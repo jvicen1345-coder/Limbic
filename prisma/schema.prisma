@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id                String   @id @default(cuid())
+  createdAt         DateTime @default(now())
+  isGuest           Boolean  @default(false)
+
+  licenseNumber     String?  @unique
+  licenseState      String?
+  licenseEmail      String?
+  licenseExpiration DateTime?
+
+  name              String   @default("Dr. Amara Chen, PT")
+  specialty         String   @default("ortho")
+  practiceState     String   @default("California")
+
+  // JSON-encoded string[] of followed topics
+  followedTopics    Json     @default("[]")
+  // JSON-encoded { name, required, completed }[] of CE categories
+  ceCategories      Json     @default("[]")
+
+  savedArticles     SavedArticle[]
+  hepPrograms       HepProgram[]
+}
+
+model SavedArticle {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  articleId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, articleId])
+}
+
+model HepProgram {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programName String
+  createdAt   DateTime      @default(now())
+  exercises   HepExercise[]
+}
+
+model HepExercise {
+  id        String     @id @default(cuid())
+  programId String
+  program   HepProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+  name      String
+  sets      String
+  reps      String
+  notes     String
+  order     Int        @default(0)
+}

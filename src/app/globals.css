@@ -1,0 +1,333 @@
+/* Design system tokens + component classes, ported from the Claude Design export
+   (project/_ds/organic-.../styles.css) with the blue/white palette override that was
+   dialed in during design iteration (project/PT News.dc.html's <style> block) baked
+   directly into :root instead of layered on top. Structure and component classes are
+   otherwise unchanged, so anything styled with .card/.btn/.tag/etc. keeps its exact
+   shape and behavior. This is a fixed light theme, same as the source design. */
+@import url("https://fonts.googleapis.com/css2?family=Caprasimo:wght@400&family=Figtree:wght@400;600;700&display=swap");
+
+:root {
+  --color-bg: #ffffff;
+  --color-surface: #dbe7fb;
+  --color-text: #14213d;
+  --color-accent: #3b6fe0;
+  --color-accent-2: #1fa8d1;
+  --color-divider: color-mix(in srgb, #14213d 16%, transparent);
+
+  --color-neutral-100: #fcfdfe;
+  --color-neutral-200: #f2f5fa;
+  --color-neutral-300: #d3deec;
+  --color-neutral-400: #b0c0da;
+  --color-neutral-500: #8ba0c2;
+  --color-neutral-600: #66799e;
+  --color-neutral-700: #4a5a78;
+  --color-neutral-800: #33405c;
+  --color-neutral-900: #1f2940;
+
+  --color-accent-100: #f6f9fe;
+  --color-accent-200: #dbe7fb;
+  --color-accent-300: #b8d0f7;
+  --color-accent-400: #8bb0f0;
+  --color-accent-500: #3b6fe0;
+  --color-accent-600: #2c5ac2;
+  --color-accent-700: #1f4494;
+  --color-accent-800: #17346f;
+  --color-accent-900: #0f2350;
+
+  --color-accent-2-100: #e6f7fc;
+  --color-accent-2-200: #c7edf7;
+  --color-accent-2-300: #97ddf0;
+  --color-accent-2-400: #5cc7e6;
+  --color-accent-2-500: #1fa8d1;
+  --color-accent-2-600: #1786a8;
+  --color-accent-2-700: #106485;
+  --color-accent-2-800: #0b4760;
+  --color-accent-2-900: #072e3f;
+
+  --font-heading: "Caprasimo", system-ui, sans-serif;
+  --font-heading-weight: 400;
+  --font-body: "Figtree", system-ui, sans-serif;
+
+  --space-1: 4.4px;
+  --space-2: 8.8px;
+  --space-3: 13.2px;
+  --space-4: 17.6px;
+  --space-6: 26.4px;
+  --space-8: 35.2px;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #1f2940 14%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #1f2940 16%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #1f2940 22%, transparent);
+}
+
+* { box-sizing: border-box; }
+
+html { height: 100%; }
+html, body { max-width: 100vw; overflow-x: hidden; }
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0 0 var(--space-2);
+}
+h1 { font-size: 42px; }
+h2 { font-size: 32px; }
+h3 { font-size: 25px; }
+h4 { font-size: 20px; }
+h5 { font-size: 16px; }
+h6 { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+p { margin: 0 0 var(--space-3); }
+a { color: var(--color-accent-700); text-underline-offset: 3px; text-decoration: none; }
+a:hover { color: var(--color-accent); text-decoration: underline; }
+img { display: block; max-width: 100%; }
+figure { margin: 0; }
+.text-muted { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+::-webkit-scrollbar { width: 0; height: 0; }
+button { font-family: inherit; }
+
+.hr {
+  height: 1px; border: 0; margin: var(--space-4) 0;
+  background: var(--color-divider);
+}
+
+/* — buttons — */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 14px; line-height: 1.2; color: var(--color-text);
+  background: transparent; border: 1px solid transparent;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  border-radius: 999px;
+}
+.btn svg { display: block; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary { background: var(--color-accent); color: var(--color-bg); }
+.btn-primary:hover { background: var(--color-accent-600); }
+.btn-primary:active { background: var(--color-accent-700); }
+.btn-secondary { border-color: var(--color-divider); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+.btn-ghost { color: var(--color-accent); padding-inline: var(--space-1); }
+.btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.btn-ghost:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
+.btn-icon { width: 36px; height: 36px; padding: 0; }
+.btn-block { width: 100%; margin-top: var(--space-2); }
+
+/* — forms — */
+.field > label {
+  display: block; font-size: 12px; margin-bottom: 5px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.input {
+  width: 100%; min-height: 36px; padding: 6px 10px; font: inherit;
+  font-size: 14px; color: var(--color-text); caret-color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider); border-radius: 999px;
+  padding-inline: 14px;
+}
+.input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
+textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius-md); }
+
+/* — cards — */
+.card {
+  display: flex; flex-direction: column; gap: var(--space-2); min-width: 0;
+  padding: var(--space-3); border-radius: calc(var(--radius-lg) * 1.15); background: var(--color-surface);
+}
+.card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
+.card-title {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 17px; line-height: 1.2;
+}
+.card-body { margin: 0; font-size: 13px; opacity: 0.8; flex: 1; }
+.card-meta {
+  display: flex; align-items: center; gap: 6px; font-size: 11px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+.elev-sm { box-shadow: var(--shadow-sm); }
+.elev-md { box-shadow: var(--shadow-md); }
+.elev-lg { box-shadow: var(--shadow-lg); }
+
+/* — tags — */
+.tag {
+  display: inline-flex; align-items: center; font-size: 11px;
+  letter-spacing: 0.02em; padding: 3px 10px;
+  border-radius: 999px;
+}
+.tag-accent { background: var(--color-accent-100); color: var(--color-accent-800); }
+.tag-accent-2 { background: var(--color-accent-2-100); color: var(--color-accent-2-800); }
+.tag-neutral { background: var(--color-neutral-100); color: var(--color-neutral-800); }
+.tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
+
+/* — app shell layout — */
+.app-root {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+.app-sidebar {
+  width: 236px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 24px 16px;
+  border-right: 1px solid var(--color-neutral-200);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.nav-section-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin: 14px 0 2px;
+  padding: 0 12px;
+}
+
+.nav-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-neutral-200);
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-mobile-topbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--color-bg);
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.app-bottomnav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-neutral-200);
+  padding: 8px 4px;
+  z-index: 20;
+}
+
+@media (max-width: 799px) {
+  .app-sidebar { display: none; }
+  .app-mobile-topbar { display: flex; }
+  .app-bottomnav { display: flex; }
+  .app-main { padding-bottom: 76px; }
+}
+
+/* — screen padding shells — */
+.screen-pad {
+  padding: 36px 44px 60px;
+  max-width: 720px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.home-pad {
+  padding: 36px 44px 60px;
+  max-width: 1020px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+@media (max-width: 799px) {
+  .screen-pad, .home-pad { padding: 18px 18px 40px; }
+}
+
+.home-row {
+  display: flex;
+  flex-direction: row;
+  gap: 48px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.home-main-col { flex: 1; min-width: 0; }
+.home-aside-col {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: 20px;
+}
+@media (max-width: 799px) {
+  .home-row { flex-direction: column; gap: 24px; }
+  .home-main-col { width: 100%; }
+  .home-aside-col { width: 100%; position: static; }
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+.cards-grid > * { min-width: 0; }
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 0;
+}
+.video-grid > * { min-width: 0; }
+@media (max-width: 799px) {
+  .cards-grid { grid-template-columns: minmax(0, 1fr); }
+  .video-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.filter-chip {
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Never show an unpaired trailing card in the 2-column desktop grid. */
+@media (min-width: 800px) {
+  .cards-grid > *:last-child:nth-child(odd) { display: none; }
+}
