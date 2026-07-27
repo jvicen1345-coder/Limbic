@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { getArticles } from "@/lib/articles";
+import { getUnderReviewArticles } from "@/lib/articles";
 import { decorateArticle } from "@/lib/feed";
 import { ReviewCard } from "@/components/RowCards";
 
@@ -19,18 +19,27 @@ export default async function UnderReviewPage() {
     );
   }
 
-  const [articles, savedRows] = await Promise.all([
-    getArticles(),
+  const [reviewArticlesRaw, savedRows] = await Promise.all([
+    getUnderReviewArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
   ]);
   const savedIds = savedRows.map((r) => r.articleId);
-  const reviewArticles = articles.filter((a) => a.underReview).map((a) => decorateArticle(a, savedIds));
+  const reviewArticles = reviewArticlesRaw.map((a) => decorateArticle(a, savedIds));
 
   return (
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Under Review</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 22px" }}>
-        Articles pinged for editorial review, with the reason flagged.
+        Retractions, corrections, and expressions of concern from PT/rehab journals, sourced from the{" "}
+        <a
+          href="https://gitlab.com/crossref/retraction-watch-data"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "inherit" }}
+        >
+          Crossref/Retraction Watch database
+        </a>
+        .
       </p>
       {reviewArticles.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -39,7 +48,7 @@ export default async function UnderReviewPage() {
           ))}
         </div>
       ) : (
-        <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>No articles currently flagged for review.</p>
+        <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>No flagged articles right now.</p>
       )}
     </div>
   );

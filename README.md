@@ -126,6 +126,33 @@ work as soon as it runs somewhere with normal outbound internet access — but t
 is based on reading the code, not a live observation, and is worth a quick check the
 first time you deploy this somewhere with real egress.
 
+## Under Review — real retraction data
+
+The Under Review section (`src/lib/retraction-watch-data.ts`) is a snapshot of real
+retractions, corrections, and expressions of concern from PT/rehab journals, pulled from
+the [Crossref/Retraction Watch database](https://gitlab.com/crossref/retraction-watch-data)
+— the authoritative public list of retracted papers across all of science. Each entry
+links out to the actual retraction notice (or the original paper, when no notice URL is
+recorded) so clinicians can read the primary source rather than a summary of it.
+
+It's a snapshot, not a live fetch: the source CSV is the *entire* Retraction Watch
+database (~65MB, every field, every discipline), which is too large to download inside a
+single serverless request, and Crossref only updates it daily anyway. Instead,
+`scripts/fetch-retraction-watch.mjs` downloads it, filters to journals PTs actually read
+(by journal name — the dataset's own "Rehabilitation/Therapy" subject tag turned out to
+mean general medical therapy, not the physical therapy profession, so it's not a
+reliable filter here), and writes the result straight into
+`src/lib/retraction-watch-data.ts`. Re-run it (`npm run fetch:retraction-watch`) whenever
+you want a fresher snapshot — the current one is pinned to a specific GitLab commit
+(recorded in the generated file's header) rather than "latest," so re-runs are
+reproducible.
+
+Unlike the news/stock sources above, gitlab.com's raw-file endpoint *was* reachable
+directly from the sandbox this was built in — this doesn't imply the other live sources
+(Google News, PubMed, Yahoo/Stooq, the Anthropic API) are reachable too, since sandbox
+network policy is host-specific; it's just how this one snapshot could actually be
+verified against real data rather than reasoned about from code alone.
+
 ### Scope boundaries on "live everything"
 
 A couple of pieces intentionally stayed static, because "live" doesn't cleanly apply to
@@ -135,8 +162,9 @@ them:
   category): a generic news search returns when an article about an event was
   *published*, not when the event itself happens, so it can't populate a calendar of
   upcoming dates. This category stays on the curated seed list.
-- **"Under review"**: an editorial workflow flag ("a reader disputed this claim, pending
-  verification"), not something live news carries. Also stays on the curated seed list.
+- **Under Review**: real data (see below), but a baked snapshot rather than a live
+  fetch — the source file is ~65MB, too large to download inside a single serverless
+  request.
 - **Wellness videos**: the original prototype's video thumbnails were filled by Claude
   Design's own image-picker tool, which has no equivalent at runtime here. They render as
   styled placeholder tiles with real title/source/duration metadata instead of a fake

@@ -135,8 +135,6 @@ export const SEED_ARTICLES: Article[] = [
     id: "a8",
     type: "industry",
     specialty: "neuro",
-    underReview:
-      "Flagged by a reader: parity date for Florida may be incorrect — verifying against state statute text.",
     title: "Telehealth PT visits get permanent parity in three more states",
     source: "State Legislative Tracker",
     date: "2026-07-05",
@@ -222,8 +220,6 @@ export const SEED_ARTICLES: Article[] = [
     id: "a13",
     type: "industry",
     specialty: "sports",
-    underReview:
-      "Source quote could not be re-confirmed with NCAA press office — pending follow-up before wider distribution.",
     title: "NCAA expands mandatory concussion protocol to club-level athletics",
     source: "NCAA Sports Science Institute",
     date: "2026-06-10",

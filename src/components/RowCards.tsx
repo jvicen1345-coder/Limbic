@@ -77,7 +77,7 @@ export function ReviewCard({ article }: { article: DecoratedArticle }) {
       onClick={() => router.push(`/article/${article.id}`)}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <span className="tag tag-neutral">Under review</span>
+        <span className="tag tag-neutral">{article.reviewStatus || "Under review"}</span>
         <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{article.dateLabel}</span>
       </div>
       <div className="card-title" style={{ marginTop: 6 }}>

@@ -3,6 +3,7 @@ import type { Article, ArticleType, WellnessArticle } from "@/lib/types";
 import { SEED_ARTICLES, SEED_WELLNESS_ARTICLES, WELLNESS_VIDEOS } from "@/lib/articles-static";
 import { fetchLiveArticles, fetchLiveWellness } from "@/lib/news-live";
 import { fetchPubmedResearch } from "@/lib/pubmed";
+import { RETRACTION_WATCH_ARTICLES } from "@/lib/retraction-watch-data";
 
 export { WELLNESS_VIDEOS };
 
@@ -44,14 +45,26 @@ export async function getArticles(): Promise<Article[]> {
   }
   // CE & Events (and the home-feed calendar) always reads from curated seed dates.
   SEED_ARTICLES.filter((a) => a.type === "ce").forEach(add);
-  // "Under review" is an editorial flag that only exists on curated seed articles — make
-  // sure those stay in the feed even if their type already met the live threshold above.
-  SEED_ARTICLES.filter((a) => a.underReview).forEach(add);
 
   return result;
 }
 
+/**
+ * Real retracted papers, corrections, and expressions of concern from PT/rehab
+ * journals, sourced from the Crossref/Retraction Watch database (see
+ * lib/retraction-watch-data.ts and scripts/fetch-retraction-watch.mjs). Kept separate
+ * from getArticles() rather than folded in — at 80+ records it would otherwise flood
+ * the home feed's research section, and "flagged for integrity reasons" is a distinct
+ * concept from the main feed's editorial categories.
+ */
+export async function getUnderReviewArticles(): Promise<Article[]> {
+  return RETRACTION_WATCH_ARTICLES;
+}
+
 export async function getArticleById(id: string): Promise<Article | null> {
+  if (id.startsWith("rw-")) {
+    return RETRACTION_WATCH_ARTICLES.find((a) => a.id === id) ?? null;
+  }
   const articles = await getArticles();
   return articles.find((a) => a.id === id) ?? null;
 }

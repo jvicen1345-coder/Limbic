@@ -7,7 +7,8 @@
     "build": "node scripts/apply-migrations.mjs && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "fetch:retraction-watch": "node scripts/fetch-retraction-watch.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",
