@@ -71,11 +71,12 @@ deploys to work too):
 | `DATABASE_URL` | the `libsql://...` URL from step 1 |
 | `TURSO_AUTH_TOKEN` | the token from step 1 |
 | `SESSION_SECRET` | output of `openssl rand -base64 32` |
+| `ANTHROPIC_API_KEY` | an API key from [console.anthropic.com](https://console.anthropic.com) — powers the "Ask AI to search PubMed" feature (see below); the rest of the app works without it |
 
 **5. Redeploy** (Vercel → Deployments → ⋯ → Redeploy) so the build picks up the new env
-vars. The build command (`prisma migrate deploy && next build`) applies the database
-schema to your Turso database automatically on every deploy — you don't need to run
-migrations by hand.
+vars. The build command (`node scripts/apply-migrations.mjs && next build`) applies the
+database schema to your Turso database automatically on every deploy — you don't need to
+run migrations by hand.
 
 That's it — you'll get a `*.vercel.app` URL. Every push to the connected branch redeploys
 automatically after that.
@@ -86,11 +87,17 @@ The design's chat history shows the author explicitly asking for real sourcing (
 information from credible sources... use yahoo finance to get the true price of USPH")
 instead of the prototype's static seed data. This build wires that up for real:
 
-- **News** (`src/lib/news-live.ts`): research/guidelines/industry/equipment articles are
-  fetched live via Google News RSS (no API key required), one query per category, then
-  keyword-classified into a specialty and re-checked against the category so the feed's
-  filters and personalization still work. This is a heuristic, not a certainty — it's
-  documented as such in the code.
+- **Research** (`src/lib/pubmed.ts`): sourced live from PubMed (NCBI E-utilities) — the
+  actual authoritative medical-literature database, not a news search — since research
+  cards on the home feed should be real published studies. No API key required.
+- **Guidelines / Industry & Policy / Equipment** (`src/lib/news-live.ts`): fetched live via
+  Google News RSS (no API key required), one query per category, then keyword-classified
+  into a specialty. A result only survives if it actually matches professional/medical-
+  sector language for its category — the home feed should only ever surface PubMed
+  research or confidently-classified medical-sector news, not general health/lifestyle
+  journalism, so anything that merely came back from a loosely-matching search is dropped
+  rather than kept under its query's category by default. General wellness content lives
+  only on the Health & Wellness page, sourced separately (`fetchLiveWellness`).
 - **Stock** (`src/lib/stock.ts`): USPH's price/sparkline is fetched live from Stooq's CSV
   export, falling back to Yahoo Finance's chart endpoint, in that order.
 - **Fallback**: if a live source is unreachable, each of the above falls back to bundled
@@ -98,6 +105,17 @@ instead of the prototype's static seed data. This build wires that up for real:
   events from the original prototype for news, and a **real** USPH daily-close series
   (captured via a live market-data connector while building this, 2026-06-24 through
   2026-07-24, last close $74.58) for the stock card, not an invented one.
+
+## AI-assisted PubMed search
+
+The Search screen has an "Ask AI to search PubMed" card: describe what you're looking for
+in plain language (e.g. "blood-flow restriction training after ACL repair") and Claude
+(`src/lib/ai-pubmed-query.ts`, model `claude-opus-5`) turns it into a proper PubMed query
+using field tags and boolean operators, scoped to PT/rehab literature. The generated query
+is shown above the results for transparency, and the search runs directly against PubMed
+(`searchPubmed` in `src/lib/pubmed.ts`) — nothing is fabricated by the model. If the
+Anthropic API call fails or `ANTHROPIC_API_KEY` isn't set, it falls back to using the raw
+description as a literal PubMed search rather than breaking the page.
 
 **I could not verify the live-fetch path succeeds end-to-end** in the sandbox this was
 built in — its network policy blocks outbound HTTP to arbitrary hosts (confirmed via

@@ -7,12 +7,23 @@ import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
 /**
  * Live news sourcing.
  *
- * There is no single "PT industry news" API, so each content category is backed by a
- * Google News RSS search (no API key required) with a query tuned to that category, plus
- * one direct feed (CMS newsroom) for industry/policy. Results are keyword-classified into
- * a specialty (ortho/neuro/sports/pediatric/geriatric) the same way a real aggregator would
- * bucket free-text news into fixed categories — it's a heuristic, not a guarantee, and is
- * documented as such here rather than presented as more rigorous than it is.
+ * "Research" is sourced from PubMed, not this file — see lib/pubmed.ts — since it's the
+ * actual authoritative medical-literature database rather than general news search.
+ *
+ * The remaining home-feed categories (guideline/industry/product) don't have a single
+ * "PT industry news" API, so each is backed by a Google News RSS search (no API key
+ * required) with a query tuned to that category. To keep general lifestyle/health
+ * journalism from slipping onto the home page under a professional-sounding label, a
+ * result only survives if it actually matches professional/medical-sector language (see
+ * the `matchedTypeKeywords` confidence check in `classify` below) — anything that merely
+ * came back from the search without a real keyword match is dropped rather than kept
+ * under its query's category by default. General health/wellness content lives only on
+ * the Health & Wellness page (`fetchLiveWellness` below), never here.
+ *
+ * Results are keyword-classified into a specialty (ortho/neuro/sports/pediatric/geriatric)
+ * the same way a real aggregator would bucket free-text into fixed categories — it's a
+ * heuristic, not a guarantee, and is documented as such here rather than presented as more
+ * rigorous than it is.
  *
  * "CE & Events" is intentionally NOT sourced live: the home-feed calendar needs a precise
  * future event *date*, which generic news search doesn't carry (a story announcing a
@@ -131,10 +142,10 @@ function titleCase(s: string): string {
   return s.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function classify(
+export function classify(
   text: string,
   defaultType: ArticleType
-): { type: ArticleType; specialty: Specialty; matchedKeywords: string[] } {
+): { type: ArticleType; specialty: Specialty; matchedKeywords: string[]; typeConfident: boolean } {
   const lower = text.toLowerCase();
   let bestSpecialty: Specialty = "ortho";
   let bestSpecialtyHits = 0;
@@ -161,11 +172,10 @@ function classify(
   });
 
   const matchedKeywords = [bestSpecialtyKeyword, bestTypeKeyword].filter(Boolean).map(titleCase);
-  return { type, specialty: bestSpecialty, matchedKeywords };
+  return { type, specialty: bestSpecialty, matchedKeywords, typeConfident: bestTypeHits > 0 };
 }
 
 const CATEGORY_QUERIES: { type: ArticleType; query: string }[] = [
-  { type: "research", query: "physical therapy research study rehabilitation" },
   { type: "guideline", query: "physical therapy clinical practice guideline APTA" },
   { type: "industry", query: "physical therapy Medicare reimbursement policy" },
   { type: "product", query: "physical therapy equipment device FDA clearance" },
@@ -179,7 +189,12 @@ function itemToArticle(item: RawItem, defaultType: ArticleType): Article | null 
   // Google News snippets repeat the title followed by the source name; drop that prefix
   // when present so the summary doesn't just echo the headline.
   const summary = snippetRaw.length > 20 ? snippetRaw : title;
-  const { type, specialty, matchedKeywords } = classify(`${title} ${summary}`, defaultType);
+  const { type, specialty, matchedKeywords, typeConfident } = classify(`${title} ${summary}`, defaultType);
+  // A result that doesn't actually match any professional/medical-sector keyword isn't
+  // reliably "medical sector news" — it just came back from a loosely-matching search.
+  // Drop it rather than keep it under its query's category by default, so general
+  // lifestyle/health journalism doesn't slip onto the home feed under a clinical label.
+  if (!typeConfident) return null;
   const source = sourceName(item, title);
   const cleanTitle = title.replace(new RegExp(` - ${source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`), "").trim();
   const tags = Array.from(new Set([SPECIALTY_META[specialty], TYPE_META[type].label, ...matchedKeywords]));

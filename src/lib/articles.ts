@@ -2,6 +2,7 @@ import "server-only";
 import type { Article, ArticleType, WellnessArticle } from "@/lib/types";
 import { SEED_ARTICLES, SEED_WELLNESS_ARTICLES, WELLNESS_VIDEOS } from "@/lib/articles-static";
 import { fetchLiveArticles, fetchLiveWellness } from "@/lib/news-live";
+import { fetchPubmedResearch } from "@/lib/pubmed";
 
 export { WELLNESS_VIDEOS };
 
@@ -12,14 +13,14 @@ const LIVE_TYPES: ArticleType[] = ["research", "guideline", "industry", "product
 const MIN_LIVE_PER_TYPE = 3;
 
 /**
- * The merged article feed: live-fetched news for research/guidelines/industry/equipment,
- * always-static CE & Events (see lib/news-live.ts for why), and always-static
+ * The merged article feed: PubMed for research, Google-News-sourced guidelines/industry/
+ * equipment, always-static CE & Events (see lib/news-live.ts for why), and always-static
  * "under review" items (an editorial workflow status, not a live-news concept).
  */
 export async function getArticles(): Promise<Article[]> {
-  const live = await fetchLiveArticles();
+  const [live, pubmedResearch] = await Promise.all([fetchLiveArticles(), fetchPubmedResearch()]);
   const liveByType: Record<ArticleType, Article[]> = {
-    research: [],
+    research: pubmedResearch,
     guideline: [],
     industry: [],
     ce: [],
