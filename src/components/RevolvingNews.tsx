@@ -6,9 +6,35 @@ import type { DecoratedArticle } from "@/lib/feed";
 
 const ROTATE_MS = 6000;
 
+/** A real og:image can still fail to load client-side (hotlink protection, a since-
+ *  removed asset, …). Keyed by article id from the parent so switching articles remounts
+ *  this and naturally resets `failed`, instead of tracking that reset with an effect. */
+function ArticleImage({ src }: { src: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- external, unconfigured domains
+    <img
+      src={src}
+      alt=""
+      onError={() => setFailed(true)}
+      style={{
+        width: "100%",
+        height: 90,
+        objectFit: "cover",
+        borderRadius: "var(--radius-md)",
+        marginBottom: 8,
+        display: "block",
+      }}
+    />
+  );
+}
+
 /** Small auto-rotating headline card for the home sidebar — cycles through the latest
- *  stories on a timer so there's always fresh-looking content below the stock card,
- *  without needing its own scroll area. */
+ *  news (guidelines/industry/equipment, not research or events; see page.tsx) on a
+ *  timer. Shows each article's own image (its real og:image) when one could be found;
+ *  otherwise just renders the text, since a fabricated stand-in would misrepresent what
+ *  the article actually looks like. */
 export function RevolvingNews({ articles }: { articles: DecoratedArticle[] }) {
   const [index, setIndex] = useState(0);
   const router = useRouter();
@@ -33,6 +59,7 @@ export function RevolvingNews({ articles }: { articles: DecoratedArticle[] }) {
         style={{ cursor: "pointer", marginTop: 8 }}
         onClick={() => router.push(`/article/${article.id}`)}
       >
+        {article.image && <ArticleImage key={article.id} src={article.image} />}
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
           <span className={article.typeTagClass} style={{ fontSize: 9.5, padding: "2px 8px" }}>
             {article.typeLabel}

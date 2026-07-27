@@ -150,6 +150,22 @@ work as soon as it runs somewhere with normal outbound internet access — but t
 is based on reading the code, not a live observation, and is worth a quick check the
 first time you deploy this somewhere with real egress.
 
+## Home page news ticker
+
+The "Latest news" card in the Home sidebar (`src/components/RevolvingNews.tsx`) rotates
+through the most recent Guidelines/Industry & Policy/Equipment articles — general news
+from news outlets, deliberately excluding Research (PubMed is an academic-literature
+database, not a news outlet) and CE & Events (a curated calendar, not news). See
+`NEWS_TICKER_TYPES` in `src/app/(app)/page.tsx`.
+
+Each card shows the real image the article itself uses — its `og:image`, fetched
+server-side (`src/lib/og-image.ts`) from the article's own page, the same image the
+publisher uses for its own social-media previews. Nothing is fabricated or substituted: if
+no image can be found (or an article has no `sourceUrl` at all, true of seed/fallback
+content), the card just renders without one. This only runs for the ~6 articles shown in
+the ticker, not the whole feed, and fails silently per-article so one slow or blocked page
+doesn't take down the rest.
+
 ## Under Review — real retraction data
 
 The Under Review section (`src/lib/retraction-watch-data.ts`) is a snapshot of real

@@ -16,6 +16,9 @@ export interface Article {
   tags: string[];
   /** Authored body paragraphs — only seed articles have these (see lib/articles-static.ts). */
   body?: string[];
+  /** The real image the article itself uses (its `og:image`), fetched on-demand for a
+   *  small number of candidates (see lib/og-image.ts) — never a fabricated stand-in. */
+  image?: string;
   /** Short "why this is flagged" note shown on the Under Review card. */
   underReview?: string;
   /** Human label for the flag's status — e.g. "Retraction", "Correction", "Expression
