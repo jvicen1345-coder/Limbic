@@ -20,6 +20,11 @@ model User {
   licenseEmail      String?
   licenseExpiration DateTime?
 
+  // General (non-PT) sign-in — separate from licenseEmail, which belongs to the PT flow
+  // and isn't unique. Signing in again with the same email returns to this same account,
+  // same persistence model as licenseNumber for PTs.
+  email             String?  @unique
+
   name              String   @default("Dr. Amara Chen, PT")
   specialty         String   @default("ortho")
   practiceState     String   @default("California")

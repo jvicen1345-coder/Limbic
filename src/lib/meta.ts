@@ -46,3 +46,12 @@ export function formatDate(iso: string): string {
 export function firstName(name: string): string {
   return name.replace(/^Dr\.\s*/, "").split(" ")[0];
 }
+
+/** Default display name for a general (non-PT) account, derived from the email's local
+ *  part since there's no license record to pull a real name from. */
+export function nameFromEmail(email: string): string {
+  const local = email.split("@")[0] || "there";
+  const words = local.replace(/[._+-]+/g, " ").trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return "there";
+  return words.map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+}
