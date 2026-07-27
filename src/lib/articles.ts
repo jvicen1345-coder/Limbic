@@ -2,7 +2,7 @@ import "server-only";
 import type { Article, ArticleType, WellnessArticle } from "@/lib/types";
 import { SEED_ARTICLES, SEED_WELLNESS_ARTICLES, WELLNESS_VIDEOS } from "@/lib/articles-static";
 import { fetchLiveArticles, fetchLiveWellness } from "@/lib/news-live";
-import { fetchPubmedResearch } from "@/lib/pubmed";
+import { fetchPubmedResearch, fetchPubmedById } from "@/lib/pubmed";
 import { RETRACTION_WATCH_ARTICLES } from "@/lib/retraction-watch-data";
 import { fetchAptaNews } from "@/lib/apta-news";
 import { APTA_NEWS_SEED } from "@/lib/apta-news-static";
@@ -83,6 +83,12 @@ export async function getArticleById(id: string): Promise<Article | null> {
   if (id.startsWith("apta-")) {
     const aptaArticles = await getAptaNewsArticles();
     return aptaArticles.find((a) => a.id === id) ?? null;
+  }
+  if (id.startsWith("pubmed-")) {
+    // Don't rely on the article still being in fetchPubmedResearch()'s current top
+    // results — a one-off AI-search query returns PMIDs that generic query never
+    // touches, so look this one PMID up directly instead of 404ing on a valid article.
+    return fetchPubmedById(id.slice("pubmed-".length));
   }
   const articles = await getArticles();
   return articles.find((a) => a.id === id) ?? null;

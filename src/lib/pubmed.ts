@@ -103,16 +103,10 @@ function stableId(pmid: string): string {
   return "pubmed-" + pmid;
 }
 
-/** Runs a PubMed search and returns normalized, classified articles. Never throws — any
- *  failed step just yields fewer (or zero) results. */
-export async function searchPubmed(query: string, limit = 12): Promise<Article[]> {
-  const searchUrl =
-    `${EUTILS}/esearch.fcgi?db=pubmed&retmode=json&retmax=${limit}&sort=date&term=` +
-    encodeURIComponent(query);
-  const searchJson = (await fetchJson(searchUrl)) as { esearchresult?: { idlist?: string[] } } | null;
-  const ids: string[] = searchJson?.esearchresult?.idlist ?? [];
+/** Shared by searchPubmed and fetchPubmedById — turns a list of PMIDs into normalized,
+ *  classified articles via esummary (metadata) + efetch (abstract text). Never throws. */
+async function buildArticlesFromIds(ids: string[]): Promise<Article[]> {
   if (ids.length === 0) return [];
-
   const idParam = ids.join(",");
   const [summaryJson, efetchXml] = await Promise.all([
     fetchJson(`${EUTILS}/esummary.fcgi?db=pubmed&retmode=json&id=${idParam}`) as Promise<{
@@ -150,6 +144,26 @@ export async function searchPubmed(query: string, limit = 12): Promise<Article[]
   return articles;
 }
 
+/** Runs a PubMed search and returns normalized, classified articles. Never throws — any
+ *  failed step just yields fewer (or zero) results. */
+export async function searchPubmed(query: string, limit = 12): Promise<Article[]> {
+  const searchUrl =
+    `${EUTILS}/esearch.fcgi?db=pubmed&retmode=json&retmax=${limit}&sort=date&term=` +
+    encodeURIComponent(query);
+  const searchJson = (await fetchJson(searchUrl)) as { esearchresult?: { idlist?: string[] } } | null;
+  const ids: string[] = searchJson?.esearchresult?.idlist ?? [];
+  return buildArticlesFromIds(ids);
+}
+
 export async function fetchPubmedResearch(limit = 12): Promise<Article[]> {
   return searchPubmed(DEFAULT_QUERY, limit);
+}
+
+/** Looks up a single PMID directly — used by getArticleById so an article surfaced by
+ *  any search (the default research feed, or a one-off AI-generated query that isn't
+ *  otherwise cached anywhere) can always be opened, not just ones that happen to still
+ *  be in fetchPubmedResearch()'s current top results. */
+export async function fetchPubmedById(pmid: string): Promise<Article | null> {
+  const articles = await buildArticlesFromIds([pmid]);
+  return articles[0] ?? null;
 }
