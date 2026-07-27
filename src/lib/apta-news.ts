@@ -1,12 +1,12 @@
 import "server-only";
 import { parse, type HTMLElement } from "node-html-parser";
 import type { Article } from "@/lib/types";
-import { classify } from "@/lib/news-live";
+import { classify, fetchGoogleNewsRss, stripHtml, sourceName, toIsoDate, estimateReadMins } from "@/lib/news-live";
 
 /**
- * Live scrape of https://www.apta.org/news for the APTA News section.
+ * APTA News section, in two live tiers plus a static fallback.
  *
- * Two real constraints shaped this file:
+ * Tier 1 — direct scrape of https://www.apta.org/news. Two real constraints shaped this:
  *
  * 1. apta.org's markup could not be inspected while building this — the sandbox this was
  *    built in blocks the domain outright (its own egress policy, confirmed via a direct
@@ -20,8 +20,15 @@ import { classify } from "@/lib/news-live";
  *    URLs (an extremely common CMS convention) won't break this, whereas guessing at div
  *    classes I've never seen would be pure luck.
  *
- * Falls back to APTA_NEWS_SEED (lib/apta-news-static.ts) if this returns too few results —
- * same graceful-degradation pattern as every other live source in this app.
+ * Tier 2 — third-party reporting *about* APTA, sourced via Google News RSS search (same
+ * no-API-key mechanism lib/news-live.ts uses for guideline/industry/product). This exists
+ * specifically because tier 1 can fail: it doesn't depend on apta.org's own bot/WAF
+ * posture at all, since the results come from whatever outlets Google News indexed, not
+ * from apta.org's servers directly. Only used when tier 1 comes back thin.
+ *
+ * Falls back to APTA_NEWS_SEED (lib/apta-news-static.ts) if both tiers together still
+ * return too few results — same graceful-degradation pattern as every other live source
+ * in this app.
  */
 
 const NEWS_URL = "https://www.apta.org/news";
@@ -55,12 +62,56 @@ function nearbySnippet(anchor: HTMLElement, title: string): string {
   return "";
 }
 
-function estimateReadMins(text: string): number {
-  const words = text.split(/\s+/).filter(Boolean).length;
-  return Math.max(2, Math.round(words / 200) || 2);
+const GOOGLE_NEWS_QUERY = "APTA American Physical Therapy Association";
+
+/** Title/summary must actually mention APTA or physical therapy — the query above is
+ *  specific, but Google News can still return loosely-related results, and a story with
+ *  neither phrase isn't reliably about APTA. */
+function isAptaRelevant(text: string): boolean {
+  return /\bapta\b/i.test(text) || /physical therap/i.test(text);
 }
 
-export async function fetchAptaNews(limit = 12): Promise<Article[]> {
+/** Tier 2: third-party reporting about APTA via Google News RSS — see file header. */
+async function fetchAptaNewsFromGoogleNews(limit = 12): Promise<Article[]> {
+  const items = await fetchGoogleNewsRss(GOOGLE_NEWS_QUERY);
+  const seen = new Set<string>();
+  const articles: Article[] = [];
+
+  for (const item of items) {
+    if (articles.length >= limit) break;
+    const link = item.link;
+    const title = (item.title || "").trim();
+    if (!link || !title || seen.has(link)) continue;
+
+    const source = sourceName(item, title);
+    const cleanTitle =
+      title.replace(new RegExp(` - ${source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`), "").trim() || title;
+    const snippetRaw = stripHtml(item.contentSnippet || item.content || "");
+    const summary = snippetRaw.length > 20 ? snippetRaw : cleanTitle;
+    if (!isAptaRelevant(`${cleanTitle} ${summary}`)) continue;
+    seen.add(link);
+
+    const { specialty } = classify(`${cleanTitle} ${summary}`, "industry");
+
+    articles.push({
+      id: stableId(link),
+      type: "industry",
+      specialty,
+      title: cleanTitle,
+      source,
+      sourceUrl: link,
+      date: toIsoDate(item),
+      readMins: estimateReadMins(summary),
+      summary: summary.length > 240 ? summary.slice(0, 237) + "…" : summary,
+      tags: ["APTA News"],
+      live: true,
+    });
+  }
+  return articles;
+}
+
+/** Tier 1: direct scrape of apta.org/news — see file header. */
+async function fetchAptaNewsDirect(limit = 12): Promise<Article[]> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   let html: string;
@@ -119,4 +170,20 @@ export async function fetchAptaNews(limit = 12): Promise<Article[]> {
   } catch {
     return [];
   }
+}
+
+/** Below this many tier-1 (direct scrape) results, top up with tier 2 (Google News) —
+ *  same "thin results" threshold articles.ts uses before falling back to the static seed. */
+const MIN_DIRECT_RESULTS = 3;
+
+/** Combines both live tiers: apta.org direct first, topped up with Google-News-sourced
+ *  third-party reporting if the direct scrape came back thin. articles.ts layers the
+ *  static-seed fallback on top of this if both tiers together are still too thin. */
+export async function fetchAptaNews(limit = 12): Promise<Article[]> {
+  const direct = await fetchAptaNewsDirect(limit);
+  if (direct.length >= MIN_DIRECT_RESULTS) return direct;
+
+  const viaGoogleNews = await fetchAptaNewsFromGoogleNews(limit - direct.length);
+  const seen = new Set(direct.map((a) => a.sourceUrl));
+  return [...direct, ...viaGoogleNews.filter((a) => !seen.has(a.sourceUrl))];
 }
