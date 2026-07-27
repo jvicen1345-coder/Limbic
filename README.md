@@ -33,7 +33,7 @@ npm run dev
 
 Visit `http://localhost:3000`. Sign-in is a demo flow — any license number works — or
 continue as a guest. Guests can read/search/save articles and personalize their profile,
-but Home Exercise Programs, Breaking News, and Under Review are gated behind having a
+but Home Exercise Programs, APTA News, and Under Review are gated behind having a
 license on file (matching the source design).
 
 ## Deploying (Vercel + Turso)
@@ -98,6 +98,9 @@ instead of the prototype's static seed data. This build wires that up for real:
   journalism, so anything that merely came back from a loosely-matching search is dropped
   rather than kept under its query's category by default. General wellness content lives
   only on the Health & Wellness page, sourced separately (`fetchLiveWellness`).
+- **APTA News** (`src/lib/apta-news.ts`): scraped live from
+  [apta.org/news](https://www.apta.org/news) for the dedicated APTA News section — see the
+  callout below, this one's riskier than the other sources.
 - **Stock** (`src/lib/stock.ts`): USPH's price/sparkline is fetched live from Stooq's CSV
   export, falling back to Yahoo Finance's chart endpoint, in that order.
 - **Fallback**: if a live source is unreachable, each of the above falls back to bundled
@@ -105,6 +108,27 @@ instead of the prototype's static seed data. This build wires that up for real:
   events from the original prototype for news, and a **real** USPH daily-close series
   (captured via a live market-data connector while building this, 2026-06-24 through
   2026-07-24, last close $74.58) for the stock card, not an invented one.
+
+### APTA News is a real risk, not just a sandbox limitation
+
+Every other live source above is a public API/RSS feed built for programmatic access. APTA
+News is different: it's an HTML scrape of apta.org's website, which isn't designed to be
+scraped. Two things point to this possibly not working even in production, not just in this
+sandbox:
+
+- The sandbox's own network policy blocks the domain outright (a 403 with
+  `x-deny-reason: host_not_allowed`) — expected, and true of most hosts here.
+- A WebFetch attempt at the same URL got a *different* 403, straight from apta.org's own
+  server. That one usually means bot/WAF protection on their end, which a Vercel serverless
+  function's request would likely trip too.
+
+Because of that, `src/lib/apta-news.ts`'s selectors are deliberately URL-pattern-based
+(matching `/news/YYYY/MM/DD/...`-shaped links) rather than tied to CSS classes I've never
+actually seen — I couldn't inspect the real markup while building this. It falls back to
+`APTA_NEWS_SEED` (`src/lib/apta-news-static.ts`, fictional but written in APTA's real news
+categories — advocacy wins, CSM, workforce reports) whenever the live scrape returns fewer
+than 3 results, so the section still looks populated either way. Worth checking after your
+first deploy whether the live scrape is actually getting through.
 
 ## AI-assisted PubMed search
 

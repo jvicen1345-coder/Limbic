@@ -90,7 +90,7 @@ export interface AppShellProps {
   specialtyLabel: string;
   practiceState: string;
   hasLicense: boolean;
-  breakingCount: number;
+  aptaCount: number;
   savedCount: number;
   children: React.ReactNode;
 }
@@ -100,7 +100,7 @@ export function AppShell({
   specialtyLabel,
   practiceState,
   hasLicense,
-  breakingCount,
+  aptaCount,
   savedCount,
   children,
 }: AppShellProps) {
@@ -125,7 +125,7 @@ export function AppShell({
         {hasLicense && (
           <>
             <div className="nav-section-label">Articles</div>
-            <NavLink href="/breaking-news" icon={<ZapIcon />} label="Breaking News" badge={breakingCount} />
+            <NavLink href="/apta-news" icon={<ZapIcon />} label="APTA News" badge={aptaCount} />
             <NavLink href="/under-review" icon={<AlertCircleIcon />} label="Under Review" />
 
             <div className="nav-section-label">Clinician tools</div>

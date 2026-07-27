@@ -4,6 +4,8 @@ import { SEED_ARTICLES, SEED_WELLNESS_ARTICLES, WELLNESS_VIDEOS } from "@/lib/ar
 import { fetchLiveArticles, fetchLiveWellness } from "@/lib/news-live";
 import { fetchPubmedResearch } from "@/lib/pubmed";
 import { RETRACTION_WATCH_ARTICLES } from "@/lib/retraction-watch-data";
+import { fetchAptaNews } from "@/lib/apta-news";
+import { APTA_NEWS_SEED } from "@/lib/apta-news-static";
 
 export { WELLNESS_VIDEOS };
 
@@ -61,9 +63,26 @@ export async function getUnderReviewArticles(): Promise<Article[]> {
   return RETRACTION_WATCH_ARTICLES;
 }
 
+/**
+ * Live news from apta.org/news (see lib/apta-news.ts for why this is scraped rather than
+ * an API/RSS feed, and the real risk that it may not work in production either). Falls
+ * back to APTA_NEWS_SEED when the live scrape comes back thin, same pattern as the rest
+ * of the app's live sources. Kept separate from getArticles() — this is its own feed,
+ * not a category within the main one.
+ */
+export async function getAptaNewsArticles(): Promise<Article[]> {
+  const live = await fetchAptaNews();
+  if (live.length >= 3) return live;
+  return [...live, ...APTA_NEWS_SEED];
+}
+
 export async function getArticleById(id: string): Promise<Article | null> {
   if (id.startsWith("rw-")) {
     return RETRACTION_WATCH_ARTICLES.find((a) => a.id === id) ?? null;
+  }
+  if (id.startsWith("apta-")) {
+    const aptaArticles = await getAptaNewsArticles();
+    return aptaArticles.find((a) => a.id === id) ?? null;
   }
   const articles = await getArticles();
   return articles.find((a) => a.id === id) ?? null;

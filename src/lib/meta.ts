@@ -18,7 +18,7 @@ export const SPECIALTY_META: Record<Specialty, string> = {
 
 export const STATES = ["California", "Texas", "New York", "Florida", "Illinois", "Ohio"];
 
-/** Shared page size for every paginated list view (Under Review, Search, Breaking News,
+/** Shared page size for every paginated list view (Under Review, Search, APTA News,
  *  Saved Articles/Guidelines) so long lists never render as one unbroken page. */
 export const PAGE_SIZE = 12;
 

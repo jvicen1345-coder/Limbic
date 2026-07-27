@@ -16,7 +16,6 @@ export interface Article {
   tags: string[];
   /** Authored body paragraphs — only seed articles have these (see lib/articles-static.ts). */
   body?: string[];
-  breaking?: boolean;
   /** Short "why this is flagged" note shown on the Under Review card. */
   underReview?: string;
   /** Human label for the flag's status — e.g. "Retraction", "Correction", "Expression

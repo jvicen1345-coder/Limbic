@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { getArticles } from "@/lib/articles";
+import { getAptaNewsArticles } from "@/lib/articles";
 import { SPECIALTY_META } from "@/lib/meta";
 import { AppShell } from "@/components/AppShell";
 
@@ -9,13 +9,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
 
-  const [articles, savedCount] = await Promise.all([
-    getArticles(),
+  const [aptaArticles, savedCount] = await Promise.all([
+    getAptaNewsArticles(),
     prisma.savedArticle.count({ where: { userId: user.id } }),
   ]);
 
   const hasLicense = !!user.licenseNumber;
-  const breakingCount = articles.filter((a) => a.breaking).length;
 
   return (
     <AppShell
@@ -23,7 +22,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       specialtyLabel={SPECIALTY_META[user.specialty as keyof typeof SPECIALTY_META]}
       practiceState={user.practiceState}
       hasLicense={hasLicense}
-      breakingCount={breakingCount}
+      aptaCount={aptaArticles.length}
       savedCount={savedCount}
     >
       {children}

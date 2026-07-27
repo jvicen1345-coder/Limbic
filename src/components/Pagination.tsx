@@ -33,7 +33,7 @@ interface PaginationProps {
 }
 
 /** Page-number links/buttons shared by every paginated list view — Under Review,
- *  Breaking News, Saved Articles/Guidelines (URL-based via `basePath`), and Search
+ *  APTA News, Saved Articles/Guidelines (URL-based via `basePath`), and Search
  *  (in-memory via `onPageChange`). */
 export function Pagination({ page, totalPages, basePath, onPageChange }: PaginationProps) {
   if (totalPages <= 1) return null;
