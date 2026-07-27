@@ -7,6 +7,7 @@ import { Chip } from "@/components/Chip";
 import { ArticleCard, HeroArticleCard } from "@/components/ArticleCard";
 import { CalendarCard, type CeEvent } from "@/components/CalendarCard";
 import { StockCard } from "@/components/StockCard";
+import { RevolvingNews } from "@/components/RevolvingNews";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { ArticleType } from "@/lib/types";
 import type { StockView } from "@/lib/stock";
@@ -81,6 +82,7 @@ export function HomeFeed({
         <aside className="home-aside-col">
           <CalendarCard events={ceEvents} />
           <StockCard stock={stock} />
+          <RevolvingNews articles={articles.slice(0, 6)} />
         </aside>
       </div>
     </div>

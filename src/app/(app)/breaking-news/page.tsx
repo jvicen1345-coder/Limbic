@@ -3,8 +3,14 @@ import { prisma } from "@/lib/db";
 import { getArticles } from "@/lib/articles";
 import { decorateArticle } from "@/lib/feed";
 import { BreakingListRow } from "@/components/RowCards";
+import { Pagination } from "@/components/Pagination";
+import { parsePageParam, paginate } from "@/lib/pagination";
 
-export default async function BreakingNewsPage() {
+export default async function BreakingNewsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!user) return null;
 
@@ -19,16 +25,18 @@ export default async function BreakingNewsPage() {
     );
   }
 
-  const [articles, savedRows] = await Promise.all([
+  const [articles, savedRows, { page: requestedPage }] = await Promise.all([
     getArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
+    searchParams,
   ]);
   const savedIds = savedRows.map((r) => r.articleId);
-  const breakingArticles = articles
+  const breakingArticlesAll = articles
     .filter((a) => a.breaking)
     .slice()
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .map((a) => decorateArticle(a, savedIds));
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const { pageItems, page, totalPages } = paginate(breakingArticlesAll, parsePageParam(requestedPage));
+  const breakingArticles = pageItems.map((a) => decorateArticle(a, savedIds));
 
   return (
     <div className="screen-pad">
@@ -37,11 +45,14 @@ export default async function BreakingNewsPage() {
         Recently flagged as breaking, shown first in your feed.
       </p>
       {breakingArticles.length > 0 ? (
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          {breakingArticles.map((a) => (
-            <BreakingListRow key={a.id} article={a} />
-          ))}
-        </div>
+        <>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {breakingArticles.map((a) => (
+              <BreakingListRow key={a.id} article={a} />
+            ))}
+          </div>
+          <Pagination page={page} totalPages={totalPages} basePath="/breaking-news" />
+        </>
       ) : (
         <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>Nothing flagged as breaking right now.</p>
       )}

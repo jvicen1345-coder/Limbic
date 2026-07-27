@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import { Chip } from "@/components/Chip";
 import { ArticleCard } from "@/components/ArticleCard";
+import { Pagination } from "@/components/Pagination";
 import { aiPubmedSearchAction, type AiSearchResult } from "@/app/actions/ai-search";
+import { paginate } from "@/lib/pagination";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { ArticleType, Specialty } from "@/lib/types";
 
@@ -79,6 +81,7 @@ export function SearchScreen({ articles }: { articles: DecoratedArticle[] }) {
   const [query, setQuery] = useState("");
   const [type, setType] = useState<ArticleType | "all">("all");
   const [specialty, setSpecialty] = useState<Specialty | "all">("all");
+  const [page, setPage] = useState(1);
   const [aiResult, setAiResult] = useState<AiSearchResult | null>(null);
 
   const results = useMemo(() => {
@@ -97,6 +100,8 @@ export function SearchScreen({ articles }: { articles: DecoratedArticle[] }) {
     list = list.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return list;
   }, [articles, query, type, specialty]);
+
+  const { pageItems, totalPages, page: clampedPage } = useMemo(() => paginate(results, page), [results, page]);
 
   return (
     <div className="screen-pad">
@@ -133,7 +138,10 @@ export function SearchScreen({ articles }: { articles: DecoratedArticle[] }) {
               className="input"
               placeholder="Search articles, topics, sources…"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setPage(1);
+              }}
             />
           </div>
 
@@ -142,7 +150,14 @@ export function SearchScreen({ articles }: { articles: DecoratedArticle[] }) {
           </div>
           <div className="filter-row" style={{ marginBottom: 14 }}>
             {TYPE_TABS.map((t) => (
-              <Chip key={t.id} active={type === t.id} onClick={() => setType(t.id)}>
+              <Chip
+                key={t.id}
+                active={type === t.id}
+                onClick={() => {
+                  setType(t.id);
+                  setPage(1);
+                }}
+              >
                 {t.label}
               </Chip>
             ))}
@@ -153,7 +168,14 @@ export function SearchScreen({ articles }: { articles: DecoratedArticle[] }) {
           </div>
           <div className="filter-row" style={{ marginBottom: 18 }}>
             {SPECIALTY_TABS.map((t) => (
-              <Chip key={t.id} active={specialty === t.id} onClick={() => setSpecialty(t.id)}>
+              <Chip
+                key={t.id}
+                active={specialty === t.id}
+                onClick={() => {
+                  setSpecialty(t.id);
+                  setPage(1);
+                }}
+              >
                 {t.label}
               </Chip>
             ))}
@@ -164,10 +186,11 @@ export function SearchScreen({ articles }: { articles: DecoratedArticle[] }) {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {results.map((a) => (
+            {pageItems.map((a) => (
               <ArticleCard key={a.id} article={a} />
             ))}
           </div>
+          <Pagination page={clampedPage} totalPages={totalPages} onPageChange={setPage} />
         </>
       )}
     </div>

@@ -3,8 +3,14 @@ import { prisma } from "@/lib/db";
 import { getUnderReviewArticles } from "@/lib/articles";
 import { decorateArticle } from "@/lib/feed";
 import { ReviewCard } from "@/components/RowCards";
+import { Pagination } from "@/components/Pagination";
+import { parsePageParam, paginate } from "@/lib/pagination";
 
-export default async function UnderReviewPage() {
+export default async function UnderReviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!user) return null;
 
@@ -19,12 +25,14 @@ export default async function UnderReviewPage() {
     );
   }
 
-  const [reviewArticlesRaw, savedRows] = await Promise.all([
+  const [reviewArticlesRaw, savedRows, { page: requestedPage }] = await Promise.all([
     getUnderReviewArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
+    searchParams,
   ]);
   const savedIds = savedRows.map((r) => r.articleId);
-  const reviewArticles = reviewArticlesRaw.map((a) => decorateArticle(a, savedIds));
+  const { pageItems, page, totalPages } = paginate(reviewArticlesRaw, parsePageParam(requestedPage));
+  const reviewArticles = pageItems.map((a) => decorateArticle(a, savedIds));
 
   return (
     <div className="screen-pad">
@@ -42,11 +50,14 @@ export default async function UnderReviewPage() {
         .
       </p>
       {reviewArticles.length > 0 ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {reviewArticles.map((a) => (
-            <ReviewCard key={a.id} article={a} />
-          ))}
-        </div>
+        <>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {reviewArticles.map((a) => (
+              <ReviewCard key={a.id} article={a} />
+            ))}
+          </div>
+          <Pagination page={page} totalPages={totalPages} basePath="/under-review" />
+        </>
       ) : (
         <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>No flagged articles right now.</p>
       )}
