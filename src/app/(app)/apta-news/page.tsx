@@ -1,12 +1,12 @@
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { getArticles } from "@/lib/articles";
+import { getAptaNewsArticles } from "@/lib/articles";
 import { decorateArticle } from "@/lib/feed";
-import { BreakingListRow } from "@/components/RowCards";
+import { AptaNewsRow } from "@/components/RowCards";
 import { Pagination } from "@/components/Pagination";
 import { parsePageParam, paginate } from "@/lib/pagination";
 
-export default async function BreakingNewsPage({
+export default async function AptaNewsPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string }>;
@@ -17,7 +17,7 @@ export default async function BreakingNewsPage({
   if (!user.licenseNumber) {
     return (
       <div className="screen-pad">
-        <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Breaking News</h1>
+        <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>APTA News</h1>
         <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
           Available to signed-in clinicians only — add your license from your profile to unlock this.
         </p>
@@ -25,36 +25,36 @@ export default async function BreakingNewsPage({
     );
   }
 
-  const [articles, savedRows, { page: requestedPage }] = await Promise.all([
-    getArticles(),
+  const [aptaArticlesAll, savedRows, { page: requestedPage }] = await Promise.all([
+    getAptaNewsArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
     searchParams,
   ]);
   const savedIds = savedRows.map((r) => r.articleId);
-  const breakingArticlesAll = articles
-    .filter((a) => a.breaking)
-    .slice()
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  const { pageItems, page, totalPages } = paginate(breakingArticlesAll, parsePageParam(requestedPage));
-  const breakingArticles = pageItems.map((a) => decorateArticle(a, savedIds));
+  const { pageItems, page, totalPages } = paginate(aptaArticlesAll, parsePageParam(requestedPage));
+  const aptaArticles = pageItems.map((a) => decorateArticle(a, savedIds));
 
   return (
     <div className="screen-pad">
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Breaking News</h1>
+      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>APTA News</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 22px" }}>
-        Recently flagged as breaking, shown first in your feed.
+        The latest from{" "}
+        <a href="https://www.apta.org/news" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>
+          apta.org/news
+        </a>
+        .
       </p>
-      {breakingArticles.length > 0 ? (
+      {aptaArticles.length > 0 ? (
         <>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            {breakingArticles.map((a) => (
-              <BreakingListRow key={a.id} article={a} />
+            {aptaArticles.map((a) => (
+              <AptaNewsRow key={a.id} article={a} />
             ))}
           </div>
-          <Pagination page={page} totalPages={totalPages} basePath="/breaking-news" />
+          <Pagination page={page} totalPages={totalPages} basePath="/apta-news" />
         </>
       ) : (
-        <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>Nothing flagged as breaking right now.</p>
+        <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>No APTA news available right now.</p>
       )}
     </div>
   );

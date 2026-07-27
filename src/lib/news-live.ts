@@ -237,8 +237,6 @@ export async function fetchLiveArticles(): Promise<Article[]> {
     for (const a of list) {
       if (seen.has(a.id)) continue;
       seen.add(a.id);
-      const publishedMsAgo = Date.now() - new Date(a.date + "T00:00:00Z").getTime();
-      a.breaking = publishedMsAgo < 1000 * 60 * 60 * 48;
       articles.push(a);
     }
   }

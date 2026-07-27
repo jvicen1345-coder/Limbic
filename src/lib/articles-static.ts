@@ -13,7 +13,6 @@ export const SEED_ARTICLES: Article[] = [
     id: "a1",
     type: "research",
     specialty: "ortho",
-    breaking: true,
     title: "Blood-flow restriction training shows faster strength gains post-ACL repair",
     source: "Journal of Orthopaedic & Sports PT",
     date: "2026-07-22",
@@ -48,7 +47,6 @@ export const SEED_ARTICLES: Article[] = [
     id: "a3",
     type: "industry",
     specialty: "ortho",
-    breaking: true,
     title:
       "CMS finalizes 2026 fee schedule: PT conversion factor rises to $33.40, but a new efficiency cut offsets it",
     source: "CMS CY2026 Physician Fee Schedule Final Rule",

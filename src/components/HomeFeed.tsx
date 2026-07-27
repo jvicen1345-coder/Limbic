@@ -25,11 +25,13 @@ export function HomeFeed({
   articles,
   ceEvents,
   stock,
+  newsTicker,
   firstName,
 }: {
   articles: DecoratedArticle[];
   ceEvents: CeEvent[];
   stock: StockView;
+  newsTicker: DecoratedArticle[];
   firstName: string;
 }) {
   const [filter, setFilter] = useState<ArticleType | "all">("all");
@@ -82,7 +84,7 @@ export function HomeFeed({
         <aside className="home-aside-col">
           <CalendarCard events={ceEvents} />
           <StockCard stock={stock} />
-          <RevolvingNews articles={articles.slice(0, 6)} />
+          <RevolvingNews articles={newsTicker} />
         </aside>
       </div>
     </div>
