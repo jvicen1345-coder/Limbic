@@ -38,11 +38,11 @@ export default async function AptaNewsPage({
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>APTA News</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 22px" }}>
-        The latest from{" "}
+        News and coverage of the American Physical Therapy Association, from{" "}
         <a href="https://www.apta.org/news" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>
-          apta.org/news
-        </a>
-        .
+          apta.org
+        </a>{" "}
+        and other outlets — each story links back to its original source below.
       </p>
       {aptaArticles.length > 0 ? (
         <>

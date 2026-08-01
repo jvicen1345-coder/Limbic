@@ -60,7 +60,7 @@ async function fetchXml(url: string): Promise<string | null> {
   }
 }
 
-interface RawItem {
+export interface GoogleNewsItem {
   title?: string;
   link?: string;
   isoDate?: string;
@@ -69,8 +69,12 @@ interface RawItem {
   content?: string;
   source?: { $?: { url?: string } } | string;
 }
+type RawItem = GoogleNewsItem;
 
-async function fetchGoogleNewsRss(query: string): Promise<RawItem[]> {
+/** Exported so other live sources (e.g. lib/apta-news.ts) can search Google News for a
+ *  topic that doesn't have its own dedicated feed, using the same no-API-key mechanism
+ *  as this file's own category queries below. */
+export async function fetchGoogleNewsRss(query: string): Promise<GoogleNewsItem[]> {
   const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
   const xml = await fetchXml(url);
   if (!xml) return [];
@@ -82,7 +86,7 @@ async function fetchGoogleNewsRss(query: string): Promise<RawItem[]> {
   }
 }
 
-function stripHtml(s: string): string {
+export function stripHtml(s: string): string {
   return s
     .replace(/<[^>]*>/g, " ")
     .replace(/&nbsp;/g, " ")
@@ -93,7 +97,7 @@ function stripHtml(s: string): string {
     .trim();
 }
 
-function sourceName(item: RawItem, fallbackTitle: string): string {
+export function sourceName(item: GoogleNewsItem, fallbackTitle: string): string {
   if (item.source && typeof item.source !== "string") {
     // rss-parser custom field for an un-namespaced <source> tag comes back as text content
     // under a nested shape depending on the feed; fall through to title-splitting below.
@@ -110,14 +114,14 @@ function stableId(link: string): string {
   return "live-" + createHash("sha1").update(link).digest("hex").slice(0, 12);
 }
 
-function toIsoDate(item: RawItem): string {
+export function toIsoDate(item: GoogleNewsItem): string {
   const raw = item.isoDate || item.pubDate;
   const d = raw ? new Date(raw) : new Date();
   if (Number.isNaN(d.getTime())) return new Date().toISOString().slice(0, 10);
   return d.toISOString().slice(0, 10);
 }
 
-function estimateReadMins(text: string): number {
+export function estimateReadMins(text: string): number {
   const words = text.split(/\s+/).filter(Boolean).length;
   return Math.max(2, Math.round(words / 200) || 2);
 }

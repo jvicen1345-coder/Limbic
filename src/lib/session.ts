@@ -2,6 +2,7 @@ import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
+import { nameFromEmail } from "@/lib/meta";
 import type { User } from "@/generated/prisma/client";
 
 const COOKIE_NAME = "pt_news_session";
@@ -79,6 +80,26 @@ export async function signInWithLicense(input: { number: string; state: string; 
 
 export async function signInAsGuest() {
   const user = await prisma.user.create({ data: { isGuest: true } });
+  await issueSessionCookie(user.id);
+}
+
+/**
+ * General (non-PT) sign-in: no license required, just an email. Signing in again with the
+ * same email returns to the same persisted profile/saved data, same pattern as
+ * signInWithLicense above — this is what makes it distinct from the anonymous, one-off
+ * "Continue as guest" flow.
+ */
+export async function signInWithEmail(input: { email: string }) {
+  const email = input.email.trim().toLowerCase();
+  if (!email) {
+    await signInAsGuest();
+    return;
+  }
+  const user = await prisma.user.upsert({
+    where: { email },
+    update: {},
+    create: { email, name: nameFromEmail(email) },
+  });
   await issueSessionCookie(user.id);
 }
 

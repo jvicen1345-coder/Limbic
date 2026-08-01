@@ -59,7 +59,9 @@ export function AptaNewsRow({ article }: { article: DecoratedArticle }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
           <span className="tag tag-accent">APTA News</span>
-          <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{article.dateLabel}</span>
+          <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>
+            {article.source} · {article.dateLabel}
+          </span>
         </div>
         <div style={{ fontFamily: "var(--font-heading)", fontSize: 17, lineHeight: 1.28 }}>{article.title}</div>
       </div>
