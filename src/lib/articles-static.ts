@@ -313,8 +313,27 @@ export const SEED_WELLNESS_ARTICLES: WellnessArticle[] = [
   },
 ];
 
+// Real YouTube videos found via search — not fabricated. Their exact runtimes couldn't be
+// independently verified (youtube.com is unreachable from this dev sandbox), so duration
+// is only set where the creator states it themselves in their own title, never invented.
 export const WELLNESS_VIDEOS: WellnessVideo[] = [
-  { id: "v1", title: "10-minute morning mobility routine", source: "Limbic Studio", duration: "10:24" },
-  { id: "v2", title: "Breathing techniques for stress and pain management", source: "Limbic Studio", duration: "7:48" },
-  { id: "v3", title: "Safe strength training basics after 60", source: "Limbic Studio", duration: "12:05" },
+  {
+    id: "v1",
+    title: "10 Min. Morning Mobility Routine | Full Body, No Equipment, Follow Along",
+    source: "YouTube",
+    duration: "10 min",
+    url: "https://www.youtube.com/watch?v=aRVFt79LqCM",
+  },
+  {
+    id: "v2",
+    title: "Breathing Techniques To Reduce Pain",
+    source: "YouTube",
+    url: "https://www.youtube.com/watch?v=84I14L-vfjE",
+  },
+  {
+    id: "v3",
+    title: "3 Exercises Everyone Over 60 MUST DO for Total Body Strength",
+    source: "Dr. Alyssa Kuhn, PT",
+    url: "https://www.youtube.com/watch?v=oMrnI_EXHqk",
+  },
 ];

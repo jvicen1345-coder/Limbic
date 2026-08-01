@@ -50,7 +50,10 @@ export interface WellnessVideo {
   id: string;
   title: string;
   source: string;
-  duration: string;
+  /** Real runtime, only when the creator states it themselves (e.g. in the video's own
+   *  title) — never invented. Omitted rather than guessed when unconfirmed. */
+  duration?: string;
+  url: string;
 }
 
 export interface CeCategory {

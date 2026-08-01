@@ -26,7 +26,14 @@ export default async function WellnessPage() {
       </div>
       <div className="video-grid">
         {WELLNESS_VIDEOS.map((v) => (
-          <div key={v.id} className="card elev-sm" style={{ padding: 0, overflow: "hidden" }}>
+          <a
+            key={v.id}
+            href={v.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="card elev-sm"
+            style={{ padding: 0, overflow: "hidden", color: "inherit", textDecoration: "none", display: "block" }}
+          >
             <div
               style={{
                 width: "100%",
@@ -45,10 +52,11 @@ export default async function WellnessPage() {
                 {v.title}
               </div>
               <div style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>
-                {v.source} · {v.duration}
+                {v.source}
+                {v.duration ? ` · ${v.duration}` : ""}
               </div>
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </div>
