@@ -37,7 +37,7 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
   return (
     <div
       className="card elev-md"
-      style={{ cursor: "pointer", padding: 26 }}
+      style={{ cursor: "pointer", padding: 26, background: "var(--color-accent-300)" }}
       onClick={() => router.push(`/article/${article.id}`)}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
