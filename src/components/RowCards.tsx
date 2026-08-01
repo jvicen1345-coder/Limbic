@@ -93,7 +93,7 @@ export function ReviewCard({ article }: { article: DecoratedArticle }) {
   );
 }
 
-export function WellnessListItem({ w }: { w: WellnessArticle }) {
+export function WellnessListItem({ w, saved = false }: { w: WellnessArticle; saved?: boolean }) {
   // Live-sourced wellness articles always carry a sourceUrl and link straight out to the
   // real story; seed/fallback ones have no external story to link to, so they open our
   // own detail page (with authored body text) instead — every article gets a working link.
@@ -107,24 +107,36 @@ export function WellnessListItem({ w }: { w: WellnessArticle }) {
     </Link>
   );
   return (
-    <div style={{ padding: "14px 0", borderBottom: "1px solid var(--color-neutral-200)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
-        <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{w.source}</span>
-        <span
-          style={{
-            width: 3,
-            height: 3,
-            borderRadius: 999,
-            background: "var(--color-neutral-700)",
-            flexShrink: 0,
-          }}
-        />
-        <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{formatDate(w.date)}</span>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+        gap: 12,
+        padding: "14px 0",
+        borderBottom: "1px solid var(--color-neutral-200)",
+      }}
+    >
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
+          <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{w.source}</span>
+          <span
+            style={{
+              width: 3,
+              height: 3,
+              borderRadius: 999,
+              background: "var(--color-neutral-700)",
+              flexShrink: 0,
+            }}
+          />
+          <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{formatDate(w.date)}</span>
+        </div>
+        <div style={{ fontFamily: "var(--font-heading)", fontSize: 17, lineHeight: 1.28, marginBottom: 5 }}>
+          {titleNode}
+        </div>
+        <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--color-neutral-700)", margin: 0 }}>{w.summary}</p>
       </div>
-      <div style={{ fontFamily: "var(--font-heading)", fontSize: 17, lineHeight: 1.28, marginBottom: 5 }}>
-        {titleNode}
-      </div>
-      <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--color-neutral-700)", margin: 0 }}>{w.summary}</p>
+      <SaveButton articleId={w.id} saved={saved} size="sm" />
     </div>
   );
 }

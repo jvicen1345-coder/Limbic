@@ -1,9 +1,18 @@
+import { getCurrentUser } from "@/lib/session";
+import { prisma } from "@/lib/db";
 import { getWellnessArticles, WELLNESS_VIDEOS } from "@/lib/articles";
 import { WellnessListItem } from "@/components/RowCards";
 import { PlayIcon } from "@/components/icons";
 
 export default async function WellnessPage() {
-  const wellnessArticles = await getWellnessArticles();
+  const user = await getCurrentUser();
+  if (!user) return null;
+
+  const [wellnessArticles, savedRows] = await Promise.all([
+    getWellnessArticles(),
+    prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
+  ]);
+  const savedIds = savedRows.map((r) => r.articleId);
 
   return (
     <div className="screen-pad">
@@ -17,7 +26,7 @@ export default async function WellnessPage() {
       </div>
       <div style={{ display: "flex", flexDirection: "column", marginBottom: 28 }}>
         {wellnessArticles.map((w) => (
-          <WellnessListItem key={w.id} w={w} />
+          <WellnessListItem key={w.id} w={w} saved={savedIds.includes(w.id)} />
         ))}
       </div>
 
