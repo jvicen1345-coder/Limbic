@@ -26,6 +26,17 @@ export default async function SignInPage() {
         <LogoIcon size={24} />
         <span style={{ fontFamily: "var(--font-heading)", fontSize: 21 }}>Limbic</span>
       </div>
+      <p
+        style={{
+          fontSize: 13,
+          color: "var(--color-neutral-700)",
+          textAlign: "center",
+          maxWidth: 280,
+          margin: "-8px 0 4px",
+        }}
+      >
+        Empowering clinicians with personalized knowledge to advance healthcare.
+      </p>
       <SignInForm states={STATES} />
     </div>
   );
