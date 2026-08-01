@@ -11,12 +11,14 @@ import { RevolvingNews } from "@/components/RevolvingNews";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
 import { NexusSuggestionsCard, type NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import { NexusJoinPromptCard } from "@/components/NexusJoinPromptCard";
+import { ReadingStreakCard } from "@/components/ReadingStreakCard";
 import { Pagination } from "@/components/Pagination";
 import { paginate } from "@/lib/pagination";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { ArticleType } from "@/lib/types";
 import type { StockView } from "@/lib/stock";
 import type { LicenseView } from "@/lib/license";
+import type { ReadingCalendarDay } from "@/lib/reading-calendar";
 
 const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
   { id: "all", label: "All" },
@@ -36,6 +38,8 @@ export function HomeFeed({
   license,
   savedUnread,
   nexusSuggestions,
+  streakDays,
+  readingWeeks,
 }: {
   articles: DecoratedArticle[];
   ceEvents: CeEvent[];
@@ -47,6 +51,8 @@ export function HomeFeed({
   /** null when the viewer hasn't opted into Nexus yet — renders an invitation instead of
    *  a list of people they can't act on. */
   nexusSuggestions: NexusSuggestion[] | null;
+  streakDays: number;
+  readingWeeks: ReadingCalendarDay[][];
 }) {
   const [filter, setFilter] = useState<ArticleType | "all">("all");
   const [page, setPage] = useState(1);
@@ -88,6 +94,8 @@ export function HomeFeed({
               <SearchIcon size={17} />
             </Link>
           </div>
+
+          <ReadingStreakCard streakDays={streakDays} weeks={readingWeeks} />
 
           <div className="filter-row" style={{ marginBottom: 20 }}>
             {TYPE_TABS.map((t) => (

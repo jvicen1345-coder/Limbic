@@ -1,19 +1,14 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/db";
 import { buildLicenseView } from "@/lib/license";
 import { SPECIALTIES, TYPES } from "@/lib/meta";
 import { allKnownKeywordTopics } from "@/lib/news-live";
-import { buildReadingCalendarWeeks } from "@/lib/reading-calendar";
 import type { CeCategory } from "@/lib/types";
 import { ProfileForm } from "@/components/ProfileForm";
 import { TopicChip } from "@/components/TopicChip";
 import { TopicBrowser } from "@/components/TopicBrowser";
-import { ReadingCalendar } from "@/components/ReadingCalendar";
 import { goAddLicenseAction } from "@/app/actions/profile";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
-
-const READING_CALENDAR_WINDOW_DAYS = 365;
 
 // The canonical specialty/type labels, always shown first — clean and stable, unlike the
 // long tail of keyword topics below, which come from a fixed vocabulary rather than
@@ -36,32 +31,9 @@ export default async function ProfilePage() {
       )
     : null;
 
-  const streakDays = user.streakDays;
-
-  const windowStart = new Date();
-  windowStart.setDate(windowStart.getDate() - (READING_CALENDAR_WINDOW_DAYS - 1));
-  const readRows = await prisma.readArticle.findMany({
-    where: { userId: user.id, createdAt: { gte: windowStart } },
-    select: { createdAt: true },
-  });
-  const readingWeeks = buildReadingCalendarWeeks(readRows.map((r) => r.createdAt));
-
   return (
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 18px" }}>Profile</h1>
-
-      <div className="card elev-sm" style={{ marginBottom: 18 }}>
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-          <div style={{ fontFamily: "var(--font-heading)", fontSize: 15 }}>
-            {streakDays > 0 ? `${streakDays}-day reading streak` : "Reading activity"}
-          </div>
-          <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>Last 365 days</span>
-        </div>
-        <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", margin: "2px 0 12px" }}>
-          {streakDays > 0 ? "Read an article today to keep it going." : "Read an article to start a streak."}
-        </p>
-        <ReadingCalendar weeks={readingWeeks} />
-      </div>
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">About you</div>
