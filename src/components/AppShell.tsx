@@ -18,6 +18,7 @@ import {
   MenuIcon,
   XIcon,
   CrownIcon,
+  FilmIcon,
 } from "@/components/icons";
 
 function sidebarNavStyle(active: boolean): React.CSSProperties {
@@ -112,6 +113,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/profile" icon={<ProfileIcon />} label="Profile" onNavigate={onNavigate} />
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Health & Wellness" onNavigate={onNavigate} />
+      <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
       <Link
         href="/pro"
         onClick={onNavigate}

@@ -175,6 +175,50 @@ export function LockIcon(props: IconProps) {
   );
 }
 
+export function VolumeIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M11 5 6 9H2v6h4l5 4Z" />
+      <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+      <path d="M18.5 5.5a9 9 0 0 1 0 13" />
+    </Svg>
+  );
+}
+
+export function VolumeMuteIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M11 5 6 9H2v6h4l5 4Z" />
+      <path d="m17 9 5 6" />
+      <path d="m22 9-5 6" />
+    </Svg>
+  );
+}
+
+export function ExternalLinkIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      <path d="M15 3h6v6" />
+      <path d="M10 14 21 3" />
+    </Svg>
+  );
+}
+
+export function FilmIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="2" y="3" width="20" height="18" rx="2" />
+      <path d="M7 3v18" />
+      <path d="M17 3v18" />
+      <path d="M2 8h5" />
+      <path d="M2 16h5" />
+      <path d="M17 8h5" />
+      <path d="M17 16h5" />
+    </Svg>
+  );
+}
+
 export function MenuIcon(props: IconProps) {
   return (
     <Svg {...props}>

@@ -56,6 +56,16 @@ export interface WellnessVideo {
   url: string;
 }
 
+/** A short-form, vertically-scrollable video for the Clips feed — real YouTube videos
+ *  (often Shorts) from PTs/clinicians, curated the same way as WELLNESS_VIDEOS. */
+export interface Clip {
+  id: string;
+  title: string;
+  source: string;
+  specialty: Specialty;
+  url: string;
+}
+
 export interface CeCategory {
   name: string;
   required: number;

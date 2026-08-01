@@ -47,11 +47,29 @@ export function firstName(name: string): string {
   return name.replace(/^Dr\.\s*/, "").split(" ")[0];
 }
 
+/** Extracts the 11-character video ID from any common YouTube URL shape (watch, youtu.be,
+ *  or Shorts). Returns null if it doesn't look like a YouTube URL. */
+export function youtubeVideoId(url: string): string | null {
+  const match = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([\w-]{11})/);
+  return match ? match[1] : null;
+}
+
 /** YouTube's own thumbnail CDN — every public video has a jpg here at a predictable URL,
  *  no API key or scraping needed. Returns null for a non-YouTube or unparseable URL. */
 export function youtubeThumbnailUrl(videoUrl: string): string | null {
-  const match = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
-  return match ? `https://i.ytimg.com/vi/${match[1]}/hqdefault.jpg` : null;
+  const id = youtubeVideoId(videoUrl);
+  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
+}
+
+/** YouTube's no-API-key iframe embed URL. `autoplay` requires `muted` per browser
+ *  autoplay policy — the caller is responsible for pairing them. */
+export function youtubeEmbedUrl(videoUrl: string, opts?: { autoplay?: boolean; muted?: boolean }): string | null {
+  const id = youtubeVideoId(videoUrl);
+  if (!id) return null;
+  const params = new URLSearchParams({ playsinline: "1", rel: "0", modestbranding: "1" });
+  if (opts?.autoplay) params.set("autoplay", "1");
+  if (opts?.muted) params.set("mute", "1");
+  return `https://www.youtube.com/embed/${id}?${params.toString()}`;
 }
 
 /** Default display name for a general (non-PT) account, derived from the email's local

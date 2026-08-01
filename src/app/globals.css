@@ -293,6 +293,66 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
   .app-mobile-drawer, .app-mobile-drawer-backdrop { display: none; }
 }
 
+/* — Clips: a full-bleed, TikTok-style vertical feed — */
+.clips-feed {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  background: #000;
+}
+@media (max-width: 799px) {
+  /* .app-mobile-topbar's real flow height (~64px) plus .app-main's own 76px bottom
+     padding (reserved for the fixed bottom nav) both eat into the viewport above/below
+     this container, so its height has to subtract both to fill exactly what's left. */
+  .clips-feed { height: calc(100dvh - 64px - 76px); }
+}
+.clip-slide {
+  position: relative;
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow: hidden;
+  background: #000;
+}
+.clip-media {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.clip-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 16px;
+  box-sizing: border-box;
+  background: linear-gradient(to bottom, transparent 60%, color-mix(in srgb, #000 75%, transparent) 100%);
+  pointer-events: none;
+}
+.clip-overlay > * { pointer-events: auto; }
+.clip-info { max-width: 78%; color: #fff; }
+.clip-title { font-family: var(--font-heading); font-size: 16px; line-height: 1.3; margin-bottom: 4px; }
+.clip-source { font-size: 12px; opacity: 0.8; }
+.clip-actions { display: flex; flex-direction: column; align-items: center; gap: 16px; flex-shrink: 0; }
+.clip-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: color-mix(in srgb, #fff 18%, transparent);
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+}
+
 /* — screen padding shells — */
 .screen-pad {
   padding: 36px 44px 60px;
