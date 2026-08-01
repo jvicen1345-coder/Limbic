@@ -189,30 +189,33 @@ export function classify(
   const lower = text.toLowerCase();
   let bestSpecialty: Specialty = "ortho";
   let bestSpecialtyHits = 0;
-  let bestSpecialtyKeyword = "";
+  let bestSpecialtyKeywords: string[] = [];
   (Object.keys(SPECIALTY_KEYWORDS) as Specialty[]).forEach((sp) => {
     const matched = SPECIALTY_KEYWORDS[sp].filter((kw) => lower.includes(kw));
     if (matched.length > bestSpecialtyHits) {
       bestSpecialtyHits = matched.length;
       bestSpecialty = sp;
-      bestSpecialtyKeyword = matched[0];
+      // Every keyword that matched the winning specialty, not just the first — a followed
+      // topic like "ACL" or "fall risk" only ever affects ranking (see rankFeed) if it
+      // actually ends up in the article's tags, so a single kept keyword per article made
+      // most of the long-tail topic list effectively inert.
+      bestSpecialtyKeywords = matched;
     }
   });
 
   let type = defaultType;
   let bestTypeHits = 0;
-  let bestTypeKeyword = "";
+  let bestTypeKeywords: string[] = [];
   (Object.keys(TYPE_KEYWORDS) as ArticleType[]).forEach((t) => {
     const matched = TYPE_KEYWORDS[t].filter((kw) => lower.includes(kw));
     if (matched.length > bestTypeHits) {
       bestTypeHits = matched.length;
       type = t;
-      bestTypeKeyword = matched[0];
+      bestTypeKeywords = matched;
     }
   });
 
-  const matchedKeywords = [bestSpecialtyKeyword, bestTypeKeyword]
-    .filter(Boolean)
+  const matchedKeywords = [...bestSpecialtyKeywords, ...bestTypeKeywords]
     .map(keywordLabel)
     .filter((k): k is string => k !== null);
   return { type, specialty: bestSpecialty, matchedKeywords, typeConfident: bestTypeHits > 0 };

@@ -28,8 +28,12 @@ export function decorateArticle(a: Article, savedIds: string[], sinceVisit: Date
 /** Personalized ranking: articles matching the reader's specialty or a followed topic
  *  float to the top, ties broken by recency — same scoring the prototype used. */
 export function rankFeed(articles: Article[], specialty: Specialty, followedTopics: string[]): Article[] {
+  // Case-insensitive: hand-authored seed article tags ("CE credit") and the canonical,
+  // classify()-derived topic labels shown in Profile ("Ce Credit") don't always agree on
+  // capitalization, and a followed topic should still count even when they don't.
+  const followedLower = new Set(followedTopics.map((t) => t.toLowerCase()));
   const score = (a: Article) =>
-    (a.specialty === specialty ? 2 : 0) + (a.tags.some((t) => followedTopics.includes(t)) ? 1 : 0);
+    (a.specialty === specialty ? 2 : 0) + (a.tags.some((t) => followedLower.has(t.toLowerCase())) ? 1 : 0);
   return [...articles].sort((a, b) => {
     const diff = score(b) - score(a);
     if (diff !== 0) return diff;
