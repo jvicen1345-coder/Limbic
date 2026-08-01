@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { signInWithLicense, signInWithEmail, signInAsGuest, signOutSession } from "@/lib/session";
+import { signInWithLicense, signInWithEmail, signOutSession } from "@/lib/session";
 
 export async function signInAction(formData: FormData) {
   const number = String(formData.get("number") ?? "");
@@ -16,12 +16,6 @@ export async function signInAction(formData: FormData) {
 export async function signInGeneralAction(formData: FormData) {
   const email = String(formData.get("generalEmail") ?? "");
   await signInWithEmail({ email });
-  revalidatePath("/", "layout");
-  redirect("/");
-}
-
-export async function signInGuestAction() {
-  await signInAsGuest();
   revalidatePath("/", "layout");
   redirect("/");
 }

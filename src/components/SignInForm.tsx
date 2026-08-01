@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { signInAction, signInGeneralAction, signInGuestAction } from "@/app/actions/auth";
+import { signInAction, signInGeneralAction } from "@/app/actions/auth";
 
 const TABS = [
   { id: "pt" as const, label: "Physical Therapist" },
@@ -178,9 +178,6 @@ export function SignInForm({ states }: { states: string[] }) {
 
           <button type="submit" className="btn btn-primary btn-block">
             Sign in
-          </button>
-          <button type="submit" formAction={signInGuestAction} className="btn btn-ghost btn-block">
-            Continue as guest
           </button>
           <p style={{ fontSize: 11, color: "var(--color-neutral-700)", margin: 0, textAlign: "center" }}>
             Demo sign-in — any email works. Signing in again with the same email returns to your
