@@ -1,12 +1,19 @@
+import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
+import { prisma } from "@/lib/db";
 import { buildLicenseView } from "@/lib/license";
 import { SPECIALTIES, TYPES } from "@/lib/meta";
 import { allKnownKeywordTopics } from "@/lib/news-live";
+import { buildReadingCalendarWeeks } from "@/lib/reading-calendar";
 import type { CeCategory } from "@/lib/types";
 import { ProfileForm } from "@/components/ProfileForm";
 import { TopicChip } from "@/components/TopicChip";
 import { TopicBrowser } from "@/components/TopicBrowser";
+import { ReadingCalendar } from "@/components/ReadingCalendar";
 import { goAddLicenseAction } from "@/app/actions/profile";
+import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
+
+const READING_CALENDAR_WINDOW_DAYS = 365;
 
 // The canonical specialty/type labels, always shown first — clean and stable, unlike the
 // long tail of keyword topics below, which come from a fixed vocabulary rather than
@@ -31,26 +38,30 @@ export default async function ProfilePage() {
 
   const streakDays = user.streakDays;
 
+  const windowStart = new Date();
+  windowStart.setDate(windowStart.getDate() - (READING_CALENDAR_WINDOW_DAYS - 1));
+  const readRows = await prisma.readArticle.findMany({
+    where: { userId: user.id, createdAt: { gte: windowStart } },
+    select: { createdAt: true },
+  });
+  const readingWeeks = buildReadingCalendarWeeks(readRows.map((r) => r.createdAt));
+
   return (
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 18px" }}>Profile</h1>
 
-      {streakDays > 0 && (
-        <div
-          className="card elev-sm"
-          style={{ marginBottom: 18, display: "flex", alignItems: "center", gap: 10 }}
-        >
-          <span style={{ fontSize: 22, lineHeight: 1 }}>🔥</span>
-          <div>
-            <div style={{ fontFamily: "var(--font-heading)", fontSize: 15 }}>
-              {streakDays}-day reading streak
-            </div>
-            <div style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>
-              Read an article today to keep it going.
-            </div>
+      <div className="card elev-sm" style={{ marginBottom: 18 }}>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
+          <div style={{ fontFamily: "var(--font-heading)", fontSize: 15 }}>
+            {streakDays > 0 ? `${streakDays}-day reading streak` : "Reading activity"}
           </div>
+          <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>Last 365 days</span>
         </div>
-      )}
+        <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", margin: "2px 0 12px" }}>
+          {streakDays > 0 ? "Read an article today to keep it going." : "Read an article to start a streak."}
+        </p>
+        <ReadingCalendar weeks={readingWeeks} />
+      </div>
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">About you</div>
@@ -61,6 +72,40 @@ export default async function ProfilePage() {
           headline={user.headline ?? ""}
           bio={user.bio ?? ""}
         />
+      </div>
+
+      <div className="card elev-sm" style={{ marginBottom: 18 }}>
+        <div className="card-kicker">Nexus</div>
+        {user.nexusOptIn ? (
+          <>
+            <p className="card-body" style={{ marginTop: 6 }}>
+              You&rsquo;re part of Nexus — visible in the directory and reachable for connection
+              requests and messages.
+            </p>
+            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+              <Link href="/nexus" className="btn btn-secondary">
+                Go to Nexus
+              </Link>
+              <form action={leaveNexusAction}>
+                <button type="submit" className="btn btn-ghost">
+                  Leave Nexus
+                </button>
+              </form>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="card-body" style={{ marginTop: 6 }}>
+              Join Nexus to appear in the directory and connect with other PTs, OTs, and
+              healthcare & wellness professionals.
+            </p>
+            <form action={optInToNexusAction}>
+              <button type="submit" className="btn btn-primary" style={{ marginTop: 8 }}>
+                Join Nexus
+              </button>
+            </form>
+          </>
+        )}
       </div>
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>

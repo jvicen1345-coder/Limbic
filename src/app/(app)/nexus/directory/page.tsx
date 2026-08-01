@@ -14,7 +14,7 @@ export default async function NexusDirectoryPage() {
 
   const [users, states] = await Promise.all([
     prisma.user.findMany({
-      where: { id: { not: user.id }, isGuest: false },
+      where: { id: { not: user.id }, isGuest: false, nexusOptIn: true },
       select: { id: true, name: true, headline: true, bio: true, specialty: true, practiceState: true },
       orderBy: { name: "asc" },
     }),

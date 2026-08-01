@@ -187,6 +187,10 @@ export async function ensureNexusSeedData(): Promise<void> {
             bio: person.bio,
             specialty: person.specialty,
             practiceState: person.practiceState,
+            // Seed profiles can't log in to opt themselves in, so they're always
+            // considered "in" Nexus — this is what makes them show up in the directory
+            // and feed regardless of any real user's own opt-in choice.
+            nexusOptIn: true,
           },
         });
 

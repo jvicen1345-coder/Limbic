@@ -39,20 +39,25 @@ export default async function HomePage() {
   ]);
   const savedIds = savedRows.map((r) => r.articleId);
 
-  await ensureNexusSeedData();
-  const [nexusCandidates, connectionStates] = await Promise.all([
-    prisma.user.findMany({
-      where: { id: { not: user.id }, isGuest: false },
-      select: { id: true, name: true, headline: true },
-      orderBy: { createdAt: "asc" },
-      take: 25,
-    }),
-    getConnectionStates(user.id),
-  ]);
-  const nexusSuggestions: NexusSuggestion[] = nexusCandidates
-    .filter((p) => (connectionStates.get(p.id) ?? { status: "none" as const }).status === "none")
-    .slice(0, NEXUS_SUGGESTIONS_SIZE)
-    .map((p) => ({ id: p.id, name: p.name, headline: p.headline, state: { status: "none" } }));
+  // Suggestions are only meaningful (and only shown) once the viewer has opted into Nexus
+  // themselves — otherwise the aside offers a join prompt instead (see HomeFeed).
+  let nexusSuggestions: NexusSuggestion[] | null = null;
+  if (user.nexusOptIn) {
+    await ensureNexusSeedData();
+    const [nexusCandidates, connectionStates] = await Promise.all([
+      prisma.user.findMany({
+        where: { id: { not: user.id }, isGuest: false, nexusOptIn: true },
+        select: { id: true, name: true, headline: true },
+        orderBy: { createdAt: "asc" },
+        take: 25,
+      }),
+      getConnectionStates(user.id),
+    ]);
+    nexusSuggestions = nexusCandidates
+      .filter((p) => (connectionStates.get(p.id) ?? { status: "none" as const }).status === "none")
+      .slice(0, NEXUS_SUGGESTIONS_SIZE)
+      .map((p) => ({ id: p.id, name: p.name, headline: p.headline, state: { status: "none" } }));
+  }
 
   const ranked = rankFeed(articles, user.specialty as Specialty, user.followedTopics as unknown as string[]);
   const decorated = ranked.map((a) => decorateArticle(a, savedIds, previousVisit));

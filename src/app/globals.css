@@ -210,12 +210,17 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
 
 .nav-section-label {
   font-size: 11px;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-neutral-700);
   margin: 14px 0 2px;
   padding: 0 12px;
 }
+/* Renders its literal text as-typed ("LimbicPRO") instead of the uppercase transform
+   every other section label gets, so "PRO" reads as a distinct, deliberate suffix rather
+   than being flattened into the same all-caps treatment as "Limbic". */
+.nav-section-label--brand { text-transform: none; }
 
 .nav-footer {
   margin-top: auto;
@@ -484,6 +489,16 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
 .wordle-key-correct { background: var(--color-accent); color: #fff; }
 .wordle-key-present { background: var(--color-accent-2); color: #fff; }
 .wordle-key-absent { background: var(--color-neutral-500); color: #fff; }
+
+/* — reading streak calendar (GitHub-contributions-style, 365 rolling days) — */
+.reading-calendar { display: flex; gap: 3px; width: max-content; }
+.reading-calendar-week { display: flex; flex-direction: column; gap: 3px; }
+.reading-calendar-day {
+  width: 9px; height: 9px; border-radius: 2px;
+  background: var(--color-neutral-200);
+}
+.reading-calendar-day-read { background: var(--color-accent); }
+.reading-calendar-day-today { box-shadow: 0 0 0 1px var(--color-accent-700); }
 
 /* Never show an unpaired trailing card in the 2-column desktop grid. */
 @media (min-width: 800px) {

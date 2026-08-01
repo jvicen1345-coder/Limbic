@@ -15,11 +15,12 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
 
   const person = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, name: true, headline: true, bio: true, specialty: true, practiceState: true },
+    select: { id: true, name: true, headline: true, bio: true, specialty: true, practiceState: true, nexusOptIn: true },
   });
-  if (!person) notFound();
-
-  const isSelf = person.id === user.id;
+  const isSelf = person?.id === user.id;
+  // A profile only exists in Nexus terms while its owner is opted in — someone who left
+  // isn't viewable via a stale link, same as if the account didn't exist.
+  if (!person || (!person.nexusOptIn && !isSelf)) notFound();
 
   const posts = await prisma.nexusPost.findMany({
     where: { authorId: person.id },

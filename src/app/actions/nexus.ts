@@ -1,8 +1,44 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+
+export async function optInToNexusAction() {
+  const user = await getCurrentUser();
+  if (!user) return;
+
+  await prisma.user.update({ where: { id: user.id }, data: { nexusOptIn: true } });
+  revalidatePath("/", "layout");
+}
+
+/**
+ * Leaving Nexus is a real removal, not just flipping a flag: it deletes every trace of
+ * the user's participation — connections (either direction), their own posts (cascades to
+ * that post's likes/comments), their likes/comments on other people's posts, and their
+ * messages (either direction) — then clears the opt-in flag and the Nexus-specific
+ * headline/bio. A user who rejoins later starts fresh rather than reappearing with old
+ * connections intact.
+ */
+export async function leaveNexusAction() {
+  const user = await getCurrentUser();
+  if (!user) return;
+
+  await prisma.$transaction([
+    prisma.connection.deleteMany({ where: { OR: [{ requesterId: user.id }, { recipientId: user.id }] } }),
+    prisma.nexusPostLike.deleteMany({ where: { userId: user.id } }),
+    prisma.nexusPostComment.deleteMany({ where: { authorId: user.id } }),
+    prisma.nexusPost.deleteMany({ where: { authorId: user.id } }),
+    prisma.nexusMessage.deleteMany({ where: { OR: [{ senderId: user.id }, { recipientId: user.id }] } }),
+    prisma.user.update({
+      where: { id: user.id },
+      data: { nexusOptIn: false, headline: null, bio: null },
+    }),
+  ]);
+  revalidatePath("/", "layout");
+  redirect("/profile");
+}
 
 export async function sendConnectionRequestAction(recipientId: string) {
   const user = await getCurrentUser();

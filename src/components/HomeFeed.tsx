@@ -10,6 +10,7 @@ import { StockCard } from "@/components/StockCard";
 import { RevolvingNews } from "@/components/RevolvingNews";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
 import { NexusSuggestionsCard, type NexusSuggestion } from "@/components/NexusSuggestionsCard";
+import { NexusJoinPromptCard } from "@/components/NexusJoinPromptCard";
 import { Pagination } from "@/components/Pagination";
 import { paginate } from "@/lib/pagination";
 import type { DecoratedArticle } from "@/lib/feed";
@@ -43,7 +44,9 @@ export function HomeFeed({
   firstName: string;
   license: LicenseView | null;
   savedUnread: DecoratedArticle[];
-  nexusSuggestions: NexusSuggestion[];
+  /** null when the viewer hasn't opted into Nexus yet — renders an invitation instead of
+   *  a list of people they can't act on. */
+  nexusSuggestions: NexusSuggestion[] | null;
 }) {
   const [filter, setFilter] = useState<ArticleType | "all">("all");
   const [page, setPage] = useState(1);
@@ -114,7 +117,7 @@ export function HomeFeed({
         <aside className="home-aside-col">
           <SavedUnreadCard articles={savedUnread} />
           <CalendarCard events={ceEvents} />
-          <NexusSuggestionsCard people={nexusSuggestions} />
+          {nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />}
           <StockCard stock={stock} />
           <RevolvingNews articles={newsTicker} />
         </aside>

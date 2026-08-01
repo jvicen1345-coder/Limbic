@@ -51,6 +51,12 @@ model User {
   // Nexus (networking) profile fields — blank for accounts that haven't set them up.
   headline          String?
   bio               String?
+  // Consent gate: false until the user explicitly joins Nexus (see app/actions/nexus.ts
+  // optInToNexusAction/leaveNexusAction) — controls whether they show up in the directory
+  // or suggestions, and whether they can view/use any /nexus page at all. Always true for
+  // seeded demo/real profiles (see lib/nexus-seed.ts), which can't log in to opt in
+  // themselves.
+  nexusOptIn        Boolean  @default(false)
 
   savedArticles       SavedArticle[]
   hepPrograms         HepProgram[]

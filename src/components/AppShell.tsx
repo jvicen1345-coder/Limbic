@@ -27,7 +27,7 @@ import {
   CreditCardIcon,
 } from "@/components/icons";
 
-function sidebarNavStyle(active: boolean): React.CSSProperties {
+function sidebarNavStyle(active: boolean, bold: boolean): React.CSSProperties {
   return {
     display: "flex",
     alignItems: "center",
@@ -35,7 +35,7 @@ function sidebarNavStyle(active: boolean): React.CSSProperties {
     border: "none",
     background: active ? "var(--color-accent-100)" : "none",
     cursor: "pointer",
-    font: "600 14px var(--font-body)",
+    font: `${bold ? 600 : 400} 14px var(--font-body)`,
     padding: "10px 12px",
     borderRadius: "var(--radius-lg)",
     textAlign: "left",
@@ -65,6 +65,7 @@ function NavLink({
   label,
   badge,
   exact = true,
+  bold = true,
   onNavigate,
 }: {
   href: string;
@@ -75,6 +76,9 @@ function NavLink({
   /** False for sub-links whose section also covers nested/dynamic routes (e.g. a message
    *  thread at /nexus/messages/[userId] should still highlight "Messages"). */
   exact?: boolean;
+  /** False for a link grouped under a (bold) section label, so the label reads as the
+   *  heavier element and its sub-links as lighter items underneath it. */
+  bold?: boolean;
   /** Called after the link is clicked — used to close the mobile drawer on navigation. */
   onNavigate?: () => void;
 }) {
@@ -82,7 +86,7 @@ function NavLink({
   const active = exact ? pathname === href : pathname.startsWith(href);
   const showBadge = typeof badge === "string" ? badge.length > 0 : badge != null && badge > 0;
   return (
-    <Link href={href} style={sidebarNavStyle(active)} onClick={onNavigate}>
+    <Link href={href} style={sidebarNavStyle(active, bold)} onClick={onNavigate}>
       {icon}
       {label}
       {showBadge && (
@@ -129,18 +133,19 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
       <NavLink href="/wordle" icon={<GridIcon />} label="Daily Term" onNavigate={onNavigate} />
 
-      <div className="nav-section-label">LimbicPro</div>
-      <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} onNavigate={onNavigate} />
-      <NavLink href="/pro/membership" icon={<CreditCardIcon />} label="Membership" onNavigate={onNavigate} />
+      <div className="nav-section-label nav-section-label--brand">LimbicPRO</div>
+      <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/pro/membership" icon={<CreditCardIcon />} label="Membership" bold={false} onNavigate={onNavigate} />
 
       <div className="nav-section-label">Nexus</div>
-      <NavLink href="/nexus" icon={<UsersIcon />} label="Feed" onNavigate={onNavigate} />
-      <NavLink href="/nexus/directory" icon={<ListIcon />} label="Directory" onNavigate={onNavigate} />
+      <NavLink href="/nexus" icon={<UsersIcon />} label="Feed" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/nexus/directory" icon={<ListIcon />} label="Directory" bold={false} onNavigate={onNavigate} />
       <NavLink
         href="/nexus/connections"
         icon={<UserPlusIcon />}
         label="Connections"
         badge={nexusRequestCount}
+        bold={false}
         onNavigate={onNavigate}
       />
       <NavLink
@@ -148,21 +153,22 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
         icon={<MessageCircleIcon />}
         label="Messages"
         exact={false}
+        bold={false}
         onNavigate={onNavigate}
       />
 
       <div className="nav-section-label">Saved</div>
-      <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" onNavigate={onNavigate} />
-      <NavLink href="/saved/guidelines" icon={<CheckCircleIcon />} label="Saved Guidelines" onNavigate={onNavigate} />
+      <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/saved/guidelines" icon={<CheckCircleIcon />} label="Saved Guidelines" bold={false} onNavigate={onNavigate} />
 
       <div className="nav-section-label">Articles</div>
-      <NavLink href="/apta-news" icon={<ZapIcon />} label="APTA News" badge={aptaCount} onNavigate={onNavigate} />
-      {hasLicense && <NavLink href="/under-review" icon={<AlertCircleIcon />} label="Under Review" onNavigate={onNavigate} />}
+      <NavLink href="/apta-news" icon={<ZapIcon />} label="APTA News" badge={aptaCount} bold={false} onNavigate={onNavigate} />
+      {hasLicense && <NavLink href="/under-review" icon={<AlertCircleIcon />} label="Under Review" bold={false} onNavigate={onNavigate} />}
 
       {hasLicense && (
         <>
           <div className="nav-section-label">Clinician tools</div>
-          <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" onNavigate={onNavigate} />
+          <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" bold={false} onNavigate={onNavigate} />
         </>
       )}
 
