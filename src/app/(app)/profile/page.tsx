@@ -29,9 +29,28 @@ export default async function ProfilePage() {
       )
     : null;
 
+  const streakDays = user.streakDays;
+
   return (
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 18px" }}>Profile</h1>
+
+      {streakDays > 0 && (
+        <div
+          className="card elev-sm"
+          style={{ marginBottom: 18, display: "flex", alignItems: "center", gap: 10 }}
+        >
+          <span style={{ fontSize: 22, lineHeight: 1 }}>🔥</span>
+          <div>
+            <div style={{ fontFamily: "var(--font-heading)", fontSize: 15 }}>
+              {streakDays}-day reading streak
+            </div>
+            <div style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>
+              Read an article today to keep it going.
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">About you</div>

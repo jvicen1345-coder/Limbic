@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getArticles, getArticleById } from "@/lib/articles";
 import { decorateArticle } from "@/lib/feed";
+import { recordArticleRead } from "@/lib/reading";
 import { SaveButton } from "@/components/SaveButton";
 import { BackButton } from "@/components/BackButton";
 
@@ -18,6 +19,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
   ]);
   if (!raw) notFound();
+
+  await recordArticleRead(user.id, raw.id);
 
   const savedIds = savedRows.map((r) => r.articleId);
   const article = decorateArticle(raw, savedIds);

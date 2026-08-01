@@ -103,6 +103,15 @@ export async function signInWithEmail(input: { email: string }) {
   await issueSessionCookie(user.id);
 }
 
+/** Stamps "now" as the user's latest home-feed visit and returns the *previous* value —
+ *  the cutoff the feed uses to badge articles published "since you were last here",
+ *  captured before it's overwritten. */
+export async function recordHomeVisit(user: User): Promise<Date | null> {
+  const previous = user.lastVisitedAt;
+  await prisma.user.update({ where: { id: user.id }, data: { lastVisitedAt: new Date() } });
+  return previous;
+}
+
 export async function signOutSession() {
   const store = await cookies();
   store.delete(COOKIE_NAME);

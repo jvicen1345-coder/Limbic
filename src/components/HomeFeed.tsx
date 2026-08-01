@@ -8,11 +8,13 @@ import { ArticleCard, HeroArticleCard } from "@/components/ArticleCard";
 import { CalendarCard, type CeEvent } from "@/components/CalendarCard";
 import { StockCard } from "@/components/StockCard";
 import { RevolvingNews } from "@/components/RevolvingNews";
+import { SavedUnreadCard } from "@/components/SavedUnreadCard";
 import { Pagination } from "@/components/Pagination";
 import { paginate } from "@/lib/pagination";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { ArticleType } from "@/lib/types";
 import type { StockView } from "@/lib/stock";
+import type { LicenseView } from "@/lib/license";
 
 const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
   { id: "all", label: "All" },
@@ -29,12 +31,16 @@ export function HomeFeed({
   stock,
   newsTicker,
   firstName,
+  license,
+  savedUnread,
 }: {
   articles: DecoratedArticle[];
   ceEvents: CeEvent[];
   stock: StockView;
   newsTicker: DecoratedArticle[];
   firstName: string;
+  license: LicenseView | null;
+  savedUnread: DecoratedArticle[];
 }) {
   const [filter, setFilter] = useState<ArticleType | "all">("all");
   const [page, setPage] = useState(1);
@@ -62,6 +68,15 @@ export function HomeFeed({
             <div>
               <div style={{ fontSize: 13, color: "var(--color-neutral-700)", marginBottom: 2 }}>Good to see you,</div>
               <h1 style={{ fontSize: 26, margin: 0 }}>{firstName}</h1>
+              {license && license.cePercent < 100 && (
+                <Link
+                  href="/profile"
+                  className={license.statusClass}
+                  style={{ display: "inline-flex", marginTop: 8, textDecoration: "none" }}
+                >
+                  {license.daysLeftLabel} · {license.ceRequiredTotal - license.ceCompletedTotal} hrs CE left
+                </Link>
+              )}
             </div>
             <Link href="/search" className="btn btn-secondary btn-icon" aria-label="Search">
               <SearchIcon size={17} />
@@ -94,6 +109,7 @@ export function HomeFeed({
         </div>
 
         <aside className="home-aside-col">
+          <SavedUnreadCard articles={savedUnread} />
           <CalendarCard events={ceEvents} />
           <StockCard stock={stock} />
           <RevolvingNews articles={newsTicker} />
