@@ -6,8 +6,15 @@ import { firstName as firstNameOf } from "@/lib/meta";
 import { getUsphSeries, buildStockView } from "@/lib/stock";
 import { attachRealImages } from "@/lib/og-image";
 import { buildLicenseView } from "@/lib/license";
+import { ensureNexusSeedData } from "@/lib/nexus-seed";
+import { getConnectionStates } from "@/lib/nexus";
 import { HomeFeed } from "@/components/HomeFeed";
+import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import type { ArticleType, CeCategory, Specialty } from "@/lib/types";
+
+// How many people to suggest connecting with in the Home aside — enough to fill the
+// card without turning it into a second directory.
+const NEXUS_SUGGESTIONS_SIZE = 3;
 
 // "Purely news-based": general news from news outlets, not academic journals — so the
 // revolving card draws from Guidelines/Industry & Policy/Equipment (Google-News-sourced)
@@ -31,6 +38,21 @@ export default async function HomePage() {
     recordHomeVisit(user),
   ]);
   const savedIds = savedRows.map((r) => r.articleId);
+
+  await ensureNexusSeedData();
+  const [nexusCandidates, connectionStates] = await Promise.all([
+    prisma.user.findMany({
+      where: { id: { not: user.id }, isGuest: false },
+      select: { id: true, name: true, headline: true },
+      orderBy: { createdAt: "asc" },
+      take: 25,
+    }),
+    getConnectionStates(user.id),
+  ]);
+  const nexusSuggestions: NexusSuggestion[] = nexusCandidates
+    .filter((p) => (connectionStates.get(p.id) ?? { status: "none" as const }).status === "none")
+    .slice(0, NEXUS_SUGGESTIONS_SIZE)
+    .map((p) => ({ id: p.id, name: p.name, headline: p.headline, state: { status: "none" } }));
 
   const ranked = rankFeed(articles, user.specialty as Specialty, user.followedTopics as unknown as string[]);
   const decorated = ranked.map((a) => decorateArticle(a, savedIds, previousVisit));
@@ -76,6 +98,7 @@ export default async function HomePage() {
       firstName={firstNameOf(user.name)}
       license={license}
       savedUnread={savedUnread}
+      nexusSuggestions={nexusSuggestions}
     />
   );
 }

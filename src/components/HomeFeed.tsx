@@ -9,6 +9,7 @@ import { CalendarCard, type CeEvent } from "@/components/CalendarCard";
 import { StockCard } from "@/components/StockCard";
 import { RevolvingNews } from "@/components/RevolvingNews";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
+import { NexusSuggestionsCard, type NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import { Pagination } from "@/components/Pagination";
 import { paginate } from "@/lib/pagination";
 import type { DecoratedArticle } from "@/lib/feed";
@@ -33,6 +34,7 @@ export function HomeFeed({
   firstName,
   license,
   savedUnread,
+  nexusSuggestions,
 }: {
   articles: DecoratedArticle[];
   ceEvents: CeEvent[];
@@ -41,6 +43,7 @@ export function HomeFeed({
   firstName: string;
   license: LicenseView | null;
   savedUnread: DecoratedArticle[];
+  nexusSuggestions: NexusSuggestion[];
 }) {
   const [filter, setFilter] = useState<ArticleType | "all">("all");
   const [page, setPage] = useState(1);
@@ -111,6 +114,7 @@ export function HomeFeed({
         <aside className="home-aside-col">
           <SavedUnreadCard articles={savedUnread} />
           <CalendarCard events={ceEvents} />
+          <NexusSuggestionsCard people={nexusSuggestions} />
           <StockCard stock={stock} />
           <RevolvingNews articles={newsTicker} />
         </aside>
