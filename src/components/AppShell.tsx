@@ -115,12 +115,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, ap
       <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" onNavigate={onNavigate} />
       <NavLink href="/saved/guidelines" icon={<CheckCircleIcon />} label="Saved Guidelines" onNavigate={onNavigate} />
 
+      <div className="nav-section-label">Articles</div>
+      <NavLink href="/apta-news" icon={<ZapIcon />} label="APTA News" badge={aptaCount} onNavigate={onNavigate} />
+      {hasLicense && <NavLink href="/under-review" icon={<AlertCircleIcon />} label="Under Review" onNavigate={onNavigate} />}
+
       {hasLicense && (
         <>
-          <div className="nav-section-label">Articles</div>
-          <NavLink href="/apta-news" icon={<ZapIcon />} label="APTA News" badge={aptaCount} onNavigate={onNavigate} />
-          <NavLink href="/under-review" icon={<AlertCircleIcon />} label="Under Review" onNavigate={onNavigate} />
-
           <div className="nav-section-label">Clinician tools</div>
           <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" onNavigate={onNavigate} />
         </>

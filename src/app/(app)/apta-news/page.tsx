@@ -14,17 +14,6 @@ export default async function AptaNewsPage({
   const user = await getCurrentUser();
   if (!user) return null;
 
-  if (!user.licenseNumber) {
-    return (
-      <div className="screen-pad">
-        <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>APTA News</h1>
-        <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
-          Available to signed-in clinicians only — add your license from your profile to unlock this.
-        </p>
-      </div>
-    );
-  }
-
   const [aptaArticlesAll, savedRows, { page: requestedPage }] = await Promise.all([
     getAptaNewsArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
