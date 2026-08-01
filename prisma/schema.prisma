@@ -146,6 +146,22 @@ model SavedArticle {
   articleId String
   createdAt DateTime @default(now())
 
+  // A snapshot of the article's display fields taken at save time — live-sourced articles
+  // (Google News guideline/industry/product, PubMed research) aren't guaranteed to still be
+  // in the current live fetch batch by the time the reader revisits Saved Articles/
+  // Guidelines, so display can't depend on re-resolving articleId against a fresh fetch
+  // indefinitely (see app/actions/saved.ts). Null on rows saved before this existed, or on
+  // non-article saves (wellness/clips), which fall back to best-effort live resolution.
+  type      String?
+  specialty String?
+  title     String?
+  source    String?
+  sourceUrl String?
+  date      String?
+  readMins  Int?
+  summary   String?
+  tags      Json?
+
   @@unique([userId, articleId])
 }
 
