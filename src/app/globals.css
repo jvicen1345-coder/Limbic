@@ -188,12 +188,15 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
 /* — app shell layout — */
 .app-root {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
 }
 
+/* The shell itself never scrolls — .app-sidebar and .app-main each own their own
+   scrollbar, so scrolling the nav (to reach "Sign out" below a long link list, say)
+   never moves the page content, and vice versa. */
 .app-sidebar {
   width: 236px;
   flex-shrink: 0;
@@ -202,9 +205,8 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
   gap: 4px;
   padding: 24px 16px;
   border-right: 1px solid var(--color-neutral-200);
-  position: sticky;
-  top: 0;
   height: 100vh;
+  overflow-y: auto;
   box-sizing: border-box;
 }
 
@@ -231,6 +233,8 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
 .app-main {
   flex: 1;
   min-width: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .app-mobile-topbar {
@@ -391,16 +395,6 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
   gap: 14px;
   position: sticky;
   top: 20px;
-}
-@media (min-width: 800px) {
-  /* Caps the article column to the viewport (minus .home-pad's own top+bottom padding)
-     so it scrolls in its own pane instead of growing the whole page — the aside next to
-     it, already sticky, then never has to chase a taller main column down the page. */
-  .home-main-col {
-    max-height: calc(100vh - 96px);
-    overflow-y: auto;
-    padding-right: 10px;
-  }
 }
 @media (max-width: 799px) {
   .home-row { flex-direction: column; gap: 24px; }
