@@ -1,8 +1,9 @@
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getWellnessArticles, WELLNESS_VIDEOS } from "@/lib/articles";
+import { youtubeThumbnailUrl } from "@/lib/meta";
 import { WellnessListItem } from "@/components/RowCards";
-import { PlayIcon } from "@/components/icons";
+import { VideoThumbnail } from "@/components/VideoThumbnail";
 
 export default async function WellnessPage() {
   const user = await getCurrentUser();
@@ -43,19 +44,7 @@ export default async function WellnessPage() {
             className="card elev-sm"
             style={{ padding: 0, overflow: "hidden", color: "inherit", textDecoration: "none", display: "block" }}
           >
-            <div
-              style={{
-                width: "100%",
-                aspectRatio: "16/9",
-                background: "var(--color-surface)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "var(--color-accent)",
-              }}
-            >
-              <PlayIcon size={32} />
-            </div>
+            <VideoThumbnail src={youtubeThumbnailUrl(v.url)} />
             <div style={{ padding: "12px 14px" }}>
               <div className="card-title" style={{ fontSize: 14.5, margin: "0 0 4px" }}>
                 {v.title}

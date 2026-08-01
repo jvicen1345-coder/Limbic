@@ -47,6 +47,13 @@ export function firstName(name: string): string {
   return name.replace(/^Dr\.\s*/, "").split(" ")[0];
 }
 
+/** YouTube's own thumbnail CDN — every public video has a jpg here at a predictable URL,
+ *  no API key or scraping needed. Returns null for a non-YouTube or unparseable URL. */
+export function youtubeThumbnailUrl(videoUrl: string): string | null {
+  const match = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
+  return match ? `https://i.ytimg.com/vi/${match[1]}/hqdefault.jpg` : null;
+}
+
 /** Default display name for a general (non-PT) account, derived from the email's local
  *  part since there's no license record to pull a real name from. */
 export function nameFromEmail(email: string): string {
