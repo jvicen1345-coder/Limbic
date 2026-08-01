@@ -17,6 +17,7 @@ import {
   BandageIcon,
   MenuIcon,
   XIcon,
+  CrownIcon,
 } from "@/components/icons";
 
 function sidebarNavStyle(active: boolean): React.CSSProperties {
@@ -96,6 +97,7 @@ interface NavContentProps {
   specialtyLabel: string;
   practiceState: string;
   hasLicense: boolean;
+  isPro: boolean;
   aptaCount: number;
   /** Called after any nav link is clicked — used to close the mobile drawer on navigation. */
   onNavigate?: () => void;
@@ -103,13 +105,26 @@ interface NavContentProps {
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, aptaCount, onNavigate }: NavContentProps) {
+function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, aptaCount, onNavigate }: NavContentProps) {
   return (
     <>
       <NavLink href="/" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/profile" icon={<ProfileIcon />} label="Profile" onNavigate={onNavigate} />
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Health & Wellness" onNavigate={onNavigate} />
+      <Link
+        href="/pro"
+        onClick={onNavigate}
+        style={{ ...sidebarNavStyle(false), color: "var(--color-accent-700)" }}
+      >
+        <CrownIcon size={18} />
+        LimbicPro
+        {isPro && (
+          <span className="tag tag-accent" style={{ marginLeft: "auto" }}>
+            Pro
+          </span>
+        )}
+      </Link>
 
       <div className="nav-section-label">Saved</div>
       <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" onNavigate={onNavigate} />
@@ -147,6 +162,7 @@ export interface AppShellProps {
   specialtyLabel: string;
   practiceState: string;
   hasLicense: boolean;
+  isPro: boolean;
   aptaCount: number;
   savedCount: number;
   children: React.ReactNode;
@@ -157,12 +173,13 @@ export function AppShell({
   specialtyLabel,
   practiceState,
   hasLicense,
+  isPro,
   aptaCount,
   savedCount,
   children,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, aptaCount };
+  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, aptaCount };
 
   return (
     <div className="app-root">

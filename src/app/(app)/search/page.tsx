@@ -15,5 +15,5 @@ export default async function SearchPage() {
   const savedIds = savedRows.map((r) => r.articleId);
   const decorated = articles.map((a) => decorateArticle(a, savedIds));
 
-  return <SearchScreen articles={decorated} />;
+  return <SearchScreen articles={decorated} isPro={user.isPro} />;
 }

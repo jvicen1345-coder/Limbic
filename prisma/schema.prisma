@@ -34,6 +34,11 @@ model User {
   // JSON-encoded { name, required, completed }[] of CE categories
   ceCategories      Json     @default("[]")
 
+  // LimbicPro — currently flipped by a demo action (see app/actions/pro.ts), not real
+  // billing. This field is the intended seam for real payment later: a webhook would set
+  // it instead of the demo action, and nothing else in the app needs to change.
+  isPro             Boolean  @default(false)
+
   savedArticles     SavedArticle[]
   hepPrograms       HepProgram[]
 }

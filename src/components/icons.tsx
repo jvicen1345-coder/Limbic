@@ -157,6 +157,24 @@ export function XIcon(props: IconProps) {
   );
 }
 
+export function CrownIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="m2 4 5 5 5-8 5 8 5-5-2 14H4Z" />
+      <path d="M4 22h16" />
+    </Svg>
+  );
+}
+
+export function LockIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="4" y="11" width="16" height="10" rx="2" />
+      <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+    </Svg>
+  );
+}
+
 export function MenuIcon(props: IconProps) {
   return (
     <Svg {...props}>

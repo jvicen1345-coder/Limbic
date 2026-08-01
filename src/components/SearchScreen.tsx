@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Chip } from "@/components/Chip";
 import { ArticleCard } from "@/components/ArticleCard";
 import { Pagination } from "@/components/Pagination";
 import { aiPubmedSearchAction, type AiSearchResult } from "@/app/actions/ai-search";
 import { paginate } from "@/lib/pagination";
+import { LockIcon } from "@/components/icons";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { ArticleType, Specialty } from "@/lib/types";
 
@@ -77,7 +79,29 @@ function AiPubmedSearch({ onResult }: { onResult: (result: AiSearchResult | null
   );
 }
 
-export function SearchScreen({ articles }: { articles: DecoratedArticle[] }) {
+function AiPubmedSearchLocked() {
+  return (
+    <Link
+      href="/pro"
+      className="card elev-sm"
+      style={{ marginBottom: 18, display: "block", color: "inherit", textDecoration: "none" }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <LockIcon size={13} style={{ color: "var(--color-neutral-700)" }} />
+        <div className="card-kicker">Ask AI to search PubMed</div>
+      </div>
+      <p className="card-body" style={{ marginTop: 2 }}>
+        Describe what you&rsquo;re looking for in plain language and let AI turn it into a precise
+        search — a LimbicPro feature.
+      </p>
+      <span className="btn btn-secondary" style={{ marginTop: 8, display: "inline-flex" }}>
+        Upgrade to LimbicPro
+      </span>
+    </Link>
+  );
+}
+
+export function SearchScreen({ articles, isPro }: { articles: DecoratedArticle[]; isPro: boolean }) {
   const [query, setQuery] = useState("");
   const [type, setType] = useState<ArticleType | "all">("all");
   const [specialty, setSpecialty] = useState<Specialty | "all">("all");
@@ -107,7 +131,7 @@ export function SearchScreen({ articles }: { articles: DecoratedArticle[] }) {
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 16px" }}>Search</h1>
 
-      <AiPubmedSearch onResult={setAiResult} />
+      {isPro ? <AiPubmedSearch onResult={setAiResult} /> : <AiPubmedSearchLocked />}
 
       {aiResult ? (
         <>

@@ -22,6 +22,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       specialtyLabel={SPECIALTY_META[user.specialty as keyof typeof SPECIALTY_META]}
       practiceState={user.practiceState}
       hasLicense={hasLicense}
+      isPro={user.isPro}
       aptaCount={aptaArticles.length}
       savedCount={savedCount}
     >
