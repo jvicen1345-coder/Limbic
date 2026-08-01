@@ -39,8 +39,18 @@ model User {
   // it instead of the demo action, and nothing else in the app needs to change.
   isPro             Boolean  @default(false)
 
+  // Timestamp of the previous home-feed load, captured before it's overwritten with the
+  // current one — this is what lets the feed tell "published since you were last here"
+  // apart from everything else (see lib/session.ts recordVisitAndGetPrevious).
+  lastVisitedAt     DateTime?
+
+  // Daily reading-streak tracking, both driven by lib/streak.ts off ReadArticle rows.
+  lastReadAt        DateTime?
+  streakDays        Int      @default(0)
+
   savedArticles     SavedArticle[]
   hepPrograms       HepProgram[]
+  readArticles      ReadArticle[]
 }
 
 model SavedArticle {
@@ -60,6 +70,19 @@ model HepProgram {
   programName String
   createdAt   DateTime      @default(now())
   exercises   HepExercise[]
+}
+
+// One row per article a user has opened — drives both the reading-streak counter and
+// "saved but still unread" resurfacing, distinct from SavedArticle (a bookmark, not a
+// read receipt).
+model ReadArticle {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  articleId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, articleId])
 }
 
 model HepExercise {

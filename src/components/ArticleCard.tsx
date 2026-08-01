@@ -13,7 +13,8 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
       onClick={() => router.push(`/article/${article.id}`)}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <div className="card-kicker">
+        <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {article.isNew && <NewBadge />}
           {article.typeLabel} · {article.dateLabel}
         </div>
         <SaveButton articleId={article.id} saved={article.saved} size="sm" />
@@ -41,7 +42,8 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
       onClick={() => router.push(`/article/${article.id}`)}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <div className="card-kicker">
+        <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {article.isNew && <NewBadge />}
           {article.typeLabel} · {article.dateLabel}
         </div>
         <SaveButton articleId={article.id} saved={article.saved} size="md" />
@@ -59,5 +61,14 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
         </span>
       </div>
     </div>
+  );
+}
+
+function NewBadge() {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "var(--color-accent-700)", fontWeight: 700 }}>
+      <span style={{ width: 6, height: 6, borderRadius: 999, background: "var(--color-accent)" }} />
+      New
+    </span>
   );
 }

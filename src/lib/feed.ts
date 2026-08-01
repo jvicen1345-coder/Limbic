@@ -7,9 +7,12 @@ export interface DecoratedArticle extends Article {
   specialtyLabel: string;
   dateLabel: string;
   saved: boolean;
+  /** True when published after the reader's previous home-feed visit. Always false
+   *  outside the home feed (default param) — the badge only makes sense there. */
+  isNew: boolean;
 }
 
-export function decorateArticle(a: Article, savedIds: string[]): DecoratedArticle {
+export function decorateArticle(a: Article, savedIds: string[], sinceVisit: Date | null = null): DecoratedArticle {
   const tm = TYPE_META[a.type];
   return {
     ...a,
@@ -18,6 +21,7 @@ export function decorateArticle(a: Article, savedIds: string[]): DecoratedArticl
     specialtyLabel: SPECIALTY_META[a.specialty],
     dateLabel: formatDate(a.date),
     saved: savedIds.includes(a.id),
+    isNew: sinceVisit != null && new Date(a.date).getTime() > sinceVisit.getTime(),
   };
 }
 
