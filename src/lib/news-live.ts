@@ -146,6 +146,41 @@ function titleCase(s: string): string {
   return s.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+/** A handful of keyword literals are acronyms that title-casing mangles ("Cms" instead of
+ *  "CMS"), or are spelling variants of the same thing ("fda clearance" / "fda-cleared") —
+ *  normalized here so they don't show up as separate near-duplicate topic chips. */
+const KEYWORD_LABEL_OVERRIDES: Record<string, string> = {
+  cms: "CMS",
+  ncaa: "NCAA",
+  csm: "CSM",
+  acl: "ACL",
+  "fda clearance": "FDA Clearance",
+  "fda-cleared": "FDA Clearance",
+};
+
+/** Keywords that just restate the specialty/type label already guaranteed to be on the
+ *  article (SPECIALTY_META / TYPE_META add that label separately, unconditionally) —
+ *  not useful as a distinct followable topic, so dropped rather than kept as a duplicate. */
+const SUPPRESSED_KEYWORDS = new Set([
+  "pediatric",
+  "paediatric",
+  "geriatric",
+  "sports",
+  "neurologic",
+  "neurological",
+  "orthopedic",
+  "orthopaedic",
+  "guideline",
+]);
+
+/** Returns the display label for a matched keyword, or null if it should be dropped —
+ *  see SUPPRESSED_KEYWORDS and KEYWORD_LABEL_OVERRIDES above. */
+function keywordLabel(kw: string): string | null {
+  const lower = kw.toLowerCase();
+  if (SUPPRESSED_KEYWORDS.has(lower)) return null;
+  return KEYWORD_LABEL_OVERRIDES[lower] ?? titleCase(kw);
+}
+
 export function classify(
   text: string,
   defaultType: ArticleType
@@ -175,7 +210,10 @@ export function classify(
     }
   });
 
-  const matchedKeywords = [bestSpecialtyKeyword, bestTypeKeyword].filter(Boolean).map(titleCase);
+  const matchedKeywords = [bestSpecialtyKeyword, bestTypeKeyword]
+    .filter(Boolean)
+    .map(keywordLabel)
+    .filter((k): k is string => k !== null);
   return { type, specialty: bestSpecialty, matchedKeywords, typeConfident: bestTypeHits > 0 };
 }
 

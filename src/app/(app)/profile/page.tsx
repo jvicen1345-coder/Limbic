@@ -1,10 +1,16 @@
 import { getCurrentUser } from "@/lib/session";
 import { getArticles } from "@/lib/articles";
 import { buildLicenseView } from "@/lib/license";
+import { SPECIALTIES, TYPES } from "@/lib/meta";
 import type { CeCategory } from "@/lib/types";
 import { ProfileForm } from "@/components/ProfileForm";
 import { TopicChip } from "@/components/TopicChip";
+import { TopicBrowser } from "@/components/TopicBrowser";
 import { goAddLicenseAction } from "@/app/actions/profile";
+
+// The canonical specialty/type labels, always shown first — clean and stable, unlike the
+// long tail of live-scraped keyword tags below, which varies with whatever's in the feed.
+const SUGGESTED_TOPICS = [...SPECIALTIES.map((s) => s.label), ...TYPES.map((t) => t.label)];
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
@@ -12,6 +18,7 @@ export default async function ProfilePage() {
 
   const articles = await getArticles();
   const allTopics = Array.from(new Set(articles.flatMap((a) => a.tags))).sort();
+  const browsableTopics = allTopics.filter((t) => !SUGGESTED_TOPICS.includes(t));
   const followedTopics = user.followedTopics as unknown as string[];
 
   const license = user.licenseNumber
@@ -37,11 +44,38 @@ export default async function ProfilePage() {
         <p className="card-body" style={{ marginTop: 2 }}>
           Tap a topic to prioritize it in your home feed.
         </p>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-          {allTopics.map((t) => (
+
+        <div
+          style={{
+            fontSize: 11,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "var(--color-neutral-700)",
+            marginTop: 14,
+            marginBottom: 6,
+          }}
+        >
+          Suggested
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {SUGGESTED_TOPICS.map((t) => (
             <TopicChip key={t} topic={t} followed={followedTopics.includes(t)} />
           ))}
         </div>
+
+        <div
+          style={{
+            fontSize: 11,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "var(--color-neutral-700)",
+            marginTop: 18,
+            marginBottom: 6,
+          }}
+        >
+          Add more
+        </div>
+        <TopicBrowser topics={browsableTopics} followedTopics={followedTopics} />
       </div>
 
       <div className="card elev-sm">
