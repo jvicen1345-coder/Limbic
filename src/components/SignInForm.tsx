@@ -60,11 +60,7 @@ export function SignInForm({ states }: { states: string[] }) {
         boxShadow: "var(--shadow-md)",
       }}
     >
-      <div
-        role="tablist"
-        aria-label="Sign-in type"
-        style={{ display: "flex", gap: 4, background: "var(--color-neutral-100)", borderRadius: "var(--radius-md)", padding: 3 }}
-      >
+      <div role="tablist" aria-label="Sign-in type" className="pill-tabs" style={{ marginBottom: 0 }}>
         {TABS.map((t) => {
           const active = mode === t.id;
           return (
@@ -74,19 +70,7 @@ export function SignInForm({ states }: { states: string[] }) {
               role="tab"
               aria-selected={active}
               onClick={() => setMode(t.id)}
-              style={{
-                flex: 1,
-                border: "none",
-                borderRadius: "var(--radius-sm)",
-                padding: "8px 10px",
-                fontFamily: "inherit",
-                fontSize: 13,
-                fontWeight: active ? 700 : 500,
-                cursor: "pointer",
-                background: active ? "var(--color-surface)" : "transparent",
-                color: active ? "var(--color-text)" : "var(--color-neutral-700)",
-                boxShadow: active ? "var(--shadow-sm)" : "none",
-              }}
+              className={active ? "pill-tab active" : "pill-tab"}
             >
               {t.label}
             </button>

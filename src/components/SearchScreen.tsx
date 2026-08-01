@@ -187,13 +187,15 @@ export function SearchScreen({ articles }: { articles: DecoratedArticle[] }) {
 
   return (
     <div className="screen-pad">
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Search</h1>
-      <div className="sub-tabs">
+      <h1 style={{ fontSize: 24, margin: "0 0 16px" }}>Search</h1>
+      <div role="tablist" aria-label="Search mode" className="pill-tabs">
         {SEARCH_MODES.map((m) => (
           <button
             key={m.id}
             type="button"
-            className={mode === m.id ? "sub-tab active" : "sub-tab"}
+            role="tab"
+            aria-selected={mode === m.id}
+            className={mode === m.id ? "pill-tab active" : "pill-tab"}
             onClick={() => setMode(m.id)}
           >
             {m.label}

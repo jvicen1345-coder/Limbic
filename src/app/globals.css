@@ -456,6 +456,20 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
   margin-bottom: -1px;
 }
 .sub-tab.active { color: var(--color-accent-700); border-bottom-color: var(--color-accent); }
+
+/* Pill-style segmented tabs — same look as the sign-in screen's Physical Therapist/General
+   switch, for anywhere else that wants a mode toggle rather than a section-navigation bar
+   (see .sub-tabs above for that). */
+.pill-tabs {
+  display: flex; gap: 4px; background: var(--color-neutral-100);
+  border-radius: var(--radius-md); padding: 3px; margin-bottom: 18px;
+}
+.pill-tab {
+  flex: 1; border: none; border-radius: var(--radius-sm); padding: 8px 10px;
+  font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+  background: transparent; color: var(--color-neutral-700); white-space: nowrap;
+}
+.pill-tab.active { font-weight: 700; background: var(--color-surface); color: var(--color-text); box-shadow: var(--shadow-sm); }
 .message-bubble { max-width: 78%; padding: 8px 13px; border-radius: 16px; font-size: 13.5px; line-height: 1.4; }
 .message-bubble-mine { background: var(--color-accent); color: var(--color-bg); align-self: flex-end; border-bottom-right-radius: 4px; }
 .message-bubble-theirs { background: var(--color-surface); align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: var(--shadow-sm); }
