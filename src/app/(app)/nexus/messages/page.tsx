@@ -3,7 +3,8 @@ import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getAcceptedConnectionIds } from "@/lib/nexus";
 import { timeAgo } from "@/lib/nexus-utils";
-import { NexusTabs } from "@/components/NexusTabs";
+import { NEXUS_TABS } from "@/lib/section-nav";
+import { SubTabs } from "@/components/SubTabs";
 import { Avatar } from "@/components/Avatar";
 
 export default async function NexusMessagesPage() {
@@ -46,7 +47,7 @@ export default async function NexusMessagesPage() {
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         A feed for PTs, OTs, and the wider healthcare & wellness community.
       </p>
-      <NexusTabs />
+      <SubTabs tabs={NEXUS_TABS} />
 
       {conversations.length === 0 ? (
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)" }}>

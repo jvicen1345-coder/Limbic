@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
-import { subscribeToProAction, cancelProAction } from "@/app/actions/pro";
 import { CrownIcon } from "@/components/icons";
+import { PRO_TABS } from "@/lib/section-nav";
+import { SubTabs } from "@/components/SubTabs";
 
 const FEATURES: { title: string; description: string; live: boolean }[] = [
   {
@@ -20,7 +22,7 @@ const FEATURES: { title: string; description: string; live: boolean }[] = [
   },
 ];
 
-export default async function ProPage() {
+export default async function ProOverviewPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
@@ -30,11 +32,12 @@ export default async function ProPage() {
         <CrownIcon size={22} style={{ color: "var(--color-accent)" }} />
         <h1 style={{ fontSize: 24, margin: 0 }}>LimbicPro</h1>
       </div>
-      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 22px" }}>
+      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         {user.isPro
           ? "You're a Pro member — thanks for supporting Limbic."
           : "Clinician tools built for how you actually practice — all in the app, nothing emailed out."}
       </p>
+      <SubTabs tabs={PRO_TABS} />
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -60,26 +63,21 @@ export default async function ProPage() {
           <>
             <div className="card-kicker">Membership</div>
             <p className="card-body" style={{ marginTop: 6 }}>
-              You have full access to LimbicPro. Manage or cancel your membership below.
+              You have full access to LimbicPro.
             </p>
-            <form action={cancelProAction}>
-              <button type="submit" className="btn btn-secondary" style={{ marginTop: 10 }}>
-                Cancel membership
-              </button>
-            </form>
+            <Link href="/pro/membership" className="btn btn-secondary" style={{ marginTop: 10 }}>
+              Manage membership
+            </Link>
           </>
         ) : (
           <>
             <div className="card-kicker">$9/month</div>
             <p className="card-body" style={{ marginTop: 6 }}>
-              Demo only — this doesn&rsquo;t charge a real card. It flips your account to Pro
-              instantly; real billing plugs in here once these features ship.
+              Demo only — this doesn&rsquo;t charge a real card.
             </p>
-            <form action={subscribeToProAction}>
-              <button type="submit" className="btn btn-primary" style={{ marginTop: 10 }}>
-                Upgrade to LimbicPro
-              </button>
-            </form>
+            <Link href="/pro/membership" className="btn btn-primary" style={{ marginTop: 10 }}>
+              Upgrade to LimbicPro
+            </Link>
           </>
         )}
       </div>

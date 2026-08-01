@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { NexusTabs } from "@/components/NexusTabs";
+import { NEXUS_TABS } from "@/lib/section-nav";
+import { SubTabs } from "@/components/SubTabs";
 import { Avatar } from "@/components/Avatar";
 import { ConnectButton } from "@/components/ConnectButton";
 import Link from "next/link";
@@ -27,7 +28,7 @@ export default async function NexusConnectionsPage() {
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         A feed for PTs, OTs, and the wider healthcare & wellness community.
       </p>
-      <NexusTabs />
+      <SubTabs tabs={NEXUS_TABS} />
 
       {incoming.length > 0 && (
         <>

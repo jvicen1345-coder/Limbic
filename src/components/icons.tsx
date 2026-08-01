@@ -311,6 +311,15 @@ export function CheckIcon(props: IconProps) {
   );
 }
 
+export function CreditCardIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <path d="M2 10h20" />
+    </Svg>
+  );
+}
+
 export function ListIcon(props: IconProps) {
   return (
     <Svg {...props}>

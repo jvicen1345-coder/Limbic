@@ -24,6 +24,7 @@ import {
   ListIcon,
   UserPlusIcon,
   MessageCircleIcon,
+  CreditCardIcon,
 } from "@/components/icons";
 
 function sidebarNavStyle(active: boolean): React.CSSProperties {
@@ -69,7 +70,8 @@ function NavLink({
   href: string;
   icon: React.ReactNode;
   label: string;
-  badge?: number;
+  /** A number renders as a count badge (hidden at 0); a string renders as-is (e.g. "Pro"). */
+  badge?: number | string;
   /** False for sub-links whose section also covers nested/dynamic routes (e.g. a message
    *  thread at /nexus/messages/[userId] should still highlight "Messages"). */
   exact?: boolean;
@@ -78,11 +80,12 @@ function NavLink({
 }) {
   const pathname = usePathname();
   const active = exact ? pathname === href : pathname.startsWith(href);
+  const showBadge = typeof badge === "string" ? badge.length > 0 : badge != null && badge > 0;
   return (
     <Link href={href} style={sidebarNavStyle(active)} onClick={onNavigate}>
       {icon}
       {label}
-      {badge != null && badge > 0 && (
+      {showBadge && (
         <span className="tag tag-accent" style={{ marginLeft: "auto" }}>
           {badge}
         </span>
@@ -125,19 +128,10 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Health & Wellness" onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
       <NavLink href="/wordle" icon={<GridIcon />} label="Daily Term" onNavigate={onNavigate} />
-      <Link
-        href="/pro"
-        onClick={onNavigate}
-        style={{ ...sidebarNavStyle(false), color: "var(--color-accent-700)" }}
-      >
-        <CrownIcon size={18} />
-        LimbicPro
-        {isPro && (
-          <span className="tag tag-accent" style={{ marginLeft: "auto" }}>
-            Pro
-          </span>
-        )}
-      </Link>
+
+      <div className="nav-section-label">LimbicPro</div>
+      <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} onNavigate={onNavigate} />
+      <NavLink href="/pro/membership" icon={<CreditCardIcon />} label="Membership" onNavigate={onNavigate} />
 
       <div className="nav-section-label">Nexus</div>
       <NavLink href="/nexus" icon={<UsersIcon />} label="Feed" onNavigate={onNavigate} />

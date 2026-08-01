@@ -2,7 +2,8 @@ import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { ensureNexusSeedData } from "@/lib/nexus-seed";
 import { getConnectionStates } from "@/lib/nexus";
-import { NexusTabs } from "@/components/NexusTabs";
+import { NEXUS_TABS } from "@/lib/section-nav";
+import { SubTabs } from "@/components/SubTabs";
 import { DirectoryList, type DirectoryPerson } from "@/components/DirectoryList";
 
 export default async function NexusDirectoryPage() {
@@ -31,7 +32,7 @@ export default async function NexusDirectoryPage() {
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         A feed for PTs, OTs, and the wider healthcare & wellness community.
       </p>
-      <NexusTabs />
+      <SubTabs tabs={NEXUS_TABS} />
       <DirectoryList people={people} />
     </div>
   );

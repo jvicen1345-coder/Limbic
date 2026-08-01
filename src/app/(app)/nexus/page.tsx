@@ -1,7 +1,8 @@
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { ensureNexusSeedData } from "@/lib/nexus-seed";
-import { NexusTabs } from "@/components/NexusTabs";
+import { NEXUS_TABS } from "@/lib/section-nav";
+import { SubTabs } from "@/components/SubTabs";
 import { NexusPostCard, type NexusPostData } from "@/components/NexusPostCard";
 import { NexusComposer } from "@/components/NexusComposer";
 
@@ -47,7 +48,7 @@ export default async function NexusFeedPage() {
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         A feed for PTs, OTs, and the wider healthcare & wellness community.
       </p>
-      <NexusTabs />
+      <SubTabs tabs={NEXUS_TABS} />
 
       <NexusComposer />
 
