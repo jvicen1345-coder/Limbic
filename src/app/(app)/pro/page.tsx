@@ -4,23 +4,18 @@ import { CrownIcon } from "@/components/icons";
 
 const FEATURES: { title: string; description: string; live: boolean }[] = [
   {
-    title: "AI-powered PubMed search",
-    description: "Describe what you're looking for in plain language and let AI turn it into a precise search — live now, only for Pro.",
-    live: true,
-  },
-  {
     title: "Home Exercise Program exports",
     description: "Export any HEP as a printable PDF, or share it with a patient via a link.",
     live: false,
   },
   {
-    title: "Weekly digest email",
-    description: "A Monday-morning email of the week's top stories from your followed topics.",
+    title: "Weekly Roundup",
+    description: "A dedicated in-app view of the week's top stories from your followed topics — no email, everything stays in Limbic.",
     live: false,
   },
   {
-    title: "License renewal reminders",
-    description: "Automatic email alerts as your license expiration or CE deadline approaches.",
+    title: "License renewal alerts",
+    description: "An in-app heads-up as your license expiration or CE deadline approaches — no email required.",
     live: false,
   },
 ];
@@ -38,7 +33,7 @@ export default async function ProPage() {
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 22px" }}>
         {user.isPro
           ? "You're a Pro member — thanks for supporting Limbic."
-          : "Unlock AI-powered search and clinician tools built for how you actually practice."}
+          : "Clinician tools built for how you actually practice — all in the app, nothing emailed out."}
       </p>
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
@@ -78,7 +73,7 @@ export default async function ProPage() {
             <div className="card-kicker">$9/month</div>
             <p className="card-body" style={{ marginTop: 6 }}>
               Demo only — this doesn&rsquo;t charge a real card. It flips your account to Pro
-              instantly so you can see what&rsquo;s gated.
+              instantly; real billing plugs in here once these features ship.
             </p>
             <form action={subscribeToProAction}>
               <button type="submit" className="btn btn-primary" style={{ marginTop: 10 }}>
