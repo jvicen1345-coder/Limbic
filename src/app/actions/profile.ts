@@ -6,7 +6,7 @@ import { getCurrentUser, clearSessionForAddLicense } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 export async function updateProfileFieldAction(
-  field: "name" | "specialty" | "practiceState",
+  field: "name" | "specialty" | "practiceState" | "headline" | "bio",
   value: string
 ) {
   const user = await getCurrentUser();

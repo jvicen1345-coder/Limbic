@@ -19,6 +19,7 @@ import {
   XIcon,
   CrownIcon,
   FilmIcon,
+  UsersIcon,
 } from "@/components/icons";
 
 function sidebarNavStyle(active: boolean): React.CSSProperties {
@@ -100,19 +101,21 @@ interface NavContentProps {
   hasLicense: boolean;
   isPro: boolean;
   aptaCount: number;
+  nexusRequestCount: number;
   /** Called after any nav link is clicked — used to close the mobile drawer on navigation. */
   onNavigate?: () => void;
 }
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, aptaCount, onNavigate }: NavContentProps) {
+function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
   return (
     <>
       <NavLink href="/" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/profile" icon={<ProfileIcon />} label="Profile" onNavigate={onNavigate} />
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Health & Wellness" onNavigate={onNavigate} />
+      <NavLink href="/nexus" icon={<UsersIcon />} label="Nexus" badge={nexusRequestCount} onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
       <Link
         href="/pro"
@@ -166,6 +169,7 @@ export interface AppShellProps {
   hasLicense: boolean;
   isPro: boolean;
   aptaCount: number;
+  nexusRequestCount: number;
   savedCount: number;
   children: React.ReactNode;
 }
@@ -177,11 +181,12 @@ export function AppShell({
   hasLicense,
   isPro,
   aptaCount,
+  nexusRequestCount,
   savedCount,
   children,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, aptaCount };
+  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, aptaCount, nexusRequestCount };
 
   return (
     <div className="app-root">

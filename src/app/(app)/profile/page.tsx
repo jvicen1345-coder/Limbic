@@ -54,7 +54,13 @@ export default async function ProfilePage() {
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">About you</div>
-        <ProfileForm name={user.name} specialty={user.specialty} practiceState={user.practiceState} />
+        <ProfileForm
+          name={user.name}
+          specialty={user.specialty}
+          practiceState={user.practiceState}
+          headline={user.headline ?? ""}
+          bio={user.bio ?? ""}
+        />
       </div>
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>

@@ -8,10 +8,14 @@ export function ProfileForm({
   name,
   specialty,
   practiceState,
+  headline,
+  bio,
 }: {
   name: string;
   specialty: string;
   practiceState: string;
+  headline: string;
+  bio: string;
 }) {
   const [, startTransition] = useTransition();
 
@@ -55,6 +59,27 @@ export function ProfileForm({
             </option>
           ))}
         </select>
+      </div>
+      <div className="field">
+        <label htmlFor="pf-headline">Nexus headline</label>
+        <input
+          className="input"
+          id="pf-headline"
+          placeholder="e.g. Outpatient Ortho PT · Austin, TX"
+          defaultValue={headline}
+          onChange={(e) => startTransition(() => updateProfileFieldAction("headline", e.target.value))}
+        />
+      </div>
+      <div className="field">
+        <label htmlFor="pf-bio">Nexus bio</label>
+        <textarea
+          className="input"
+          id="pf-bio"
+          rows={3}
+          placeholder="A couple sentences for your Nexus profile…"
+          defaultValue={bio}
+          onChange={(e) => startTransition(() => updateProfileFieldAction("bio", e.target.value))}
+        />
       </div>
     </div>
   );

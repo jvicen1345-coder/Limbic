@@ -48,9 +48,89 @@ model User {
   lastReadAt        DateTime?
   streakDays        Int      @default(0)
 
-  savedArticles     SavedArticle[]
-  hepPrograms       HepProgram[]
-  readArticles      ReadArticle[]
+  // Nexus (networking) profile fields — blank for accounts that haven't set them up.
+  headline          String?
+  bio               String?
+
+  savedArticles       SavedArticle[]
+  hepPrograms         HepProgram[]
+  readArticles        ReadArticle[]
+
+  connectionsSent     Connection[]       @relation("ConnectionRequester")
+  connectionsReceived Connection[]       @relation("ConnectionRecipient")
+  nexusPosts          NexusPost[]
+  nexusPostLikes      NexusPostLike[]
+  nexusPostComments   NexusPostComment[]
+  messagesSent        NexusMessage[]     @relation("MessageSender")
+  messagesReceived    NexusMessage[]     @relation("MessageRecipient")
+}
+
+// A connection request between two users, PT-network-style — "pending" until the
+// recipient accepts or declines. Messaging is gated on status == "accepted" (see
+// app/actions/nexus.ts).
+model Connection {
+  id          String    @id @default(cuid())
+  requesterId String
+  requester   User      @relation("ConnectionRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  recipientId String
+  recipient   User      @relation("ConnectionRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  status      String    @default("pending") // pending | accepted | declined
+  createdAt   DateTime  @default(now())
+  respondedAt DateTime?
+
+  @@unique([requesterId, recipientId])
+}
+
+// A Nexus feed post. Seeded rows carry sourceUrl/sourceLabel pointing at the real
+// external piece they summarize (a real clinician's real published post) — never a
+// fabricated quote, same integrity standard as the rest of the app's content. User-authored
+// posts leave both null.
+model NexusPost {
+  id          String   @id @default(cuid())
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body        String
+  sourceUrl   String?
+  sourceLabel String?
+  createdAt   DateTime @default(now())
+
+  likes    NexusPostLike[]
+  comments NexusPostComment[]
+}
+
+model NexusPostLike {
+  id        String    @id @default(cuid())
+  postId    String
+  post      NexusPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+
+  @@unique([postId, userId])
+}
+
+model NexusPostComment {
+  id        String    @id @default(cuid())
+  postId    String
+  post      NexusPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime  @default(now())
+}
+
+// A direct message between two connected users. senderId/recipientId, not a thread id —
+// a "conversation" is just every row where the two ids match either side (see
+// lib/nexus.ts).
+model NexusMessage {
+  id          String    @id @default(cuid())
+  senderId    String
+  sender      User      @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipientId String
+  recipient   User      @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  body        String
+  createdAt   DateTime  @default(now())
+  readAt      DateTime?
 }
 
 model SavedArticle {

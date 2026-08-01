@@ -9,9 +9,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
 
-  const [aptaArticles, savedCount] = await Promise.all([
+  const [aptaArticles, savedCount, nexusRequestCount] = await Promise.all([
     getAptaNewsArticles(),
     prisma.savedArticle.count({ where: { userId: user.id } }),
+    prisma.connection.count({ where: { recipientId: user.id, status: "pending" } }),
   ]);
 
   const hasLicense = !!user.licenseNumber;
@@ -24,6 +25,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       hasLicense={hasLicense}
       isPro={user.isPro}
       aptaCount={aptaArticles.length}
+      nexusRequestCount={nexusRequestCount}
       savedCount={savedCount}
     >
       {children}

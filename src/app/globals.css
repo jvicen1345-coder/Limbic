@@ -424,6 +424,27 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
   white-space: nowrap;
 }
 
+/* — Nexus — */
+.avatar {
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  border-radius: 999px; background: var(--color-accent-100); color: var(--color-accent-700);
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  overflow: hidden;
+}
+.nexus-tabs {
+  display: flex; gap: 4px; border-bottom: 1px solid var(--color-divider);
+  margin-bottom: 18px; overflow-x: auto;
+}
+.nexus-tab {
+  padding: 10px 14px; font: 600 13.5px var(--font-body); white-space: nowrap;
+  color: var(--color-neutral-700); text-decoration: none; border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.nexus-tab.active { color: var(--color-accent-700); border-bottom-color: var(--color-accent); }
+.message-bubble { max-width: 78%; padding: 8px 13px; border-radius: 16px; font-size: 13.5px; line-height: 1.4; }
+.message-bubble-mine { background: var(--color-accent); color: var(--color-bg); align-self: flex-end; border-bottom-right-radius: 4px; }
+.message-bubble-theirs { background: var(--color-surface); align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: var(--shadow-sm); }
+
 /* Never show an unpaired trailing card in the 2-column desktop grid. */
 @media (min-width: 800px) {
   .cards-grid > *:last-child:nth-child(odd) { display: none; }
