@@ -21,6 +21,9 @@ import {
   FilmIcon,
   UsersIcon,
   GridIcon,
+  ListIcon,
+  UserPlusIcon,
+  MessageCircleIcon,
 } from "@/components/icons";
 
 function sidebarNavStyle(active: boolean): React.CSSProperties {
@@ -60,17 +63,21 @@ function NavLink({
   icon,
   label,
   badge,
+  exact = true,
   onNavigate,
 }: {
   href: string;
   icon: React.ReactNode;
   label: string;
   badge?: number;
+  /** False for sub-links whose section also covers nested/dynamic routes (e.g. a message
+   *  thread at /nexus/messages/[userId] should still highlight "Messages"). */
+  exact?: boolean;
   /** Called after the link is clicked — used to close the mobile drawer on navigation. */
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
-  const active = pathname === href;
+  const active = exact ? pathname === href : pathname.startsWith(href);
   return (
     <Link href={href} style={sidebarNavStyle(active)} onClick={onNavigate}>
       {icon}
@@ -116,7 +123,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/profile" icon={<ProfileIcon />} label="Profile" onNavigate={onNavigate} />
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Health & Wellness" onNavigate={onNavigate} />
-      <NavLink href="/nexus" icon={<UsersIcon />} label="Nexus" badge={nexusRequestCount} onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
       <NavLink href="/wordle" icon={<GridIcon />} label="Daily Term" onNavigate={onNavigate} />
       <Link
@@ -132,6 +138,24 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
           </span>
         )}
       </Link>
+
+      <div className="nav-section-label">Nexus</div>
+      <NavLink href="/nexus" icon={<UsersIcon />} label="Feed" onNavigate={onNavigate} />
+      <NavLink href="/nexus/directory" icon={<ListIcon />} label="Directory" onNavigate={onNavigate} />
+      <NavLink
+        href="/nexus/connections"
+        icon={<UserPlusIcon />}
+        label="Connections"
+        badge={nexusRequestCount}
+        onNavigate={onNavigate}
+      />
+      <NavLink
+        href="/nexus/messages"
+        icon={<MessageCircleIcon />}
+        label="Messages"
+        exact={false}
+        onNavigate={onNavigate}
+      />
 
       <div className="nav-section-label">Saved</div>
       <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" onNavigate={onNavigate} />
