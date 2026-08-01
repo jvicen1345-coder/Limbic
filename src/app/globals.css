@@ -252,11 +252,45 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
   z-index: 20;
 }
 
+/* The bottom nav only fits Home/Search/Profile — everything else (Saved, APTA News,
+   Under Review, HEP, sign out) lives in this slide-out drawer, opened from the mobile
+   top bar's menu button. Only ever mounted while open, so no display:none default needed. */
+.app-mobile-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, #14213d 45%, transparent);
+  z-index: 30;
+}
+.app-mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  max-width: 84vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 16px;
+  background: var(--color-bg);
+  box-shadow: var(--shadow-lg);
+  z-index: 31;
+  overflow-y: auto;
+}
+
 @media (max-width: 799px) {
   .app-sidebar { display: none; }
   .app-mobile-topbar { display: flex; }
   .app-bottomnav { display: flex; }
   .app-main { padding-bottom: 76px; }
+}
+
+/* The drawer is a mobile-only affordance — its trigger button lives in
+   .app-mobile-topbar, which is itself hidden above the breakpoint, but this guards
+   against it staying mounted through a resize (e.g. rotating a tablet) while open. */
+@media (min-width: 800px) {
+  .app-mobile-drawer, .app-mobile-drawer-backdrop { display: none; }
 }
 
 /* — screen padding shells — */
