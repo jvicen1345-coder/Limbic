@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { signInAction, signInGeneralAction, signInGuestAction } from "@/app/actions/auth";
 
 const TABS = [
@@ -8,8 +8,43 @@ const TABS = [
   { id: "general" as const, label: "General" },
 ];
 
+/** localStorage keys for remembering what a returning visitor last typed, so they don't
+ *  have to retype it. Device-local convenience only — not part of the auth flow itself. */
+const STORAGE_KEYS = {
+  licenseNumber: "limbic:signIn:licenseNumber",
+  licenseState: "limbic:signIn:licenseState",
+  generalEmail: "limbic:signIn:generalEmail",
+};
+
 export function SignInForm({ states }: { states: string[] }) {
   const [mode, setMode] = useState<"pt" | "general">("pt");
+  const numberRef = useRef<HTMLInputElement>(null);
+  const stateRef = useRef<HTMLSelectElement>(null);
+  const generalEmailRef = useRef<HTMLInputElement>(null);
+
+  // Fills in whatever this tab's inputs are mounted (imperatively, via ref — not React
+  // state, so there's no server/client markup to reconcile and nothing to hydrate around).
+  // Re-runs on every tab switch so each tab's own remembered value is restored.
+  useEffect(() => {
+    if (mode === "pt") {
+      const savedNumber = localStorage.getItem(STORAGE_KEYS.licenseNumber);
+      if (savedNumber && numberRef.current) numberRef.current.value = savedNumber;
+      const savedState = localStorage.getItem(STORAGE_KEYS.licenseState);
+      if (savedState && stateRef.current) stateRef.current.value = savedState;
+    } else {
+      const savedEmail = localStorage.getItem(STORAGE_KEYS.generalEmail);
+      if (savedEmail && generalEmailRef.current) generalEmailRef.current.value = savedEmail;
+    }
+  }, [mode]);
+
+  const rememberPtFields = () => {
+    if (numberRef.current?.value) localStorage.setItem(STORAGE_KEYS.licenseNumber, numberRef.current.value);
+    if (stateRef.current?.value) localStorage.setItem(STORAGE_KEYS.licenseState, stateRef.current.value);
+  };
+
+  const rememberGeneralEmail = () => {
+    if (generalEmailRef.current?.value) localStorage.setItem(STORAGE_KEYS.generalEmail, generalEmailRef.current.value);
+  };
 
   return (
     <div
@@ -60,18 +95,36 @@ export function SignInForm({ states }: { states: string[] }) {
       </div>
 
       {mode === "pt" ? (
-        <form action={signInAction} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <form
+          action={signInAction}
+          onSubmit={rememberPtFields}
+          style={{ display: "flex", flexDirection: "column", gap: 16 }}
+        >
           <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
             Sign in with your license to track renewals and CE requirements alongside your feed.
           </p>
 
           <div className="field">
             <label htmlFor="li-number">License number</label>
-            <input className="input" id="li-number" name="number" placeholder="PT-48213" />
+            <input
+              ref={numberRef}
+              className="input"
+              id="li-number"
+              name="number"
+              placeholder="PT-48213"
+              autoComplete="username"
+            />
           </div>
           <div className="field">
             <label htmlFor="li-state">Issuing state</label>
-            <select className="input" id="li-state" name="state" defaultValue="California">
+            <select
+              ref={stateRef}
+              className="input"
+              id="li-state"
+              name="state"
+              defaultValue="California"
+              autoComplete="address-level1"
+            >
               {states.map((s) => (
                 <option key={s} value={s}>
                   {s}
@@ -81,7 +134,14 @@ export function SignInForm({ states }: { states: string[] }) {
           </div>
           <div className="field">
             <label htmlFor="li-email">Email</label>
-            <input className="input" id="li-email" name="email" type="email" placeholder="you@clinic.com" />
+            <input
+              className="input"
+              id="li-email"
+              name="email"
+              type="email"
+              placeholder="you@clinic.com"
+              autoComplete="email"
+            />
           </div>
 
           <button type="submit" className="btn btn-primary btn-block">
@@ -92,7 +152,11 @@ export function SignInForm({ states }: { states: string[] }) {
           </p>
         </form>
       ) : (
-        <form action={signInGeneralAction} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <form
+          action={signInGeneralAction}
+          onSubmit={rememberGeneralEmail}
+          style={{ display: "flex", flexDirection: "column", gap: 16 }}
+        >
           <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
             Not a licensed PT? Sign in with just your email to read, search, and save articles and
             personalize your profile.
@@ -100,7 +164,16 @@ export function SignInForm({ states }: { states: string[] }) {
 
           <div className="field">
             <label htmlFor="general-email">Email</label>
-            <input className="input" id="general-email" name="generalEmail" type="email" placeholder="you@example.com" required />
+            <input
+              ref={generalEmailRef}
+              className="input"
+              id="general-email"
+              name="generalEmail"
+              type="email"
+              placeholder="you@example.com"
+              autoComplete="email"
+              required
+            />
           </div>
 
           <button type="submit" className="btn btn-primary btn-block">
