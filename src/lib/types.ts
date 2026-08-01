@@ -40,6 +40,10 @@ export interface WellnessArticle {
   title: string;
   summary: string;
   tags: string[];
+  /** Authored body paragraphs — only seed wellness articles have these, same pattern as
+   *  Article.body (see lib/articles-static.ts). Live-sourced wellness articles rely on
+   *  sourceUrl instead, since they link out to a real story. */
+  body?: string[];
 }
 
 export interface WellnessVideo {

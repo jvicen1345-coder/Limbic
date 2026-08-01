@@ -99,3 +99,9 @@ export async function getWellnessArticles(): Promise<WellnessArticle[]> {
   if (live.length >= 2) return live;
   return SEED_WELLNESS_ARTICLES;
 }
+
+/** Only seed wellness articles (id "w1".."w4") ever link to /wellness/[id] — live-sourced
+ *  ones always carry a sourceUrl and link straight out to the real story instead. */
+export async function getWellnessArticleById(id: string): Promise<WellnessArticle | null> {
+  return SEED_WELLNESS_ARTICLES.find((w) => w.id === id) ?? null;
+}

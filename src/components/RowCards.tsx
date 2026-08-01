@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { SaveButton } from "@/components/SaveButton";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { WellnessArticle } from "@/lib/types";
@@ -93,12 +94,17 @@ export function ReviewCard({ article }: { article: DecoratedArticle }) {
 }
 
 export function WellnessListItem({ w }: { w: WellnessArticle }) {
+  // Live-sourced wellness articles always carry a sourceUrl and link straight out to the
+  // real story; seed/fallback ones have no external story to link to, so they open our
+  // own detail page (with authored body text) instead — every article gets a working link.
   const titleNode = w.sourceUrl ? (
     <a href={w.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>
       {w.title}
     </a>
   ) : (
-    w.title
+    <Link href={`/wellness/${w.id}`} style={{ color: "inherit" }}>
+      {w.title}
+    </Link>
   );
   return (
     <div style={{ padding: "14px 0", borderBottom: "1px solid var(--color-neutral-200)" }}>
