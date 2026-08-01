@@ -20,6 +20,7 @@ import {
   CrownIcon,
   FilmIcon,
   UsersIcon,
+  GridIcon,
 } from "@/components/icons";
 
 function sidebarNavStyle(active: boolean): React.CSSProperties {
@@ -117,6 +118,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Health & Wellness" onNavigate={onNavigate} />
       <NavLink href="/nexus" icon={<UsersIcon />} label="Nexus" badge={nexusRequestCount} onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
+      <NavLink href="/wordle" icon={<GridIcon />} label="Daily Term" onNavigate={onNavigate} />
       <Link
         href="/pro"
         onClick={onNavigate}

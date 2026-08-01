@@ -311,6 +311,17 @@ export function CheckIcon(props: IconProps) {
   );
 }
 
+export function GridIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="3" y="3" width="6" height="6" rx="1" />
+      <rect x="15" y="3" width="6" height="6" rx="1" />
+      <rect x="3" y="15" width="6" height="6" rx="1" />
+      <rect x="15" y="15" width="6" height="6" rx="1" />
+    </Svg>
+  );
+}
+
 export function TrashIcon(props: IconProps) {
   return (
     <Svg {...props}>

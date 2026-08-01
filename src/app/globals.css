@@ -445,6 +445,36 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
 .message-bubble-mine { background: var(--color-accent); color: var(--color-bg); align-self: flex-end; border-bottom-right-radius: 4px; }
 .message-bubble-theirs { background: var(--color-surface); align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: var(--shadow-sm); }
 
+/* — Daily Term (Wordle-style game) — */
+.wordle-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+.wordle-row { display: flex; gap: 6px; justify-content: center; }
+.wordle-tile {
+  width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-heading); font-size: 22px; text-transform: uppercase;
+  border-radius: var(--radius-sm); border: 2px solid var(--color-divider);
+  background: var(--color-surface); color: var(--color-text);
+}
+.wordle-tile-filled { border-color: var(--color-neutral-500); }
+.wordle-tile-correct { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+.wordle-tile-present { background: var(--color-accent-2); border-color: var(--color-accent-2); color: #fff; }
+.wordle-tile-absent { background: var(--color-neutral-400); border-color: var(--color-neutral-400); color: #fff; }
+@media (max-width: 420px) {
+  .wordle-tile { width: 44px; height: 44px; font-size: 19px; }
+}
+
+.wordle-keyboard { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.wordle-keyboard-row { display: flex; gap: 6px; justify-content: center; }
+.wordle-key {
+  min-width: 32px; height: 46px; padding: 0 8px; display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: var(--radius-sm); background: var(--color-neutral-200); color: var(--color-text);
+  font: 600 13px var(--font-body); cursor: pointer; flex: 1; max-width: 40px;
+}
+.wordle-key:disabled { cursor: not-allowed; }
+.wordle-key-wide { max-width: 60px; font-size: 11px; flex: 1.5; }
+.wordle-key-correct { background: var(--color-accent); color: #fff; }
+.wordle-key-present { background: var(--color-accent-2); color: #fff; }
+.wordle-key-absent { background: var(--color-neutral-500); color: #fff; }
+
 /* Never show an unpaired trailing card in the 2-column desktop grid. */
 @media (min-width: 800px) {
   .cards-grid > *:last-child:nth-child(odd) { display: none; }
