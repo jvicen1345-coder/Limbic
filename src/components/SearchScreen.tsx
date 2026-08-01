@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Chip } from "@/components/Chip";
 import { ArticleCard } from "@/components/ArticleCard";
 import { Pagination } from "@/components/Pagination";
-import { aiPubmedSearchAction, type AiSearchResult } from "@/app/actions/ai-search";
+import { aiPubmedSearchAction, searchGuidelinesAction, type AiSearchResult } from "@/app/actions/ai-search";
 import { paginate } from "@/lib/pagination";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { ArticleType, Specialty } from "@/lib/types";
@@ -77,7 +77,89 @@ function AiPubmedSearch({ onResult }: { onResult: (result: AiSearchResult | null
   );
 }
 
+function GuidelinesSearch() {
+  const [topic, setTopic] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [result, setResult] = useState<AiSearchResult | null>(null);
+
+  async function run() {
+    const trimmed = topic.trim();
+    if (!trimmed || loading) return;
+    setLoading(true);
+    setError(false);
+    try {
+      setResult(await searchGuidelinesAction(trimmed));
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div>
+      <div className="card elev-sm" style={{ marginBottom: 18 }}>
+        <div className="card-kicker">Clinical practice guidelines</div>
+        <p className="card-body" style={{ marginTop: 2 }}>
+          Pulled live from PubMed&rsquo;s own Guideline / Practice Guideline publication-type
+          filter — real CPGs for whatever you search, not a keyword guess.
+        </p>
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+          <input
+            className="input"
+            placeholder="e.g. low back pain, ACL rehabilitation, vestibular rehab"
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") run();
+            }}
+          />
+          <button type="button" className="btn btn-primary" disabled={loading || !topic.trim()} onClick={run}>
+            {loading ? "Searching…" : "Search"}
+          </button>
+        </div>
+        {error && (
+          <p style={{ fontSize: 12, color: "var(--color-neutral-700)", marginTop: 8 }}>
+            Couldn&rsquo;t reach PubMed just now — try again in a moment.
+          </p>
+        )}
+      </div>
+
+      {result && (
+        <>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+            <div style={{ fontSize: 13, color: "var(--color-neutral-700)" }}>
+              PubMed query: <span style={{ fontFamily: "ui-monospace, monospace", fontSize: 12 }}>{result.query}</span>
+            </div>
+            <button type="button" className="btn btn-ghost" onClick={() => setResult(null)}>
+              Clear
+            </button>
+          </div>
+          {result.articles.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {result.articles.map((a) => (
+                <ArticleCard key={a.id} article={a} />
+              ))}
+            </div>
+          ) : (
+            <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
+              No practice guidelines on PubMed for that topic — try a broader term.
+            </p>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+const SEARCH_MODES: { id: "browse" | "guidelines"; label: string }[] = [
+  { id: "browse", label: "Browse" },
+  { id: "guidelines", label: "Practice Guidelines" },
+];
+
 export function SearchScreen({ articles }: { articles: DecoratedArticle[] }) {
+  const [mode, setMode] = useState<"browse" | "guidelines">("browse");
   const [query, setQuery] = useState("");
   const [type, setType] = useState<ArticleType | "all">("all");
   const [specialty, setSpecialty] = useState<Specialty | "all">("all");
@@ -105,92 +187,110 @@ export function SearchScreen({ articles }: { articles: DecoratedArticle[] }) {
 
   return (
     <div className="screen-pad">
-      <h1 style={{ fontSize: 24, margin: "0 0 16px" }}>Search</h1>
+      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Search</h1>
+      <div className="sub-tabs">
+        {SEARCH_MODES.map((m) => (
+          <button
+            key={m.id}
+            type="button"
+            className={mode === m.id ? "sub-tab active" : "sub-tab"}
+            onClick={() => setMode(m.id)}
+          >
+            {m.label}
+          </button>
+        ))}
+      </div>
 
-      <AiPubmedSearch onResult={setAiResult} />
-
-      {aiResult ? (
-        <>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-            <div style={{ fontSize: 13, color: "var(--color-neutral-700)" }}>
-              PubMed query: <span style={{ fontFamily: "ui-monospace, monospace", fontSize: 12 }}>{aiResult.query}</span>
-            </div>
-            <button type="button" className="btn btn-ghost" onClick={() => setAiResult(null)}>
-              Back to browse
-            </button>
-          </div>
-          {aiResult.articles.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {aiResult.articles.map((a) => (
-                <ArticleCard key={a.id} article={a} />
-              ))}
-            </div>
-          ) : (
-            <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
-              No PubMed results for that description — try rephrasing it.
-            </p>
-          )}
-        </>
+      {mode === "guidelines" ? (
+        <GuidelinesSearch />
       ) : (
         <>
-          <div className="field" style={{ marginBottom: 16 }}>
-            <input
-              className="input"
-              placeholder="Search articles, topics, sources…"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setPage(1);
-              }}
-            />
-          </div>
+          <AiPubmedSearch onResult={setAiResult} />
 
-          <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 8 }}>
-            Type
-          </div>
-          <div className="filter-row" style={{ marginBottom: 14 }}>
-            {TYPE_TABS.map((t) => (
-              <Chip
-                key={t.id}
-                active={type === t.id}
-                onClick={() => {
-                  setType(t.id);
-                  setPage(1);
-                }}
-              >
-                {t.label}
-              </Chip>
-            ))}
-          </div>
+          {aiResult ? (
+            <>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                <div style={{ fontSize: 13, color: "var(--color-neutral-700)" }}>
+                  PubMed query: <span style={{ fontFamily: "ui-monospace, monospace", fontSize: 12 }}>{aiResult.query}</span>
+                </div>
+                <button type="button" className="btn btn-ghost" onClick={() => setAiResult(null)}>
+                  Back to browse
+                </button>
+              </div>
+              {aiResult.articles.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {aiResult.articles.map((a) => (
+                    <ArticleCard key={a.id} article={a} />
+                  ))}
+                </div>
+              ) : (
+                <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
+                  No PubMed results for that description — try rephrasing it.
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="field" style={{ marginBottom: 16 }}>
+                <input
+                  className="input"
+                  placeholder="Search articles, topics, sources…"
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setPage(1);
+                  }}
+                />
+              </div>
 
-          <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 8 }}>
-            Specialty
-          </div>
-          <div className="filter-row" style={{ marginBottom: 18 }}>
-            {SPECIALTY_TABS.map((t) => (
-              <Chip
-                key={t.id}
-                active={specialty === t.id}
-                onClick={() => {
-                  setSpecialty(t.id);
-                  setPage(1);
-                }}
-              >
-                {t.label}
-              </Chip>
-            ))}
-          </div>
+              <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 8 }}>
+                Type
+              </div>
+              <div className="filter-row" style={{ marginBottom: 14 }}>
+                {TYPE_TABS.map((t) => (
+                  <Chip
+                    key={t.id}
+                    active={type === t.id}
+                    onClick={() => {
+                      setType(t.id);
+                      setPage(1);
+                    }}
+                  >
+                    {t.label}
+                  </Chip>
+                ))}
+              </div>
 
-          <div style={{ fontSize: 13, color: "var(--color-neutral-700)", marginBottom: 10 }}>
-            {results.length} {results.length === 1 ? "result" : "results"}
-          </div>
+              <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 8 }}>
+                Specialty
+              </div>
+              <div className="filter-row" style={{ marginBottom: 18 }}>
+                {SPECIALTY_TABS.map((t) => (
+                  <Chip
+                    key={t.id}
+                    active={specialty === t.id}
+                    onClick={() => {
+                      setSpecialty(t.id);
+                      setPage(1);
+                    }}
+                  >
+                    {t.label}
+                  </Chip>
+                ))}
+              </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {pageItems.map((a) => (
-              <ArticleCard key={a.id} article={a} />
-            ))}
-          </div>
-          <Pagination page={clampedPage} totalPages={totalPages} onPageChange={setPage} />
+              <div style={{ fontSize: 13, color: "var(--color-neutral-700)", marginBottom: 10 }}>
+                {results.length} {results.length === 1 ? "result" : "results"}
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {pageItems.map((a) => (
+                  <ArticleCard key={a.id} article={a} />
+                ))}
+              </div>
+              <Pagination page={clampedPage} totalPages={totalPages} onPageChange={setPage} />
+            </>
+          )}
         </>
       )}
     </div>

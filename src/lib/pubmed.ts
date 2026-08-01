@@ -159,6 +159,30 @@ export async function fetchPubmedResearch(limit = 12): Promise<Article[]> {
   return searchPubmed(DEFAULT_QUERY, limit);
 }
 
+/**
+ * Clinical practice guidelines for whatever topic the reader types, pulled live from
+ * PubMed's own "Guideline"/"Practice Guideline" publication-type filter — the same
+ * mechanism medical librarians use to isolate CPGs from PubMed's general literature, not
+ * a keyword guess. Since PubMed's own metadata already confirms the publication type,
+ * the results are re-tagged as "guideline" here rather than trusting buildArticlesFromIds'
+ * keyword classifier (which stays as-is for the general Research feed).
+ */
+export function buildCpgQuery(topic: string): string {
+  return `(${topic.trim()}) AND (Guideline[Publication Type] OR "Practice Guideline"[Publication Type])`;
+}
+
+export async function searchClinicalPracticeGuidelines(topic: string, limit = 12): Promise<Article[]> {
+  const trimmed = topic.trim();
+  if (!trimmed) return [];
+
+  const articles = await searchPubmed(buildCpgQuery(trimmed), limit);
+  return articles.map((a) => ({
+    ...a,
+    type: "guideline",
+    tags: Array.from(new Set([TYPE_META.guideline.label, ...a.tags.filter((t) => t !== TYPE_META.research.label)])),
+  }));
+}
+
 /** Looks up a single PMID directly — used by getArticleById so an article surfaced by
  *  any search (the default research feed, or a one-off AI-generated query that isn't
  *  otherwise cached anywhere) can always be opened, not just ones that happen to still
