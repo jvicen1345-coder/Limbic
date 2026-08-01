@@ -171,6 +171,7 @@ const SUPPRESSED_KEYWORDS = new Set([
   "orthopedic",
   "orthopaedic",
   "guideline",
+  "equipment",
 ]);
 
 /** Returns the display label for a matched keyword, or null if it should be dropped —
@@ -215,6 +216,18 @@ export function classify(
     .map(keywordLabel)
     .filter((k): k is string => k !== null);
   return { type, specialty: bestSpecialty, matchedKeywords, typeConfident: bestTypeHits > 0 };
+}
+
+/** Every keyword-derived topic label classify() can ever produce, normalized the same way
+ *  and deduplicated — independent of which articles happen to be loaded right now. Used to
+ *  populate Profile's "Add more" topic list so it doesn't shrink or grow as live sources
+ *  refresh (classify() only keeps the first-matched keyword per article, so plenty of these
+ *  never win that slot for any currently-loaded article, and would otherwise never appear
+ *  as a followable topic at all). */
+export function allKnownKeywordTopics(): string[] {
+  const allKeywords = [...Object.values(SPECIALTY_KEYWORDS).flat(), ...Object.values(TYPE_KEYWORDS).flat()];
+  const labels = allKeywords.map(keywordLabel).filter((k): k is string => k !== null);
+  return Array.from(new Set(labels)).sort();
 }
 
 const CATEGORY_QUERIES: { type: ArticleType; query: string }[] = [

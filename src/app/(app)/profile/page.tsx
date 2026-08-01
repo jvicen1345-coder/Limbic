@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/session";
-import { getArticles } from "@/lib/articles";
 import { buildLicenseView } from "@/lib/license";
 import { SPECIALTIES, TYPES } from "@/lib/meta";
+import { allKnownKeywordTopics } from "@/lib/news-live";
 import type { CeCategory } from "@/lib/types";
 import { ProfileForm } from "@/components/ProfileForm";
 import { TopicChip } from "@/components/TopicChip";
@@ -9,16 +9,15 @@ import { TopicBrowser } from "@/components/TopicBrowser";
 import { goAddLicenseAction } from "@/app/actions/profile";
 
 // The canonical specialty/type labels, always shown first — clean and stable, unlike the
-// long tail of live-scraped keyword tags below, which varies with whatever's in the feed.
+// long tail of keyword topics below, which come from a fixed vocabulary rather than
+// whatever's currently loaded (see allKnownKeywordTopics).
 const SUGGESTED_TOPICS = [...SPECIALTIES.map((s) => s.label), ...TYPES.map((t) => t.label)];
+const BROWSABLE_TOPICS = allKnownKeywordTopics().filter((t) => !SUGGESTED_TOPICS.includes(t));
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const articles = await getArticles();
-  const allTopics = Array.from(new Set(articles.flatMap((a) => a.tags))).sort();
-  const browsableTopics = allTopics.filter((t) => !SUGGESTED_TOPICS.includes(t));
   const followedTopics = user.followedTopics as unknown as string[];
 
   const license = user.licenseNumber
@@ -75,7 +74,7 @@ export default async function ProfilePage() {
         >
           Add more
         </div>
-        <TopicBrowser topics={browsableTopics} followedTopics={followedTopics} />
+        <TopicBrowser topics={BROWSABLE_TOPICS} followedTopics={followedTopics} />
       </div>
 
       <div className="card elev-sm">
