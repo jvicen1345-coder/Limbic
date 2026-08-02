@@ -9,12 +9,17 @@ import { SubTabs } from "@/components/SubTabs";
  * that audience actually needs — Student PRO for coursework/boards prep, LimbicPro for
  * practicing clinicians. Nothing here is built yet — this is the plan, not a live
  * comparison of two purchasable products. Today's checkout flow further down is still
- * the single LimbicPro $9/month demo toggle; Student PRO isn't a purchasable tier yet.
+ * the single LimbicPro $25/month demo toggle; Student PRO isn't a purchasable tier yet.
  */
 const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
   {
+    feature: "Limbic Boards",
+    student: "Daily pre-boards sharpening, case-based practice.",
+    pro: "Not included — Boards is a student-only product.",
+  },
+  {
     feature: "Limbic Agent",
-    student: "Study and exam support, case-based learning.",
+    student: "Not included — Agent is a PRO-only product.",
     pro: "Clinical decision support for real patients.",
   },
   {
@@ -42,6 +47,19 @@ const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
     student: "Can follow and learn from clinicians.",
     pro: "Full peer-to-peer clinical networking.",
   },
+];
+
+/** The planned tier ladder — order reflects a clinician's career stage (free -> student
+ *  -> boards prep -> new grad -> full LimbicPro -> clinic/team), not sorted by price.
+ *  Only LimbicPro is actually purchasable today (see the checkout card below); everything
+ *  else here is priced but not yet built or billable. */
+const PRICING_TIERS: { name: string; price: string; who: string }[] = [
+  { name: "Free", price: "$0", who: "General public" },
+  { name: "Student PRO", price: "$5/mo", who: "PT students" },
+  { name: "Student PRO+ Boards", price: "$15/mo", who: "PT students serious about boards" },
+  { name: "New Grad PRO", price: "$12/mo", who: "First year post-graduation" },
+  { name: "LimbicPro", price: "$25/mo", who: "Practicing PTs" },
+  { name: "Clinic PRO", price: "$100/mo", who: "Up to 6 clinicians · $15/seat above that" },
 ];
 
 export default async function ProOverviewPage() {
@@ -74,6 +92,36 @@ export default async function ProOverviewPage() {
             Built around practice and efficiency.
           </p>
         </div>
+      </div>
+
+      <div className="card elev-sm" style={{ marginBottom: 12 }}>
+        <div className="card-kicker" style={{ marginBottom: 8 }}>
+          Planned tiers
+        </div>
+        <div style={{ display: "flex", gap: 10, overflowX: "auto" }}>
+          {PRICING_TIERS.map((tier) => (
+            <div
+              key={tier.name}
+              style={{
+                flexShrink: 0,
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                padding: "8px 14px",
+                borderRadius: "var(--radius-lg)",
+                background: tier.name === "LimbicPro" ? "var(--color-accent-100)" : "var(--color-neutral-100)",
+                color: tier.name === "LimbicPro" ? "var(--color-accent-800)" : "var(--color-neutral-800)",
+              }}
+            >
+              <span style={{ fontSize: 12 }}>{tier.name}</span>
+              <span style={{ fontFamily: "var(--font-heading)", fontSize: 15 }}>{tier.price}</span>
+              <span style={{ fontSize: 11, opacity: 0.85, maxWidth: 150 }}>{tier.who}</span>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: "10px 0 0" }}>
+          Only LimbicPro is available to purchase today (demo) — the rest are priced but not yet built.
+        </p>
       </div>
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
@@ -135,7 +183,7 @@ export default async function ProOverviewPage() {
           </>
         ) : (
           <>
-            <div className="card-kicker">$9/month</div>
+            <div className="card-kicker">$25/month</div>
             <p className="card-body" style={{ marginTop: 6 }}>
               Demo only — this doesn&rsquo;t charge a real card.
             </p>

@@ -36,7 +36,7 @@ export default async function ProMembershipPage() {
           </>
         ) : (
           <>
-            <div className="card-kicker">$9/month</div>
+            <div className="card-kicker">$25/month</div>
             <p className="card-body" style={{ marginTop: 6 }}>
               Demo only — this doesn&rsquo;t charge a real card. It flips your account to Pro
               instantly; real billing plugs in here once these features ship.
