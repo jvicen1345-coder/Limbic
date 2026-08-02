@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { STATES } from "@/lib/meta";
-import { LogoIcon } from "@/components/icons";
 import { SignInForm } from "@/components/SignInForm";
 
 export default async function SignInPage() {
@@ -22,10 +21,8 @@ export default async function SignInPage() {
         boxSizing: "border-box",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <LogoIcon size={24} />
-        <span style={{ fontFamily: "var(--font-heading)", fontSize: 21 }}>Limbic</span>
-      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size brand lockup, not a responsive content image */}
+      <img src="/logo-lockup.svg" alt="Limbic — Curated Research" width={260} height={70} />
       <p
         style={{
           fontSize: 13,

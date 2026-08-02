@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 interface IconProps {
   size?: number;
   className?: string;
@@ -23,11 +25,53 @@ function Svg({ size = 18, className, style, children }: IconProps & { children: 
   );
 }
 
-export function LogoIcon(props: IconProps) {
+/** The compact icon mark from the Limbic logo — a gradient node network standing in for
+ *  the limbic system's neural connections. Cropped tight to the icon's own bounds (see
+ *  public/logo-lockup.svg for the full lockup with wordmark + tagline, used where there's
+ *  room to show it in full). Fixed brand colors, not currentColor — unlike the rest of
+ *  this file's outline icons, the logo isn't meant to be recolored. */
+export function LogoIcon({ size = 24, className, style }: IconProps) {
+  // AppShell keeps the desktop sidebar and mobile topbar/drawer all mounted at once
+  // (CSS just hides whichever doesn't apply), so a hardcoded gradient id here would
+  // collide across simultaneous LogoIcon instances — a browser resolves url(#id) to the
+  // *first* matching element, which could be the copy sitting inside a display:none
+  // ancestor, silently rendering as an unfilled (invisible) circle everywhere else.
+  const gradientId = useId();
   return (
-    <Svg {...props} style={{ color: "var(--color-accent)", ...props.style }}>
-      <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z" />
-    </Svg>
+    <svg width={size} height={size} viewBox="32 22 96 96" className={className} style={style} role="img" aria-label="Limbic">
+      <defs>
+        <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#41B3D3" />
+          <stop offset="100%" stopColor="#1A5276" />
+        </linearGradient>
+      </defs>
+      <circle cx="80" cy="70" r="48" fill={`url(#${gradientId})`} />
+      <g stroke="#FFFFFF" strokeWidth="2" opacity="0.65" strokeLinecap="round">
+        <line x1="60" y1="54" x2="80" y2="40" />
+        <line x1="80" y1="40" x2="100" y2="54" />
+        <line x1="60" y1="54" x2="54" y2="76" />
+        <line x1="60" y1="54" x2="80" y2="70" />
+        <line x1="80" y1="40" x2="80" y2="70" />
+        <line x1="100" y1="54" x2="80" y2="70" />
+        <line x1="100" y1="54" x2="106" y2="76" />
+        <line x1="54" y1="76" x2="80" y2="70" />
+        <line x1="80" y1="70" x2="106" y2="76" />
+        <line x1="54" y1="76" x2="64" y2="96" />
+        <line x1="80" y1="70" x2="64" y2="96" />
+        <line x1="80" y1="70" x2="96" y2="96" />
+        <line x1="106" y1="76" x2="96" y2="96" />
+      </g>
+      <g fill="#FFFFFF">
+        <circle cx="60" cy="54" r="4.6" opacity="0.95" />
+        <circle cx="80" cy="40" r="4.6" opacity="0.95" />
+        <circle cx="100" cy="54" r="4.6" opacity="0.95" />
+        <circle cx="54" cy="76" r="4.6" opacity="0.95" />
+        <circle cx="80" cy="70" r="7.2" />
+        <circle cx="106" cy="76" r="4.6" opacity="0.95" />
+        <circle cx="64" cy="96" r="4.6" opacity="0.95" />
+        <circle cx="96" cy="96" r="4.6" opacity="0.95" />
+      </g>
+    </svg>
   );
 }
 
