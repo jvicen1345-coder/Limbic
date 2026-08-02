@@ -4,6 +4,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { youtubeVideoId } from "@/lib/meta";
+
+const MAX_POST_IMAGES = 4;
+// Generous relative to what client-side compression actually produces (see
+// lib/media-upload.ts) — this is a backstop against a malformed/bypassed request, not the
+// normal ceiling.
+const MAX_IMAGE_DATA_URL_LENGTH = 2_000_000;
 
 export async function optInToNexusAction() {
   const user = await getCurrentUser();
@@ -97,10 +104,39 @@ export async function createNexusPostAction(formData: FormData) {
   const user = await getCurrentUser();
   if (!user || !user.nexusOptIn) return;
 
+  const type = String(formData.get("type") ?? "text");
   const body = String(formData.get("body") ?? "").trim();
-  if (!body) return;
+  const articleTitle = String(formData.get("articleTitle") ?? "").trim();
+  const videoUrl = String(formData.get("videoUrl") ?? "").trim();
 
-  await prisma.nexusPost.create({ data: { authorId: user.id, body } });
+  let imageUrls: string[] = [];
+  const rawImageUrls = formData.get("imageUrls");
+  if (typeof rawImageUrls === "string" && rawImageUrls) {
+    try {
+      const parsed = JSON.parse(rawImageUrls);
+      if (Array.isArray(parsed)) {
+        imageUrls = parsed
+          .filter((u): u is string => typeof u === "string" && u.startsWith("data:image/") && u.length <= MAX_IMAGE_DATA_URL_LENGTH)
+          .slice(0, MAX_POST_IMAGES);
+      }
+    } catch {
+      // Malformed JSON just falls back to no images rather than failing the whole post.
+    }
+  }
+
+  if (type === "photo") {
+    if (imageUrls.length === 0) return;
+    await prisma.nexusPost.create({ data: { authorId: user.id, type, body, imageUrls } });
+  } else if (type === "video") {
+    if (!youtubeVideoId(videoUrl)) return;
+    await prisma.nexusPost.create({ data: { authorId: user.id, type, body, videoUrl } });
+  } else if (type === "article") {
+    if (!articleTitle || !body) return;
+    await prisma.nexusPost.create({ data: { authorId: user.id, type, body, articleTitle, imageUrls } });
+  } else {
+    if (!body) return;
+    await prisma.nexusPost.create({ data: { authorId: user.id, type: "text", body } });
+  }
   revalidatePath("/nexus");
 }
 

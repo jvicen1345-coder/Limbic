@@ -34,7 +34,11 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
 
   const decorated: NexusPostData[] = posts.map((p) => ({
     id: p.id,
+    type: p.type,
     body: p.body,
+    articleTitle: p.articleTitle,
+    imageUrls: (p.imageUrls as string[]) ?? [],
+    videoUrl: p.videoUrl,
     sourceUrl: p.sourceUrl,
     sourceLabel: p.sourceLabel,
     createdAt: p.createdAt.toISOString(),

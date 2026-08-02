@@ -27,7 +27,11 @@ export default async function NexusFeedPage() {
 
   const decorated: NexusPostData[] = posts.map((p) => ({
     id: p.id,
+    type: p.type,
     body: p.body,
+    articleTitle: p.articleTitle,
+    imageUrls: (p.imageUrls as string[]) ?? [],
+    videoUrl: p.videoUrl,
     sourceUrl: p.sourceUrl,
     sourceLabel: p.sourceLabel,
     createdAt: p.createdAt.toISOString(),
@@ -50,7 +54,7 @@ export default async function NexusFeedPage() {
       </p>
       <SubTabs tabs={NEXUS_TABS} />
 
-      <NexusComposer />
+      <NexusComposer authorName={user.name} />
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 14 }}>
         {decorated.map((post) => (

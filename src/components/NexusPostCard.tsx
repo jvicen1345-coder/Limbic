@@ -6,6 +6,7 @@ import { toggleNexusLikeAction, addNexusCommentAction } from "@/app/actions/nexu
 import { Avatar } from "@/components/Avatar";
 import { HeartIcon, MessageCircleIcon, ExternalLinkIcon } from "@/components/icons";
 import { TimeAgo } from "@/components/TimeAgo";
+import { youtubeEmbedUrl } from "@/lib/meta";
 
 export interface NexusPostComment {
   id: string;
@@ -16,7 +17,11 @@ export interface NexusPostComment {
 
 export interface NexusPostData {
   id: string;
+  type: string;
   body: string;
+  articleTitle: string | null;
+  imageUrls: string[];
+  videoUrl: string | null;
   sourceUrl: string | null;
   sourceLabel: string | null;
   createdAt: string;
@@ -26,13 +31,20 @@ export interface NexusPostData {
   comments: NexusPostComment[];
 }
 
+const ARTICLE_PREVIEW_LENGTH = 260;
+
 export function NexusPostCard({ post, currentUserName }: { post: NexusPostData; currentUserName: string }) {
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [liked, setLiked] = useState(post.likedByMe);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState(post.comments);
   const [commentDraft, setCommentDraft] = useState("");
+  const [articleExpanded, setArticleExpanded] = useState(false);
   const [, startTransition] = useTransition();
+
+  const embedUrl = post.type === "video" ? youtubeEmbedUrl(post.videoUrl ?? "") : null;
+  const isLongArticle = post.type === "article" && post.body.length > ARTICLE_PREVIEW_LENGTH;
+  const articleBody = isLongArticle && !articleExpanded ? `${post.body.slice(0, ARTICLE_PREVIEW_LENGTH)}…` : post.body;
 
   return (
     <div className="card elev-sm">
@@ -56,9 +68,48 @@ export function NexusPostCard({ post, currentUserName }: { post: NexusPostData; 
         </div>
       </div>
 
+      {post.type === "article" && post.articleTitle && (
+        <div className="card-title" style={{ marginTop: 2, fontSize: 19 }}>
+          {post.articleTitle}
+        </div>
+      )}
+
+      {post.type === "article" && post.imageUrls[0] && (
+        // eslint-disable-next-line @next/next/no-img-element -- data-URL image, next/image can't optimize it anyway
+        <img
+          src={post.imageUrls[0]}
+          alt=""
+          style={{ width: "100%", borderRadius: "var(--radius-md)", marginTop: 8, display: "block" }}
+        />
+      )}
+
       <p className="card-body" style={{ whiteSpace: "pre-wrap" }}>
-        {post.body}
+        {articleBody}
+        {isLongArticle && (
+          <button
+            type="button"
+            onClick={() => setArticleExpanded((v) => !v)}
+            style={{ background: "none", border: "none", padding: 0, marginLeft: 4, color: "var(--color-accent-700)", cursor: "pointer", font: "inherit" }}
+          >
+            {articleExpanded ? "less" : "more"}
+          </button>
+        )}
       </p>
+
+      {post.type === "photo" && post.imageUrls.length > 0 && (
+        <div className={`nexus-image-grid nexus-image-grid--${Math.min(post.imageUrls.length, 4)}`}>
+          {post.imageUrls.slice(0, 4).map((url, i) => (
+            // eslint-disable-next-line @next/next/no-img-element -- data-URL image, next/image can't optimize it anyway
+            <img key={i} src={url} alt="" />
+          ))}
+        </div>
+      )}
+
+      {post.type === "video" && embedUrl && (
+        <div className="nexus-video-embed">
+          <iframe src={embedUrl} title={post.body || "Video"} allow="autoplay; encrypted-media; picture-in-picture" style={{ width: "100%", height: "100%", border: "none" }} />
+        </div>
+      )}
 
       {post.sourceUrl && (
         <a

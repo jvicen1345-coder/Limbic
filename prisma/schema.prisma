@@ -127,7 +127,21 @@ model NexusPost {
   id          String   @id @default(cuid())
   authorId    String
   author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  // "text" | "photo" | "video" | "article" — drives which extra fields below are used and
+  // how NexusPostCard renders the post; a plain text post ignores all of them.
+  type        String   @default("text")
   body        String
+  // Article posts only.
+  articleTitle String?
+  // JSON-encoded string[] of data-URL images — photo posts (1-4 images) and an optional
+  // single article cover image. Stored inline (not on disk/object storage) since this app
+  // has no file storage configured; images are client-side compressed before upload to
+  // keep rows reasonably sized (see lib/media-upload.ts).
+  imageUrls   Json     @default("[]")
+  // Video posts only — a YouTube URL, embedded the same way as Clips (see lib/meta.ts
+  // youtubeEmbedUrl). No raw video upload/storage, for the same reason images are data URLs
+  // instead of files: nowhere to durably store large binaries in this deployment.
+  videoUrl    String?
   sourceUrl   String?
   sourceLabel String?
   createdAt   DateTime @default(now())
