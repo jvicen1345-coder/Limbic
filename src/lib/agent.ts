@@ -108,12 +108,13 @@ export async function startAgentWeb(
   try {
     const message = await client.messages.parse({
       model: MODEL,
-      // Generous headroom: "effort: medium" can spend a meaningful chunk of the budget on
-      // internal reasoning before it ever emits the structured JSON, and a truncated
-      // response fails to parse (see the catch below) — a low limit here reads as "Limbic
-      // Agent isn't available" even though the model was actually mid-answer.
       max_tokens: 4096,
-      output_config: { effort: "medium", format: zodOutputFormat(CenterResponseSchema) },
+      // "low" matches lib/ai-pubmed-query.ts's proven-working call. Higher effort levels
+      // enable more internal reasoning before the model emits its final answer, which can
+      // interact badly with a strict structured-output (JSON schema) response — content
+      // that isn't clean JSON fails to parse (see the catch below) and surfaces as the
+      // generic "Limbic Agent isn't available" message with no other symptom.
+      output_config: { effort: "low", format: zodOutputFormat(CenterResponseSchema) },
       system: systemPrompt(licensed),
       messages: [
         {
@@ -171,7 +172,7 @@ export async function expandAgentNode(
     const message = await client.messages.parse({
       model: MODEL,
       max_tokens: 4096,
-      output_config: { effort: "medium", format: zodOutputFormat(ExpansionResponseSchema) },
+      output_config: { effort: "low", format: zodOutputFormat(ExpansionResponseSchema) },
       system: systemPrompt(licensed),
       messages: [
         {
