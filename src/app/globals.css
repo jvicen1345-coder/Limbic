@@ -4,7 +4,7 @@
    directly into :root instead of layered on top. Structure and component classes are
    otherwise unchanged, so anything styled with .card/.btn/.tag/etc. keeps its exact
    shape and behavior. This is a fixed light theme, same as the source design. */
-@import url("https://fonts.googleapis.com/css2?family=Caprasimo:wght@400&family=Figtree:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Caprasimo:wght@400&family=Figtree:wght@400;600;700;800&display=swap");
 
 :root {
   --color-bg: #ffffff;
@@ -213,10 +213,10 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
 
 .nav-section-label {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-neutral-700);
+  color: var(--color-text);
   margin: 14px 0 2px;
   padding: 0 12px;
 }
