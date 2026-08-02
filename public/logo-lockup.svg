@@ -1,5 +1,5 @@
 <!-- Limbic Logo — full lockup (icon + wordmark + tagline) -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 140" width="520" height="140" role="img" aria-label="Limbic — Curated Research">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 388 140" width="388" height="140" role="img" aria-label="Limbic — Curated Research">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#41B3D3"/>
@@ -9,7 +9,7 @@
 
   <!-- Background — matches the app's card surface color, faded so it reads as a soft
        backdrop rather than a solid card competing with the sign-in card below it. -->
-  <rect x="0" y="0" width="520" height="140" rx="18" fill="#DBE7FB" fill-opacity="0.55"/>
+  <rect x="0" y="0" width="388" height="140" rx="18" fill="#DBE7FB" fill-opacity="0.55"/>
 
   <!-- Icon -->
   <circle cx="80" cy="70" r="48" fill="url(#g)"/>

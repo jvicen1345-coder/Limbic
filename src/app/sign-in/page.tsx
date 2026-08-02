@@ -22,7 +22,7 @@ export default async function SignInPage() {
       }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size brand lockup, not a responsive content image */}
-      <img src="/logo-lockup.svg" alt="Limbic — Curated Research" width={260} height={70} />
+      <img src="/logo-lockup.svg" alt="Limbic — Curated Research" width={194} height={70} />
       <p
         style={{
           fontSize: 13,
