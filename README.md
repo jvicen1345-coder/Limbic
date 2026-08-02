@@ -73,6 +73,7 @@ deploys to work too):
 | `SESSION_SECRET` | output of `openssl rand -base64 32` |
 | `ANTHROPIC_API_KEY` | an API key from [console.anthropic.com](https://console.anthropic.com) — powers the "Ask AI to search PubMed" feature (see below); the rest of the app works without it |
 | `YOUTUBE_API_KEY` | a free API key from [console.cloud.google.com](https://console.cloud.google.com) (enable the "YouTube Data API v3" on the project) — powers live-sourced Clips; without it, Clips falls back to only the curated static set |
+| `PEXELS_API_KEY` | a free API key from [pexels.com/api](https://www.pexels.com/api/) — powers topic-matched stock-photo fallback images on Home feed cards that don't have their own real `og:image`; without it, those cards just render without an image |
 
 **5. Redeploy** (Vercel → Deployments → ⋯ → Redeploy) so the build picks up the new env
 vars. The build command (`node scripts/apply-migrations.mjs && next build`) applies the
@@ -176,11 +177,30 @@ database, not a news outlet) and CE & Events (a curated calendar, not news). See
 
 Each card shows the real image the article itself uses — its `og:image`, fetched
 server-side (`src/lib/og-image.ts`) from the article's own page, the same image the
-publisher uses for its own social-media previews. Nothing is fabricated or substituted: if
-no image can be found (or an article has no `sourceUrl` at all, true of seed/fallback
-content), the card just renders without one. This only runs for the ~6 articles shown in
-the ticker, not the whole feed, and fails silently per-article so one slow or blocked page
-doesn't take down the rest.
+publisher uses for its own social-media previews. If no image can be found (or an article
+has no `sourceUrl` at all, true of seed/fallback content), a topic-matched stock photo
+fills the gap instead — see "Topic-image fallback" below. This runs for the ~6 articles
+shown in the ticker plus the top-ranked ~16 articles on the main Home feed (see
+`FEED_IMAGE_LIMIT` in `src/app/(app)/page.tsx`), not the entire pool, and fails silently
+per-article so one slow or blocked page doesn't take down the rest.
+
+## Topic-image fallback
+
+Most seed and AOPT clinical-practice-guideline content has no `og:image` to find at all —
+seed articles have no `sourceUrl`, and a guideline PDF has no `<meta>` tags of any kind. For
+those, `src/lib/topic-image.ts` searches a real, freely-licensed stock photo via the Pexels
+API (`src/lib/pexels.ts`), matched to a specific anatomical/topical term recognized in the
+article's title (e.g. "knee", "rotator cuff") when there is one, falling back to the
+article's specialty (e.g. "Orthopedic physical therapy rehabilitation") otherwise — so every
+article that reaches this fallback still resolves to something relevant, not a generic
+placeholder. Same graceful-degradation pattern as `YOUTUBE_API_KEY`: without
+`PEXELS_API_KEY` set, those cards just render without an image.
+
+Same sandbox caveat as Clips above — `api.pexels.com` is outside this sandbox's allowlist,
+so this could only be verified by inspecting the built query strings and the graceful
+no-key/no-result fallback paths, not by confirming a real photo actually comes back. Worth
+spot-checking after deploy that a few seed/guideline cards on Home are picking up sensible,
+on-topic photos rather than silently sitting on "no image" because of a quota or key issue.
 
 ## Under Review — real retraction data
 

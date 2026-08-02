@@ -16,8 +16,12 @@ export interface Article {
   tags: string[];
   /** Authored body paragraphs — only seed articles have these (see lib/articles-static.ts). */
   body?: string[];
-  /** The real image the article itself uses (its `og:image`), fetched on-demand for a
-   *  small number of candidates (see lib/og-image.ts) — never a fabricated stand-in. */
+  /** Either the article's own `og:image` (see lib/og-image.ts attachRealImages — the
+   *  article's real preview image, fetched on-demand for a small number of candidates), or,
+   *  when that isn't available (most seed/guideline-PDF content has no og:image to find at
+   *  all), a real stock photo matched to the article's topic (see lib/topic-image.ts
+   *  attachTopicImages). Both are real photography, never an AI-generated or otherwise
+   *  fabricated stand-in — just two different sources for one field. */
   image?: string;
   /** Short "why this is flagged" note shown on the Under Review card. */
   underReview?: string;

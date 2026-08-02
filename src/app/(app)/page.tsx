@@ -5,6 +5,7 @@ import { decorateArticle, rankFeed, type DecoratedArticle } from "@/lib/feed";
 import { firstName as firstNameOf, timeOfDayGreeting, credentialFromName } from "@/lib/meta";
 import { getUsphSeries, buildStockView } from "@/lib/stock";
 import { attachRealImages } from "@/lib/og-image";
+import { attachTopicImages } from "@/lib/topic-image";
 import { buildLicenseView } from "@/lib/license";
 import { ensureNexusSeedData } from "@/lib/nexus-seed";
 import { getConnectionStates } from "@/lib/nexus";
@@ -119,10 +120,17 @@ export default async function HomePage() {
       })()
     : Promise.resolve(null);
 
-  const [newsTickerWithImages, rankedWithImages, nexusSuggestions] = await Promise.all([
+  const [newsTickerWithRealImages, rankedWithRealImages, nexusSuggestions] = await Promise.all([
     attachRealImages(newsTickerCandidates),
     attachRealImages(ranked.slice(0, FEED_IMAGE_LIMIT)),
     nexusSuggestionsPromise,
+  ]);
+  // A second pass, after (not alongside) the real-image fetch above — attachTopicImages
+  // only fills in articles that pass 1 left empty (see lib/topic-image.ts), which is most
+  // seed/guideline-PDF content, since a PDF has no og:image to find at all.
+  const [newsTickerWithImages, rankedWithImages] = await Promise.all([
+    attachTopicImages(newsTickerWithRealImages),
+    attachTopicImages(rankedWithRealImages),
   ]);
   const newsTicker = newsTickerWithImages.map((a) => decorateArticle(a, savedIds, null, readIds));
   const rankedForDisplay = [...rankedWithImages, ...ranked.slice(FEED_IMAGE_LIMIT)];
