@@ -312,18 +312,36 @@ export async function fetchLiveArticles(): Promise<Article[]> {
   return articles;
 }
 
+// Several distinct topical queries, merged and deduped, rather than one fixed search — a
+// single query's top results barely change run to run, which would defeat the Health &
+// Wellness page's per-user rotation (see lib/wellness-rotation.ts): swapping an opened
+// article for an unopened one needs an actual pool of candidates to draw from, not just
+// whatever a single search's current top 8 happen to be.
+const WELLNESS_QUERIES = [
+  "wellness fitness stretching recovery tips",
+  "sleep nutrition self-care health",
+  "mental health mindfulness stress relief",
+  "healthy aging mobility strength exercise",
+];
+
 export async function fetchLiveWellness(): Promise<WellnessArticle[]> {
-  const items = await fetchGoogleNewsRss("wellness fitness stretching recovery tips");
-  return items
-    .map((item): WellnessArticle | null => {
+  const results = await Promise.all(WELLNESS_QUERIES.map((q) => fetchGoogleNewsRss(q)));
+
+  const seen = new Set<string>();
+  const articles: WellnessArticle[] = [];
+  for (const items of results) {
+    for (const item of items) {
       const link = item.link;
       const title = (item.title || "").trim();
-      if (!link || !title) return null;
+      if (!link || !title) continue;
+      const id = stableId(link);
+      if (seen.has(id)) continue;
+      seen.add(id);
       const snippet = stripHtml(item.contentSnippet || item.content || "");
       const source = sourceName(item, title);
       const cleanTitle = title.replace(new RegExp(` - ${source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`), "").trim();
-      return {
-        id: stableId(link),
+      articles.push({
+        id,
         source,
         sourceUrl: link,
         date: toIsoDate(item),
@@ -331,8 +349,8 @@ export async function fetchLiveWellness(): Promise<WellnessArticle[]> {
         title: cleanTitle || title,
         summary: (snippet.length > 20 ? snippet : title).slice(0, 200),
         tags: [],
-      };
-    })
-    .filter((w): w is WellnessArticle => w !== null)
-    .slice(0, 8);
+      });
+    }
+  }
+  return articles.slice(0, 24);
 }

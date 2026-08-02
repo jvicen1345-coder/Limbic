@@ -70,7 +70,18 @@ model User {
   lastBoardsActivityAt DateTime?
   boardsStreakDays     Int      @default(0)
 
+  // The Health & Wellness page's current per-user rotation state (see
+  // lib/wellness-rotation.ts). wellnessArticleIds/wellnessVideoIds are JSON-encoded
+  // string[] of the ids currently displayed; wellnessOpenedIds is a JSON-encoded string[]
+  // of every id the user has ever opened, bounded/pruned to the most recent entries — the
+  // Refresh button keeps whatever's still unopened and swaps opened ones for ids outside
+  // this list, rather than reshuffling the whole page every time.
+  wellnessArticleIds Json @default("[]")
+  wellnessVideoIds   Json @default("[]")
+  wellnessOpenedIds  Json @default("[]")
+
   savedArticles       SavedArticle[]
+  savedWellness       SavedWellness[]
   hepPrograms         HepProgram[]
   readArticles        ReadArticle[]
   boardActivity       BoardActivity[]
@@ -176,6 +187,36 @@ model SavedArticle {
   tags      Json?
 
   @@unique([userId, articleId])
+}
+
+// A bookmark on a Health & Wellness article or video, snapshot at save time — same
+// reasoning as SavedArticle's snapshot: wellness content rotates per-user (see
+// lib/wellness-rotation.ts) and isn't guaranteed to still be in anyone's current pool by
+// the time the reader revisits Saved Wellness. Kept as its own model rather than folded
+// into SavedArticle since wellness items have no specialty/ArticleType and videos carry a
+// duration instead of a readMins/summary — a dedicated shape beats optional fields that
+// only make sense for one kind or the other.
+model SavedWellness {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId    String
+  kind      String // "article" | "video"
+  createdAt DateTime @default(now())
+
+  title     String
+  source    String
+  // Null for a saved seed wellness article (id "w1".."w4") — those have no external story,
+  // they link to our own /wellness/[id] instead (see getWellnessArticleById); keeping this
+  // null rather than faking an internal path lets WellnessListItem's sourceUrl-presence
+  // check still correctly route back to that page instead of misreading it as external.
+  sourceUrl String?
+  date      String?
+  readMins  Int?
+  summary   String?
+  duration  String?
+
+  @@unique([userId, itemId])
 }
 
 model HepProgram {

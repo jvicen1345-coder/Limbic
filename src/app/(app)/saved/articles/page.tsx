@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { getArticles, getWellnessArticles } from "@/lib/articles";
+import { getArticles } from "@/lib/articles";
 import { decorateArticle } from "@/lib/feed";
 import { snapshotToArticle } from "@/lib/saved-snapshot";
 import type { Article } from "@/lib/types";
@@ -10,10 +10,7 @@ export default async function SavedArticlesPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const [wellnessArticles, savedRows] = await Promise.all([
-    getWellnessArticles(),
-    prisma.savedArticle.findMany({ where: { userId: user.id } }),
-  ]);
+  const savedRows = await prisma.savedArticle.findMany({ where: { userId: user.id } });
   const savedIds = savedRows.map((r) => r.articleId);
 
   // See saved/guidelines/page.tsx — snapshot-backed rows render without needing the
@@ -25,7 +22,6 @@ export default async function SavedArticlesPage() {
 
   const allSaved: Article[] = [...[...snapshotted.values()].filter((a): a is Article => a != null), ...legacyArticles];
   const savedArticles = allSaved.filter((a) => a.type !== "guideline").map((a) => decorateArticle(a, savedIds));
-  const savedWellness = wellnessArticles.filter((w) => savedIds.includes(w.id));
 
-  return <SavedArticlesTabs articles={savedArticles} wellness={savedWellness} />;
+  return <SavedArticlesTabs articles={savedArticles} />;
 }

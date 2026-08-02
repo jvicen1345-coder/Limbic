@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { SaveButton } from "@/components/SaveButton";
+import { WellnessSaveButton } from "@/components/WellnessSaveButton";
+import { markWellnessOpenedAction } from "@/app/actions/wellness";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { WellnessArticle } from "@/lib/types";
 import { formatDate } from "@/lib/meta";
@@ -97,8 +99,17 @@ export function WellnessListItem({ w, saved = false }: { w: WellnessArticle; sav
   // Live-sourced wellness articles always carry a sourceUrl and link straight out to the
   // real story; seed/fallback ones have no external story to link to, so they open our
   // own detail page (with authored body text) instead — every article gets a working link.
+  // The external case fires markWellnessOpenedAction on click (fire-and-forget — it doesn't
+  // block the new-tab navigation) since there's no page of ours involved to record it
+  // server-side; the internal case is recorded by app/(app)/wellness/[id]/page.tsx instead.
   const titleNode = w.sourceUrl ? (
-    <a href={w.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>
+    <a
+      href={w.sourceUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ color: "inherit" }}
+      onClick={() => markWellnessOpenedAction(w.id)}
+    >
       {w.title}
     </a>
   ) : (
@@ -136,7 +147,20 @@ export function WellnessListItem({ w, saved = false }: { w: WellnessArticle; sav
         </div>
         <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--color-neutral-700)", margin: 0 }}>{w.summary}</p>
       </div>
-      <SaveButton articleId={w.id} saved={saved} size="sm" />
+      <WellnessSaveButton
+        itemId={w.id}
+        kind="article"
+        saved={saved}
+        size="sm"
+        snapshot={{
+          title: w.title,
+          source: w.source,
+          sourceUrl: w.sourceUrl,
+          date: w.date,
+          readMins: w.readMins,
+          summary: w.summary,
+        }}
+      />
     </div>
   );
 }

@@ -1,20 +1,52 @@
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getWellnessArticles, WELLNESS_VIDEOS } from "@/lib/articles";
-import { youtubeThumbnailUrl } from "@/lib/meta";
+import { computeWellnessSet, WELLNESS_ARTICLE_TARGET, WELLNESS_VIDEO_TARGET } from "@/lib/wellness-rotation";
 import { WellnessListItem } from "@/components/RowCards";
-import { VideoThumbnail } from "@/components/VideoThumbnail";
+import { WellnessVideoCard } from "@/components/WellnessVideoCard";
 import { RefreshWellnessButton } from "@/components/RefreshWellnessButton";
 
 export default async function WellnessPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const [wellnessArticles, savedRows] = await Promise.all([
+  const [articlePool, savedArticleRows, savedWellnessRows] = await Promise.all([
     getWellnessArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
+    prisma.savedWellness.findMany({ where: { userId: user.id }, select: { itemId: true } }),
   ]);
-  const savedIds = savedRows.map((r) => r.articleId);
+  const savedIds = new Set([...savedArticleRows.map((r) => r.articleId), ...savedWellnessRows.map((r) => r.itemId)]);
+
+  // A plain page load never drops an id just because it's been opened — only the explicit
+  // Refresh action does that (see app/actions/wellness.ts refreshWellnessAction). This just
+  // self-heals: an id that's no longer in a fresh pool fetch (live content churns) gets
+  // dropped and topped up, same as computeWellnessSet's normal top-up behavior.
+  const storedArticleIds = (user.wellnessArticleIds as string[]) ?? [];
+  const storedVideoIds = (user.wellnessVideoIds as string[]) ?? [];
+  const openedIds = (user.wellnessOpenedIds as string[]) ?? [];
+
+  const articleIds = computeWellnessSet(
+    articlePool.map((a) => a.id),
+    storedArticleIds,
+    openedIds,
+    WELLNESS_ARTICLE_TARGET,
+    false
+  );
+  const videoIds = computeWellnessSet(WELLNESS_VIDEOS.map((v) => v.id), storedVideoIds, openedIds, WELLNESS_VIDEO_TARGET, false);
+
+  const articleIdsChanged = JSON.stringify(articleIds) !== JSON.stringify(storedArticleIds);
+  const videoIdsChanged = JSON.stringify(videoIds) !== JSON.stringify(storedVideoIds);
+  if (articleIdsChanged || videoIdsChanged) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { wellnessArticleIds: articleIds, wellnessVideoIds: videoIds },
+    });
+  }
+
+  const articlePoolById = new Map(articlePool.map((a) => [a.id, a]));
+  const wellnessArticles = articleIds.map((id) => articlePoolById.get(id)).filter((a) => a != null);
+  const videoPoolById = new Map(WELLNESS_VIDEOS.map((v) => [v.id, v]));
+  const videos = videoIds.map((id) => videoPoolById.get(id)).filter((v) => v != null);
 
   return (
     <div className="screen-pad">
@@ -31,7 +63,7 @@ export default async function WellnessPage() {
       </div>
       <div style={{ display: "flex", flexDirection: "column", marginBottom: 28 }}>
         {wellnessArticles.map((w) => (
-          <WellnessListItem key={w.id} w={w} saved={savedIds.includes(w.id)} />
+          <WellnessListItem key={w.id} w={w} saved={savedIds.has(w.id)} />
         ))}
       </div>
 
@@ -39,26 +71,8 @@ export default async function WellnessPage() {
         Video recommendations
       </div>
       <div className="video-grid">
-        {WELLNESS_VIDEOS.map((v) => (
-          <a
-            key={v.id}
-            href={v.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="card elev-sm"
-            style={{ padding: 0, overflow: "hidden", color: "inherit", textDecoration: "none", display: "block" }}
-          >
-            <VideoThumbnail src={youtubeThumbnailUrl(v.url)} />
-            <div style={{ padding: "12px 14px" }}>
-              <div className="card-title" style={{ fontSize: 14.5, margin: "0 0 4px" }}>
-                {v.title}
-              </div>
-              <div style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>
-                {v.source}
-                {v.duration ? ` · ${v.duration}` : ""}
-              </div>
-            </div>
-          </a>
+        {videos.map((v) => (
+          <WellnessVideoCard key={v.id} video={v} saved={savedIds.has(v.id)} />
         ))}
       </div>
     </div>

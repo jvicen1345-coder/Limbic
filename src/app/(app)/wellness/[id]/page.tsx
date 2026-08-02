@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
+import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { getWellnessArticleById } from "@/lib/articles";
+import { withOpenedId } from "@/lib/wellness-rotation";
 import { formatDate } from "@/lib/meta";
 import { BackButton } from "@/components/BackButton";
 
@@ -11,6 +13,15 @@ export default async function WellnessArticlePage({ params }: { params: Promise<
 
   const article = await getWellnessArticleById(id);
   if (!article) notFound();
+
+  // Only seed wellness articles route through this page (see getWellnessArticleById) — the
+  // live-sourced case is recorded from the click itself in components/RowCards.tsx
+  // WellnessListItem, since there's no page of ours involved for an external link.
+  const openedIds = (user.wellnessOpenedIds as string[]) ?? [];
+  const nextOpenedIds = withOpenedId(openedIds, id);
+  if (nextOpenedIds !== openedIds) {
+    await prisma.user.update({ where: { id: user.id }, data: { wellnessOpenedIds: nextOpenedIds } });
+  }
 
   return (
     <div className="screen-pad">
