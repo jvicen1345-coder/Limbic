@@ -2,33 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArticleImage } from "@/components/ArticleImage";
 import type { DecoratedArticle } from "@/lib/feed";
 
 const ROTATE_MS = 6000;
-
-/** A real og:image can still fail to load client-side (hotlink protection, a since-
- *  removed asset, …). Keyed by article id from the parent so switching articles remounts
- *  this and naturally resets `failed`, instead of tracking that reset with an effect. */
-function ArticleImage({ src }: { src: string }) {
-  const [failed, setFailed] = useState(false);
-  if (failed) return null;
-  return (
-    // eslint-disable-next-line @next/next/no-img-element -- external, unconfigured domains
-    <img
-      src={src}
-      alt=""
-      onError={() => setFailed(true)}
-      style={{
-        width: "100%",
-        height: 90,
-        objectFit: "cover",
-        borderRadius: "var(--radius-md)",
-        marginBottom: 8,
-        display: "block",
-      }}
-    />
-  );
-}
 
 /** Small auto-rotating headline card for the home sidebar — cycles through the latest
  *  news (guidelines/industry/equipment, not research or events; see page.tsx) on a

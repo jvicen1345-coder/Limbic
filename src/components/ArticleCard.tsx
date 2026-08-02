@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { SaveButton } from "@/components/SaveButton";
+import { ArticleImage } from "@/components/ArticleImage";
 import { CheckIcon } from "@/components/icons";
 import type { DecoratedArticle } from "@/lib/feed";
 
@@ -13,6 +14,7 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
       style={{ cursor: "pointer" }}
       onClick={() => router.push(`/article/${article.id}`)}
     >
+      {article.image && <ArticleImage key={article.id} src={article.image} height={120} />}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {article.isNew && <NewBadge />}
@@ -43,6 +45,7 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
       style={{ cursor: "pointer", padding: 26, background: "var(--color-accent-300)" }}
       onClick={() => router.push(`/article/${article.id}`)}
     >
+      {article.image && <ArticleImage key={article.id} src={article.image} height={200} />}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {article.isNew && <NewBadge />}

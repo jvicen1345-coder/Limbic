@@ -8,7 +8,6 @@ import { attachRealImages } from "@/lib/og-image";
 import { buildLicenseView } from "@/lib/license";
 import { ensureNexusSeedData } from "@/lib/nexus-seed";
 import { getConnectionStates } from "@/lib/nexus";
-import { buildReadingCalendarWeeks } from "@/lib/reading-calendar";
 import { HomeFeed } from "@/components/HomeFeed";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import type { ArticleType, CeCategory, Specialty } from "@/lib/types";
@@ -16,8 +15,6 @@ import type { ArticleType, CeCategory, Specialty } from "@/lib/types";
 // How many people to suggest connecting with in the Home aside — enough to fill the
 // card without turning it into a second directory.
 const NEXUS_SUGGESTIONS_SIZE = 3;
-
-const READING_CALENDAR_WINDOW_DAYS = 365;
 
 // "Purely news-based": general news from news outlets, not academic journals — so the
 // revolving card draws from Guidelines/Industry & Policy/Equipment (Google-News-sourced)
@@ -29,21 +26,19 @@ const NEWS_TICKER_SIZE = 6;
 // since those are the ones most overdue.
 const SAVED_UNREAD_SIZE = 3;
 
+// How many of the top-ranked feed articles get a real og:image fetched (see lib/og-image.ts)
+// — the hero plus a comfortable first page or two (PAGE_SIZE is 12), not the entire pool,
+// since each image is an extra network request per article.
+const FEED_IMAGE_LIMIT = 16;
+
 export default async function HomePage() {
   const user = await getCurrentUser();
   if (!user) return null; // layout already redirects; guards TS narrowing below
 
-  const readingCalendarStart = new Date();
-  readingCalendarStart.setDate(readingCalendarStart.getDate() - (READING_CALENDAR_WINDOW_DAYS - 1));
-
-  const [articles, savedRows, readRows, readCalendarRows, stockSeries, previousVisit, lastReadArticle] = await Promise.all([
+  const [articles, savedRows, readRows, stockSeries, previousVisit, lastReadArticle] = await Promise.all([
     getArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true, createdAt: true } }),
     prisma.readArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
-    prisma.readArticle.findMany({
-      where: { userId: user.id, createdAt: { gte: readingCalendarStart } },
-      select: { createdAt: true },
-    }),
     getUsphSeries(),
     recordHomeVisit(user),
     prisma.readArticle.findFirst({
@@ -54,7 +49,6 @@ export default async function HomePage() {
   ]);
   const savedIds = savedRows.map((r) => r.articleId);
   const readIds = readRows.map((r) => r.articleId);
-  const readingWeeks = buildReadingCalendarWeeks(readCalendarRows.map((r) => r.createdAt));
 
   // Daily PT Dashboard (see components/DailyDashboard.tsx) — greeting/date are computed
   // off the server's local clock, same as every other "today" concept in this app (see
@@ -91,7 +85,6 @@ export default async function HomePage() {
     : null;
 
   const ranked = rankFeed(articles, user.specialty as Specialty, user.followedTopics as unknown as string[]);
-  const decorated = ranked.map((a) => decorateArticle(a, savedIds, previousVisit, readIds));
 
   const ceEvents = articles
     .filter((a) => a.type === "ce")
@@ -126,11 +119,14 @@ export default async function HomePage() {
       })()
     : Promise.resolve(null);
 
-  const [newsTickerWithImages, nexusSuggestions] = await Promise.all([
+  const [newsTickerWithImages, rankedWithImages, nexusSuggestions] = await Promise.all([
     attachRealImages(newsTickerCandidates),
+    attachRealImages(ranked.slice(0, FEED_IMAGE_LIMIT)),
     nexusSuggestionsPromise,
   ]);
   const newsTicker = newsTickerWithImages.map((a) => decorateArticle(a, savedIds, null, readIds));
+  const rankedForDisplay = [...rankedWithImages, ...ranked.slice(FEED_IMAGE_LIMIT)];
+  const decorated = rankedForDisplay.map((a) => decorateArticle(a, savedIds, previousVisit, readIds));
 
   const stock = buildStockView(stockSeries);
 
@@ -173,8 +169,6 @@ export default async function HomePage() {
       license={license}
       savedUnread={savedUnread}
       nexusSuggestions={nexusSuggestions}
-      streakDays={user.streakDays}
-      readingWeeks={readingWeeks}
       continueReading={continueReading}
       dashboard={dashboard}
     />

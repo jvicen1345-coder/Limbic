@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
+import { prisma } from "@/lib/db";
 import { buildLicenseView } from "@/lib/license";
 import { SPECIALTIES, TYPES } from "@/lib/meta";
 import { allKnownKeywordTopics } from "@/lib/news-live";
+import { buildReadingCalendarWeeks } from "@/lib/reading-calendar";
 import type { CeCategory } from "@/lib/types";
 import { ProfileForm } from "@/components/ProfileForm";
 import { TopicChip } from "@/components/TopicChip";
 import { TopicBrowser } from "@/components/TopicBrowser";
+import { ReadingStreakCard } from "@/components/ReadingStreakCard";
 import { goAddLicenseAction } from "@/app/actions/profile";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
 
@@ -15,6 +18,8 @@ import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
 // whatever's currently loaded (see allKnownKeywordTopics).
 const SUGGESTED_TOPICS = [...SPECIALTIES.map((s) => s.label), ...TYPES.map((t) => t.label)];
 const BROWSABLE_TOPICS = allKnownKeywordTopics().filter((t) => !SUGGESTED_TOPICS.includes(t));
+
+const READING_CALENDAR_WINDOW_DAYS = 365;
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
@@ -31,9 +36,19 @@ export default async function ProfilePage() {
       )
     : null;
 
+  const readingCalendarStart = new Date();
+  readingCalendarStart.setDate(readingCalendarStart.getDate() - (READING_CALENDAR_WINDOW_DAYS - 1));
+  const readCalendarRows = await prisma.readArticle.findMany({
+    where: { userId: user.id, createdAt: { gte: readingCalendarStart } },
+    select: { createdAt: true },
+  });
+  const readingWeeks = buildReadingCalendarWeeks(readCalendarRows.map((r) => r.createdAt));
+
   return (
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 18px" }}>Profile</h1>
+
+      <ReadingStreakCard streakDays={user.streakDays} weeks={readingWeeks} />
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">About you</div>

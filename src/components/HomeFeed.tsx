@@ -13,14 +13,12 @@ import { RevolvingNews } from "@/components/RevolvingNews";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
 import { NexusSuggestionsCard, type NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import { NexusJoinPromptCard } from "@/components/NexusJoinPromptCard";
-import { ReadingStreakCard } from "@/components/ReadingStreakCard";
 import { Pagination } from "@/components/Pagination";
 import { paginate } from "@/lib/pagination";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { ArticleType } from "@/lib/types";
 import type { StockView } from "@/lib/stock";
 import type { LicenseView } from "@/lib/license";
-import type { ReadingCalendarDay } from "@/lib/reading-calendar";
 
 const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
   { id: "all", label: "All" },
@@ -39,8 +37,6 @@ export function HomeFeed({
   license,
   savedUnread,
   nexusSuggestions,
-  streakDays,
-  readingWeeks,
   continueReading,
   dashboard,
 }: {
@@ -53,8 +49,6 @@ export function HomeFeed({
   /** null when the viewer hasn't opted into Nexus yet — renders an invitation instead of
    *  a list of people they can't act on. */
   nexusSuggestions: NexusSuggestion[] | null;
-  streakDays: number;
-  readingWeeks: ReadingCalendarDay[][];
   /** null when there's no reading history yet — see app/(app)/page.tsx. */
   continueReading: ContinueReadingData | null;
   dashboard: DailyDashboardData;
@@ -132,7 +126,6 @@ export function HomeFeed({
         <aside className="home-aside-col">
           <div className="home-aside-scroll">
             <ContinueReadingCard data={continueReading} />
-            <ReadingStreakCard streakDays={streakDays} weeks={readingWeeks} compact />
             <SavedUnreadCard articles={savedUnread} />
             <CalendarCard events={ceEvents} />
             {nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />}
