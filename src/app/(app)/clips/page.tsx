@@ -16,5 +16,11 @@ export default async function ClipsPage() {
   const seenIds = (user.clipsSeenIds as string[]) ?? [];
   const clips = orderClipsForUser(pool, seenIds);
 
-  return <ClipsFeed clips={clips} savedClipIds={savedClipIds} />;
+  // orderClipsForUser shuffles fresh on every call, so this key changes on essentially
+  // every request — keying on it forces a clean remount of ClipsFeed instead of the
+  // refresh button's router.refresh() silently doing nothing, since a Server Component
+  // prop update alone doesn't reset a client child's already-initialized local state.
+  const feedKey = clips.map((c) => c.id).join(",");
+
+  return <ClipsFeed key={feedKey} clips={clips} savedClipIds={savedClipIds} />;
 }

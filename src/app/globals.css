@@ -312,6 +312,13 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
 }
 
 /* — Clips: a full-bleed, TikTok-style vertical feed — */
+.clips-feed-wrap { position: relative; }
+.clips-refresh-wrap {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 5;
+}
 .clips-feed {
   height: 100vh;
   overflow-y: scroll;

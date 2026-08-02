@@ -10,9 +10,18 @@ export interface DecoratedArticle extends Article {
   /** True when published after the reader's previous home-feed visit. Always false
    *  outside the home feed (default param) — the badge only makes sense there. */
   isNew: boolean;
+  /** True when this reader has already opened the article (see lib/reading.ts
+   *  recordArticleRead, called from the article detail page on every view). Defaults to
+   *  false for callers that don't pass readIds — same opt-in shape as sinceVisit/isNew. */
+  isRead: boolean;
 }
 
-export function decorateArticle(a: Article, savedIds: string[], sinceVisit: Date | null = null): DecoratedArticle {
+export function decorateArticle(
+  a: Article,
+  savedIds: string[],
+  sinceVisit: Date | null = null,
+  readIds: string[] = []
+): DecoratedArticle {
   const tm = TYPE_META[a.type];
   return {
     ...a,
@@ -22,6 +31,7 @@ export function decorateArticle(a: Article, savedIds: string[], sinceVisit: Date
     dateLabel: formatDate(a.date),
     saved: savedIds.includes(a.id),
     isNew: sinceVisit != null && new Date(a.date).getTime() > sinceVisit.getTime(),
+    isRead: readIds.includes(a.id),
   };
 }
 

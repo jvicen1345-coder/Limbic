@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ClipSaveButton } from "@/components/ClipSaveButton";
+import { RefreshClipsButton } from "@/components/RefreshClipsButton";
 import { markClipSeenAction } from "@/app/actions/clips";
 import { VolumeIcon, VolumeMuteIcon, ExternalLinkIcon } from "@/components/icons";
 import { SPECIALTY_META, youtubeEmbedUrl, youtubeThumbnailUrl } from "@/lib/meta";
@@ -51,7 +52,11 @@ function ClipSlide({
             src={embedUrl}
             title={clip.title}
             allow="autoplay; encrypted-media; picture-in-picture"
-            style={{ width: "100%", height: "100%", border: "none" }}
+            // pointer-events: none keeps every tap on the video going to this div's own
+            // onClick (our mute toggle) instead of landing inside the iframe's own
+            // browsing context, which would otherwise silently swallow the click (never
+            // reaching our handler at all) and show YouTube's own big play/pause icon.
+            style={{ width: "100%", height: "100%", border: "none", pointerEvents: "none" }}
           />
         ) : thumbUrl ? (
           // eslint-disable-next-line @next/next/no-img-element -- external, unconfigured domain
@@ -150,18 +155,23 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
   }, [activeSlotId, slots]);
 
   return (
-    <div className="clips-feed" ref={containerRef}>
-      {slots.map((slot) => (
-        <ClipSlide
-          key={slot.slotId}
-          clip={slot.clip}
-          slotId={slot.slotId}
-          active={slot.slotId === activeSlotId}
-          muted={muted}
-          onToggleMute={() => setMuted((m) => !m)}
-          saved={savedClipIds.includes(slot.clip.id)}
-        />
-      ))}
+    <div className="clips-feed-wrap">
+      <div className="clips-feed" ref={containerRef}>
+        {slots.map((slot) => (
+          <ClipSlide
+            key={slot.slotId}
+            clip={slot.clip}
+            slotId={slot.slotId}
+            active={slot.slotId === activeSlotId}
+            muted={muted}
+            onToggleMute={() => setMuted((m) => !m)}
+            saved={savedClipIds.includes(slot.clip.id)}
+          />
+        ))}
+      </div>
+      <div className="clips-refresh-wrap">
+        <RefreshClipsButton />
+      </div>
     </div>
   );
 }

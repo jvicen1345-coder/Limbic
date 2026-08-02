@@ -48,10 +48,11 @@ export default async function HomePage() {
     recordHomeVisit(user),
   ]);
   const savedIds = savedRows.map((r) => r.articleId);
+  const readIds = readRows.map((r) => r.articleId);
   const readingWeeks = buildReadingCalendarWeeks(readCalendarRows.map((r) => r.createdAt));
 
   const ranked = rankFeed(articles, user.specialty as Specialty, user.followedTopics as unknown as string[]);
-  const decorated = ranked.map((a) => decorateArticle(a, savedIds, previousVisit));
+  const decorated = ranked.map((a) => decorateArticle(a, savedIds, previousVisit, readIds));
 
   const ceEvents = articles
     .filter((a) => a.type === "ce")
@@ -90,14 +91,14 @@ export default async function HomePage() {
     attachRealImages(newsTickerCandidates),
     nexusSuggestionsPromise,
   ]);
-  const newsTicker = newsTickerWithImages.map((a) => decorateArticle(a, savedIds));
+  const newsTicker = newsTickerWithImages.map((a) => decorateArticle(a, savedIds, null, readIds));
 
   const stock = buildStockView(stockSeries);
 
-  const readIds = new Set(readRows.map((r) => r.articleId));
+  const readIdSet = new Set(readIds);
   const decoratedById = new Map(decorated.map((a) => [a.id, a]));
   const savedUnread = savedRows
-    .filter((r) => !readIds.has(r.articleId))
+    .filter((r) => !readIdSet.has(r.articleId))
     .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
     .slice(0, SAVED_UNREAD_SIZE)
     .map((r) => decoratedById.get(r.articleId))

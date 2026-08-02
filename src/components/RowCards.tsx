@@ -5,6 +5,7 @@ import Link from "next/link";
 import { SaveButton } from "@/components/SaveButton";
 import { WellnessSaveButton } from "@/components/WellnessSaveButton";
 import { markWellnessOpenedAction } from "@/app/actions/wellness";
+import { CheckIcon } from "@/components/icons";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { WellnessArticle } from "@/lib/types";
 import { formatDate } from "@/lib/meta";
@@ -95,7 +96,19 @@ export function ReviewCard({ article }: { article: DecoratedArticle }) {
   );
 }
 
-export function WellnessListItem({ w, saved = false }: { w: WellnessArticle; saved?: boolean }) {
+export function WellnessListItem({
+  w,
+  saved = false,
+  opened = false,
+}: {
+  w: WellnessArticle;
+  saved?: boolean;
+  /** True when this reader has already opened this article (see
+   *  app/actions/wellness.ts markWellnessOpenedAction / app/(app)/wellness/[id]/page.tsx)
+   *  — the same "already been here" tracking that drives the refresh rotation, reused here
+   *  purely as a display marker. */
+  opened?: boolean;
+}) {
   // Live-sourced wellness articles always carry a sourceUrl and link straight out to the
   // real story; seed/fallback ones have no external story to link to, so they open our
   // own detail page (with authored body text) instead — every article gets a working link.
@@ -141,6 +154,16 @@ export function WellnessListItem({ w, saved = false }: { w: WellnessArticle; sav
             }}
           />
           <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{formatDate(w.date)}</span>
+          {opened && (
+            <span
+              style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 11, color: "var(--color-neutral-700)" }}
+              aria-label="Already read"
+              title="You've already read this"
+            >
+              <CheckIcon size={11} />
+              Read
+            </span>
+          )}
         </div>
         <div style={{ fontFamily: "var(--font-heading)", fontSize: 17, lineHeight: 1.28, marginBottom: 5 }}>
           {titleNode}

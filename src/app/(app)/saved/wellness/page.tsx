@@ -9,6 +9,7 @@ export default async function SavedWellnessPage() {
   if (!user) return null;
 
   const rows = await prisma.savedWellness.findMany({ where: { userId: user.id }, orderBy: { createdAt: "desc" } });
+  const openedIds = (user.wellnessOpenedIds as string[]) ?? [];
   const articles = rows.filter((r) => r.kind === "article").map(savedWellnessToArticle);
   // A saved video's sourceUrl is always set (see WellnessVideoCard's snapshot), unlike a
   // saved article's — the filter is just to satisfy the type, not an expected real case.
@@ -33,7 +34,7 @@ export default async function SavedWellnessPage() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", marginBottom: 28 }}>
                 {articles.map((w) => (
-                  <WellnessListItem key={w.id} w={w} saved />
+                  <WellnessListItem key={w.id} w={w} saved opened={openedIds.includes(w.id)} />
                 ))}
               </div>
             </>

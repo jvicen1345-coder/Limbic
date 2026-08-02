@@ -63,7 +63,7 @@ export default async function WellnessPage() {
       </div>
       <div style={{ display: "flex", flexDirection: "column", marginBottom: 28 }}>
         {wellnessArticles.map((w) => (
-          <WellnessListItem key={w.id} w={w} saved={savedIds.has(w.id)} />
+          <WellnessListItem key={w.id} w={w} saved={savedIds.has(w.id)} opened={openedIds.includes(w.id)} />
         ))}
       </div>
 
