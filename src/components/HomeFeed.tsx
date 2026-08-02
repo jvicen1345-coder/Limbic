@@ -39,6 +39,7 @@ export function HomeFeed({
   nexusSuggestions,
   continueReading,
   dashboard,
+  hiddenWidgets,
 }: {
   articles: DecoratedArticle[];
   ceEvents: CeEvent[];
@@ -52,7 +53,11 @@ export function HomeFeed({
   /** null when there's no reading history yet — see app/(app)/page.tsx. */
   continueReading: ContinueReadingData | null;
   dashboard: DailyDashboardData;
+  /** Sidebar widget ids the reader has hidden — see lib/home-widgets.ts and the "Home page
+   *  widgets" section on Profile. */
+  hiddenWidgets: string[];
 }) {
+  const showWidget = (id: string) => !hiddenWidgets.includes(id);
   const [filter, setFilter] = useState<ArticleType | "all">("all");
   const [page, setPage] = useState(1);
 
@@ -125,12 +130,13 @@ export function HomeFeed({
 
         <aside className="home-aside-col">
           <div className="home-aside-scroll">
-            <ContinueReadingCard data={continueReading} />
-            <SavedUnreadCard articles={savedUnread} />
-            <CalendarCard events={ceEvents} />
-            {nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />}
-            <StockCard stock={stock} />
-            <RevolvingNews articles={newsTicker} />
+            {showWidget("continueReading") && <ContinueReadingCard data={continueReading} />}
+            {showWidget("savedUnread") && <SavedUnreadCard articles={savedUnread} />}
+            {showWidget("calendar") && <CalendarCard events={ceEvents} />}
+            {showWidget("nexus") &&
+              (nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />)}
+            {showWidget("stock") && <StockCard stock={stock} />}
+            {showWidget("news") && <RevolvingNews articles={newsTicker} />}
           </div>
         </aside>
       </div>

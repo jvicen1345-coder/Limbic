@@ -28,6 +28,19 @@ export async function toggleTopicAction(topic: string) {
   revalidatePath("/", "layout");
 }
 
+/** Toggles one Home sidebar widget's visibility (see components/HomeFeed.tsx
+ *  HOME_WIDGETS) — stored as which ones are *hidden*, not which are shown, so the default
+ *  empty array means "show everything", matching every account's behavior before this
+ *  preference existed. */
+export async function toggleHomeWidgetAction(widgetId: string) {
+  const user = await getCurrentUser();
+  if (!user) return;
+  const current = (user.hiddenHomeWidgets as unknown as string[]) ?? [];
+  const next = current.includes(widgetId) ? current.filter((w) => w !== widgetId) : [...current, widgetId];
+  await prisma.user.update({ where: { id: user.id }, data: { hiddenHomeWidgets: next } });
+  revalidatePath("/", "layout");
+}
+
 /** "Add license" from the guest profile screen — matches the prototype's behavior of
  *  sending the user back to the license sign-in form. */
 export async function goAddLicenseAction() {

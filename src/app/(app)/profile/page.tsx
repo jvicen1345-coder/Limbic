@@ -10,8 +10,10 @@ import { ProfileForm } from "@/components/ProfileForm";
 import { TopicChip } from "@/components/TopicChip";
 import { TopicBrowser } from "@/components/TopicBrowser";
 import { ReadingStreakCard } from "@/components/ReadingStreakCard";
+import { HomeWidgetToggle } from "@/components/HomeWidgetToggle";
 import { goAddLicenseAction } from "@/app/actions/profile";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
+import { HOME_WIDGETS } from "@/lib/home-widgets";
 
 // The canonical specialty/type labels, always shown first — clean and stable, unlike the
 // long tail of keyword topics below, which come from a fixed vocabulary rather than
@@ -26,6 +28,7 @@ export default async function ProfilePage() {
   if (!user) return null;
 
   const followedTopics = user.followedTopics as unknown as string[];
+  const hiddenHomeWidgets = user.hiddenHomeWidgets as unknown as string[];
 
   const license = user.licenseNumber
     ? buildLicenseView(
@@ -191,6 +194,18 @@ export default async function ProfilePage() {
             </form>
           </>
         )}
+      </div>
+
+      <div className="card elev-sm" style={{ marginTop: 18 }}>
+        <div className="card-kicker">Home page widgets</div>
+        <p className="card-body" style={{ marginTop: 2 }}>
+          Choose what shows up in the sidebar on your home page.
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 10 }}>
+          {HOME_WIDGETS.map((w) => (
+            <HomeWidgetToggle key={w.id} id={w.id} label={w.label} visible={!hiddenHomeWidgets.includes(w.id)} />
+          ))}
+        </div>
       </div>
     </div>
   );

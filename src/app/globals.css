@@ -152,6 +152,7 @@ button { font-family: inherit; }
 .input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
 .input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
 textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius-md); }
+input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height: 16px; cursor: pointer; }
 
 /* — cards — */
 .card {

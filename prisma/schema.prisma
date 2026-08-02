@@ -65,6 +65,11 @@ model User {
   // themselves.
   nexusOptIn        Boolean  @default(false)
 
+  // JSON-encoded string[] of Home sidebar widget ids the user has hidden (see
+  // components/HomeFeed.tsx HOME_WIDGETS) — opt-out, not opt-in, so the default empty array
+  // means "show everything", same as every existing account before this field existed.
+  hiddenHomeWidgets Json     @default("[]")
+
   // Limbic Boards (student daily-habit tools) streak — same nextStreak() logic as the
   // reading streak above, driven off BoardActivity rows instead of ReadArticle ones.
   lastBoardsActivityAt DateTime?

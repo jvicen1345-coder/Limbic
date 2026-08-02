@@ -179,6 +179,7 @@ export default async function HomePage() {
       nexusSuggestions={nexusSuggestions}
       continueReading={continueReading}
       dashboard={dashboard}
+      hiddenWidgets={user.hiddenHomeWidgets as unknown as string[]}
     />
   );
 }
