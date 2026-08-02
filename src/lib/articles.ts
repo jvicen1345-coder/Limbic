@@ -72,8 +72,11 @@ export async function getUnderReviewArticles(): Promise<Article[]> {
  */
 export async function getAptaNewsArticles(): Promise<Article[]> {
   const live = await fetchAptaNews();
-  if (live.length >= 3) return live;
-  return [...live, ...APTA_NEWS_SEED];
+  const combined = live.length >= 3 ? live : [...live, ...APTA_NEWS_SEED];
+  // Tier 1 (direct scrape), tier 2 (Google News), and the static-seed fallback each come
+  // in their own order — concatenating them isn't sorted, so this is the one place that
+  // guarantees "most recently posted first" regardless of which tiers contributed.
+  return combined.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 export async function getArticleById(id: string): Promise<Article | null> {
