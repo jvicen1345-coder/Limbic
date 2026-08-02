@@ -177,6 +177,20 @@ export function GraduationCapIcon(props: IconProps) {
   );
 }
 
+export function NetworkIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="5" r="2.3" />
+      <circle cx="5.5" cy="18" r="2.3" />
+      <circle cx="18.5" cy="18" r="2.3" />
+      <path d="M12 7.3v4.7" />
+      <path d="m10.4 13.5-3.4 3" />
+      <path d="m13.6 13.5 3.4 3" />
+      <path d="M7.8 18h8.4" />
+    </Svg>
+  );
+}
+
 export function ChevronLeftIcon(props: IconProps) {
   return (
     <Svg {...props}>
