@@ -180,13 +180,13 @@ export function GraduationCapIcon(props: IconProps) {
 export function NetworkIcon(props: IconProps) {
   return (
     <Svg {...props}>
-      <circle cx="12" cy="5" r="2.3" />
-      <circle cx="5.5" cy="18" r="2.3" />
-      <circle cx="18.5" cy="18" r="2.3" />
-      <path d="M12 7.3v4.7" />
-      <path d="m10.4 13.5-3.4 3" />
-      <path d="m13.6 13.5 3.4 3" />
-      <path d="M7.8 18h8.4" />
+      <path d="M12 12 12 4.3" />
+      <path d="m12 12-6.2 3.6" />
+      <path d="m12 12 6.2 3.6" />
+      <circle cx="12" cy="12" r="2.1" />
+      <circle cx="12" cy="4.3" r="1.8" />
+      <circle cx="5.8" cy="15.6" r="1.8" />
+      <circle cx="18.2" cy="15.6" r="1.8" />
     </Svg>
   );
 }
