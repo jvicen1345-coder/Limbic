@@ -7,8 +7,9 @@
     </linearGradient>
   </defs>
 
-  <!-- Background (light blue) -->
-  <rect x="0" y="0" width="520" height="140" rx="18" fill="#D6EAF8"/>
+  <!-- Background — matches the app's card surface color, faded so it reads as a soft
+       backdrop rather than a solid card competing with the sign-in card below it. -->
+  <rect x="0" y="0" width="520" height="140" rx="18" fill="#DBE7FB" fill-opacity="0.55"/>
 
   <!-- Icon -->
   <circle cx="80" cy="70" r="48" fill="url(#g)"/>

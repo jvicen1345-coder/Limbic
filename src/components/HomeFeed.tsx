@@ -95,8 +95,6 @@ export function HomeFeed({
             </Link>
           </div>
 
-          <ReadingStreakCard streakDays={streakDays} weeks={readingWeeks} />
-
           <div className="filter-row" style={{ marginBottom: 20 }}>
             {TYPE_TABS.map((t) => (
               <Chip key={t.id} active={filter === t.id} onClick={() => changeFilter(t.id)}>
@@ -123,6 +121,7 @@ export function HomeFeed({
         </div>
 
         <aside className="home-aside-col">
+          <ReadingStreakCard streakDays={streakDays} weeks={readingWeeks} compact />
           <SavedUnreadCard articles={savedUnread} />
           <CalendarCard events={ceEvents} />
           {nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />}
