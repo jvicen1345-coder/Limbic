@@ -820,3 +820,86 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   .agent-topbar { padding: 10px 14px; font-size: 10.5px; }
   .agent-input-bar { padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* — Limbic Threads (see components/ThreadsWeb.tsx) — reuses the .agent-node/.agent-link
+   rules and the .agent-detail-kicker/-title/-body/-hint/-close typography above verbatim.
+   Its own detail panel is NOT .agent-detail-card's floating overlay though — Agent's own
+   card can afford to float over its fixed-height chat canvas, but Threads' canvas sits in
+   a normal scrolling page where a force-simulated node can end up anywhere, including
+   right where a docked overlay would sit, silently blocking clicks on whatever's under it. */
+.threads-collapsed-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 13.5px;
+  color: var(--color-accent-700);
+  cursor: pointer;
+}
+.threads-collapsed-line:hover { color: var(--color-accent-800); }
+.threads-wrap {
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.threads-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 13px;
+  color: #dbe4f5;
+  background: #0b1122;
+}
+.threads-canvas-wrap {
+  height: 420px;
+  background: radial-gradient(ellipse at 50% 30%, #10182c 0%, #070a14 65%, #05070d 100%);
+}
+.threads-detail-panel {
+  position: relative;
+  background: #0d1428;
+  border-top: 1px solid rgba(140, 170, 255, 0.15);
+  padding: 16px;
+}
+.threads-detail-cta { margin-top: 10px; font-size: 12.5px; }
+@media (max-width: 640px) {
+  .threads-canvas-wrap { height: 340px; }
+}
+
+/* — Feed-card Threads teaser (see components/ArticleCard.tsx) — a static, cheap preview
+   (fixed category labels, not per-article real matches — computing the full web for
+   every card in a grid would be expensive) that only becomes visible on hover, revealing
+   what the full web on the article page would explore. */
+.card-threads-teaser {
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: var(--color-accent-700);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+.card-threads-preview {
+  display: none;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+.card:hover .card-threads-preview { display: flex; }
+.card-threads-preview-chip {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+}

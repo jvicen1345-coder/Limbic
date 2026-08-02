@@ -56,6 +56,10 @@ export function AgentGraph({
   const simRef = useRef<d3.Simulation<SimNode, SimLink> | null>(null);
   const simNodesRef = useRef<SimNode[]>([]);
   const prevLabelsRef = useRef<Map<string, string>>(new Map());
+  // Read inside the tick handler below (defined once, in the mount-only effect) rather
+  // than closing over the `width`/`height` props directly, which would go stale the
+  // moment either one changes after mount.
+  const sizeRef = useRef({ width, height });
   const onNodeClickRef = useRef(onNodeClick);
   const onBackgroundClickRef = useRef(onBackgroundClick);
   useEffect(() => {
@@ -104,6 +108,21 @@ export function AgentGraph({
     // container resizes).
 
     simulation.on("tick", () => {
+      // Only the gentle centering force (see the width/height effect below) pulls nodes
+      // toward the middle — nothing stops repulsion/collision from pushing an outer-ring
+      // node beyond the canvas's own bounds otherwise. That's harmless when nothing sits
+      // past the canvas, but Limbic Threads (see components/ThreadsWeb.tsx) renders real
+      // content right below it, and an escaped node would render on top of — and be
+      // unclickable behind — that content instead of the graph. Clamped here, on the
+      // simulation's own x/y (not just the rendered transform), so it also stops
+      // affecting link endpoints and future ticks, not just this frame's paint.
+      const { width: w, height: h } = sizeRef.current;
+      const margin = 30;
+      for (const n of simNodesRef.current) {
+        n.x = Math.max(margin, Math.min(w - margin, n.x ?? w / 2));
+        n.y = Math.max(margin, Math.min(h - margin, n.y ?? h / 2));
+      }
+
       svg
         .select(".agent-links")
         .selectAll<SVGLineElement, SimLink>("line")
@@ -126,6 +145,7 @@ export function AgentGraph({
 
   // Keeps the gentle centering forces aligned if the container's size changes.
   useEffect(() => {
+    sizeRef.current = { width, height };
     const simulation = simRef.current;
     if (!simulation) return;
     simulation.force("x", d3.forceX(width / 2).strength(0.03));

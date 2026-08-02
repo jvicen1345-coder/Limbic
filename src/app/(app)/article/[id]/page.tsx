@@ -5,19 +5,28 @@ import { prisma } from "@/lib/db";
 import { getArticles, getArticleById } from "@/lib/articles";
 import { decorateArticle } from "@/lib/feed";
 import { recordArticleRead } from "@/lib/reading";
+import { buildThreadsWeb } from "@/lib/threads";
 import { SaveButton } from "@/components/SaveButton";
 import { BackButton } from "@/components/BackButton";
 import { ReadingProgressTracker } from "@/components/ReadingProgressTracker";
+import { ThreadsWeb } from "@/components/ThreadsWeb";
 
-export default async function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ArticlePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ threads?: string }>;
+}) {
   const { id } = await params;
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const [raw, allArticles, savedRows] = await Promise.all([
+  const [raw, allArticles, savedRows, { threads }] = await Promise.all([
     getArticleById(id),
     getArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
+    searchParams,
   ]);
   if (!raw) notFound();
 
@@ -29,6 +38,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
     .filter((a) => a.id !== raw.id && (a.type === raw.type || a.specialty === raw.specialty))
     .slice(0, 3)
     .map((a) => decorateArticle(a, savedIds));
+  const threadsNodes = await buildThreadsWeb(raw, allArticles);
 
   return (
     <div className="screen-pad">
@@ -113,6 +123,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
           </div>
         </div>
       )}
+
+      <div style={{ borderTop: "1px solid var(--color-neutral-200)", paddingTop: 18, marginTop: 18 }}>
+        <ThreadsWeb articleId={article.id} webNodes={threadsNodes} isPro={user.isPro} autoExpand={threads === "1"} />
+      </div>
     </div>
   );
 }

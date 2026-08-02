@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { AgentClient } from "@/components/AgentClient";
 
-export default async function AgentPage() {
+export default async function AgentPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const user = await getCurrentUser();
   if (!user) return null;
 
@@ -12,5 +12,6 @@ export default async function AgentPage() {
   // from calling the action directly).
   if (!user.isPro) redirect("/pro");
 
-  return <AgentClient />;
+  const { q } = await searchParams;
+  return <AgentClient initialQuestion={q} />;
 }

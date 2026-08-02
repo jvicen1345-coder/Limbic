@@ -65,8 +65,8 @@ function ancestorLabelsOf(nodeId: string, nodes: AgentNode[]): string[] {
   return labels;
 }
 
-export function AgentClient() {
-  const [question, setQuestion] = useState("");
+export function AgentClient({ initialQuestion }: { initialQuestion?: string } = {}) {
+  const [question, setQuestion] = useState(initialQuestion ?? "");
   const [askedQuestion, setAskedQuestion] = useState<string | null>(null);
   const [nodes, setNodes] = useState<AgentNode[]>([IDLE_NODE]);
   const [crossLinks, setCrossLinks] = useState<AgentLink[]>([]);
@@ -93,6 +93,14 @@ export function AgentClient() {
   }, [treeLinks, crossLinks, nodes]);
   const selectedNode = nodes.find((n) => n.id === selectedId) ?? null;
 
+  // Fires once, only when a topic arrived via ?q= (see the Limbic Threads "Ask Limbic
+  // Agent" handoff node in components/ThreadsWeb.tsx) — a plain visit to /agent has no
+  // initialQuestion and starts from the normal idle state instead.
+  useEffect(() => {
+    if (initialQuestion?.trim()) handleAsk(initialQuestion);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function revealStaggered(newNodes: AgentNode[]) {
     for (const n of newNodes) {
       setNodes((prev) => [...prev, n]);
@@ -100,8 +108,12 @@ export function AgentClient() {
     }
   }
 
-  async function handleAsk() {
-    const trimmed = question.trim();
+  /** Accepts an optional override so a caller (see the initialQuestion mount effect
+   *  below) can ask immediately without waiting on the setQuestion state update to land
+   *  first — reading the `question` state right after setting it would still see the
+   *  old value. */
+  async function handleAsk(override?: string) {
+    const trimmed = (override ?? question).trim();
     if (!trimmed || starting) return;
     setStarting(true);
     setError(null);
@@ -250,7 +262,7 @@ export function AgentClient() {
           }}
           disabled={starting}
         />
-        <button type="button" disabled={starting || !question.trim()} onClick={handleAsk}>
+        <button type="button" disabled={starting || !question.trim()} onClick={() => handleAsk()}>
           {starting ? "Thinking…" : "Ask"}
         </button>
       </div>

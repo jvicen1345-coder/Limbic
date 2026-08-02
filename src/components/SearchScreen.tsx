@@ -77,8 +77,16 @@ function AiPubmedSearch({ onResult }: { onResult: (result: AiSearchResult | null
   );
 }
 
-export function SearchScreen({ articles, initialType = "all" }: { articles: DecoratedArticle[]; initialType?: ArticleType | "all" }) {
-  const [query, setQuery] = useState("");
+export function SearchScreen({
+  articles,
+  initialType = "all",
+  initialQuery = "",
+}: {
+  articles: DecoratedArticle[];
+  initialType?: ArticleType | "all";
+  initialQuery?: string;
+}) {
+  const [query, setQuery] = useState(initialQuery);
   const [type, setType] = useState<ArticleType | "all">(initialType);
   const [specialty, setSpecialty] = useState<Specialty | "all">("all");
   const [page, setPage] = useState(1);
