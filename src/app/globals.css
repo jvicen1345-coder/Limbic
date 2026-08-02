@@ -3,8 +3,9 @@
    dialed in during design iteration (project/PT News.dc.html's <style> block) baked
    directly into :root instead of layered on top. Structure and component classes are
    otherwise unchanged, so anything styled with .card/.btn/.tag/etc. keeps its exact
-   shape and behavior. This is a fixed light theme, same as the source design. */
-@import url("https://fonts.googleapis.com/css2?family=Caprasimo:wght@400&family=Figtree:wght@400;600;700;800&display=swap");
+   shape and behavior. This is a fixed light theme, same as the source design. Caprasimo/
+   Figtree are loaded via next/font in app/layout.tsx (--font-caprasimo/--font-figtree),
+   not a CSS @import — see the comment there for why. */
 
 :root {
   --color-bg: #ffffff;
@@ -44,9 +45,9 @@
   --color-accent-2-800: #0b4760;
   --color-accent-2-900: #072e3f;
 
-  --font-heading: "Caprasimo", system-ui, sans-serif;
+  --font-heading: var(--font-caprasimo), system-ui, sans-serif;
   --font-heading-weight: 400;
-  --font-body: "Figtree", system-ui, sans-serif;
+  --font-body: var(--font-figtree), system-ui, sans-serif;
 
   --space-1: 4.4px;
   --space-2: 8.8px;
