@@ -17,7 +17,7 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
           {article.isNew && <NewBadge />}
           {article.typeLabel} · {article.dateLabel}
         </div>
-        <SaveButton articleId={article.id} saved={article.saved} size="sm" />
+        <SaveButton articleId={article.id} saved={article.saved} size="sm" article={article} />
       </div>
       <div className="card-title" style={{ marginTop: 6 }}>
         {article.title}
@@ -46,7 +46,7 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
           {article.isNew && <NewBadge />}
           {article.typeLabel} · {article.dateLabel}
         </div>
-        <SaveButton articleId={article.id} saved={article.saved} size="md" />
+        <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
       </div>
       <div className="card-title" style={{ marginTop: 8, fontSize: 22 }}>
         {article.title}

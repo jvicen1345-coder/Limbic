@@ -4,8 +4,18 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { getArticleById } from "@/lib/articles";
+import type { Article } from "@/lib/types";
 
-export async function toggleSaveAction(articleId: string) {
+/**
+ * knownArticle is the article exactly as the reader is currently looking at it (see
+ * components/SaveButton.tsx) — trusted here over re-resolving articleId from scratch,
+ * since some context (e.g. a PubMed search re-tagging a PMID as type: "guideline" for a
+ * practice-guideline search) only exists at search time and can't be recovered from the
+ * id alone. A caller could in principle pass a fabricated snapshot, but the blast radius
+ * is a user's own saved-list display for their own bookmark — not a cross-user or
+ * privileged write — so that's an acceptable tradeoff for fixing the staleness bug.
+ */
+export async function toggleSaveAction(articleId: string, knownArticle?: Article) {
   const user = await getCurrentUser();
   if (!user) return;
   const existing = await prisma.savedArticle.findUnique({
@@ -20,7 +30,7 @@ export async function toggleSaveAction(articleId: string) {
     // depend on re-resolving articleId indefinitely (see lib/articles.ts getArticleById).
     // Silently no-op for anything that doesn't resolve as an article (wellness, clips —
     // "clip-<id>" keys, Retraction Watch, etc.), same as before this snapshot existed.
-    const article = await getArticleById(articleId).catch(() => null);
+    const article = knownArticle ?? (await getArticleById(articleId).catch(() => null));
     await prisma.savedArticle.create({
       data: {
         userId: user.id,

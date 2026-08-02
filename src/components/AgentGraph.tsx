@@ -4,8 +4,15 @@ import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import type { AgentNode, AgentLink } from "@/lib/agent-graph";
 
-type SimNode = AgentNode & d3.SimulationNodeDatum;
+// labelHalfWidth is filled in after each label's text is rendered (see the data-update
+// effect) by measuring its actual SVG bounding box — collision then reserves that much
+// horizontal room per node so two labels can never visually touch, regardless of how long
+// either string is.
+type SimNode = AgentNode & d3.SimulationNodeDatum & { labelHalfWidth?: number };
 type SimLink = { source: string | SimNode; target: string | SimNode; kind: "tree" | "cross" };
+
+// Minimum gap kept between the edges of two neighboring labels.
+const LABEL_COLLIDE_PADDING = 10;
 
 // Bright, glowing fills tuned for the near-black canvas — see the .agent-node-circle glow
 // filter in globals.css, which is what actually reads as "glowing," not just fill color.
@@ -87,7 +94,9 @@ export function AgentGraph({
       .force("charge", d3.forceManyBody().strength(-260))
       .force(
         "collide",
-        d3.forceCollide<SimNode>().radius((d) => (RING_RADIUS[d.ring] ?? 14) + 16)
+        d3
+          .forceCollide<SimNode>()
+          .radius((d) => Math.max((RING_RADIUS[d.ring] ?? 14) + 16, (d.labelHalfWidth ?? 0) + LABEL_COLLIDE_PADDING))
       );
     // The centering "x"/"y" forces are added by the width/height effect below, which also
     // runs once on mount — kept out of this effect so this one-time setup never needs
@@ -160,10 +169,6 @@ export function AgentGraph({
 
     const nextSimLinks: SimLink[] = links.map((l) => ({ source: l.source, target: l.target, kind: l.kind }));
 
-    simulation.nodes(nextSimNodes);
-    (simulation.force("link") as d3.ForceLink<SimNode, SimLink>).links(nextSimLinks);
-    simulation.alpha(0.7).restart();
-
     // Links.
     svg
       .select(".agent-links")
@@ -227,6 +232,18 @@ export function AgentGraph({
       .attr("fill", (d) => RING_COLOR[d.ring] ?? "#8a97c4")
       .style("color", (d) => RING_COLOR[d.ring] ?? "#8a97c4");
     merged.select(".agent-node-label").attr("dy", (d) => (radii[d.ring] ?? 14) + 14);
+
+    // Measure each label's actual rendered width now that its final text/font-size are set,
+    // so the collide force below (initialized by simulation.nodes()) can reserve enough
+    // horizontal room to keep every label clear of its neighbors — a fixed circle-only
+    // collision radius has no idea how wide "Post-Op Rehab Protocol" is versus "Pain".
+    merged.select<SVGTextElement>(".agent-node-label").each(function (d) {
+      d.labelHalfWidth = this.getBBox().width / 2;
+    });
+
+    simulation.nodes(nextSimNodes);
+    (simulation.force("link") as d3.ForceLink<SimNode, SimLink>).links(nextSimLinks);
+    simulation.alpha(0.7).restart();
 
     // The center node's label changes once (idle "Limbic Agent" -> the question, then
     // again once the model's polished label comes back) — flash the pulse-in animation

@@ -37,7 +37,7 @@ export function SavedListRow({
         </div>
         <div style={{ fontFamily: "var(--font-heading)", fontSize: 17, lineHeight: 1.28 }}>{article.title}</div>
       </div>
-      <SaveButton articleId={article.id} saved />
+      <SaveButton articleId={article.id} saved article={article} />
     </div>
   );
 }
@@ -66,7 +66,7 @@ export function AptaNewsRow({ article }: { article: DecoratedArticle }) {
         </div>
         <div style={{ fontFamily: "var(--font-heading)", fontSize: 17, lineHeight: 1.28 }}>{article.title}</div>
       </div>
-      <SaveButton articleId={article.id} saved={article.saved} />
+      <SaveButton articleId={article.id} saved={article.saved} article={article} />
     </div>
   );
 }
