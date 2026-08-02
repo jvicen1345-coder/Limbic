@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SaveButton } from "@/components/SaveButton";
 import { VolumeIcon, VolumeMuteIcon, ExternalLinkIcon } from "@/components/icons";
 import { SPECIALTY_META, youtubeEmbedUrl, youtubeThumbnailUrl } from "@/lib/meta";
@@ -12,14 +12,29 @@ function savedKey(clip: Clip): string {
   return `clip-${clip.id}`;
 }
 
+// The curated clip list is small and finite, so a continuous ("for you"-style) feed loops
+// it rather than dead-ending — each time the reader scrolls within this many slides of the
+// end, another lap of the same clips is appended, same content each time around.
+const APPEND_WHEN_WITHIN = 2;
+
+interface ClipSlot {
+  clip: Clip;
+  /** Unique per physical slide (clip id + lap number) — the clip can repeat across laps,
+   *  but each rendered slide still needs an identity of its own for the intersection
+   *  observer and autoplay targeting. */
+  slotId: string;
+}
+
 function ClipSlide({
   clip,
+  slotId,
   active,
   muted,
   onToggleMute,
   saved,
 }: {
   clip: Clip;
+  slotId: string;
   active: boolean;
   muted: boolean;
   onToggleMute: () => void;
@@ -29,11 +44,11 @@ function ClipSlide({
   const thumbUrl = youtubeThumbnailUrl(clip.url);
 
   return (
-    <section className="clip-slide" data-clip-id={clip.id}>
+    <section className="clip-slide" data-slot-id={slotId}>
       <div className="clip-media" onClick={onToggleMute}>
         {embedUrl ? (
           <iframe
-            key={`${clip.id}-${muted}`}
+            key={`${slotId}-${muted}`}
             src={embedUrl}
             title={clip.title}
             allow="autoplay; encrypted-media; picture-in-picture"
@@ -80,41 +95,57 @@ function ClipSlide({
 }
 
 export function ClipsFeed({ clips, savedIds }: { clips: Clip[]; savedIds: string[] }) {
-  const [activeId, setActiveId] = useState<string | null>(clips[0]?.id ?? null);
+  const [laps, setLaps] = useState(1);
+  const [activeSlotId, setActiveSlotId] = useState<string | null>(clips[0] ? `${clips[0].id}__0` : null);
   const [muted, setMuted] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const slots = useMemo(() => {
+    const out: ClipSlot[] = [];
+    for (let lap = 0; lap < laps; lap++) {
+      for (const clip of clips) out.push({ clip, slotId: `${clip.id}__${lap}` });
+    }
+    return out;
+  }, [clips, laps]);
+
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || slots.length === 0) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         const mostVisible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (mostVisible) {
-          setActiveId(mostVisible.target.getAttribute("data-clip-id"));
+        if (!mostVisible) return;
+        const slotId = mostVisible.target.getAttribute("data-slot-id");
+        if (!slotId) return;
+        setActiveSlotId(slotId);
+
+        const index = slots.findIndex((s) => s.slotId === slotId);
+        if (index !== -1 && index >= slots.length - APPEND_WHEN_WITHIN) {
+          setLaps((l) => l + 1);
         }
       },
       { root: container, threshold: [0.6] }
     );
 
-    const slides = container.querySelectorAll("[data-clip-id]");
+    const slides = container.querySelectorAll("[data-slot-id]");
     slides.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [clips]);
+  }, [slots]);
 
   return (
     <div className="clips-feed" ref={containerRef}>
-      {clips.map((clip) => (
+      {slots.map((slot) => (
         <ClipSlide
-          key={clip.id}
-          clip={clip}
-          active={clip.id === activeId}
+          key={slot.slotId}
+          clip={slot.clip}
+          slotId={slot.slotId}
+          active={slot.slotId === activeSlotId}
           muted={muted}
           onToggleMute={() => setMuted((m) => !m)}
-          saved={savedIds.includes(savedKey(clip))}
+          saved={savedIds.includes(savedKey(slot.clip))}
         />
       ))}
     </div>
