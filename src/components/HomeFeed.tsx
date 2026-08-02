@@ -121,12 +121,14 @@ export function HomeFeed({
         </div>
 
         <aside className="home-aside-col">
-          <ReadingStreakCard streakDays={streakDays} weeks={readingWeeks} compact />
-          <SavedUnreadCard articles={savedUnread} />
-          <CalendarCard events={ceEvents} />
-          {nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />}
-          <StockCard stock={stock} />
-          <RevolvingNews articles={newsTicker} />
+          <div className="home-aside-scroll">
+            <ReadingStreakCard streakDays={streakDays} weeks={readingWeeks} compact />
+            <SavedUnreadCard articles={savedUnread} />
+            <CalendarCard events={ceEvents} />
+            {nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />}
+            <StockCard stock={stock} />
+            <RevolvingNews articles={newsTicker} />
+          </div>
         </aside>
       </div>
     </div>

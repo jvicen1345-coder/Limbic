@@ -414,16 +414,29 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
 .home-aside-col {
   width: 200px;
   flex-shrink: 0;
+  position: sticky;
+  top: 20px;
+}
+/* The column's own widgets (streak, calendar, saved-unread, Nexus suggestions, stock
+   ticker, latest news) can add up to taller than the viewport — without a height cap,
+   sticky still pins .home-aside-col's top edge in place, but whatever falls past the
+   bottom of the viewport is just unreachable. This inner wrapper (rather than putting the
+   scroll on .home-aside-col itself) caps the height and scrolls internally instead, so
+   every widget stays reachable while the outer column stays pinned as the main feed
+   scrolls past it — position: sticky combined with overflow-y: auto on the very same
+   element doesn't reliably stay pinned. */
+.home-aside-scroll {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  position: sticky;
-  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
 }
 @media (max-width: 799px) {
   .home-row { flex-direction: column; gap: 24px; }
   .home-main-col { width: 100%; }
   .home-aside-col { width: 100%; position: static; }
+  .home-aside-scroll { max-height: none; overflow-y: visible; }
 }
 
 .cards-grid {
