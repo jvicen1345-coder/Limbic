@@ -4,21 +4,43 @@ import { CrownIcon } from "@/components/icons";
 import { PRO_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
 
-const FEATURES: { title: string; description: string; live: boolean }[] = [
+/**
+ * The Pro roadmap: two tiers sharing the same six feature areas, each scoped to what
+ * that audience actually needs — Student PRO for coursework/boards prep, LimbicPro for
+ * practicing clinicians. Nothing here is built yet — this is the plan, not a live
+ * comparison of two purchasable products. Today's checkout flow further down is still
+ * the single LimbicPro $9/month demo toggle; Student PRO isn't a purchasable tier yet.
+ */
+const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
   {
-    title: "Home Exercise Program exports",
-    description: "Export any HEP as a printable PDF, or share it with a patient via a link.",
-    live: false,
+    feature: "Limbic Agent",
+    student: "Study and exam support, case-based learning.",
+    pro: "Clinical decision support for real patients.",
   },
   {
-    title: "Weekly Roundup",
-    description: "A dedicated in-app view of the week's top stories from your followed topics — no email, everything stays in Limbic.",
-    live: false,
+    feature: "HEP Builder",
+    student: "Create and save HEP templates for coursework.",
+    pro: "Send HEPs directly to real patients, with images.",
   },
   {
-    title: "License renewal alerts",
-    description: "An in-app heads-up as your license expiration or CE deadline approaches — no email required.",
-    live: false,
+    feature: "Verified Badge",
+    student: "Student verified badge.",
+    pro: "Licensed PT gold badge.",
+  },
+  {
+    feature: "Certified Clips",
+    student: "Cannot post certified clips.",
+    pro: "Full certified clip posting.",
+  },
+  {
+    feature: "Weekly Roundup",
+    student: "Curated to coursework and upcoming boards prep.",
+    pro: "Curated to clinical specialty and CE events.",
+  },
+  {
+    feature: "Nexus",
+    student: "Can follow and learn from clinicians.",
+    pro: "Full peer-to-peer clinical networking.",
   },
 ];
 
@@ -39,22 +61,64 @@ export default async function ProOverviewPage() {
       </p>
       <SubTabs tabs={PRO_TABS} />
 
+      <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+        <div className="card elev-sm" style={{ flex: 1 }}>
+          <div className="card-kicker">Student PRO</div>
+          <p className="card-body" style={{ marginTop: 4 }}>
+            Built around learning and preparation.
+          </p>
+        </div>
+        <div className="card elev-sm" style={{ flex: 1 }}>
+          <div className="card-kicker">LimbicPro</div>
+          <p className="card-body" style={{ marginTop: 4 }}>
+            Built around practice and efficiency.
+          </p>
+        </div>
+      </div>
+
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {FEATURES.map((f) => (
-            <div key={f.title} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-              <span
-                className={f.live ? "tag tag-accent" : "tag tag-neutral"}
-                style={{ flexShrink: 0, marginTop: 2 }}
-              >
-                {f.live ? "Live" : "Coming soon"}
-              </span>
-              <div>
-                <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, marginBottom: 2 }}>{f.title}</div>
-                <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>{f.description}</p>
-              </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+          <div className="card-kicker" style={{ margin: 0 }}>
+            What&rsquo;s coming
+          </div>
+          <span className="tag tag-neutral">Coming soon</span>
+        </div>
+        <div style={{ overflowX: "auto" }}>
+          <div style={{ minWidth: 560, display: "flex", flexDirection: "column" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "minmax(110px, 1fr) minmax(200px, 1.6fr) minmax(200px, 1.6fr)",
+                gap: 12,
+                fontSize: 11,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "var(--color-neutral-700)",
+                padding: "8px 0",
+                borderBottom: "1px solid var(--color-divider)",
+              }}
+            >
+              <div>Feature</div>
+              <div>Student PRO</div>
+              <div>LimbicPro</div>
             </div>
-          ))}
+            {TIER_COMPARISON.map((row) => (
+              <div
+                key={row.feature}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "minmax(110px, 1fr) minmax(200px, 1.6fr) minmax(200px, 1.6fr)",
+                  gap: 12,
+                  padding: "10px 0",
+                  borderBottom: "1px solid var(--color-divider)",
+                }}
+              >
+                <div style={{ fontFamily: "var(--font-heading)", fontSize: 14 }}>{row.feature}</div>
+                <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>{row.student}</p>
+                <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>{row.pro}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
