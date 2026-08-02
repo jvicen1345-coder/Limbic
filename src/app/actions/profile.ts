@@ -5,12 +5,16 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser, clearSessionForAddLicense } from "@/lib/session";
 import { redirect } from "next/navigation";
 
-export async function updateProfileFieldAction(
-  field: "name" | "specialty" | "practiceState" | "headline" | "bio",
-  value: string
-) {
+// A Server Action is callable as its own HTTP endpoint independent of which component
+// imported it — the parameter's union type only constrains callers going through the
+// compiled client wrapper, not a request built directly against the deployed action. This
+// runtime whitelist is what actually stops `field` from being an arbitrary User column.
+const EDITABLE_FIELDS = ["name", "specialty", "practiceState", "headline", "bio"] as const;
+type EditableField = (typeof EDITABLE_FIELDS)[number];
+
+export async function updateProfileFieldAction(field: EditableField, value: string) {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user || !EDITABLE_FIELDS.includes(field)) return;
   await prisma.user.update({ where: { id: user.id }, data: { [field]: value } });
   revalidatePath("/", "layout");
 }

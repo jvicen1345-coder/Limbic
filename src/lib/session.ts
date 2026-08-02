@@ -1,4 +1,5 @@
 import "server-only";
+import { randomUUID } from "node:crypto";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
@@ -60,10 +61,12 @@ export async function getCurrentUser(): Promise<User | null> {
 /**
  * Demo sign-in: any license number works, matching the prototype. Signing in again with the
  * same license number returns to the same persisted profile/saved data instead of creating a
- * new account each time.
+ * new account each time. A blank submission gets its own fresh, unique account rather than a
+ * shared fallback — otherwise every visitor who skips the field would land in the same row
+ * and see each other's saved articles, HEP programs, and messages.
  */
 export async function signInWithLicense(input: { number: string; state: string; email: string }) {
-  const licenseNumber = input.number.trim() || "PT-48213";
+  const licenseNumber = input.number.trim() || `guest-pt-${randomUUID()}`;
   const user = await prisma.user.upsert({
     where: { licenseNumber },
     update: { licenseState: input.state, licenseEmail: input.email },

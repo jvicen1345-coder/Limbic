@@ -42,33 +42,46 @@ export async function leaveNexusAction() {
 
 export async function sendConnectionRequestAction(recipientId: string) {
   const user = await getCurrentUser();
-  if (!user || user.id === recipientId) return;
+  if (!user || user.id === recipientId || !user.nexusOptIn) return;
 
-  const existing = await prisma.connection.findFirst({
-    where: {
-      OR: [
-        { requesterId: user.id, recipientId },
-        { requesterId: recipientId, recipientId: user.id },
-      ],
-    },
-  });
-  if (existing && existing.status !== "declined") return;
+  // The Directory only ever lists opted-in people, but that's a UI-level filter — without
+  // this check, a request built outside the app's own UI could still target (or come from)
+  // someone who never joined Nexus, or who joined and later left.
+  const recipient = await prisma.user.findUnique({ where: { id: recipientId }, select: { nexusOptIn: true } });
+  if (!recipient?.nexusOptIn) return;
 
-  if (existing) {
-    // A previously declined request can be re-sent, from either side.
-    await prisma.connection.update({
-      where: { id: existing.id },
-      data: { requesterId: user.id, recipientId, status: "pending", respondedAt: null },
+  // The existence check and the write are wrapped in one transaction so they're atomic —
+  // otherwise two people connecting with each other at nearly the same moment could each
+  // pass the "no existing row" check before either write lands, creating two rows (A→B
+  // and B→A) instead of one relationship, since the unique constraint is direction-
+  // sensitive and doesn't consider those the same pair.
+  await prisma.$transaction(async (tx) => {
+    const existing = await tx.connection.findFirst({
+      where: {
+        OR: [
+          { requesterId: user.id, recipientId },
+          { requesterId: recipientId, recipientId: user.id },
+        ],
+      },
     });
-  } else {
-    await prisma.connection.create({ data: { requesterId: user.id, recipientId } });
-  }
+    if (existing && existing.status !== "declined") return;
+
+    if (existing) {
+      // A previously declined request can be re-sent, from either side.
+      await tx.connection.update({
+        where: { id: existing.id },
+        data: { requesterId: user.id, recipientId, status: "pending", respondedAt: null },
+      });
+    } else {
+      await tx.connection.create({ data: { requesterId: user.id, recipientId } });
+    }
+  });
   revalidatePath("/nexus");
 }
 
 export async function respondConnectionAction(connectionId: string, accept: boolean) {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user || !user.nexusOptIn) return;
 
   const connection = await prisma.connection.findUnique({ where: { id: connectionId } });
   if (!connection || connection.recipientId !== user.id) return;
@@ -82,7 +95,7 @@ export async function respondConnectionAction(connectionId: string, accept: bool
 
 export async function createNexusPostAction(formData: FormData) {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user || !user.nexusOptIn) return;
 
   const body = String(formData.get("body") ?? "").trim();
   if (!body) return;
@@ -93,7 +106,7 @@ export async function createNexusPostAction(formData: FormData) {
 
 export async function toggleNexusLikeAction(postId: string) {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user || !user.nexusOptIn) return;
 
   const existing = await prisma.nexusPostLike.findUnique({
     where: { postId_userId: { postId, userId: user.id } },
@@ -108,7 +121,7 @@ export async function toggleNexusLikeAction(postId: string) {
 
 export async function addNexusCommentAction(postId: string, formData: FormData) {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user || !user.nexusOptIn) return;
 
   const body = String(formData.get("body") ?? "").trim();
   if (!body) return;
@@ -119,7 +132,7 @@ export async function addNexusCommentAction(postId: string, formData: FormData) 
 
 export async function sendNexusMessageAction(recipientId: string, formData: FormData) {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user || !user.nexusOptIn) return;
 
   const body = String(formData.get("body") ?? "").trim();
   if (!body) return;

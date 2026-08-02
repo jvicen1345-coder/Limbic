@@ -172,7 +172,9 @@ export const ALL_SEED_PEOPLE = [...REAL_PEOPLE, ...DEMO_PEOPLE];
 let ensured: Promise<void> | null = null;
 
 /** Upserts every seed profile + their one seed post. Cheap (fixed ids, no-op after the
- *  first call in a given database) so every Nexus page can just call this before querying. */
+ *  first call in a given database) so every Nexus page can just call this before querying.
+ *  If seeding fails, the cached promise is cleared so the *next* call retries instead of
+ *  every future call in this process replaying the same stale rejection forever. */
 export async function ensureNexusSeedData(): Promise<void> {
   if (!ensured) {
     ensured = (async () => {
@@ -206,7 +208,10 @@ export async function ensureNexusSeedData(): Promise<void> {
           });
         }
       }
-    })();
+    })().catch((err) => {
+      ensured = null;
+      throw err;
+    });
   }
   return ensured;
 }
