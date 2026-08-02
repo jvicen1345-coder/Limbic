@@ -96,7 +96,11 @@ export async function startAgentWeb(
   try {
     const message = await client.messages.parse({
       model: MODEL,
-      max_tokens: 1024,
+      // Generous headroom: "effort: medium" can spend a meaningful chunk of the budget on
+      // internal reasoning before it ever emits the structured JSON, and a truncated
+      // response fails to parse (see the catch below) — a low limit here reads as "Limbic
+      // Agent isn't available" even though the model was actually mid-answer.
+      max_tokens: 4096,
       output_config: { effort: "medium", format: zodOutputFormat(CenterResponseSchema) },
       system: systemPrompt(licensed),
       messages: [
@@ -122,7 +126,8 @@ export async function startAgentWeb(
       })),
     ];
     return { ok: true, nodes };
-  } catch {
+  } catch (err) {
+    console.error("Limbic Agent startAgentWeb failed:", err);
     return { ok: false, message: UNAVAILABLE_MESSAGE };
   }
 }
@@ -147,7 +152,7 @@ export async function expandAgentNode(
   try {
     const message = await client.messages.parse({
       model: MODEL,
-      max_tokens: 1024,
+      max_tokens: 4096,
       output_config: { effort: "medium", format: zodOutputFormat(ExpansionResponseSchema) },
       system: systemPrompt(licensed),
       messages: [
@@ -176,7 +181,8 @@ export async function expandAgentNode(
       expandable: childRing < 3,
     }));
     return { ok: true, nodes };
-  } catch {
+  } catch (err) {
+    console.error("Limbic Agent expandAgentNode failed:", err);
     return { ok: false, message: UNAVAILABLE_MESSAGE };
   }
 }
