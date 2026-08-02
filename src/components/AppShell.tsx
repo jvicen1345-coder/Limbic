@@ -117,6 +117,10 @@ interface NavContentProps {
   practiceState: string;
   hasLicense: boolean;
   isPro: boolean;
+  /** True for a .edu sign-in email (see lib/session.ts isStudentEmail) — Limbic Boards and
+   *  Daily Term are student-only products, hidden from the nav (and their routes redirect
+   *  to /pro) for anyone who doesn't qualify, same as the Pro-only sections below. */
+  isStudent: boolean;
   aptaCount: number;
   nexusRequestCount: number;
   /** Called after any nav link is clicked — used to close the mobile drawer on navigation. */
@@ -125,7 +129,7 @@ interface NavContentProps {
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
+function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
   return (
     <>
       <NavLink href="/" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
@@ -133,10 +137,14 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/profile" icon={<ProfileIcon />} label="Profile" onNavigate={onNavigate} />
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Health & Wellness" onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
-      <NavLink href="/wordle" icon={<GridIcon />} label="Daily Term" onNavigate={onNavigate} />
+      {isStudent && <NavLink href="/wordle" icon={<GridIcon />} label="Daily Term" onNavigate={onNavigate} />}
 
-      <div className="nav-section-label">Limbic Boards</div>
-      <NavLink href="/boards" icon={<GraduationCapIcon />} label="Daily Sharpening" bold={false} onNavigate={onNavigate} />
+      {isStudent && (
+        <>
+          <div className="nav-section-label">Limbic Boards</div>
+          <NavLink href="/boards" icon={<GraduationCapIcon />} label="Daily Sharpening" bold={false} onNavigate={onNavigate} />
+        </>
+      )}
 
       <div className="nav-section-label nav-section-label--brand">LimbicPRO</div>
       <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
@@ -200,6 +208,7 @@ export interface AppShellProps {
   practiceState: string;
   hasLicense: boolean;
   isPro: boolean;
+  isStudent: boolean;
   aptaCount: number;
   nexusRequestCount: number;
   savedCount: number;
@@ -212,13 +221,14 @@ export function AppShell({
   practiceState,
   hasLicense,
   isPro,
+  isStudent,
   aptaCount,
   nexusRequestCount,
   savedCount,
   children,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, aptaCount, nexusRequestCount };
+  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, aptaCount, nexusRequestCount };
 
   return (
     <div className="app-root">

@@ -39,6 +39,13 @@ model User {
   // it instead of the demo action, and nothing else in the app needs to change.
   isPro             Boolean  @default(false)
 
+  // Student tiers — "none" | "studentPro" | "studentProBoards" (a superset of studentPro).
+  // Only purchasable/visible for accounts signed in with a .edu email (see
+  // lib/session.ts isStudentEmail) — Limbic Boards and Daily Term are gated on that check,
+  // not on this field, since the tier is about what's purchasable, not who can sign in.
+  // Same demo-purchase pattern as isPro (see app/actions/pro.ts).
+  studentTier       String   @default("none")
+
   // Timestamp of the previous home-feed load, captured before it's overwritten with the
   // current one — this is what lets the feed tell "published since you were last here"
   // apart from everything else (see lib/session.ts recordVisitAndGetPrevious).

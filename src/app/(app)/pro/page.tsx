@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, isStudentEmail } from "@/lib/session";
 import { CrownIcon } from "@/components/icons";
 import { PRO_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
@@ -7,10 +7,11 @@ import { SubTabs } from "@/components/SubTabs";
 /**
  * The Pro roadmap: two tiers sharing the same six feature areas, each scoped to what
  * that audience actually needs — Student PRO for coursework/boards prep, LimbicPro for
- * practicing clinicians. This is still the plan, not a live comparison of two purchasable
- * products — Student PRO isn't a purchasable tier yet, and today's checkout flow further
- * down is still the single LimbicPro $25/month demo toggle. Limbic Boards (/boards) and
- * Limbic Agent (/agent, currently in demo mode) are the two rows actually built so far.
+ * practicing clinicians. Student PRO and Student PRO+ Boards are real (demo) purchasable
+ * tiers now, gated to .edu sign-ins (see the membership card below and lib/session.ts
+ * isStudentEmail) — Limbic Boards (/boards, /wordle) and Limbic Agent (/agent, currently
+ * in demo mode) are the built rows; HEP Builder/Verified Badge/Certified Clips/Weekly
+ * Roundup differentiation below is still just the plan.
  */
 const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
   {
@@ -50,10 +51,12 @@ const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
   },
 ];
 
-/** The planned tier ladder — order reflects a clinician's career stage (free -> student
- *  -> boards prep -> new grad -> full LimbicPro -> clinic/team), not sorted by price.
- *  Only LimbicPro is actually purchasable today (see the checkout card below); everything
- *  else here is priced but not yet built or billable. */
+/** The tier ladder — order reflects a clinician's career stage (free -> student -> boards
+ *  prep -> new grad -> full LimbicPro -> clinic/team), not sorted by price. LimbicPro,
+ *  Student PRO, and Student PRO+ Boards are purchasable today (demo — see the membership
+ *  card below); New Grad PRO and Clinic PRO are priced but not yet built or billable. */
+const PURCHASABLE_TIERS = new Set(["LimbicPro", "Student PRO", "Student PRO+ Boards"]);
+
 const PRICING_TIERS: { name: string; price: string; who: string }[] = [
   { name: "Free", price: "$0", who: "General public" },
   { name: "Student PRO", price: "$5/mo", who: "PT students" },
@@ -67,6 +70,10 @@ export default async function ProOverviewPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
+  const student = isStudentEmail(user.email);
+  const studentTierLabel =
+    user.studentTier === "studentProBoards" ? "Student PRO+ Boards" : user.studentTier === "studentPro" ? "Student PRO" : null;
+
   return (
     <div className="screen-pad">
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -76,7 +83,11 @@ export default async function ProOverviewPage() {
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         {user.isPro
           ? "You're a Pro member — thanks for supporting Limbic."
-          : "Clinician tools built for how you actually practice — all in the app, nothing emailed out."}
+          : studentTierLabel
+            ? `You're a ${studentTierLabel} member — thanks for supporting Limbic.`
+            : student
+              ? "PT student? Student PRO and Student PRO+ Boards are available for your .edu account below."
+              : "Clinician tools built for how you actually practice — all in the app, nothing emailed out."}
       </p>
       <SubTabs tabs={PRO_TABS} />
 
@@ -110,8 +121,8 @@ export default async function ProOverviewPage() {
                 gap: 2,
                 padding: "8px 14px",
                 borderRadius: "var(--radius-lg)",
-                background: tier.name === "LimbicPro" ? "var(--color-accent-100)" : "var(--color-neutral-100)",
-                color: tier.name === "LimbicPro" ? "var(--color-accent-800)" : "var(--color-neutral-800)",
+                background: PURCHASABLE_TIERS.has(tier.name) ? "var(--color-accent-100)" : "var(--color-neutral-100)",
+                color: PURCHASABLE_TIERS.has(tier.name) ? "var(--color-accent-800)" : "var(--color-neutral-800)",
               }}
             >
               <span style={{ fontSize: 12 }}>{tier.name}</span>
@@ -121,7 +132,9 @@ export default async function ProOverviewPage() {
           ))}
         </div>
         <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: "10px 0 0" }}>
-          Only LimbicPro is available to purchase today (demo) — the rest are priced but not yet built.
+          LimbicPro and the two Student tiers are available to purchase today (demo) — Student
+          PRO and Student PRO+ Boards require a .edu sign-in. New Grad PRO and Clinic PRO are
+          priced but not yet built.
         </p>
       </div>
 
@@ -171,7 +184,7 @@ export default async function ProOverviewPage() {
         </div>
       </div>
 
-      <div className="card elev-sm">
+      <div className="card elev-sm" style={{ marginBottom: student ? 12 : 0 }}>
         {user.isPro ? (
           <>
             <div className="card-kicker">Membership</div>
@@ -194,6 +207,32 @@ export default async function ProOverviewPage() {
           </>
         )}
       </div>
+
+      {student && (
+        <div className="card elev-sm">
+          {studentTierLabel ? (
+            <>
+              <div className="card-kicker">Student membership</div>
+              <p className="card-body" style={{ marginTop: 6 }}>
+                You have {studentTierLabel} access.
+              </p>
+              <Link href="/pro/membership" className="btn btn-secondary" style={{ marginTop: 10 }}>
+                Manage membership
+              </Link>
+            </>
+          ) : (
+            <>
+              <div className="card-kicker">Student PRO · from $5/month</div>
+              <p className="card-body" style={{ marginTop: 6 }}>
+                Demo only — this doesn&rsquo;t charge a real card.
+              </p>
+              <Link href="/pro/membership" className="btn btn-primary" style={{ marginTop: 10 }}>
+                See student tiers
+              </Link>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -59,6 +59,16 @@ export async function getCurrentUser(): Promise<User | null> {
 }
 
 /**
+ * Any .edu email counts as a student account — matches how most PT programs actually issue
+ * student addresses (school-specific subdomains included), rather than hardcoding a single
+ * literal domain. Only the General (email) sign-in flow sets `email` at all — a PT license
+ * sign-in leaves it null, so licensed PTs never qualify here regardless of licenseEmail.
+ */
+export function isStudentEmail(email: string | null | undefined): boolean {
+  return !!email && /\.edu$/i.test(email.trim());
+}
+
+/**
  * Demo sign-in: any license number works, matching the prototype. Signing in again with the
  * same license number returns to the same persisted profile/saved data instead of creating a
  * new account each time. A blank submission gets its own fresh, unique account rather than a

@@ -1,4 +1,5 @@
-import { getCurrentUser } from "@/lib/session";
+import { redirect } from "next/navigation";
+import { getCurrentUser, isStudentEmail } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { GraduationCapIcon } from "@/components/icons";
 import { BoardQuestionCard } from "@/components/BoardQuestionCard";
@@ -12,6 +13,10 @@ const CALENDAR_WINDOW_DAYS = 365;
 export default async function BoardsPage() {
   const user = await getCurrentUser();
   if (!user) return null;
+
+  // Same hard-redirect pattern as /agent's isPro gate — Limbic Boards is a student-only
+  // product, so a non-.edu account is sent to the Pro page rather than a dead-end here.
+  if (!isStudentEmail(user.email)) redirect("/pro");
 
   const dateKey = todayDateKey();
   const question = questionForDate(dateKey);
