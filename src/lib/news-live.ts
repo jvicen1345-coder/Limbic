@@ -10,20 +10,26 @@ import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
  * "Research" is sourced from PubMed, not this file — see lib/pubmed.ts — since it's the
  * actual authoritative medical-literature database rather than general news search.
  *
- * The remaining home-feed categories (guideline/industry/product) don't have a single
- * "PT industry news" API, so each is backed by a Google News RSS search (no API key
- * required) with a query tuned to that category. To keep general lifestyle/health
- * journalism from slipping onto the home page under a professional-sounding label, a
- * result only survives if it actually matches professional/medical-sector language (see
- * the `matchedTypeKeywords` confidence check in `classify` below) — anything that merely
- * came back from the search without a real keyword match is dropped rather than kept
- * under its query's category by default. General health/wellness content lives only on
- * the Health & Wellness page (`fetchLiveWellness` below), never here.
+ * The remaining home-feed categories (industry/product) don't have a single "PT industry
+ * news" API, so each is backed by a Google News RSS search (no API key required) with a
+ * query tuned to that category. To keep general lifestyle/health journalism from slipping
+ * onto the home page under a professional-sounding label, a result only survives if it
+ * actually matches professional/medical-sector language (see the `matchedTypeKeywords`
+ * confidence check in `classify` below) — anything that merely came back from the search
+ * without a real keyword match is dropped rather than kept under its query's category by
+ * default. General health/wellness content lives only on the Health & Wellness page
+ * (`fetchLiveWellness` below), never here.
  *
  * Results are keyword-classified into a specialty (ortho/neuro/sports/pediatric/geriatric)
  * the same way a real aggregator would bucket free-text into fixed categories — it's a
  * heuristic, not a guarantee, and is documented as such here rather than presented as more
  * rigorous than it is.
+ *
+ * "Guideline" is deliberately not a reachable outcome of that classifier (see the empty
+ * TYPE_KEYWORDS.guideline below) — "Guidelines" means the real, curated AOPT clinical
+ * practice guidelines in lib/orthopt-cpg-static.ts, not a news story that happens to use
+ * the word "guideline". classify() can still be handed a "guideline" defaultType in
+ * principle, but nothing calls it with one anymore.
  *
  * "CE & Events" is intentionally NOT sourced live: the home-feed calendar needs a precise
  * future event *date*, which generic news search doesn't carry (a story announcing a
@@ -136,7 +142,11 @@ const SPECIALTY_KEYWORDS: Record<Specialty, string[]> = {
 
 const TYPE_KEYWORDS: Record<ArticleType, string[]> = {
   research: ["study", "trial", "researchers", "journal", "randomized", "cohort", "findings"],
-  guideline: ["guideline", "recommendation", "consensus", "protocol", "best practice", "apta"],
+  // Empty on purpose: "Guidelines" now means the real, curated AOPT clinical practice
+  // guidelines in lib/orthopt-cpg-static.ts, not a keyword guess off general news search —
+  // see lib/articles.ts. An empty keyword list means classify() can never award a Google
+  // News result "guideline" as its best-match type.
+  guideline: [],
   industry: ["cms", "medicare", "medicaid", "reimbursement", "policy", "legislation", "law", "insurer", "payer", "regulation"],
   ce: ["webinar", "conference", "continuing education", "ce credit", "course", "csm", "symposium"],
   product: ["device", "wearable", "equipment", "fda clearance", "fda-cleared", "launch", "software", "app"],
@@ -234,7 +244,6 @@ export function allKnownKeywordTopics(): string[] {
 }
 
 const CATEGORY_QUERIES: { type: ArticleType; query: string }[] = [
-  { type: "guideline", query: "physical therapy clinical practice guideline APTA" },
   { type: "industry", query: "physical therapy Medicare reimbursement policy" },
   { type: "product", query: "physical therapy equipment device FDA clearance" },
 ];

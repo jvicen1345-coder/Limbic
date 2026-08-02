@@ -27,23 +27,6 @@ export const SEED_ARTICLES: Article[] = [
     ],
   },
   {
-    id: "a2",
-    type: "guideline",
-    specialty: "neuro",
-    title: "APTA updates stroke rehab guidelines: earlier task-specific gait training endorsed",
-    source: "APTA Clinical Practice Guidelines",
-    date: "2026-07-18",
-    readMins: 8,
-    summary:
-      "Revised guidance pushes task-specific, high-repetition gait training into the acute phase for medically stable patients — a shift from prior conservative timelines.",
-    tags: ["Stroke", "Gait training", "Acute care"],
-    body: [
-      "The updated guideline, developed with a multidisciplinary panel, now grades early task-specific gait training as a strong recommendation for medically stable stroke patients, starting as early as 24-48 hours post-event.",
-      "Body-weight-supported treadmill training and overground stepping practice are both endorsed, with dosage recommendations of at least 20 minutes of active stepping per session where tolerated.",
-      "Clinicians are advised to pair the guideline with standard medical stability screening — the panel stresses this is a floor for readiness, not a substitute for clinical judgment.",
-    ],
-  },
-  {
     id: "a3",
     type: "industry",
     specialty: "ortho",
@@ -113,23 +96,6 @@ export const SEED_ARTICLES: Article[] = [
     ],
   },
   {
-    id: "a7",
-    type: "guideline",
-    specialty: "ortho",
-    title: "Low back pain guideline update: imaging thresholds tightened again",
-    source: "Journal of Orthopaedic & Sports PT",
-    date: "2026-07-08",
-    readMins: 7,
-    summary:
-      "Revised recommendations narrow the red-flag criteria that should prompt imaging referral, aiming to cut unnecessary early MRI use further.",
-    tags: ["Low back pain", "Imaging", "Guidelines"],
-    body: [
-      "The update refines red-flag screening criteria for cauda equina, fracture, malignancy and infection, removing several low-yield items that were prompting unnecessary imaging referrals.",
-      "Clinicians are directed toward a structured watch-and-treat window of 4-6 weeks for uncomplicated acute low back pain before considering imaging, absent red flags.",
-      "The panel cites continued evidence that early MRI in uncomplicated cases correlates with worse outcomes, not better ones, likely via nocebo and downstream intervention effects.",
-    ],
-  },
-  {
     id: "a8",
     type: "industry",
     specialty: "neuro",
@@ -195,23 +161,6 @@ export const SEED_ARTICLES: Article[] = [
       "Thirty-two patients reporting persistent dizziness more than three months after COVID-19 infection completed a 6-week vestibular rehabilitation program combining gaze stabilization and habituation exercises.",
       "Average Dizziness Handicap Inventory scores dropped from 52 to 24, a clinically meaningful reduction, though the study lacked a control arm.",
       "Authors call for a larger controlled trial but say the results support offering vestibular rehab as a first-line option for this population now.",
-    ],
-  },
-  {
-    id: "a12",
-    type: "guideline",
-    specialty: "pediatric",
-    title: "Torticollis referral guideline lowers age threshold for PT evaluation",
-    source: "Pediatric Physical Therapy",
-    date: "2026-06-15",
-    readMins: 4,
-    summary:
-      "Updated consensus guidance recommends PT evaluation for congenital muscular torticollis start at 4 weeks rather than 8, citing better outcomes with earlier intervention.",
-    tags: ["Torticollis", "Infant care", "Guidelines"],
-    body: [
-      "The revised consensus statement recommends pediatric physical therapy evaluation begin at 4 weeks of age for infants with suspected congenital muscular torticollis, down from the prior 8-week threshold.",
-      "Supporting data shows infants starting stretching and positioning programs before 6 weeks reach full range of motion in significantly fewer treatment sessions.",
-      "The guideline also updates home-program handouts, now available in eleven languages through the sponsoring organization.",
     ],
   },
   {

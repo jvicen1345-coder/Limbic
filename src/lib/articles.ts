@@ -6,19 +6,22 @@ import { fetchPubmedResearch, fetchPubmedById } from "@/lib/pubmed";
 import { RETRACTION_WATCH_ARTICLES } from "@/lib/retraction-watch-data";
 import { fetchAptaNews } from "@/lib/apta-news";
 import { APTA_NEWS_SEED } from "@/lib/apta-news-static";
+import { ORTHOPT_CPG_SEED } from "@/lib/orthopt-cpg-static";
 
 export { WELLNESS_VIDEOS };
 
-const LIVE_TYPES: ArticleType[] = ["research", "guideline", "industry", "product"];
+const LIVE_TYPES: ArticleType[] = ["research", "industry", "product"];
 /** Below this many live results for a type, top it up with seed articles so the section
  *  never looks sparse (and so the app still works fully offline, falling all the way back
  *  to the bundled seed feed if every live source is unreachable). */
 const MIN_LIVE_PER_TYPE = 3;
 
 /**
- * The merged article feed: PubMed for research, Google-News-sourced guidelines/industry/
- * equipment, always-static CE & Events (see lib/news-live.ts for why), and always-static
- * "under review" items (an editorial workflow status, not a live-news concept).
+ * The merged article feed: PubMed for research, Google-News-sourced industry/equipment,
+ * always-static CE & Events (see lib/news-live.ts for why), always-static "under review"
+ * items (an editorial workflow status, not a live-news concept), and the always-static,
+ * real AOPT clinical practice guidelines (see lib/orthopt-cpg-static.ts — "Guidelines"
+ * means those specific documents, not a keyword guess off general news search).
  */
 export async function getArticles(): Promise<Article[]> {
   const [live, pubmedResearch] = await Promise.all([fetchLiveArticles(), fetchPubmedResearch()]);
@@ -47,6 +50,8 @@ export async function getArticles(): Promise<Article[]> {
   }
   // CE & Events (and the home-feed calendar) always reads from curated seed dates.
   SEED_ARTICLES.filter((a) => a.type === "ce").forEach(add);
+  // Guidelines always reads from the real, curated AOPT CPG list — never news search.
+  ORTHOPT_CPG_SEED.forEach(add);
 
   return result;
 }
