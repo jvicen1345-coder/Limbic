@@ -173,12 +173,16 @@ let ensured: Promise<void> | null = null;
 
 /** Upserts every seed profile + their one seed post. Cheap (fixed ids, no-op after the
  *  first call in a given database) so every Nexus page can just call this before querying.
+ *  Each person's own upsert-then-post-check is inherently sequential, but the people are
+ *  independent of each other — run across all of them at once rather than one full chain
+ *  at a time, since a cold call (a fresh serverless instance, before this ever lands in
+ *  cache) is otherwise up to ~30 round-trips deep before the first Nexus page can render.
  *  If seeding fails, the cached promise is cleared so the *next* call retries instead of
  *  every future call in this process replaying the same stale rejection forever. */
 export async function ensureNexusSeedData(): Promise<void> {
   if (!ensured) {
-    ensured = (async () => {
-      for (const person of ALL_SEED_PEOPLE) {
+    ensured = Promise.all(
+      ALL_SEED_PEOPLE.map(async (person) => {
         const user = await prisma.user.upsert({
           where: { id: person.id },
           update: {},
@@ -207,11 +211,13 @@ export async function ensureNexusSeedData(): Promise<void> {
             },
           });
         }
-      }
-    })().catch((err) => {
-      ensured = null;
-      throw err;
-    });
+      })
+    )
+      .then(() => undefined)
+      .catch((err) => {
+        ensured = null;
+        throw err;
+      });
   }
   return ensured;
 }

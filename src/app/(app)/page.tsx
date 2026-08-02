@@ -50,26 +50,6 @@ export default async function HomePage() {
   const savedIds = savedRows.map((r) => r.articleId);
   const readingWeeks = buildReadingCalendarWeeks(readCalendarRows.map((r) => r.createdAt));
 
-  // Suggestions are only meaningful (and only shown) once the viewer has opted into Nexus
-  // themselves — otherwise the aside offers a join prompt instead (see HomeFeed).
-  let nexusSuggestions: NexusSuggestion[] | null = null;
-  if (user.nexusOptIn) {
-    await ensureNexusSeedData();
-    const [nexusCandidates, connectionStates] = await Promise.all([
-      prisma.user.findMany({
-        where: { id: { not: user.id }, isGuest: false, nexusOptIn: true },
-        select: { id: true, name: true, headline: true },
-        orderBy: { createdAt: "asc" },
-        take: 25,
-      }),
-      getConnectionStates(user.id),
-    ]);
-    nexusSuggestions = nexusCandidates
-      .filter((p) => (connectionStates.get(p.id) ?? { status: "none" as const }).status === "none")
-      .slice(0, NEXUS_SUGGESTIONS_SIZE)
-      .map((p) => ({ id: p.id, name: p.name, headline: p.headline, state: { status: "none" } }));
-  }
-
   const ranked = rankFeed(articles, user.specialty as Specialty, user.followedTopics as unknown as string[]);
   const decorated = ranked.map((a) => decorateArticle(a, savedIds, previousVisit));
 
@@ -82,7 +62,34 @@ export default async function HomePage() {
     .slice()
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, NEWS_TICKER_SIZE);
-  const newsTickerWithImages = await attachRealImages(newsTickerCandidates);
+
+  // Independent of each other, so run concurrently rather than making the og-image scrape
+  // (always runs) wait behind the Nexus lookups (only when nexusOptIn is set), or vice
+  // versa. Suggestions are only meaningful (and only shown) once the viewer has opted into
+  // Nexus themselves — otherwise the aside offers a join prompt instead (see HomeFeed).
+  const nexusSuggestionsPromise: Promise<NexusSuggestion[] | null> = user.nexusOptIn
+    ? (async () => {
+        await ensureNexusSeedData();
+        const [nexusCandidates, connectionStates] = await Promise.all([
+          prisma.user.findMany({
+            where: { id: { not: user.id }, isGuest: false, nexusOptIn: true },
+            select: { id: true, name: true, headline: true },
+            orderBy: { createdAt: "asc" },
+            take: 25,
+          }),
+          getConnectionStates(user.id),
+        ]);
+        return nexusCandidates
+          .filter((p) => (connectionStates.get(p.id) ?? { status: "none" as const }).status === "none")
+          .slice(0, NEXUS_SUGGESTIONS_SIZE)
+          .map((p) => ({ id: p.id, name: p.name, headline: p.headline, state: { status: "none" } }));
+      })()
+    : Promise.resolve(null);
+
+  const [newsTickerWithImages, nexusSuggestions] = await Promise.all([
+    attachRealImages(newsTickerCandidates),
+    nexusSuggestionsPromise,
+  ]);
   const newsTicker = newsTickerWithImages.map((a) => decorateArticle(a, savedIds));
 
   const stock = buildStockView(stockSeries);
