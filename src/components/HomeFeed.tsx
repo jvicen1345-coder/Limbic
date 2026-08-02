@@ -7,6 +7,7 @@ import { Chip } from "@/components/Chip";
 import { ArticleCard, HeroArticleCard } from "@/components/ArticleCard";
 import { CalendarCard, type CeEvent } from "@/components/CalendarCard";
 import { ContinueReadingCard, type ContinueReadingData } from "@/components/ContinueReadingCard";
+import { DailyDashboard, type DailyDashboardData } from "@/components/DailyDashboard";
 import { StockCard } from "@/components/StockCard";
 import { RevolvingNews } from "@/components/RevolvingNews";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
@@ -35,19 +36,18 @@ export function HomeFeed({
   ceEvents,
   stock,
   newsTicker,
-  firstName,
   license,
   savedUnread,
   nexusSuggestions,
   streakDays,
   readingWeeks,
   continueReading,
+  dashboard,
 }: {
   articles: DecoratedArticle[];
   ceEvents: CeEvent[];
   stock: StockView;
   newsTicker: DecoratedArticle[];
-  firstName: string;
   license: LicenseView | null;
   savedUnread: DecoratedArticle[];
   /** null when the viewer hasn't opted into Nexus yet — renders an invitation instead of
@@ -57,6 +57,7 @@ export function HomeFeed({
   readingWeeks: ReadingCalendarDay[][];
   /** null when there's no reading history yet — see app/(app)/page.tsx. */
   continueReading: ContinueReadingData | null;
+  dashboard: DailyDashboardData;
 }) {
   const [filter, setFilter] = useState<ArticleType | "all">("all");
   const [page, setPage] = useState(1);
@@ -80,10 +81,10 @@ export function HomeFeed({
     <div className="home-pad">
       <div className="home-row">
         <div className="home-main-col">
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 4 }}>
             <div>
-              <div style={{ fontSize: 13, color: "var(--color-neutral-700)", marginBottom: 2 }}>Good to see you,</div>
-              <h1 style={{ fontSize: 26, margin: 0 }}>{firstName}</h1>
+              <h1 style={{ fontSize: 26, margin: 0 }}>{dashboard.greeting}</h1>
+              <div style={{ fontSize: 13, color: "var(--color-neutral-700)", marginTop: 2 }}>{dashboard.dateLabel}</div>
               {license && license.cePercent < 100 && (
                 <Link
                   href="/profile"
@@ -97,6 +98,10 @@ export function HomeFeed({
             <Link href="/search" className="btn btn-secondary btn-icon" aria-label="Search">
               <SearchIcon size={17} />
             </Link>
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <DailyDashboard data={dashboard} />
           </div>
 
           <div className="filter-row" style={{ marginBottom: 20 }}>

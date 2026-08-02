@@ -1,8 +1,8 @@
-import { getCurrentUser, recordHomeVisit } from "@/lib/session";
+import { getCurrentUser, recordHomeVisit, isStudentEmail } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getArticles } from "@/lib/articles";
 import { decorateArticle, rankFeed, type DecoratedArticle } from "@/lib/feed";
-import { firstName as firstNameOf } from "@/lib/meta";
+import { firstName as firstNameOf, timeOfDayGreeting, credentialFromName } from "@/lib/meta";
 import { getUsphSeries, buildStockView } from "@/lib/stock";
 import { attachRealImages } from "@/lib/og-image";
 import { buildLicenseView } from "@/lib/license";
@@ -55,6 +55,24 @@ export default async function HomePage() {
   const savedIds = savedRows.map((r) => r.articleId);
   const readIds = readRows.map((r) => r.articleId);
   const readingWeeks = buildReadingCalendarWeeks(readCalendarRows.map((r) => r.createdAt));
+
+  // Daily PT Dashboard (see components/DailyDashboard.tsx) — greeting/date are computed
+  // off the server's local clock, same as every other "today" concept in this app (see
+  // lib/reading-calendar.ts, components/CalendarCard.tsx — none of them track a per-user
+  // timezone either).
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const credential = credentialFromName(user.name);
+  const greetingName = firstNameOf(user.name);
+  const greeting = `${timeOfDayGreeting(now.getHours())}, ${greetingName}${credential ? `, ${credential}` : ""}`;
+  const dateLabel = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const newStudiesToday = articles.filter((a) => a.type === "research" && a.date === todayStr).length;
+  const newGuidelinesToday = articles.filter((a) => a.type === "guideline" && a.date === todayStr).length;
+  // Limbic Boards' daily question is normally a student-only product (see
+  // app/(app)/boards/page.tsx), but a licensed PT/clinician account gets access to just
+  // that one question — not the rest of Boards — so the dashboard card shows for both.
+  const showQuestionOfDay = isStudentEmail(user.email) || user.licenseNumber != null;
+  const ceHoursCompleted = (user.ceCategories as unknown as CeCategory[]).reduce((sum, c) => sum + c.completed, 0);
 
   // Falls back to null (renders nothing — see ContinueReadingCard) if there's no reading
   // history yet, or if the most recently read article has since dropped out of the current
@@ -118,8 +136,9 @@ export default async function HomePage() {
 
   const readIdSet = new Set(readIds);
   const decoratedById = new Map(decorated.map((a) => [a.id, a]));
-  const savedUnread = savedRows
-    .filter((r) => !readIdSet.has(r.articleId))
+  const savedUnreadRows = savedRows.filter((r) => !readIdSet.has(r.articleId));
+  const savedUnread = savedUnreadRows
+    .slice()
     .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
     .slice(0, SAVED_UNREAD_SIZE)
     .map((r) => decoratedById.get(r.articleId))
@@ -134,19 +153,30 @@ export default async function HomePage() {
       )
     : null;
 
+  const dashboard = {
+    greeting,
+    dateLabel,
+    newStudiesToday,
+    newGuidelinesToday,
+    showQuestionOfDay,
+    streakDays: user.streakDays,
+    ceHoursCompleted,
+    savedUnfinishedCount: savedUnreadRows.length,
+  };
+
   return (
     <HomeFeed
       articles={decorated}
       ceEvents={ceEvents}
       stock={stock}
       newsTicker={newsTicker}
-      firstName={firstNameOf(user.name)}
       license={license}
       savedUnread={savedUnread}
       nexusSuggestions={nexusSuggestions}
       streakDays={user.streakDays}
       readingWeeks={readingWeeks}
       continueReading={continueReading}
+      dashboard={dashboard}
     />
   );
 }

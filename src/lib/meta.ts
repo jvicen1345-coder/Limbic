@@ -47,6 +47,25 @@ export function firstName(name: string): string {
   return name.replace(/^Dr\.\s*/, "").split(" ")[0];
 }
 
+/** "Good morning/afternoon/evening" off a 0-23 local hour — for the Home page's Daily PT
+ *  Dashboard greeting (see app/(app)/page.tsx). Standard tri-split: before noon, before
+ *  5pm, everything else. */
+export function timeOfDayGreeting(hour: number): string {
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+/** A credential suffix like "PT" out of a name like "Dr. Amara Chen, PT" — null for names
+ *  with no comma (e.g. a general sign-in's plain "John Doe", see lib/session.ts
+ *  nameFromEmail), which have no credential to show. */
+export function credentialFromName(name: string): string | null {
+  const commaIndex = name.lastIndexOf(",");
+  if (commaIndex === -1) return null;
+  const credential = name.slice(commaIndex + 1).trim();
+  return credential || null;
+}
+
 /** m:ss, for Daily Term / Limbic Boards completion times (see
  *  app/actions/daily-completion.ts) — clamped at 0 since a clock skew or a stale client
  *  timestamp could otherwise produce a negative elapsed time. */

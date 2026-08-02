@@ -14,28 +14,53 @@ export default async function BoardsPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  // Same hard-redirect pattern as /agent's isPro gate — Limbic Boards is a student-only
-  // product, so a non-.edu account is sent to the Pro page rather than a dead-end here.
-  if (!isStudentEmail(user.email)) redirect("/pro");
+  const isStudent = isStudentEmail(user.email);
+  // A licensed PT/clinician account (see lib/session.ts signInWithLicense) gets access to
+  // just today's question — not the rest of Limbic Boards, which stays a student-only
+  // product (see the conditional render below). Anyone who's neither is sent to the Pro
+  // page rather than a dead-end here, same hard-redirect pattern as /agent's isPro gate.
+  const isClinician = user.licenseNumber != null;
+  if (!isStudent && !isClinician) redirect("/pro");
 
   const dateKey = todayDateKey();
   const question = questionForDate(dateKey);
+
+  const questionCompletion = await prisma.dailyCompletion.findUnique({
+    where: { userId_kind_dateKey: { userId: user.id, kind: "boardQuestion", dateKey } },
+  });
+
+  if (!isStudent) {
+    return (
+      <div className="screen-pad" style={{ maxWidth: 640, margin: "0 auto" }}>
+        <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Question of the Day</h1>
+        <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
+          A board-style question for clinicians to keep sharp on — the rest of Limbic Boards is a student product.
+        </p>
+        <BoardQuestionCard
+          dateKey={dateKey}
+          question={question}
+          initialSelectedIndex={questionCompletion?.selectedIndex ?? null}
+          initialElapsedSeconds={questionCompletion?.elapsedSeconds ?? null}
+          nexusOptIn={user.nexusOptIn}
+        />
+      </div>
+    );
+  }
+
   const term = termForDate(dateKey);
 
   const windowStart = new Date();
   windowStart.setDate(windowStart.getDate() - (CALENDAR_WINDOW_DAYS - 1));
-  const [activityRows, completionRows] = await Promise.all([
+  const [activityRows, termCompletion] = await Promise.all([
     prisma.boardActivity.findMany({
       where: { userId: user.id, createdAt: { gte: windowStart } },
       select: { createdAt: true },
     }),
-    prisma.dailyCompletion.findMany({
-      where: { userId: user.id, dateKey, kind: { in: ["boardQuestion", "boardTerm"] } },
+    prisma.dailyCompletion.findUnique({
+      where: { userId_kind_dateKey: { userId: user.id, kind: "boardTerm", dateKey } },
     }),
   ]);
   const weeks = buildReadingCalendarWeeks(activityRows.map((r) => r.createdAt));
-  const questionCompletion = completionRows.find((r) => r.kind === "boardQuestion");
-  const termCompletion = completionRows.find((r) => r.kind === "boardTerm");
 
   return (
     <div className="screen-pad" style={{ maxWidth: 640, margin: "0 auto" }}>
