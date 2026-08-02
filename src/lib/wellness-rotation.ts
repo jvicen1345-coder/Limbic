@@ -1,4 +1,5 @@
 import "server-only";
+import { withSeenId } from "@/lib/seen-tracking";
 import type { WellnessArticle } from "@/lib/types";
 
 /** How many articles/videos the Health & Wellness page shows at once. Videos are capped by
@@ -49,9 +50,7 @@ export function computeWellnessSet(
 /** Appends a newly-opened id to the history (no-op if already present), pruning down to
  *  the most recent MAX_OPENED_HISTORY entries so the JSON column doesn't grow unbounded. */
 export function withOpenedId(openedIds: string[], id: string): string[] {
-  if (openedIds.includes(id)) return openedIds;
-  const next = [...openedIds, id];
-  return next.length > MAX_OPENED_HISTORY ? next.slice(next.length - MAX_OPENED_HISTORY) : next;
+  return withSeenId(openedIds, id, MAX_OPENED_HISTORY);
 }
 
 /** Rebuilds a WellnessArticle from a saved "article"-kind SavedWellness row, for rendering

@@ -175,6 +175,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" bold={false} onNavigate={onNavigate} />
       <NavLink href="/saved/guidelines" icon={<CheckCircleIcon />} label="Saved Guidelines" bold={false} onNavigate={onNavigate} />
       <NavLink href="/saved/wellness" icon={<WellnessIcon />} label="Health & Wellness" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/saved/clips" icon={<FilmIcon />} label="Saved Clips" bold={false} onNavigate={onNavigate} />
 
       <div className="nav-section-label">Articles</div>
       <NavLink href="/apta-news" icon={<ZapIcon />} label="APTA News" badge={aptaCount} bold={false} onNavigate={onNavigate} />

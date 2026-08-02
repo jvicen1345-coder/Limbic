@@ -80,8 +80,15 @@ model User {
   wellnessVideoIds   Json @default("[]")
   wellnessOpenedIds  Json @default("[]")
 
+  // Every Clip id the user has scrolled past (see lib/clip-rotation.ts), bounded/pruned the
+  // same way as wellnessOpenedIds. The curated CLIPS pool (lib/clips-static.ts) is small and
+  // finite, so this can't guarantee never repeating — it's what lets the feed put
+  // never-seen clips first each visit instead of always restarting from the same c1.
+  clipsSeenIds Json @default("[]")
+
   savedArticles       SavedArticle[]
   savedWellness       SavedWellness[]
+  savedClips          SavedClip[]
   hepPrograms         HepProgram[]
   readArticles        ReadArticle[]
   boardActivity       BoardActivity[]
@@ -217,6 +224,24 @@ model SavedWellness {
   duration  String?
 
   @@unique([userId, itemId])
+}
+
+// A bookmark on a Clips short — snapshot at save time, same reasoning as SavedWellness.
+// A dedicated model rather than reusing SavedWellness since a clip carries a specialty
+// (for the Clips feed's tag) instead of a duration/readMins/summary.
+model SavedClip {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clipId    String
+  createdAt DateTime @default(now())
+
+  title     String
+  source    String
+  url       String
+  specialty String
+
+  @@unique([userId, clipId])
 }
 
 model HepProgram {

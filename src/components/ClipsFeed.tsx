@@ -1,20 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { SaveButton } from "@/components/SaveButton";
+import { ClipSaveButton } from "@/components/ClipSaveButton";
+import { markClipSeenAction } from "@/app/actions/clips";
 import { VolumeIcon, VolumeMuteIcon, ExternalLinkIcon } from "@/components/icons";
 import { SPECIALTY_META, youtubeEmbedUrl, youtubeThumbnailUrl } from "@/lib/meta";
+import { shuffle } from "@/lib/shuffle";
 import type { Clip } from "@/lib/types";
-
-/** Clip ids are saved under a "clip-" prefixed key in the same SavedArticle table as
- *  everything else — cheap, and lays the groundwork for a future "Saved Clips" view. */
-function savedKey(clip: Clip): string {
-  return `clip-${clip.id}`;
-}
 
 // The curated clip list is small and finite, so a continuous ("for you"-style) feed loops
 // it rather than dead-ending — each time the reader scrolls within this many slides of the
-// end, another lap of the same clips is appended, same content each time around.
+// end, another lap is appended. `clips` already arrives ordered never-seen-first for this
+// visit (see lib/clip-rotation.ts orderClipsForUser); each additional lap is a fresh
+// shuffle rather than repeating the exact same sequence, so looping doesn't feel like the
+// same fixed loop every time either.
 const APPEND_WHEN_WITHIN = 2;
 
 interface ClipSlot {
@@ -75,9 +74,7 @@ function ClipSlide({
           <button type="button" className="clip-action-btn" onClick={onToggleMute} aria-label={muted ? "Unmute" : "Mute"}>
             {muted ? <VolumeMuteIcon size={20} /> : <VolumeIcon size={20} />}
           </button>
-          <div className="clip-action-btn" style={{ padding: 0 }}>
-            <SaveButton articleId={savedKey(clip)} saved={saved} />
-          </div>
+          <ClipSaveButton clip={clip} saved={saved} />
           <a
             href={clip.url}
             target="_blank"
@@ -94,19 +91,28 @@ function ClipSlide({
   );
 }
 
-export function ClipsFeed({ clips, savedIds }: { clips: Clip[]; savedIds: string[] }) {
-  const [laps, setLaps] = useState(1);
+export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds: string[] }) {
+  // lap 0 is exactly the server-provided order (never-seen-first for this visit — see
+  // lib/clip-rotation.ts); each additional lap (appended directly by the intersection
+  // observer below, as the reader nears the end) gets its own fresh shuffle, generated
+  // once and cached here rather than recomputed on every render, so laps already scrolled
+  // past never silently reorder underneath the reader.
+  // clips arrives fresh from the server on every navigation to /clips — a distinct route,
+  // so this component fully unmounts and remounts rather than receiving an updated prop —
+  // meaning lazy-initializing state from it here is enough, with no separate reset needed
+  // for a prop change that doesn't happen in practice.
+  const [lapOrders, setLapOrders] = useState<Clip[][]>(() => (clips.length ? [clips] : []));
   const [activeSlotId, setActiveSlotId] = useState<string | null>(clips[0] ? `${clips[0].id}__0` : null);
   const [muted, setMuted] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const slots = useMemo(() => {
     const out: ClipSlot[] = [];
-    for (let lap = 0; lap < laps; lap++) {
-      for (const clip of clips) out.push({ clip, slotId: `${clip.id}__${lap}` });
-    }
+    lapOrders.forEach((order, lap) => {
+      for (const clip of order) out.push({ clip, slotId: `${clip.id}__${lap}` });
+    });
     return out;
-  }, [clips, laps]);
+  }, [lapOrders]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -123,8 +129,8 @@ export function ClipsFeed({ clips, savedIds }: { clips: Clip[]; savedIds: string
         setActiveSlotId(slotId);
 
         const index = slots.findIndex((s) => s.slotId === slotId);
-        if (index !== -1 && index >= slots.length - APPEND_WHEN_WITHIN) {
-          setLaps((l) => l + 1);
+        if (index !== -1 && index >= slots.length - APPEND_WHEN_WITHIN && clips.length > 0) {
+          setLapOrders((prev) => [...prev, shuffle(clips)]);
         }
       },
       { root: container, threshold: [0.6] }
@@ -133,7 +139,15 @@ export function ClipsFeed({ clips, savedIds }: { clips: Clip[]; savedIds: string
     const slides = container.querySelectorAll("[data-slot-id]");
     slides.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [slots]);
+  }, [slots, clips]);
+
+  // Marks the active clip "seen" (fire-and-forget) so the ordering on the next visit puts
+  // it after whatever's still unseen — only fires on an actual change of active clip, not
+  // on every intersection-observer callback for the same one.
+  useEffect(() => {
+    const active = slots.find((s) => s.slotId === activeSlotId);
+    if (active) markClipSeenAction(active.clip.id);
+  }, [activeSlotId, slots]);
 
   return (
     <div className="clips-feed" ref={containerRef}>
@@ -145,7 +159,7 @@ export function ClipsFeed({ clips, savedIds }: { clips: Clip[]; savedIds: string
           active={slot.slotId === activeSlotId}
           muted={muted}
           onToggleMute={() => setMuted((m) => !m)}
-          saved={savedIds.includes(savedKey(slot.clip))}
+          saved={savedClipIds.includes(slot.clip.id)}
         />
       ))}
     </div>
