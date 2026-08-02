@@ -25,7 +25,9 @@ async function fetchJson(url: string): Promise<unknown | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
-    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 900 } });
+    // Tagged so the Home refresh button (see app/actions/home.ts) can force a fresh
+    // PubMed pull on demand via revalidateTag, without waiting out the window.
+    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 900, tags: ["live-research"] } });
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -39,7 +41,7 @@ async function fetchText(url: string): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
-    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 900 } });
+    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 900, tags: ["live-research"] } });
     if (!res.ok) return null;
     return await res.text();
   } catch {

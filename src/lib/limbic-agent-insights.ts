@@ -3,17 +3,24 @@ import { SPECIALTIES, SPECIALTY_META } from "@/lib/meta";
 
 const RECENT_WINDOW_DAYS = 7;
 const RECENT_TOPICS_COUNT = 3;
+const MAX_NEGLECTED_TOPICS = 3;
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+export interface NeglectedTopic {
+  topic: string;
+  /** Days since this topic was last read, or since account creation if it's never been
+   *  read at all. */
+  gapDays: number;
+  recommendedArticle: { id: string; title: string } | null;
+}
 
 export interface LimbicAgentInsights {
   /** Up to the last 3 distinct specialties read in the past 7 days, most recent first. */
   recentTopics: string[];
-  /** The followed topic (or, with no followed topics yet, canonical specialty) with the
-   *  longest gap since it was last read — null when there's no reading history at all. */
-  gapTopic: string | null;
-  /** Days since gapTopic was last read, or since account creation if it's never been read. */
-  gapDays: number | null;
-  recommendedArticle: { id: string; title: string } | null;
+  /** Up to the 3 followed topics (or, with none followed yet, canonical specialties) with
+   *  the longest gap since they were last read, longest gap first — empty when there's no
+   *  reading history at all. */
+  neglectedTopics: NeglectedTopic[];
 }
 
 const specialtyLabel = (s: Article["specialty"]) => SPECIALTY_META[s];
@@ -37,7 +44,7 @@ export function buildLimbicAgentInsights(
   accountCreatedAt: Date
 ): LimbicAgentInsights {
   if (readRows.length === 0) {
-    return { recentTopics: [], gapTopic: null, gapDays: null, recommendedArticle: null };
+    return { recentTopics: [], neglectedTopics: [] };
   }
 
   const articleById = new Map(articles.map((a) => [a.id, a]));
@@ -54,34 +61,35 @@ export function buildLimbicAgentInsights(
     if (recentTopics.length >= RECENT_TOPICS_COUNT) break;
   }
 
-  // No followed topics yet (a common state for new accounts) falls back to the 5
-  // canonical specialties, so the gap insight still has something to say rather than
-  // going blank the moment reading history exists but topic-following hasn't started.
+  // No followed topics yet (a common state for skipped onboarding or legacy accounts)
+  // falls back to the 5 canonical specialties, so the card still has something to say
+  // rather than going blank the moment reading history exists but topic-following doesn't.
   const gapCandidates = followedTopics.length > 0 ? followedTopics : SPECIALTIES.map((s) => s.label);
-  let gapTopic: string | null = null;
-  let gapDays = -1;
-  for (const topic of gapCandidates) {
+  const withGaps = gapCandidates.map((topic) => {
     const lastMatch = readRows.find((row) => {
       const article = articleById.get(row.articleId);
       return article != null && topicMatchesArticle(topic, article);
     });
     const since = lastMatch ? lastMatch.updatedAt : accountCreatedAt;
     const days = Math.floor((now - since.getTime()) / DAY_MS);
-    if (days > gapDays) {
-      gapDays = days;
-      gapTopic = topic;
-    }
-  }
+    return { topic, days };
+  });
+  withGaps.sort((a, b) => b.days - a.days);
 
-  let recommendedArticle: LimbicAgentInsights["recommendedArticle"] = null;
-  if (gapTopic) {
-    const readIds = new Set(readRows.map((r) => r.articleId));
-    const matches = articles.filter((a) => topicMatchesArticle(gapTopic!, a));
+  const readIds = new Set(readRows.map((r) => r.articleId));
+  // Tracked across topics so two neglected topics that share a tag don't both recommend
+  // the exact same article — each row should point somewhere different when possible.
+  const usedArticleIds = new Set<string>();
+  const neglectedTopics: NeglectedTopic[] = withGaps.slice(0, MAX_NEGLECTED_TOPICS).map(({ topic, days }) => {
+    const matches = articles.filter((a) => topicMatchesArticle(topic, a));
     const unread = matches.filter((a) => !readIds.has(a.id));
-    const pool = unread.length > 0 ? unread : matches;
-    const best = pool.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-    if (best) recommendedArticle = { id: best.id, title: best.title };
-  }
+    const pool = (unread.length > 0 ? unread : matches)
+      .slice()
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const best = pool.find((a) => !usedArticleIds.has(a.id)) ?? pool[0] ?? null;
+    if (best) usedArticleIds.add(best.id);
+    return { topic, gapDays: days, recommendedArticle: best ? { id: best.id, title: best.title } : null };
+  });
 
-  return { recentTopics, gapTopic, gapDays: gapDays >= 0 ? gapDays : null, recommendedArticle };
+  return { recentTopics, neglectedTopics };
 }

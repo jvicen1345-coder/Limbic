@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { buildLicenseView } from "@/lib/license";
-import { SPECIALTIES, TYPES } from "@/lib/meta";
+import { SUGGESTED_TOPICS } from "@/lib/meta";
 import { allKnownKeywordTopics } from "@/lib/news-live";
 import { buildReadingCalendarWeeks } from "@/lib/reading-calendar";
 import type { CeCategory } from "@/lib/types";
@@ -15,10 +15,8 @@ import { goAddLicenseAction } from "@/app/actions/profile";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
 import { HOME_WIDGETS } from "@/lib/home-widgets";
 
-// The canonical specialty/type labels, always shown first — clean and stable, unlike the
-// long tail of keyword topics below, which come from a fixed vocabulary rather than
-// whatever's currently loaded (see allKnownKeywordTopics).
-const SUGGESTED_TOPICS = [...SPECIALTIES.map((s) => s.label), ...TYPES.map((t) => t.label)];
+// The long tail of keyword topics not already covered by SUGGESTED_TOPICS — comes from a
+// fixed vocabulary rather than whatever's currently loaded (see allKnownKeywordTopics).
 const BROWSABLE_TOPICS = allKnownKeywordTopics().filter((t) => !SUGGESTED_TOPICS.includes(t));
 
 const READING_CALENDAR_WINDOW_DAYS = 365;

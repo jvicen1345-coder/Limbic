@@ -8,6 +8,7 @@ import { AppShell } from "@/components/AppShell";
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
+  if (!user.hasOnboarded) redirect("/onboarding");
 
   const [aptaArticles, savedCount, nexusRequestCount] = await Promise.all([
     getAptaNewsArticles(),

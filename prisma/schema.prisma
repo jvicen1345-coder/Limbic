@@ -70,6 +70,14 @@ model User {
   // means "show everything", same as every existing account before this field existed.
   hiddenHomeWidgets Json     @default("[]")
 
+  // Gates the one-time "pick your interests" screen at app/onboarding (see
+  // app/(app)/layout.tsx) for brand-new accounts. Defaults to true (not false) so this
+  // field's own rollout doesn't retroactively send every existing account back through
+  // onboarding — every account-creation path (lib/session.ts signInWithLicense/
+  // signInWithEmail/signInAsGuest) explicitly sets this false only in its own `create`
+  // branch, never in an `update` branch, so a returning user is never affected.
+  hasOnboarded      Boolean  @default(true)
+
   // Limbic Boards (student daily-habit tools) streak — same nextStreak() logic as the
   // reading streak above, driven off BoardActivity rows instead of ReadArticle ones.
   lastBoardsActivityAt DateTime?

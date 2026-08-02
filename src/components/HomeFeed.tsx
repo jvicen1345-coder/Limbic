@@ -9,6 +9,7 @@ import { CalendarCard, type CeEvent } from "@/components/CalendarCard";
 import { ContinueReadingCard, type ContinueReadingData } from "@/components/ContinueReadingCard";
 import { DailyDashboard, type DailyDashboardData } from "@/components/DailyDashboard";
 import { LimbicAgentCard } from "@/components/LimbicAgentCard";
+import { RefreshHomeFeedButton } from "@/components/RefreshHomeFeedButton";
 import { StockCard } from "@/components/StockCard";
 import { RevolvingNews } from "@/components/RevolvingNews";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
@@ -100,9 +101,12 @@ export function HomeFeed({
                 </Link>
               )}
             </div>
-            <Link href="/search" className="btn btn-secondary btn-icon" aria-label="Search">
-              <SearchIcon size={17} />
-            </Link>
+            <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+              <RefreshHomeFeedButton />
+              <Link href="/search" className="btn btn-secondary btn-icon" aria-label="Search">
+                <SearchIcon size={17} />
+              </Link>
+            </div>
           </div>
 
           <div style={{ marginBottom: 20 }}>

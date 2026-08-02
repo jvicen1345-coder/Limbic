@@ -86,13 +86,14 @@ export async function signInWithLicense(input: { number: string; state: string; 
       licenseEmail: input.email,
       licenseExpiration: new Date("2027-03-31"),
       ceCategories: DEFAULT_CE_CATEGORIES,
+      hasOnboarded: false,
     },
   });
   await issueSessionCookie(user.id);
 }
 
 export async function signInAsGuest() {
-  const user = await prisma.user.create({ data: { isGuest: true } });
+  const user = await prisma.user.create({ data: { isGuest: true, hasOnboarded: false } });
   await issueSessionCookie(user.id);
 }
 
@@ -111,7 +112,7 @@ export async function signInWithEmail(input: { email: string }) {
   const user = await prisma.user.upsert({
     where: { email },
     update: {},
-    create: { email, name: nameFromEmail(email) },
+    create: { email, name: nameFromEmail(email), hasOnboarded: false },
   });
   await issueSessionCookie(user.id);
 }

@@ -54,8 +54,10 @@ async function fetchXml(url: string): Promise<string | null> {
       signal: controller.signal,
       headers: { "User-Agent": USER_AGENT, Accept: "application/rss+xml, application/xml, text/xml" },
       // Live news should never be served stale-forever; a short revalidate window still
-      // lets Next.js de-duplicate bursts of concurrent requests.
-      next: { revalidate: 600 },
+      // lets Next.js de-duplicate bursts of concurrent requests. Tagged so the Home
+      // refresh button (see app/actions/home.ts) can force a fresh pull on demand via
+      // revalidateTag, without waiting out the window.
+      next: { revalidate: 600, tags: ["live-news"] },
     });
     if (!res.ok) return null;
     return await res.text();
@@ -283,6 +285,14 @@ function itemToArticle(item: RawItem, defaultType: ArticleType): Article | null 
 
 let cache: { at: number; articles: Article[] } | null = null;
 const CACHE_TTL_MS = 15 * 60 * 1000;
+
+/** Lets the Home refresh button (see app/actions/home.ts) force a genuinely fresh
+ *  fetchLiveArticles() call on the next request instead of waiting out CACHE_TTL_MS —
+ *  this in-memory cache sits in front of (and isn't cleared by) the fetch()-level
+ *  revalidateTag("live-news") below, so both need invalidating together. */
+export function invalidateLiveArticlesCache(): void {
+  cache = null;
+}
 
 /** Fetches and normalizes live articles across every non-calendar category. Never throws —
  *  a source that fails to load simply contributes zero articles for that category. */
