@@ -237,6 +237,12 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
   min-width: 0;
   height: 100vh;
   overflow-y: auto;
+  /* Explicit, not left to default "visible": per the CSS Overflow spec, a "visible"
+     overflow-x paired with a scrolling overflow-y (above) computes to "auto" instead —
+     turning this into a horizontally-scrollable container that stretches to fit its
+     widest descendant (e.g. a chip row meant to scroll internally) rather than clamping
+     to the viewport, which dragged every page wider than the screen on mobile. */
+  overflow-x: hidden;
   /* A flex column (not just a plain block) so a full-height page (see .agent-page) can
      use flex:1 to fill exactly what's left after .app-mobile-topbar, instead of guessing
      that height with a CSS percentage that has no way to know the topbar is there. Every
@@ -380,12 +386,14 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
 
 /* — screen padding shells — */
 .screen-pad {
+  width: 100%;
   padding: 36px 44px 60px;
   max-width: 720px;
   margin: 0 auto;
   box-sizing: border-box;
 }
 .home-pad {
+  width: 100%;
   padding: 36px 44px 60px;
   max-width: 1020px;
   margin: 0 auto;
