@@ -25,6 +25,7 @@ import {
   UserPlusIcon,
   MessageCircleIcon,
   CreditCardIcon,
+  GraduationCapIcon,
 } from "@/components/icons";
 
 function sidebarNavStyle(active: boolean, bold: boolean): React.CSSProperties {
@@ -132,6 +133,9 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Health & Wellness" onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
       <NavLink href="/wordle" icon={<GridIcon />} label="Daily Term" onNavigate={onNavigate} />
+
+      <div className="nav-section-label">Limbic Boards</div>
+      <NavLink href="/boards" icon={<GraduationCapIcon />} label="Daily Sharpening" bold={false} onNavigate={onNavigate} />
 
       <div className="nav-section-label nav-section-label--brand">LimbicPRO</div>
       <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />

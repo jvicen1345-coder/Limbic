@@ -58,9 +58,15 @@ model User {
   // themselves.
   nexusOptIn        Boolean  @default(false)
 
+  // Limbic Boards (student daily-habit tools) streak — same nextStreak() logic as the
+  // reading streak above, driven off BoardActivity rows instead of ReadArticle ones.
+  lastBoardsActivityAt DateTime?
+  boardsStreakDays     Int      @default(0)
+
   savedArticles       SavedArticle[]
   hepPrograms         HepProgram[]
   readArticles        ReadArticle[]
+  boardActivity       BoardActivity[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -185,6 +191,20 @@ model ReadArticle {
   createdAt DateTime @default(now())
 
   @@unique([userId, articleId])
+}
+
+// One row per day a user engages with Limbic Boards (answers the daily question and/or
+// reveals the daily term) — drives the Boards streak/calendar the same way ReadArticle
+// drives the reading one. Unique per (userId, dateKey) so answering the question and
+// revealing the term on the same day only ever counts as one day of activity.
+model BoardActivity {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dateKey   String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, dateKey])
 }
 
 model HepExercise {

@@ -167,6 +167,16 @@ export function BandageIcon(props: IconProps) {
   );
 }
 
+export function GraduationCapIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M21.42 10.922a1 1 0 0 0-.019-1.795l-9.83-4.973a2 2 0 0 0-1.806 0L.75 9.15a1 1 0 0 0 0 1.79l9.831 4.973a2 2 0 0 0 1.806 0z" />
+      <path d="M22 10v6" />
+      <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" />
+    </Svg>
+  );
+}
+
 export function ChevronLeftIcon(props: IconProps) {
   return (
     <Svg {...props}>
