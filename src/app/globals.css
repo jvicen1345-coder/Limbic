@@ -538,26 +538,28 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
 .agent-topbar {
   flex-shrink: 0;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 8px;
   padding: 14px 20px;
   font-size: 11.5px;
   color: #7c8db5;
   line-height: 1.5;
 }
 .agent-topbar strong { color: #a9bbe0; font-weight: 600; }
-.agent-new-question {
+.agent-demo-badge {
   flex-shrink: 0;
-  background: none;
-  border: 1px solid rgba(140, 170, 255, 0.3);
-  color: #a9bbe0;
-  font-size: 12px;
-  padding: 5px 12px;
+  background: rgba(255, 176, 66, 0.14);
+  border: 1px solid rgba(255, 176, 66, 0.4);
+  color: #ffb042;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 9px;
   border-radius: 999px;
-  cursor: pointer;
+  margin-top: 1px;
 }
-.agent-new-question:hover { border-color: rgba(140, 170, 255, 0.6); }
 
 .agent-canvas-wrap {
   position: relative;

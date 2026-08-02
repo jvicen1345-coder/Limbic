@@ -7,9 +7,10 @@ import { SubTabs } from "@/components/SubTabs";
 /**
  * The Pro roadmap: two tiers sharing the same six feature areas, each scoped to what
  * that audience actually needs — Student PRO for coursework/boards prep, LimbicPro for
- * practicing clinicians. Nothing here is built yet — this is the plan, not a live
- * comparison of two purchasable products. Today's checkout flow further down is still
- * the single LimbicPro $25/month demo toggle; Student PRO isn't a purchasable tier yet.
+ * practicing clinicians. This is still the plan, not a live comparison of two purchasable
+ * products — Student PRO isn't a purchasable tier yet, and today's checkout flow further
+ * down is still the single LimbicPro $25/month demo toggle. Limbic Boards (/boards) and
+ * Limbic Agent (/agent, currently in demo mode) are the two rows actually built so far.
  */
 const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
   {
@@ -20,7 +21,7 @@ const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
   {
     feature: "Limbic Agent",
     student: "Not included — Agent is a PRO-only product.",
-    pro: "Clinical decision support for real patients.",
+    pro: "Demo mode live now — full clinical decision support launching in a future phase.",
   },
   {
     feature: "HEP Builder",

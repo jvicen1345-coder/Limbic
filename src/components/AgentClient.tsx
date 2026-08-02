@@ -3,7 +3,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { askAgentAction, expandAgentNodeAction } from "@/app/actions/agent";
 import { AgentGraph } from "@/components/AgentGraph";
+import { AGENT_DEMO_NODES, AGENT_DEMO_CROSS_LINKS } from "@/lib/agent-demo";
 import type { AgentNode, AgentLink, AgentRing } from "@/lib/agent-graph";
+
+/**
+ * Phase 1 launch state (see the Pro page's roadmap table: Launch 2026 -> Limbic Agent
+ * "Demo only"). Every question reveals the same hand-written web from lib/agent-demo.ts
+ * instead of a live model call — no ANTHROPIC_API_KEY spend, and no risk of the "isn't
+ * available right now" failure state reaching a real visitor before the feature is
+ * actually funded and proven. Flip to false for the "Beta for PRO users" phase — nothing
+ * else about this component needs to change, the live askAgentAction/expandAgentNodeAction
+ * path below is already fully wired and unchanged.
+ */
+const AGENT_DEMO_MODE = true;
 
 /** Before any question is asked, the canvas shows exactly this one node, breathing (see
  *  the .agent-node-breathing rule in globals.css) — "the best clinician in the world,
@@ -71,7 +83,14 @@ export function AgentClient() {
         .map((n) => ({ source: n.parentId, target: n.id, kind: "tree" as const })),
     [nodes]
   );
-  const links = useMemo(() => [...treeLinks, ...crossLinks], [treeLinks, crossLinks]);
+  // Cross-links can be set (demo mode) or arrive from the server (live mode) referencing
+  // a node whose sibling branch hasn't been revealed yet — d3's force simulation throws if
+  // handed a link whose source/target isn't in its node set, so this is a hard requirement,
+  // not just tidiness. Anything not yet resolvable simply doesn't render until it is.
+  const links = useMemo(() => {
+    const ids = new Set(nodes.map((n) => n.id));
+    return [...treeLinks, ...crossLinks.filter((l) => ids.has(l.source) && ids.has(l.target))];
+  }, [treeLinks, crossLinks, nodes]);
   const selectedNode = nodes.find((n) => n.id === selectedId) ?? null;
 
   async function revealStaggered(newNodes: AgentNode[]) {
@@ -89,6 +108,21 @@ export function AgentClient() {
     setSelectedId(null);
     setCrossLinks([]);
     setAskedQuestion(trimmed);
+
+    if (AGENT_DEMO_MODE) {
+      // The idle node keeps breathing a beat longer (reads as "thinking"), then settles
+      // directly on the demo's own center label — no raw-question echo first, since
+      // showing the visitor's literal text and then "transforming" it into an unrelated
+      // sample case would read as broken rather than illustrative.
+      await sleep(700);
+      const center = AGENT_DEMO_NODES.find((n) => n.ring === 0);
+      if (center) setNodes([center]);
+      await sleep(400);
+      await revealStaggered(AGENT_DEMO_NODES.filter((n) => n.ring === 1));
+      setStarting(false);
+      return;
+    }
+
     // Instant, optimistic "transform" — the idle node becomes the question right away,
     // before the model has even responded, so the first thing the user sees is a reaction.
     setNodes([{ id: "center", parentId: null, ring: 0, label: truncate(trimmed, 42), expandable: false }]);
@@ -116,8 +150,20 @@ export function AgentClient() {
     setSelectedId(node.id);
     if (!node.expandable) return;
     const alreadyExpanded = nodes.some((n) => n.parentId === node.id);
-    if (alreadyExpanded || loadingId || !askedQuestion) return;
+    if (alreadyExpanded || loadingId) return;
 
+    if (AGENT_DEMO_MODE) {
+      setLoadingId(node.id);
+      await sleep(450);
+      setLoadingId(null);
+      const children = AGENT_DEMO_NODES.filter((n) => n.parentId === node.id);
+      await revealStaggered(children);
+      const newCrossLinks = AGENT_DEMO_CROSS_LINKS.filter((l) => children.some((c) => c.id === l.source));
+      if (newCrossLinks.length) setCrossLinks((prev) => [...prev, ...newCrossLinks]);
+      return;
+    }
+
+    if (!askedQuestion) return;
     setLoadingId(node.id);
     setError(null);
     const ancestors = [...ancestorLabelsOf(node.id, nodes), node.label];
@@ -142,9 +188,13 @@ export function AgentClient() {
   return (
     <div className="agent-page">
       <div className="agent-topbar">
+        {AGENT_DEMO_MODE && <span className="agent-demo-badge">Demo</span>}
         <span>
-          <strong>Clinical decision support, not diagnosis.</strong> Never diagnoses, never recommends
-          medication — always defer to your own direct patient assessment.
+          <strong>Clinical decision support, not diagnosis.</strong>{" "}
+          {AGENT_DEMO_MODE
+            ? "Sample reasoning web — full AI-generated answers for your own questions are coming soon. "
+            : ""}
+          Never diagnoses, never recommends medication — always defer to your own direct patient assessment.
         </span>
       </div>
 
@@ -188,7 +238,11 @@ export function AgentClient() {
 
       <div className="agent-input-bar">
         <input
-          placeholder="Ask a clinical question or describe a case…"
+          placeholder={
+            AGENT_DEMO_MODE
+              ? "Try any question — see a sample reasoning web…"
+              : "Ask a clinical question or describe a case…"
+          }
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => {
