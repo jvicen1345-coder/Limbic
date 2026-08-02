@@ -8,6 +8,7 @@ import { ArticleCard, HeroArticleCard } from "@/components/ArticleCard";
 import { CalendarCard, type CeEvent } from "@/components/CalendarCard";
 import { ContinueReadingCard, type ContinueReadingData } from "@/components/ContinueReadingCard";
 import { DailyDashboard, type DailyDashboardData } from "@/components/DailyDashboard";
+import { LimbicAgentCard } from "@/components/LimbicAgentCard";
 import { StockCard } from "@/components/StockCard";
 import { RevolvingNews } from "@/components/RevolvingNews";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
@@ -19,6 +20,7 @@ import type { DecoratedArticle } from "@/lib/feed";
 import type { ArticleType } from "@/lib/types";
 import type { StockView } from "@/lib/stock";
 import type { LicenseView } from "@/lib/license";
+import type { LimbicAgentInsights } from "@/lib/limbic-agent-insights";
 
 const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
   { id: "all", label: "All" },
@@ -40,6 +42,8 @@ export function HomeFeed({
   continueReading,
   dashboard,
   hiddenWidgets,
+  limbicAgentInsights,
+  isPro,
 }: {
   articles: DecoratedArticle[];
   ceEvents: CeEvent[];
@@ -56,6 +60,8 @@ export function HomeFeed({
   /** Sidebar widget ids the reader has hidden — see lib/home-widgets.ts and the "Home page
    *  widgets" section on Profile. */
   hiddenWidgets: string[];
+  limbicAgentInsights: LimbicAgentInsights;
+  isPro: boolean;
 }) {
   const showWidget = (id: string) => !hiddenWidgets.includes(id);
   const [filter, setFilter] = useState<ArticleType | "all">("all");
@@ -101,6 +107,10 @@ export function HomeFeed({
 
           <div style={{ marginBottom: 20 }}>
             <DailyDashboard data={dashboard} />
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <LimbicAgentCard insights={limbicAgentInsights} isPro={isPro} />
           </div>
 
           <div className="filter-row" style={{ marginBottom: 20 }}>

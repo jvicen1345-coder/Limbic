@@ -9,6 +9,7 @@ import { attachTopicImages } from "@/lib/topic-image";
 import { buildLicenseView } from "@/lib/license";
 import { ensureNexusSeedData } from "@/lib/nexus-seed";
 import { getConnectionStates } from "@/lib/nexus";
+import { buildLimbicAgentInsights } from "@/lib/limbic-agent-insights";
 import { HomeFeed } from "@/components/HomeFeed";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import type { ArticleType, CeCategory, Specialty } from "@/lib/types";
@@ -39,7 +40,13 @@ export default async function HomePage() {
   const [articles, savedRows, readRows, stockSeries, previousVisit, lastReadArticle] = await Promise.all([
     getArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true, createdAt: true } }),
-    prisma.readArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
+    // Ordered most-recently-touched first — also feeds buildLimbicAgentInsights below,
+    // which needs that ordering to find each topic's most recent read in one pass.
+    prisma.readArticle.findMany({
+      where: { userId: user.id },
+      orderBy: { updatedAt: "desc" },
+      select: { articleId: true, updatedAt: true },
+    }),
     getUsphSeries(),
     recordHomeVisit(user),
     prisma.readArticle.findFirst({
@@ -50,6 +57,12 @@ export default async function HomePage() {
   ]);
   const savedIds = savedRows.map((r) => r.articleId);
   const readIds = readRows.map((r) => r.articleId);
+  const limbicAgentInsights = buildLimbicAgentInsights(
+    readRows,
+    articles,
+    user.followedTopics as unknown as string[],
+    user.createdAt
+  );
 
   // Daily PT Dashboard (see components/DailyDashboard.tsx) — greeting/date are computed
   // off the server's local clock, same as every other "today" concept in this app (see
@@ -180,6 +193,8 @@ export default async function HomePage() {
       continueReading={continueReading}
       dashboard={dashboard}
       hiddenWidgets={user.hiddenHomeWidgets as unknown as string[]}
+      limbicAgentInsights={limbicAgentInsights}
+      isPro={user.isPro}
     />
   );
 }
