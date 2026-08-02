@@ -4,6 +4,7 @@ import { getWellnessArticles, WELLNESS_VIDEOS } from "@/lib/articles";
 import { youtubeThumbnailUrl } from "@/lib/meta";
 import { WellnessListItem } from "@/components/RowCards";
 import { VideoThumbnail } from "@/components/VideoThumbnail";
+import { RefreshWellnessButton } from "@/components/RefreshWellnessButton";
 
 export default async function WellnessPage() {
   const user = await getCurrentUser();
@@ -17,7 +18,10 @@ export default async function WellnessPage() {
 
   return (
     <div className="screen-pad">
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Health & Wellness</h1>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 4 }}>
+        <h1 style={{ fontSize: 24, margin: 0 }}>Health & Wellness</h1>
+        <RefreshWellnessButton />
+      </div>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 22px" }}>
         Everyday wellness reading and movement videos for patients and clinicians alike.
       </p>
