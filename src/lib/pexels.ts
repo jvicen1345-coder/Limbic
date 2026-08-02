@@ -2,16 +2,22 @@ import "server-only";
 
 const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
 const FETCH_TIMEOUT_MS = 6000;
+// Multiple candidates per query, not just the top result — many articles collapse onto the
+// same query (e.g. every orthopedic article with no more specific title match all search
+// "Orthopedic physical therapy rehabilitation"), and requesting just 1 result would mean
+// every one of them shows the literal same photo. Picking from a pool per-article instead
+// (see fetchTopicPhoto's seed param) spreads them out.
+const CANDIDATES_PER_QUERY = 15;
 
 interface PexelsPhoto {
   src: { large: string };
 }
 
-async function searchPexels(query: string): Promise<string | null> {
+async function searchPexels(query: string): Promise<string[]> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
-    const params = new URLSearchParams({ query, per_page: "1", orientation: "landscape" });
+    const params = new URLSearchParams({ query, per_page: String(CANDIDATES_PER_QUERY), orientation: "landscape" });
     const res = await fetch(`https://api.pexels.com/v1/search?${params}`, {
       signal: controller.signal,
       headers: { Authorization: PEXELS_API_KEY! },
@@ -23,39 +29,59 @@ async function searchPexels(query: string): Promise<string | null> {
     if (!res.ok) {
       const body = await res.text().catch(() => "");
       console.error(`[pexels] search failed (${res.status}) for "${query}": ${body.slice(0, 500)}`);
-      return null;
+      return [];
     }
     const json = (await res.json()) as { photos?: PexelsPhoto[] };
-    return json.photos?.[0]?.src?.large ?? null;
+    return (json.photos ?? []).map((p) => p.src.large).filter(Boolean);
   } catch (err) {
     console.error(`[pexels] search threw for "${query}":`, err);
-    return null;
+    return [];
   } finally {
     clearTimeout(timer);
   }
 }
 
-const cache = new Map<string, { at: number; url: string | null }>();
+/** Small, deterministic string hash (not cryptographic — just needs to spread article ids
+ *  evenly across a candidate pool) so the same article always picks the same photo from its
+ *  query's pool across requests/cache hits, without needing to persist a per-article choice
+ *  anywhere. */
+function hashToIndex(seed: string, length: number): number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  return hash % length;
+}
+
+const cache = new Map<string, { at: number; urls: string[] }>();
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+async function candidatesFor(query: string): Promise<string[]> {
+  const cached = cache.get(query);
+  if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached.urls;
+
+  const urls = await searchPexels(query);
+  cache.set(query, { at: Date.now(), urls });
+  return urls;
+}
 
 /**
  * A real, freely-licensed stock photo matching `query` (see lib/topic-image.ts for how the
  * query is built from an article's specialty/title) — used as a fallback for articles that
  * don't have their own real og:image (see lib/og-image.ts attachRealImages), which in
- * practice is most seed/guideline-PDF content (a PDF has no og:image to find at all).
+ * practice is most seed/guideline-PDF content (a PDF has no og:image to find at all) and
+ * Google-News-sourced articles (whose sourceUrl is an unresolvable redirect, so it's never
+ * trusted for an image either — see isUnresolvableRedirect in og-image.ts).
  *
- * Returns null (never throws) when PEXELS_API_KEY isn't set — those articles just render
- * without an image, same graceful-degradation pattern as YOUTUBE_API_KEY (see
- * lib/clips-live.ts). Cached in-process per query, on top of Next's own fetch cache above,
- * since many articles share a specialty/topic and would otherwise repeat the same search on
- * every request.
+ * `seed` (pass the article's own id) picks a stable photo out of the query's candidate pool
+ * per article, rather than every article for the same query always showing the identical
+ * top result. Returns null (never throws) when PEXELS_API_KEY isn't set — those articles
+ * just render without an image, same graceful-degradation pattern as YOUTUBE_API_KEY (see
+ * lib/clips-live.ts). The candidate pool itself is cached in-process per query, on top of
+ * Next's own fetch cache above, since many articles share a specialty/topic and would
+ * otherwise repeat the same search on every request.
  */
-export async function fetchTopicPhoto(query: string): Promise<string | null> {
+export async function fetchTopicPhoto(query: string, seed: string): Promise<string | null> {
   if (!PEXELS_API_KEY) return null;
-  const cached = cache.get(query);
-  if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached.url;
-
-  const url = await searchPexels(query);
-  cache.set(query, { at: Date.now(), url });
-  return url;
+  const candidates = await candidatesFor(query);
+  if (candidates.length === 0) return null;
+  return candidates[hashToIndex(seed, candidates.length)];
 }

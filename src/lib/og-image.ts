@@ -19,6 +19,20 @@ const MAX_BYTES = 150_000;
 const OG_IMAGE_RE =
   /<meta[^>]+(?:property|name)=["']og:image["'][^>]+content=["']([^"']+)["']|<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["']og:image["']/i;
 
+// Google News RSS items' own "link" (see lib/news-live.ts itemToArticle) is a
+// news.google.com click-tracking redirect, not the publisher's real URL — it resolves to
+// the actual article via a client-side (JS) redirect, which a plain server-side fetch never
+// executes. Fetching it just returns Google News' own interstitial page, whose og:image is
+// Google's generic news-icon branding, not anything about the article — worse than no image
+// at all, so these are skipped entirely rather than trusted.
+function isUnresolvableRedirect(url: string): boolean {
+  try {
+    return new URL(url).hostname === "news.google.com";
+  } catch {
+    return false;
+  }
+}
+
 async function fetchOgImage(url: string): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
@@ -59,7 +73,7 @@ async function fetchOgImage(url: string): Promise<string | null> {
 export async function attachRealImages(articles: Article[]): Promise<Article[]> {
   return Promise.all(
     articles.map(async (a) => {
-      if (!a.sourceUrl) return a;
+      if (!a.sourceUrl || isUnresolvableRedirect(a.sourceUrl)) return a;
       const image = await fetchOgImage(a.sourceUrl);
       return image ? { ...a, image } : a;
     })

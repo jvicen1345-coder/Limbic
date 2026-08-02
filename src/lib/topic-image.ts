@@ -33,7 +33,7 @@ export async function attachTopicImages<T extends Article>(articles: T[]): Promi
   return Promise.all(
     articles.map(async (a) => {
       if (a.image) return a;
-      const image = await fetchTopicPhoto(topicQueryFor(a));
+      const image = await fetchTopicPhoto(topicQueryFor(a), a.id);
       return image ? { ...a, image } : a;
     })
   );
