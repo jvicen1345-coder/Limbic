@@ -72,6 +72,7 @@ deploys to work too):
 | `TURSO_AUTH_TOKEN` | the token from step 1 |
 | `SESSION_SECRET` | output of `openssl rand -base64 32` |
 | `ANTHROPIC_API_KEY` | an API key from [console.anthropic.com](https://console.anthropic.com) — powers the "Ask AI to search PubMed" feature (see below); the rest of the app works without it |
+| `YOUTUBE_API_KEY` | a free API key from [console.cloud.google.com](https://console.cloud.google.com) (enable the "YouTube Data API v3" on the project) — powers live-sourced Clips; without it, Clips falls back to only the curated static set |
 
 **5. Redeploy** (Vercel → Deployments → ⋯ → Redeploy) so the build picks up the new env
 vars. The build command (`node scripts/apply-migrations.mjs && next build`) applies the
@@ -103,6 +104,11 @@ instead of the prototype's static seed data. This build wires that up for real:
   callout below, this one's riskier than the other sources.
 - **Stock** (`src/lib/stock.ts`): USPH's price/sparkline is fetched live from Stooq's CSV
   export, falling back to Yahoo Finance's chart endpoint, in that order.
+- **Clips** (`src/lib/clips-live.ts`): real PT/rehab YouTube Shorts fetched live via the
+  YouTube Data API v3 (requires `YOUTUBE_API_KEY`), merged with the hand-curated set in
+  `src/lib/clips-static.ts`. Same relevance-gating principle as the Google News sources — a
+  result has to actually mention PT/rehab language to survive, not just come back from a
+  topically-scoped search. Without an API key, Clips is just the curated static set.
 - **Fallback**: if a live source is unreachable, each of the above falls back to bundled
   seed content (`src/lib/articles-static.ts`) — the same hand-authored articles and CE
   events from the original prototype for news, and a **real** USPH daily-close series
@@ -149,6 +155,16 @@ against the standard `fetch()` API with no sandbox-specific workarounds, so it s
 work as soon as it runs somewhere with normal outbound internet access — but that claim
 is based on reading the code, not a live observation, and is worth a quick check the
 first time you deploy this somewhere with real egress.
+
+## Live-sourced Clips
+
+The Clips feed's live-fetch path (`src/lib/clips-live.ts`) has the exact same "couldn't
+verify against the real API" caveat as the section above — `googleapis.com` is also
+outside this sandbox's allowlist, so the fallback (the curated static set alone) is all
+that was ever actually exercised while building it. Once `YOUTUBE_API_KEY` is set,
+worth confirming after deploy that the Clips feed is actually pulling in live results
+(new clip titles beyond the original 9) rather than silently sitting on the static
+fallback because of, say, a quota or key-restriction issue on the Google Cloud project.
 
 ## Home page news ticker
 
