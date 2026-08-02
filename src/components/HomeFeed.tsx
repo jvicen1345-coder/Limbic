@@ -81,7 +81,7 @@ export function HomeFeed({
     <div className="home-pad">
       <div className="home-row">
         <div className="home-main-col">
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 4 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
             <div>
               <h1 style={{ fontSize: 26, margin: 0 }}>{dashboard.greeting}</h1>
               <div style={{ fontSize: 13, color: "var(--color-neutral-700)", marginTop: 2 }}>{dashboard.dateLabel}</div>
