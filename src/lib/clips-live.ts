@@ -57,10 +57,18 @@ async function searchYouTube(query: string): Promise<YouTubeSearchItem[]> {
       // which is the real rate limiter (YouTube's free quota is small).
       next: { revalidate: 21600 },
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      // Logged (not swallowed) since a non-2xx here is otherwise invisible — the caller
+      // just sees an empty pool and no way to tell "API not enabled" from "quota
+      // exhausted" from "key restricted to referrers that a server request never sends".
+      const body = await res.text().catch(() => "");
+      console.error(`[clips-live] YouTube search failed (${res.status}) for "${query}": ${body.slice(0, 500)}`);
+      return [];
+    }
     const json = (await res.json()) as { items?: YouTubeSearchItem[] };
     return json.items ?? [];
-  } catch {
+  } catch (err) {
+    console.error(`[clips-live] YouTube search threw for "${query}":`, err);
     return [];
   } finally {
     clearTimeout(timer);
@@ -83,10 +91,14 @@ const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
  * the underlying pool itself changes.
  */
 export async function fetchLiveClips(): Promise<Clip[]> {
-  if (!YOUTUBE_API_KEY) return [];
+  if (!YOUTUBE_API_KEY) {
+    console.error("[clips-live] YOUTUBE_API_KEY not set — Clips is using only the static pool.");
+    return [];
+  }
   if (cache && Date.now() - cache.at < CACHE_TTL_MS) return cache.clips;
 
   const results = await Promise.all(CLIP_QUERIES.map((q) => searchYouTube(q)));
+  const rawCount = results.reduce((n, items) => n + items.length, 0);
 
   const seen = new Set<string>();
   const clips: Clip[] = [];
@@ -112,6 +124,12 @@ export async function fetchLiveClips(): Promise<Clip[]> {
       });
     }
   }
+
+  // A one-line health check for the Vercel function logs: rawCount 0 across every query
+  // means the API calls themselves are failing (see the per-query error above for why);
+  // rawCount > 0 but clips.length 0 means results came back but none passed the relevance
+  // filter, which would point at CLIP_QUERIES/RELEVANCE_KEYWORDS rather than the API call.
+  console.log(`[clips-live] fetched ${rawCount} raw result(s) across ${CLIP_QUERIES.length} queries, ${clips.length} passed relevance filtering`);
 
   cache = { at: Date.now(), clips };
   return clips;
