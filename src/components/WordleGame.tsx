@@ -2,6 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { wordForDate } from "@/lib/wordle-words";
+import { recordWordleCompletionAction } from "@/app/actions/daily-completion";
+import { formatElapsed } from "@/lib/meta";
+import { nowMs } from "@/lib/clock";
+import { ShareCompletionButton } from "@/components/ShareCompletionButton";
 
 const WORD_LENGTH = 5;
 const MAX_GUESSES = 6;
@@ -17,11 +21,6 @@ const KEYBOARD_ROWS = [
   ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
   ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACK"],
 ];
-
-interface StoredState {
-  guesses: string[];
-  status: GameStatus;
-}
 
 /** Standard two-pass Wordle scoring: exact-position matches first, then leftover letters
  *  matched against leftover answer letters — so a guess with a repeated letter only gets
@@ -48,40 +47,33 @@ function evaluateGuess(guess: string, answer: string): LetterStatus[] {
   return result;
 }
 
-export function WordleGame({ dateKey }: { dateKey: string }) {
+export interface WordleInitialState {
+  guesses: string[];
+  status: GameStatus;
+  elapsedSeconds: number | null;
+}
+
+export function WordleGame({
+  dateKey,
+  initial,
+  nexusOptIn,
+}: {
+  dateKey: string;
+  /** Today's progress/result for this user, as persisted server-side (see
+   *  app/actions/daily-completion.ts) — null the first time they play today. Replaces what
+   *  used to be an unscoped "limbic:wordle:<dateKey>" localStorage key shared by every
+   *  account on the same browser. */
+  initial: WordleInitialState | null;
+  nexusOptIn: boolean;
+}) {
   const answer = useMemo(() => wordForDate(dateKey), [dateKey]);
-  const storageKey = `limbic:wordle:${dateKey}`;
 
-  const [guesses, setGuesses] = useState<string[]>([]);
+  const [guesses, setGuesses] = useState<string[]>(initial?.guesses ?? []);
   const [current, setCurrent] = useState("");
-  const [status, setStatus] = useState<GameStatus>("playing");
-  const [loaded, setLoaded] = useState(false);
+  const [status, setStatus] = useState<GameStatus>(initial?.status ?? "playing");
+  const [elapsedSeconds, setElapsedSeconds] = useState<number | null>(initial?.elapsedSeconds ?? null);
   const [message, setMessage] = useState<string | null>(null);
-
-  // Restores today's in-progress or completed game. Deferred to an effect (rather than
-  // read during render) because localStorage doesn't exist during SSR — the server and
-  // first client render both show a blank board, then this fills in real progress.
-  useEffect(() => {
-    const raw = localStorage.getItem(storageKey);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw) as StoredState;
-        /* eslint-disable react-hooks/set-state-in-effect -- restoring today's saved
-           progress from localStorage, which is unavailable during SSR */
-        setGuesses(parsed.guesses ?? []);
-        setStatus(parsed.status ?? "playing");
-        /* eslint-enable react-hooks/set-state-in-effect */
-      } catch {
-        // corrupt/old-shape storage — just start fresh
-      }
-    }
-    setLoaded(true);
-  }, [storageKey]);
-
-  useEffect(() => {
-    if (!loaded) return;
-    localStorage.setItem(storageKey, JSON.stringify({ guesses, status } satisfies StoredState));
-  }, [loaded, guesses, status, storageKey]);
+  const [startedAt] = useState(() => nowMs());
 
   useEffect(() => {
     if (!message) return;
@@ -96,11 +88,16 @@ export function WordleGame({ dateKey }: { dateKey: string }) {
     }
     const next = [...guesses, current];
     const won = current === answer;
+    const nextStatus: GameStatus = won ? "won" : next.length >= MAX_GUESSES ? "lost" : "playing";
+    const nextElapsed = nextStatus === "playing" ? undefined : Math.round((nowMs() - startedAt) / 1000);
+
     setGuesses(next);
     setCurrent("");
-    if (won) setStatus("won");
-    else if (next.length >= MAX_GUESSES) setStatus("lost");
-  }, [current, guesses, answer]);
+    setStatus(nextStatus);
+    if (nextElapsed !== undefined) setElapsedSeconds(nextElapsed);
+
+    recordWordleCompletionAction(dateKey, next, nextStatus, nextElapsed);
+  }, [current, guesses, answer, dateKey, startedAt]);
 
   const handleKey = useCallback(
     (key: string) => {
@@ -190,6 +187,23 @@ export function WordleGame({ dateKey }: { dateKey: string }) {
               </>
             )}
             Come back tomorrow for a new word.
+          </div>
+          {elapsedSeconds != null && (
+            <div style={{ fontSize: 13, color: "var(--color-neutral-700)", marginTop: 8 }}>
+              Time: <strong>{formatElapsed(elapsedSeconds)}</strong> · {guesses.length}/{MAX_GUESSES} guesses
+            </div>
+          )}
+          <div style={{ marginTop: 12 }}>
+            <ShareCompletionButton
+              nexusOptIn={nexusOptIn}
+              body={
+                status === "won"
+                  ? `Solved today's Daily Term in ${guesses.length}/${MAX_GUESSES} guesses${
+                      elapsedSeconds != null ? ` — ${formatElapsed(elapsedSeconds)}` : ""
+                    } 🎯`
+                  : `Gave today's Daily Term a shot${elapsedSeconds != null ? ` (${formatElapsed(elapsedSeconds)})` : ""} — back at it tomorrow.`
+              }
+            />
           </div>
         </div>
       )}

@@ -92,6 +92,7 @@ model User {
   hepPrograms         HepProgram[]
   readArticles        ReadArticle[]
   boardActivity       BoardActivity[]
+  dailyCompletions    DailyCompletion[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -242,6 +243,32 @@ model SavedClip {
   specialty String
 
   @@unique([userId, clipId])
+}
+
+// Per-user, per-day completion state for Daily Term (Wordle) and Limbic Boards' question
+// and term of the day — replaces what used to be tracked only in localStorage under an
+// unscoped "limbic:wordle:<dateKey>"-style key, which meant every account on the same
+// browser saw (and overwrote) the same "completed" state instead of each user having
+// their own. elapsedSeconds is the time from first interaction to completion, captured so
+// it can be shared to the Nexus feed (see app/actions/daily-completion.ts).
+model DailyCompletion {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String // "wordle" | "boardQuestion" | "boardTerm"
+  dateKey   String
+  createdAt DateTime @default(now())
+
+  // Wordle-specific.
+  guesses Json? // string[]
+  status  String? // "won" | "lost"
+
+  // boardQuestion-specific.
+  selectedIndex Int?
+
+  elapsedSeconds Int?
+
+  @@unique([userId, kind, dateKey])
 }
 
 model HepProgram {

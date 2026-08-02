@@ -1,43 +1,41 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { recordBoardsActivityAction } from "@/app/actions/boards";
+import { useState } from "react";
+import { recordBoardQuestionAction } from "@/app/actions/daily-completion";
+import { formatElapsed } from "@/lib/meta";
+import { nowMs } from "@/lib/clock";
+import { ShareCompletionButton } from "@/components/ShareCompletionButton";
 import type { BoardQuestion } from "@/lib/board-content";
 
-interface StoredAnswer {
-  selectedIndex: number;
-}
-
-export function BoardQuestionCard({ dateKey, question }: { dateKey: string; question: BoardQuestion }) {
-  const storageKey = `limbic:boards-question:${dateKey}`;
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [, startTransition] = useTransition();
-
-  // Restores today's answer if the student already answered — same pattern as
-  // WordleGame's localStorage restore (unavailable during SSR, so deferred to an effect).
-  useEffect(() => {
-    const raw = localStorage.getItem(storageKey);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw) as StoredAnswer;
-        /* eslint-disable-next-line react-hooks/set-state-in-effect -- restoring today's
-           saved answer from localStorage, which is unavailable during SSR */
-        setSelectedIndex(parsed.selectedIndex);
-      } catch {
-        // corrupt/old-shape storage — just start fresh
-      }
-    }
-  }, [storageKey]);
+export function BoardQuestionCard({
+  dateKey,
+  question,
+  initialSelectedIndex,
+  initialElapsedSeconds,
+  nexusOptIn,
+}: {
+  dateKey: string;
+  question: BoardQuestion;
+  /** This user's answer for today, as persisted server-side — replaces what used to be an
+   *  unscoped "limbic:boards-question:<dateKey>" localStorage key shared by every account
+   *  on the same browser. Null if they haven't answered yet today. */
+  initialSelectedIndex: number | null;
+  initialElapsedSeconds: number | null;
+  nexusOptIn: boolean;
+}) {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(initialSelectedIndex);
+  const [elapsedSeconds, setElapsedSeconds] = useState<number | null>(initialElapsedSeconds);
+  const [startedAt] = useState(() => nowMs());
 
   const answered = selectedIndex !== null;
+  const isCorrectAnswer = selectedIndex === question.correctIndex;
 
   function choose(index: number) {
     if (answered) return;
+    const elapsed = Math.round((nowMs() - startedAt) / 1000);
     setSelectedIndex(index);
-    localStorage.setItem(storageKey, JSON.stringify({ selectedIndex: index } satisfies StoredAnswer));
-    startTransition(() => {
-      recordBoardsActivityAction(dateKey);
-    });
+    setElapsedSeconds(elapsed);
+    recordBoardQuestionAction(dateKey, index, elapsed);
   }
 
   return (
@@ -74,7 +72,24 @@ export function BoardQuestionCard({ dateKey, question }: { dateKey: string; ques
         })}
       </div>
       {answered && (
-        <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "12px 0 0" }}>{question.explanation}</p>
+        <>
+          <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "12px 0 0" }}>{question.explanation}</p>
+          {elapsedSeconds != null && (
+            <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "8px 0 0" }}>
+              Time: <strong>{formatElapsed(elapsedSeconds)}</strong>
+            </p>
+          )}
+          <div style={{ marginTop: 12 }}>
+            <ShareCompletionButton
+              nexusOptIn={nexusOptIn}
+              body={
+                isCorrectAnswer
+                  ? `Answered today's Limbic Boards question correctly${elapsedSeconds != null ? ` in ${formatElapsed(elapsedSeconds)}` : ""} ⚡`
+                  : `Took a swing at today's Limbic Boards question${elapsedSeconds != null ? ` (${formatElapsed(elapsedSeconds)})` : ""} — locking in the right answer for next time.`
+              }
+            />
+          </div>
+        </>
       )}
     </div>
   );

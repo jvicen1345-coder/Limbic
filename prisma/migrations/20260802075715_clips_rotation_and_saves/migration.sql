@@ -26,8 +26,8 @@ CREATE TABLE "new_User" (
     "name" TEXT NOT NULL DEFAULT 'Dr. Amara Chen, PT',
     "specialty" TEXT NOT NULL DEFAULT 'ortho',
     "practiceState" TEXT NOT NULL DEFAULT 'California',
-    "followedTopics" JSONB NOT NULL DEFAULT [],
-    "ceCategories" JSONB NOT NULL DEFAULT [],
+    "followedTopics" JSONB NOT NULL DEFAULT '[]',
+    "ceCategories" JSONB NOT NULL DEFAULT '[]',
     "isPro" BOOLEAN NOT NULL DEFAULT false,
     "studentTier" TEXT NOT NULL DEFAULT 'none',
     "lastVisitedAt" DATETIME,
@@ -38,10 +38,10 @@ CREATE TABLE "new_User" (
     "nexusOptIn" BOOLEAN NOT NULL DEFAULT false,
     "lastBoardsActivityAt" DATETIME,
     "boardsStreakDays" INTEGER NOT NULL DEFAULT 0,
-    "wellnessArticleIds" JSONB NOT NULL DEFAULT [],
-    "wellnessVideoIds" JSONB NOT NULL DEFAULT [],
-    "wellnessOpenedIds" JSONB NOT NULL DEFAULT [],
-    "clipsSeenIds" JSONB NOT NULL DEFAULT []
+    "wellnessArticleIds" JSONB NOT NULL DEFAULT '[]',
+    "wellnessVideoIds" JSONB NOT NULL DEFAULT '[]',
+    "wellnessOpenedIds" JSONB NOT NULL DEFAULT '[]',
+    "clipsSeenIds" JSONB NOT NULL DEFAULT '[]'
 );
 INSERT INTO "new_User" ("bio", "boardsStreakDays", "ceCategories", "createdAt", "email", "followedTopics", "headline", "id", "isGuest", "isPro", "lastBoardsActivityAt", "lastReadAt", "lastVisitedAt", "licenseEmail", "licenseExpiration", "licenseNumber", "licenseState", "name", "nexusOptIn", "practiceState", "specialty", "streakDays", "studentTier", "wellnessArticleIds", "wellnessOpenedIds", "wellnessVideoIds") SELECT "bio", "boardsStreakDays", "ceCategories", "createdAt", "email", "followedTopics", "headline", "id", "isGuest", "isPro", "lastBoardsActivityAt", "lastReadAt", "lastVisitedAt", "licenseEmail", "licenseExpiration", "licenseNumber", "licenseState", "name", "nexusOptIn", "practiceState", "specialty", "streakDays", "studentTier", "wellnessArticleIds", "wellnessOpenedIds", "wellnessVideoIds" FROM "User";
 DROP TABLE "User";

@@ -47,6 +47,16 @@ export function firstName(name: string): string {
   return name.replace(/^Dr\.\s*/, "").split(" ")[0];
 }
 
+/** m:ss, for Daily Term / Limbic Boards completion times (see
+ *  app/actions/daily-completion.ts) — clamped at 0 since a clock skew or a stale client
+ *  timestamp could otherwise produce a negative elapsed time. */
+export function formatElapsed(totalSeconds: number): string {
+  const clamped = Math.max(0, Math.round(totalSeconds));
+  const minutes = Math.floor(clamped / 60);
+  const seconds = clamped % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
 /** Extracts the 11-character video ID from any common YouTube URL shape (watch, youtu.be,
  *  or Shorts). Returns null if it doesn't look like a YouTube URL. */
 export function youtubeVideoId(url: string): string | null {

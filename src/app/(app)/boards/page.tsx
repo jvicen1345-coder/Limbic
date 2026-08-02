@@ -24,11 +24,18 @@ export default async function BoardsPage() {
 
   const windowStart = new Date();
   windowStart.setDate(windowStart.getDate() - (CALENDAR_WINDOW_DAYS - 1));
-  const activityRows = await prisma.boardActivity.findMany({
-    where: { userId: user.id, createdAt: { gte: windowStart } },
-    select: { createdAt: true },
-  });
+  const [activityRows, completionRows] = await Promise.all([
+    prisma.boardActivity.findMany({
+      where: { userId: user.id, createdAt: { gte: windowStart } },
+      select: { createdAt: true },
+    }),
+    prisma.dailyCompletion.findMany({
+      where: { userId: user.id, dateKey, kind: { in: ["boardQuestion", "boardTerm"] } },
+    }),
+  ]);
   const weeks = buildReadingCalendarWeeks(activityRows.map((r) => r.createdAt));
+  const questionCompletion = completionRows.find((r) => r.kind === "boardQuestion");
+  const termCompletion = completionRows.find((r) => r.kind === "boardTerm");
 
   return (
     <div className="screen-pad" style={{ maxWidth: 640, margin: "0 auto" }}>
@@ -41,8 +48,20 @@ export default async function BoardsPage() {
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        <BoardQuestionCard dateKey={dateKey} question={question} />
-        <BoardTermCard dateKey={dateKey} term={term} />
+        <BoardQuestionCard
+          dateKey={dateKey}
+          question={question}
+          initialSelectedIndex={questionCompletion?.selectedIndex ?? null}
+          initialElapsedSeconds={questionCompletion?.elapsedSeconds ?? null}
+          nexusOptIn={user.nexusOptIn}
+        />
+        <BoardTermCard
+          dateKey={dateKey}
+          term={term}
+          initialRevealed={termCompletion != null}
+          initialElapsedSeconds={termCompletion?.elapsedSeconds ?? null}
+          nexusOptIn={user.nexusOptIn}
+        />
         <BoardsStreakCard streakDays={user.boardsStreakDays} weeks={weeks} />
       </div>
     </div>

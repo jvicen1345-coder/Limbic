@@ -171,48 +171,57 @@ export const ALL_SEED_PEOPLE = [...REAL_PEOPLE, ...DEMO_PEOPLE];
 
 let ensured: Promise<void> | null = null;
 
-/** Upserts every seed profile + their one seed post. Cheap (fixed ids, no-op after the
- *  first call in a given database) so every Nexus page can just call this before querying.
- *  Each person's own upsert-then-post-check is inherently sequential, but the people are
- *  independent of each other — run across all of them at once rather than one full chain
- *  at a time, since a cold call (a fresh serverless instance, before this ever lands in
- *  cache) is otherwise up to ~30 round-trips deep before the first Nexus page can render.
- *  If seeding fails, the cached promise is cleared so the *next* call retries instead of
- *  every future call in this process replaying the same stale rejection forever. */
+/** Upserts one seed profile + their one seed post — a fixed id, so a no-op after the
+ *  first call in a given database. */
+async function seedOnePerson(person: (typeof ALL_SEED_PEOPLE)[number]): Promise<void> {
+  const user = await prisma.user.upsert({
+    where: { id: person.id },
+    update: {},
+    create: {
+      id: person.id,
+      name: person.name,
+      headline: person.headline,
+      bio: person.bio,
+      specialty: person.specialty,
+      practiceState: person.practiceState,
+      // Seed profiles can't log in to opt themselves in, so they're always
+      // considered "in" Nexus — this is what makes them show up in the directory
+      // and feed regardless of any real user's own opt-in choice.
+      nexusOptIn: true,
+    },
+  });
+
+  const existingPost = await prisma.nexusPost.findFirst({ where: { authorId: user.id } });
+  if (!existingPost) {
+    await prisma.nexusPost.create({
+      data: {
+        authorId: user.id,
+        body: person.post.body,
+        sourceUrl: person.post.sourceUrl,
+        sourceLabel: person.post.sourceLabel,
+      },
+    });
+  }
+}
+
+/** Ensures every seed profile + their one seed post exist, so every Nexus page can just
+ *  call this before querying. Cached per-process (the `ensured` promise below) so this
+ *  only actually does any work once. If seeding fails, the cached promise is cleared so
+ *  the *next* call retries instead of every future call in this process replaying the
+ *  same stale rejection forever. */
 export async function ensureNexusSeedData(): Promise<void> {
   if (!ensured) {
-    ensured = Promise.all(
-      ALL_SEED_PEOPLE.map(async (person) => {
-        const user = await prisma.user.upsert({
-          where: { id: person.id },
-          update: {},
-          create: {
-            id: person.id,
-            name: person.name,
-            headline: person.headline,
-            bio: person.bio,
-            specialty: person.specialty,
-            practiceState: person.practiceState,
-            // Seed profiles can't log in to opt themselves in, so they're always
-            // considered "in" Nexus — this is what makes them show up in the directory
-            // and feed regardless of any real user's own opt-in choice.
-            nexusOptIn: true,
-          },
-        });
-
-        const existingPost = await prisma.nexusPost.findFirst({ where: { authorId: user.id } });
-        if (!existingPost) {
-          await prisma.nexusPost.create({
-            data: {
-              authorId: user.id,
-              body: person.post.body,
-              sourceUrl: person.post.sourceUrl,
-              sourceLabel: person.post.sourceLabel,
-            },
-          });
-        }
-      })
-    )
+    // Sequential rather than Promise.all across every seed person — SQLite (the local dev
+    // datastore behind the same libSQL adapter used in production) can't reliably serve a
+    // couple dozen concurrent write connections to one file; that many upserts fired at
+    // once was intermittently corrupting the query engine's response stream. Only runs
+    // once per process (see the `ensured` cache above), so the extra latency of going
+    // one-at-a-time here is a one-time cost, not a per-request one.
+    ensured = (async () => {
+      for (const person of ALL_SEED_PEOPLE) {
+        await seedOnePerson(person);
+      }
+    })()
       .then(() => undefined)
       .catch((err) => {
         ensured = null;

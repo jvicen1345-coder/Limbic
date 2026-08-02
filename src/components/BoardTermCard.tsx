@@ -1,27 +1,38 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { recordBoardsActivityAction } from "@/app/actions/boards";
+import { useState } from "react";
+import { recordBoardTermRevealAction } from "@/app/actions/daily-completion";
+import { formatElapsed } from "@/lib/meta";
+import { nowMs } from "@/lib/clock";
+import { ShareCompletionButton } from "@/components/ShareCompletionButton";
 import type { BoardTerm } from "@/lib/board-content";
 
-export function BoardTermCard({ dateKey, term }: { dateKey: string; term: BoardTerm }) {
-  const storageKey = `limbic:boards-term:${dateKey}`;
-  const [revealed, setRevealed] = useState(false);
-  const [, startTransition] = useTransition();
-
-  useEffect(() => {
-    /* eslint-disable-next-line react-hooks/set-state-in-effect -- restoring today's
-       reveal state from localStorage, which is unavailable during SSR */
-    setRevealed(localStorage.getItem(storageKey) === "1");
-  }, [storageKey]);
+export function BoardTermCard({
+  dateKey,
+  term,
+  initialRevealed,
+  initialElapsedSeconds,
+  nexusOptIn,
+}: {
+  dateKey: string;
+  term: BoardTerm;
+  /** Whether this user has already revealed today's term, as persisted server-side —
+   *  replaces what used to be an unscoped "limbic:boards-term:<dateKey>" localStorage key
+   *  shared by every account on the same browser. */
+  initialRevealed: boolean;
+  initialElapsedSeconds: number | null;
+  nexusOptIn: boolean;
+}) {
+  const [revealed, setRevealed] = useState(initialRevealed);
+  const [elapsedSeconds, setElapsedSeconds] = useState<number | null>(initialElapsedSeconds);
+  const [startedAt] = useState(() => nowMs());
 
   function reveal() {
     if (revealed) return;
+    const elapsed = Math.round((nowMs() - startedAt) / 1000);
     setRevealed(true);
-    localStorage.setItem(storageKey, "1");
-    startTransition(() => {
-      recordBoardsActivityAction(dateKey);
-    });
+    setElapsedSeconds(elapsed);
+    recordBoardTermRevealAction(dateKey, elapsed);
   }
 
   return (
@@ -36,6 +47,17 @@ export function BoardTermCard({ dateKey, term }: { dateKey: string; term: BoardT
               {term.memoryAid}
             </p>
           )}
+          {elapsedSeconds != null && (
+            <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "8px 0 0" }}>
+              Time: <strong>{formatElapsed(elapsedSeconds)}</strong>
+            </p>
+          )}
+          <div style={{ marginTop: 12 }}>
+            <ShareCompletionButton
+              nexusOptIn={nexusOptIn}
+              body={`Locked in today's Limbic Boards term${elapsedSeconds != null ? ` in ${formatElapsed(elapsedSeconds)}` : ""}.`}
+            />
+          </div>
         </>
       ) : (
         <button type="button" className="btn btn-primary" onClick={reveal}>
