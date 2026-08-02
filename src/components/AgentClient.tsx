@@ -1,26 +1,41 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { askAgentAction, expandAgentNodeAction } from "@/app/actions/agent";
 import { AgentGraph } from "@/components/AgentGraph";
 import type { AgentNode, AgentLink, AgentRing } from "@/lib/agent-graph";
 
-const GRAPH_HEIGHT = 520;
+/** Before any question is asked, the canvas shows exactly this one node, breathing (see
+ *  the .agent-node-breathing rule in globals.css) — "the best clinician in the world,
+ *  available 24/7," waiting. */
+const IDLE_NODE: AgentNode = { id: "center", parentId: null, ring: 0, label: "Limbic Agent", expandable: false };
 
-function useContainerWidth() {
+/** Delay between each node in a ring appearing — slow and deliberate on purpose, so the
+ *  web reads as being thought through in real time rather than dumped onto the canvas. */
+const REVEAL_DELAY_MS = 420;
+
+function sleep(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+}
+
+function truncate(label: string, max: number): string {
+  return label.length > max ? `${label.slice(0, max - 1)}…` : label;
+}
+
+function useContainerSize() {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [width, setWidth] = useState(640);
+  const [size, setSize] = useState({ width: 640, height: 480 });
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const observer = new ResizeObserver((entries) => {
-      const w = entries[0]?.contentRect.width;
-      if (w) setWidth(w);
+      const rect = entries[0]?.contentRect;
+      if (rect) setSize({ width: rect.width, height: rect.height });
     });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
-  return [ref, width] as const;
+  return [ref, size] as const;
 }
 
 /** Walks parentId up to the root, returning ancestor labels root-first (excluding the
@@ -41,38 +56,60 @@ function ancestorLabelsOf(nodeId: string, nodes: AgentNode[]): string[] {
 export function AgentClient() {
   const [question, setQuestion] = useState("");
   const [askedQuestion, setAskedQuestion] = useState<string | null>(null);
-  const [nodes, setNodes] = useState<AgentNode[]>([]);
+  const [nodes, setNodes] = useState<AgentNode[]>([IDLE_NODE]);
+  const [crossLinks, setCrossLinks] = useState<AgentLink[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [containerRef, containerWidth] = useContainerWidth();
+  const [containerRef, size] = useContainerSize();
 
-  const links: AgentLink[] = useMemo(
+  const treeLinks: AgentLink[] = useMemo(
     () =>
       nodes
         .filter((n): n is AgentNode & { parentId: string } => n.parentId != null)
-        .map((n) => ({ source: n.parentId, target: n.id })),
+        .map((n) => ({ source: n.parentId, target: n.id, kind: "tree" as const })),
     [nodes]
   );
-
+  const links = useMemo(() => [...treeLinks, ...crossLinks], [treeLinks, crossLinks]);
   const selectedNode = nodes.find((n) => n.id === selectedId) ?? null;
-  const hasWeb = nodes.length > 0;
+
+  async function revealStaggered(newNodes: AgentNode[]) {
+    for (const n of newNodes) {
+      setNodes((prev) => [...prev, n]);
+      await sleep(REVEAL_DELAY_MS);
+    }
+  }
 
   async function handleAsk() {
     const trimmed = question.trim();
     if (!trimmed || starting) return;
     setStarting(true);
     setError(null);
+    setSelectedId(null);
+    setCrossLinks([]);
+    setAskedQuestion(trimmed);
+    // Instant, optimistic "transform" — the idle node becomes the question right away,
+    // before the model has even responded, so the first thing the user sees is a reaction.
+    setNodes([{ id: "center", parentId: null, ring: 0, label: truncate(trimmed, 42), expandable: false }]);
+
     const result = await askAgentAction(trimmed);
-    setStarting(false);
     if (!result.ok) {
+      setStarting(false);
       setError(result.message);
       return;
     }
-    setAskedQuestion(trimmed);
-    setNodes(result.nodes);
-    setSelectedId("center");
+
+    const center = result.nodes.find((n) => n.ring === 0);
+    const ring1 = result.nodes.filter((n) => n.ring === 1);
+    if (center) {
+      // A second, smaller transform: the raw question refines into the model's own
+      // concise framing of it.
+      setNodes([{ ...center, detail: trimmed }]);
+      await sleep(500);
+    }
+    await revealStaggered(ring1);
+    setStarting(false);
   }
 
   async function handleNodeClick(node: AgentNode) {
@@ -84,124 +121,85 @@ export function AgentClient() {
     setLoadingId(node.id);
     setError(null);
     const ancestors = [...ancestorLabelsOf(node.id, nodes), node.label];
-    const result = await expandAgentNodeAction(askedQuestion, node.id, node.label, node.ring as AgentRing, ancestors);
+    const existingNodes = nodes.map((n) => ({ id: n.id, label: n.label }));
+    const result = await expandAgentNodeAction(
+      askedQuestion,
+      node.id,
+      node.label,
+      node.ring as AgentRing,
+      ancestors,
+      existingNodes
+    );
     setLoadingId(null);
     if (!result.ok) {
       setError(result.message);
       return;
     }
-    setNodes((prev) => [...prev, ...result.nodes]);
-  }
-
-  function reset() {
-    setNodes([]);
-    setAskedQuestion(null);
-    setSelectedId(null);
-    setLoadingId(null);
-    setError(null);
-    setQuestion("");
+    await revealStaggered(result.nodes);
+    if (result.crossLinks.length) setCrossLinks((prev) => [...prev, ...result.crossLinks]);
   }
 
   return (
-    <div className="screen-pad" style={{ maxWidth: 1100 }}>
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Limbic Agent</h1>
-      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 12px" }}>
-        Clinical decision support — a living reasoning web that grows as you explore.
-      </p>
-
-      <div
-        className="card elev-sm"
-        style={{ marginBottom: 14, background: "var(--color-accent-100)", border: "1px solid var(--color-accent-300)" }}
-      >
-        <p style={{ fontSize: 12, color: "var(--color-accent-800)", margin: 0, lineHeight: 1.5 }}>
-          <strong>Clinical decision support, not diagnosis.</strong> Limbic Agent never diagnoses a patient and
-          never recommends medication. It exists to support your clinical reasoning — always defer to your own
-          direct patient assessment and judgment.
-        </p>
+    <div className="agent-page">
+      <div className="agent-topbar">
+        <span>
+          <strong>Clinical decision support, not diagnosis.</strong> Never diagnoses, never recommends
+          medication — always defer to your own direct patient assessment.
+        </span>
       </div>
 
-      {!hasWeb ? (
-        <div className="card elev-sm">
-          <div className="card-kicker">Ask a clinical question or describe a case</div>
-          <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-            <input
-              className="input"
-              placeholder="e.g. 45yo with lateral knee pain after increasing running mileage"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleAsk();
-              }}
-            />
-            <button type="button" className="btn btn-primary" disabled={starting || !question.trim()} onClick={handleAsk}>
-              {starting ? "Building web…" : "Ask"}
-            </button>
-          </div>
-          {error && (
-            <p style={{ fontSize: 12, color: "var(--color-neutral-700)", marginTop: 8 }}>{error}</p>
-          )}
-        </div>
-      ) : (
-        <>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-            <div style={{ fontSize: 13, color: "var(--color-neutral-700)" }}>
-              Exploring: <strong style={{ color: "var(--color-text)" }}>{askedQuestion}</strong>
-            </div>
-            <button type="button" className="btn btn-ghost" onClick={reset}>
-              New question
-            </button>
-          </div>
+      <div className="agent-canvas-wrap" ref={containerRef}>
+        <AgentGraph
+          nodes={nodes}
+          links={links}
+          selectedId={selectedId}
+          loadingId={loadingId}
+          width={size.width}
+          height={size.height}
+          onNodeClick={handleNodeClick}
+          onBackgroundClick={() => setSelectedId(null)}
+        />
 
-          {error && (
-            <div className="card elev-sm" style={{ marginBottom: 10 }}>
-              <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: 0 }}>{error}</p>
-            </div>
-          )}
-
-          <div style={{ display: "flex", gap: 14, alignItems: "flex-start", flexWrap: "wrap" }}>
-            <div
-              ref={containerRef}
-              className="card elev-sm"
-              style={{ flex: "1 1 480px", minWidth: 0, padding: 0, overflow: "hidden" }}
+        {selectedNode?.detail && (
+          <div className="agent-detail-card">
+            <button
+              type="button"
+              className="agent-detail-close"
+              aria-label="Close"
+              onClick={() => setSelectedId(null)}
             >
-              <AgentGraph
-                nodes={nodes}
-                links={links}
-                selectedId={selectedId}
-                loadingId={loadingId}
-                width={containerWidth}
-                height={GRAPH_HEIGHT}
-                onNodeClick={handleNodeClick}
-              />
+              ×
+            </button>
+            <div className="agent-detail-kicker">
+              {selectedNode.ring === 0 ? "Your question" : `Ring ${selectedNode.ring}`}
             </div>
-
-            <div className="card elev-sm" style={{ flex: "0 0 280px", minWidth: 240, minHeight: 200 }}>
-              {selectedNode ? (
-                <>
-                  <div className="card-kicker">
-                    {selectedNode.ring === 0 ? "Your question" : `Ring ${selectedNode.ring}`}
-                  </div>
-                  <div style={{ fontFamily: "var(--font-heading)", fontSize: 16, margin: "6px 0 8px" }}>
-                    {selectedNode.label}
-                  </div>
-                  <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
-                    {selectedNode.detail}
-                  </p>
-                  {selectedNode.expandable && !nodes.some((n) => n.parentId === selectedNode.id) && (
-                    <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", marginTop: 10, fontStyle: "italic" }}>
-                      {loadingId === selectedNode.id ? "Growing the web…" : "Click this node again to expand it."}
-                    </p>
-                  )}
-                </>
-              ) : (
-                <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
-                  Click a node to see the reasoning behind it.
-                </p>
-              )}
-            </div>
+            <div className="agent-detail-title">{selectedNode.label}</div>
+            <p className="agent-detail-body">{selectedNode.detail}</p>
+            {selectedNode.expandable && !nodes.some((n) => n.parentId === selectedNode.id) && (
+              <p className="agent-detail-hint">
+                {loadingId === selectedNode.id ? "Growing the web…" : "Click this node again to expand it."}
+              </p>
+            )}
           </div>
-        </>
-      )}
+        )}
+
+        {error && <div className="agent-error">{error}</div>}
+      </div>
+
+      <div className="agent-input-bar">
+        <input
+          placeholder="Ask a clinical question or describe a case…"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleAsk();
+          }}
+          disabled={starting}
+        />
+        <button type="button" disabled={starting || !question.trim()} onClick={handleAsk}>
+          {starting ? "Thinking…" : "Ask"}
+        </button>
+      </div>
     </div>
   );
 }

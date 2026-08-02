@@ -2,7 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
-import type { AgentNode, AgentRing } from "@/lib/agent-graph";
+import type { AgentNode, AgentLink, AgentRing } from "@/lib/agent-graph";
 
 const client = new Anthropic();
 const MODEL = "claude-opus-5";
@@ -69,6 +69,15 @@ const ExpansionResponseSchema = z.object({
             "2-4 sentences of clinical reasoning for this node — teach the why, grounded in established " +
               "PT/rehab knowledge, following every hard rule in the system prompt."
           ),
+        relatedToLabel: z
+          .string()
+          .nullable()
+          .describe(
+            "If — and only if — this node has a genuinely meaningful clinical connection to one of the " +
+              "'existing nodes already in the web' listed in the prompt, put that other node's EXACT label here " +
+              "verbatim so the app can draw a line between them. Use this rarely; most nodes have no such " +
+              "connection. Null when there isn't one — don't force it."
+          ),
       })
     )
     .min(2)
@@ -78,6 +87,9 @@ const ExpansionResponseSchema = z.object({
 export interface AgentWebResult {
   ok: true;
   nodes: AgentNode[];
+  /** Cross-branch relationship lines only — the parent/child "tree" links are derived
+   *  client-side from each node's parentId, so this array never duplicates those. */
+  crossLinks: AgentLink[];
 }
 export interface AgentWebError {
   ok: false;
@@ -125,7 +137,7 @@ export async function startAgentWeb(
         expandable: true,
       })),
     ];
-    return { ok: true, nodes };
+    return { ok: true, nodes, crossLinks: [] };
   } catch (err) {
     console.error("Limbic Agent startAgentWeb failed:", err);
     return { ok: false, message: UNAVAILABLE_MESSAGE };
@@ -134,13 +146,19 @@ export async function startAgentWeb(
 
 /** Grows one more ring out from an existing node — ring 1 -> 2 (specific findings/tests/
  *  treatments) or ring 2 -> 3 (evidence, research framing, red flags). Ring 3 is always
- *  terminal (see AgentRing), so this is never called on a ring-3 node. */
+ *  terminal (see AgentRing), so this is never called on a ring-3 node.
+ *
+ *  existingNodes is the web's current node set (id + label only) — passed to the model so
+ *  it can point back at a specific one by exact label for a cross-branch connection. A
+ *  label the model gets wrong or half-remembers just fails to match anything below and is
+ *  silently dropped, rather than drawing a bogus line to a made-up node. */
 export async function expandAgentNode(
   originalQuestion: string,
   parentId: string,
   nodeLabel: string,
   parentRing: AgentRing,
   ancestorLabels: string[],
+  existingNodes: { id: string; label: string }[],
   licensed: boolean
 ): Promise<AgentWebResult | AgentWebError> {
   const childRing = (parentRing + 1) as AgentRing;
@@ -163,6 +181,9 @@ export async function expandAgentNode(
             ancestorLabels.length ? `Path so far: ${ancestorLabels.join(" -> ")}` : null,
             `Expand this node: "${nodeLabel}"`,
             `Generate ${framing}.`,
+            existingNodes.length
+              ? `Existing nodes already in the web (for the optional relatedToLabel field only — do not repeat these as new children): ${existingNodes.map((n) => n.label).join(", ")}`
+              : null,
           ]
             .filter(Boolean)
             .join("\n"),
@@ -172,15 +193,25 @@ export async function expandAgentNode(
     const parsed = message.parsed_output;
     if (!parsed) return { ok: false, message: UNAVAILABLE_MESSAGE };
 
-    const nodes: AgentNode[] = parsed.children.map((c, i) => ({
-      id: `${parentId}-c${i}`,
-      parentId,
-      ring: childRing,
-      label: c.label,
-      detail: c.detail,
-      expandable: childRing < 3,
-    }));
-    return { ok: true, nodes };
+    const labelToId = new Map(existingNodes.map((n) => [n.label.trim().toLowerCase(), n.id]));
+    const nodes: AgentNode[] = [];
+    const crossLinks: AgentLink[] = [];
+
+    parsed.children.forEach((c, i) => {
+      const id = `${parentId}-c${i}`;
+      nodes.push({
+        id,
+        parentId,
+        ring: childRing,
+        label: c.label,
+        detail: c.detail,
+        expandable: childRing < 3,
+      });
+      const relatedId = c.relatedToLabel ? labelToId.get(c.relatedToLabel.trim().toLowerCase()) : undefined;
+      if (relatedId) crossLinks.push({ source: id, target: relatedId, kind: "cross" });
+    });
+
+    return { ok: true, nodes, crossLinks };
   } catch (err) {
     console.error("Limbic Agent expandAgentNode failed:", err);
     return { ok: false, message: UNAVAILABLE_MESSAGE };

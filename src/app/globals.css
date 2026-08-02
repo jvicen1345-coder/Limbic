@@ -237,6 +237,13 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
   min-width: 0;
   height: 100vh;
   overflow-y: auto;
+  /* A flex column (not just a plain block) so a full-height page (see .agent-page) can
+     use flex:1 to fill exactly what's left after .app-mobile-topbar, instead of guessing
+     that height with a CSS percentage that has no way to know the topbar is there. Every
+     other page here is an ordinary flex:0 auto child, which behaves identically to plain
+     block stacking — this changes nothing for them. */
+  display: flex;
+  flex-direction: column;
 }
 
 .app-mobile-topbar {
@@ -515,7 +522,147 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
   .cards-grid > *:last-child:nth-child(odd) { display: none; }
 }
 
-/* — Limbic Agent spiderweb (see components/AgentGraph.tsx) — */
+/* — Limbic Agent: full-screen dark canvas + spiderweb (components/AgentClient.tsx,
+   components/AgentGraph.tsx). A deliberately separate visual language from the rest of
+   the (light-themed) app — this page owns its own colors rather than reusing --color-*. */
+.agent-page {
+  /* Fills exactly what's left of .app-main after .app-mobile-topbar (mobile only) —
+     see the .app-main comment above for why this is flex:1 and not a height percentage. */
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(ellipse at 50% 30%, #10182c 0%, #070a14 65%, #05070d 100%);
+  color: #dbe4f5;
+}
+.agent-topbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px;
+  font-size: 11.5px;
+  color: #7c8db5;
+  line-height: 1.5;
+}
+.agent-topbar strong { color: #a9bbe0; font-weight: 600; }
+.agent-new-question {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid rgba(140, 170, 255, 0.3);
+  color: #a9bbe0;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.agent-new-question:hover { border-color: rgba(140, 170, 255, 0.6); }
+
+.agent-canvas-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.agent-input-bar {
+  flex-shrink: 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+  max-width: 620px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.agent-input-bar input {
+  flex: 1;
+  min-width: 0;
+  background: rgba(20, 28, 48, 0.8);
+  border: 1px solid rgba(140, 170, 255, 0.25);
+  color: #e8ecf7;
+  font-size: 14px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  outline: none;
+}
+.agent-input-bar input::placeholder { color: #5c6a8f; }
+.agent-input-bar input:focus { border-color: rgba(140, 170, 255, 0.6); }
+.agent-input-bar button {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #5b8def, #3b6fe0);
+  color: #fff;
+  border: none;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 14px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.agent-input-bar button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.agent-error {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: #ffb4b4;
+  background: rgba(60, 20, 20, 0.55);
+  border: 1px solid rgba(255, 140, 140, 0.3);
+  padding: 6px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.agent-detail-card {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  width: min(420px, calc(100% - 32px));
+  background: rgba(15, 21, 38, 0.92);
+  border: 1px solid rgba(140, 170, 255, 0.25);
+  border-radius: 16px;
+  padding: 14px 16px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+.agent-detail-kicker {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6ea8ff;
+}
+.agent-detail-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+  color: #f1f4fc;
+  margin: 4px 0 6px;
+}
+.agent-detail-body { font-size: 12.5px; color: #a9b6d6; line-height: 1.5; margin: 0; }
+.agent-detail-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #7c8db5;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+}
+.agent-detail-close:hover { color: #dbe4f5; }
+.agent-detail-hint { font-size: 11px; color: #6ea8ff; font-style: italic; margin: 8px 0 0; }
+
+/* Nodes/links */
+.agent-link { stroke-width: 1.4; }
+.agent-link-tree { stroke: rgba(140, 170, 255, 0.28); }
+.agent-link-cross { stroke: rgba(66, 214, 200, 0.35); stroke-dasharray: 3 4; stroke-width: 1.1; }
+
 @keyframes agent-node-pulse-in {
   0% { transform: scale(0.3); opacity: 0; }
   65% { transform: scale(1.18); opacity: 1; }
@@ -523,20 +670,46 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
 }
 .agent-node-pulse {
   transform-origin: center;
-  animation: agent-node-pulse-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: agent-node-pulse-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.agent-node-circle {
-  transition: filter 0.2s ease, opacity 0.2s ease;
-}
+.agent-node-pulse-replay { animation: agent-node-pulse-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+.agent-node-circle { transition: filter 0.25s ease, opacity 0.25s ease; }
+.agent-node-circle { filter: drop-shadow(0 0 5px currentColor); }
 .agent-node:hover .agent-node-circle,
 .agent-node-selected .agent-node-circle {
-  filter: drop-shadow(0 0 7px var(--color-accent-500));
+  filter: drop-shadow(0 0 12px currentColor);
 }
-.agent-node-label { font-family: var(--font-body); pointer-events: none; }
+.agent-node-label {
+  font-family: var(--font-body);
+  fill: #a9b6d6;
+  pointer-events: none;
+}
+
+@keyframes agent-node-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
+@keyframes agent-node-breathe-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px currentColor); }
+  50% { filter: drop-shadow(0 0 20px currentColor); }
+}
+.agent-node-breathing .agent-node-pulse {
+  animation: agent-node-breathe 3.4s ease-in-out infinite;
+}
+.agent-node-breathing .agent-node-circle {
+  animation: agent-node-breathe-glow 3.4s ease-in-out infinite;
+}
+
 @keyframes agent-node-loading-pulse {
-  0%, 100% { opacity: 0.4; }
+  0%, 100% { opacity: 0.45; }
   50% { opacity: 1; }
 }
 .agent-node-loading .agent-node-circle {
   animation: agent-node-loading-pulse 0.9s ease-in-out infinite;
+}
+
+@media (max-width: 640px) {
+  .agent-topbar { padding: 10px 14px; font-size: 10.5px; }
+  .agent-input-bar { padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px)); }
 }

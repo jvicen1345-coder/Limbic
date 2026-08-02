@@ -5,17 +5,20 @@ import * as d3 from "d3";
 import type { AgentNode, AgentLink } from "@/lib/agent-graph";
 
 type SimNode = AgentNode & d3.SimulationNodeDatum;
-type SimLink = { source: string | SimNode; target: string | SimNode };
+type SimLink = { source: string | SimNode; target: string | SimNode; kind: "tree" | "cross" };
 
+// Bright, glowing fills tuned for the near-black canvas — see the .agent-node-circle glow
+// filter in globals.css, which is what actually reads as "glowing," not just fill color.
 const RING_COLOR: Record<number, string> = {
-  0: "var(--color-accent-900)",
-  1: "var(--color-accent-600)",
-  2: "var(--color-accent-2-600)",
-  3: "var(--color-neutral-600)",
+  0: "#bfe0ff",
+  1: "#6ea8ff",
+  2: "#42d6c8",
+  3: "#8a97c4",
 };
-const RING_RADIUS: Record<number, number> = { 0: 34, 1: 24, 2: 18, 3: 13 };
-const RING_LINK_DISTANCE: Record<number, number> = { 1: 120, 2: 95, 3: 75 };
-const RING_FONT_SIZE: Record<number, number> = { 0: 12, 1: 11, 2: 10.5, 3: 9.5 };
+const RING_RADIUS: Record<number, number> = { 0: 30, 1: 22, 2: 17, 3: 12 };
+const RING_RADIUS_COMPACT: Record<number, number> = { 0: 24, 1: 18, 2: 14, 3: 10 };
+const RING_LINK_DISTANCE: Record<number, number> = { 1: 110, 2: 85, 3: 68 };
+const RING_FONT_SIZE: Record<number, number> = { 0: 13, 1: 11, 2: 10.5, 3: 9.5 };
 
 function truncate(label: string, max: number): string {
   return label.length > max ? `${label.slice(0, max - 1)}…` : label;
@@ -29,24 +32,29 @@ export function AgentGraph({
   width,
   height,
   onNodeClick,
+  onBackgroundClick,
 }: {
   nodes: AgentNode[];
   links: AgentLink[];
   selectedId: string | null;
-  /** The node currently awaiting an expansion response, if any — shown with a spinner
-   *  ring instead of the usual fill. */
+  /** The node currently awaiting an expansion response, if any — shown with a soft pulse
+   *  instead of the usual static glow. */
   loadingId: string | null;
   width: number;
   height: number;
   onNodeClick: (node: AgentNode) => void;
+  onBackgroundClick?: () => void;
 }) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const simRef = useRef<d3.Simulation<SimNode, SimLink> | null>(null);
   const simNodesRef = useRef<SimNode[]>([]);
+  const prevLabelsRef = useRef<Map<string, string>>(new Map());
   const onNodeClickRef = useRef(onNodeClick);
+  const onBackgroundClickRef = useRef(onBackgroundClick);
   useEffect(() => {
     onNodeClickRef.current = onNodeClick;
-  }, [onNodeClick]);
+    onBackgroundClickRef.current = onBackgroundClick;
+  }, [onNodeClick, onBackgroundClick]);
 
   // One-time setup: the SVG structure and the force simulation itself persist across
   // re-renders so existing node positions are never reset — only the second effect below
@@ -56,19 +64,9 @@ export function AgentGraph({
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    svg
-      .append("defs")
-      .append("marker")
-      .attr("id", "agent-arrow")
-      .attr("viewBox", "0 0 8 8")
-      .attr("refX", 4)
-      .attr("refY", 4)
-      .attr("markerWidth", 4)
-      .attr("markerHeight", 4)
-      .attr("orient", "auto-start-reverse")
-      .append("path")
-      .attr("d", "M0,0 L8,4 L0,8 Z")
-      .attr("fill", "var(--color-neutral-400)");
+    svg.on("click", (event) => {
+      if (event.target === svgRef.current) onBackgroundClickRef.current?.();
+    });
 
     svg.append("g").attr("class", "agent-links");
     svg.append("g").attr("class", "agent-nodes");
@@ -84,7 +82,7 @@ export function AgentGraph({
             const target = d.target as SimNode;
             return RING_LINK_DISTANCE[target.ring] ?? 90;
           })
-          .strength(0.85)
+          .strength((d) => (d.kind === "cross" ? 0.15 : 0.85))
       )
       .force("charge", d3.forceManyBody().strength(-260))
       .force(
@@ -117,8 +115,7 @@ export function AgentGraph({
     };
   }, []);
 
-  // Keeps the gentle centering forces aligned if the container's size changes (e.g. the
-  // detail panel opening narrows the graph column).
+  // Keeps the gentle centering forces aligned if the container's size changes.
   useEffect(() => {
     const simulation = simRef.current;
     if (!simulation) return;
@@ -141,6 +138,9 @@ export function AgentGraph({
     const simulation = simRef.current;
     if (!simulation) return;
 
+    const compact = width < 460;
+    const radii = compact ? RING_RADIUS_COMPACT : RING_RADIUS;
+
     const existingById = new Map(simNodesRef.current.map((n) => [n.id, n]));
     const nextSimNodes: SimNode[] = nodes.map((n) => {
       const existing = existingById.get(n.id);
@@ -158,21 +158,22 @@ export function AgentGraph({
     });
     simNodesRef.current = nextSimNodes;
 
-    const nextSimLinks: SimLink[] = links.map((l) => ({ source: l.source, target: l.target }));
+    const nextSimLinks: SimLink[] = links.map((l) => ({ source: l.source, target: l.target, kind: l.kind }));
 
     simulation.nodes(nextSimNodes);
     (simulation.force("link") as d3.ForceLink<SimNode, SimLink>).links(nextSimLinks);
     simulation.alpha(0.7).restart();
 
-    // Links — plain enter/exit, no interaction.
+    // Links.
     svg
       .select(".agent-links")
       .selectAll<SVGLineElement, SimLink>("line")
-      .data(nextSimLinks, (d) => `${typeof d.source === "string" ? d.source : d.source.id}->${typeof d.target === "string" ? d.target : d.target.id}`)
+      .data(
+        nextSimLinks,
+        (d) => `${typeof d.source === "string" ? d.source : d.source.id}->${typeof d.target === "string" ? d.target : d.target.id}`
+      )
       .join("line")
-      .attr("class", "agent-link")
-      .attr("stroke", "var(--color-neutral-400)")
-      .attr("stroke-width", 1.5);
+      .attr("class", (d) => `agent-link agent-link-${d.kind}`);
 
     // Nodes.
     const nodeSel = svg
@@ -185,7 +186,10 @@ export function AgentGraph({
       .append("g")
       .attr("class", "agent-node")
       .style("cursor", (d) => (d.expandable ? "pointer" : "default"))
-      .on("click", (_event, d) => onNodeClickRef.current(d));
+      .on("click", (event, d) => {
+        event.stopPropagation();
+        onNodeClickRef.current(d);
+      });
 
     entered
       .append("g")
@@ -194,14 +198,16 @@ export function AgentGraph({
         const g = d3.select(this);
         g.append("circle")
           .attr("class", "agent-node-circle")
-          .attr("r", RING_RADIUS[d.ring] ?? 14)
-          .attr("fill", RING_COLOR[d.ring] ?? "var(--color-neutral-600)");
+          .attr("r", radii[d.ring] ?? 14)
+          .attr("fill", RING_COLOR[d.ring] ?? "#8a97c4")
+          // The glow filter uses currentColor (see globals.css) so each ring glows its
+          // own color — fill alone wouldn't drive that, since drop-shadow reads `color`.
+          .style("color", RING_COLOR[d.ring] ?? "#8a97c4");
         g.append("text")
           .attr("class", "agent-node-label")
           .attr("text-anchor", "middle")
-          .attr("dy", (RING_RADIUS[d.ring] ?? 14) + 13)
+          .attr("dy", (radii[d.ring] ?? 14) + 14)
           .attr("font-size", RING_FONT_SIZE[d.ring] ?? 10)
-          .attr("fill", "var(--color-text)")
           .text(truncate(d.label, d.ring === 0 ? 26 : 20));
       });
 
@@ -210,11 +216,44 @@ export function AgentGraph({
       .style("cursor", (d) => (d.expandable ? "pointer" : "default"))
       .classed("agent-node-selected", (d) => d.id === selectedId)
       .classed("agent-node-loading", (d) => d.id === loadingId)
-      .select(".agent-node-label")
-      .text((d) => truncate(d.label, d.ring === 0 ? 26 : 20));
+      // The idle center placeholder ("Limbic Agent") breathes continuously; once it has
+      // any children it has "answered" and settles into the normal static glow.
+      .classed("agent-node-breathing", (d) => d.ring === 0 && !nodes.some((n) => n.parentId === d.id));
+
+    merged.select(".agent-node-label").text((d) => truncate(d.label, d.ring === 0 ? 26 : 20));
+    merged
+      .select(".agent-node-circle")
+      .attr("r", (d) => radii[d.ring] ?? 14)
+      .attr("fill", (d) => RING_COLOR[d.ring] ?? "#8a97c4")
+      .style("color", (d) => RING_COLOR[d.ring] ?? "#8a97c4");
+    merged.select(".agent-node-label").attr("dy", (d) => (radii[d.ring] ?? 14) + 14);
+
+    // The center node's label changes once (idle "Limbic Agent" -> the question, then
+    // again once the model's polished label comes back) — flash the pulse-in animation
+    // on that specific transition rather than only on brand-new nodes.
+    merged.each(function (d) {
+      const prev = prevLabelsRef.current.get(d.id);
+      if (prev !== undefined && prev !== d.label) {
+        const pulseNode = d3.select(this).select(".agent-node-pulse").node() as SVGGElement | null;
+        if (pulseNode) {
+          pulseNode.classList.remove("agent-node-pulse-replay");
+          // Force a reflow so re-adding the class restarts the CSS animation.
+          void pulseNode.getBoundingClientRect();
+          pulseNode.classList.add("agent-node-pulse-replay");
+        }
+      }
+      prevLabelsRef.current.set(d.id, d.label);
+    });
 
     nodeSel.exit().remove();
   }, [nodes, links, selectedId, loadingId, width, height]);
 
-  return <svg ref={svgRef} width={width} height={height} style={{ width: "100%", height, display: "block" }} />;
+  return (
+    <svg
+      ref={svgRef}
+      width={width}
+      height={height}
+      style={{ width: "100%", height, display: "block", touchAction: "none" }}
+    />
+  );
 }

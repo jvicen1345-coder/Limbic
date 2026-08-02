@@ -9,15 +9,19 @@ export interface AgentNode {
   parentId: string | null;
   ring: AgentRing;
   label: string;
-  /** Longer explanation shown in the detail panel when the node is selected — absent on
-   *  the center node, which only ever carries the original question. */
+  /** Longer explanation shown in the detail overlay when the node is selected — absent on
+   *  the idle center node, which only ever carries "Limbic Agent" until a question is asked. */
   detail?: string;
   /** Ring 1/2 nodes the student/clinician can click to grow the web further; false for
-   *  ring 3 (evidence/red-flag) nodes, which are always terminal. */
+   *  ring 3 (evidence/red-flag) nodes and the center node, which are always terminal. */
   expandable: boolean;
 }
 
 export interface AgentLink {
   source: string;
   target: string;
+  /** "tree" is a normal parent/child growth edge; "cross" is a subtle, dashed line the
+   *  model drew between two related nodes in different branches (see expandAgentNode in
+   *  lib/agent.ts) — visually distinct and never something a node's expansion depends on. */
+  kind: "tree" | "cross";
 }

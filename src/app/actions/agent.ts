@@ -28,9 +28,18 @@ export async function expandAgentNodeAction(
   parentId: string,
   nodeLabel: string,
   parentRing: AgentRing,
-  ancestorLabels: string[]
+  ancestorLabels: string[],
+  existingNodes: { id: string; label: string }[]
 ): Promise<AgentWebResult | AgentWebError> {
   const user = await requireProUser();
   if (!user) return NOT_PRO_ERROR;
-  return expandAgentNode(originalQuestion, parentId, nodeLabel, parentRing, ancestorLabels, !!user.licenseNumber);
+  return expandAgentNode(
+    originalQuestion,
+    parentId,
+    nodeLabel,
+    parentRing,
+    ancestorLabels,
+    existingNodes,
+    !!user.licenseNumber
+  );
 }
