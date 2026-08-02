@@ -7,6 +7,7 @@ import { decorateArticle } from "@/lib/feed";
 import { recordArticleRead } from "@/lib/reading";
 import { SaveButton } from "@/components/SaveButton";
 import { BackButton } from "@/components/BackButton";
+import { ReadingProgressTracker } from "@/components/ReadingProgressTracker";
 
 export default async function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -31,6 +32,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="screen-pad">
+      <ReadingProgressTracker articleId={article.id} />
       <BackButton />
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
         <span className={article.typeTagClass}>{article.typeLabel}</span>

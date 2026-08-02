@@ -303,6 +303,14 @@ model ReadArticle {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   articleId String
   createdAt DateTime @default(now())
+  // 0-1 fraction of the article's scroll extent the reader last reached — drives the Home
+  // page "Continue Reading" card (see components/ReadingProgressTracker.tsx, which reports
+  // it, and components/ContinueReadingCard.tsx, which renders it).
+  scrollProgress Float    @default(0)
+  // Bumped on every write to this row, including a bare re-open (see lib/reading.ts
+  // recordArticleRead's upsert) as well as a progress update — "most recently touched",
+  // not "first read", is what Continue Reading should surface.
+  updatedAt      DateTime @default(now()) @updatedAt
 
   @@unique([userId, articleId])
 }

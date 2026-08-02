@@ -36,7 +36,7 @@ export default async function HomePage() {
   const readingCalendarStart = new Date();
   readingCalendarStart.setDate(readingCalendarStart.getDate() - (READING_CALENDAR_WINDOW_DAYS - 1));
 
-  const [articles, savedRows, readRows, readCalendarRows, stockSeries, previousVisit] = await Promise.all([
+  const [articles, savedRows, readRows, readCalendarRows, stockSeries, previousVisit, lastReadArticle] = await Promise.all([
     getArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true, createdAt: true } }),
     prisma.readArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
@@ -46,10 +46,31 @@ export default async function HomePage() {
     }),
     getUsphSeries(),
     recordHomeVisit(user),
+    prisma.readArticle.findFirst({
+      where: { userId: user.id },
+      orderBy: { updatedAt: "desc" },
+      select: { articleId: true, scrollProgress: true },
+    }),
   ]);
   const savedIds = savedRows.map((r) => r.articleId);
   const readIds = readRows.map((r) => r.articleId);
   const readingWeeks = buildReadingCalendarWeeks(readCalendarRows.map((r) => r.createdAt));
+
+  // Falls back to null (renders nothing — see ContinueReadingCard) if there's no reading
+  // history yet, or if the most recently read article has since dropped out of the current
+  // pool (a live-sourced article can churn out from under an old ReadArticle row).
+  const lastReadArticleMeta = lastReadArticle ? articles.find((a) => a.id === lastReadArticle.articleId) : null;
+  const continueReading = lastReadArticleMeta
+    ? (() => {
+        const remainingMins = lastReadArticleMeta.readMins * (1 - lastReadArticle!.scrollProgress);
+        return {
+          articleId: lastReadArticleMeta.id,
+          title: lastReadArticleMeta.title,
+          progress: lastReadArticle!.scrollProgress,
+          remainingLabel: remainingMins < 1 ? "< 1 min left" : `${Math.ceil(remainingMins)} min left`,
+        };
+      })()
+    : null;
 
   const ranked = rankFeed(articles, user.specialty as Specialty, user.followedTopics as unknown as string[]);
   const decorated = ranked.map((a) => decorateArticle(a, savedIds, previousVisit, readIds));
@@ -125,6 +146,7 @@ export default async function HomePage() {
       nexusSuggestions={nexusSuggestions}
       streakDays={user.streakDays}
       readingWeeks={readingWeeks}
+      continueReading={continueReading}
     />
   );
 }

@@ -6,6 +6,7 @@ import { SearchIcon } from "@/components/icons";
 import { Chip } from "@/components/Chip";
 import { ArticleCard, HeroArticleCard } from "@/components/ArticleCard";
 import { CalendarCard, type CeEvent } from "@/components/CalendarCard";
+import { ContinueReadingCard, type ContinueReadingData } from "@/components/ContinueReadingCard";
 import { StockCard } from "@/components/StockCard";
 import { RevolvingNews } from "@/components/RevolvingNews";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
@@ -40,6 +41,7 @@ export function HomeFeed({
   nexusSuggestions,
   streakDays,
   readingWeeks,
+  continueReading,
 }: {
   articles: DecoratedArticle[];
   ceEvents: CeEvent[];
@@ -53,6 +55,8 @@ export function HomeFeed({
   nexusSuggestions: NexusSuggestion[] | null;
   streakDays: number;
   readingWeeks: ReadingCalendarDay[][];
+  /** null when there's no reading history yet — see app/(app)/page.tsx. */
+  continueReading: ContinueReadingData | null;
 }) {
   const [filter, setFilter] = useState<ArticleType | "all">("all");
   const [page, setPage] = useState(1);
@@ -122,6 +126,7 @@ export function HomeFeed({
 
         <aside className="home-aside-col">
           <div className="home-aside-scroll">
+            <ContinueReadingCard data={continueReading} />
             <ReadingStreakCard streakDays={streakDays} weeks={readingWeeks} compact />
             <SavedUnreadCard articles={savedUnread} />
             <CalendarCard events={ceEvents} />
