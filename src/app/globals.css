@@ -868,6 +868,23 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   padding: 16px;
 }
 .threads-detail-cta { margin-top: 10px; font-size: 12.5px; }
+/* Same color language as .agent-demo-badge above ("Demo" on /agent's topbar) — both mark
+   "not fully live yet," so they should read as the same signal wherever they show up. */
+.threads-coming-soon-badge {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 8px;
+  background: rgba(255, 176, 66, 0.14);
+  border: 1px solid rgba(255, 176, 66, 0.4);
+  color: #ffb042;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
 @media (max-width: 640px) {
   .threads-canvas-wrap { height: 340px; }
 }

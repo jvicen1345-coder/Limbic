@@ -14,6 +14,18 @@ import type { ThreadsNodeData } from "@/lib/threads-graph";
 const REVEAL_DELAY_MS = 380;
 const RING_PAUSE_MS = 500;
 
+/**
+ * The 5 insight nodes (see lib/threads-graph.ts THREADS_INSIGHT_META) call Limbic Agent
+ * live — same ANTHROPIC_API_KEY-gated path as lib/agent.ts, currently unfunded, so every
+ * attempt fails with the same generic "isn't available right now" message regardless of
+ * PRO status. Rather than let a click sit there and fail (reading as a bug, not a
+ * limitation), this skips the attempt entirely and shows a plain "Coming Soon" state —
+ * same spirit as AgentClient.tsx's own AGENT_DEMO_MODE flag. Flip to true once billing is
+ * set up on the Anthropic account; nothing else about this component needs to change,
+ * the real generateThreadsInsightAction path below is already fully wired.
+ */
+const THREADS_INSIGHTS_ENABLED = false;
+
 function sleep(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
@@ -102,6 +114,7 @@ export function ThreadsWeb({
     setSelectedId(node.id);
     const web = byId.get(node.id);
     if (!web || web.action.kind !== "insight") return;
+    if (!THREADS_INSIGHTS_ENABLED) return;
     if (!isPro) return;
     if (insightCache[node.id] || loadingId === node.id) return;
 
@@ -126,11 +139,16 @@ export function ThreadsWeb({
     );
   }
 
-  const gated = selectedWeb && (selectedWeb.action.kind === "insight" || selectedWeb.action.kind === "agent-handoff") && !isPro;
   const isInsight = selectedWeb?.action.kind === "insight";
+  // Takes priority over the PRO gate below — while generation is unfunded, a free viewer
+  // seeing an "Upgrade to unlock this" prompt for something that wouldn't work even if
+  // they paid would be actively misleading, not just unpolished.
+  const comingSoon = isInsight && !THREADS_INSIGHTS_ENABLED;
+  const gated =
+    selectedWeb && !comingSoon && (selectedWeb.action.kind === "insight" || selectedWeb.action.kind === "agent-handoff") && !isPro;
   const insightText = selectedWeb && isInsight ? insightCache[selectedWeb.id] : undefined;
   const insightErr = selectedWeb && isInsight ? insightError[selectedWeb.id] : undefined;
-  const bodyText = gated ? undefined : (insightText ?? selectedWeb?.detail);
+  const bodyText = gated || comingSoon ? undefined : (insightText ?? selectedWeb?.detail);
 
   return (
     <div className="threads-wrap">
@@ -163,9 +181,16 @@ export function ThreadsWeb({
             ×
           </button>
           <div className="agent-detail-kicker">Ring {selectedWeb.ring}</div>
-          <div className="agent-detail-title">{selectedWeb.label}</div>
+          <div className="agent-detail-title">
+            {selectedWeb.label}
+            {comingSoon && <span className="threads-coming-soon-badge">Coming Soon</span>}
+          </div>
 
-          {gated ? (
+          {comingSoon ? (
+            <p className="agent-detail-body">
+              Limbic Agent&rsquo;s AI-generated clinical reasoning is still in development for this node — check back soon.
+            </p>
+          ) : gated ? (
             <>
               <p className="agent-detail-body">Unlock deeper, AI-generated clinical reasoning for this article with LimbicPro.</p>
               <Link href="/pro" className="btn btn-primary threads-detail-cta">
