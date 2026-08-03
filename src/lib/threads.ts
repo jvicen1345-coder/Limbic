@@ -99,9 +99,13 @@ export async function buildThreadsWeb(article: Article, articlePool: Article[]):
         research.length > 0
           ? `${research.length} related ${research.length === 1 ? "study" : "studies"} found — most recently "${truncate(research[0].title, 60)}".`
           : "No connected research found yet.",
+      // Links straight to the specific article the detail text names, rather than a
+      // Search query — a query built from just one tag is a narrower filter than the
+      // specialty-or-any-tag match that produced the count above, so it was routinely
+      // surfacing fewer results than "N found" promised (sometimes just 1).
       action:
         research.length > 0
-          ? { kind: "navigate", label: "View in Search", href: `/search?type=research&q=${encodeURIComponent(primaryTag)}` }
+          ? { kind: "navigate", label: "Read the article", href: `/article/${research[0].id}` }
           : { kind: "navigate", label: "Browse Research", href: "/search?type=research" },
     },
     {
@@ -121,9 +125,10 @@ export async function buildThreadsWeb(article: Article, articlePool: Article[]):
         guidelines.length > 0
           ? `${guidelines.length} related ${guidelines.length === 1 ? "guideline" : "guidelines"} found — most recently "${truncate(guidelines[0].title, 60)}".`
           : "No related guidelines found yet.",
+      // Same reasoning as "research" above — links to the specific named guideline.
       action:
         guidelines.length > 0
-          ? { kind: "navigate", label: "View in Search", href: `/search?type=guideline&q=${encodeURIComponent(primaryTag)}` }
+          ? { kind: "navigate", label: "Read the guideline", href: `/article/${guidelines[0].id}` }
           : { kind: "navigate", label: "Browse Guidelines", href: "/search?type=guideline" },
     },
     {

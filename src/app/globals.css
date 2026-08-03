@@ -868,6 +868,17 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   padding: 16px;
 }
 .threads-detail-cta { margin-top: 10px; font-size: 12.5px; }
+/* .btn-secondary's default color/border (see the "buttons" rules above) are tuned for a
+   light background — var(--color-text) on this panel's dark navy background was
+   effectively navy-on-navy, nearly invisible. .btn-primary is unaffected (solid accent
+   fill + white text already reads fine on dark). */
+.threads-detail-panel .btn-secondary {
+  color: #dbe4f5;
+  border-color: rgba(140, 170, 255, 0.35);
+}
+.threads-detail-panel .btn-secondary:hover {
+  background: rgba(140, 170, 255, 0.14);
+}
 /* Same color language as .agent-demo-badge above ("Demo" on /agent's topbar) — both mark
    "not fully live yet," so they should read as the same signal wherever they show up. */
 .threads-coming-soon-badge {
