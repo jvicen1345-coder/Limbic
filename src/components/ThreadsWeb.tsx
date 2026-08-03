@@ -26,6 +26,11 @@ const RING_PAUSE_MS = 500;
  */
 const THREADS_INSIGHTS_ENABLED = false;
 
+/** Matches a "navigate" node's href that points at another article (e.g. the Connected
+ *  Research/Related Guidelines nodes built in lib/threads.ts) — nothing else, so a Search
+ *  link or /nexus/​/clips still falls through to a real navigation below. */
+const ARTICLE_HREF = /^\/article\/([^/?]+)$/;
+
 function sleep(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
@@ -52,6 +57,7 @@ export function ThreadsWeb({
   webNodes,
   isPro,
   autoExpand = false,
+  onNavigateToArticle,
 }: {
   articleId: string;
   /** Server-computed node shells for this article — real-data nodes arrive with `detail`
@@ -60,6 +66,15 @@ export function ThreadsWeb({
   webNodes: ThreadsNodeData[];
   isPro: boolean;
   autoExpand?: boolean;
+  /** When provided, a "navigate" node whose href points at another article (see
+   *  ARTICLE_HREF above) calls this with that article's id instead of doing a real
+   *  navigation — see components/ArticleThreadsSplitView.tsx, which swaps the reading
+   *  pane in place so exploring a chain of connected articles doesn't reload the whole
+   *  page each time. Every other node (Search links, /nexus, external clips) still does a
+   *  real navigation regardless — only leaving to a different article stays in-pane.
+   *  Omit this prop to keep ThreadsWeb's default behavior (always a real navigation),
+   *  same as before this existed. */
+  onNavigateToArticle?: (articleId: string) => void;
 }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState(autoExpand);
@@ -209,7 +224,15 @@ export function ThreadsWeb({
                 <button
                   type="button"
                   className="btn btn-secondary threads-detail-cta"
-                  onClick={() => router.push(selectedWeb.action.kind === "navigate" ? selectedWeb.action.href : "/")}
+                  onClick={() => {
+                    if (selectedWeb.action.kind !== "navigate") return;
+                    const articleMatch = ARTICLE_HREF.exec(selectedWeb.action.href);
+                    if (articleMatch && onNavigateToArticle) {
+                      onNavigateToArticle(articleMatch[1]);
+                    } else {
+                      router.push(selectedWeb.action.href);
+                    }
+                  }}
                 >
                   {selectedWeb.action.label}
                   <ChevronRightIcon size={13} />
