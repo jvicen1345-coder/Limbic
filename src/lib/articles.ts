@@ -98,6 +98,20 @@ export async function getArticleById(id: string): Promise<Article | null> {
     // touches, so look this one PMID up directly instead of 404ing on a valid article.
     return fetchPubmedById(id.slice("pubmed-".length));
   }
+  // A seed-origin research/industry/product article only ends up inside getArticles()'s
+  // composed result when that type's live fetch happened to come back thin that moment
+  // (see MIN_LIVE_PER_TYPE above) — so whether a given seed id is "in the pool" can differ
+  // between two getArticles() calls made seconds apart, if the live fetch's count happens
+  // to cross that threshold either way (a real risk on serverless, where each request can
+  // be a cold instance with no shared cache). Checked directly here, before ever touching
+  // the live-composed pool, so a seed article's id resolves the same way regardless of
+  // what the live pool looked like at this particular moment — Limbic Threads' article
+  // swap (see lib/article-view.ts) depends on exactly this: it calls getArticleById again
+  // moments after the id was first surfaced from a getArticles() call that isn't
+  // guaranteed to recur identically.
+  const seedMatch = [...SEED_ARTICLES, ...ORTHOPT_CPG_SEED].find((a) => a.id === id);
+  if (seedMatch) return seedMatch;
+
   const articles = await getArticles();
   return articles.find((a) => a.id === id) ?? null;
 }
