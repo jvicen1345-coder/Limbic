@@ -53,11 +53,15 @@ async function fetchXml(url: string): Promise<string | null> {
     const res = await fetch(url, {
       signal: controller.signal,
       headers: { "User-Agent": USER_AGENT, Accept: "application/rss+xml, application/xml, text/xml" },
-      // Live news should never be served stale-forever; a short revalidate window still
-      // lets Next.js de-duplicate bursts of concurrent requests. Tagged so the Home
-      // refresh button (see app/actions/home.ts) can force a fresh pull on demand via
-      // revalidateTag, without waiting out the window.
-      next: { revalidate: 600, tags: ["live-news"] },
+      // Live news should never be served stale-forever, but 10min was actually shorter
+      // than fetchLiveArticles()'s own in-memory cache below (15min) — since that
+      // in-memory layer returns early and skips this fetch entirely while it's still
+      // warm, this fetch-level cache never got a chance to serve a hit at all; by the
+      // time the outer cache expired, this one always had too. Widened to 30min and
+      // aligned with CACHE_TTL_MS below so the two layers actually agree. Tagged so the
+      // Home refresh button (see app/actions/home.ts) can force a fresh pull on demand
+      // via updateTag, without waiting out either window.
+      next: { revalidate: 1800, tags: ["live-news"] },
     });
     if (!res.ok) return null;
     return await res.text();
@@ -284,12 +288,16 @@ function itemToArticle(item: RawItem, defaultType: ArticleType): Article | null 
 }
 
 let cache: { at: number; articles: Article[] } | null = null;
-const CACHE_TTL_MS = 15 * 60 * 1000;
+// Aligned with fetchXml's own revalidate window above — this outer cache used to
+// outlive that inner one (15min vs 10min), which meant the inner fetch-level cache
+// could never actually serve a hit: by the time this one expired, that one always had
+// too, so every "cache miss" here was guaranteed to also be a network round trip there.
+const CACHE_TTL_MS = 30 * 60 * 1000;
 
 /** Lets the Home refresh button (see app/actions/home.ts) force a genuinely fresh
  *  fetchLiveArticles() call on the next request instead of waiting out CACHE_TTL_MS —
  *  this in-memory cache sits in front of (and isn't cleared by) the fetch()-level
- *  revalidateTag("live-news") below, so both need invalidating together. */
+ *  updateTag("live-news") below, so both need invalidating together. */
 export function invalidateLiveArticlesCache(): void {
   cache = null;
 }

@@ -26,8 +26,11 @@ async function fetchJson(url: string): Promise<unknown | null> {
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
     // Tagged so the Home refresh button (see app/actions/home.ts) can force a fresh
-    // PubMed pull on demand via revalidateTag, without waiting out the window.
-    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 900, tags: ["live-research"] } });
+    // PubMed pull on demand via updateTag, without waiting out the window. The window
+    // itself is widened from 15min to 1hr — new PubMed results don't arrive minute to
+    // minute, and every cache miss here is a real 3-round-trip network cost (esearch +
+    // esummary + efetch) on whoever's request lands right after expiry.
+    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 3600, tags: ["live-research"] } });
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -41,7 +44,7 @@ async function fetchText(url: string): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
-    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 900, tags: ["live-research"] } });
+    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 3600, tags: ["live-research"] } });
     if (!res.ok) return null;
     return await res.text();
   } catch {

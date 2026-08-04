@@ -40,7 +40,12 @@ async function fetchOgImage(url: string): Promise<string | null> {
     const res = await fetch(url, {
       signal: controller.signal,
       headers: { "User-Agent": "Mozilla/5.0 (compatible; LimbicPTNews/1.0)" },
-      next: { revalidate: 3600 },
+      // A publisher's og:image essentially never changes after an article is posted, so
+      // there's no freshness reason to keep re-scraping every hour — widened from 1hr to
+      // 24hr since this is the single biggest per-request cost on Home (up to ~16 of
+      // these run in parallel per load) and a cache miss here is a real network round
+      // trip to an arbitrary third-party server, not just a DB read.
+      next: { revalidate: 86400 },
     });
     if (!res.ok || !res.body) return null;
 
