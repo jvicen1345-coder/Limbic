@@ -237,6 +237,26 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
 .tag-neutral { background: var(--color-neutral-100); color: var(--color-neutral-800); }
 .tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
 
+/* — evidence level badges (see lib/evidence.ts) — same pill shape as .tag above, one
+   color per level. Reuses existing tokens where the hue already exists in the palette
+   (SR/blue, Review/teal, Product/grey via the accent/accent-2/neutral scales already
+   used by .tag-accent/.tag-accent-2/.tag-neutral; Research/navy and Industry/slate via
+   the neutral scale at different steps); the 4 hues with no existing token (RCT green,
+   MA purple, CPG amber, CE orange) get a literal-hex light-bg/dark-text pair instead,
+   same color-mix pattern as .agent-demo-badge/.threads-coming-soon-badge above. */
+.tag-evidence-rct { background: color-mix(in srgb, #1f9d5e 14%, white); color: #146b44; }
+.tag-evidence-sr { background: var(--color-accent-100); color: var(--color-accent-800); }
+.tag-evidence-ma { background: color-mix(in srgb, #7c4dbd 14%, white); color: #5c3690; }
+.tag-evidence-review { background: var(--color-accent-2-100); color: var(--color-accent-2-800); }
+.tag-evidence-research { background: var(--color-neutral-200); color: var(--color-neutral-900); }
+.tag-evidence-cpg { background: color-mix(in srgb, #d9a400 14%, white); color: #8a6300; }
+.tag-evidence-industry { background: var(--color-neutral-200); color: var(--color-neutral-700); }
+.tag-evidence-ce { background: color-mix(in srgb, #e0741f 14%, white); color: #b5540b; }
+.tag-evidence-product { background: var(--color-neutral-100); color: var(--color-neutral-800); }
+/* Larger size modifier for the article detail page's more prominent badge — pairs with
+   one of the .tag-evidence-* color classes above, e.g. class="tag tag-lg tag-evidence-rct". */
+.tag-lg { font-size: 13px; padding: 5px 14px; }
+
 /* — app shell layout — */
 .app-root {
   display: flex;

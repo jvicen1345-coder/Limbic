@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { SaveButton } from "@/components/SaveButton";
 import { BackButton } from "@/components/BackButton";
+import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { EVIDENCE_LEVEL_META } from "@/lib/evidence";
 import type { DecoratedArticle } from "@/lib/feed";
 
 /** The article body/tags/meta/Related markup — extracted from what used to be
@@ -20,6 +22,16 @@ export function ArticleReadingPane({ article, related }: { article: DecoratedArt
         <span className="tag tag-neutral">{article.specialtyLabel}</span>
       </div>
       <h1 style={{ fontSize: 27, margin: "0 0 10px", lineHeight: 1.18 }}>{article.title}</h1>
+
+      {article.evidenceLevel && (
+        <div style={{ marginBottom: 18 }}>
+          <EvidenceBadge level={article.evidenceLevel} size="lg" />
+          <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--color-neutral-700)", margin: "6px 0 0" }}>
+            {EVIDENCE_LEVEL_META[article.evidenceLevel].label} — {EVIDENCE_LEVEL_META[article.evidenceLevel].description}
+          </p>
+        </div>
+      )}
+
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 22 }}>
         <div style={{ fontSize: 13, color: "var(--color-neutral-700)" }}>
           {article.source} · {article.dateLabel} · {article.readMins} min read

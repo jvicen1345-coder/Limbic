@@ -1,5 +1,6 @@
 import type { Article, ArticleType, Specialty } from "@/lib/types";
 import type { SavedArticle } from "@/generated/prisma/client";
+import { defaultEvidenceLevelForType } from "@/lib/evidence";
 
 /** Rebuilds an Article from a SavedArticle row's snapshot fields (see
  *  app/actions/saved.ts toggleSaveAction) — null if the row predates the snapshot or
@@ -28,5 +29,10 @@ export function snapshotToArticle(row: SavedArticle): Article | null {
     summary: row.summary,
     tags: (row.tags as unknown as string[]) ?? [],
     live: true,
+    // No evidenceLevel column on SavedArticle — derived fresh from the stored type at
+    // read time instead of migrating the DB. A saved PubMed article's specific
+    // RCT/SR/MA/Review distinction degrades to generic "Research" once round-tripped
+    // through Save, since only `type` (not the original evidenceLevel) is persisted.
+    evidenceLevel: defaultEvidenceLevelForType(row.type as ArticleType),
   };
 }

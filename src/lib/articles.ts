@@ -7,8 +7,17 @@ import { RETRACTION_WATCH_ARTICLES } from "@/lib/retraction-watch-data";
 import { fetchAptaNews } from "@/lib/apta-news";
 import { APTA_NEWS_SEED } from "@/lib/apta-news-static";
 import { ORTHOPT_CPG_SEED } from "@/lib/orthopt-cpg-static";
+import { defaultEvidenceLevelForType } from "@/lib/evidence";
 
 export { WELLNESS_VIDEOS };
+
+/** Fills in evidenceLevel generically from an article's type, for every source except
+ *  PubMed (which already set its own specific RCT/SR/MA/Review — see lib/pubmed.ts —
+ *  and is left untouched here). Applied once at each getArticles-family function's
+ *  return point rather than hand-editing every static seed file. */
+function withEvidenceLevel(articles: Article[]): Article[] {
+  return articles.map((a) => (a.evidenceLevel ? a : { ...a, evidenceLevel: defaultEvidenceLevelForType(a.type) }));
+}
 
 const LIVE_TYPES: ArticleType[] = ["research", "industry", "product"];
 /** Below this many live results for a type, top it up with seed articles so the section
@@ -53,7 +62,7 @@ export async function getArticles(): Promise<Article[]> {
   // Guidelines always reads from the real, curated AOPT CPG list — never news search.
   ORTHOPT_CPG_SEED.forEach(add);
 
-  return result;
+  return withEvidenceLevel(result);
 }
 
 /**
@@ -65,7 +74,7 @@ export async function getArticles(): Promise<Article[]> {
  * concept from the main feed's editorial categories.
  */
 export async function getUnderReviewArticles(): Promise<Article[]> {
-  return RETRACTION_WATCH_ARTICLES;
+  return withEvidenceLevel(RETRACTION_WATCH_ARTICLES);
 }
 
 /**
@@ -81,12 +90,12 @@ export async function getAptaNewsArticles(): Promise<Article[]> {
   // Tier 1 (direct scrape), tier 2 (Google News), and the static-seed fallback each come
   // in their own order — concatenating them isn't sorted, so this is the one place that
   // guarantees "most recently posted first" regardless of which tiers contributed.
-  return combined.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return withEvidenceLevel(combined.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
 }
 
 export async function getArticleById(id: string): Promise<Article | null> {
   if (id.startsWith("rw-")) {
-    return RETRACTION_WATCH_ARTICLES.find((a) => a.id === id) ?? null;
+    return (await getUnderReviewArticles()).find((a) => a.id === id) ?? null;
   }
   if (id.startsWith("apta-")) {
     const aptaArticles = await getAptaNewsArticles();
@@ -110,7 +119,7 @@ export async function getArticleById(id: string): Promise<Article | null> {
   // moments after the id was first surfaced from a getArticles() call that isn't
   // guaranteed to recur identically.
   const seedMatch = [...SEED_ARTICLES, ...ORTHOPT_CPG_SEED].find((a) => a.id === id);
-  if (seedMatch) return seedMatch;
+  if (seedMatch) return withEvidenceLevel([seedMatch])[0];
 
   const articles = await getArticles();
   return articles.find((a) => a.id === id) ?? null;

@@ -1,6 +1,6 @@
 import "server-only";
 import { XMLParser } from "fast-xml-parser";
-import type { Article } from "@/lib/types";
+import type { Article, EvidenceLevel } from "@/lib/types";
 import { classify } from "@/lib/news-live";
 import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
 
@@ -82,26 +82,61 @@ interface EsummaryEntry {
   elocationid?: string;
 }
 
-function extractAbstracts(efetchXml: string): Map<string, string> {
-  const abstracts = new Map<string, string>();
+/** A <PublicationType> entry parses as a plain string when it has no attributes, or as
+ *  `{ "#text": "...", "@_UI": "D..." }` when it does (this parser is configured with
+ *  ignoreAttributes: false) — same shape PMID already has to be unwrapped from below. */
+function xmlNodeText(node: unknown): string {
+  if (typeof node === "string") return node;
+  if (node && typeof node === "object" && "#text" in node) return String((node as { "#text"?: unknown })["#text"] ?? "");
+  return "";
+}
+
+/** PubMed's own controlled-vocabulary PublicationTypeList — checked in priority order
+ *  against the exact term strings, not substring matching, since "Systematic Review" and
+ *  "Review" are two distinct entries a record can carry independently (a systematic
+ *  review that also happens to match "Review" shouldn't shadow the more specific SR). */
+function evidenceLevelFromPublicationTypes(types: string[]): EvidenceLevel {
+  if (types.includes("Randomized Controlled Trial")) return "RCT";
+  if (types.includes("Systematic Review")) return "SR";
+  if (types.includes("Meta-Analysis")) return "MA";
+  if (types.includes("Review")) return "Review";
+  return "Research";
+}
+
+interface PubmedMeta {
+  abstract: string;
+  evidenceLevel: EvidenceLevel;
+}
+
+/** Both the abstract text and the evidence level come off the same efetch XML response —
+ *  no extra API call needed for evidence levels, just reading more of what's already
+ *  being fetched. */
+function extractPubmedMeta(efetchXml: string): Map<string, PubmedMeta> {
+  const meta = new Map<string, PubmedMeta>();
   try {
     const parsed = xmlParser.parse(efetchXml);
     const articlesRaw = parsed?.PubmedArticleSet?.PubmedArticle;
     const articles = Array.isArray(articlesRaw) ? articlesRaw : articlesRaw ? [articlesRaw] : [];
     for (const art of articles) {
       const pmid = art?.MedlineCitation?.PMID?.["#text"] ?? art?.MedlineCitation?.PMID;
+      if (!pmid) continue;
+
       const abstractTextRaw = art?.MedlineCitation?.Article?.Abstract?.AbstractText;
-      if (!pmid || !abstractTextRaw) continue;
-      const parts = Array.isArray(abstractTextRaw) ? abstractTextRaw : [abstractTextRaw];
-      const text = parts
-        .map((p: unknown) => (typeof p === "string" ? p : (p as { "#text"?: string })?.["#text"] ?? ""))
-        .join(" ");
-      abstracts.set(String(pmid), stripHtml(text));
+      const abstractParts = Array.isArray(abstractTextRaw) ? abstractTextRaw : abstractTextRaw ? [abstractTextRaw] : [];
+      const abstract = stripHtml(abstractParts.map(xmlNodeText).join(" "));
+
+      const pubTypeRaw = art?.MedlineCitation?.Article?.PublicationTypeList?.PublicationType;
+      const pubTypes = (Array.isArray(pubTypeRaw) ? pubTypeRaw : pubTypeRaw ? [pubTypeRaw] : [])
+        .map(xmlNodeText)
+        .filter(Boolean);
+
+      meta.set(String(pmid), { abstract, evidenceLevel: evidenceLevelFromPublicationTypes(pubTypes) });
     }
   } catch {
-    // Malformed/unexpected XML shape — callers fall back to the title as the summary.
+    // Malformed/unexpected XML shape — callers fall back to the title as the summary,
+    // and to "Research" as the evidence level.
   }
-  return abstracts;
+  return meta;
 }
 
 function stableId(pmid: string): string {
@@ -120,13 +155,14 @@ async function buildArticlesFromIds(ids: string[]): Promise<Article[]> {
     fetchText(`${EUTILS}/efetch.fcgi?db=pubmed&rettype=abstract&retmode=xml&id=${idParam}`),
   ]);
   if (!summaryJson) return [];
-  const abstracts = efetchXml ? extractAbstracts(efetchXml) : new Map<string, string>();
+  const pubmedMeta = efetchXml ? extractPubmedMeta(efetchXml) : new Map<string, PubmedMeta>();
 
   const articles: Article[] = [];
   for (const pmid of ids) {
     const entry: EsummaryEntry | undefined = summaryJson.result?.[pmid];
     if (!entry?.title) continue;
-    const abstract = abstracts.get(pmid) ?? "";
+    const meta = pubmedMeta.get(pmid);
+    const abstract = meta?.abstract ?? "";
     const summary = abstract || entry.title;
     const { specialty, matchedKeywords } = classify(`${entry.title} ${abstract}`, "research");
     const journal = entry.fulljournalname || entry.source || "PubMed";
@@ -144,6 +180,7 @@ async function buildArticlesFromIds(ids: string[]): Promise<Article[]> {
       summary: summary.length > 320 ? summary.slice(0, 317) + "…" : summary,
       tags,
       live: true,
+      evidenceLevel: meta?.evidenceLevel ?? "Research",
     });
   }
   return articles;

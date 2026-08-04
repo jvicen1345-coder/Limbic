@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { SaveButton } from "@/components/SaveButton";
 import { ArticleImage } from "@/components/ArticleImage";
+import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { CheckIcon, NetworkIcon, ChevronRightIcon } from "@/components/icons";
 import type { DecoratedArticle } from "@/lib/feed";
 
@@ -63,6 +64,7 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
       <p className="card-body">{article.summary}</p>
       <div className="card-meta">
         <span className={article.typeTagClass}>{article.specialtyLabel}</span>
+        {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
         <span>
           {article.source} · {article.readMins} min
         </span>
@@ -97,6 +99,7 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
       </p>
       <div className="card-meta">
         <span className={article.typeTagClass}>{article.specialtyLabel}</span>
+        {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
         <span>
           {article.source} · {article.readMins} min
         </span>

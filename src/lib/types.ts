@@ -1,6 +1,13 @@
 export type ArticleType = "research" | "guideline" | "industry" | "ce" | "product";
 export type Specialty = "ortho" | "neuro" | "sports" | "pediatric" | "geriatric";
 
+/** Where an article sits in the evidence hierarchy — see lib/evidence.ts for labels,
+ *  colors, and one-sentence explanations per level. PubMed articles get RCT/SR/MA/Review
+ *  from their own structured PublicationTypeList metadata (see lib/pubmed.ts); every
+ *  other source's level is derived one-for-one from its ArticleType (see
+ *  lib/evidence.ts defaultEvidenceLevelForType). */
+export type EvidenceLevel = "RCT" | "SR" | "MA" | "Review" | "Research" | "CPG" | "Industry" | "CE" | "Product";
+
 export interface Article {
   id: string;
   type: ArticleType;
@@ -33,6 +40,11 @@ export interface Article {
   /** True when this article was pulled from a live feed at request time rather than the
    *  bundled seed set. */
   live?: boolean;
+  /** See lib/evidence.ts — every article from every current source ends up with one (set
+   *  directly by lib/pubmed.ts, or filled in generically by lib/articles.ts's
+   *  normalization pass / lib/saved-snapshot.ts), but kept optional on the type itself so
+   *  UI code guards for its absence rather than assuming a source can never omit it. */
+  evidenceLevel?: EvidenceLevel;
 }
 
 export interface WellnessArticle {
