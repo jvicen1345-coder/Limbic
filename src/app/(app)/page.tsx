@@ -10,6 +10,7 @@ import { buildLicenseView } from "@/lib/license";
 import { ensureNexusSeedData } from "@/lib/nexus-seed";
 import { getConnectionStates } from "@/lib/nexus";
 import { buildLimbicAgentInsights } from "@/lib/limbic-agent-insights";
+import { todayLocalDateStr } from "@/lib/today";
 import { HomeFeed } from "@/components/HomeFeed";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import type { ArticleType, CeCategory, Specialty } from "@/lib/types";
@@ -69,7 +70,7 @@ export default async function HomePage() {
   // lib/reading-calendar.ts, components/CalendarCard.tsx — none of them track a per-user
   // timezone either).
   const now = new Date();
-  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const todayStr = todayLocalDateStr(now);
   const credential = credentialFromName(user.name);
   const greetingName = firstNameOf(user.name);
   const greeting = `${timeOfDayGreeting(now.getHours())}, ${greetingName}${credential ? `, ${credential}` : ""}`;

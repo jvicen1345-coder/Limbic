@@ -81,14 +81,24 @@ export function SearchScreen({
   articles,
   initialType = "all",
   initialQuery = "",
+  initialNewOnly = false,
+  todayStr,
 }: {
   articles: DecoratedArticle[];
   initialType?: ArticleType | "all";
   initialQuery?: string;
+  /** True when arriving from the Home dashboard's Studies/Guidelines tile (via
+   *  /search?new=1) — starts the results filtered down to just today's new items,
+   *  matching the count shown on that tile (see components/DailyDashboard.tsx). */
+  initialNewOnly?: boolean;
+  /** The same server-local "today" the dashboard tile counts were computed against (see
+   *  lib/today.ts) — required whenever initialNewOnly can be true. */
+  todayStr?: string;
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [type, setType] = useState<ArticleType | "all">(initialType);
   const [specialty, setSpecialty] = useState<Specialty | "all">("all");
+  const [newOnly, setNewOnly] = useState(initialNewOnly);
   const [page, setPage] = useState(1);
   const [aiResult, setAiResult] = useState<AiSearchResult | null>(null);
 
@@ -97,6 +107,7 @@ export function SearchScreen({
     let list = articles.filter((a) => {
       if (type !== "all" && a.type !== type) return false;
       if (specialty !== "all" && a.specialty !== specialty) return false;
+      if (newOnly && a.date !== todayStr) return false;
       if (!q) return true;
       return (
         a.title.toLowerCase().includes(q) ||
@@ -107,7 +118,7 @@ export function SearchScreen({
     });
     list = list.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return list;
-  }, [articles, query, type, specialty]);
+  }, [articles, query, type, specialty, newOnly, todayStr]);
 
   const { pageItems, totalPages, page: clampedPage } = useMemo(() => paginate(results, page), [results, page]);
 
@@ -141,6 +152,29 @@ export function SearchScreen({
         </>
       ) : (
         <>
+          {newOnly && (
+            <div
+              className="card elev-sm"
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 10,
+                marginBottom: 16,
+                background: "var(--color-accent-100)",
+                border: "1px solid var(--color-accent-300)",
+              }}
+            >
+              <span style={{ fontSize: 13, color: "var(--color-accent-800)" }}>
+                Showing only what&rsquo;s new today — {results.length} {results.length === 1 ? "item" : "items"}
+              </span>
+              <button type="button" className="btn btn-ghost" onClick={() => setNewOnly(false)}>
+                Show all
+              </button>
+            </div>
+          )}
+
           <div className="field" style={{ marginBottom: 16 }}>
             <input
               className="input"

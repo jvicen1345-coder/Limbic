@@ -45,8 +45,8 @@ function QuestionOfDayTile() {
 export function DailyDashboard({ data }: { data: DailyDashboardData }) {
   return (
     <div className="dashboard-metrics-row">
-      <MetricTile label="Studies" title="New studies published today" value={data.newStudiesToday} href="/search?type=research" />
-      <MetricTile label="Guidelines" title="New guideline updates today" value={data.newGuidelinesToday} href="/search?type=guideline" />
+      <MetricTile label="Studies" title="New studies published today" value={data.newStudiesToday} href="/search?type=research&new=1" />
+      <MetricTile label="Guidelines" title="New guideline updates today" value={data.newGuidelinesToday} href="/search?type=guideline&new=1" />
       {data.showQuestionOfDay && <QuestionOfDayTile />}
       <MetricTile label="Day streak" title="Current reading streak" value={data.streakDays} href="/profile" />
       <MetricTile label="CE hours" title="CE hours completed" value={data.ceHoursCompleted} href="/profile" />
