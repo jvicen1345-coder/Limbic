@@ -701,9 +701,14 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
 .reading-calendar-day-read { background: var(--color-accent); }
 .reading-calendar-day-today { box-shadow: 0 0 0 1px var(--color-accent-700); }
 
-/* Never show an unpaired trailing card in the 2-column desktop grid. */
+/* Never show an unpaired trailing card in the 2-column desktop grid — assumes more
+   content exists on another page, which is true for every paginated .cards-grid (Search,
+   Saved, etc.) but not Home's (see .home-cards-grid override right below): Home never
+   paginates, so an odd count there (e.g. only 1-5 real, distinct-image articles found —
+   see page.tsx's resolveHomeImages) is the whole story, not a dangling leftover to hide. */
 @media (min-width: 800px) {
   .cards-grid > *:last-child:nth-child(odd) { display: none; }
+  .cards-grid.home-cards-grid > *:last-child:nth-child(odd) { display: block; }
 }
 
 /* — Limbic Agent: full-screen dark canvas + spiderweb (components/AgentClient.tsx,

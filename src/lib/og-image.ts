@@ -33,6 +33,15 @@ function isUnresolvableRedirect(url: string): boolean {
   }
 }
 
+// A handful of known "og:image" values are a *site's* generic social-preview branding,
+// not anything specific to the article — PubMed uses the exact same image on every single
+// article page regardless of PMID (verified directly against pubmed.ncbi.nlm.nih.gov).
+// Accepting it as a real image tells the reader nothing about the actual article, and
+// worse, blocks lib/topic-image.ts's per-article stock-photo fallback (which only fills
+// in articles that don't already have `.image` set) — so a useless shared logo silently
+// crowds out a real, distinguishing photo. Treated as "no image found" instead.
+const GENERIC_SITE_IMAGES = new Set(["https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image-v2.jpg"]);
+
 async function fetchOgImage(url: string): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
@@ -65,7 +74,8 @@ async function fetchOgImage(url: string): Promise<string | null> {
     const match = OG_IMAGE_RE.exec(html);
     const raw = match?.[1] || match?.[2];
     if (!raw) return null;
-    return new URL(raw, url).toString();
+    const resolved = new URL(raw, url).toString();
+    return GENERIC_SITE_IMAGES.has(resolved) ? null : resolved;
   } catch {
     return null;
   } finally {
