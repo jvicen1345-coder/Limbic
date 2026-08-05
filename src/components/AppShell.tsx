@@ -28,6 +28,7 @@ import {
   GraduationCapIcon,
   NetworkIcon,
 } from "@/components/icons";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 function sidebarNavStyle(active: boolean, bold: boolean): React.CSSProperties {
   return {
@@ -192,9 +193,10 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <div className="nav-footer">
         <div style={{ fontSize: 12, color: "var(--color-neutral-700)", marginBottom: 4 }}>Signed in as</div>
         <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)" }}>{profileName}</div>
-        <div style={{ fontSize: 12, color: "var(--color-neutral-700)", marginBottom: 8 }}>
+        <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
           {specialtyLabel} · {practiceState}
         </div>
+        <ThemeToggle />
         <form action={signOutAction}>
           <button type="submit" className="btn btn-ghost" style={{ padding: "4px 0", fontSize: 12 }}>
             Sign out

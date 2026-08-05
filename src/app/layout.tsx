@@ -29,13 +29,26 @@ export const metadata: Metadata = {
   description: "Up-to-date news, guidelines, and clinical tools for physical therapists.",
 };
 
+// Sets html[data-theme] before the first paint, so the page never flashes light and then
+// swaps to dark a beat later. Deliberately not something React renders (a useEffect that
+// set the attribute would run after that first paint, too late to prevent the flash) —
+// see components/ThemeToggle.tsx, which reads/writes this same localStorage key and
+// attribute for the actual toggle. suppressHydrationWarning on <html> below is required
+// because of this: the server has no way to know the visitor's stored preference, so its
+// markup never has data-theme at all, and React would otherwise warn about this script
+// changing an attribute it didn't render.
+const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${caprasimo.variable} ${figtree.variable}`}>
+    <html lang="en" className={`${caprasimo.variable} ${figtree.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body>
         {children}
         <Analytics />
