@@ -4,6 +4,7 @@ import { getArticles } from "@/lib/articles";
 import { decorateArticle, rankFeed, type DecoratedArticle } from "@/lib/feed";
 import { firstName as firstNameOf, timeOfDayGreeting, credentialFromName } from "@/lib/meta";
 import { getIndustryIndexView } from "@/lib/stock";
+import { randomSeed } from "@/lib/random";
 import { attachRealImages } from "@/lib/og-image";
 import { attachTopicImages } from "@/lib/topic-image";
 import { buildLicenseView } from "@/lib/license";
@@ -196,6 +197,7 @@ export default async function HomePage() {
       hiddenWidgets={user.hiddenHomeWidgets as unknown as string[]}
       limbicAgentInsights={limbicAgentInsights}
       isPro={user.isPro}
+      refreshSeed={randomSeed()}
     />
   );
 }
