@@ -543,6 +543,23 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   .article-split-threads { width: 100%; position: static; max-height: none; overflow-y: visible; }
 }
 
+/* Hero + "Latest news" pairing above the main feed grid (see components/HomeFeed.tsx) —
+   align-items: flex-end sinks the shorter news card to the hero's bottom edge, so it reads
+   as sitting in the hero's bottom-right corner rather than floating at the top of a taller
+   row. */
+.home-hero-row {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: flex-end;
+}
+.home-hero-main { flex: 2; min-width: 0; }
+.home-hero-news { flex: 1; min-width: 0; max-width: 280px; }
+@media (max-width: 799px) {
+  .home-hero-row { flex-direction: column; align-items: stretch; }
+  .home-hero-news { max-width: none; }
+}
+
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

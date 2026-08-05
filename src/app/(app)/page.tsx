@@ -30,9 +30,11 @@ const NEWS_TICKER_SIZE = 6;
 const SAVED_UNREAD_SIZE = 3;
 
 // How many of the top-ranked feed articles get a real og:image fetched (see lib/og-image.ts)
-// — the hero plus a comfortable first page or two (PAGE_SIZE is 12), not the entire pool,
-// since each image is an extra network request per article.
-const FEED_IMAGE_LIMIT = 16;
+// — the rotating hero (5 articles, see HomeFeed's HERO_SIZE) plus a comfortable page or two
+// of the grid below it (PAGE_SIZE is 12), not the entire pool, since each image is an extra
+// network request per article. HomeFeed caps the feed to just these imaged articles, so
+// this number is also effectively how many articles Home shows at all.
+const FEED_IMAGE_LIMIT = 24;
 
 export default async function HomePage() {
   const user = await getCurrentUser();
