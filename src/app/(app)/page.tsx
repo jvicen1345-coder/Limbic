@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { getArticles } from "@/lib/articles";
 import { decorateArticle, rankFeed, type DecoratedArticle } from "@/lib/feed";
 import { firstName as firstNameOf, timeOfDayGreeting, credentialFromName } from "@/lib/meta";
-import { getUsphSeries, buildStockView } from "@/lib/stock";
+import { getIndustryIndexView } from "@/lib/stock";
 import { attachRealImages } from "@/lib/og-image";
 import { attachTopicImages } from "@/lib/topic-image";
 import { buildLicenseView } from "@/lib/license";
@@ -40,7 +40,7 @@ export default async function HomePage() {
   const user = await getCurrentUser();
   if (!user) return null; // layout already redirects; guards TS narrowing below
 
-  const [articles, savedRows, readRows, stockSeries, previousVisit, lastReadArticle] = await Promise.all([
+  const [articles, savedRows, readRows, industryIndex, previousVisit, lastReadArticle] = await Promise.all([
     getArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true, createdAt: true } }),
     // Ordered most-recently-touched first — also feeds buildLimbicAgentInsights below,
@@ -50,7 +50,7 @@ export default async function HomePage() {
       orderBy: { updatedAt: "desc" },
       select: { articleId: true, updatedAt: true },
     }),
-    getUsphSeries(),
+    getIndustryIndexView(),
     recordHomeVisit(user),
     prisma.readArticle.findFirst({
       where: { userId: user.id },
@@ -152,8 +152,6 @@ export default async function HomePage() {
   const rankedForDisplay = [...rankedWithImages, ...ranked.slice(FEED_IMAGE_LIMIT)];
   const decorated = rankedForDisplay.map((a) => decorateArticle(a, savedIds, previousVisit, readIds));
 
-  const stock = buildStockView(stockSeries);
-
   const readIdSet = new Set(readIds);
   const decoratedById = new Map(decorated.map((a) => [a.id, a]));
   const savedUnreadRows = savedRows.filter((r) => !readIdSet.has(r.articleId));
@@ -188,7 +186,7 @@ export default async function HomePage() {
     <HomeFeed
       articles={decorated}
       ceEvents={ceEvents}
-      stock={stock}
+      stocks={industryIndex}
       newsTicker={newsTicker}
       license={license}
       savedUnread={savedUnread}

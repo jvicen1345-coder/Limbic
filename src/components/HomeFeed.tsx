@@ -41,7 +41,7 @@ const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
 export function HomeFeed({
   articles,
   ceEvents,
-  stock,
+  stocks,
   newsTicker,
   license,
   savedUnread,
@@ -54,7 +54,7 @@ export function HomeFeed({
 }: {
   articles: DecoratedArticle[];
   ceEvents: CeEvent[];
-  stock: StockView;
+  stocks: StockView[];
   newsTicker: DecoratedArticle[];
   license: LicenseView | null;
   savedUnread: DecoratedArticle[];
@@ -185,7 +185,7 @@ export function HomeFeed({
             {showWidget("calendar") && <CalendarCard events={ceEvents} />}
             {showWidget("nexus") &&
               (nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />)}
-            {showWidget("stock") && <StockCard stock={stock} />}
+            {showWidget("stock") && <StockCard stocks={stocks} />}
             {showWidget("news") && (
               <div className="home-news-desktop">
                 <RevolvingNews articles={newsTicker} />
