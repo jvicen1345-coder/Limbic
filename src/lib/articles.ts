@@ -20,17 +20,29 @@ function withEvidenceLevel(articles: Article[]): Article[] {
 }
 
 const LIVE_TYPES: ArticleType[] = ["research", "industry", "product"];
-/** Below this many live results for a type, top it up with seed articles so the section
- *  never looks sparse (and so the app still works fully offline, falling all the way back
- *  to the bundled seed feed if every live source is unreachable). */
-const MIN_LIVE_PER_TYPE = 3;
 
 /**
  * The merged article feed: PubMed for research, Google-News-sourced industry/equipment,
- * always-static CE & Events (see lib/news-live.ts for why), always-static "under review"
- * items (an editorial workflow status, not a live-news concept), and the always-static,
- * real AOPT clinical practice guidelines (see lib/orthopt-cpg-static.ts — "Guidelines"
- * means those specific documents, not a keyword guess off general news search).
+ * always-static "under review" items (an editorial workflow status, not a live-news
+ * concept), and the always-static, real AOPT clinical practice guidelines (see
+ * lib/orthopt-cpg-static.ts — "Guidelines" means those specific documents, not a keyword
+ * guess off general news search).
+ *
+ * Deliberately never tops up a thin live result with SEED_ARTICLES (lib/articles-static.ts)
+ * — that file is hand-authored, illustrative content (fabricated study details, fake
+ * legislative changes, invented FDA clearances) with no real sourceUrl a reader could
+ * verify it against, and showing it interleaved with genuine PubMed/news results with no
+ * way to tell them apart is a real clinical-trust problem for licensed clinicians reading
+ * this feed. In practice PubMed and the Google News queries return well above what a
+ * MIN_LIVE_PER_TYPE-style threshold ever needed, so real supply isn't actually the
+ * constraint that fallback existed for. SEED_ARTICLES itself isn't deleted — see
+ * getArticleById below, which still resolves already-saved seed-origin ids directly —
+ * just never surfaced as a new recommendation.
+ *
+ * CE & Events has no live source at all right now (Google News doesn't carry precise
+ * future event dates — see lib/news-live.ts) and, for the same reason, no longer falls
+ * back to fabricated event listings either: it returns empty until a genuinely real,
+ * curated source (same bar as ORTHOPT_CPG_SEED below — real, with real links) exists.
  */
 export async function getArticles(): Promise<Article[]> {
   const [live, pubmedResearch] = await Promise.all([fetchLiveArticles(), fetchPubmedResearch()]);
@@ -53,12 +65,7 @@ export async function getArticles(): Promise<Article[]> {
 
   for (const type of LIVE_TYPES) {
     liveByType[type].forEach(add);
-    if (liveByType[type].length < MIN_LIVE_PER_TYPE) {
-      SEED_ARTICLES.filter((a) => a.type === type).forEach(add);
-    }
   }
-  // CE & Events (and the home-feed calendar) always reads from curated seed dates.
-  SEED_ARTICLES.filter((a) => a.type === "ce").forEach(add);
   // Guidelines always reads from the real, curated AOPT CPG list — never news search.
   ORTHOPT_CPG_SEED.forEach(add);
 
@@ -79,18 +86,18 @@ export async function getUnderReviewArticles(): Promise<Article[]> {
 
 /**
  * Live news from apta.org/news (see lib/apta-news.ts for why this is scraped rather than
- * an API/RSS feed, and the real risk that it may not work in production either). Falls
- * back to APTA_NEWS_SEED when the live scrape comes back thin, same pattern as the rest
- * of the app's live sources. Kept separate from getArticles() — this is its own feed,
- * not a category within the main one.
+ * an API/RSS feed, and the real risk that it may not work in production either). Two real
+ * tiers (see lib/apta-news.ts) — never tops up with APTA_NEWS_SEED's fabricated content
+ * (same reasoning as getArticles() above), so this can come back sparse or empty if both
+ * tiers genuinely have nothing, rather than ever showing invented news. Kept separate from
+ * getArticles() — this is its own feed, not a category within the main one.
  */
 export async function getAptaNewsArticles(): Promise<Article[]> {
   const live = await fetchAptaNews();
-  const combined = live.length >= 3 ? live : [...live, ...APTA_NEWS_SEED];
-  // Tier 1 (direct scrape), tier 2 (Google News), and the static-seed fallback each come
-  // in their own order — concatenating them isn't sorted, so this is the one place that
-  // guarantees "most recently posted first" regardless of which tiers contributed.
-  return withEvidenceLevel(combined.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+  // Tier 1 (direct scrape) and tier 2 (Google News) each come back in their own order —
+  // concatenating them isn't sorted, so this guarantees "most recently posted first"
+  // regardless of which tier contributed.
+  return withEvidenceLevel(live.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
 }
 
 export async function getArticleById(id: string): Promise<Article | null> {
@@ -99,7 +106,15 @@ export async function getArticleById(id: string): Promise<Article | null> {
   }
   if (id.startsWith("apta-")) {
     const aptaArticles = await getAptaNewsArticles();
-    return aptaArticles.find((a) => a.id === id) ?? null;
+    const live = aptaArticles.find((a) => a.id === id);
+    if (live) return live;
+    // Not a live result right now — still resolve it directly if it's a
+    // previously-saved APTA_NEWS_SEED id, same backward-compatibility reasoning as the
+    // SEED_ARTICLES fallback below: getArticles()/getAptaNewsArticles() no longer
+    // surface this fabricated content as a *new* recommendation, but an existing
+    // SavedArticle row pointing at one shouldn't 404 just because of that.
+    const aptaSeedMatch = APTA_NEWS_SEED.find((a) => a.id === id);
+    return aptaSeedMatch ? withEvidenceLevel([aptaSeedMatch])[0] : null;
   }
   if (id.startsWith("pubmed-")) {
     // Don't rely on the article still being in fetchPubmedResearch()'s current top
@@ -107,17 +122,9 @@ export async function getArticleById(id: string): Promise<Article | null> {
     // touches, so look this one PMID up directly instead of 404ing on a valid article.
     return fetchPubmedById(id.slice("pubmed-".length));
   }
-  // A seed-origin research/industry/product article only ends up inside getArticles()'s
-  // composed result when that type's live fetch happened to come back thin that moment
-  // (see MIN_LIVE_PER_TYPE above) — so whether a given seed id is "in the pool" can differ
-  // between two getArticles() calls made seconds apart, if the live fetch's count happens
-  // to cross that threshold either way (a real risk on serverless, where each request can
-  // be a cold instance with no shared cache). Checked directly here, before ever touching
-  // the live-composed pool, so a seed article's id resolves the same way regardless of
-  // what the live pool looked like at this particular moment — Limbic Threads' article
-  // swap (see lib/article-view.ts) depends on exactly this: it calls getArticleById again
-  // moments after the id was first surfaced from a getArticles() call that isn't
-  // guaranteed to recur identically.
+  // SEED_ARTICLES is no longer surfaced as a new recommendation (see getArticles()
+  // above) — checked directly here only so a previously-saved seed-origin id still
+  // resolves instead of 404ing, same reasoning as the APTA_NEWS_SEED check above.
   const seedMatch = [...SEED_ARTICLES, ...ORTHOPT_CPG_SEED].find((a) => a.id === id);
   if (seedMatch) return withEvidenceLevel([seedMatch])[0];
 

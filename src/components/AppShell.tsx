@@ -117,9 +117,10 @@ interface NavContentProps {
   practiceState: string;
   hasLicense: boolean;
   isPro: boolean;
-  /** True for a .edu sign-in email (see lib/session.ts isStudentEmail) — Limbic Boards and
-   *  Daily Term are student-only products, hidden from the nav (and their routes redirect
-   *  to /pro) for anyone who doesn't qualify, same as the Pro-only sections below. */
+  /** True for a .edu sign-in email (see lib/session.ts isStudentEmail) — Limbic Boards is
+   *  a student-only product, hidden from the nav (and its route redirects to /pro) for
+   *  anyone who doesn't qualify, same as the Pro-only sections below. Limbic Games
+   *  (/wordle) is open to everyone regardless of this flag. */
   isStudent: boolean;
   aptaCount: number;
   nexusRequestCount: number;
@@ -137,7 +138,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/profile" icon={<ProfileIcon />} label="Profile" onNavigate={onNavigate} />
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Health & Wellness" onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
-      {isStudent && <NavLink href="/wordle" icon={<GridIcon />} label="Daily Term" onNavigate={onNavigate} />}
+      <NavLink href="/wordle" icon={<GridIcon />} label="Limbic Games" onNavigate={onNavigate} />
 
       {isStudent && (
         <>
