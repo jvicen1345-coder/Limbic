@@ -45,8 +45,8 @@ function setTheme(next: Theme) {
 
 /** Sidebar/drawer footer button (see components/AppShell.tsx) that flips between light and
  *  dark, persisting the explicit choice to localStorage under the same "theme" key the
- *  init script reads — once a reader picks one, it overrides system preference on every
- *  future visit until they pick the other. */
+ *  init script reads — every new visitor starts on light (see that script), and picking
+ *  dark here is what makes it stick on future visits until they switch back. */
 export function ThemeToggle() {
   const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
