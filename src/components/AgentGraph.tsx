@@ -34,7 +34,9 @@ const RING_FONT_SIZE: Record<number, number> = { 0: 13, 1: 11, 2: 10.5, 3: 9.5 }
 // automatically glows amber the same way every other node glows its own ring color.
 const ACTION_NODE_RADIUS = 36;
 const ACTION_NODE_RADIUS_COMPACT = 30;
-const ACTION_NODE_COLOR = "#ffb84d";
+// Dimmer than a raw "#ffb84d" gold — still clearly warmer than every ring's blue/teal, just
+// not competing with them for attention.
+const ACTION_NODE_COLOR = "#d89c41";
 const ACTION_NODE_ICON_STROKE = "#3d2600";
 // Kept clear of the canvas edge and of the label rendered below the node (dy = radius +
 // 14, plus the label's own line height) — see the two "fy = height - ..." assignments
@@ -77,6 +79,62 @@ function appendBrainIcon(container: d3.Selection<SVGGElement, unknown, null, und
   icon.append("ellipse").attr("cx", 8.5).attr("cy", 12).attr("rx", 4.5).attr("ry", 6);
   icon.append("ellipse").attr("cx", 15.5).attr("cy", 12).attr("rx", 4.5).attr("ry", 6);
   icon.append("line").attr("x1", 12).attr("y1", 5).attr("x2", 12).attr("y2", 19);
+}
+
+let logoGradientCounter = 0;
+
+/** The center (ring 0) node's icon — same markup as components/icons.tsx's LogoIcon,
+ *  hand-replicated here for the same reason as appendBrainIcon above (D3-appended SVG,
+ *  not JSX). Each call gets its own gradient id (a module-level counter, not React's
+ *  useId, since this runs outside React) so multiple graphs mounted at once — Limbic
+ *  Agent's own web and a Threads web, say — never collide on url(#id) resolution. */
+function appendLogoIcon(container: d3.Selection<SVGGElement, unknown, null, undefined>, size: number) {
+  const gradientId = `agent-graph-logo-gradient-${++logoGradientCounter}`;
+  const icon = container
+    .append("svg")
+    .attr("x", -size / 2)
+    .attr("y", -size / 2)
+    .attr("width", size)
+    .attr("height", size)
+    .attr("viewBox", "32 22 96 96")
+    .style("pointer-events", "none");
+  const defs = icon.append("defs").append("linearGradient").attr("id", gradientId).attr("x1", 0).attr("y1", 0).attr("x2", 1).attr("y2", 1);
+  defs.append("stop").attr("offset", "0%").attr("stop-color", "#41B3D3");
+  defs.append("stop").attr("offset", "100%").attr("stop-color", "#1A5276");
+  icon.append("circle").attr("cx", 80).attr("cy", 70).attr("r", 48).attr("fill", `url(#${gradientId})`);
+  const lines = icon.append("g").attr("stroke", "#FFFFFF").attr("stroke-width", 2).attr("opacity", 0.65).attr("stroke-linecap", "round");
+  const linkPoints: [number, number, number, number][] = [
+    [60, 54, 80, 40],
+    [80, 40, 100, 54],
+    [60, 54, 54, 76],
+    [60, 54, 80, 70],
+    [80, 40, 80, 70],
+    [100, 54, 80, 70],
+    [100, 54, 106, 76],
+    [54, 76, 80, 70],
+    [80, 70, 106, 76],
+    [54, 76, 64, 96],
+    [80, 70, 64, 96],
+    [80, 70, 96, 96],
+    [106, 76, 96, 96],
+  ];
+  for (const [x1, y1, x2, y2] of linkPoints) {
+    lines.append("line").attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2);
+  }
+  const dots = icon.append("g").attr("fill", "#FFFFFF");
+  const dotPoints: [number, number, number, number][] = [
+    [60, 54, 4.6, 0.95],
+    [80, 40, 4.6, 0.95],
+    [100, 54, 4.6, 0.95],
+    [54, 76, 4.6, 0.95],
+    [80, 70, 7.2, 1],
+    [106, 76, 4.6, 0.95],
+    [64, 96, 4.6, 0.95],
+    [96, 96, 4.6, 0.95],
+  ];
+  for (const [cx, cy, r, opacity] of dotPoints) {
+    dots.append("circle").attr("cx", cx).attr("cy", cy).attr("r", r).attr("opacity", opacity);
+  }
 }
 
 export function AgentGraph({
@@ -251,6 +309,11 @@ export function AgentGraph({
 
     // Links.
     const nodeById = new Map(nodes.map((n) => [n.id, n]));
+    const linkClass = (d: SimLink) => {
+      const targetId = typeof d.target === "string" ? d.target : d.target.id;
+      const toAction = nodeById.get(targetId)?.variant === "action";
+      return `agent-link agent-link-${d.kind}${toAction ? " agent-link-action" : ""}`;
+    };
     svg
       .select(".agent-links")
       .selectAll<SVGLineElement, SimLink>("line")
@@ -258,12 +321,20 @@ export function AgentGraph({
         nextSimLinks,
         (d) => `${typeof d.source === "string" ? d.source : d.source.id}->${typeof d.target === "string" ? d.target : d.target.id}`
       )
-      .join("line")
-      .attr("class", (d) => {
-        const targetId = typeof d.target === "string" ? d.target : d.target.id;
-        const toAction = nodeById.get(targetId)?.variant === "action";
-        return `agent-link agent-link-${d.kind}${toAction ? " agent-link-action" : ""}`;
-      });
+      .join(
+        // pathLength normalizes the line's dash coordinate space to a fixed 0-100 range
+        // regardless of its actual on-screen length — which keeps changing every tick as
+        // the simulation settles — so the draw-in animation always reads as "0% to 100%
+        // grown" instead of resetting or glitching as the endpoints move.
+        (enter) =>
+          enter
+            .append("line")
+            .attr("pathLength", 100)
+            .attr("stroke-dasharray", 100)
+            .attr("class", (d) => `${linkClass(d)} agent-link-draw-in`),
+        (update) => update.attr("class", linkClass),
+        (exit) => exit.remove()
+      );
 
     // Nodes.
     const nodeSel = svg
@@ -296,6 +367,7 @@ export function AgentGraph({
           // own color — fill alone wouldn't drive that, since drop-shadow reads `color`.
           .style("color", isAction ? ACTION_NODE_COLOR : (RING_COLOR[d.ring] ?? "#8a97c4"));
         if (isAction) appendBrainIcon(g, r * 0.72);
+        else if (d.ring === 0) appendLogoIcon(g, r * 1.8);
         g.append("text")
           .attr("class", "agent-node-label")
           .attr("text-anchor", "middle")

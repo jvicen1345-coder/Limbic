@@ -826,18 +826,30 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
 /* The line running to Limbic Threads' "Prompt Agent" node (see AgentNode.variant) —
    same tree line style as .agent-link-tree, just amber to match that one node's warm
    glow instead of the usual blue. */
-.agent-link-action { stroke: rgba(255, 184, 77, 0.4); }
+.agent-link-action { stroke: rgba(216, 156, 65, 0.4); }
+
+/* Grows a newly-added line out from its source rather than snapping in at full length —
+   see components/AgentGraph.tsx, which sets pathLength="100" and stroke-dasharray: 100
+   on every new line specifically so this animates consistently regardless of the line's
+   actual on-screen length (which keeps changing as the force simulation settles). Only
+   applied on creation (the "enter" selection), never replayed on an existing line. */
+@keyframes agent-link-draw-in {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+.agent-link-draw-in {
+  animation: agent-link-draw-in 1.3s ease-out forwards;
+}
 
 @keyframes agent-node-pulse-in {
-  0% { transform: scale(0.3); opacity: 0; }
-  65% { transform: scale(1.18); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 .agent-node-pulse {
   transform-origin: center;
-  animation: agent-node-pulse-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: agent-node-pulse-in 0.8s ease-out;
 }
-.agent-node-pulse-replay { animation: agent-node-pulse-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.agent-node-pulse-replay { animation: agent-node-pulse-in 0.8s ease-out; }
 
 .agent-node-circle { transition: filter 0.25s ease, opacity 0.25s ease; }
 .agent-node-circle { filter: drop-shadow(0 0 5px currentColor); }
