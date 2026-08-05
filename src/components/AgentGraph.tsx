@@ -37,7 +37,6 @@ const ACTION_NODE_RADIUS_COMPACT = 30;
 // Dimmer than a raw "#ffb84d" gold — still clearly warmer than every ring's blue/teal, just
 // not competing with them for attention.
 const ACTION_NODE_COLOR = "#d89c41";
-const ACTION_NODE_ICON_STROKE = "#3d2600";
 // Kept clear of the canvas edge and of the label rendered below the node (dy = radius +
 // 14, plus the label's own line height) — see the two "fy = height - ..." assignments
 // below, which both need to agree with this so the node never migrates when either fires.
@@ -59,42 +58,11 @@ function actionNodeFixedPos(width: number, height: number, compact: boolean) {
   return { fx: width / 2, fy: height - r - ACTION_NODE_BOTTOM_CLEARANCE };
 }
 
-/** A side-profile brain-and-spinal-cord silhouette — a filled lumpy blob for the brain,
- *  a thick curved stroke trailing down from its base for the cord, both the same dark
- *  tone for contrast against the node's amber fill. Hand-drawn path data rather than a
- *  traced medical illustration — this renders at roughly 16-26px inside the node, so
- *  anatomical precision would be lost anyway; a filled silhouette reads far more clearly
- *  than fine outline strokes at that size. */
-function appendBrainIcon(container: d3.Selection<SVGGElement, unknown, null, undefined>, size: number) {
-  const icon = container
-    .append("svg")
-    .attr("x", -size / 2)
-    .attr("y", -size / 2)
-    .attr("width", size)
-    .attr("height", size)
-    .attr("viewBox", "0 0 24 24")
-    .style("pointer-events", "none");
-  icon
-    .append("path")
-    .attr(
-      "d",
-      "M2,10 C2,6 5,2 9,2 C9,0.5 13,0.5 13,2.5 C16,0.5 20,2 20,6 C23,6 22,11 19,11.5 C20,13.5 16,15.5 12,13.5 C8,16.5 3,13.5 2,10 Z"
-    )
-    .attr("fill", ACTION_NODE_ICON_STROKE);
-  icon
-    .append("path")
-    .attr("d", "M12,13.5 C12,15 10.5,15.5 10.5,17 C10.5,18.5 13,18.5 13,20")
-    .attr("fill", "none")
-    .attr("stroke", ACTION_NODE_ICON_STROKE)
-    .attr("stroke-width", 2.2)
-    .attr("stroke-linecap", "round");
-}
-
 let logoGradientCounter = 0;
 
 /** The center (ring 0) node's icon — same markup as components/icons.tsx's LogoIcon,
- *  hand-replicated here for the same reason as appendBrainIcon above (D3-appended SVG,
- *  not JSX). Each call gets its own gradient id (a module-level counter, not React's
+ *  hand-replicated here since this node is D3-appended SVG rather than JSX. Each call
+ *  gets its own gradient id (a module-level counter, not React's
  *  useId, since this runs outside React) so multiple graphs mounted at once — Limbic
  *  Agent's own web and a Threads web, say — never collide on url(#id) resolution. */
 function appendLogoIcon(container: d3.Selection<SVGGElement, unknown, null, undefined>, size: number) {
@@ -375,8 +343,7 @@ export function AgentGraph({
           // The glow filter uses currentColor (see globals.css) so each ring glows its
           // own color — fill alone wouldn't drive that, since drop-shadow reads `color`.
           .style("color", isAction ? ACTION_NODE_COLOR : (RING_COLOR[d.ring] ?? "#8a97c4"));
-        if (isAction) appendBrainIcon(g, r * 0.88);
-        else if (d.ring === 0) appendLogoIcon(g, r * 1.8);
+        if (d.ring === 0) appendLogoIcon(g, r * 1.8);
         g.append("text")
           .attr("class", "agent-node-label")
           .attr("text-anchor", "middle")
