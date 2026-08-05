@@ -4,7 +4,6 @@ import { getArticles } from "@/lib/articles";
 import { decorateArticle, rankFeed, type DecoratedArticle } from "@/lib/feed";
 import { firstName as firstNameOf, timeOfDayGreeting, credentialFromName } from "@/lib/meta";
 import { getIndustryIndexView } from "@/lib/stock";
-import { randomSeed } from "@/lib/random";
 import { attachRealImages } from "@/lib/og-image";
 import { attachTopicImages } from "@/lib/topic-image";
 import { buildLicenseView } from "@/lib/license";
@@ -14,7 +13,7 @@ import { buildLimbicAgentInsights } from "@/lib/limbic-agent-insights";
 import { todayLocalDateStr } from "@/lib/today";
 import { HomeFeed } from "@/components/HomeFeed";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
-import type { ArticleType, CeCategory, Specialty } from "@/lib/types";
+import type { Article, ArticleType, CeCategory, Specialty } from "@/lib/types";
 
 // How many people to suggest connecting with in the Home aside — enough to fill the
 // card without turning it into a second directory.
@@ -30,12 +29,51 @@ const NEWS_TICKER_SIZE = 6;
 // since those are the ones most overdue.
 const SAVED_UNREAD_SIZE = 3;
 
-// How many of the top-ranked feed articles get a real og:image fetched (see lib/og-image.ts)
-// — the rotating hero (5 articles, see HomeFeed's HERO_SIZE) plus a comfortable page or two
-// of the grid below it (PAGE_SIZE is 12), not the entire pool, since each image is an extra
-// network request per article. HomeFeed caps the feed to just these imaged articles, so
-// this number is also effectively how many articles Home shows at all.
-const FEED_IMAGE_LIMIT = 24;
+// Home shows exactly 7 cards, no pagination: the hero plus a 6-card grid below it (see
+// HomeFeed.tsx), and every one of those 7 needs a real picture. Rather than trying a
+// fixed-size slice of the ranked pool and accepting however many happen to resolve an
+// image, this walks deeper into the pool in batches — attempting a real og:image fetch
+// (lib/og-image.ts) then a topic stock-photo fallback (lib/topic-image.ts) per batch —
+// until enough *distinct-image* candidates exist for the grid's 6 (the hero doesn't need
+// a distinct one; see HomeFeed.tsx) plus a small hero rotation pool, or the search cap is
+// hit. RefreshHomeFeedButton re-running this (see app/actions/home.ts) is the intended
+// way a reader waits through a thin/unlucky batch.
+const IMAGE_SEARCH_BATCH = 16;
+const IMAGE_SEARCH_MAX = 96;
+const HOME_GRID_SIZE = 6;
+const HOME_HERO_POOL_SIZE = 5;
+
+/** Attaches images to `ranked`, batch by batch, stopping once there are enough resolved
+ *  candidates to fill the grid (with mutually distinct images) plus a hero pool, or once
+ *  IMAGE_SEARCH_MAX is reached. Returns every article it attempted (imaged or not, in
+ *  their original rank order) — the shape HomeFeed already expects for the rest of the
+ *  ranked pool (see rankedForDisplay below), just with more of the prefix processed than
+ *  the old fixed FEED_IMAGE_LIMIT ever guaranteed. */
+async function resolveHomeImages(ranked: Article[]): Promise<Article[]> {
+  const processed: Article[] = [];
+  const seenImages = new Set<string>();
+  let distinctImaged = 0;
+  let totalImaged = 0;
+
+  for (let offset = 0; offset < Math.min(ranked.length, IMAGE_SEARCH_MAX); offset += IMAGE_SEARCH_BATCH) {
+    const batch = ranked.slice(offset, offset + IMAGE_SEARCH_BATCH);
+    const withReal = await attachRealImages(batch);
+    const withTopic = await attachTopicImages(withReal);
+    processed.push(...withTopic);
+
+    for (const a of withTopic) {
+      if (!a.image) continue;
+      totalImaged++;
+      if (!seenImages.has(a.image)) {
+        seenImages.add(a.image);
+        distinctImaged++;
+      }
+    }
+    if (distinctImaged >= HOME_GRID_SIZE && totalImaged >= HOME_GRID_SIZE + HOME_HERO_POOL_SIZE) break;
+  }
+
+  return processed;
+}
 
 export default async function HomePage() {
   const user = await getCurrentUser();
@@ -137,20 +175,18 @@ export default async function HomePage() {
       })()
     : Promise.resolve(null);
 
-  const [newsTickerWithRealImages, rankedWithRealImages, nexusSuggestions] = await Promise.all([
+  const [newsTickerWithRealImages, homeImagedPrefix, nexusSuggestions] = await Promise.all([
     attachRealImages(newsTickerCandidates),
-    attachRealImages(ranked.slice(0, FEED_IMAGE_LIMIT)),
+    resolveHomeImages(ranked),
     nexusSuggestionsPromise,
   ]);
   // A second pass, after (not alongside) the real-image fetch above — attachTopicImages
   // only fills in articles that pass 1 left empty (see lib/topic-image.ts), which is most
-  // seed/guideline-PDF content, since a PDF has no og:image to find at all.
-  const [newsTickerWithImages, rankedWithImages] = await Promise.all([
-    attachTopicImages(newsTickerWithRealImages),
-    attachTopicImages(rankedWithRealImages),
-  ]);
+  // seed/guideline-PDF content, since a PDF has no og:image to find at all. resolveHomeImages
+  // already runs both steps per batch internally.
+  const newsTickerWithImages = await attachTopicImages(newsTickerWithRealImages);
   const newsTicker = newsTickerWithImages.map((a) => decorateArticle(a, savedIds, null, readIds));
-  const rankedForDisplay = [...rankedWithImages, ...ranked.slice(FEED_IMAGE_LIMIT)];
+  const rankedForDisplay = [...homeImagedPrefix, ...ranked.slice(homeImagedPrefix.length)];
   const decorated = rankedForDisplay.map((a) => decorateArticle(a, savedIds, previousVisit, readIds));
 
   const readIdSet = new Set(readIds);
@@ -197,7 +233,6 @@ export default async function HomePage() {
       hiddenWidgets={user.hiddenHomeWidgets as unknown as string[]}
       limbicAgentInsights={limbicAgentInsights}
       isPro={user.isPro}
-      refreshSeed={randomSeed()}
     />
   );
 }
