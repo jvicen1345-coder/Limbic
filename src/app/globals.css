@@ -3,9 +3,17 @@
    dialed in during design iteration (project/PT News.dc.html's <style> block) baked
    directly into :root instead of layered on top. Structure and component classes are
    otherwise unchanged, so anything styled with .card/.btn/.tag/etc. keeps its exact
-   shape and behavior. This is a fixed light theme, same as the source design. Caprasimo/
-   Figtree are loaded via next/font in app/layout.tsx (--font-caprasimo/--font-figtree),
-   not a CSS @import — see the comment there for why. */
+   shape and behavior. Caprasimo/Figtree are loaded via next/font in app/layout.tsx
+   (--font-caprasimo/--font-figtree), not a CSS @import — see the comment there for why.
+   Light is still the default palette below; dark mode is a second token block further
+   down, gated on `html[data-theme="dark"]` (see components/ThemeToggle.tsx and the inline
+   script in app/layout.tsx that sets the attribute before first paint). Because every
+   component here is built on these tokens rather than literal colors, that block is
+   almost the entire feature — component rules never need their own dark variant. The two
+   deliberate exceptions are .agent-page/.threads-* (already their own fixed dark palette
+   in both themes — see the comment further down) and the four hardcoded evidence-badge
+   hues (RCT/MA/CPG/CE) that don't route through a token, each given one small dark
+   override right after its light rule below. */
 
 :root {
   --color-bg: #ffffff;
@@ -63,6 +71,60 @@
   --shadow-sm: 0 1px 2px color-mix(in srgb, #1f2940 14%, transparent);
   --shadow-md: 0 3px 10px color-mix(in srgb, #1f2940 16%, transparent);
   --shadow-lg: 0 12px 32px color-mix(in srgb, #1f2940 22%, transparent);
+}
+
+/* Same token set, dark values — same hue families as the light palette above (navy/blue
+   for neutral, the accent blue, the accent-2 cyan) with each 100..900 ramp's lightness
+   direction flipped, since every ramp is used both as "light tint background, dark tint
+   text" in the light theme (e.g. .tag-accent: 100 background, 800 text) and needs the
+   opposite pairing to keep working once the app's own background is dark — swap only
+   which end is dark and the exact same component rules read correctly in both themes. The
+   accent hues are also brightened a step (not just inverted) since a saturated blue that
+   passes contrast on white needs to be lighter to still pass on navy. */
+html[data-theme="dark"] {
+  --color-bg: #0d1220;
+  --color-surface: #1a2338;
+  --color-text: #e7ecf7;
+  --color-accent: #6d9bf5;
+  --color-accent-2: #4dd1ee;
+  --color-divider: color-mix(in srgb, #e7ecf7 14%, transparent);
+
+  --color-neutral-100: #1a2136;
+  --color-neutral-200: #212a44;
+  --color-neutral-300: #2c3752;
+  --color-neutral-400: #3c4968;
+  --color-neutral-500: #59678c;
+  --color-neutral-600: #7686ac;
+  --color-neutral-700: #9aa8c9;
+  --color-neutral-800: #c4cde4;
+  --color-neutral-900: #eef1fa;
+
+  --color-accent-100: #16223c;
+  --color-accent-200: #1c2b4c;
+  --color-accent-300: #23375f;
+  --color-accent-400: #2e4677;
+  --color-accent-500: #6d9bf5;
+  --color-accent-600: #8fb2f8;
+  --color-accent-700: #b0c8fa;
+  --color-accent-800: #cfdcfc;
+  --color-accent-900: #e9f0fe;
+
+  --color-accent-2-100: #0f2a33;
+  --color-accent-2-200: #123640;
+  --color-accent-2-300: #17434f;
+  --color-accent-2-400: #1c5666;
+  --color-accent-2-500: #4dd1ee;
+  --color-accent-2-600: #77ddf1;
+  --color-accent-2-700: #9fe6f5;
+  --color-accent-2-800: #c6f0f9;
+  --color-accent-2-900: #e6faff;
+
+  /* Black-based rather than the light theme's navy-based shadow tint, and a bit more
+     opaque at each step — elevation on a dark surface reads through contrast against an
+     even darker shadow, not through the light theme's "darker than white" trick. */
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #000 45%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #000 50%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #000 55%, transparent);
 }
 
 * { box-sizing: border-box; }
@@ -265,6 +327,15 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
 .tag-evidence-industry { background: var(--color-neutral-200); color: var(--color-neutral-700); }
 .tag-evidence-ce { background: color-mix(in srgb, #e0741f 14%, white); color: #b5540b; }
 .tag-evidence-product { background: var(--color-neutral-100); color: var(--color-neutral-800); }
+/* The 5 evidence classes above that reuse existing tokens (sr/review/research/industry/
+   product) already adapt to dark mode for free via the token overrides above. These 4
+   don't route through a token at all — mixed against a literal "white" — so they're the
+   only evidence-badge rules that need an explicit dark variant: same hue, mixed against
+   the dark surface instead of white, with a light (not dark) text color. */
+html[data-theme="dark"] .tag-evidence-rct { background: color-mix(in srgb, #1f9d5e 22%, var(--color-surface)); color: #7fe8b2; }
+html[data-theme="dark"] .tag-evidence-ma { background: color-mix(in srgb, #7c4dbd 24%, var(--color-surface)); color: #cdaef4; }
+html[data-theme="dark"] .tag-evidence-cpg { background: color-mix(in srgb, #d9a400 22%, var(--color-surface)); color: #f3d166; }
+html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741f 22%, var(--color-surface)); color: #f7ab6c; }
 /* Larger size modifier for the article detail page's more prominent badge — pairs with
    one of the .tag-evidence-* color classes above, e.g. class="tag tag-lg tag-evidence-rct". */
 .tag-lg { font-size: 13px; padding: 5px 14px; }
