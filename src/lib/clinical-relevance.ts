@@ -1,3 +1,5 @@
+import { MESH_CLINICAL_TERMS } from "./mesh-terms";
+
 /**
  * Clinical relevance scores for article tags and keywords.
  * Only tags scoring 3 or above appear as gap topics in the
@@ -8,6 +10,12 @@
  * 3 — Anatomy or condition adjacent (still clinical)
  * 2 — Clinical adjacent (professional but not clinical)
  * 1 — Non-clinical (policy, legal, general)
+ *
+ * This dictionary is hand-maintained for terms that need a specific grade (e.g.
+ * distinguishing a core specialty from an anatomy-adjacent term). Tags that aren't
+ * listed here but do appear in mesh-terms.ts — real NLM MeSH descriptors from PT/rehab
+ * tree branches (see scripts/fetch-mesh-terms.mjs) — are treated as clinical sub-topics
+ * (score 4) rather than falling through to the generic "clinical adjacent" default.
  */
 export const CLINICAL_RELEVANCE_SCORES: Record<string, number> = {
   // Core specialties — 5
@@ -102,7 +110,10 @@ export const GAP_TOPIC_MIN_SCORE = 3;
 
 /** Returns the clinical relevance score for a tag */
 export function clinicalRelevanceScore(tag: string): number {
-  return CLINICAL_RELEVANCE_SCORES[tag.toLowerCase()] ?? 2;
+  const lower = tag.toLowerCase();
+  if (lower in CLINICAL_RELEVANCE_SCORES) return CLINICAL_RELEVANCE_SCORES[lower];
+  if (MESH_CLINICAL_TERMS.has(lower)) return 4;
+  return 2;
 }
 
 /** Returns true if a tag is clinically relevant enough to appear as a gap topic */

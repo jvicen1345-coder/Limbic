@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "fetch:retraction-watch": "node scripts/fetch-retraction-watch.mjs"
+    "fetch:retraction-watch": "node scripts/fetch-retraction-watch.mjs",
+    "fetch:mesh-terms": "node scripts/fetch-mesh-terms.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",
