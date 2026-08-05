@@ -157,15 +157,14 @@ export function HomeFeed({
             <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>No stories in this category yet.</p>
           )}
 
-          {clampedPage === 1 && (heroPool.length > 0 || (showWidget("news") && newsTicker.length > 0)) && (
-            <div className="home-hero-row" style={{ marginBottom: 8 }}>
-              {heroPool.length > 0 && (
-                <div className="home-hero-main">
-                  <HeroFeed articles={heroPool} />
-                </div>
-              )}
+          {heroPool.length > 0 && clampedPage === 1 && (
+            <div style={{ marginBottom: 8 }}>
+              <HeroFeed articles={heroPool} />
+              {/* Mobile keeps "Latest news" right under the hero (its counterpart in the
+               *  aside below is desktop-only — see .home-news-desktop/.home-hero-news-mobile
+               *  in globals.css); on desktop the aside's sidebar copy is the one that shows. */}
               {showWidget("news") && newsTicker.length > 0 && (
-                <div className="home-hero-news">
+                <div className="home-hero-news-mobile" style={{ marginTop: 8 }}>
                   <RevolvingNews articles={newsTicker} />
                 </div>
               )}
@@ -187,6 +186,11 @@ export function HomeFeed({
             {showWidget("nexus") &&
               (nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />)}
             {showWidget("stock") && <StockCard stock={stock} />}
+            {showWidget("news") && (
+              <div className="home-news-desktop">
+                <RevolvingNews articles={newsTicker} />
+              </div>
+            )}
           </div>
         </aside>
       </div>
