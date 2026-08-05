@@ -9,9 +9,10 @@ import { SubTabs } from "@/components/SubTabs";
  * that audience actually needs — Student PRO for coursework/boards prep, LimbicPro for
  * practicing clinicians. Student PRO and Student PRO+ Boards are real (demo) purchasable
  * tiers now, gated to .edu sign-ins (see the membership card below and lib/session.ts
- * isStudentEmail) — Limbic Boards (/boards, /wordle) and Limbic Agent (/agent, currently
+ * isStudentEmail) — Limbic Boards (/boards) and Limbic Agent (/agent, currently
  * in demo mode) are the built rows; HEP Builder/Verified Badge/Certified Clips/Weekly
- * Roundup differentiation below is still just the plan.
+ * Roundup differentiation below is still just the plan. Limbic Games (/wordle) is open to
+ * everyone and isn't part of this tier comparison.
  */
 const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
   {
