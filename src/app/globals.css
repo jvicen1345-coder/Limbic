@@ -1013,10 +1013,8 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   .threads-canvas-wrap { height: 340px; }
 }
 
-/* — Feed-card Threads teaser (see components/ArticleCard.tsx) — a static, cheap preview
-   (fixed category labels, not per-article real matches — computing the full web for
-   every card in a grid would be expensive) that only becomes visible on hover, revealing
-   what the full web on the article page would explore. */
+/* — Feed-card Threads teaser (see components/ArticleCard.tsx) — a direct, always-visible
+   link into the article's real Threads web, not a hover-revealed preview. */
 .card-threads-teaser {
   margin-top: 4px;
   font-size: 11.5px;
@@ -1029,18 +1027,4 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   padding: 0;
   font-family: inherit;
   cursor: pointer;
-}
-.card-threads-preview {
-  display: none;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 6px;
-}
-.card:hover .card-threads-preview { display: flex; }
-.card-threads-preview-chip {
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--color-accent-100);
-  color: var(--color-accent-700);
 }

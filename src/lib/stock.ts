@@ -1,17 +1,32 @@
 import "server-only";
 
 /**
- * USPH (U.S. Physical Therapy, Inc.) price sourcing for the sidebar sparkline.
+ * "PT Industry Index" price sourcing for the sidebar sparkline — cycles between two
+ * tickers (see components/StockCard.tsx): USPH (a pure-play PT provider) and XHS (State
+ * Street's SPDR S&P Health Care Services ETF, a broader industry benchmark).
  *
- * Tries two no-API-key sources in order (Stooq's CSV export, then Yahoo Finance's chart
- * endpoint) before falling back to REAL_SNAPSHOT below. That snapshot isn't invented —
- * it's an actual daily-close series pulled from a live market-data connector while this
- * app was built (2026-06-24 through 2026-07-24, last close $74.58), kept only as the
- * offline fallback for environments where outbound requests to market-data sites are
- * blocked.
+ * Each ticker tries two no-API-key sources in order (Stooq's CSV export, then Yahoo
+ * Finance's chart endpoint) before falling back to its own REAL_SNAPSHOTS entry below.
+ * Neither snapshot is invented — both are actual daily-close series pulled from a live
+ * market-data connector while this app was built, kept only as the offline fallback for
+ * environments where outbound requests to market-data sites are blocked.
  */
 
-const REAL_SNAPSHOT: { date: string; close: number }[] = [
+export interface IndustryTicker {
+  symbol: string;
+  /** Stooq's own symbol format, e.g. "usph.us". */
+  stooqSymbol: string;
+  exchange: string;
+  name: string;
+}
+
+export const INDUSTRY_TICKERS: IndustryTicker[] = [
+  { symbol: "USPH", stooqSymbol: "usph.us", exchange: "NYSE", name: "U.S. Physical Therapy, Inc." },
+  { symbol: "XHS", stooqSymbol: "xhs.us", exchange: "NYSEArca", name: "SPDR S&P Health Care Services ETF" },
+];
+
+// 2026-06-24 through 2026-07-24, last close $74.58.
+const USPH_SNAPSHOT: { date: string; close: number }[] = [
   { date: "2026-06-24", close: 66.13 },
   { date: "2026-06-25", close: 66.36 },
   { date: "2026-06-26", close: 69.0 },
@@ -36,6 +51,37 @@ const REAL_SNAPSHOT: { date: string; close: number }[] = [
   { date: "2026-07-24", close: 74.58 },
 ];
 
+// 2026-07-06 through 2026-08-04, last close $132.89.
+const XHS_SNAPSHOT: { date: string; close: number }[] = [
+  { date: "2026-07-06", close: 137.5 },
+  { date: "2026-07-07", close: 136.9 },
+  { date: "2026-07-08", close: 134.75 },
+  { date: "2026-07-09", close: 136.24 },
+  { date: "2026-07-10", close: 134.9 },
+  { date: "2026-07-13", close: 135.0 },
+  { date: "2026-07-14", close: 134.21 },
+  { date: "2026-07-15", close: 134.75 },
+  { date: "2026-07-16", close: 135.36 },
+  { date: "2026-07-17", close: 135.77 },
+  { date: "2026-07-20", close: 134.46 },
+  { date: "2026-07-21", close: 135.68 },
+  { date: "2026-07-22", close: 132.94 },
+  { date: "2026-07-23", close: 131.95 },
+  { date: "2026-07-24", close: 132.82 },
+  { date: "2026-07-27", close: 133.26 },
+  { date: "2026-07-28", close: 135.96 },
+  { date: "2026-07-29", close: 134.07 },
+  { date: "2026-07-30", close: 134.26 },
+  { date: "2026-07-31", close: 132.71 },
+  { date: "2026-08-03", close: 134.19 },
+  { date: "2026-08-04", close: 132.89 },
+];
+
+const REAL_SNAPSHOTS: Record<string, { date: string; close: number }[]> = {
+  USPH: USPH_SNAPSHOT,
+  XHS: XHS_SNAPSHOT,
+};
+
 export interface StockSeries {
   closes: number[];
   isLive: boolean;
@@ -56,9 +102,9 @@ async function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>): Promise<
   }
 }
 
-async function fetchFromStooq(): Promise<StockSeries | null> {
+async function fetchFromStooq(ticker: IndustryTicker): Promise<StockSeries | null> {
   return withTimeout(async (signal) => {
-    const res = await fetch("https://stooq.com/q/d/l/?s=usph.us&i=d", {
+    const res = await fetch(`https://stooq.com/q/d/l/?s=${ticker.stooqSymbol}&i=d`, {
       signal,
       next: { revalidate: 900 },
     });
@@ -73,10 +119,10 @@ async function fetchFromStooq(): Promise<StockSeries | null> {
   });
 }
 
-async function fetchFromYahoo(): Promise<StockSeries | null> {
+async function fetchFromYahoo(ticker: IndustryTicker): Promise<StockSeries | null> {
   return withTimeout(async (signal) => {
     const res = await fetch(
-      "https://query1.finance.yahoo.com/v8/finance/chart/USPH?range=1mo&interval=1d",
+      `https://query1.finance.yahoo.com/v8/finance/chart/${ticker.symbol}?range=1mo&interval=1d`,
       { signal, next: { revalidate: 900 } }
     );
     if (!res.ok) return null;
@@ -88,25 +134,35 @@ async function fetchFromYahoo(): Promise<StockSeries | null> {
   });
 }
 
-let cache: { at: number; data: StockSeries } | null = null;
+const cache = new Map<string, { at: number; data: StockSeries }>();
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
-export async function getUsphSeries(): Promise<StockSeries> {
-  if (cache && Date.now() - cache.at < CACHE_TTL_MS) return cache.data;
+async function getSeriesFor(ticker: IndustryTicker): Promise<StockSeries> {
+  const cached = cache.get(ticker.symbol);
+  if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached.data;
 
+  const snapshot = REAL_SNAPSHOTS[ticker.symbol];
   const data =
-    (await fetchFromStooq()) ??
-    (await fetchFromYahoo()) ?? {
-      closes: REAL_SNAPSHOT.map((p) => p.close),
+    (await fetchFromStooq(ticker)) ??
+    (await fetchFromYahoo(ticker)) ?? {
+      closes: snapshot.map((p) => p.close),
       isLive: false,
-      asOf: REAL_SNAPSHOT[REAL_SNAPSHOT.length - 1].date,
+      asOf: snapshot[snapshot.length - 1].date,
     };
 
-  cache = { at: Date.now(), data };
+  cache.set(ticker.symbol, { at: Date.now(), data });
   return data;
 }
 
+/** One series per entry in INDUSTRY_TICKERS, fetched concurrently. */
+export async function getIndustryIndexSeries(): Promise<StockSeries[]> {
+  return Promise.all(INDUSTRY_TICKERS.map(getSeriesFor));
+}
+
 export interface StockView {
+  symbol: string;
+  exchange: string;
+  name: string;
   price: string;
   changeLabel: string;
   changeUp: boolean;
@@ -115,7 +171,7 @@ export interface StockView {
   asOf: string;
 }
 
-export function buildStockView(series: StockSeries): StockView {
+export function buildStockView(ticker: IndustryTicker, series: StockSeries): StockView {
   const { closes } = series;
   const w = 220;
   const h = 60;
@@ -131,6 +187,9 @@ export function buildStockView(series: StockSeries): StockView {
   const up = change >= 0;
 
   return {
+    symbol: ticker.symbol,
+    exchange: ticker.exchange,
+    name: ticker.name,
     price: `$${closes[closes.length - 1].toFixed(2)}`,
     changeLabel: `${up ? "+" : ""}${change.toFixed(2)} (${up ? "+" : ""}${changePct.toFixed(1)}%)`,
     changeUp: up,
@@ -138,4 +197,10 @@ export function buildStockView(series: StockSeries): StockView {
     isLive: series.isLive,
     asOf: series.asOf,
   };
+}
+
+/** Builds all industry-index tiles (see INDUSTRY_TICKERS) for the cycling StockCard. */
+export async function getIndustryIndexView(): Promise<StockView[]> {
+  const series = await getIndustryIndexSeries();
+  return series.map((s, i) => buildStockView(INDUSTRY_TICKERS[i], s));
 }

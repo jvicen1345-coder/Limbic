@@ -29,6 +29,11 @@ import type { LimbicAgentInsights } from "@/lib/limbic-agent-insights";
 // for the grid below.
 const HERO_SIZE = 5;
 
+// Page 1 shows the hero (1 visible card, even though it rotates through HERO_SIZE
+// candidates) plus this many grid cards below it — 7 total, matching how many distinct
+// cards should be on screen at once.
+const GRID_PAGE_SIZE = 6;
+
 const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
   { id: "all", label: "All" },
   { id: "research", label: "Research" },
@@ -41,7 +46,7 @@ const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
 export function HomeFeed({
   articles,
   ceEvents,
-  stock,
+  stocks,
   newsTicker,
   license,
   savedUnread,
@@ -54,7 +59,7 @@ export function HomeFeed({
 }: {
   articles: DecoratedArticle[];
   ceEvents: CeEvent[];
-  stock: StockView;
+  stocks: StockView[];
   newsTicker: DecoratedArticle[];
   license: LicenseView | null;
   savedUnread: DecoratedArticle[];
@@ -84,9 +89,22 @@ export function HomeFeed({
   // and blank-looking cards reads as duplicates of the same empty card. So the hero rotation
   // and the grid below only draw from articles that resolved one — capping the feed to
   // however many pictures are actually available rather than padding it out with blanks.
+  // Reusing the same photo across different page loads is fine (lib/topic-image.ts matches
+  // by specialty/topic, so unrelated articles can land on the same stock photo), but two
+  // cards showing the identical picture on screen at once reads as a glitch — so beyond the
+  // first article to claim a given image URL, later ones with that same URL are dropped
+  // rather than shown duplicated.
+  const withImage = useMemo(() => {
+    const seenImages = new Set<string>();
+    return filtered.filter((a) => {
+      if (!a.image) return false;
+      if (seenImages.has(a.image)) return false;
+      seenImages.add(a.image);
+      return true;
+    });
+  }, [filtered]);
   // Falls back to the unfiltered pool if literally none resolved an image (e.g. no
   // PEXELS_API_KEY configured), so Home never goes empty.
-  const withImage = useMemo(() => filtered.filter((a) => a.image), [filtered]);
   const displayPool = withImage.length > 0 ? withImage : filtered;
 
   // The hero rotates through the top of the ranked feed instead of pinning just the single
@@ -104,7 +122,10 @@ export function HomeFeed({
     () => displayPool.filter((a) => !heroIds.has(a.id) && !newsIds.has(a.id)),
     [displayPool, heroIds, newsIds]
   );
-  const { pageItems, totalPages, page: clampedPage } = useMemo(() => paginate(rest, page), [rest, page]);
+  const { pageItems, totalPages, page: clampedPage } = useMemo(
+    () => paginate(rest, page, GRID_PAGE_SIZE),
+    [rest, page]
+  );
 
   const changeFilter = (id: ArticleType | "all") => {
     setFilter(id);
@@ -185,7 +206,7 @@ export function HomeFeed({
             {showWidget("calendar") && <CalendarCard events={ceEvents} />}
             {showWidget("nexus") &&
               (nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />)}
-            {showWidget("stock") && <StockCard stock={stock} />}
+            {showWidget("stock") && <StockCard stocks={stocks} />}
             {showWidget("news") && (
               <div className="home-news-desktop">
                 <RevolvingNews articles={newsTicker} />

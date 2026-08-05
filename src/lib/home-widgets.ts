@@ -6,7 +6,7 @@ export const HOME_WIDGETS = [
   { id: "savedUnread", label: "Saved, still unread" },
   { id: "calendar", label: "CE & Events calendar" },
   { id: "nexus", label: "Nexus" },
-  { id: "stock", label: "Stock ticker" },
+  { id: "stock", label: "PT Industry Index" },
   { id: "news", label: "Latest news" },
 ] as const;
 
