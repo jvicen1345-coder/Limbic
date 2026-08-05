@@ -74,24 +74,7 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
   );
 }
 
-const clampStyle = (lines: number): React.CSSProperties => ({
-  display: "-webkit-box",
-  WebkitLineClamp: lines,
-  WebkitBoxOrient: "vertical",
-  overflow: "hidden",
-});
-
-export function HeroArticleCard({
-  article,
-  compact = false,
-}: {
-  article: DecoratedArticle;
-  /** Clamps title/summary and shrinks the image so the card holds a predictable height
-   *  regardless of how long an article's summary is — used when the hero sits paired
-   *  beside another card (see HeroFeed.tsx) so that pairing doesn't end up towering over
-   *  it or leaving a large gap next to a much shorter neighbor. */
-  compact?: boolean;
-}) {
+export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
   const router = useRouter();
   return (
     <div
@@ -99,7 +82,7 @@ export function HeroArticleCard({
       style={{ cursor: "pointer", padding: 26, background: "var(--color-accent-300)" }}
       onClick={() => router.push(`/article/${article.id}`)}
     >
-      {article.image && <ArticleImage key={article.id} src={article.image} height={compact ? 140 : 200} />}
+      {article.image && <ArticleImage key={article.id} src={article.image} height={200} />}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {article.isNew && <NewBadge />}
@@ -108,10 +91,10 @@ export function HeroArticleCard({
         </div>
         <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
       </div>
-      <div className="card-title" style={{ marginTop: 8, fontSize: 22, ...(compact ? clampStyle(3) : {}) }}>
+      <div className="card-title" style={{ marginTop: 8, fontSize: 22 }}>
         {article.title}
       </div>
-      <p className="card-body" style={{ fontSize: 15, ...(compact ? clampStyle(2) : {}) }}>
+      <p className="card-body" style={{ fontSize: 15 }}>
         {article.summary}
       </p>
       <div className="card-meta">

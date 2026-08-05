@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArticleImage } from "@/components/ArticleImage";
 import type { DecoratedArticle } from "@/lib/feed";
 
-const ROTATE_MS = 6000;
+const ROTATE_MS = 12000;
 
 /** Small auto-rotating headline card for the home sidebar — cycles through the latest
  *  news (guidelines/industry/equipment, not research or events; see page.tsx) on a

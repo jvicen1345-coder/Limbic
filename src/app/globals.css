@@ -217,6 +217,18 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   line-height: 1.15;
   color: var(--color-text);
 }
+/* The zero-count state for Studies/Guidelines (see DailyDashboard.tsx's
+   upToDateWhenZero) — deliberately smaller and lighter than .dashboard-metric-tile's
+   own .card-kicker label above it, so it reads as a quiet aside rather than competing
+   with the label or the bold counts on neighboring tiles. */
+.dashboard-metric-uptodate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 8.5px;
+  color: var(--color-neutral-500);
+}
+.dashboard-metric-uptodate span { color: #1f9d5e; }
 @media (max-width: 799px) {
   .dashboard-metrics-row { flex-direction: column; }
   .dashboard-metric-tile { flex-direction: row; align-items: center; justify-content: space-between; }
@@ -543,21 +555,17 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   .article-split-threads { width: 100%; position: static; max-height: none; overflow-y: visible; }
 }
 
-/* Hero + "Latest news" pairing above the main feed grid (see components/HomeFeed.tsx) —
-   align-items: flex-end sinks the shorter news card to the hero's bottom edge, so it reads
-   as sitting in the hero's bottom-right corner rather than floating at the top of a taller
-   row. */
-.home-hero-row {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  align-items: flex-end;
-}
-.home-hero-main { flex: 2; min-width: 0; }
-.home-hero-news { flex: 1; min-width: 0; max-width: 280px; }
+/* "Latest news" (see components/HomeFeed.tsx) renders twice — once right under the hero,
+   once in the aside — and CSS picks which copy shows per breakpoint rather than one
+   component moving between two different flex containers (.home-main-col and
+   .home-aside-col aren't reachable from one another with a media query alone). Desktop
+   shows the aside's sidebar copy; mobile shows the one under the hero instead, since the
+   aside stacks below the entire feed (including pagination) on narrow screens — too far
+   from the hero to read as related. */
+.home-hero-news-mobile { display: none; }
 @media (max-width: 799px) {
-  .home-hero-row { flex-direction: column; align-items: stretch; }
-  .home-hero-news { max-width: none; }
+  .home-hero-news-mobile { display: block; }
+  .home-news-desktop { display: none; }
 }
 
 .cards-grid {

@@ -15,11 +15,35 @@ export interface DailyDashboardData {
   savedUnfinishedCount: number;
 }
 
-function MetricTile({ label, title, value, href }: { label: string; title: string; value: number; href: string }) {
+function MetricTile({
+  label,
+  title,
+  value,
+  href,
+  upToDateWhenZero = false,
+}: {
+  label: string;
+  title: string;
+  value: number;
+  href: string;
+  /** A bare "0" reads as a broken counter rather than "nothing new today" — so for
+   *  counts of new items (Studies/Guidelines), a zero swaps to a quiet "Up to date"
+   *  checkmark instead. Opt-in per tile since it wouldn't make sense for a streak, an
+   *  hours total, or an unfinished count (see DailyDashboard's own tile list below). */
+  upToDateWhenZero?: boolean;
+}) {
+  const isUpToDate = upToDateWhenZero && value === 0;
   return (
     <Link href={href} className="card elev-sm dashboard-metric-tile" title={title}>
       <div className="card-kicker">{label}</div>
-      <div className="dashboard-metric-value">{value}</div>
+      {isUpToDate ? (
+        <div className="dashboard-metric-uptodate">
+          <span aria-hidden="true">✓</span>
+          Up to date
+        </div>
+      ) : (
+        <div className="dashboard-metric-value">{value}</div>
+      )}
     </Link>
   );
 }
@@ -45,8 +69,20 @@ function QuestionOfDayTile() {
 export function DailyDashboard({ data }: { data: DailyDashboardData }) {
   return (
     <div className="dashboard-metrics-row">
-      <MetricTile label="Studies" title="New studies published today" value={data.newStudiesToday} href="/search?type=research&new=1" />
-      <MetricTile label="Guidelines" title="New guideline updates today" value={data.newGuidelinesToday} href="/search?type=guideline&new=1" />
+      <MetricTile
+        label="Studies"
+        title="New studies published today"
+        value={data.newStudiesToday}
+        href="/search?type=research&new=1"
+        upToDateWhenZero
+      />
+      <MetricTile
+        label="Guidelines"
+        title="New guideline updates today"
+        value={data.newGuidelinesToday}
+        href="/search?type=guideline&new=1"
+        upToDateWhenZero
+      />
       {data.showQuestionOfDay && <QuestionOfDayTile />}
       <MetricTile label="Day streak" title="Current reading streak" value={data.streakDays} href="/profile" />
       <MetricTile label="CE hours" title="CE hours completed" value={data.ceHoursCompleted} href="/profile" />

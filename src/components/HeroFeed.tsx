@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { HeroArticleCard } from "@/components/ArticleCard";
 import type { DecoratedArticle } from "@/lib/feed";
 
-const ROTATE_MS = 6000;
+const ROTATE_MS = 12000;
 
 /** Auto-rotating hero — cycles through the top of the reader's ranked feed on a timer,
  *  the same rotation pattern as the "Latest news" card (see RevolvingNews.tsx), just
@@ -28,7 +28,7 @@ export function HeroFeed({ articles }: { articles: DecoratedArticle[] }) {
       {/* Keyed by article id so rotating swaps remount the card — otherwise SaveButton's
        *  own optimistic-saved state (see SaveButton.tsx) would carry over from whichever
        *  article previously occupied this slot. */}
-      <HeroArticleCard key={article.id} article={article} compact />
+      <HeroArticleCard key={article.id} article={article} />
       {articles.length > 1 && (
         <div style={{ display: "flex", gap: 6, marginTop: 10, justifyContent: "center" }}>
           {articles.map((a, i) => (
