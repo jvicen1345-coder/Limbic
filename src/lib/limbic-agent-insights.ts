@@ -1,5 +1,6 @@
 import type { Article } from "@/lib/types";
 import { SPECIALTIES, SPECIALTY_META } from "@/lib/meta";
+import { filterClinicalGapTopics, normalizeTag } from "@/lib/clinical-relevance";
 
 const RECENT_WINDOW_DAYS = 7;
 const RECENT_TOPICS_COUNT = 3;
@@ -61,10 +62,26 @@ export function buildLimbicAgentInsights(
     if (recentTopics.length >= RECENT_TOPICS_COUNT) break;
   }
 
-  // No followed topics yet (a common state for skipped onboarding or legacy accounts)
-  // falls back to the 5 canonical specialties, so the card still has something to say
-  // rather than going blank the moment reading history exists but topic-following doesn't.
-  const gapCandidates = followedTopics.length > 0 ? followedTopics : SPECIALTIES.map((s) => s.label);
+  // Followed topics can include non-clinical keywords Profile's "Add more" list surfaces
+  // alongside genuine clinical ones (see lib/news-live.ts allKnownKeywordTopics) — e.g.
+  // "Legislation" or "Athlete" — which have no business showing up as a clinical gap to
+  // close (see lib/clinical-relevance.ts). filterClinicalGapTopics also normalizes
+  // near-duplicates ("Athletic" -> "athlete") so they can't both appear; the lookup below
+  // maps each surviving normalized key back to whichever originally-cased followed topic
+  // produced it, so the card still displays "ACL" rather than the normalized "acl".
+  const clinicalKeys = new Set(filterClinicalGapTopics(followedTopics));
+  const seenKeys = new Set<string>();
+  const clinicalFollowedTopics = followedTopics.filter((topic) => {
+    const key = normalizeTag(topic);
+    if (!clinicalKeys.has(key) || seenKeys.has(key)) return false;
+    seenKeys.add(key);
+    return true;
+  });
+
+  // No followed topics yet (a common state for skipped onboarding or legacy accounts) — or
+  // none of them clinically relevant — falls back to the 5 canonical specialties, so the
+  // card still has something to say rather than going blank.
+  const gapCandidates = clinicalFollowedTopics.length > 0 ? clinicalFollowedTopics : SPECIALTIES.map((s) => s.label);
   const withGaps = gapCandidates.map((topic) => {
     const lastMatch = readRows.find((row) => {
       const article = articleById.get(row.articleId);
