@@ -27,8 +27,56 @@ const RING_RADIUS_COMPACT: Record<number, number> = { 0: 24, 1: 18, 2: 14, 3: 10
 const RING_LINK_DISTANCE: Record<number, number> = { 1: 110, 2: 85, 3: 68 };
 const RING_FONT_SIZE: Record<number, number> = { 0: 13, 1: 11, 2: 10.5, 3: 9.5 };
 
+// Limbic Threads' "Prompt Agent" node (see AgentNode.variant) — deliberately larger and a
+// warmer color than any ring's, so it reads as an action to take rather than another piece
+// of connected content. The glow itself needs no separate CSS — .agent-node-circle's
+// existing drop-shadow filter already keys off currentColor, so setting this fill/color
+// automatically glows amber the same way every other node glows its own ring color.
+const ACTION_NODE_RADIUS = 36;
+const ACTION_NODE_RADIUS_COMPACT = 30;
+const ACTION_NODE_COLOR = "#ffb84d";
+const ACTION_NODE_ICON_STROKE = "#3d2600";
+// Kept clear of the canvas edge and of the label rendered below the node (dy = radius +
+// 14, plus the label's own line height) — see the two "fy = height - ..." assignments
+// below, which both need to agree with this so the node never migrates when either fires.
+const ACTION_NODE_BOTTOM_CLEARANCE = 26;
+
 function truncate(label: string, max: number): string {
   return label.length > max ? `${label.slice(0, max - 1)}…` : label;
+}
+
+function nodeRadius(d: { ring: number; variant?: "action" }, radii: Record<number, number>, compact: boolean): number {
+  if (d.variant === "action") return compact ? ACTION_NODE_RADIUS_COMPACT : ACTION_NODE_RADIUS;
+  return radii[d.ring] ?? 14;
+}
+
+/** Bottom-center, fixed — not part of the force layout like every other node, so this is
+ *  computed directly from canvas size rather than left to the simulation. */
+function actionNodeFixedPos(width: number, height: number, compact: boolean) {
+  const r = compact ? ACTION_NODE_RADIUS_COMPACT : ACTION_NODE_RADIUS;
+  return { fx: width / 2, fy: height - r - ACTION_NODE_BOTTOM_CLEARANCE };
+}
+
+/** A small two-lobe brain glyph — same stroke-based style as components/icons.tsx, just
+ *  inlined here since this node is D3-appended SVG rather than JSX. Simple ellipse
+ *  primitives rather than a hand-authored path, so it can't render lopsided. */
+function appendBrainIcon(container: d3.Selection<SVGGElement, unknown, null, undefined>, size: number) {
+  const icon = container
+    .append("svg")
+    .attr("x", -size / 2)
+    .attr("y", -size / 2)
+    .attr("width", size)
+    .attr("height", size)
+    .attr("viewBox", "0 0 24 24")
+    .attr("fill", "none")
+    .attr("stroke", ACTION_NODE_ICON_STROKE)
+    .attr("stroke-width", 2.5)
+    .attr("stroke-linecap", "round")
+    .attr("stroke-linejoin", "round")
+    .style("pointer-events", "none");
+  icon.append("ellipse").attr("cx", 8.5).attr("cy", 12).attr("rx", 4.5).attr("ry", 6);
+  icon.append("ellipse").attr("cx", 15.5).attr("cy", 12).attr("rx", 4.5).attr("ry", 6);
+  icon.append("line").attr("x1", 12).attr("y1", 5).attr("x2", 12).attr("y2", 19);
 }
 
 export function AgentGraph({
@@ -98,9 +146,10 @@ export function AgentGraph({
       .force("charge", d3.forceManyBody().strength(-260))
       .force(
         "collide",
-        d3
-          .forceCollide<SimNode>()
-          .radius((d) => Math.max((RING_RADIUS[d.ring] ?? 14) + 16, (d.labelHalfWidth ?? 0) + LABEL_COLLIDE_PADDING))
+        d3.forceCollide<SimNode>().radius((d) => {
+          const r = d.variant === "action" ? ACTION_NODE_RADIUS : (RING_RADIUS[d.ring] ?? 14);
+          return Math.max(r + 16, (d.labelHalfWidth ?? 0) + LABEL_COLLIDE_PADDING);
+        })
       );
     // The centering "x"/"y" forces are added by the width/height effect below, which also
     // runs once on mount — kept out of this effect so this one-time setup never needs
@@ -155,6 +204,12 @@ export function AgentGraph({
       center.fx = width / 2;
       center.fy = height / 2;
     }
+    const actionNode = simNodesRef.current.find((n) => n.variant === "action");
+    if (actionNode) {
+      const { fx, fy } = actionNodeFixedPos(width, height, width < 460);
+      actionNode.fx = fx;
+      actionNode.fy = fy;
+    }
     simulation.alpha(0.3).restart();
   }, [width, height]);
 
@@ -183,6 +238,11 @@ export function AgentGraph({
         simNode.fx = width / 2;
         simNode.fy = height / 2;
       }
+      if (n.variant === "action") {
+        const { fx, fy } = actionNodeFixedPos(width, height, compact);
+        simNode.fx = fx;
+        simNode.fy = fy;
+      }
       return simNode;
     });
     simNodesRef.current = nextSimNodes;
@@ -190,6 +250,7 @@ export function AgentGraph({
     const nextSimLinks: SimLink[] = links.map((l) => ({ source: l.source, target: l.target, kind: l.kind }));
 
     // Links.
+    const nodeById = new Map(nodes.map((n) => [n.id, n]));
     svg
       .select(".agent-links")
       .selectAll<SVGLineElement, SimLink>("line")
@@ -198,7 +259,11 @@ export function AgentGraph({
         (d) => `${typeof d.source === "string" ? d.source : d.source.id}->${typeof d.target === "string" ? d.target : d.target.id}`
       )
       .join("line")
-      .attr("class", (d) => `agent-link agent-link-${d.kind}`);
+      .attr("class", (d) => {
+        const targetId = typeof d.target === "string" ? d.target : d.target.id;
+        const toAction = nodeById.get(targetId)?.variant === "action";
+        return `agent-link agent-link-${d.kind}${toAction ? " agent-link-action" : ""}`;
+      });
 
     // Nodes.
     const nodeSel = svg
@@ -221,18 +286,22 @@ export function AgentGraph({
       .attr("class", "agent-node-pulse")
       .each(function (d) {
         const g = d3.select(this);
+        const r = nodeRadius(d, radii, compact);
+        const isAction = d.variant === "action";
         g.append("circle")
           .attr("class", "agent-node-circle")
-          .attr("r", radii[d.ring] ?? 14)
-          .attr("fill", RING_COLOR[d.ring] ?? "#8a97c4")
+          .attr("r", r)
+          .attr("fill", isAction ? ACTION_NODE_COLOR : (RING_COLOR[d.ring] ?? "#8a97c4"))
           // The glow filter uses currentColor (see globals.css) so each ring glows its
           // own color — fill alone wouldn't drive that, since drop-shadow reads `color`.
-          .style("color", RING_COLOR[d.ring] ?? "#8a97c4");
+          .style("color", isAction ? ACTION_NODE_COLOR : (RING_COLOR[d.ring] ?? "#8a97c4"));
+        if (isAction) appendBrainIcon(g, r * 0.72);
         g.append("text")
           .attr("class", "agent-node-label")
           .attr("text-anchor", "middle")
-          .attr("dy", (radii[d.ring] ?? 14) + 14)
-          .attr("font-size", RING_FONT_SIZE[d.ring] ?? 10)
+          .attr("dy", r + 14)
+          .attr("font-size", isAction ? 12 : (RING_FONT_SIZE[d.ring] ?? 10))
+          .attr("font-weight", isAction ? 700 : 400)
           .text(truncate(d.label, d.ring === 0 ? 26 : 20));
       });
 
@@ -243,15 +312,18 @@ export function AgentGraph({
       .classed("agent-node-loading", (d) => d.id === loadingId)
       // The idle center placeholder ("Limbic Agent") breathes continuously; once it has
       // any children it has "answered" and settles into the normal static glow.
-      .classed("agent-node-breathing", (d) => d.ring === 0 && !nodes.some((n) => n.parentId === d.id));
+      .classed("agent-node-breathing", (d) => d.ring === 0 && !nodes.some((n) => n.parentId === d.id))
+      // The action node gets its own slower, warmer pulse instead (see globals.css) —
+      // never combined with agent-node-breathing, since only a ring-0 node can breathe.
+      .classed("agent-node-action", (d) => d.variant === "action");
 
     merged.select(".agent-node-label").text((d) => truncate(d.label, d.ring === 0 ? 26 : 20));
     merged
       .select(".agent-node-circle")
-      .attr("r", (d) => radii[d.ring] ?? 14)
-      .attr("fill", (d) => RING_COLOR[d.ring] ?? "#8a97c4")
-      .style("color", (d) => RING_COLOR[d.ring] ?? "#8a97c4");
-    merged.select(".agent-node-label").attr("dy", (d) => (radii[d.ring] ?? 14) + 14);
+      .attr("r", (d) => nodeRadius(d, radii, compact))
+      .attr("fill", (d) => (d.variant === "action" ? ACTION_NODE_COLOR : (RING_COLOR[d.ring] ?? "#8a97c4")))
+      .style("color", (d) => (d.variant === "action" ? ACTION_NODE_COLOR : (RING_COLOR[d.ring] ?? "#8a97c4")));
+    merged.select(".agent-node-label").attr("dy", (d) => nodeRadius(d, radii, compact) + 14);
 
     // Measure each label's actual rendered width now that its final text/font-size are set,
     // so the collide force below (initialized by simulation.nodes()) can reserve enough

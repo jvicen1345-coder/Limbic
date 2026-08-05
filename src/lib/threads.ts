@@ -89,6 +89,9 @@ const NEXUS_DISCUSSION_ID = "nexus-discussion";
  *  (THREADS_INSIGHTS_ENABLED = false in ThreadsWeb.tsx) — nothing here needs to change
  *  when that flips on, the gating logic already handles it. */
 const CLINICAL_IMPLICATIONS_ID = "clinical-implications";
+/** The universal action node appended after every type's contextual nodes (see
+ *  buildThreadsWeb) — not part of NODE_SPECS_BY_TYPE since it never varies by type. */
+const PROMPT_AGENT_ID = "prompt-agent";
 
 /** Contextually relevant node set per article type (see lib/types.ts ArticleType) — the
  *  "Explore Connections" web research gets 4 nodes, every other type gets 5: its own 4
@@ -327,6 +330,19 @@ export async function buildThreadsWeb(article: Article, articlePool: Article[]):
         action: { kind: "navigate", label: "View in Search", href: searchHref(article, spec) },
       };
     }),
+    // Every article gets exactly one of these, regardless of type — a visually distinct
+    // "take this to Limbic Agent" action rather than another piece of connected content
+    // (see components/ThreadsWeb.tsx's variant="action" styling and
+    // components/AgentGraph.tsx's bottom-center/amber/pulse rendering for it). PRO-gated
+    // on click, same mechanism as the Clinical Implications insight node above.
+    {
+      id: PROMPT_AGENT_ID,
+      parentId: "center",
+      ring: 1,
+      label: "Prompt Agent",
+      detail: "Go deeper with open-ended clinical reasoning tailored to this article.",
+      action: { kind: "agent-handoff", topic: article.title },
+    },
   ];
 
   return nodes;

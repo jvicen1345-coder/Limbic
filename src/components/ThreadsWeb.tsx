@@ -99,6 +99,10 @@ export function ThreadsWeb({
           ring: n.ring,
           label: n.label,
           expandable: true,
+          // The one "Prompt Agent" node per article (see lib/threads.ts) — flagged purely
+          // off its action kind, not a hardcoded id, so AgentGraph.tsx renders it larger,
+          // amber, pinned to bottom-center, with a brain icon (see AgentNode.variant).
+          variant: n.action.kind === "agent-handoff" ? ("action" as const) : undefined,
         })),
     [webNodes, revealedIds]
   );
@@ -206,13 +210,22 @@ export function ThreadsWeb({
               Limbic Agent&rsquo;s AI-generated clinical reasoning is still in development for this node — check back soon.
             </p>
           ) : gated ? (
-            <>
-              <p className="agent-detail-body">Unlock deeper, AI-generated clinical reasoning for this article with LimbicPro.</p>
-              <Link href="/pro" className="btn btn-primary threads-detail-cta">
-                <LockIcon size={12} />
-                Upgrade to LimbicPro
-              </Link>
-            </>
+            selectedWeb.action.kind === "agent-handoff" ? (
+              <>
+                <p className="agent-detail-body">Limbic Agent is available with LimbicPRO.</p>
+                <Link href="/pro" className="btn btn-primary threads-detail-cta">
+                  → Upgrade to PRO
+                </Link>
+              </>
+            ) : (
+              <>
+                <p className="agent-detail-body">Unlock deeper, AI-generated clinical reasoning for this article with LimbicPro.</p>
+                <Link href="/pro" className="btn btn-primary threads-detail-cta">
+                  <LockIcon size={12} />
+                  Upgrade to LimbicPro
+                </Link>
+              </>
+            )
           ) : loadingId === selectedWeb.id ? (
             <p className="agent-detail-hint">Limbic Agent is thinking…</p>
           ) : insightErr ? (
@@ -250,7 +263,7 @@ export function ThreadsWeb({
               )}
               {selectedWeb.action.kind === "agent-handoff" && (
                 <Link
-                  href={`/agent?q=${encodeURIComponent(selectedWeb.action.kind === "agent-handoff" ? selectedWeb.action.topic : "")}`}
+                  href={`/agent?topic=${encodeURIComponent(selectedWeb.action.kind === "agent-handoff" ? selectedWeb.action.topic : "")}`}
                   className="btn btn-primary threads-detail-cta"
                 >
                   Continue in Limbic Agent

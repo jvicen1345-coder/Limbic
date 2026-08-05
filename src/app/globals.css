@@ -823,6 +823,10 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
 .agent-link { stroke-width: 1.4; }
 .agent-link-tree { stroke: rgba(140, 170, 255, 0.28); }
 .agent-link-cross { stroke: rgba(66, 214, 200, 0.35); stroke-dasharray: 3 4; stroke-width: 1.1; }
+/* The line running to Limbic Threads' "Prompt Agent" node (see AgentNode.variant) —
+   same tree line style as .agent-link-tree, just amber to match that one node's warm
+   glow instead of the usual blue. */
+.agent-link-action { stroke: rgba(255, 184, 77, 0.4); }
 
 @keyframes agent-node-pulse-in {
   0% { transform: scale(0.3); opacity: 0; }
@@ -868,6 +872,24 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
 }
 .agent-node-loading .agent-node-circle {
   animation: agent-node-loading-pulse 0.9s ease-in-out infinite;
+}
+
+/* Limbic Threads' "Prompt Agent" node (see AgentNode.variant, components/AgentGraph.tsx)
+   — a slower, subtler pulse than .agent-node-breathing's (5s vs. 3.4s, a gentler scale),
+   reading as a calm, warm invitation rather than something actively "thinking." */
+@keyframes agent-node-action-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+@keyframes agent-node-action-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px currentColor); }
+  50% { filter: drop-shadow(0 0 18px currentColor); }
+}
+.agent-node-action .agent-node-pulse {
+  animation: agent-node-action-pulse 5s ease-in-out infinite;
+}
+.agent-node-action .agent-node-circle {
+  animation: agent-node-action-glow 5s ease-in-out infinite;
 }
 
 @media (max-width: 640px) {

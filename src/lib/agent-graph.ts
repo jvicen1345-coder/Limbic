@@ -15,6 +15,12 @@ export interface AgentNode {
   /** Ring 1/2 nodes the student/clinician can click to grow the web further; false for
    *  ring 3 (evidence/red-flag) nodes and the center node, which are always terminal. */
   expandable: boolean;
+  /** Marks Limbic Threads' single "Prompt Agent" action node (see lib/threads.ts) —
+   *  AgentGraph.tsx pins it to the bottom-center of the canvas and renders it larger, with
+   *  a warm amber glow/pulse and a brain icon, instead of the uniform ring-based styling
+   *  every other node gets. Limbic Agent's own spiderweb (AgentClient.tsx) never sets
+   *  this, so it has no effect there. */
+  variant?: "action";
 }
 
 export interface AgentLink {
