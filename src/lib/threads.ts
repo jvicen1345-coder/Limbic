@@ -1,9 +1,8 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { ensureNexusSeedData } from "@/lib/nexus-seed";
-import { CLIPS } from "@/lib/clips-static";
 import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
-import { THREADS_INSIGHT_META, type ThreadsNodeData } from "@/lib/threads-graph";
+import type { ThreadsNodeData } from "@/lib/threads-graph";
 import type { Article, ArticleType } from "@/lib/types";
 
 const MAX_MATCHES_CONSIDERED = 4;
@@ -60,26 +59,193 @@ async function findNexusMatch(article: Article): Promise<{ authorName: string; s
   return null;
 }
 
-function findClipMatch(article: Article) {
-  return CLIPS.find((c) => c.specialty === article.specialty) ?? null;
+/** One of Limbic Threads' 4 per-article-type nodes (see NODE_SPECS_BY_TYPE below) — every
+ *  node is a plain "go look at a filtered view" link, not a synthesized/AI answer, so this
+ *  only needs to describe how to filter and what to say about it, not any real content. */
+interface FeedNodeSpec {
+  id: string;
+  label: string;
+  /** Narrows the linked Search results to this ArticleType, alongside the article's own
+   *  specialty — omitted when this node's topic isn't itself a distinct article type. */
+  filterType?: ArticleType;
+  /** Free-text term added to the Search query as this node's "topic," alongside specialty
+   *  and (if set) filterType — omitted when specialty/type alone is the clearest filter.
+   *  "relevant-techniques" leaves this unset here and fills it in per-article instead (see
+   *  buildThreadsWeb), since its topic is the article's own tag, not a fixed term. */
+  topicQuery?: string;
+  /** Static one-line description shown as the node's detail text when there's no
+   *  real per-article data to summarize instead (see countDetail below). */
+  blurb: string;
 }
 
-/** Assembles Limbic Threads' full 11-node, 3-ring web for one article — see
- *  lib/threads-graph.ts for the node/action shapes. Every node here is either backed by
- *  real data (connected articles, the article's own tags, a best-effort Nexus post match,
- *  a specialty-matched Clip) or is one of the 5 "insight" nodes whose actual text is
- *  synthesized by Limbic Agent lazily, client-side, only for PRO viewers who click it
- *  (see app/actions/threads.ts) — nothing here fabricates clinical content ahead of time.
- *  `articlePool` is the caller's already-fetched getArticles() result, passed in rather
- *  than fetched again here. */
-export async function buildThreadsWeb(article: Article, articlePool: Article[]): Promise<ThreadsNodeData[]> {
-  const research = matchesOfType(article, articlePool, "research");
-  const guidelines = matchesOfType(article, articlePool, "guideline");
-  const techniques = techniqueTags(article);
-  const primaryTag = techniques[0] ?? SPECIALTY_META[article.specialty];
+const NEXUS_DISCUSSION_ID = "nexus-discussion";
 
-  const [nexusMatch] = await Promise.all([findNexusMatch(article)]);
-  const clipMatch = findClipMatch(article);
+/** Contextually relevant node set per article type (see lib/types.ts ArticleType) — each
+ *  array is exactly the 4 nodes that type's "Explore Connections" web should show, in
+ *  order. A "Nexus Discussion" entry (spec.id === NEXUS_DISCUSSION_ID) is handled
+ *  specially in buildThreadsWeb below rather than through the generic Search-link path. */
+const NODE_SPECS_BY_TYPE: Record<ArticleType, FeedNodeSpec[]> = {
+  research: [
+    {
+      id: "connected-research",
+      label: "Connected Research",
+      filterType: "research",
+      blurb: "Other research studies related to this article's specialty.",
+    },
+    {
+      id: "clinical-implications",
+      label: "Clinical Implications",
+      topicQuery: "clinical implications",
+      blurb: "What this kind of finding tends to mean for day-to-day clinical practice.",
+    },
+    {
+      id: "related-guidelines",
+      label: "Related Guidelines",
+      filterType: "guideline",
+      blurb: "Clinical practice guidelines related to this article's specialty.",
+    },
+    {
+      id: "relevant-techniques",
+      label: "Relevant Techniques",
+      blurb: "Techniques and interventions mentioned in this article.",
+    },
+  ],
+  guideline: [
+    {
+      id: "related-research",
+      label: "Related Research",
+      filterType: "research",
+      blurb: "Research studies related to this guideline's specialty.",
+    },
+    {
+      id: "clinical-application",
+      label: "Clinical Application",
+      topicQuery: "clinical application",
+      blurb: "How this guideline tends to translate into day-to-day practice.",
+    },
+    {
+      id: "patient-education",
+      label: "Patient Education",
+      topicQuery: "patient education",
+      blurb: "Material for explaining this guideline's recommendations to patients.",
+    },
+    { id: NEXUS_DISCUSSION_ID, label: "Nexus Discussion", blurb: "" },
+  ],
+  industry: [
+    {
+      id: "related-policy",
+      label: "Related Policy",
+      filterType: "industry",
+      topicQuery: "policy",
+      blurb: "Other industry and policy news related to this article's specialty.",
+    },
+    {
+      id: "clinical-impact",
+      label: "Clinical Impact",
+      topicQuery: "clinical impact",
+      blurb: "How this kind of industry or policy change tends to affect clinical practice.",
+    },
+    { id: NEXUS_DISCUSSION_ID, label: "Nexus Discussion", blurb: "" },
+    {
+      id: "further-reading",
+      label: "Further Reading",
+      blurb: "More coverage related to this article's specialty.",
+    },
+  ],
+  product: [
+    {
+      id: "clinical-evidence",
+      label: "Clinical Evidence",
+      filterType: "research",
+      blurb: "Research studies related to this product's specialty.",
+    },
+    {
+      id: "similar-devices",
+      label: "Similar Devices",
+      filterType: "product",
+      blurb: "Other equipment and product news related to this article's specialty.",
+    },
+    {
+      id: "fda-information",
+      label: "FDA Information",
+      topicQuery: "FDA",
+      blurb: "Regulatory coverage related to this product.",
+    },
+    { id: NEXUS_DISCUSSION_ID, label: "Nexus Discussion", blurb: "" },
+  ],
+  ce: [
+    {
+      id: "related-topics",
+      label: "Related Topics",
+      blurb: "Other content related to this course's specialty.",
+    },
+    {
+      id: "prerequisites",
+      label: "Prerequisites",
+      topicQuery: "prerequisites",
+      blurb: "Background reading worth covering before this course.",
+    },
+    {
+      id: "related-guidelines-ce",
+      label: "Related Guidelines",
+      filterType: "guideline",
+      blurb: "Clinical practice guidelines related to this course's specialty.",
+    },
+    { id: NEXUS_DISCUSSION_ID, label: "Nexus Discussion", blurb: "" },
+  ],
+};
+
+/** Nouns read naturally in "N related ___ found" for the two types with a real single-word
+ *  count phrase (see countDetail) — every other filterType falls back to "articles". */
+const COUNT_NOUNS: Partial<Record<ArticleType, { singular: string; plural: string }>> = {
+  research: { singular: "study", plural: "studies" },
+  guideline: { singular: "guideline", plural: "guidelines" },
+};
+
+/** Real-data detail text for a node backed by an actual ArticleType filter — same
+ *  specialty-or-tag relevance pool as the rest of Threads, just no longer linking straight
+ *  to the top match (see searchHref) now that every node consistently opens a filtered
+ *  Search view instead of jumping to one specific article. */
+function countDetail(article: Article, pool: Article[], type: ArticleType): string {
+  const matches = matchesOfType(article, pool, type);
+  const noun = COUNT_NOUNS[type] ?? { singular: "article", plural: "articles" };
+  if (matches.length === 0) {
+    return `No related ${noun.plural} found yet — tap to browse ${SPECIALTY_META[article.specialty]}.`;
+  }
+  return `${matches.length} related ${matches.length === 1 ? noun.singular : noun.plural} found, most recently "${truncate(matches[0].title, 60)}".`;
+}
+
+/** Every non-Nexus node links to Search filtered by the article's specialty and, where
+ *  the node has one, an ArticleType and/or a free-text topic term — never to one specific
+ *  article, so every node in this new per-type web behaves the same way. */
+function searchHref(article: Article, spec: FeedNodeSpec): string {
+  const params = new URLSearchParams();
+  if (spec.filterType) params.set("type", spec.filterType);
+  params.set("specialty", article.specialty);
+  if (spec.topicQuery) params.set("q", spec.topicQuery);
+  return `/search?${params.toString()}`;
+}
+
+/** Nexus Discussion nodes link straight to the Nexus feed filtered by this article's own
+ *  tags, rather than through Search — a different destination entirely, not just a
+ *  different filter combination. */
+function nexusHref(article: Article): string {
+  const tags = article.tags.length > 0 ? article.tags : [SPECIALTY_META[article.specialty]];
+  return `/nexus?tags=${encodeURIComponent(tags.join(","))}`;
+}
+
+/** Assembles Limbic Threads' "Explore Connections" web for one article: a center node for
+ *  the article itself, plus exactly the 4 nodes contextually relevant to its ArticleType
+ *  (see NODE_SPECS_BY_TYPE). Every node — Nexus Discussion included — is a plain link to a
+ *  filtered view (Search, or the Nexus feed) rather than an AI-generated answer, so this
+ *  never fabricates clinical content. `articlePool` is the caller's already-fetched
+ *  getArticles() result, passed in rather than fetched again here. */
+export async function buildThreadsWeb(article: Article, articlePool: Article[]): Promise<ThreadsNodeData[]> {
+  const specs = NODE_SPECS_BY_TYPE[article.type].map((spec) =>
+    spec.id === "relevant-techniques" ? { ...spec, topicQuery: techniqueTags(article)[0] } : spec
+  );
+  const hasNexusNode = specs.some((spec) => spec.id === NEXUS_DISCUSSION_ID);
+  const nexusMatch = hasNexusNode ? await findNexusMatch(article) : null;
 
   const nodes: ThreadsNodeData[] = [
     {
@@ -90,118 +256,32 @@ export async function buildThreadsWeb(article: Article, articlePool: Article[]):
       detail: article.summary,
       action: { kind: "navigate", label: "Read the article", href: `/article/${article.id}` },
     },
-    {
-      id: "research",
-      parentId: "center",
-      ring: 1,
-      label: "Connected Research",
-      detail:
-        research.length > 0
-          ? `${research.length} related ${research.length === 1 ? "study" : "studies"} found — most recently "${truncate(research[0].title, 60)}".`
-          : "No connected research found yet.",
-      // Links straight to the specific article the detail text names, rather than a
-      // Search query — a query built from just one tag is a narrower filter than the
-      // specialty-or-any-tag match that produced the count above, so it was routinely
-      // surfacing fewer results than "N found" promised (sometimes just 1).
-      action:
-        research.length > 0
-          ? { kind: "navigate", label: "Read the article", href: `/article/${research[0].id}` }
-          : { kind: "navigate", label: "Browse Research", href: "/search?type=research" },
-    },
-    {
-      id: "implications",
-      parentId: "center",
-      ring: 1,
-      label: THREADS_INSIGHT_META.implications.label,
-      detail: "",
-      action: { kind: "insight", insightKind: "implications" },
-    },
-    {
-      id: "guidelines",
-      parentId: "center",
-      ring: 1,
-      label: "Related Guidelines",
-      detail:
-        guidelines.length > 0
-          ? `${guidelines.length} related ${guidelines.length === 1 ? "guideline" : "guidelines"} found — most recently "${truncate(guidelines[0].title, 60)}".`
-          : "No related guidelines found yet.",
-      // Same reasoning as "research" above — links to the specific named guideline.
-      action:
-        guidelines.length > 0
-          ? { kind: "navigate", label: "Read the guideline", href: `/article/${guidelines[0].id}` }
-          : { kind: "navigate", label: "Browse Guidelines", href: "/search?type=guideline" },
-    },
-    {
-      id: "techniques",
-      parentId: "center",
-      ring: 1,
-      label: "Relevant Techniques",
-      detail: techniques.length > 0 ? `Mentioned in this article: ${techniques.join(", ")}.` : "No specific techniques tagged for this article.",
-      action:
-        techniques.length > 0
-          ? { kind: "navigate", label: "Explore in Search", href: `/search?q=${encodeURIComponent(primaryTag)}` }
-          : { kind: "navigate", label: "Browse Search", href: "/search" },
-    },
-    {
-      id: "patient-education",
-      parentId: "implications",
-      ring: 2,
-      label: THREADS_INSIGHT_META["patient-education"].label,
-      detail: "",
-      action: { kind: "insight", insightKind: "patient-education" },
-    },
-    {
-      id: "contraindications",
-      parentId: "techniques",
-      ring: 2,
-      label: THREADS_INSIGHT_META.contraindications.label,
-      detail: "",
-      action: { kind: "insight", insightKind: "contraindications" },
-    },
-    {
-      id: "outcome-measures",
-      parentId: "implications",
-      ring: 2,
-      label: THREADS_INSIGHT_META["outcome-measures"].label,
-      detail: "",
-      action: { kind: "insight", insightKind: "outcome-measures" },
-    },
-    {
-      id: "case-studies",
-      parentId: "research",
-      ring: 2,
-      label: THREADS_INSIGHT_META["case-studies"].label,
-      detail: "",
-      action: { kind: "insight", insightKind: "case-studies" },
-    },
-    {
-      id: "nexus",
-      parentId: "patient-education",
-      ring: 3,
-      label: "Nexus Discussions",
-      detail: nexusMatch
-        ? `${nexusMatch.authorName} in Nexus: "${nexusMatch.snippet}"`
-        : "No Nexus discussions on this topic yet — be the first to start one.",
-      action: { kind: "navigate", label: nexusMatch ? "View in Nexus" : "Start a discussion", href: "/nexus" },
-    },
-    {
-      id: "clips",
-      parentId: "case-studies",
-      ring: 3,
-      label: "Related Clips",
-      detail: clipMatch ? `Technique video: "${clipMatch.title}" (${clipMatch.source}).` : "No technique videos for this specialty yet.",
-      action: clipMatch
-        ? { kind: "external", label: "Watch", url: clipMatch.url }
-        : { kind: "navigate", label: "Browse Clips", href: "/clips" },
-    },
-    {
-      id: "agent",
-      parentId: "outcome-measures",
-      ring: 3,
-      label: "Ask Limbic Agent",
-      detail: "Go deeper with open-ended clinical reasoning tailored to this article.",
-      action: { kind: "agent-handoff", topic: article.title },
-    },
+    ...specs.map((spec): ThreadsNodeData => {
+      if (spec.id === NEXUS_DISCUSSION_ID) {
+        return {
+          id: spec.id,
+          parentId: "center",
+          ring: 1,
+          label: spec.label,
+          detail: nexusMatch
+            ? `${nexusMatch.authorName} in Nexus: "${nexusMatch.snippet}"`
+            : "No Nexus discussions on this topic yet — be the first to start one.",
+          action: {
+            kind: "navigate",
+            label: nexusMatch ? "View in Nexus" : "Start a discussion",
+            href: nexusHref(article),
+          },
+        };
+      }
+      return {
+        id: spec.id,
+        parentId: "center",
+        ring: 1,
+        label: spec.label,
+        detail: spec.filterType ? countDetail(article, articlePool, spec.filterType) : spec.blurb,
+        action: { kind: "navigate", label: "View in Search", href: searchHref(article, spec) },
+      };
+    }),
   ];
 
   return nodes;

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { ensureNexusSeedData } from "@/lib/nexus-seed";
@@ -6,11 +7,17 @@ import { SubTabs } from "@/components/SubTabs";
 import { NexusPostCard, type NexusPostData } from "@/components/NexusPostCard";
 import { NexusComposer } from "@/components/NexusComposer";
 
-export default async function NexusFeedPage() {
+export default async function NexusFeedPage({ searchParams }: { searchParams: Promise<{ tags?: string }> }) {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  await ensureNexusSeedData();
+  const [, { tags: tagsParam }] = await Promise.all([ensureNexusSeedData(), searchParams]);
+  const filterTags = tagsParam
+    ? tagsParam
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean)
+    : [];
 
   const posts = await prisma.nexusPost.findMany({
     orderBy: { createdAt: "desc" },
@@ -25,7 +32,7 @@ export default async function NexusFeedPage() {
     },
   });
 
-  const decorated: NexusPostData[] = posts.map((p) => ({
+  let decorated: NexusPostData[] = posts.map((p) => ({
     id: p.id,
     type: p.type,
     body: p.body,
@@ -46,6 +53,18 @@ export default async function NexusFeedPage() {
     })),
   }));
 
+  // Arriving from a Limbic Threads "Nexus Discussion" node (see lib/threads.ts
+  // nexusHref) — same case-insensitive substring match against body+articleTitle as that
+  // node's own preview match, just applied across the whole fetched page instead of
+  // stopping at the first hit.
+  if (filterTags.length > 0) {
+    const needles = filterTags.map((t) => t.toLowerCase());
+    decorated = decorated.filter((p) => {
+      const haystack = `${p.body} ${p.articleTitle ?? ""}`.toLowerCase();
+      return needles.some((n) => haystack.includes(n));
+    });
+  }
+
   return (
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Nexus</h1>
@@ -54,13 +73,43 @@ export default async function NexusFeedPage() {
       </p>
       <SubTabs tabs={NEXUS_TABS} />
 
+      {filterTags.length > 0 && (
+        <div
+          className="card elev-sm"
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+            marginTop: 14,
+            background: "var(--color-accent-100)",
+            border: "1px solid var(--color-accent-300)",
+          }}
+        >
+          <span style={{ fontSize: 13, color: "var(--color-accent-800)" }}>
+            Showing discussions related to {filterTags.join(", ")} — {decorated.length}{" "}
+            {decorated.length === 1 ? "post" : "posts"}
+          </span>
+          <Link href="/nexus" className="btn btn-ghost">
+            Show all
+          </Link>
+        </div>
+      )}
+
       <NexusComposer authorName={user.name} />
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 14 }}>
-        {decorated.map((post) => (
-          <NexusPostCard key={post.id} post={post} currentUserName={user.name} />
-        ))}
-      </div>
+      {filterTags.length > 0 && decorated.length === 0 ? (
+        <p style={{ fontSize: 14, color: "var(--color-neutral-700)", marginTop: 14 }}>
+          No discussions on this topic yet — be the first to start one above.
+        </p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 14 }}>
+          {decorated.map((post) => (
+            <NexusPostCard key={post.id} post={post} currentUserName={user.name} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

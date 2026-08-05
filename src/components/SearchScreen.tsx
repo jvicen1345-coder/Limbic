@@ -80,12 +80,16 @@ function AiPubmedSearch({ onResult }: { onResult: (result: AiSearchResult | null
 export function SearchScreen({
   articles,
   initialType = "all",
+  initialSpecialty = "all",
   initialQuery = "",
   initialNewOnly = false,
   todayStr,
 }: {
   articles: DecoratedArticle[];
   initialType?: ArticleType | "all";
+  /** Pre-selects the Specialty chip — set via /search?specialty=... (see
+   *  lib/threads.ts's per-article-type node links, the first caller of this). */
+  initialSpecialty?: Specialty | "all";
   initialQuery?: string;
   /** True when arriving from the Home dashboard's Studies/Guidelines tile (via
    *  /search?new=1) — starts the results filtered down to just today's new items,
@@ -97,7 +101,7 @@ export function SearchScreen({
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [type, setType] = useState<ArticleType | "all">(initialType);
-  const [specialty, setSpecialty] = useState<Specialty | "all">("all");
+  const [specialty, setSpecialty] = useState<Specialty | "all">(initialSpecialty);
   const [newOnly, setNewOnly] = useState(initialNewOnly);
   const [page, setPage] = useState(1);
   const [aiResult, setAiResult] = useState<AiSearchResult | null>(null);
