@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { SearchIcon } from "@/components/icons";
 import { Chip } from "@/components/Chip";
-import { ArticleCard, HeroArticleCard } from "@/components/ArticleCard";
+import { ArticleCard } from "@/components/ArticleCard";
+import { HeroFeed } from "@/components/HeroFeed";
 import { CalendarCard, type CeEvent } from "@/components/CalendarCard";
 import { ContinueReadingCard, type ContinueReadingData } from "@/components/ContinueReadingCard";
 import { DailyDashboard, type DailyDashboardData } from "@/components/DailyDashboard";
@@ -22,6 +23,11 @@ import type { ArticleType } from "@/lib/types";
 import type { StockView } from "@/lib/stock";
 import type { LicenseView } from "@/lib/license";
 import type { LimbicAgentInsights } from "@/lib/limbic-agent-insights";
+
+// How many of the top-ranked articles the hero rotates through — kept well under
+// page.tsx's FEED_IMAGE_LIMIT so there's still a meaningful pool of imaged articles left
+// for the grid below.
+const HERO_SIZE = 5;
 
 const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
   { id: "all", label: "All" },
@@ -72,10 +78,32 @@ export function HomeFeed({
     () => (filter === "all" ? articles : articles.filter((a) => a.type === filter)),
     [articles, filter]
   );
-  // The hero is always the top story and only shown on page 1 — it isn't part of the
-  // paginated count, same as Search doesn't re-count what's already visible elsewhere.
-  const hero = filtered[0];
-  const rest = filtered.slice(1);
+
+  // Not every article gets a picture (see page.tsx's FEED_IMAGE_LIMIT and lib/topic-image.ts
+  // — most seed/guideline-PDF content has nothing to find at all), and a feed mixing imaged
+  // and blank-looking cards reads as duplicates of the same empty card. So the hero rotation
+  // and the grid below only draw from articles that resolved one — capping the feed to
+  // however many pictures are actually available rather than padding it out with blanks.
+  // Falls back to the unfiltered pool if literally none resolved an image (e.g. no
+  // PEXELS_API_KEY configured), so Home never goes empty.
+  const withImage = useMemo(() => filtered.filter((a) => a.image), [filtered]);
+  const displayPool = withImage.length > 0 ? withImage : filtered;
+
+  // The hero rotates through the top of the ranked feed instead of pinning just the single
+  // top story; the news ticker's own articles are excluded from that rotation (and from the
+  // grid below) so the same story can't show up twice on screen at once.
+  const newsIds = useMemo(() => new Set(newsTicker.map((a) => a.id)), [newsTicker]);
+  const heroPool = useMemo(
+    () => displayPool.filter((a) => !newsIds.has(a.id)).slice(0, HERO_SIZE),
+    [displayPool, newsIds]
+  );
+  const heroIds = useMemo(() => new Set(heroPool.map((a) => a.id)), [heroPool]);
+  // Only shown on page 1 — it isn't part of the paginated count, same as Search doesn't
+  // re-count what's already visible elsewhere.
+  const rest = useMemo(
+    () => displayPool.filter((a) => !heroIds.has(a.id) && !newsIds.has(a.id)),
+    [displayPool, heroIds, newsIds]
+  );
   const { pageItems, totalPages, page: clampedPage } = useMemo(() => paginate(rest, page), [rest, page]);
 
   const changeFilter = (id: ArticleType | "all") => {
@@ -129,9 +157,18 @@ export function HomeFeed({
             <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>No stories in this category yet.</p>
           )}
 
-          {hero && clampedPage === 1 && (
-            <div style={{ marginBottom: 8 }}>
-              <HeroArticleCard article={hero} />
+          {clampedPage === 1 && (heroPool.length > 0 || (showWidget("news") && newsTicker.length > 0)) && (
+            <div className="home-hero-row" style={{ marginBottom: 8 }}>
+              {heroPool.length > 0 && (
+                <div className="home-hero-main">
+                  <HeroFeed articles={heroPool} />
+                </div>
+              )}
+              {showWidget("news") && newsTicker.length > 0 && (
+                <div className="home-hero-news">
+                  <RevolvingNews articles={newsTicker} />
+                </div>
+              )}
             </div>
           )}
           <div className="cards-grid">
@@ -150,7 +187,6 @@ export function HomeFeed({
             {showWidget("nexus") &&
               (nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />)}
             {showWidget("stock") && <StockCard stock={stock} />}
-            {showWidget("news") && <RevolvingNews articles={newsTicker} />}
           </div>
         </aside>
       </div>
