@@ -32,6 +32,13 @@ const HERO_SIZE = 5;
 // thin/unlucky batch rather than paging past it.
 const GRID_SIZE = 6;
 
+// The hero is the single most prominent thing on Home, so it's held to a tighter bar than
+// the grid below it: only genuinely medical sources — PubMed research and the curated AOPT
+// clinical practice guidelines (see lib/orthopt-cpg-static.ts) — never Google-News-sourced
+// industry/equipment coverage (see lib/news-live.ts), even when the type filter tab is set
+// to "All". The grid isn't restricted this way; this only narrows heroPool below.
+const HERO_ELIGIBLE_TYPES: ArticleType[] = ["research", "guideline"];
+
 const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
   { id: "all", label: "All" },
   { id: "research", label: "Research" },
@@ -91,30 +98,34 @@ export function HomeFeed({
   const newsIds = useMemo(() => new Set(newsTicker.map((a) => a.id)), [newsTicker]);
   const withoutNews = useMemo(() => withImage.filter((a) => !newsIds.has(a.id)), [withImage, newsIds]);
 
-  // The grid's GRID_SIZE cards must have mutually distinct pictures; walking in rank
-  // order and keeping the first article to claim each image URL guarantees that without
-  // ever needing to drop an article for "no picture available" — see withImage above.
+  // The hero picks first — top of rank, restricted to HERO_ELIGIBLE_TYPES — precisely so
+  // it isn't starved by the grid below greedily claiming the same top-ranked research/
+  // guideline articles first (rank order and "is a medical source" correlate heavily,
+  // since evidence quality feeds into ranking). Its picture is allowed to repeat one the
+  // grid ends up using too; the reader explicitly doesn't mind that repetition.
+  const heroPool = useMemo(
+    () => withoutNews.filter((a) => HERO_ELIGIBLE_TYPES.includes(a.type)).slice(0, HERO_SIZE),
+    [withoutNews]
+  );
+
+  // The grid's GRID_SIZE cards must have mutually distinct pictures; walking in rank order
+  // and keeping the first article to claim each image URL guarantees that without ever
+  // needing to drop an article for "no picture available" (see withImage above) — and
+  // skipping whatever the hero already claimed keeps the same story from appearing in both
+  // places at once.
+  const heroIds = useMemo(() => new Set(heroPool.map((a) => a.id)), [heroPool]);
   const gridArticles = useMemo(() => {
     const seenImages = new Set<string>();
     const picked: DecoratedArticle[] = [];
     for (const a of withoutNews) {
       if (picked.length >= GRID_SIZE) break;
+      if (heroIds.has(a.id)) continue;
       if (!a.image || seenImages.has(a.image)) continue;
       seenImages.add(a.image);
       picked.push(a);
     }
     return picked;
-  }, [withoutNews]);
-
-  // The hero rotates through the top of what's left after the grid's picks — a distinct
-  // *article* from every grid card (so the same story never appears in both places at
-  // once), but its picture is allowed to repeat one of the grid's; the reader explicitly
-  // doesn't mind that repetition for the hero specifically.
-  const gridIds = useMemo(() => new Set(gridArticles.map((a) => a.id)), [gridArticles]);
-  const heroPool = useMemo(
-    () => withoutNews.filter((a) => !gridIds.has(a.id)).slice(0, HERO_SIZE),
-    [withoutNews, gridIds]
-  );
+  }, [withoutNews, heroIds]);
 
   return (
     <div className="home-pad">
