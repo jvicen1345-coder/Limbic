@@ -7,37 +7,24 @@ import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { CheckIcon, NetworkIcon, ChevronRightIcon } from "@/components/icons";
 import type { DecoratedArticle } from "@/lib/feed";
 
-/** The fixed Ring-1 category labels (see lib/threads.ts) — shown as a static hover
- *  preview rather than each card's real matched connections, since computing the full
- *  Threads web for every card in a feed grid would mean a Nexus query and article-pool
- *  scan per card. The real, per-article web only gets built once the reader is actually
- *  on the article page (see components/ThreadsWeb.tsx). */
-const THREADS_PREVIEW_LABELS = ["Connected Research", "Clinical Implications", "Related Guidelines", "Relevant Techniques"];
-
+/** A direct link into the article's real Threads web (see components/ThreadsWeb.tsx) —
+ *  no preview of what it contains, since computing the full web for every card in a feed
+ *  grid would mean a Nexus query and article-pool scan per card. */
 function ThreadsTeaser({ articleId }: { articleId: string }) {
   const router = useRouter();
   return (
-    <>
-      <button
-        type="button"
-        className="card-threads-teaser"
-        onClick={(e) => {
-          e.stopPropagation();
-          router.push(`/article/${articleId}?threads=1`);
-        }}
-      >
-        <NetworkIcon size={12} />
-        Explore Connections
-        <ChevronRightIcon size={11} />
-      </button>
-      <div className="card-threads-preview">
-        {THREADS_PREVIEW_LABELS.map((l) => (
-          <span key={l} className="card-threads-preview-chip">
-            {l}
-          </span>
-        ))}
-      </div>
-    </>
+    <button
+      type="button"
+      className="card-threads-teaser"
+      onClick={(e) => {
+        e.stopPropagation();
+        router.push(`/article/${articleId}?threads=1`);
+      }}
+    >
+      <NetworkIcon size={12} />
+      Explore Connections
+      <ChevronRightIcon size={11} />
+    </button>
   );
 }
 
