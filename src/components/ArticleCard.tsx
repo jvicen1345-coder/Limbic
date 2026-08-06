@@ -28,8 +28,20 @@ function ThreadsTeaser({ articleId }: { articleId: string }) {
   );
 }
 
+/** Every source already tags an article with its specialty and type label as the first two
+ *  entries (see lib/pubmed.ts, lib/news-live.ts) — both already shown elsewhere on the card
+ *  (the specialty pill, the type in the kicker), so showing them again here would just be
+ *  noise. What's left after excluding those is the genuinely new context: the specific
+ *  matched keywords (e.g. "ACL", "Medicare", "FDA Clearance") that classify() found. Capped
+ *  at 2 so a keyword-heavy article doesn't overrun the card. */
+function extraContextTags(article: DecoratedArticle): string[] {
+  const shown = new Set([article.specialtyLabel, article.typeLabel]);
+  return article.tags.filter((t) => !shown.has(t)).slice(0, 2);
+}
+
 export function ArticleCard({ article }: { article: DecoratedArticle }) {
   const router = useRouter();
+  const extraTags = extraContextTags(article);
   return (
     <div
       className="card elev-sm card-hoverable"
@@ -56,6 +68,15 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
           {article.source} · {article.readMins} min
         </span>
       </div>
+      {extraTags.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+          {extraTags.map((t) => (
+            <span key={t} className="tag tag-outline" style={{ fontSize: 10.5 }}>
+              {t}
+            </span>
+          ))}
+        </div>
+      )}
       <ThreadsTeaser articleId={article.id} />
     </div>
   );

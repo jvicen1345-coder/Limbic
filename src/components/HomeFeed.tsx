@@ -139,10 +139,30 @@ export function HomeFeed({
   // guideline articles first (rank order and "is a medical source" correlate heavily,
   // since evidence quality feeds into ranking). Its picture is allowed to repeat one the
   // grid ends up using too; the reader explicitly doesn't mind that repetition.
-  const heroPool = useMemo(
+  const rawHeroPool = useMemo(
     () => withoutNews.filter((a) => HERO_ELIGIBLE_TYPES.includes(a.type)).slice(0, HERO_SIZE),
     [withoutNews]
   );
+
+  // RefreshHomeFeedButton is meant to only change the grid, never the hero — but switching
+  // the type tab or arriving via a different Limbic Agent gap-topic link (LimbicAgentCard.tsx)
+  // is a genuine "show me something else" request and should still update it. This pins
+  // rawHeroPool per (filter, topicParam): setting state directly during render — React's
+  // documented pattern for "adjusting state when a prop changes" — re-pins the moment the
+  // key itself changes, but a refresh alone (articles changes, filter/topicParam don't)
+  // never re-enters that branch, so pinnedHeroPool stays exactly what it was.
+  const heroPinKey = `${filter}:${topicParam ?? ""}`;
+  const [pinnedHeroKey, setPinnedHeroKey] = useState(heroPinKey);
+  const [pinnedHeroPool, setPinnedHeroPool] = useState(rawHeroPool);
+  if (heroPinKey !== pinnedHeroKey) {
+    setPinnedHeroKey(heroPinKey);
+    setPinnedHeroPool(rawHeroPool);
+  }
+  // Falls back to the fresh pool on the rare batch where the very first pin for this key
+  // came up empty (no eligible research/guideline articles yet) — pinnedHeroPool otherwise
+  // never updates again until the key changes, so this keeps trying each refresh instead
+  // of permanently showing no hero for the rest of that key's lifetime.
+  const heroPool = pinnedHeroPool.length > 0 ? pinnedHeroPool : rawHeroPool;
 
   // Normally GRID_SIZE (1 hero + 6 grid = MIN_HOME_CARDS) — but if heroPool came up empty
   // (nothing eligible this batch — see HERO_ELIGIBLE_TYPES above), the hero block doesn't
@@ -158,13 +178,28 @@ export function HomeFeed({
   const heroIds = useMemo(() => new Set(heroPool.map((a) => a.id)), [heroPool]);
   const gridArticles = useMemo(() => {
     const seenImages = new Set<string>();
+    const pickedIds = new Set<string>();
     const picked: DecoratedArticle[] = [];
     for (const a of withoutNews) {
       if (picked.length >= gridTarget) break;
       if (heroIds.has(a.id)) continue;
       if (!a.image || seenImages.has(a.image)) continue;
       seenImages.add(a.image);
+      pickedIds.add(a.id);
       picked.push(a);
+    }
+    // gridTarget is a hard floor, not a best-effort target — distinct images are the ideal
+    // (the loop above), but a thin/unlucky batch that can't find gridTarget distinct ones
+    // must still hit the floor, so this backfills from whatever's left (still never the
+    // hero, never already-picked) allowing an image repeat rather than showing fewer cards
+    // than guaranteed.
+    if (picked.length < gridTarget) {
+      for (const a of withoutNews) {
+        if (picked.length >= gridTarget) break;
+        if (heroIds.has(a.id) || pickedIds.has(a.id) || !a.image) continue;
+        pickedIds.add(a.id);
+        picked.push(a);
+      }
     }
     return picked;
   }, [withoutNews, heroIds, gridTarget]);
