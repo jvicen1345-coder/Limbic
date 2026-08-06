@@ -244,6 +244,7 @@ export default async function HomePage() {
             rotationStartDate: user.rotationStartDate,
             rotationEndDate: user.rotationEndDate,
             graduationDate: user.graduationDate,
+            practiceStartDate: user.practiceStartDate,
           }}
           platformEvents={ceEvents}
         />

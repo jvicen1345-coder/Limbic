@@ -1,34 +1,17 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { LimbicCalendarWidgetClient } from "@/components/LimbicCalendarWidgetClient";
-import { dateToLocalIso, daysRemainingLabel, type CalDot } from "@/lib/limbic-calendar";
+import {
+  dateToLocalIso,
+  daysRemainingLabel,
+  isEventPost,
+  PERSONAL_DEADLINE_FIELDS,
+  type CalDot,
+  type ProfessionalDateField,
+} from "@/lib/limbic-calendar";
 import { todayLocalDateStr } from "@/lib/today";
 
-/** The orange-dot personal deadlines (see the Profile "Professional Dates" section,
- *  app/actions/profile.ts updateProfessionalDates) — one entry per field, in the order
- *  they should list if more than one lands on the same day. `title` is the noun shown as
- *  the popup's bold heading; `verb` builds the "License expires in 23 days"-style
- *  countdown sentence below it (title alone wouldn't read as a sentence for every field —
- *  "CEU Deadline in 10 days" is off, "CEU deadline is in 10 days" reads right). */
-const PERSONAL_DEADLINE_FIELDS: { field: keyof PersonalDates; title: string; verb: string }[] = [
-  { field: "npteExamDate", title: "NPTE Exam", verb: "NPTE Exam is" },
-  { field: "licenseExpiration", title: "License Expiration", verb: "License expires" },
-  { field: "ceuDeadline", title: "CEU Deadline", verb: "CEU deadline is" },
-  { field: "certificationExpiry", title: "Specialty Certification Expiry", verb: "Certification expires" },
-  { field: "rotationStartDate", title: "Clinical Rotation Start", verb: "Rotation starts" },
-  { field: "rotationEndDate", title: "Clinical Rotation End", verb: "Rotation ends" },
-  { field: "graduationDate", title: "Graduation", verb: "Graduation is" },
-];
-
-interface PersonalDates {
-  npteExamDate: Date | null;
-  licenseExpiration: Date | null;
-  ceuDeadline: Date | null;
-  certificationExpiry: Date | null;
-  rotationStartDate: Date | null;
-  rotationEndDate: Date | null;
-  graduationDate: Date | null;
-}
+type PersonalDates = Record<ProfessionalDateField, Date | null>;
 
 export interface PlatformEvent {
   id: string;
@@ -36,27 +19,6 @@ export interface PlatformEvent {
   title: string;
   source: string;
   readMins: number;
-}
-
-/** NexusPost has no event-tag field (see prisma/schema.prisma) — this keyword heuristic
- *  stands in for one, matching the same "classify by keyword" pattern lib/news-live.ts
- *  already uses for CE articles. A real tag field would be a more accurate follow-up. */
-const COMMUNITY_EVENT_KEYWORDS = [
-  "webinar",
-  "conference",
-  "meetup",
-  "meet-up",
-  "workshop",
-  "seminar",
-  "symposium",
-  "summit",
-  "networking event",
-  "csm",
-];
-
-function isEventPost(body: string, articleTitle: string | null): boolean {
-  const text = `${body} ${articleTitle ?? ""}`.toLowerCase();
-  return COMMUNITY_EVENT_KEYWORDS.some((kw) => text.includes(kw));
 }
 
 export async function LimbicCalendarWidget({

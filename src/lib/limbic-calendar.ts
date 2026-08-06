@@ -46,4 +46,54 @@ export function daysRemainingLabel(iso: string): string {
   return `in ${days} day${days === 1 ? "" : "s"}`;
 }
 
+/** Same idea as daysRemainingLabel, phrased for the full /calendar page's detail panel
+ *  ("23 days remaining" / "Past due") instead of the sidebar widget's inline-sentence
+ *  phrasing — kept as a separate function rather than a shared one with a `style` flag so
+ *  neither caller has to know the other's wording exists. */
+export function daysRemainingOrPastDue(iso: string): string {
+  const days = daysUntil(iso);
+  if (days === 0) return "Today";
+  if (days < 0) return "Past due";
+  return `${days} day${days === 1 ? "" : "s"} remaining`;
+}
+
 export const WARNING_WINDOW_DAYS = 30;
+
+/** The orange-pill/dot personal deadlines (see the Profile "Professional Dates" section,
+ *  app/actions/profile.ts updateProfessionalDates) — one entry per User date field, shared
+ *  by the sidebar LimbicCalendarWidget and the full /calendar page so both list exactly
+ *  the same fields with exactly the same wording. `title` is the noun shown as a heading;
+ *  `verb` builds a "License expires in 23 days"-style countdown sentence (title alone
+ *  wouldn't read as a sentence for every field — "CEU Deadline in 10 days" is off, "CEU
+ *  deadline is in 10 days" reads right). */
+export type ProfessionalDateField =
+  | "npteExamDate"
+  | "ceuDeadline"
+  | "licenseExpiration"
+  | "certificationExpiry"
+  | "rotationStartDate"
+  | "rotationEndDate"
+  | "graduationDate"
+  | "practiceStartDate";
+
+export const PERSONAL_DEADLINE_FIELDS: { field: ProfessionalDateField; title: string; verb: string }[] = [
+  { field: "npteExamDate", title: "NPTE Exam", verb: "NPTE Exam is" },
+  { field: "licenseExpiration", title: "License Renewal", verb: "License expires" },
+  { field: "ceuDeadline", title: "CEU Deadline", verb: "CEU deadline is" },
+  { field: "certificationExpiry", title: "Certification Expires", verb: "Certification expires" },
+  { field: "rotationStartDate", title: "Rotation Starts", verb: "Rotation starts" },
+  { field: "rotationEndDate", title: "Rotation Ends", verb: "Rotation ends" },
+  { field: "graduationDate", title: "Graduation", verb: "Graduation is" },
+  { field: "practiceStartDate", title: "Practice Anniversary", verb: "Practice anniversary is" },
+];
+
+/** NexusPost has no event-tag field (see prisma/schema.prisma) — this keyword heuristic
+ *  stands in for one, matching the same "classify by keyword" pattern lib/news-live.ts
+ *  already uses for CE articles. Shared by the sidebar widget and the full /calendar page
+ *  so a post never counts as an event on one and not the other. */
+export const COMMUNITY_EVENT_KEYWORDS = ["webinar", "conference", "csm", "symposium", "event", "seminar"];
+
+export function isEventPost(body: string, articleTitle: string | null): boolean {
+  const text = `${body} ${articleTitle ?? ""}`.toLowerCase();
+  return COMMUNITY_EVENT_KEYWORDS.some((kw) => text.includes(kw));
+}
