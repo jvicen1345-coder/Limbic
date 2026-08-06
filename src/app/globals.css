@@ -22,7 +22,7 @@
      a blue tint. --color-accent/--color-accent-2 are deliberately untouched here: blue
      stays reserved for interactive elements (buttons, active states, links) exactly as
      before, just no longer doubling as the page's general surface color. */
-  --color-bg: #fafaf8;
+  --color-bg: #f8f7f5;
   --color-surface: #ffffff;
   --color-text: #14213d;
   --color-accent: #3b6fe0;
@@ -262,6 +262,11 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
    ArticleCard.tsx/HeroArticleCard, the only components that add this class alongside .card. */
 .card.card-hoverable:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(20, 10, 0, 0.11);
+}
+/* Same light-mode-only reasoning as .card.elev-* below — dark mode keeps its own
+   pre-existing (already warm-black-based) hover shadow instead of this literal rgba. */
+html[data-theme="dark"] .card.card-hoverable:hover {
   box-shadow: var(--shadow-lg);
 }
 .card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
@@ -277,6 +282,24 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
 .elev-sm { box-shadow: var(--shadow-sm); }
 .elev-md { box-shadow: var(--shadow-md); }
 .elev-lg { box-shadow: var(--shadow-lg); }
+/* Every real card (article cards, dashboard metric tiles, Limbic Agent card, Continue
+   Reading card, sidebar cards, …) gets this same flat warm shadow instead of whichever
+   --shadow-sm/md/lg tier it happened to use — higher specificity than the bare .elev-*
+   rules above (two classes vs one) so it wins regardless of source order, and scoped to
+   .card specifically so non-card elevation (the Topic Browser dropdown, the mobile nav
+   drawer, message bubbles, the active pill-tab) keeps using the token scale untouched.
+   Light-mode only: the literal rgba here is tuned for a light card on a light page, and
+   would be nearly invisible (or just wrong) on dark mode's navy cards — those keep the
+   existing token-based shadow instead, one flat tier to match the same "single shadow"
+   intent. */
+.card.elev-sm, .card.elev-md, .card.elev-lg {
+  box-shadow: 0 2px 12px rgba(20, 10, 0, 0.07);
+}
+html[data-theme="dark"] .card.elev-sm,
+html[data-theme="dark"] .card.elev-md,
+html[data-theme="dark"] .card.elev-lg {
+  box-shadow: var(--shadow-sm);
+}
 
 /* — Home hero card's photo-led layout (see components/ArticleCard.tsx HeroArticleCard) —
    title/source/evidence/read-time/date all sit directly on the image, above a bottom
@@ -490,6 +513,11 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   flex-direction: column;
   gap: 4px;
   padding: 24px 16px;
+  /* Explicit, rather than inheriting .app-root's --color-bg like it used to (before that
+     token and the sidebar's own background were the same value anyway) — now that the
+     page background is a step warmer/darker than card surfaces, the sidebar needs its own
+     white to stay visually with the cards, not the page behind them. */
+  background: var(--color-surface);
   border-right: 1px solid var(--color-neutral-200);
   height: 100vh;
   overflow-y: auto;
@@ -501,9 +529,12 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  /* Warmer medium gray instead of the stark --color-text — section labels are structural
-     chrome, not content, so they read better a step quieter than the nav links below them. */
-  color: var(--color-neutral-600);
+  /* A literal warm medium grey rather than the (navy-hued, per-theme-flipped)
+     --color-neutral-600 token — section labels are structural chrome, not content, so
+     they read better a step quieter than the nav links below them. One value for both
+     themes: #8a8075 sits close enough to mid-lightness that it reads clearly against
+     both the light and dark page backgrounds without needing its own dark-mode variant. */
+  color: #8a8075;
   margin: 14px 0 2px;
   padding: 0 12px;
 }
