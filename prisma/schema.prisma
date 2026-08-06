@@ -321,7 +321,7 @@ model DailyCompletion {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  kind      String // "wordle" | "boardQuestion" | "boardTerm"
+  kind      String // "wordle" | "boardQuestion" | "boardTerm" | "crossword"
   dateKey   String
   createdAt DateTime @default(now())
 
@@ -331,6 +331,12 @@ model DailyCompletion {
 
   // boardQuestion-specific.
   selectedIndex Int?
+
+  // crossword-specific — the full 5x5 grid of what the reader has typed so far ("" for a
+  // black cell or one they haven't filled in yet), so an in-progress solve survives a
+  // refresh the same way Wordle's guesses do. `status` above doubles for this kind too
+  // ("won" once every cell matches the solution — there's no "lost" state, unlike Wordle).
+  crosswordCells Json? // string[][]
 
   elapsedSeconds Int?
 

@@ -55,3 +55,22 @@ export async function recordBoardTermRevealAction(dateKey: string, elapsedSecond
   ]);
   revalidatePath("/boards");
 }
+
+/** Persists a day's Mini Crossword progress/result — same per-user, survives-a-refresh
+ *  reasoning as recordWordleCompletionAction above. Called on every cell edit, not just
+ *  completion. `cells` is the full 5x5 grid of what the reader has typed so far. */
+export async function recordCrosswordCompletionAction(
+  dateKey: string,
+  cells: string[][],
+  status: "playing" | "won",
+  elapsedSeconds?: number
+) {
+  const user = await getCurrentUser();
+  if (!user) return;
+  await prisma.dailyCompletion.upsert({
+    where: { userId_kind_dateKey: { userId: user.id, kind: "crossword", dateKey } },
+    create: { userId: user.id, kind: "crossword", dateKey, crosswordCells: cells, status, elapsedSeconds },
+    update: { crosswordCells: cells, status, elapsedSeconds },
+  });
+  revalidatePath("/crossword");
+}
