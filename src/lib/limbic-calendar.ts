@@ -19,8 +19,8 @@ export interface CalDot {
 
 export const CAL_DOT_KIND_LABEL: Record<CalDotKind, string> = {
   personal: "Personal Deadline",
-  platform: "Platform Event",
-  community: "Community Event",
+  platform: "PT Event",
+  community: "Limbic Event",
 };
 
 /** Same local-clock convention as todayLocalDateStr, for a stored DateTime value rather

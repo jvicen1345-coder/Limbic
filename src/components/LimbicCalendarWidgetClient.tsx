@@ -15,7 +15,7 @@ function Legend() {
         <div key={kind} style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <span className={`limbic-cal-dot limbic-cal-dot-${kind}`} />
           <span style={{ fontSize: 9.5, color: "var(--color-neutral-700)" }}>
-            {kind === "personal" ? "Personal" : kind === "platform" ? "Platform" : "Community"}
+            {kind === "personal" ? "Personal" : kind === "platform" ? "PT Events" : "Limbic Events"}
           </span>
         </div>
       ))}
