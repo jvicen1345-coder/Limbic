@@ -506,3 +506,96 @@ export function BellIcon(props: IconProps) {
     </Svg>
   );
 }
+
+/** Limbic Vitals' nav icon — a heartbeat/pulse line, the conventional "vitals" mark. */
+export function ActivityIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M22 12h-4l-3 8-4-16-3 8H2" />
+    </Svg>
+  );
+}
+
+/** Nutrition's nav icon — a simple apple silhouette. */
+export function AppleIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 7c-3 0-6 2.5-6 7 0 4 2.5 8 5 8 1.2 0 1.8-.6 3-.6s1.8.6 3 .6c2.2 0 4.5-3.5 4.5-7 0-3.5-2.3-6-5-6-1 0-1.7.3-2.5.6" />
+      <path d="M12 7c0-2 1.2-4 3-4.5" />
+    </Svg>
+  );
+}
+
+/** Limbic Games hub — Daily Term's card icon: four letter tiles spelling "WORD", echoing
+ *  the tile look of the actual game (see .wordle-tile-* in globals.css). Custom 64x64
+ *  markup rather than the generic outline Svg wrapper, since this needs filled colored
+ *  tiles + letters, not a single-stroke glyph. */
+export function DailyTermIcon({ size = 56, className, style }: IconProps) {
+  const tiles = [
+    { letter: "W", x: 2, y: 24, fill: "var(--color-accent)" },
+    { letter: "O", x: 17, y: 15, fill: "var(--color-accent-2)" },
+    { letter: "R", x: 32, y: 15, fill: "var(--color-accent-2)" },
+    { letter: "D", x: 47, y: 24, fill: "var(--color-accent)" },
+  ];
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" className={className} style={style} role="img" aria-label="Daily Term">
+      {tiles.map((t) => (
+        <g key={t.letter}>
+          <rect x={t.x} y={t.y} width="15" height="15" rx="3.5" fill={t.fill} />
+          <text x={t.x + 7.5} y={t.y + 10.8} textAnchor="middle" fontSize="9" fontWeight="700" fill="#fff">
+            {t.letter}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+/** Limbic Games hub — Mini Crossword's card icon: a small 5x5 grid with a sparse block
+ *  pattern, standing in for a filled-in crossword without needing real clue data. */
+export function MiniCrosswordIcon({ size = 56, className, style }: IconProps) {
+  const filled = new Set(["0,2", "1,0", "2,2", "2,4", "3,1", "4,2"]);
+  const cell = 10;
+  const gap = 1.5;
+  const start = 4;
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" className={className} style={style} role="img" aria-label="Mini Crossword">
+      {Array.from({ length: 5 }, (_, row) =>
+        Array.from({ length: 5 }, (_, col) => {
+          const x = start + col * (cell + gap);
+          const y = start + row * (cell + gap);
+          const isFilled = filled.has(`${row},${col}`);
+          return (
+            <rect
+              key={`${row}-${col}`}
+              x={x}
+              y={y}
+              width={cell}
+              height={cell}
+              rx="1.5"
+              fill={isFilled ? "var(--color-accent-700)" : "var(--color-accent-100)"}
+              stroke="var(--color-accent-300)"
+              strokeWidth="1"
+            />
+          );
+        })
+      )}
+    </svg>
+  );
+}
+
+/** Limbic Games hub — Case of the Day's card icon: a clipboard (the patient case) with a
+ *  stethoscope draped over it. */
+export function CaseOfDayIcon({ size = 56, className, style }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className} style={style} role="img" aria-label="Case of the Day">
+      <rect x="12" y="10" width="30" height="42" rx="4" fill="var(--color-accent-100)" stroke="var(--color-accent-700)" strokeWidth="2.5" />
+      <rect x="21" y="6" width="12" height="8" rx="2" fill="var(--color-accent-700)" />
+      <path d="M18 25h18" stroke="var(--color-accent-700)" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M18 32h18" stroke="var(--color-accent-700)" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M18 39h10" stroke="var(--color-accent-700)" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M38 30v10a7 7 0 0 0 14 0v-3" stroke="var(--color-accent-2)" strokeWidth="2.75" strokeLinecap="round" />
+      <circle cx="52" cy="37" r="3.2" fill="var(--color-accent-2)" />
+    </svg>
+  );
+}

@@ -126,6 +126,8 @@ model User {
   boardActivity       BoardActivity[]
   dailyCompletions    DailyCompletion[]
   calendarEvents      UserCalendarEvent[]
+  vitalsProfile       VitalsProfile?
+  vitalsLogs          VitalsLog[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -260,6 +262,39 @@ model UserCalendarEvent {
   type      String
   notes     String?
   reminder  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// Limbic Vitals (see app/(app)/wellness/vitals/page.tsx) — general wellness tracking, not
+// medical advice or condition-specific. VitalsProfile is the reader's self-reported body
+// metrics (one row per user); VitalsLog is one row per logged activity, aggregated
+// client-side into the weekly bar chart rather than pre-summarized here, same "store the
+// raw rows, derive views on read" approach as ReadArticle/BoardActivity elsewhere in this
+// schema.
+model VitalsProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  age           Int?
+  heightFeet    Int?
+  heightInches  Int?
+  weightLbs     Float?
+  biologicalSex String?
+  activityLevel String?
+  wellnessGoal  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model VitalsLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime
+  category  String // "cardio" | "strength" | "mobility" | "mindfulness"
+  minutes   Int
+  activity  String
+  notes     String?
   createdAt DateTime @default(now())
 }
 
