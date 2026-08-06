@@ -406,7 +406,10 @@ html[data-theme="dark"] .card.elev-lg {
   border: 1px solid var(--color-neutral-200);
 }
 .dashboard-metric-tile .card-kicker {
-  color: var(--color-neutral-700);
+  /* A step darker than the neutral-700 every other .card-kicker uses — small (9.5px) and
+     all-caps compounds low contrast into genuinely hard to read, more than the rest of
+     this app's kicker labels tend to be. */
+  color: var(--color-neutral-800);
   font-size: 9.5px;
   letter-spacing: 0.03em;
   white-space: nowrap;
