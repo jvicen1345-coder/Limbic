@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ChevronRightIcon } from "@/components/icons";
+import { ChevronRightIcon, CheckCircleIcon, ZapIcon } from "@/components/icons";
+import { CountUp } from "@/components/CountUp";
 
 export interface DailyDashboardData {
   greeting: string;
@@ -21,6 +22,9 @@ function MetricTile({
   value,
   href,
   upToDateWhenZero = false,
+  zeroMessage,
+  zeroIcon,
+  animateValue = false,
 }: {
   label: string;
   title: string;
@@ -31,8 +35,18 @@ function MetricTile({
    *  checkmark instead. Opt-in per tile since it wouldn't make sense for a streak, an
    *  hours total, or an unfinished count (see DailyDashboard's own tile list below). */
   upToDateWhenZero?: boolean;
+  /** A different empty-state treatment for tiles where "0" is a normal, non-alarming
+   *  state worth a short encouraging note rather than a bare number — e.g. Day streak's
+   *  "Start your streak today" or Unfinished's "All caught up". Ignored when
+   *  upToDateWhenZero already handles zero for this tile (Studies/Guidelines). */
+  zeroMessage?: string;
+  zeroIcon?: React.ReactNode;
+  /** Counts up from 0 to `value` on mount instead of rendering it immediately — see
+   *  components/CountUp.tsx. Used just for Day streak below. */
+  animateValue?: boolean;
 }) {
   const isUpToDate = upToDateWhenZero && value === 0;
+  const isEncouragingZero = !upToDateWhenZero && !!zeroMessage && value === 0;
   return (
     <Link href={href} className="card elev-sm dashboard-metric-tile" title={title}>
       <div className="card-kicker">{label}</div>
@@ -41,8 +55,13 @@ function MetricTile({
           <span aria-hidden="true">✓</span>
           Up to date
         </div>
+      ) : isEncouragingZero ? (
+        <div className="dashboard-metric-zero">
+          {zeroIcon}
+          {zeroMessage}
+        </div>
       ) : (
-        <div className="dashboard-metric-value">{value}</div>
+        <div className="dashboard-metric-value">{animateValue ? <CountUp value={value} /> : value}</div>
       )}
     </Link>
   );
@@ -84,9 +103,24 @@ export function DailyDashboard({ data }: { data: DailyDashboardData }) {
         upToDateWhenZero
       />
       {data.showQuestionOfDay && <QuestionOfDayTile />}
-      <MetricTile label="Day streak" title="Current reading streak" value={data.streakDays} href="/profile" />
+      <MetricTile
+        label="Day streak"
+        title="Current reading streak"
+        value={data.streakDays}
+        href="/profile"
+        animateValue
+        zeroMessage="Start your streak today"
+        zeroIcon={<ZapIcon size={12} />}
+      />
       <MetricTile label="CE hours" title="CE hours completed" value={data.ceHoursCompleted} href="/profile" />
-      <MetricTile label="Unfinished" title="Saved articles still unread" value={data.savedUnfinishedCount} href="/saved/articles" />
+      <MetricTile
+        label="Unfinished"
+        title="Saved articles still unread"
+        value={data.savedUnfinishedCount}
+        href="/saved/articles"
+        zeroMessage="All caught up"
+        zeroIcon={<CheckCircleIcon size={12} />}
+      />
     </div>
   );
 }

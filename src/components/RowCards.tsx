@@ -78,7 +78,7 @@ export function ReviewCard({ article }: { article: DecoratedArticle }) {
   const router = useRouter();
   return (
     <div
-      className="card elev-sm"
+      className="card elev-sm card-hoverable"
       style={{ cursor: "pointer" }}
       onClick={() => router.push(`/article/${article.id}`)}
     >

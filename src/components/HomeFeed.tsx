@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { SearchIcon } from "@/components/icons";
-import { Chip } from "@/components/Chip";
+import { SlidingTabs } from "@/components/SlidingTabs";
 import { ArticleCard } from "@/components/ArticleCard";
 import { HeroFeed } from "@/components/HeroFeed";
 import { CalendarCard, type CeEvent } from "@/components/CalendarCard";
@@ -172,12 +172,8 @@ export function HomeFeed({
             <LimbicAgentCard insights={limbicAgentInsights} isPro={isPro} />
           </div>
 
-          <div className="filter-row" style={{ marginBottom: 20 }}>
-            {TYPE_TABS.map((t) => (
-              <Chip key={t.id} active={filter === t.id} onClick={() => setFilter(t.id)}>
-                {t.label}
-              </Chip>
-            ))}
+          <div style={{ marginBottom: 20 }}>
+            <SlidingTabs tabs={TYPE_TABS} active={filter} onChange={setFilter} />
           </div>
 
           {heroPool.length === 0 && gridArticles.length === 0 && (
@@ -189,7 +185,7 @@ export function HomeFeed({
           )}
 
           {heroPool.length > 0 && (
-            <div style={{ marginBottom: 8 }}>
+            <div style={{ marginBottom: 16 }}>
               <HeroFeed articles={heroPool} />
               {/* Mobile keeps "Latest news" right under the hero (its counterpart in the
                *  aside below is desktop-only — see .home-news-desktop/.home-hero-news-mobile
