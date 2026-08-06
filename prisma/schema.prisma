@@ -125,6 +125,7 @@ model User {
   readArticles        ReadArticle[]
   boardActivity       BoardActivity[]
   dailyCompletions    DailyCompletion[]
+  calendarEvents      UserCalendarEvent[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -241,6 +242,25 @@ model SavedArticle {
   tags      Json?
 
   @@unique([userId, articleId])
+}
+
+// A reader's own Limbic Calendar entries (see app/(app)/calendar/page.tsx) — both
+// manually added via the Add Event modal and "Save to my calendar" copies of a PT
+// platform event (see app/actions/calendar.ts). `type` is a free-text label chosen from
+// the Add Event modal's select (Personal | CE Event | Conference | Rotation | Other), not
+// an enum — same "no DB-level constraint, whitelist enforced in the server action"
+// approach as every other free-text field in this schema (see profile.ts's
+// PROFESSIONAL_DATE_FIELDS/EDITABLE_FIELDS pattern).
+model UserCalendarEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  date      DateTime
+  type      String
+  notes     String?
+  reminder  Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 // A bookmark on a Health & Wellness article or video, snapshot at save time — same

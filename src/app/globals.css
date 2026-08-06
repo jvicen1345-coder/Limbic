@@ -32,6 +32,22 @@
   --color-danger: #b0413e;
   --color-divider: color-mix(in srgb, #14213d 16%, transparent);
 
+  /* Two semantic hues the design system doesn't otherwise name — reusing the exact same
+     literal values already established elsewhere for the same meaning (CE evidence badge/
+     personal-deadline orange, RCT evidence badge green — see .tag-evidence-ce/-rct below)
+     rather than inventing new ones. Named as real tokens (like --color-danger above) so
+     the Limbic Calendar (sidebar widget and full /calendar page) never references a
+     literal hex directly — only var(--color-warn)/var(--color-success) — and both
+     automatically follow the dark-mode override further down. */
+  --color-warn: #e0741f;
+  --color-success: #1f9d5e;
+  /* A theme-invariant dimming scrim for the calendar detail panel's mobile backdrop and
+     the Add Event modal — same literal-black-tint approach .app-mobile-drawer-backdrop
+     already uses (a scrim dims whatever's behind it equally in either theme, unlike
+     foreground/surface colors, which is why this is the one place a flat black works
+     without a dark-mode override, same reasoning behind the --shadow-* tokens below). */
+  --color-scrim: color-mix(in srgb, #000 45%, transparent);
+
   --color-neutral-100: #fcfdfe;
   --color-neutral-200: #f2f5fa;
   --color-neutral-300: #d3deec;
@@ -100,6 +116,8 @@ html[data-theme="dark"] {
   --color-accent-2: #4dd1ee;
   --color-danger: #e08883;
   --color-divider: color-mix(in srgb, #e7ecf7 14%, transparent);
+  --color-warn: #f7ab6c;
+  --color-success: #7fe8b2;
 
   --color-neutral-100: #1a2136;
   --color-neutral-200: #212a44;
@@ -1358,36 +1376,278 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 
 /* — Limbic Calendar widget (see components/LimbicCalendarWidget.tsx) — one dot color per
-   event kind. Orange reuses the CE evidence badge's literal hue (see .tag-evidence-ce
-   above) for a consistent "orange = CE/deadline" meaning across the app; blue is the
-   existing accent token (platform = brand color); green has no existing token, so it
-   reuses the RCT evidence badge's literal hue for the same reason orange does. */
+   event kind, all driven by var() so a theme switch needs no component-level override:
+   orange/green route through --color-warn/--color-success (defined once, up top, next to
+   --color-danger), blue through the existing --color-accent. */
 .limbic-cal-dot {
   width: 5px;
   height: 5px;
   border-radius: 999px;
   flex-shrink: 0;
 }
-.limbic-cal-dot-personal { background: #e0741f; }
+.limbic-cal-dot-personal { background: var(--color-warn); }
 .limbic-cal-dot-platform { background: var(--color-accent); }
-.limbic-cal-dot-community { background: #1f9d5e; }
+.limbic-cal-dot-community { background: var(--color-success); }
 
 /* Subtle pulse on a personal-deadline dot within 30 days of today — a warning, not an
    alarm, so the glow is gentle (low peak opacity, slow cycle) rather than the sharper
-   pulses used for AI-agent "thinking" states elsewhere (see agent-node-loading-pulse). */
+   pulses used for AI-agent "thinking" states elsewhere (see agent-node-loading-pulse).
+   color-mix against var(--color-warn) rather than a literal rgba() so the glow's tint
+   follows the dark-mode override automatically, same as the dot itself. */
 @keyframes limbic-cal-dot-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 116, 31, 0.55); }
-  50% { box-shadow: 0 0 0 3px rgba(224, 116, 31, 0.22); }
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-warn) 55%, transparent); }
+  50% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-warn) 22%, transparent); }
 }
 .limbic-cal-dot-glow {
   animation: limbic-cal-dot-glow 2.2s ease-in-out infinite;
 }
-html[data-theme="dark"] .limbic-cal-dot-personal { background: #f7ab6c; }
-html[data-theme="dark"] .limbic-cal-dot-community { background: #7fe8b2; }
-html[data-theme="dark"] .limbic-cal-dot-glow {
-  animation-name: limbic-cal-dot-glow-dark;
+
+/* — Full /calendar page (see app/(app)/calendar/page.tsx, components/calendar/*) — reuses
+   .pill-tabs/.pill-tab (above) for the Month/Week/List view switch, .btn/.card/.input/
+   .field for everything that already has a component class, and var(--color-warn)/
+   --color-success/--color-accent (defined up top) for the three pill/dot colors so this
+   whole page needs zero literal hex of its own. */
+.cal-page-header { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+.cal-page-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.cal-page-title { font-family: var(--font-heading); font-size: 24px; margin: 0; }
+.cal-controls-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.cal-month-nav { display: flex; align-items: center; gap: 10px; }
+.cal-month-label { font-family: var(--font-heading); font-size: 15px; min-width: 168px; text-align: center; }
+.cal-view-toggle.pill-tabs { margin-bottom: 0; width: 260px; }
+.cal-filter-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.cal-filter-chip {
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  color: var(--color-neutral-700);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
 }
-@keyframes limbic-cal-dot-glow-dark {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(247, 171, 108, 0.5); }
-  50% { box-shadow: 0 0 0 3px rgba(247, 171, 108, 0.25); }
+.cal-filter-chip.active { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-bg); }
+
+/* Month view */
+.cal-month-fade { animation: cal-month-fade 150ms ease; }
+@keyframes cal-month-fade { from { opacity: 0; } to { opacity: 1; } }
+/* No minmax on the default (desktop) column width — the grid should fit the content
+   column exactly at normal widths, matching the spec's "scrolls horizontally on very
+   small screens" (i.e. only there, not on an ordinary desktop/tablet width). The
+   small-screen override below reintroduces a minmax floor, which is what actually forces
+   the scrollbar to appear once columns would otherwise get too narrow to read. */
+.cal-month-scroll { overflow-x: auto; }
+.cal-month-weekdays, .cal-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--color-divider);
+  border: 1px solid var(--color-divider);
 }
+.cal-month-weekdays { border-radius: var(--radius-md) var(--radius-md) 0 0; overflow: hidden; }
+.cal-month-grid { border-top: none; border-radius: 0 0 var(--radius-md) var(--radius-md); overflow: hidden; }
+.cal-month-weekday {
+  background: var(--color-surface);
+  padding: 8px;
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+}
+.cal-cell {
+  background: var(--color-surface);
+  min-height: 106px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  cursor: pointer;
+  text-align: left;
+  border: none;
+  font-family: inherit;
+  color: var(--color-text);
+}
+.cal-cell:hover { background: var(--color-neutral-100); }
+.cal-cell-empty { background: var(--color-bg); cursor: default; }
+.cal-cell-daynum { font-size: 12.5px; font-weight: 700; }
+.cal-cell-past .cal-cell-daynum { opacity: 0.5; }
+.cal-cell-today {
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 7%, var(--color-surface));
+}
+.cal-cell-today:hover { background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface)); }
+.cal-pill {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  line-height: 1.6;
+  padding: 1px 6px;
+  border-radius: 999px;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+}
+.cal-pill-personal { background: color-mix(in srgb, var(--color-warn) 18%, var(--color-surface)); color: var(--color-warn); }
+.cal-pill-platform { background: var(--color-accent-100); color: var(--color-accent-700); }
+.cal-pill-community { background: color-mix(in srgb, var(--color-success) 18%, var(--color-surface)); color: var(--color-success); }
+.cal-more-indicator { font-size: 10px; font-weight: 600; color: var(--color-neutral-700); padding: 0 6px; }
+
+@media (max-width: 640px) {
+  .cal-month-weekdays, .cal-month-grid { grid-template-columns: repeat(7, minmax(92px, 1fr)); }
+}
+
+/* Week view */
+/* Same reasoning as .cal-month-grid above — no minmax at the default width, so 7 columns
+   fit the content column exactly instead of forcing a scrollbar on an ordinary desktop
+   width; the minmax floor only kicks in under the small-screen override further down. */
+.cal-week-scroll { overflow-x: auto; padding-bottom: 4px; }
+.cal-week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+.cal-week-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.cal-week-col-header { text-align: center; padding: 8px 4px; border-radius: var(--radius-sm); background: var(--color-surface); box-shadow: var(--shadow-sm); }
+.cal-week-col-header.cal-cell-today { box-shadow: var(--shadow-sm), inset 0 0 0 2px var(--color-accent); }
+.cal-week-weekday { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-700); }
+.cal-week-daynum { font-family: var(--font-heading); font-size: 16px; }
+.cal-week-event-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  border-left: 3px solid var(--color-divider);
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  border-top: none; border-right: none; border-bottom: none;
+  color: var(--color-text);
+}
+.cal-week-event-card.cal-pill-personal { border-left-color: var(--color-warn); background: var(--color-surface); color: var(--color-text); }
+.cal-week-event-card.cal-pill-platform { border-left-color: var(--color-accent); background: var(--color-surface); color: var(--color-text); }
+.cal-week-event-card.cal-pill-community { border-left-color: var(--color-success); background: var(--color-surface); color: var(--color-text); }
+.cal-week-event-title { font-size: 12.5px; font-weight: 700; line-height: 1.3; }
+.cal-week-event-meta { font-size: 10.5px; color: var(--color-neutral-700); margin-top: 3px; }
+.cal-week-empty { font-size: 11px; color: var(--color-neutral-700); text-align: center; padding: 10px 0; }
+@media (max-width: 640px) {
+  .cal-week-grid { grid-template-columns: repeat(7, minmax(140px, 1fr)); }
+  .cal-week-col { min-width: 140px; }
+}
+
+/* List view */
+.cal-list-section { margin-bottom: 20px; }
+.cal-list-date-header { font-family: var(--font-heading); font-size: 14px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider); }
+.cal-list-event {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--color-divider);
+  cursor: pointer;
+  width: 100%;
+  background: none;
+  border-left: none; border-right: none; border-top: none;
+  text-align: left;
+  font-family: inherit;
+  color: var(--color-text);
+}
+.cal-list-event:last-child { border-bottom: none; }
+.cal-list-event:hover { background: var(--color-neutral-100); }
+.cal-list-event-dot { width: 8px; height: 8px; border-radius: 999px; margin-top: 5px; flex-shrink: 0; }
+.cal-list-event-title { font-size: 13.5px; font-weight: 700; }
+.cal-list-event-meta { font-size: 11.5px; color: var(--color-neutral-700); margin-top: 3px; }
+.cal-list-event-desc { font-size: 12px; color: var(--color-neutral-700); margin-top: 4px; }
+.cal-list-empty { text-align: center; padding: 50px 0; color: var(--color-neutral-700); font-size: 13px; }
+.cal-list-toggle-row { text-align: center; margin-top: 16px; }
+
+/* Right detail panel — slides in from the right on desktop, up from the bottom as a full
+   sheet on mobile (see the max-width:640px override below). Stays mounted for
+   --cal-panel-exit-ms after closing so the slide-out actually plays — see
+   lib/use-exit-animation.ts and components/calendar/CalendarDetailPanel.tsx. */
+.cal-panel-backdrop { position: fixed; inset: 0; background: var(--color-scrim); z-index: 40; }
+.cal-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 400px;
+  max-width: 92vw;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  z-index: 41;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  animation: cal-panel-in 250ms ease;
+}
+.cal-panel-closing { animation: cal-panel-out 250ms ease forwards; }
+@keyframes cal-panel-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes cal-panel-out { from { transform: translateX(0); } to { transform: translateX(100%); } }
+.cal-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--color-divider);
+  position: sticky;
+  top: 0;
+  background: var(--color-surface);
+}
+.cal-panel-title { font-family: var(--font-heading); font-size: 16px; }
+.cal-panel-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 20px; }
+.cal-panel-group-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 8px; }
+.cal-panel-event { background: var(--color-neutral-100); border-radius: var(--radius-lg); padding: 12px 14px; margin-bottom: 8px; }
+.cal-panel-event:last-child { margin-bottom: 0; }
+.cal-panel-event-title { font-family: var(--font-heading); font-size: 13.5px; line-height: 1.3; margin-bottom: 4px; }
+.cal-panel-event-meta { font-size: 11px; color: var(--color-neutral-700); }
+.cal-panel-empty { text-align: center; color: var(--color-neutral-700); font-size: 13px; padding: 30px 0; }
+
+@media (max-width: 640px) {
+  .cal-panel {
+    top: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: none;
+    max-height: 82vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    animation: cal-panel-in-mobile 250ms ease;
+  }
+  .cal-panel-closing { animation: cal-panel-out-mobile 250ms ease forwards; }
+  @keyframes cal-panel-in-mobile { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes cal-panel-out-mobile { from { transform: translateY(0); } to { transform: translateY(100%); } }
+}
+
+/* Add Event modal */
+.cal-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--color-scrim);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: cal-modal-fade-in 200ms ease;
+}
+.cal-modal-backdrop.cal-modal-closing { animation: cal-modal-fade-out 200ms ease forwards; }
+@keyframes cal-modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cal-modal-fade-out { from { opacity: 1; } to { opacity: 0; } }
+.cal-modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 420px;
+  max-width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 22px;
+}
+.cal-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.cal-modal-title { font-family: var(--font-heading); font-size: 17px; }
+.cal-modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+.cal-modal-reminder-row { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }

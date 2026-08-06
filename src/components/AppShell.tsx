@@ -28,6 +28,7 @@ import {
   GraduationCapIcon,
   NetworkIcon,
   LockIcon,
+  CalendarIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -161,6 +162,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
     <>
       <NavLink href="/" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
+      <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
       <NavLink href="/profile" icon={<ProfileIcon />} label="Profile" onNavigate={onNavigate} />
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Health & Wellness" onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
