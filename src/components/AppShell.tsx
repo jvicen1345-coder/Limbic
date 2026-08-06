@@ -27,6 +27,7 @@ import {
   CreditCardIcon,
   GraduationCapIcon,
   NetworkIcon,
+  LockIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -67,6 +68,7 @@ function NavLink({
   icon,
   label,
   badge,
+  locked = false,
   exact = true,
   bold = true,
   onNavigate,
@@ -76,6 +78,10 @@ function NavLink({
   label: string;
   /** A number renders as a count badge (hidden at 0); a string renders as-is (e.g. "Pro"). */
   badge?: number | string;
+  /** Same lock-badge treatment as LimbicAgentCard's "Ask Limbic Agent" button (icon + "PRO"
+   *  pill) — for a nav item that's shown to everyone but only fully usable by
+   *  PRO/studentTier accounts. Takes precedence over `badge` when both are set. */
+  locked?: boolean;
   /** False for sub-links whose section also covers nested/dynamic routes (e.g. a message
    *  thread at /nexus/messages/[userId] should still highlight "Messages"). */
   exact?: boolean;
@@ -92,10 +98,20 @@ function NavLink({
     <Link href={href} style={sidebarNavStyle(active, bold)} onClick={onNavigate}>
       {icon}
       {label}
-      {showBadge && (
-        <span className="tag tag-accent" style={{ marginLeft: "auto" }}>
-          {badge}
+      {locked ? (
+        <span
+          className="tag tag-accent"
+          style={{ marginLeft: "auto", background: "var(--color-bg)", display: "inline-flex", alignItems: "center", gap: 3 }}
+        >
+          <LockIcon size={10} />
+          PRO
         </span>
+      ) : (
+        showBadge && (
+          <span className="tag tag-accent" style={{ marginLeft: "auto" }}>
+            {badge}
+          </span>
+        )
       )}
     </Link>
   );
@@ -123,6 +139,9 @@ interface NavContentProps {
    *  anyone who doesn't qualify, same as the Pro-only sections below. Limbic Games
    *  (/wordle) is open to everyone regardless of this flag. */
   isStudent: boolean;
+  /** "none" | "studentPro" | "studentProBoards" (see prisma schema User.studentTier) — used
+   *  alongside isPro just for the LimbicPRO section's "Limbic Boards" link's lock badge. */
+  studentTier: string;
   aptaCount: number;
   nexusRequestCount: number;
   /** Called after any nav link is clicked — used to close the mobile drawer on navigation. */
@@ -131,7 +150,8 @@ interface NavContentProps {
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
+function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, studentTier, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
+  const hasBoardsAccess = studentTier !== "none" || isPro;
   return (
     <>
       <NavLink href="/" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
@@ -151,6 +171,14 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <div className="nav-section-label nav-section-label--brand">LimbicPRO</div>
       <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
       <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
+      <NavLink
+        href="/boards"
+        icon={<GraduationCapIcon />}
+        label="Limbic Boards"
+        locked={!hasBoardsAccess}
+        bold={false}
+        onNavigate={onNavigate}
+      />
       <NavLink href="/pro/membership" icon={<CreditCardIcon />} label="Membership" bold={false} onNavigate={onNavigate} />
 
       <div className="nav-section-label">Nexus</div>
@@ -176,12 +204,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <div className="nav-section-label">Saved</div>
       <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" bold={false} onNavigate={onNavigate} />
       <NavLink href="/saved/guidelines" icon={<CheckCircleIcon />} label="Saved Guidelines" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/saved/wellness" icon={<WellnessIcon />} label="Health & Wellness" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/saved/wellness" icon={<WellnessIcon />} label="Saved Wellness" bold={false} onNavigate={onNavigate} />
       <NavLink href="/saved/clips" icon={<FilmIcon />} label="Saved Clips" bold={false} onNavigate={onNavigate} />
 
       <div className="nav-section-label">Articles</div>
       <NavLink href="/apta-news" icon={<ZapIcon />} label="APTA News" badge={aptaCount} bold={false} onNavigate={onNavigate} />
-      {hasLicense && <NavLink href="/under-review" icon={<AlertCircleIcon />} label="Under Review" bold={false} onNavigate={onNavigate} />}
+      {hasLicense && <NavLink href="/under-review" icon={<AlertCircleIcon />} label="Retracted Articles" bold={false} onNavigate={onNavigate} />}
 
       {hasLicense && (
         <>
@@ -214,6 +242,7 @@ export interface AppShellProps {
   hasLicense: boolean;
   isPro: boolean;
   isStudent: boolean;
+  studentTier: string;
   aptaCount: number;
   nexusRequestCount: number;
   savedCount: number;
@@ -227,13 +256,14 @@ export function AppShell({
   hasLicense,
   isPro,
   isStudent,
+  studentTier,
   aptaCount,
   nexusRequestCount,
   savedCount,
   children,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, aptaCount, nexusRequestCount };
+  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, studentTier, aptaCount, nexusRequestCount };
 
   return (
     <div className="app-root">
