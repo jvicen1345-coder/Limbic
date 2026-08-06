@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { SearchIcon } from "@/components/icons";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { SearchIcon, XIcon } from "@/components/icons";
+import { slugifyTopic } from "@/lib/topic-slug";
 import { SlidingTabs } from "@/components/SlidingTabs";
 import { ArticleCard } from "@/components/ArticleCard";
 import { HeroFeed } from "@/components/HeroFeed";
@@ -88,10 +90,39 @@ export function HomeFeed({
   const showWidget = (id: string) => !hiddenWidgets.includes(id);
   const [filter, setFilter] = useState<ArticleType | "all">("all");
 
-  const filtered = useMemo(
-    () => (filter === "all" ? articles : articles.filter((a) => a.type === filter)),
-    [articles, filter]
-  );
+  // Set by clicking a gap-topic row on the Limbic Agent card (see LimbicAgentCard.tsx,
+  // which links to /?topic=<slug>) — pre-filters the feed to that topic on arrival. Read
+  // straight from the URL (not local state initialized once) so clicking a *different*
+  // gap-topic row while already on Home updates the filter too, not just the first visit.
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const topicParam = searchParams.get("topic");
+  const clearTopicFilter = () => router.replace(pathname);
+
+  // The URL only carries the slug (e.g. "back-pain") — this recovers the real-cased label
+  // ("Back Pain") to show in the pill by finding whichever tag/specialty among the current
+  // articles actually slugifies to it, falling back to a best-effort de-slugify (title
+  // case, hyphens back to spaces) on the off chance nothing in this batch matches.
+  const topicDisplayLabel = useMemo(() => {
+    if (!topicParam) return null;
+    for (const a of articles) {
+      const match = [...a.tags, a.specialtyLabel].find((t) => slugifyTopic(t) === topicParam);
+      if (match) return match;
+    }
+    return topicParam
+      .split("-")
+      .map((w) => (w.length > 0 ? w[0].toUpperCase() + w.slice(1) : w))
+      .join(" ");
+  }, [articles, topicParam]);
+
+  const filtered = useMemo(() => {
+    const byType = filter === "all" ? articles : articles.filter((a) => a.type === filter);
+    if (!topicParam) return byType;
+    return byType.filter(
+      (a) => a.tags.some((t) => slugifyTopic(t) === topicParam) || slugifyTopic(a.specialtyLabel) === topicParam
+    );
+  }, [articles, filter, topicParam]);
 
   // Every visible card needs a real picture — no more falling back to a blank card just
   // to hit a count (see page.tsx's resolveHomeImages, which searches deeper into the
@@ -108,10 +139,30 @@ export function HomeFeed({
   // guideline articles first (rank order and "is a medical source" correlate heavily,
   // since evidence quality feeds into ranking). Its picture is allowed to repeat one the
   // grid ends up using too; the reader explicitly doesn't mind that repetition.
-  const heroPool = useMemo(
+  const rawHeroPool = useMemo(
     () => withoutNews.filter((a) => HERO_ELIGIBLE_TYPES.includes(a.type)).slice(0, HERO_SIZE),
     [withoutNews]
   );
+
+  // RefreshHomeFeedButton is meant to only change the grid, never the hero — but switching
+  // the type tab or arriving via a different Limbic Agent gap-topic link (LimbicAgentCard.tsx)
+  // is a genuine "show me something else" request and should still update it. This pins
+  // rawHeroPool per (filter, topicParam): setting state directly during render — React's
+  // documented pattern for "adjusting state when a prop changes" — re-pins the moment the
+  // key itself changes, but a refresh alone (articles changes, filter/topicParam don't)
+  // never re-enters that branch, so pinnedHeroPool stays exactly what it was.
+  const heroPinKey = `${filter}:${topicParam ?? ""}`;
+  const [pinnedHeroKey, setPinnedHeroKey] = useState(heroPinKey);
+  const [pinnedHeroPool, setPinnedHeroPool] = useState(rawHeroPool);
+  if (heroPinKey !== pinnedHeroKey) {
+    setPinnedHeroKey(heroPinKey);
+    setPinnedHeroPool(rawHeroPool);
+  }
+  // Falls back to the fresh pool on the rare batch where the very first pin for this key
+  // came up empty (no eligible research/guideline articles yet) — pinnedHeroPool otherwise
+  // never updates again until the key changes, so this keeps trying each refresh instead
+  // of permanently showing no hero for the rest of that key's lifetime.
+  const heroPool = pinnedHeroPool.length > 0 ? pinnedHeroPool : rawHeroPool;
 
   // Normally GRID_SIZE (1 hero + 6 grid = MIN_HOME_CARDS) — but if heroPool came up empty
   // (nothing eligible this batch — see HERO_ELIGIBLE_TYPES above), the hero block doesn't
@@ -127,16 +178,41 @@ export function HomeFeed({
   const heroIds = useMemo(() => new Set(heroPool.map((a) => a.id)), [heroPool]);
   const gridArticles = useMemo(() => {
     const seenImages = new Set<string>();
+    const pickedIds = new Set<string>();
     const picked: DecoratedArticle[] = [];
     for (const a of withoutNews) {
       if (picked.length >= gridTarget) break;
       if (heroIds.has(a.id)) continue;
       if (!a.image || seenImages.has(a.image)) continue;
       seenImages.add(a.image);
+      pickedIds.add(a.id);
       picked.push(a);
+    }
+    // gridTarget is a hard floor, not a best-effort target — distinct images are the ideal
+    // (the loop above), but a thin/unlucky batch that can't find gridTarget distinct ones
+    // must still hit the floor, so this backfills from whatever's left (still never the
+    // hero, never already-picked) allowing an image repeat rather than showing fewer cards
+    // than guaranteed.
+    if (picked.length < gridTarget) {
+      for (const a of withoutNews) {
+        if (picked.length >= gridTarget) break;
+        if (heroIds.has(a.id) || pickedIds.has(a.id) || !a.image) continue;
+        pickedIds.add(a.id);
+        picked.push(a);
+      }
     }
     return picked;
   }, [withoutNews, heroIds, gridTarget]);
+
+  // Arriving via a gap-topic link (see LimbicAgentCard.tsx) drops the reader at the top of
+  // the page same as any other Home visit — this carries them the rest of the way down to
+  // where the now-filtered results actually are, past the dashboard/Limbic Agent card
+  // they've already seen. Keyed on topicParam specifically (not e.g. a mount-only effect)
+  // so clicking a different gap-topic row while already on Home scrolls again too.
+  const feedSectionRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (topicParam) feedSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [topicParam]);
 
   return (
     <div className="home-pad">
@@ -172,7 +248,17 @@ export function HomeFeed({
             <LimbicAgentCard insights={limbicAgentInsights} isPro={isPro} />
           </div>
 
-          <div style={{ marginBottom: 20 }}>
+          <div ref={feedSectionRef} style={{ marginBottom: 20, scrollMarginTop: 90 }}>
+            {topicParam && topicDisplayLabel && (
+              <div className="topic-filter-pill">
+                <span>
+                  Showing results for: <strong>{topicDisplayLabel}</strong>
+                </span>
+                <button type="button" aria-label="Clear topic filter" onClick={clearTopicFilter}>
+                  <XIcon size={10} />
+                </button>
+              </div>
+            )}
             <SlidingTabs tabs={TYPE_TABS} active={filter} onChange={setFilter} />
           </div>
 

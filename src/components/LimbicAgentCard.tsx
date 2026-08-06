@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { NetworkIcon, ChevronRightIcon, LockIcon } from "@/components/icons";
+import { slugifyTopic } from "@/lib/topic-slug";
 import type { LimbicAgentInsights } from "@/lib/limbic-agent-insights";
 
 /** "...reviewed Orthopedic today" / "...in 1 day" / "...in 4 days" — 0 and 1 need their
@@ -65,7 +66,7 @@ export function LimbicAgentCard({ insights, isPro }: { insights: LimbicAgentInsi
                 n.recommendedArticle ? (
                   <Link
                     key={n.topic}
-                    href={`/article/${n.recommendedArticle.id}`}
+                    href={`/?topic=${slugifyTopic(n.topic)}`}
                     style={{
                       display: "flex",
                       alignItems: "center",

@@ -22,7 +22,7 @@
      a blue tint. --color-accent/--color-accent-2 are deliberately untouched here: blue
      stays reserved for interactive elements (buttons, active states, links) exactly as
      before, just no longer doubling as the page's general surface color. */
-  --color-bg: #fafaf8;
+  --color-bg: #f8f7f5;
   --color-surface: #ffffff;
   --color-text: #14213d;
   --color-accent: #3b6fe0;
@@ -262,6 +262,11 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
    ArticleCard.tsx/HeroArticleCard, the only components that add this class alongside .card. */
 .card.card-hoverable:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(20, 10, 0, 0.11);
+}
+/* Same light-mode-only reasoning as .card.elev-* below — dark mode keeps its own
+   pre-existing (already warm-black-based) hover shadow instead of this literal rgba. */
+html[data-theme="dark"] .card.card-hoverable:hover {
   box-shadow: var(--shadow-lg);
 }
 .card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
@@ -277,6 +282,24 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
 .elev-sm { box-shadow: var(--shadow-sm); }
 .elev-md { box-shadow: var(--shadow-md); }
 .elev-lg { box-shadow: var(--shadow-lg); }
+/* Every real card (article cards, dashboard metric tiles, Limbic Agent card, Continue
+   Reading card, sidebar cards, …) gets this same flat warm shadow instead of whichever
+   --shadow-sm/md/lg tier it happened to use — higher specificity than the bare .elev-*
+   rules above (two classes vs one) so it wins regardless of source order, and scoped to
+   .card specifically so non-card elevation (the Topic Browser dropdown, the mobile nav
+   drawer, message bubbles, the active pill-tab) keeps using the token scale untouched.
+   Light-mode only: the literal rgba here is tuned for a light card on a light page, and
+   would be nearly invisible (or just wrong) on dark mode's navy cards — those keep the
+   existing token-based shadow instead, one flat tier to match the same "single shadow"
+   intent. */
+.card.elev-sm, .card.elev-md, .card.elev-lg {
+  box-shadow: 0 2px 12px rgba(20, 10, 0, 0.07);
+}
+html[data-theme="dark"] .card.elev-sm,
+html[data-theme="dark"] .card.elev-md,
+html[data-theme="dark"] .card.elev-lg {
+  box-shadow: var(--shadow-sm);
+}
 
 /* — Home hero card's photo-led layout (see components/ArticleCard.tsx HeroArticleCard) —
    title/source/evidence/read-time/date all sit directly on the image, above a bottom
@@ -383,7 +406,10 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   border: 1px solid var(--color-neutral-200);
 }
 .dashboard-metric-tile .card-kicker {
-  color: var(--color-neutral-700);
+  /* A step darker than the neutral-700 every other .card-kicker uses — small (9.5px) and
+     all-caps compounds low contrast into genuinely hard to read, more than the rest of
+     this app's kicker labels tend to be. */
+  color: var(--color-neutral-800);
   font-size: 9.5px;
   letter-spacing: 0.03em;
   white-space: nowrap;
@@ -490,6 +516,11 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   flex-direction: column;
   gap: 4px;
   padding: 24px 16px;
+  /* Explicit, rather than inheriting .app-root's --color-bg like it used to (before that
+     token and the sidebar's own background were the same value anyway) — now that the
+     page background is a step warmer/darker than card surfaces, the sidebar needs its own
+     white to stay visually with the cards, not the page behind them. */
+  background: var(--color-surface);
   border-right: 1px solid var(--color-neutral-200);
   height: 100vh;
   overflow-y: auto;
@@ -501,9 +532,12 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  /* Warmer medium gray instead of the stark --color-text — section labels are structural
-     chrome, not content, so they read better a step quieter than the nav links below them. */
-  color: var(--color-neutral-600);
+  /* A literal warm medium grey rather than the (navy-hued, per-theme-flipped)
+     --color-neutral-600 token — section labels are structural chrome, not content, so
+     they read better a step quieter than the nav links below them. One value for both
+     themes: #8a8075 sits close enough to mid-lightness that it reads clearly against
+     both the light and dark page backgrounds without needing its own dark-mode variant. */
+  color: #8a8075;
   margin: 14px 0 2px;
   padding: 0 12px;
 }
@@ -849,6 +883,38 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   margin-bottom: -1px;
 }
 .sub-tab.active { color: var(--color-accent-700); border-bottom-color: var(--color-accent); }
+
+/* Home's topic-filter indicator (see components/HomeFeed.tsx) — shown above the type-
+   filter tabs when arriving via a Limbic Agent gap-topic link (/?topic=<slug>). Same light
+   accent-tinted pill as .tag-accent elsewhere, not a new color. */
+.topic-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+  font-size: 12.5px;
+  padding: 6px 8px 6px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+  animation: fade-in 0.3s ease;
+}
+.topic-filter-pill button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent-800);
+  cursor: pointer;
+}
+.topic-filter-pill button:hover {
+  background: color-mix(in srgb, var(--color-accent) 28%, transparent);
+}
 
 /* Home's type-filter row (see components/SlidingTabs.tsx) — same underline-tab look as
    .sub-tabs/.sub-tab above, but with one shared underline element that slides between
