@@ -405,19 +405,19 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 8.5px;
+  font-size: 12px;
   color: var(--color-neutral-500);
 }
 .dashboard-metric-uptodate span { color: #1f9d5e; }
 /* Day streak/Unfinished's own zero-state (see DailyDashboard.tsx's zeroMessage/zeroIcon) —
-   same quiet, small, muted treatment as .dashboard-metric-uptodate above, just without
-   that one's hardcoded green (a checkmark reading "up to date" earns green; "start your
-   streak today" isn't a status to celebrate the same way, just a nudge). */
+   same quiet, muted treatment as .dashboard-metric-uptodate above, just without that one's
+   hardcoded green (a checkmark reading "up to date" earns green; "start your streak
+   today" isn't a status to celebrate the same way, just a nudge). */
 .dashboard-metric-zero {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 8.5px;
+  font-size: 12px;
   color: var(--color-neutral-500);
 }
 @media (max-width: 799px) {
