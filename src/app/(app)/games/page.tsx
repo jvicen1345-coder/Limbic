@@ -1,41 +1,161 @@
 import Link from "next/link";
-import { GridIcon } from "@/components/icons";
+import { getCurrentUser } from "@/lib/session";
+import { prisma } from "@/lib/db";
+import { todayDateKey } from "@/lib/wordle-words";
+import {
+  GAMES,
+  GAME_KINDS,
+  DIFFICULTY_DOTS,
+  completionStateForStatus,
+  isFinishedStatus,
+  computeCurrentStreak,
+  computeBestStreak,
+  last7DateKeys,
+  type GameKind,
+  type CardCompletionState,
+} from "@/lib/games";
+import { DailyTermIcon, MiniCrosswordIcon, CaseOfDayIcon, CheckCircleIcon, LockIcon } from "@/components/icons";
 
-const GAMES = [
-  { href: "/wordle", title: "Daily Term", description: "Guess today's 5-letter health & wellness word in 6 tries." },
-  { href: "/crossword", title: "Mini Crossword", description: "A small 5x5 crossword, a new one each day." },
-];
+const GAME_ICON: Record<GameKind, (props: { size?: number }) => React.ReactNode> = {
+  wordle: DailyTermIcon,
+  crossword: MiniCrosswordIcon,
+  caseOfDay: CaseOfDayIcon,
+};
 
-export default function GamesPage() {
+const BUTTON_LABEL: Record<CardCompletionState, string> = {
+  "not-started": "Play Today",
+  "in-progress": "Continue",
+  completed: "Completed ✓",
+  locked: "Available Tomorrow",
+};
+
+export default async function GamesPage() {
+  const user = await getCurrentUser();
+  if (!user) return null;
+
+  const dateKey = todayDateKey();
+
+  const [todayRows, historyRows] = await Promise.all([
+    prisma.dailyCompletion.findMany({
+      where: { userId: user.id, kind: { in: GAME_KINDS }, dateKey },
+      select: { kind: true, status: true },
+    }),
+    prisma.dailyCompletion.findMany({
+      where: { userId: user.id, kind: { in: GAME_KINDS } },
+      select: { kind: true, dateKey: true, status: true },
+    }),
+  ]);
+
+  const todayStatusByKind = new Map(todayRows.map((r) => [r.kind, r.status]));
+  const finishedRows = historyRows.filter((r) => isFinishedStatus(r.status));
+  const finishedDateKeys = finishedRows.map((r) => r.dateKey);
+
+  const currentStreak = computeCurrentStreak(finishedDateKeys, dateKey);
+  const bestStreak = computeBestStreak(finishedDateKeys);
+  const totalCompleted = finishedRows.length;
+
+  const countByKind = new Map<string, number>();
+  for (const row of finishedRows) countByKind.set(row.kind, (countByKind.get(row.kind) ?? 0) + 1);
+  let favoriteGame: string | null = null;
+  let favoriteCount = 0;
+  for (const game of GAMES) {
+    const count = countByKind.get(game.kind) ?? 0;
+    if (count > favoriteCount) {
+      favoriteCount = count;
+      favoriteGame = game.title;
+    }
+  }
+
+  const week = last7DateKeys(dateKey);
+  const weekFinishedSet = new Set(finishedDateKeys);
+  const activeWeekDays = week.filter((d) => weekFinishedSet.has(d)).length;
+
+  const todayLabel = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+
   return (
-    <div className="screen-pad" style={{ maxWidth: 460, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Limbic Games</h1>
-      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>Pick a daily game.</p>
+    <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>
+      <div className="games-header">
+        <p className="games-header-date">{todayLabel}</p>
+        <h1 className="games-header-title">Limbic Games</h1>
+        {currentStreak > 0 && <div className="games-header-streak">🔥 {currentStreak} day streak</div>}
+        <p className="games-header-tagline">Your daily dose of clinical knowledge</p>
+      </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {GAMES.map((g) => (
-          <Link key={g.href} href={g.href} className="card elev-sm card-hoverable" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: "var(--radius-md)",
-                background: "var(--color-accent-100)",
-                color: "var(--color-accent-700)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <GridIcon size={18} />
-            </span>
-            <span>
-              <div style={{ fontFamily: "var(--font-heading)", fontSize: 15 }}>{g.title}</div>
-              <div style={{ fontSize: 12.5, color: "var(--color-neutral-700)", marginTop: 2 }}>{g.description}</div>
-            </span>
-          </Link>
-        ))}
+      <div className="games-grid">
+        {GAMES.map((game) => {
+          const Icon = GAME_ICON[game.kind];
+          const state = completionStateForStatus(todayStatusByKind.get(game.kind));
+          return (
+            <Link key={game.kind} href={game.href} className={`game-card game-card-${state}`}>
+              {state === "completed" && (
+                <span className="game-card-check-badge">
+                  <CheckCircleIcon size={18} />
+                </span>
+              )}
+              {state === "in-progress" && <span className="game-card-progress-dot" />}
+              {state === "locked" && (
+                <span className="game-card-lock-badge">
+                  <LockIcon size={16} />
+                </span>
+              )}
+
+              <div className="game-card-icon">
+                <Icon size={56} />
+              </div>
+              <div className="game-card-title">{game.title}</div>
+              <p className="game-card-desc">{game.description}</p>
+
+              <div className="game-card-meta">
+                <span className="game-card-dots">
+                  {Array.from({ length: 3 }, (_, i) => (
+                    <span key={i} className={`game-card-dot${i < DIFFICULTY_DOTS[game.difficulty] ? " game-card-dot-filled" : ""}`} />
+                  ))}
+                  <span style={{ marginLeft: 4 }}>{game.difficulty}</span>
+                </span>
+                <span>·</span>
+                <span>{game.timeEstimate}</span>
+              </div>
+
+              <span className="game-card-btn">{BUTTON_LABEL[state]}</span>
+            </Link>
+          );
+        })}
+      </div>
+
+      <div className="card elev-sm" style={{ padding: 20 }}>
+        <div className="games-stats-title">Your Stats</div>
+        <div className="games-stats-grid">
+          <div className="games-stat-tile">
+            <div className="games-stat-value">{totalCompleted}</div>
+            <div className="games-stat-label">Games Completed</div>
+          </div>
+          <div className="games-stat-tile">
+            <div className="games-stat-value">{currentStreak}</div>
+            <div className="games-stat-label">Current Streak</div>
+          </div>
+          <div className="games-stat-tile">
+            <div className="games-stat-value">{bestStreak}</div>
+            <div className="games-stat-label">Best Streak</div>
+          </div>
+          <div className="games-stat-tile">
+            <div className="games-stat-value" style={{ fontSize: 15 }}>
+              {favoriteGame ?? "—"}
+            </div>
+            <div className="games-stat-label">Favorite Game</div>
+          </div>
+        </div>
+
+        <div className="games-week-bar">
+          {week
+            .slice()
+            .reverse()
+            .map((d) => (
+              <span key={d} className={`games-week-dot${weekFinishedSet.has(d) ? " games-week-dot-active" : ""}`} />
+            ))}
+          <span className="games-week-label">
+            {activeWeekDays} out of 7 days
+          </span>
+        </div>
       </div>
     </div>
   );

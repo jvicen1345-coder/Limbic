@@ -1841,3 +1841,189 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 .nutrition-paywall-card { text-align: center; max-width: 300px; }
 .nutrition-paywall-card p { font-size: 13px; color: var(--color-neutral-700); margin: 6px 0 14px; }
+
+/* — Limbic Games hub (app/(app)/games/page.tsx) — the "game lobby" redesign: header with
+   streak, a responsive 3/2/1-column card grid, and a bottom stats section. The completed
+   state's green is the exact literal Limbic Vitals already uses for "Mobility"
+   (#4caf7d light / #7dd8a8 dark) — aliased here rather than duplicated so both features
+   stay in sync if that hue ever changes. */
+:root { --color-games-completed: var(--color-vitals-mobility); }
+
+.games-header { text-align: center; margin-bottom: 24px; }
+.games-header-date { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 6px; }
+.games-header-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 30px; margin: 0 0 8px; }
+.games-header-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 14%, var(--color-surface));
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+.games-header-tagline { font-size: 13px; color: var(--color-neutral-700); margin: 4px 0 0; }
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+@media (max-width: 900px) {
+  .games-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 620px) {
+  .games-grid { grid-template-columns: 1fr; }
+}
+
+.game-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  padding: 22px 20px;
+  border-radius: calc(var(--radius-lg) * 1.15);
+  background: linear-gradient(165deg, var(--color-accent-100), var(--color-surface) 55%);
+  border: 1px solid var(--color-divider);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: transform 200ms ease, box-shadow 200ms ease, opacity 200ms ease;
+}
+.game-card-fresh:hover, .game-card-progress:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.game-card-completed { background: color-mix(in srgb, var(--color-games-completed) 8%, var(--color-surface)); opacity: 0.88; }
+.game-card-locked { opacity: 0.5; }
+
+.game-card-icon { margin-bottom: 14px; }
+.game-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 19px; margin: 0 0 6px; }
+.game-card-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.45; margin: 0 0 14px; flex: 1; }
+
+.game-card-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 12px; color: var(--color-neutral-700); }
+.game-card-dots { display: inline-flex; gap: 3px; align-items: center; }
+.game-card-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--color-neutral-300); }
+.game-card-dot-filled { background: var(--color-accent); }
+
+.game-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 0;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 600;
+  border: none;
+}
+.game-card-fresh .game-card-btn, .game-card-progress .game-card-btn {
+  background: var(--color-accent);
+  color: #fff;
+}
+.game-card-completed .game-card-btn {
+  background: color-mix(in srgb, var(--color-games-completed) 20%, var(--color-surface));
+  color: var(--color-games-completed);
+}
+.game-card-locked .game-card-btn {
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-700);
+}
+
+.game-card-check-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: var(--color-games-completed);
+  background: var(--color-surface);
+  border-radius: 999px;
+  display: flex;
+  padding: 2px;
+  box-shadow: var(--shadow-sm);
+}
+
+.game-card-progress-dot {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  animation: games-pulse 1.6s ease-in-out infinite;
+}
+@keyframes games-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent); }
+  50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-accent) 0%, transparent); }
+}
+
+.game-card-lock-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: var(--color-neutral-700);
+  display: flex;
+}
+
+/* — Your Stats section — */
+.games-stats-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; margin: 0 0 12px; }
+.games-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+@media (max-width: 620px) {
+  .games-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.games-stat-tile { text-align: center; padding: 14px 8px; }
+.games-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; }
+.games-stat-label { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
+
+.games-week-bar { display: flex; align-items: center; gap: 6px; }
+.games-week-dot { width: 22px; height: 22px; border-radius: 999px; background: var(--color-neutral-200); flex-shrink: 0; }
+.games-week-dot-active { background: var(--color-games-completed); }
+.games-week-label { font-size: 12.5px; color: var(--color-neutral-700); margin-left: 6px; }
+
+/* — Case of the Day (app/(app)/games/case/page.tsx, components/CaseOfDayGame.tsx) — */
+.case-section { margin-bottom: 12px; }
+.case-section-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; margin-bottom: 8px; }
+.case-bullet-list { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.6; color: var(--color-text); }
+.case-bullet-list li { margin-bottom: 2px; }
+
+.case-option-list { display: flex; flex-direction: column; gap: 8px; }
+.case-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  text-align: left;
+  padding: 11px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font-size: 13.5px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.case-option:hover:not(:disabled) { border-color: var(--color-accent); }
+.case-option:disabled { cursor: default; }
+.case-option-correct {
+  border-color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 12%, var(--color-surface));
+  color: var(--color-success);
+  font-weight: 600;
+}
+.case-option-wrong {
+  border-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
+  opacity: 0.75;
+}
+.case-hint { font-size: 12.5px; color: var(--color-neutral-700); margin: 8px 2px 0; }
+
+.case-reveal { margin-top: 4px; }
+.case-reveal-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.case-reveal-points { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; color: var(--color-games-completed); }
+.case-reveal-verdict { font-size: 12.5px; color: var(--color-neutral-700); }
+.case-reveal-explanation { font-size: 13.5px; line-height: 1.6; color: var(--color-text); margin: 0 0 14px; }
+.case-reveal-actions { display: flex; flex-wrap: wrap; gap: 10px; }

@@ -74,3 +74,27 @@ export async function recordCrosswordCompletionAction(
   });
   revalidatePath("/crossword");
 }
+
+/** Persists a day's Case of the Day attempt(s) — reuses the same DailyCompletion columns
+ *  as the other games rather than a new migration: `guesses` holds each attempted option
+ *  index (as a string, in attempt order), `selectedIndex` the most recent attempt, and
+ *  `status` one of "playing" (first attempt was wrong, second still open),
+ *  "correct-first"/"correct-second" (scored 3/1), or "wrong" (both attempts wrong, 0). */
+export async function recordCaseOfDayAction(
+  dateKey: string,
+  attemptedIndexes: number[],
+  selectedIndex: number,
+  status: "playing" | "correct-first" | "correct-second" | "wrong",
+  elapsedSeconds?: number
+) {
+  const user = await getCurrentUser();
+  if (!user) return;
+  const guesses = attemptedIndexes.map(String);
+  await prisma.dailyCompletion.upsert({
+    where: { userId_kind_dateKey: { userId: user.id, kind: "caseOfDay", dateKey } },
+    create: { userId: user.id, kind: "caseOfDay", dateKey, guesses, selectedIndex, status, elapsedSeconds },
+    update: { guesses, selectedIndex, status, elapsedSeconds },
+  });
+  revalidatePath("/games/case");
+  revalidatePath("/games");
+}
