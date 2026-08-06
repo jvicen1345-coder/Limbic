@@ -37,7 +37,12 @@ export const metadata: Metadata = {
 // because of this: the server has no way to know the visitor's stored preference, so its
 // markup never has data-theme at all, and React would otherwise warn about this script
 // changing an attribute it didn't render.
-const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t}catch(e){}})();`;
+//
+// Every new visitor starts on light regardless of OS/browser color-scheme — deliberately
+// not following prefers-color-scheme here, so light is the one guaranteed first
+// impression for anyone who hasn't chosen otherwise. Dark is fully opt-in via the toggle,
+// which is what actually writes "dark" into localStorage for this same read to pick up.
+const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");document.documentElement.dataset.theme=t==="dark"?"dark":"light"}catch(e){}})();`;
 
 export default function RootLayout({
   children,

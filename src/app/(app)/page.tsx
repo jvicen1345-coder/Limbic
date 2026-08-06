@@ -29,18 +29,19 @@ const NEWS_TICKER_SIZE = 6;
 // since those are the ones most overdue.
 const SAVED_UNREAD_SIZE = 3;
 
-// Home shows exactly 7 cards, no pagination: the hero plus a 6-card grid below it (see
-// HomeFeed.tsx), and every one of those 7 needs a real picture. Rather than trying a
-// fixed-size slice of the ranked pool and accepting however many happen to resolve an
-// image, this walks deeper into the pool in batches — attempting a real og:image fetch
-// (lib/og-image.ts) then a topic stock-photo fallback (lib/topic-image.ts) per batch —
-// until enough *distinct-image* candidates exist for the grid's 6 (the hero doesn't need
-// a distinct one; see HomeFeed.tsx) plus a small hero rotation pool, or the search cap is
-// hit. RefreshHomeFeedButton re-running this (see app/actions/home.ts) is the intended
-// way a reader waits through a thin/unlucky batch.
+// Home shows a minimum of 7 cards, no pagination: the hero plus a grid below it (see
+// HomeFeed.tsx's MIN_HOME_CARDS/GRID_SIZE — normally 1 hero + 6 grid, but the grid grows to
+// 7 on its own if the hero pool ever comes up empty), and every one of those cards needs a
+// real picture. Rather than trying a fixed-size slice of the ranked pool and accepting
+// however many happen to resolve an image, this walks deeper into the pool in batches —
+// attempting a real og:image fetch (lib/og-image.ts) then a topic stock-photo fallback
+// (lib/topic-image.ts) per batch — until enough *distinct-image* candidates exist for the
+// grid's worst case of 7 (the hero doesn't need a distinct one; see HomeFeed.tsx) plus a
+// small hero rotation pool, or the search cap is hit. RefreshHomeFeedButton re-running this
+// (see app/actions/home.ts) is the intended way a reader waits through a thin/unlucky batch.
 const IMAGE_SEARCH_BATCH = 16;
 const IMAGE_SEARCH_MAX = 96;
-const HOME_GRID_SIZE = 6;
+const HOME_GRID_SIZE = 7;
 const HOME_HERO_POOL_SIZE = 5;
 
 /** Attaches images to `ranked`, batch by batch, stopping once there are enough resolved

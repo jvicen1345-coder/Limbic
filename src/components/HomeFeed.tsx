@@ -25,12 +25,17 @@ import type { LimbicAgentInsights } from "@/lib/limbic-agent-insights";
 // How many of the top-ranked articles the hero rotates through.
 const HERO_SIZE = 5;
 
-// No pagination — Home always shows exactly the hero plus this many grid cards below it,
-// 7 total. Every one of the 7 needs a real picture (see page.tsx's resolveHomeImages,
-// which searches deeper into the ranked pool than a fixed slice would to make that
-// realistic); RefreshHomeFeedButton is the intended way a reader waits through a
-// thin/unlucky batch rather than paging past it.
-const GRID_SIZE = 6;
+// No pagination — the middle panel (hero + grid) always shows at least this many cards.
+// Every one needs a real picture (see page.tsx's resolveHomeImages, which searches deeper
+// into the ranked pool than a fixed slice would to make that realistic); RefreshHomeFeedButton
+// is the intended way a reader waits through a thin/unlucky batch rather than paging past it.
+const MIN_HOME_CARDS = 7;
+
+// The grid's normal size when the hero is showing (1 hero + 6 grid = MIN_HOME_CARDS). If
+// heroPool below ever comes up empty (HERO_ELIGIBLE_TYPES too thin this batch), the grid
+// grows to MIN_HOME_CARDS on its own instead of silently dropping the reader to 6 cards —
+// see gridTarget below.
+const GRID_SIZE = MIN_HOME_CARDS - 1;
 
 // The hero is the single most prominent thing on Home, so it's held to a tighter bar than
 // the grid below it: only genuinely medical sources — PubMed research and the curated AOPT
@@ -108,24 +113,30 @@ export function HomeFeed({
     [withoutNews]
   );
 
-  // The grid's GRID_SIZE cards must have mutually distinct pictures; walking in rank order
-  // and keeping the first article to claim each image URL guarantees that without ever
-  // needing to drop an article for "no picture available" (see withImage above) — and
-  // skipping whatever the hero already claimed keeps the same story from appearing in both
-  // places at once.
+  // Normally GRID_SIZE (1 hero + 6 grid = MIN_HOME_CARDS) — but if heroPool came up empty
+  // (nothing eligible this batch — see HERO_ELIGIBLE_TYPES above), the hero block doesn't
+  // render at all, so the grid grows to fill the gap itself rather than leaving the reader
+  // at 6 cards instead of the guaranteed minimum.
+  const gridTarget = heroPool.length > 0 ? GRID_SIZE : MIN_HOME_CARDS;
+
+  // The grid's cards must have mutually distinct pictures; walking in rank order and
+  // keeping the first article to claim each image URL guarantees that without ever needing
+  // to drop an article for "no picture available" (see withImage above) — and skipping
+  // whatever the hero already claimed keeps the same story from appearing in both places
+  // at once.
   const heroIds = useMemo(() => new Set(heroPool.map((a) => a.id)), [heroPool]);
   const gridArticles = useMemo(() => {
     const seenImages = new Set<string>();
     const picked: DecoratedArticle[] = [];
     for (const a of withoutNews) {
-      if (picked.length >= GRID_SIZE) break;
+      if (picked.length >= gridTarget) break;
       if (heroIds.has(a.id)) continue;
       if (!a.image || seenImages.has(a.image)) continue;
       seenImages.add(a.image);
       picked.push(a);
     }
     return picked;
-  }, [withoutNews, heroIds]);
+  }, [withoutNews, heroIds, gridTarget]);
 
   return (
     <div className="home-pad">
