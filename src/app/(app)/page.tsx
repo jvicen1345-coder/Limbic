@@ -187,7 +187,17 @@ export default async function HomePage() {
   // already runs both steps per batch internally.
   const newsTickerWithImages = await attachTopicImages(newsTickerWithRealImages);
   const newsTicker = newsTickerWithImages.map((a) => decorateArticle(a, savedIds, null, readIds));
-  const rankedForDisplay = [...homeImagedPrefix, ...ranked.slice(homeImagedPrefix.length)];
+  // resolveHomeImages stops once it's found enough images for the *default* "All" view —
+  // everything ranked after that point is still real content (a reader can reach it via a
+  // type/specialty tab or a Limbic Agent topic filter — see HomeFeed.tsx), just never
+  // attempted for an image at all, which is what actually produced "Nothing with a picture
+  // in this category yet" rather than any shortage in the bundled pool (lib/topic-photos.ts
+  // never returns null — it's a real Commons photo pool, not a network call, so running it
+  // over the rest of the ranked list here is cheap: no og:image scrape, no Pexels round
+  // trip, just a hash lookup per article). This guarantees every article in `ranked` ends
+  // up with a real picture, not only the ones in the processed prefix.
+  const rankedTail = await attachTopicImages(ranked.slice(homeImagedPrefix.length));
+  const rankedForDisplay = [...homeImagedPrefix, ...rankedTail];
   const decorated = rankedForDisplay.map((a) => decorateArticle(a, savedIds, previousVisit, readIds));
 
   const readIdSet = new Set(readIds);
