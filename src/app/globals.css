@@ -215,6 +215,15 @@ button { font-family: inherit; }
 .input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
 textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius-md); }
 input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height: 16px; cursor: pointer; }
+@media (max-width: 799px) {
+  /* iOS Safari (and most other mobile browsers) auto-zooms the whole page on focus when a
+     text input's computed font-size is under 16px, to keep the text legible to type into —
+     that's the small involuntary zoom-in a reader has to manually pinch back out of after
+     tapping Search (or any other .input) on mobile. 16px is the documented threshold that
+     avoids triggering it; kept desktop at the original 14px; this is mobile-only so the
+     desktop design is unaffected. */
+  .input { font-size: 16px; }
+}
 
 /* — cards — */
 .card {
@@ -851,6 +860,12 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 .agent-input-bar input::placeholder { color: #5c6a8f; }
 .agent-input-bar input:focus { border-color: rgba(140, 170, 255, 0.6); }
+@media (max-width: 799px) {
+  /* Same iOS-Safari-auto-zoom-on-focus fix as .input's own mobile override above — this
+     input doesn't use the .input class (the whole Agent page owns its own dark styling
+     instead), so it needs the same 16px-on-mobile treatment applied separately here. */
+  .agent-input-bar input { font-size: 16px; }
+}
 .agent-input-bar button {
   flex-shrink: 0;
   background: linear-gradient(135deg, #5b8def, #3b6fe0);
