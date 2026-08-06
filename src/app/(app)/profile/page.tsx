@@ -7,6 +7,7 @@ import { allKnownKeywordTopics } from "@/lib/news-live";
 import { buildReadingCalendarWeeks } from "@/lib/reading-calendar";
 import type { CeCategory } from "@/lib/types";
 import { ProfileForm } from "@/components/ProfileForm";
+import { ProfessionalDatesForm } from "@/components/ProfessionalDatesForm";
 import { TopicChip } from "@/components/TopicChip";
 import { TopicBrowser } from "@/components/TopicBrowser";
 import { ReadingStreakCard } from "@/components/ReadingStreakCard";
@@ -14,6 +15,7 @@ import { HomeWidgetToggle } from "@/components/HomeWidgetToggle";
 import { goAddLicenseAction } from "@/app/actions/profile";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
 import { HOME_WIDGETS } from "@/lib/home-widgets";
+import { isRecentGraduate } from "@/lib/professional-dates";
 
 // The long tail of keyword topics not already covered by SUGGESTED_TOPICS — comes from a
 // fixed vocabulary rather than whatever's currently loaded (see allKnownKeywordTopics).
@@ -45,6 +47,9 @@ export default async function ProfilePage() {
   });
   const readingWeeks = buildReadingCalendarWeeks(readCalendarRows.map((r) => r.createdAt));
 
+  const isStudent = user.studentTier !== "none";
+  const showPracticeStartDate = user.isPro || isRecentGraduate(user.graduationDate);
+
   return (
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 18px" }}>Profile</h1>
@@ -59,6 +64,25 @@ export default async function ProfilePage() {
           practiceState={user.practiceState}
           headline={user.headline ?? ""}
           bio={user.bio ?? ""}
+        />
+      </div>
+
+      <div className="card elev-sm" style={{ marginBottom: 18 }}>
+        <div className="card-kicker">Professional dates</div>
+        <p className="card-body" style={{ marginTop: 2 }}>
+          Powers the orange dots on your Limbic Calendar and your renewal reminders.
+        </p>
+        <ProfessionalDatesForm
+          npteExamDate={user.npteExamDate}
+          ceuDeadline={user.ceuDeadline}
+          licenseExpiration={user.licenseExpiration}
+          certificationExpiry={user.certificationExpiry}
+          rotationStartDate={user.rotationStartDate}
+          rotationEndDate={user.rotationEndDate}
+          graduationDate={user.graduationDate}
+          practiceStartDate={user.practiceStartDate}
+          isStudent={isStudent}
+          showPracticeStartDate={showPracticeStartDate}
         />
       </div>
 

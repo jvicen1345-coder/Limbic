@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SearchIcon, XIcon } from "@/components/icons";
@@ -8,7 +8,6 @@ import { slugifyTopic } from "@/lib/topic-slug";
 import { SlidingTabs } from "@/components/SlidingTabs";
 import { ArticleCard } from "@/components/ArticleCard";
 import { HeroFeed } from "@/components/HeroFeed";
-import { CalendarCard, type CeEvent } from "@/components/CalendarCard";
 import { ContinueReadingCard, type ContinueReadingData } from "@/components/ContinueReadingCard";
 import { DailyDashboard, type DailyDashboardData } from "@/components/DailyDashboard";
 import { LimbicAgentCard } from "@/components/LimbicAgentCard";
@@ -57,7 +56,7 @@ const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
 
 export function HomeFeed({
   articles,
-  ceEvents,
+  calendarWidget,
   stocks,
   newsTicker,
   license,
@@ -70,7 +69,8 @@ export function HomeFeed({
   isPro,
 }: {
   articles: DecoratedArticle[];
-  ceEvents: CeEvent[];
+  /** Server-rendered — see components/LimbicCalendarWidget.tsx, app/(app)/page.tsx. */
+  calendarWidget: ReactNode;
   stocks: StockView[];
   newsTicker: DecoratedArticle[];
   license: LicenseView | null;
@@ -294,7 +294,7 @@ export function HomeFeed({
           <div className="home-aside-scroll">
             {showWidget("continueReading") && <ContinueReadingCard data={continueReading} />}
             {showWidget("savedUnread") && <SavedUnreadCard articles={savedUnread} />}
-            {showWidget("calendar") && <CalendarCard events={ceEvents} />}
+            {showWidget("calendar") && calendarWidget}
             {showWidget("nexus") &&
               (nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />)}
             {showWidget("stock") && <StockCard stocks={stocks} />}

@@ -452,6 +452,20 @@ html[data-theme="dark"] .card.elev-lg {
 }
 
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+/* Profile "Professional Dates" save confirmation (see components/ProfessionalDatesForm.tsx)
+   — plays once per save rather than looping, unlike the other keyframe animations in this
+   file (spin, the agent-node pulses): mounted on save, unmounted via a matching-length
+   setTimeout once it's finished rather than left sitting at opacity 0 in the DOM. */
+@keyframes fade-in-out {
+  0% { opacity: 0; transform: scale(0.8); }
+  20% { opacity: 1; transform: scale(1); }
+  75% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.8); }
+}
+.profile-date-saved-check {
+  animation: fade-in-out 1.6s ease;
+  color: var(--color-accent-2-700);
+}
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .revolving-news-item { animation: fade-in 0.4s ease; }
 /* Continue Reading's progress bar (see components/ContinueReadingCard.tsx). */
@@ -1341,4 +1355,39 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   padding: 0;
   font-family: inherit;
   cursor: pointer;
+}
+
+/* — Limbic Calendar widget (see components/LimbicCalendarWidget.tsx) — one dot color per
+   event kind. Orange reuses the CE evidence badge's literal hue (see .tag-evidence-ce
+   above) for a consistent "orange = CE/deadline" meaning across the app; blue is the
+   existing accent token (platform = brand color); green has no existing token, so it
+   reuses the RCT evidence badge's literal hue for the same reason orange does. */
+.limbic-cal-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.limbic-cal-dot-personal { background: #e0741f; }
+.limbic-cal-dot-platform { background: var(--color-accent); }
+.limbic-cal-dot-community { background: #1f9d5e; }
+
+/* Subtle pulse on a personal-deadline dot within 30 days of today — a warning, not an
+   alarm, so the glow is gentle (low peak opacity, slow cycle) rather than the sharper
+   pulses used for AI-agent "thinking" states elsewhere (see agent-node-loading-pulse). */
+@keyframes limbic-cal-dot-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 116, 31, 0.55); }
+  50% { box-shadow: 0 0 0 3px rgba(224, 116, 31, 0.22); }
+}
+.limbic-cal-dot-glow {
+  animation: limbic-cal-dot-glow 2.2s ease-in-out infinite;
+}
+html[data-theme="dark"] .limbic-cal-dot-personal { background: #f7ab6c; }
+html[data-theme="dark"] .limbic-cal-dot-community { background: #7fe8b2; }
+html[data-theme="dark"] .limbic-cal-dot-glow {
+  animation-name: limbic-cal-dot-glow-dark;
+}
+@keyframes limbic-cal-dot-glow-dark {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(247, 171, 108, 0.5); }
+  50% { box-shadow: 0 0 0 3px rgba(247, 171, 108, 0.25); }
 }

@@ -12,6 +12,7 @@ import { getConnectionStates } from "@/lib/nexus";
 import { buildLimbicAgentInsights } from "@/lib/limbic-agent-insights";
 import { todayLocalDateStr } from "@/lib/today";
 import { HomeFeed } from "@/components/HomeFeed";
+import { LimbicCalendarWidget } from "@/components/LimbicCalendarWidget";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import type { Article, ArticleType, CeCategory, Specialty } from "@/lib/types";
 
@@ -233,7 +234,20 @@ export default async function HomePage() {
   return (
     <HomeFeed
       articles={decorated}
-      ceEvents={ceEvents}
+      calendarWidget={
+        <LimbicCalendarWidget
+          personalDates={{
+            npteExamDate: user.npteExamDate,
+            licenseExpiration: user.licenseExpiration,
+            ceuDeadline: user.ceuDeadline,
+            certificationExpiry: user.certificationExpiry,
+            rotationStartDate: user.rotationStartDate,
+            rotationEndDate: user.rotationEndDate,
+            graduationDate: user.graduationDate,
+          }}
+          platformEvents={ceEvents}
+        />
+      }
       stocks={industryIndex}
       newsTicker={newsTicker}
       license={license}
