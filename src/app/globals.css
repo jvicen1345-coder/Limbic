@@ -1026,6 +1026,62 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .wordle-key-present { background: var(--color-accent-2); color: #fff; }
 .wordle-key-absent { background: var(--color-neutral-500); color: #fff; }
 
+/* — Mini Crossword (see components/CrosswordGame.tsx, lib/crossword-puzzles.ts) — */
+.crossword-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 3px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+.crossword-cell {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-neutral-400);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--color-text);
+}
+/* Blocked squares stay a fixed dark tone in both themes, same reasoning as the shadow
+   tokens and .app-mobile-drawer-backdrop's scrim above — a "blocked cell" is a structural
+   grid marking, not page content, so it doesn't flip with the palette the way a
+   foreground/background color would. */
+.crossword-cell-black { background: #1a1410; border-color: #1a1410; cursor: default; }
+.crossword-cell-selected { background: color-mix(in srgb, var(--color-accent) 30%, var(--color-surface)); border-color: var(--color-accent); }
+.crossword-cell-active-word { background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface)); }
+.crossword-cell-correct { color: var(--color-accent-700); }
+.crossword-cell-number {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-size: 9px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  color: var(--color-neutral-700);
+}
+.crossword-clue-banner { text-align: center; font-size: 13px; min-height: 20px; margin: 12px 0; color: var(--color-neutral-700); }
+.crossword-clue-banner strong { color: var(--color-text); }
+.crossword-clues { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+.crossword-clue-list-title { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px; }
+.crossword-clue-item {
+  display: flex;
+  gap: 6px;
+  font-size: 13px;
+  padding: 5px 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.crossword-clue-item:hover { background: var(--color-neutral-100); }
+.crossword-clue-item-active { background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface)); font-weight: 600; }
+.crossword-clue-num { color: var(--color-neutral-700); min-width: 16px; flex-shrink: 0; }
+
 /* — reading streak calendar (GitHub-contributions-style, 365 rolling days) — */
 .reading-calendar { display: flex; gap: 3px; width: max-content; }
 .reading-calendar-week { display: flex; flex-direction: column; gap: 3px; }
