@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { SearchIcon } from "@/components/icons";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { SearchIcon, XIcon } from "@/components/icons";
+import { slugifyTopic } from "@/lib/topic-slug";
 import { SlidingTabs } from "@/components/SlidingTabs";
 import { ArticleCard } from "@/components/ArticleCard";
 import { HeroFeed } from "@/components/HeroFeed";
@@ -88,10 +90,39 @@ export function HomeFeed({
   const showWidget = (id: string) => !hiddenWidgets.includes(id);
   const [filter, setFilter] = useState<ArticleType | "all">("all");
 
-  const filtered = useMemo(
-    () => (filter === "all" ? articles : articles.filter((a) => a.type === filter)),
-    [articles, filter]
-  );
+  // Set by clicking a gap-topic row on the Limbic Agent card (see LimbicAgentCard.tsx,
+  // which links to /?topic=<slug>) — pre-filters the feed to that topic on arrival. Read
+  // straight from the URL (not local state initialized once) so clicking a *different*
+  // gap-topic row while already on Home updates the filter too, not just the first visit.
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const topicParam = searchParams.get("topic");
+  const clearTopicFilter = () => router.replace(pathname);
+
+  // The URL only carries the slug (e.g. "back-pain") — this recovers the real-cased label
+  // ("Back Pain") to show in the pill by finding whichever tag/specialty among the current
+  // articles actually slugifies to it, falling back to a best-effort de-slugify (title
+  // case, hyphens back to spaces) on the off chance nothing in this batch matches.
+  const topicDisplayLabel = useMemo(() => {
+    if (!topicParam) return null;
+    for (const a of articles) {
+      const match = [...a.tags, a.specialtyLabel].find((t) => slugifyTopic(t) === topicParam);
+      if (match) return match;
+    }
+    return topicParam
+      .split("-")
+      .map((w) => (w.length > 0 ? w[0].toUpperCase() + w.slice(1) : w))
+      .join(" ");
+  }, [articles, topicParam]);
+
+  const filtered = useMemo(() => {
+    const byType = filter === "all" ? articles : articles.filter((a) => a.type === filter);
+    if (!topicParam) return byType;
+    return byType.filter(
+      (a) => a.tags.some((t) => slugifyTopic(t) === topicParam) || slugifyTopic(a.specialtyLabel) === topicParam
+    );
+  }, [articles, filter, topicParam]);
 
   // Every visible card needs a real picture — no more falling back to a blank card just
   // to hit a count (see page.tsx's resolveHomeImages, which searches deeper into the
@@ -138,6 +169,16 @@ export function HomeFeed({
     return picked;
   }, [withoutNews, heroIds, gridTarget]);
 
+  // Arriving via a gap-topic link (see LimbicAgentCard.tsx) drops the reader at the top of
+  // the page same as any other Home visit — this carries them the rest of the way down to
+  // where the now-filtered results actually are, past the dashboard/Limbic Agent card
+  // they've already seen. Keyed on topicParam specifically (not e.g. a mount-only effect)
+  // so clicking a different gap-topic row while already on Home scrolls again too.
+  const feedSectionRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (topicParam) feedSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [topicParam]);
+
   return (
     <div className="home-pad">
       <div className="home-row">
@@ -172,7 +213,17 @@ export function HomeFeed({
             <LimbicAgentCard insights={limbicAgentInsights} isPro={isPro} />
           </div>
 
-          <div style={{ marginBottom: 20 }}>
+          <div ref={feedSectionRef} style={{ marginBottom: 20, scrollMarginTop: 90 }}>
+            {topicParam && topicDisplayLabel && (
+              <div className="topic-filter-pill">
+                <span>
+                  Showing results for: <strong>{topicDisplayLabel}</strong>
+                </span>
+                <button type="button" aria-label="Clear topic filter" onClick={clearTopicFilter}>
+                  <XIcon size={10} />
+                </button>
+              </div>
+            )}
             <SlidingTabs tabs={TYPE_TABS} active={filter} onChange={setFilter} />
           </div>
 

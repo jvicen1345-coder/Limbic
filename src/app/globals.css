@@ -884,6 +884,38 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 .sub-tab.active { color: var(--color-accent-700); border-bottom-color: var(--color-accent); }
 
+/* Home's topic-filter indicator (see components/HomeFeed.tsx) — shown above the type-
+   filter tabs when arriving via a Limbic Agent gap-topic link (/?topic=<slug>). Same light
+   accent-tinted pill as .tag-accent elsewhere, not a new color. */
+.topic-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+  font-size: 12.5px;
+  padding: 6px 8px 6px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+  animation: fade-in 0.3s ease;
+}
+.topic-filter-pill button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent-800);
+  cursor: pointer;
+}
+.topic-filter-pill button:hover {
+  background: color-mix(in srgb, var(--color-accent) 28%, transparent);
+}
+
 /* Home's type-filter row (see components/SlidingTabs.tsx) — same underline-tab look as
    .sub-tabs/.sub-tab above, but with one shared underline element that slides between
    tabs (via a measured transform/width) instead of each tab drawing its own static
