@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Chip } from "@/components/Chip";
 import { ArticleCard } from "@/components/ArticleCard";
 import { Pagination } from "@/components/Pagination";
+import { SearchIcon, RefreshIcon } from "@/components/icons";
 import { aiPubmedSearchAction, type AiSearchResult } from "@/app/actions/ai-search";
 import { paginate } from "@/lib/pagination";
 import type { DecoratedArticle } from "@/lib/feed";
@@ -231,12 +232,36 @@ export function SearchScreen({
             {results.length} {results.length === 1 ? "result" : "results"}
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {pageItems.map((a) => (
-              <ArticleCard key={a.id} article={a} />
-            ))}
-          </div>
-          <Pagination page={clampedPage} totalPages={totalPages} onPageChange={setPage} />
+          {results.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "48px 16px", color: "var(--color-neutral-700)" }}>
+              <SearchIcon size={26} style={{ color: "var(--color-neutral-400)", marginBottom: 10 }} />
+              <div style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text)" }}>
+                No articles found — try a different filter
+              </div>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 5,
+                  fontSize: 12.5,
+                  marginTop: 6,
+                  color: "var(--color-neutral-600)",
+                }}
+              >
+                <RefreshIcon size={12} />
+                Clearing a filter or refreshing may turn up more results
+              </div>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {pageItems.map((a) => (
+                  <ArticleCard key={a.id} article={a} />
+                ))}
+              </div>
+              <Pagination page={clampedPage} totalPages={totalPages} onPageChange={setPage} />
+            </>
+          )}
         </>
       )}
     </div>

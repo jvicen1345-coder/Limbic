@@ -16,11 +16,20 @@
    override right after its light rule below. */
 
 :root {
-  --color-bg: #ffffff;
-  --color-surface: #dbe7fb;
+  /* A very subtle warm off-white rather than pure white, with card surfaces a step
+     brighter than the page itself (see --color-surface below) — the page/card contrast
+     now comes from that tonal step plus --shadow-* (also warmed, further down) instead of
+     a blue tint. --color-accent/--color-accent-2 are deliberately untouched here: blue
+     stays reserved for interactive elements (buttons, active states, links) exactly as
+     before, just no longer doubling as the page's general surface color. */
+  --color-bg: #fafaf8;
+  --color-surface: #ffffff;
   --color-text: #14213d;
   --color-accent: #3b6fe0;
   --color-accent-2: #1fa8d1;
+  /* Muted, not alarm-red — for Sign out and other clearly-destructive-but-not-scary
+     actions (see .nav-footer's Sign out button). */
+  --color-danger: #b0413e;
   --color-divider: color-mix(in srgb, #14213d 16%, transparent);
 
   --color-neutral-100: #fcfdfe;
@@ -55,7 +64,7 @@
 
   --font-heading: var(--font-caprasimo), system-ui, sans-serif;
   --font-heading-weight: 400;
-  --font-body: var(--font-figtree), system-ui, sans-serif;
+  --font-body: var(--font-jakarta), system-ui, sans-serif;
 
   --space-1: 4.4px;
   --space-2: 8.8px;
@@ -68,9 +77,11 @@
   --radius-md: 16px;
   --radius-lg: 28px;
 
-  --shadow-sm: 0 1px 2px color-mix(in srgb, #1f2940 14%, transparent);
-  --shadow-md: 0 3px 10px color-mix(in srgb, #1f2940 16%, transparent);
-  --shadow-lg: 0 12px 32px color-mix(in srgb, #1f2940 22%, transparent);
+  /* Warm brown-black tint (was navy #1f2940) so elevation reads as a soft, warm shadow
+     rather than a cool grey one — same 3-tier scale, same overall softness as before. */
+  --shadow-sm: 0 2px 8px color-mix(in srgb, #2b2015 8%, transparent);
+  --shadow-md: 0 4px 16px color-mix(in srgb, #2b2015 10%, transparent);
+  --shadow-lg: 0 16px 40px color-mix(in srgb, #2b2015 14%, transparent);
 }
 
 /* Same token set, dark values — same hue families as the light palette above (navy/blue
@@ -87,6 +98,7 @@ html[data-theme="dark"] {
   --color-text: #e7ecf7;
   --color-accent: #6d9bf5;
   --color-accent-2: #4dd1ee;
+  --color-danger: #e08883;
   --color-divider: color-mix(in srgb, #e7ecf7 14%, transparent);
 
   --color-neutral-100: #1a2136;
@@ -138,8 +150,8 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: 16px;
+  line-height: 1.6;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -147,7 +159,14 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
+  /* Bolder than --font-heading-weight (400) on purpose — that token is shared by a lot of
+     UI chrome that isn't a real heading (.card-title, .btn, .nav-section-label, …), so
+     bumping it directly would bold all of those too. Real h1-h6 elements (page titles like
+     Home's greeting, the article detail title, …) get their own stronger weight instead.
+     Caprasimo only ships a single 400 weight file (see app/layout.tsx), so this renders as
+     the browser's synthetic bold — acceptable here since Caprasimo is already a heavy
+     display face by design. */
+  font-weight: 800;
   line-height: 1.12;
   letter-spacing: -0.015em;
   margin: 0 0 var(--space-2);
@@ -184,9 +203,11 @@ button { font-family: inherit; }
   background: transparent; border: 1px solid transparent;
   padding: var(--space-2) calc(var(--space-3) * 1.2);
   border-radius: 999px;
+  transition: transform 100ms ease, background 150ms ease, border-color 150ms ease;
 }
 .btn svg { display: block; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn:active:not(:disabled) { transform: scale(0.97); }
 .btn-primary { background: var(--color-accent); color: var(--color-bg); }
 .btn-primary:hover { background: var(--color-accent-600); }
 .btn-primary:active { background: var(--color-accent-700); }
@@ -228,14 +249,27 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
 /* — cards — */
 .card {
   display: flex; flex-direction: column; gap: var(--space-2); min-width: 0;
-  padding: var(--space-3); border-radius: calc(var(--radius-lg) * 1.15); background: var(--color-surface);
+  /* ~21% over the old var(--space-3) (13.2px) — a literal value rather than scaling that
+     shared token, since --space-3 also drives unrelated gaps/margins elsewhere that
+     weren't asked to grow. */
+  padding: 16px;
+  border-radius: calc(var(--radius-lg) * 1.15); background: var(--color-surface);
+  /* 200ms hover lift (see .card:hover below) needs something to transition. */
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+/* Article/feed cards only — not every .card (the dashboard metric tiles, message bubbles,
+   etc. reuse .card too and shouldn't lift on hover just because they share the class). See
+   ArticleCard.tsx/HeroArticleCard, the only components that add this class alongside .card. */
+.card.card-hoverable:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 .card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
 .card-title {
   font-family: var(--font-heading); font-weight: var(--font-heading-weight);
   font-size: 17px; line-height: 1.2;
 }
-.card-body { margin: 0; font-size: 13px; opacity: 0.8; flex: 1; }
+.card-body { margin: 0; font-size: 13px; opacity: 0.8; flex: 1; max-width: 680px; line-height: 1.6; }
 .card-meta {
   display: flex; align-items: center; gap: 6px; font-size: 11px;
   color: color-mix(in srgb, var(--color-text) 50%, transparent);
@@ -243,6 +277,80 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
 .elev-sm { box-shadow: var(--shadow-sm); }
 .elev-md { box-shadow: var(--shadow-md); }
 .elev-lg { box-shadow: var(--shadow-lg); }
+
+/* — Home hero card's photo-led layout (see components/ArticleCard.tsx HeroArticleCard) —
+   title/source/evidence/read-time/date all sit directly on the image, above a bottom
+   gradient, so the space below the photo can stay to just the summary. */
+.hero-card-media {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  height: 320px;
+  overflow: hidden;
+  background: var(--color-neutral-200);
+}
+.hero-card-gradient {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.5));
+  pointer-events: none;
+}
+.hero-card-topleft, .hero-card-topright {
+  position: absolute;
+  top: 14px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-card-topleft { left: 14px; }
+.hero-card-topright { right: 14px; }
+.hero-card-meta-pill {
+  font-size: 11.5px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+/* SaveButton's own hit target is already a circle (see .btn-icon) — this just gives it a
+   scrim to sit on so it stays legible over any photo, light or dark. */
+.hero-card-save-wrap {
+  display: flex;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.4);
+}
+.hero-card-save-wrap .btn-ghost { color: #fff; }
+.hero-card-save-wrap .btn-ghost:hover { background: rgba(255, 255, 255, 0.18); }
+.hero-card-bottom {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 2;
+  padding: 18px 20px;
+  box-sizing: border-box;
+}
+.hero-card-title {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1.22;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+.hero-card-source {
+  margin-top: 5px;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.hero-card-source-sep { opacity: 0.6; }
+@media (max-width: 799px) {
+  .hero-card-media { min-height: 240px; height: 240px; }
+  .hero-card-title { font-size: 20px; }
+}
 
 .progress-bar {
   width: 100%;
@@ -268,7 +376,8 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 12px 14px;
+  /* ~20% over the old 12px/14px, same ratio as .card's own padding bump. */
+  padding: 15px 17px;
   border-radius: var(--radius-md);
   background: var(--color-neutral-100);
   border: 1px solid var(--color-neutral-200);
@@ -300,6 +409,17 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   color: var(--color-neutral-500);
 }
 .dashboard-metric-uptodate span { color: #1f9d5e; }
+/* Day streak/Unfinished's own zero-state (see DailyDashboard.tsx's zeroMessage/zeroIcon) —
+   same quiet, small, muted treatment as .dashboard-metric-uptodate above, just without
+   that one's hardcoded green (a checkmark reading "up to date" earns green; "start your
+   streak today" isn't a status to celebrate the same way, just a nudge). */
+.dashboard-metric-zero {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 8.5px;
+  color: var(--color-neutral-500);
+}
 @media (max-width: 799px) {
   .dashboard-metrics-row { flex-direction: column; }
   .dashboard-metric-tile { flex-direction: row; align-items: center; justify-content: space-between; }
@@ -308,6 +428,8 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .revolving-news-item { animation: fade-in 0.4s ease; }
+/* Continue Reading's progress bar (see components/ContinueReadingCard.tsx). */
+.progress-bar-fade-in { animation: fade-in 0.5s ease; }
 
 /* — tags — */
 .tag {
@@ -362,7 +484,7 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
    scrollbar, so scrolling the nav (to reach "Sign out" below a long link list, say)
    never moves the page content, and vice versa. */
 .app-sidebar {
-  width: 236px;
+  width: 252px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -379,7 +501,9 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-text);
+  /* Warmer medium gray instead of the stark --color-text — section labels are structural
+     chrome, not content, so they read better a step quieter than the nav links below them. */
+  color: var(--color-neutral-600);
   margin: 14px 0 2px;
   padding: 0 12px;
 }
@@ -557,7 +681,9 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .home-pad {
   width: 100%;
   padding: 36px 44px 60px;
-  max-width: 1020px;
+  /* Widened from 1020px — home-main-col is flex:1 and home-aside-col is a fixed 200px, so
+     the extra room goes entirely to the main feed column (see the "Desktop Space" ask). */
+  max-width: 1400px;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -651,7 +777,7 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 16px;
   min-width: 0;
 }
 .cards-grid > * { min-width: 0; }
@@ -723,6 +849,37 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   margin-bottom: -1px;
 }
 .sub-tab.active { color: var(--color-accent-700); border-bottom-color: var(--color-accent); }
+
+/* Home's type-filter row (see components/SlidingTabs.tsx) — same underline-tab look as
+   .sub-tabs/.sub-tab above, but with one shared underline element that slides between
+   tabs (via a measured transform/width) instead of each tab drawing its own static
+   border-bottom. */
+.sliding-tabs {
+  position: relative;
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--color-divider);
+  overflow-x: auto;
+}
+.sliding-tab {
+  border: none;
+  background: none;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 10px 14px;
+  font: 600 13.5px var(--font-body);
+  color: var(--color-neutral-700);
+}
+.sliding-tab.active { color: var(--color-accent-700); }
+.sliding-tab-underline {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--color-accent);
+  border-radius: 999px;
+  transition: transform 250ms ease, width 250ms ease;
+}
 
 /* Pill-style segmented tabs — same look as the sign-in screen's Physical Therapist/General
    switch, for anywhere else that wants a mode toggle rather than a section-navigation bar

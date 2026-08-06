@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Caprasimo, Figtree } from "next/font/google";
+import { Caprasimo, Figtree, Plus_Jakarta_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -17,10 +17,22 @@ const caprasimo = Caprasimo({
   display: "swap",
 });
 
+// No longer the base body font (see plusJakartaSans below) — kept loaded since
+// --font-figtree isn't referenced anywhere, but removing the import wasn't asked for here
+// and this stays available if something still wants it.
 const figtree = Figtree({
   weight: ["400", "600", "700", "800"],
   subsets: ["latin"],
   variable: "--font-figtree",
+  display: "swap",
+});
+
+// The base body font — see globals.css's --font-body, which points here instead of
+// --font-figtree now (visual-only swap, same self-hosting reasoning as above).
+const plusJakartaSans = Plus_Jakarta_Sans({
+  weight: ["400", "500", "600", "700", "800"],
+  subsets: ["latin"],
+  variable: "--font-jakarta",
   display: "swap",
 });
 
@@ -50,7 +62,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${caprasimo.variable} ${figtree.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${caprasimo.variable} ${figtree.variable} ${plusJakartaSans.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>

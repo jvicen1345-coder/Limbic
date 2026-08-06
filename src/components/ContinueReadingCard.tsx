@@ -22,7 +22,7 @@ export function ContinueReadingCard({ data }: { data: ContinueReadingData | null
     <div className="card elev-sm" style={{ padding: 14 }}>
       <div className="card-kicker">Continue reading</div>
       <div style={{ fontFamily: "var(--font-heading)", fontSize: 14, lineHeight: 1.3 }}>{data.title}</div>
-      <div className="progress-bar">
+      <div className="progress-bar progress-bar-fade-in">
         <div className="progress-bar-fill" style={{ width: `${Math.round(data.progress * 100)}%` }} />
       </div>
       <div style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{data.remainingLabel}</div>

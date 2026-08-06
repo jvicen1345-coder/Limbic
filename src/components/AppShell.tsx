@@ -37,15 +37,20 @@ function sidebarNavStyle(active: boolean, bold: boolean): React.CSSProperties {
     alignItems: "center",
     gap: 10,
     border: "none",
+    // Always a 3px left border (transparent when inactive) rather than only adding one
+    // when active — that way toggling active/inactive never shifts the icon/label by the
+    // border's width, just its color.
+    borderLeft: active ? "3px solid var(--color-accent)" : "3px solid transparent",
     background: active ? "var(--color-accent-100)" : "none",
     cursor: "pointer",
     font: `${bold ? 600 : 400} 14px var(--font-body)`,
-    padding: "10px 12px",
+    padding: "13px 12px",
     borderRadius: "var(--radius-lg)",
     textAlign: "left",
     width: "100%",
     color: active ? "var(--color-accent-700)" : "var(--color-text)",
     textDecoration: "none",
+    transition: "background 150ms ease, border-color 150ms ease",
   };
 }
 
@@ -226,7 +231,11 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
         </div>
         <ThemeToggle />
         <form action={signOutAction}>
-          <button type="submit" className="btn btn-ghost" style={{ padding: "4px 0", fontSize: 12 }}>
+          <button
+            type="submit"
+            className="btn btn-ghost"
+            style={{ padding: "4px 0", fontSize: 12, color: "var(--color-danger)" }}
+          >
             Sign out
           </button>
         </form>
