@@ -5,17 +5,39 @@ import { computeWellnessSet, WELLNESS_ARTICLE_TARGET, WELLNESS_VIDEO_TARGET } fr
 import { WellnessListItem } from "@/components/RowCards";
 import { WellnessVideoCard } from "@/components/WellnessVideoCard";
 import { RefreshWellnessButton } from "@/components/RefreshWellnessButton";
+import { VitalsPreviewCard } from "@/components/vitals/VitalsPreviewCard";
+import { NutritionPreviewCard } from "@/components/vitals/NutritionPreviewCard";
+import { startOfWeekLocal, summarizeWeek, type VitalsLogEntry } from "@/lib/vitals";
+import { dateToLocalIso } from "@/lib/limbic-calendar";
+import { nutritionTipForDate } from "@/lib/nutrition-content";
+import { todayDateKey } from "@/lib/wordle-words";
 
 export default async function WellnessPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const [articlePool, savedArticleRows, savedWellnessRows] = await Promise.all([
+  const thisWeekStart = startOfWeekLocal(new Date());
+  const thisWeekStartIso = dateToLocalIso(thisWeekStart);
+
+  const [articlePool, savedArticleRows, savedWellnessRows, vitalsLogRows] = await Promise.all([
     getWellnessArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
     prisma.savedWellness.findMany({ where: { userId: user.id }, select: { itemId: true } }),
+    prisma.vitalsLog.findMany({ where: { userId: user.id, date: { gte: thisWeekStart } } }),
   ]);
   const savedIds = new Set([...savedArticleRows.map((r) => r.articleId), ...savedWellnessRows.map((r) => r.itemId)]);
+
+  const vitalsLogs: VitalsLogEntry[] = vitalsLogRows.map((r) => ({
+    id: r.id,
+    date: dateToLocalIso(r.date),
+    category: r.category as VitalsLogEntry["category"],
+    minutes: r.minutes,
+    activity: r.activity,
+    notes: r.notes,
+    createdAtMs: r.createdAt.getTime(),
+  }));
+  const thisWeekVitals = summarizeWeek(vitalsLogs, thisWeekStartIso);
+  const nutritionTip = nutritionTipForDate(todayDateKey());
 
   // A plain page load never drops an id just because it's been opened — only the explicit
   // Refresh action does that (see app/actions/wellness.ts refreshWellnessAction). This just
@@ -57,6 +79,11 @@ export default async function WellnessPage() {
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 22px" }}>
         Everyday wellness reading and movement videos for patients and clinicians alike.
       </p>
+
+      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 28 }}>
+        <VitalsPreviewCard totals={thisWeekVitals.totals} totalMinutes={thisWeekVitals.totalMinutes} />
+        <NutritionPreviewCard tip={nutritionTip} />
+      </div>
 
       <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 10 }}>
         Articles

@@ -506,3 +506,22 @@ export function BellIcon(props: IconProps) {
     </Svg>
   );
 }
+
+/** Limbic Vitals' nav icon — a heartbeat/pulse line, the conventional "vitals" mark. */
+export function ActivityIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M22 12h-4l-3 8-4-16-3 8H2" />
+    </Svg>
+  );
+}
+
+/** Nutrition's nav icon — a simple apple silhouette. */
+export function AppleIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 7c-3 0-6 2.5-6 7 0 4 2.5 8 5 8 1.2 0 1.8-.6 3-.6s1.8.6 3 .6c2.2 0 4.5-3.5 4.5-7 0-3.5-2.3-6-5-6-1 0-1.7.3-2.5.6" />
+      <path d="M12 7c0-2 1.2-4 3-4.5" />
+    </Svg>
+  );
+}
