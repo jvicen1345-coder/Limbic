@@ -47,3 +47,29 @@ export async function goAddLicenseAction() {
   await clearSessionForAddLicense();
   redirect("/sign-in");
 }
+
+// Same runtime-whitelist reasoning as EDITABLE_FIELDS above — see components/
+// ProfessionalDatesForm.tsx (the Profile "Professional Dates" section) and
+// components/LimbicCalendarWidget.tsx (reads these back out for the orange dots).
+const PROFESSIONAL_DATE_FIELDS = [
+  "npteExamDate",
+  "ceuDeadline",
+  "licenseExpiration",
+  "certificationExpiry",
+  "rotationStartDate",
+  "rotationEndDate",
+  "graduationDate",
+  "practiceStartDate",
+] as const;
+type ProfessionalDateField = (typeof PROFESSIONAL_DATE_FIELDS)[number];
+
+/** `value` is whatever an `<input type="date">` hands back onChange: "YYYY-MM-DD", or ""
+ *  when the reader clears the field — which this treats as "unset" (null) rather than
+ *  rejecting the change. */
+export async function updateProfessionalDates(field: ProfessionalDateField, value: string) {
+  const user = await getCurrentUser();
+  if (!user || !PROFESSIONAL_DATE_FIELDS.includes(field)) return;
+  const parsed = value ? new Date(`${value}T00:00:00`) : null;
+  await prisma.user.update({ where: { id: user.id }, data: { [field]: parsed } });
+  revalidatePath("/", "layout");
+}
