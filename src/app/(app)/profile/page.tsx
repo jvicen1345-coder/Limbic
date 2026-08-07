@@ -11,6 +11,7 @@ import { ProfessionalDatesForm } from "@/components/ProfessionalDatesForm";
 import { TopicChip } from "@/components/TopicChip";
 import { TopicBrowser } from "@/components/TopicBrowser";
 import { ReadingStreakCard } from "@/components/ReadingStreakCard";
+import { GamesStreakCard } from "@/components/GamesStreakCard";
 import { HomeWidgetToggle } from "@/components/HomeWidgetToggle";
 import { goAddLicenseAction } from "@/app/actions/profile";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
@@ -41,11 +42,18 @@ export default async function ProfilePage() {
 
   const readingCalendarStart = new Date();
   readingCalendarStart.setDate(readingCalendarStart.getDate() - (READING_CALENDAR_WINDOW_DAYS - 1));
-  const readCalendarRows = await prisma.readArticle.findMany({
-    where: { userId: user.id, createdAt: { gte: readingCalendarStart } },
-    select: { createdAt: true },
-  });
+  const [readCalendarRows, gameCalendarRows] = await Promise.all([
+    prisma.readArticle.findMany({
+      where: { userId: user.id, createdAt: { gte: readingCalendarStart } },
+      select: { createdAt: true },
+    }),
+    prisma.gameActivity.findMany({
+      where: { userId: user.id, createdAt: { gte: readingCalendarStart } },
+      select: { createdAt: true },
+    }),
+  ]);
   const readingWeeks = buildReadingCalendarWeeks(readCalendarRows.map((r) => r.createdAt));
+  const gamesWeeks = buildReadingCalendarWeeks(gameCalendarRows.map((r) => r.createdAt));
 
   const isStudent = user.studentTier !== "none";
   const showPracticeStartDate = user.isPro || isRecentGraduate(user.graduationDate);
@@ -55,6 +63,7 @@ export default async function ProfilePage() {
       <h1 style={{ fontSize: 24, margin: "0 0 18px" }}>Profile</h1>
 
       <ReadingStreakCard streakDays={user.streakDays} weeks={readingWeeks} />
+      <GamesStreakCard streakDays={user.gamesStreakDays} weeks={gamesWeeks} />
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">About you</div>

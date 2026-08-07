@@ -1898,7 +1898,6 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   box-shadow: var(--shadow-lg);
 }
 .game-card-completed { background: color-mix(in srgb, var(--color-games-completed) 8%, var(--color-surface)); opacity: 0.88; }
-.game-card-locked { opacity: 0.5; }
 
 .game-card-icon { margin-bottom: 14px; }
 .game-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 19px; margin: 0 0 6px; }
@@ -1929,11 +1928,6 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   background: color-mix(in srgb, var(--color-games-completed) 20%, var(--color-surface));
   color: var(--color-games-completed);
 }
-.game-card-locked .game-card-btn {
-  background: var(--color-neutral-200);
-  color: var(--color-neutral-700);
-}
-
 .game-card-check-badge {
   position: absolute;
   top: 16px;
@@ -1959,14 +1953,6 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 @keyframes games-pulse {
   0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent); }
   50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-accent) 0%, transparent); }
-}
-
-.game-card-lock-badge {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  color: var(--color-neutral-700);
-  display: flex;
 }
 
 /* — Your Stats section — */

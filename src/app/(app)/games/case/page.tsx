@@ -17,7 +17,10 @@ export default async function CaseOfDayPage() {
     prisma.dailyCompletion.findUnique({
       where: { userId_kind_dateKey: { userId: user.id, kind: "caseOfDay", dateKey } },
     }),
-    getArticles(),
+    // getArticles() hits live network sources (see lib/articles.ts) purely to resolve one
+    // "Learn More" link — a flaky fetch here shouldn't take down the whole case page, so
+    // fall back to an empty pool (which just means the search-page fallback link below).
+    getArticles().catch(() => []),
   ]);
 
   const initial: CaseOfDayInitialState | null = row

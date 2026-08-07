@@ -1,10 +1,12 @@
-/** Shared metadata + streak/stats math for the Limbic Games hub (see
- *  app/(app)/games/page.tsx) and Case of the Day (app/(app)/games/case/page.tsx). Kept free
- *  of JSX/server-only imports, same convention as lib/vitals.ts, so both the server hub page
- *  and any client pieces can import from here. Streaks/stats are computed on the fly from
- *  the existing DailyCompletion rows rather than a stored counter, since no schema
- *  migration is planned for this feature — same reasoning documented in
- *  lib/cases-static.ts for reusing existing columns instead of adding new ones. */
+/** Shared metadata + stats math for the Limbic Games hub (see app/(app)/games/page.tsx)
+ *  and Case of the Day (app/(app)/games/case/page.tsx). Kept free of JSX/server-only
+ *  imports, same convention as lib/vitals.ts, so both the server hub page and any client
+ *  pieces can import from here. The current-day Games streak itself is a persisted counter
+ *  on User (gamesStreakDays/lastGamesActivityAt, advanced by lib/game-activity.ts) — same
+ *  pattern as the reading streak (streakDays) and Boards streak (boardsStreakDays), so all
+ *  three "streaks" in this app are independently tracked rather than sharing one counter.
+ *  Best streak and the weekly bar are still computed on the fly here, off the compact
+ *  GameActivity table (one row per active day) rather than scanning DailyCompletion. */
 
 export type GameKind = "wordle" | "crossword" | "caseOfDay";
 
@@ -50,10 +52,8 @@ export const GAMES: GameMeta[] = [
   },
 ];
 
-/** The hub card's visual/behavioral state. "locked" is defined for completeness (see the
- *  spec's 4-row completion states table) but nothing in this app currently produces it —
- *  every game is available fresh each day, with no multi-day-ahead content to gate. */
-export type CardCompletionState = "not-started" | "in-progress" | "completed" | "locked";
+/** The hub card's visual/behavioral state. */
+export type CardCompletionState = "not-started" | "in-progress" | "completed";
 
 /** A row's `status` column means something different per kind (see
  *  app/actions/daily-completion.ts), but "unset/playing" vs. "anything else" maps
@@ -81,23 +81,6 @@ function utcMsToDateKey(ms: number): string {
   return new Date(ms).toISOString().slice(0, 10);
 }
 
-/** Current streak = consecutive days (counting back from today, or from yesterday if
- *  today hasn't been played yet) with at least one finished game. */
-export function computeCurrentStreak(dateKeys: Iterable<string>, todayKey: string): number {
-  const set = new Set(dateKeys);
-  let cursor = dateKeyToUtcMs(todayKey);
-  if (!set.has(todayKey)) {
-    cursor -= DAY_MS;
-    if (!set.has(utcMsToDateKey(cursor))) return 0;
-  }
-  let streak = 0;
-  while (set.has(utcMsToDateKey(cursor))) {
-    streak++;
-    cursor -= DAY_MS;
-  }
-  return streak;
-}
-
 /** Best streak = longest run of consecutive calendar days across all-time history. */
 export function computeBestStreak(dateKeys: Iterable<string>): number {
   const sorted = Array.from(new Set(dateKeys)).sort();
@@ -122,8 +105,11 @@ export function last7DateKeys(todayKey: string): string[] {
 /** Case of the Day's "Learn More" link resolves to a real article when one exists — same
  *  "classify/match by keyword" heuristic lib/nutrition-content.ts's isNutritionArticle
  *  already uses for untagged live content, just picking the best-scoring match instead of
- *  a yes/no. Falls back to null (caller sends the reader to /search?q=... instead) when
- *  nothing in the current article pool mentions the topic at all. */
+ *  a yes/no. Requires at least 2 distinct keyword hits (or the exact first word of
+ *  relatedTopic — usually the condition's own name, e.g. "lateral epicondylitis") before
+ *  trusting a match; a single incidental word overlap isn't enough to call an article
+ *  "about" a case's topic. Falls back to null (caller sends the reader to /search?q=...
+ *  instead) when nothing in the current article pool clears that bar. */
 export function findRelatedArticle<T extends { title: string; summary: string }>(
   articles: T[],
   relatedTopic: string
@@ -132,12 +118,16 @@ export function findRelatedArticle<T extends { title: string; summary: string }>
     .toLowerCase()
     .split(/[^a-z0-9]+/)
     .filter((w) => w.length > 3);
+  if (words.length === 0) return null;
+  const headTerm = words[0];
+
   let best: T | null = null;
   let bestScore = 0;
   for (const article of articles) {
     const text = `${article.title} ${article.summary}`.toLowerCase();
     const score = words.reduce((sum, w) => sum + (text.includes(w) ? 1 : 0), 0);
-    if (score > bestScore) {
+    const clearsBar = score >= 2 || text.includes(headTerm);
+    if (clearsBar && score > bestScore) {
       bestScore = score;
       best = article;
     }

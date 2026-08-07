@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { recordBoardActivity } from "@/lib/board-activity";
+import { recordGameActivity } from "@/lib/game-activity";
 
 /** Persists a day's Daily Term (Wordle) progress/result for the signed-in user — replaces
  *  what used to be a "limbic:wordle:<dateKey>" localStorage key with no userId in it at
@@ -17,12 +18,16 @@ export async function recordWordleCompletionAction(
 ) {
   const user = await getCurrentUser();
   if (!user) return;
-  await prisma.dailyCompletion.upsert({
-    where: { userId_kind_dateKey: { userId: user.id, kind: "wordle", dateKey } },
-    create: { userId: user.id, kind: "wordle", dateKey, guesses, status, elapsedSeconds },
-    update: { guesses, status, elapsedSeconds },
-  });
+  await Promise.all([
+    prisma.dailyCompletion.upsert({
+      where: { userId_kind_dateKey: { userId: user.id, kind: "wordle", dateKey } },
+      create: { userId: user.id, kind: "wordle", dateKey, guesses, status, elapsedSeconds },
+      update: { guesses, status, elapsedSeconds },
+    }),
+    status !== "playing" ? recordGameActivity(user.id, dateKey) : Promise.resolve(),
+  ]);
   revalidatePath("/wordle");
+  revalidatePath("/games");
 }
 
 /** Persists a Limbic Boards question answer — same per-user fix as the Wordle action
@@ -67,12 +72,16 @@ export async function recordCrosswordCompletionAction(
 ) {
   const user = await getCurrentUser();
   if (!user) return;
-  await prisma.dailyCompletion.upsert({
-    where: { userId_kind_dateKey: { userId: user.id, kind: "crossword", dateKey } },
-    create: { userId: user.id, kind: "crossword", dateKey, crosswordCells: cells, status, elapsedSeconds },
-    update: { crosswordCells: cells, status, elapsedSeconds },
-  });
+  await Promise.all([
+    prisma.dailyCompletion.upsert({
+      where: { userId_kind_dateKey: { userId: user.id, kind: "crossword", dateKey } },
+      create: { userId: user.id, kind: "crossword", dateKey, crosswordCells: cells, status, elapsedSeconds },
+      update: { crosswordCells: cells, status, elapsedSeconds },
+    }),
+    status === "won" ? recordGameActivity(user.id, dateKey) : Promise.resolve(),
+  ]);
   revalidatePath("/crossword");
+  revalidatePath("/games");
 }
 
 /** Persists a day's Case of the Day attempt(s) — reuses the same DailyCompletion columns
@@ -90,11 +99,14 @@ export async function recordCaseOfDayAction(
   const user = await getCurrentUser();
   if (!user) return;
   const guesses = attemptedIndexes.map(String);
-  await prisma.dailyCompletion.upsert({
-    where: { userId_kind_dateKey: { userId: user.id, kind: "caseOfDay", dateKey } },
-    create: { userId: user.id, kind: "caseOfDay", dateKey, guesses, selectedIndex, status, elapsedSeconds },
-    update: { guesses, selectedIndex, status, elapsedSeconds },
-  });
+  await Promise.all([
+    prisma.dailyCompletion.upsert({
+      where: { userId_kind_dateKey: { userId: user.id, kind: "caseOfDay", dateKey } },
+      create: { userId: user.id, kind: "caseOfDay", dateKey, guesses, selectedIndex, status, elapsedSeconds },
+      update: { guesses, selectedIndex, status, elapsedSeconds },
+    }),
+    status !== "playing" ? recordGameActivity(user.id, dateKey) : Promise.resolve(),
+  ]);
   revalidatePath("/games/case");
   revalidatePath("/games");
 }
