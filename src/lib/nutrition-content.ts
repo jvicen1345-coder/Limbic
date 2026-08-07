@@ -38,24 +38,26 @@ export const NUTRITION_SECTIONS: NutritionSection[] = [
 ];
 
 /** Wellness+ (LimbicPro) — goal-specific general guidance, keyed off VitalsProfile's
- *  wellnessGoal. All framed as general wellness information, same as the free sections
+ *  wellnessGoal. Three short bullets per goal (not a paragraph) so /wellness/nutrition's
+ *  "Personalized for Your Goal" card can render them as a scannable list rather than a
+ *  block of text — all still general wellness information, same as the free sections
  *  above, just narrowed to the reader's stated goal. */
-export const NUTRITION_GOAL_TIPS: Record<WellnessGoal, string> = {
-  "General Health":
-    "Balanced eating, general overview: a wide variety of whole foods, regular meal timing, and adequate hydration form the foundation of most general wellness nutrition guidance, regardless of specific goals.",
-  "Weight Management":
-    "General caloric awareness: tracking roughly what you eat for a week or two, without judgment, is a simple way to understand your current eating patterns before making changes. Small, sustainable adjustments tend to stick better than large, sudden ones.",
-  "Build Strength":
-    "General protein timing guidance: spreading protein intake across 3–4 meals a day, rather than one large serving, is a commonly cited general approach for supporting muscle-building goals alongside resistance training.",
-  "Improve Flexibility":
-    "General hydration and anti-inflammatory tips: well-hydrated tissue tends to move more comfortably, and anti-inflammatory foods are often paired with mobility-focused routines as a general wellness combination.",
-  "Stress Reduction":
-    "General magnesium and omega-3 awareness: foods like leafy greens, nuts, seeds, and fatty fish are commonly discussed in general wellness contexts around relaxation and stress. This is general dietary information, not a treatment recommendation.",
+export const NUTRITION_GOAL_TIPS: Record<WellnessGoal, string[]> = {
+  "General Health": ["Balanced whole foods", "Regular meal timing", "Adequate hydration"],
+  "Weight Management": ["Mindful portion awareness", "Regular meal timing", "Staying hydrated before meals"],
+  "Build Strength": ["Protein at every meal", "Post-workout nutrition within 2 hours", "Consistent meal timing"],
+  "Improve Flexibility": ["Anti-inflammatory food patterns", "Adequate hydration", "Omega-3 rich foods"],
+  "Stress Reduction": [
+    "Magnesium-rich foods — leafy greens, nuts",
+    "Limiting caffeine after noon",
+    "Regular meal timing for stable energy",
+  ],
 };
 
-/** The Wellness overview's rotating "tip of the day" preview card — deterministic by
- *  calendar day, same idea as lib/wordle-words.ts's word-of-the-day (one tip per day, not
- *  random on every load). */
+/** The Wellness overview's rotating "tip of the day" preview card, and
+ *  /wellness/nutrition's "Nutrition of the Day" card — deterministic by calendar day, same
+ *  idea as lib/wordle-words.ts's word-of-the-day (one tip per day, not random on every
+ *  load, same tip for every reader that day). */
 export const NUTRITION_DAILY_TIPS: string[] = [
   "Pairing protein with carbs after a workout supports recovery — even a simple snack works.",
   "A good rule of thumb: drink water before you feel thirsty, especially on active days.",
@@ -64,6 +66,14 @@ export const NUTRITION_DAILY_TIPS: string[] = [
   "A light pre-workout snack with some carbohydrate can help provide steadier energy.",
   "Whole grains, nuts, and fatty fish are commonly grouped as anti-inflammatory choices.",
   "Spreading protein across meals, rather than one big serving, is a common general approach.",
+  "Eating within 2 hours post-workout helps replenish glycogen stores and supports muscle recovery.",
+  "Colorful fruits and vegetables provide a wide range of antioxidants that support general health.",
+  "Staying hydrated before you feel thirsty helps maintain consistent energy during activity.",
+  "A palm-sized portion of protein at each meal is a simple general guideline for active adults.",
+  "Whole grains provide sustained energy compared to refined carbohydrates for longer activities.",
+  "Healthy fats from sources like nuts, olive oil, and fatty fish support hormone production.",
+  "Sleep quality affects appetite regulation — consistent sleep supports healthy eating patterns.",
+  "Meal timing matters — eating regularly throughout the day helps maintain steady energy levels.",
 ];
 
 export function nutritionTipForDate(dateKey: string): string {
@@ -71,6 +81,24 @@ export function nutritionTipForDate(dateKey: string): string {
   for (let i = 0; i < dateKey.length; i++) h = (Math.imul(h, 31) + dateKey.charCodeAt(i)) >>> 0;
   return NUTRITION_DAILY_TIPS[h % NUTRITION_DAILY_TIPS.length];
 }
+
+/** /wellness/nutrition's "Quick Tips" pill row — short, scannable, one per general
+ *  category. `kind` drives the pill's left dot color (see .nutrition-quicktip-dot-* in
+ *  globals.css), reusing the same literal hues Limbic Vitals already assigns to
+ *  strength/mobility/mindfulness rather than inventing new ones. */
+export type QuickTipKind = "hydration" | "energy" | "recovery" | "sleep";
+
+export interface QuickTip {
+  kind: QuickTipKind;
+  text: string;
+}
+
+export const NUTRITION_QUICK_TIPS: QuickTip[] = [
+  { kind: "hydration", text: "Drink water before you feel thirsty" },
+  { kind: "energy", text: "Carbs before, protein after workouts" },
+  { kind: "recovery", text: "Colorful plate supports recovery" },
+  { kind: "sleep", text: "Sleep supports appetite regulation" },
+];
 
 /** Live-sourced wellness articles carry no topic tags (see lib/news-live.ts
  *  fetchLiveWellness), so "general nutrition articles" for the bottom of the Nutrition
