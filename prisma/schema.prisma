@@ -83,6 +83,14 @@ model User {
   lastBoardsActivityAt DateTime?
   boardsStreakDays     Int      @default(0)
 
+  // Limbic Games (Daily Term / Mini Crossword / Case of the Day) streak — same
+  // nextStreak() logic and same "separate streak per feature" reasoning as the reading and
+  // Boards streaks above, driven off GameActivity rows instead of ReadArticle/
+  // BoardActivity ones. Advanced once per day the first time any of the three games is
+  // finished that day (see lib/game-activity.ts), not once per game.
+  lastGamesActivityAt DateTime?
+  gamesStreakDays     Int      @default(0)
+
   // The Health & Wellness page's current per-user rotation state (see
   // lib/wellness-rotation.ts). wellnessArticleIds/wellnessVideoIds are JSON-encoded
   // string[] of the ids currently displayed; wellnessOpenedIds is a JSON-encoded string[]
@@ -124,6 +132,7 @@ model User {
   hepPrograms         HepProgram[]
   readArticles        ReadArticle[]
   boardActivity       BoardActivity[]
+  gameActivity        GameActivity[]
   dailyCompletions    DailyCompletion[]
   calendarEvents      UserCalendarEvent[]
   vitalsProfile       VitalsProfile?
@@ -413,6 +422,20 @@ model ReadArticle {
 // drives the reading one. Unique per (userId, dateKey) so answering the question and
 // revealing the term on the same day only ever counts as one day of activity.
 model BoardActivity {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dateKey   String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, dateKey])
+}
+
+// One row per day a user finishes at least one Limbic Games game (Daily Term, Mini
+// Crossword, or Case of the Day) — drives the Games streak/calendar the same way
+// BoardActivity drives the Boards one. Unique per (userId, dateKey) so finishing more than
+// one game the same day still only counts as one day of activity.
+model GameActivity {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
