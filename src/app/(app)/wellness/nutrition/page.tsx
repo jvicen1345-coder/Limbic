@@ -2,27 +2,34 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getWellnessArticles } from "@/lib/articles";
-import { NUTRITION_SECTIONS, NUTRITION_GOAL_TIPS, isNutritionArticle } from "@/lib/nutrition-content";
+import { NUTRITION_SECTIONS, NUTRITION_GOAL_TIPS, NUTRITION_QUICK_TIPS, nutritionTipForDate, isNutritionArticle } from "@/lib/nutrition-content";
+import { todayDateKey } from "@/lib/wordle-words";
 import type { WellnessGoal } from "@/lib/vitals";
-import { WELLNESS_GOAL_OPTIONS } from "@/lib/vitals";
 import { WellnessDisclaimer } from "@/components/vitals/WellnessDisclaimer";
-import { WellnessListItem } from "@/components/RowCards";
 import { LockIcon } from "@/components/icons";
+import type { WellnessArticle } from "@/lib/types";
 
 const NUTRITION_ARTICLE_LIMIT = 6;
+
+/** Zips NUTRITION_SECTIONS (content, unchanged) with this page's own card metadata (label +
+ *  border color) by position — the lib data stays presentation-agnostic, same reasoning as
+ *  keeping icon components out of lib/games.ts. Order must match NUTRITION_SECTIONS exactly. */
+const CARD_META = [
+  { label: "HYDRATION", className: "nutrition-card-hydration" },
+  { label: "MACRONUTRIENTS", className: "nutrition-card-macros" },
+  { label: "WORKOUT NUTRITION", className: "nutrition-card-workout" },
+  { label: "ANTI-INFLAMMATORY", className: "nutrition-card-antiinflammatory" },
+  { label: "RECOVERY", className: "nutrition-card-recovery" },
+];
 
 export default async function NutritionPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const [articlePool, profile, savedArticleRows, savedWellnessRows] = await Promise.all([
+  const [articlePool, profile] = await Promise.all([
     getWellnessArticles(),
     prisma.vitalsProfile.findUnique({ where: { userId: user.id } }),
-    prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
-    prisma.savedWellness.findMany({ where: { userId: user.id }, select: { itemId: true } }),
   ]);
-  const savedIds = new Set([...savedArticleRows.map((r) => r.articleId), ...savedWellnessRows.map((r) => r.itemId)]);
-  const openedIds = new Set((user.wellnessOpenedIds as string[]) ?? []);
 
   const nutritionArticles = articlePool.filter((a) => isNutritionArticle(a.title, a.summary)).slice(0, NUTRITION_ARTICLE_LIMIT);
 
@@ -30,70 +37,131 @@ export default async function NutritionPage() {
   // subscription — there's no dedicated Wellness+ field in the schema, and adding a whole
   // second paid tier wasn't part of this spec's Step 1 migration, so this reuses the same
   // isPro flag /pro already gates on (see app/actions/pro.ts).
-  const isWellnessPlus = user.isPro;
-  const goal = (profile?.wellnessGoal as WellnessGoal | undefined) ?? "General Health";
+  const isWellnessPlus = user.isPro || user.studentTier !== "none";
+  const goal = profile?.wellnessGoal as WellnessGoal | undefined;
+
+  const dailyTip = nutritionTipForDate(todayDateKey());
 
   return (
-    <div className="screen-pad" style={{ maxWidth: 640, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Nutrition</h1>
-      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 14px" }}>General wellness nutrition guidance.</p>
-      <WellnessDisclaimer />
+    <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>
+      <div className="nutrition-header">
+        <h1 className="nutrition-title">Nutrition</h1>
+        <p className="nutrition-subtitle">General wellness nutrition guidance</p>
+        <WellnessDisclaimer />
+      </div>
 
-      <div className="card elev-sm" style={{ marginBottom: 18 }}>
-        {NUTRITION_SECTIONS.map((section, i) => (
-          <div key={section.title} style={{ marginTop: i === 0 ? 0 : 18 }}>
-            <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, marginBottom: 4 }}>{section.title}</div>
-            <p className="card-body" style={{ margin: 0 }}>
-              {section.body}
-            </p>
+      <div className="nutrition-tip-card">
+        <div className="nutrition-section-label">Today&rsquo;s Nutrition Tip</div>
+        <p className="nutrition-tip-text">{dailyTip}</p>
+      </div>
+
+      <div className="nutrition-quicktips-row">
+        {NUTRITION_QUICK_TIPS.map((tip) => (
+          <div key={tip.text} className="nutrition-quicktip-pill">
+            <span className={`nutrition-quicktip-dot nutrition-quicktip-dot-${tip.kind}`} />
+            {tip.text}
           </div>
         ))}
       </div>
 
-      <div className="card elev-sm" style={{ marginBottom: 18 }}>
-        <div className="card-kicker">Personalized for your goal</div>
-        <p className="card-body" style={{ marginTop: 2 }}>
-          Wellness+ tailors these general tips to the goal set in your Vitals profile.
-        </p>
-
-        {isWellnessPlus ? (
-          <div style={{ marginTop: 10, padding: "12px 14px", borderRadius: "var(--radius-lg)", background: "var(--color-neutral-100)" }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-accent-700)", marginBottom: 4 }}>{goal}</div>
-            <p style={{ fontSize: 13, margin: 0, lineHeight: 1.5 }}>{NUTRITION_GOAL_TIPS[goal]}</p>
+      <div className="nutrition-cards-grid">
+        {NUTRITION_SECTIONS.map((section, i) => (
+          <div key={section.title} className={`nutrition-content-card ${CARD_META[i].className}`}>
+            <div className="nutrition-section-label">{CARD_META[i].label}</div>
+            <div className="nutrition-content-card-title">{section.title}</div>
+            <p className="nutrition-content-card-body">{section.body}</p>
           </div>
-        ) : (
-          <div className="nutrition-paywall" style={{ marginTop: 10 }}>
-            <div className="nutrition-paywall-content">
-              {WELLNESS_GOAL_OPTIONS.map((g) => (
-                <div key={g} style={{ padding: "12px 14px", borderRadius: "var(--radius-lg)", background: "var(--color-neutral-100)", marginBottom: 8 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-accent-700)", marginBottom: 4 }}>{g}</div>
-                  <p style={{ fontSize: 13, margin: 0, lineHeight: 1.5 }}>{NUTRITION_GOAL_TIPS[g]}</p>
+        ))}
+      </div>
+
+      {isWellnessPlus ? (
+        <div className="nutrition-goal-card">
+          <div className="nutrition-section-label">Personalized for Your Goal</div>
+          {goal ? (
+            <>
+              <div className="nutrition-goal-value">Your Goal: {goal}</div>
+              <div style={{ marginBottom: 4 }}>
+                {NUTRITION_GOAL_TIPS[goal].map((tip) => (
+                  <div key={tip} className="vitals-insight-item">
+                    <span className="vitals-insight-dot" />
+                    <span>{tip}</span>
+                  </div>
+                ))}
+              </div>
+              <Link href="/wellness/vitals" className="btn btn-secondary" style={{ marginTop: 14 }}>
+                → Update your goal
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="card-body" style={{ margin: "0 0 14px" }}>
+                Set up your Vitals profile to unlock personalized guidance.
+              </p>
+              <Link href="/wellness/vitals" className="btn btn-secondary">
+                → Go to Vitals
+              </Link>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="nutrition-paywall" style={{ marginBottom: 22 }}>
+          <div className="nutrition-paywall-content">
+            <div className="nutrition-goal-card" style={{ marginBottom: 0 }}>
+              <div className="nutrition-section-label">Personalized for Your Goal</div>
+              <div className="nutrition-goal-value">Your Goal: General Health</div>
+              {NUTRITION_GOAL_TIPS["General Health"].map((tip) => (
+                <div key={tip} className="vitals-insight-item">
+                  <span className="vitals-insight-dot" />
+                  <span>{tip}</span>
                 </div>
               ))}
             </div>
-            <div className="nutrition-paywall-overlay">
-              <div className="nutrition-paywall-card">
-                <LockIcon size={20} />
-                <p>Unlock nutrition tips personalized to your wellness goal with Wellness+.</p>
-                <Link href="/pro" className="btn btn-primary">
-                  → Upgrade to Wellness+
-                </Link>
-              </div>
+          </div>
+          <div className="nutrition-paywall-overlay">
+            <div className="nutrition-paywall-card">
+              <LockIcon size={20} />
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: 16, marginTop: 6 }}>Unlock personalized nutrition guidance</div>
+              <p>Based on your wellness goal — available with Wellness+</p>
+              <Link href="/pro" className="btn btn-primary">
+                Upgrade to Wellness+
+              </Link>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {nutritionArticles.length > 0 && (
-        <div className="card elev-sm">
-          <div className="card-kicker">More on nutrition</div>
-          <div style={{ display: "flex", flexDirection: "column", marginTop: 8 }}>
-            {nutritionArticles.map((w) => (
-              <WellnessListItem key={w.id} w={w} saved={savedIds.has(w.id)} opened={openedIds.has(w.id)} />
+        <div>
+          <div className="nutrition-section-label">From the Feed</div>
+          <div className="nutrition-articles-row">
+            {nutritionArticles.map((a) => (
+              <NutritionArticleCard key={a.id} article={a} />
             ))}
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+function NutritionArticleCard({ article }: { article: WellnessArticle }) {
+  const href = article.sourceUrl ?? `/wellness/${article.id}`;
+  const isExternal = !!article.sourceUrl;
+  return (
+    <Link
+      href={href}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noopener noreferrer" : undefined}
+      className="card elev-sm card-hoverable nutrition-article-card"
+    >
+      <div className="card-title" style={{ fontSize: 15 }}>
+        {article.title}
+      </div>
+      <div className="card-meta">
+        <span>
+          {article.source} · {article.readMins} min
+        </span>
+      </div>
+    </Link>
   );
 }

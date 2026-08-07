@@ -1842,6 +1842,107 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .nutrition-paywall-card { text-align: center; max-width: 300px; }
 .nutrition-paywall-card p { font-size: 13px; color: var(--color-neutral-700); margin: 6px 0 14px; }
 
+/* — Nutrition page redesign (app/(app)/wellness/nutrition/page.tsx) — a "real product
+   feature" pass: a highlighted daily-tip card, a scannable quick-tips pill row, a two-
+   column card grid for the five topic sections, a premium goal card (or its blurred
+   paywalled preview), and a horizontal-scroll article row. Card left-border colors reuse
+   the exact literal hues Limbic Vitals and Limbic Games already established rather than
+   inventing new tokens: blue = --color-accent, orange = --color-vitals-strength,
+   green = --color-vitals-mobility, purple = --color-vitals-mindfulness, and teal (needed
+   only here, for the fifth "Recovery" card) = --color-accent-2, which is already a
+   cyan/teal hue in both themes. */
+.nutrition-header { margin-bottom: 18px; }
+.nutrition-title { font-size: 24px; margin: 0 0 4px; }
+.nutrition-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 12px; }
+
+.nutrition-section-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin-bottom: 8px;
+}
+
+/* — Nutrition of the Day — */
+.nutrition-tip-card {
+  border-left: 4px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  padding: 20px 22px;
+  margin-bottom: 20px;
+}
+.nutrition-tip-text { font-size: 17px; line-height: 1.55; margin: 0; }
+
+/* — Quick Tips pill row — */
+.nutrition-quicktips-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 22px;
+}
+.nutrition-quicktip-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  background: var(--color-neutral-100);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 12.5px;
+}
+.nutrition-quicktip-dot { width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; }
+.nutrition-quicktip-dot-hydration { background: var(--color-accent); }
+.nutrition-quicktip-dot-energy { background: var(--color-vitals-strength); }
+.nutrition-quicktip-dot-recovery { background: var(--color-vitals-mobility); }
+.nutrition-quicktip-dot-sleep { background: var(--color-vitals-mindfulness); }
+
+/* — Content card grid — */
+.nutrition-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+@media (max-width: 680px) {
+  .nutrition-cards-grid { grid-template-columns: 1fr; }
+}
+.nutrition-content-card {
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  padding: 20px 22px;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+@media (hover: hover) {
+  .nutrition-content-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+}
+.nutrition-content-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; margin: 0 0 8px; }
+.nutrition-content-card-body { font-size: 13.5px; line-height: 1.6; color: var(--color-text); opacity: 0.85; margin: 0; }
+.nutrition-card-hydration { border-left-color: var(--color-accent); }
+.nutrition-card-macros { border-left-color: var(--color-vitals-strength); }
+.nutrition-card-workout { border-left-color: var(--color-vitals-mobility); }
+.nutrition-card-antiinflammatory { border-left-color: var(--color-vitals-mindfulness); }
+.nutrition-card-recovery { border-left-color: var(--color-accent-2); }
+
+/* — Personalized for Your Goal — */
+.nutrition-goal-card {
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, var(--color-accent-100), var(--color-surface) 65%);
+  border: 1px solid var(--color-divider);
+  box-shadow: var(--shadow-sm);
+  padding: 22px 24px;
+  margin-bottom: 22px;
+}
+.nutrition-goal-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 19px; margin: 2px 0 14px; }
+
+/* — Nutrition articles row — */
+.nutrition-articles-row { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 4px; }
+.nutrition-article-card { flex: 0 0 230px; }
+
 /* — Limbic Games hub (app/(app)/games/page.tsx) — the "game lobby" redesign: header with
    streak, a responsive 3/2/1-column card grid, and a bottom stats section. The completed
    state's green is the exact literal Limbic Vitals already uses for "Mobility"
