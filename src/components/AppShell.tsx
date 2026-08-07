@@ -167,6 +167,19 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
       <NavLink href="/profile" icon={<ProfileIcon />} label="Profile" onNavigate={onNavigate} />
 
+      <div className="nav-section-label nav-section-label--brand">LimbicPRO</div>
+      <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
+      <NavLink
+        href="/boards"
+        icon={<GraduationCapIcon />}
+        label="Limbic Boards"
+        locked={!hasBoardsAccess}
+        bold={false}
+        onNavigate={onNavigate}
+      />
+      <NavLink href="/pro/membership" icon={<CreditCardIcon />} label="Membership" bold={false} onNavigate={onNavigate} />
+
       <div className="nav-section-label">Health & Wellness</div>
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
       <NavLink href="/wellness/nutrition" icon={<AppleIcon />} label="Nutrition" bold={false} onNavigate={onNavigate} />
@@ -182,19 +195,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
           <NavLink href="/boards" icon={<GraduationCapIcon />} label="Daily Sharpening" bold={false} onNavigate={onNavigate} />
         </>
       )}
-
-      <div className="nav-section-label nav-section-label--brand">LimbicPRO</div>
-      <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
-      <NavLink
-        href="/boards"
-        icon={<GraduationCapIcon />}
-        label="Limbic Boards"
-        locked={!hasBoardsAccess}
-        bold={false}
-        onNavigate={onNavigate}
-      />
-      <NavLink href="/pro/membership" icon={<CreditCardIcon />} label="Membership" bold={false} onNavigate={onNavigate} />
 
       <div className="nav-section-label">Nexus</div>
       <NavLink href="/nexus" icon={<UsersIcon />} label="Feed" bold={false} onNavigate={onNavigate} />
