@@ -9,6 +9,28 @@ import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { EVIDENCE_LEVEL_META } from "@/lib/evidence";
 import { slugifyTopic } from "@/lib/topic-slug";
 import type { DecoratedArticle } from "@/lib/feed";
+import type { EvidenceLevel } from "@/lib/types";
+
+/** Which of the Related grid's 6 left-border colors a card gets (see
+ *  .article-related-border-* in globals.css) — keyed off the card's own evidence badge
+ *  rather than its specialty, so the border tells the reader something the badge doesn't
+ *  already show right next to it. */
+function relatedBorderClass(level: EvidenceLevel | undefined): string {
+  switch (level) {
+    case "Research":
+      return "article-related-border-res";
+    case "RCT":
+      return "article-related-border-rct";
+    case "SR":
+      return "article-related-border-sr";
+    case "MA":
+      return "article-related-border-ma";
+    case "CPG":
+      return "article-related-border-cpg";
+    default:
+      return "article-related-border-default";
+  }
+}
 
 /** The article body/tags/meta/Related markup — extracted from what used to be
  *  app/(app)/article/[id]/page.tsx's own JSX so the exact same rendering serves both the
@@ -106,7 +128,7 @@ export function ArticleReadingPane({ article, related }: { article: DecoratedArt
               <Link
                 key={rel.id}
                 href={`/article/${rel.id}`}
-                className={`card elev-sm card-hoverable article-related-card${!rel.image ? ` specialty-border-${rel.specialty}` : ""}`}
+                className={`card elev-sm card-hoverable article-related-card ${relatedBorderClass(rel.evidenceLevel)}`}
               >
                 {rel.image && (
                   <div className="article-related-thumb">
@@ -118,12 +140,14 @@ export function ArticleReadingPane({ article, related }: { article: DecoratedArt
                     {rel.evidenceLevel && <EvidenceBadge level={rel.evidenceLevel} />}
                     <span className="tag tag-neutral">{rel.specialtyLabel}</span>
                   </div>
+                  <hr className="article-related-divider" />
                   <div className="article-related-title">{rel.title}</div>
                   <div className="article-related-meta">
                     {rel.source} · {rel.readMins} min
                   </div>
                   <div className="article-related-date">{rel.dateLabel}</div>
                 </div>
+                <span className="article-related-arrow">→</span>
               </Link>
             ))}
           </div>
