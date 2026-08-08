@@ -1265,6 +1265,14 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 @media (max-width: 420px) {
   .wordle-tile { width: 44px; height: 44px; font-size: 19px; }
 }
+/* Same 3 colors as the tiles above (and the keyboard below) — a swatch + label per state
+   so a first-time player doesn't have to infer what each color means from context. */
+.wordle-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; font-size: 11.5px; color: var(--color-neutral-700); }
+.wordle-legend-item { display: flex; align-items: center; gap: 5px; }
+.wordle-legend-swatch { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
+.wordle-legend-swatch-correct { background: var(--color-accent); }
+.wordle-legend-swatch-present { background: var(--color-accent-2); }
+.wordle-legend-swatch-absent { background: var(--color-neutral-400); }
 
 .wordle-keyboard { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
 .wordle-keyboard-row { display: flex; gap: 6px; justify-content: center; }
