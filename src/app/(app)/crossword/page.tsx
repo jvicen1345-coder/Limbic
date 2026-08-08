@@ -19,5 +19,5 @@ export default async function CrosswordPage() {
     elapsedSeconds: row?.elapsedSeconds ?? null,
   };
 
-  return <CrosswordGame dateKey={dateKey} puzzle={puzzle} initial={initial} nexusOptIn={user.nexusOptIn} />;
+  return <CrosswordGame dateKey={dateKey} puzzle={puzzle} initial={initial} />;
 }
