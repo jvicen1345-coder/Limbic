@@ -24,6 +24,14 @@
      before, just no longer doubling as the page's general surface color. */
   --color-bg: #f8f7f5;
   --color-surface: #ffffff;
+  /* Cards' own background — a soft blue-purple (periwinkle) rather than plain white,
+     bringing back some of the color the very first design pass had (--color-surface
+     itself used to be a pastel blue, #dbe7fb, before the warmth pass above flattened it to
+     white for every surface — inputs, the sidebar, message bubbles, etc.). Scoped to its
+     own token instead of reverting --color-surface, so only actual card-shaped content
+     (.card, plus a few custom "-card" classes that don't share that base class) picks up
+     the tint — chrome like inputs and the sidebar stays neutral. */
+  --color-card-surface: #e4e1fb;
   --color-text: #14213d;
   --color-accent: #3b6fe0;
   --color-accent-2: #1fa8d1;
@@ -119,6 +127,9 @@
 html[data-theme="dark"] {
   --color-bg: #0d1220;
   --color-surface: #1a2338;
+  /* A muted indigo, a step more blue-purple than plain --color-surface, so cards still
+     read as distinctly tinted against the navy page background rather than just lighter. */
+  --color-card-surface: #262d54;
   --color-text: #e7ecf7;
   --color-accent: #6d9bf5;
   --color-accent-2: #4dd1ee;
@@ -282,7 +293,7 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
      shared token, since --space-3 also drives unrelated gaps/margins elsewhere that
      weren't asked to grow. */
   padding: 16px;
-  border-radius: calc(var(--radius-lg) * 1.15); background: var(--color-surface);
+  border-radius: calc(var(--radius-lg) * 1.15); background: var(--color-card-surface);
   /* 200ms hover lift (see .card:hover below) needs something to transition. */
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
@@ -1867,7 +1878,7 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .nutrition-tip-card {
   border-left: 4px solid var(--color-accent);
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  background: var(--color-card-surface);
   box-shadow: var(--shadow-sm);
   padding: 20px 22px;
   margin-bottom: 20px;
@@ -1912,7 +1923,7 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .nutrition-content-card {
   border-left: 3px solid var(--color-accent);
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  background: var(--color-card-surface);
   box-shadow: var(--shadow-sm);
   padding: 20px 22px;
   transition: transform 200ms ease, box-shadow 200ms ease;
@@ -1931,7 +1942,7 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 /* — Personalized for Your Goal — */
 .nutrition-goal-card {
   border-radius: var(--radius-lg);
-  background: linear-gradient(160deg, var(--color-accent-100), var(--color-surface) 65%);
+  background: linear-gradient(160deg, var(--color-accent-100), var(--color-card-surface) 65%);
   border: 1px solid var(--color-divider);
   box-shadow: var(--shadow-sm);
   padding: 22px 24px;
@@ -1987,7 +1998,7 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   min-height: 280px;
   padding: 22px 20px;
   border-radius: calc(var(--radius-lg) * 1.15);
-  background: linear-gradient(165deg, var(--color-accent-100), var(--color-surface) 55%);
+  background: linear-gradient(165deg, var(--color-accent-100), var(--color-card-surface) 55%);
   border: 1px solid var(--color-divider);
   box-shadow: var(--shadow-sm);
   text-decoration: none;
