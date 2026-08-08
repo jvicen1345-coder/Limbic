@@ -5,15 +5,26 @@ import type { Clip } from "@/lib/types";
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const FETCH_TIMEOUT_MS = 8000;
 
-// One query per specialty, so the live pool doesn't skew toward whichever topic YouTube's
-// relevance ranking happens to favor for a single broad search — same reasoning as
-// news-live.ts's multi-query approach for wellness articles.
+// Several queries per specialty (rather than one), so the live pool doesn't skew toward
+// whichever topic YouTube's relevance ranking happens to favor for a single broad search —
+// same reasoning as news-live.ts's multi-query approach for wellness articles. Doubling the
+// query count only doubles search.list calls (still tiny against YouTube's free quota — see
+// fetchLiveClips's own doc comment), not results per call, so this is the cheap way to grow
+// the pool: a reader who scrolls quickly was running out of fresh clips well within a single
+// 6-hour cache window with the original 5-query pool.
 const CLIP_QUERIES = [
   "physical therapy exercise tips",
+  "physical therapy stretches for back pain",
+  "posture correction physical therapy",
+  "home exercise program physical therapy",
   "sports physical therapy ACL rehab",
+  "return to sport rehabilitation exercises",
   "neuro rehab stroke physical therapy",
+  "vestibular rehabilitation therapy",
   "pediatric physical therapy occupational therapy",
   "geriatric balance fall prevention physical therapy exercise",
+  "post surgery rehabilitation exercises physical therapy",
+  "manual therapy techniques physiotherapy",
 ];
 
 // A search scoped to these queries mostly returns on-topic results already, but this is a
@@ -48,7 +59,10 @@ async function searchYouTube(query: string): Promise<YouTubeSearchItem[]> {
       videoDuration: "short", // YouTube's own "under 4 minutes" filter — Shorts and short clips.
       safeSearch: "strict",
       relevanceLanguage: "en",
-      maxResults: "12",
+      // YouTube's search.list quota cost is a flat 100 units per call regardless of
+      // maxResults, so asking for the API's own max (50) instead of a small slice is free —
+      // straightforwardly more raw results per query to grow the live pool.
+      maxResults: "50",
       key: YOUTUBE_API_KEY!,
     });
     const res = await fetch(`https://www.googleapis.com/youtube/v3/search?${params}`, {
