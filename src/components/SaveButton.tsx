@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, type MouseEvent } from "react";
 import { toggleSaveAction } from "@/app/actions/saved";
 import { BookmarkIcon } from "@/components/icons";
 import type { Article } from "@/lib/types";
@@ -10,6 +10,7 @@ export function SaveButton({
   saved,
   size = "md",
   article,
+  label,
 }: {
   articleId: string;
   saved: boolean;
@@ -22,11 +23,33 @@ export function SaveButton({
    *  fetchPubmedById). Omitted for saves that aren't real resolvable articles (clips,
    *  wellness), which already work fine without a snapshot. */
   article?: Article;
+  /** When set, renders a labeled "Save Article" / "Saved" text button (see the article
+   *  detail page's action row in components/ArticleReadingPane.tsx) instead of the bare
+   *  icon-only button every other caller uses — same toggle underneath, just a different
+   *  shell around it so there's one save codepath instead of two. */
+  label?: string;
 }) {
   const [optimisticSaved, setOptimisticSaved] = useState(saved);
   const [, startTransition] = useTransition();
   const dim = size === "sm" ? 30 : 32;
   const icon = size === "sm" ? 15 : 16;
+
+  const onClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    setOptimisticSaved((v) => !v);
+    startTransition(() => {
+      toggleSaveAction(articleId, article);
+    });
+  };
+
+  if (label) {
+    return (
+      <button type="button" className="btn btn-secondary" onClick={onClick}>
+        <BookmarkIcon size={15} filled={optimisticSaved} />
+        {optimisticSaved ? "Saved" : label}
+      </button>
+    );
+  }
 
   return (
     <button
@@ -34,13 +57,7 @@ export function SaveButton({
       className="btn btn-ghost btn-icon"
       aria-label={optimisticSaved ? "Remove from saved" : "Save"}
       style={{ width: dim, height: dim, flexShrink: 0 }}
-      onClick={(e) => {
-        e.stopPropagation();
-        setOptimisticSaved((v) => !v);
-        startTransition(() => {
-          toggleSaveAction(articleId, article);
-        });
-      }}
+      onClick={onClick}
     >
       <BookmarkIcon size={icon} filled={optimisticSaved} />
     </button>
