@@ -1287,61 +1287,230 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .wordle-key-present { background: var(--color-accent-2); color: #fff; }
 .wordle-key-absent { background: var(--color-neutral-500); color: #fff; }
 
-/* — Mini Crossword (see components/CrosswordGame.tsx, lib/crossword-puzzles.ts) — */
+/* — Mini Crossword page (see components/CrosswordGame.tsx, app/(app)/crossword/page.tsx,
+   lib/crossword-puzzles.ts) — a full page (header + two-column grid/clue-list split) rather
+   than the compact single-column widget the rest of Limbic Games' mini-games use. */
+.crossword-page-pad { width: 100%; max-width: 1200px; margin: 0 auto; padding: 32px 24px 60px; box-sizing: border-box; }
+.crossword-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-accent-700);
+  margin-bottom: 18px;
+}
+.crossword-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; margin: 0 0 4px; }
+.crossword-subtitle { font-size: 14px; color: var(--color-neutral-700); margin: 0; }
+.crossword-date { font-size: 13px; color: var(--color-neutral-600); margin-top: 4px; margin-bottom: 28px; }
+
+.crossword-layout { display: flex; gap: 40px; align-items: flex-start; }
+.crossword-left-col { flex: 0 0 50%; max-width: 50%; min-width: 0; }
+.crossword-right-col { flex: 0 0 50%; max-width: 50%; min-width: 0; }
+@media (max-width: 1023px) {
+  .crossword-layout { flex-direction: column; gap: 28px; }
+  .crossword-left-col, .crossword-right-col { flex: 1 1 auto; max-width: none; width: 100%; }
+}
+
+.crossword-left-header { display: flex; justify-content: flex-end; margin-bottom: 12px; min-height: 20px; }
+.crossword-timer {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  color: var(--color-neutral-600);
+  font-variant-numeric: tabular-nums;
+}
+
+.crossword-grid-center { display: flex; justify-content: center; }
+/* The shadow sits on this wrapper (one unit) rather than per-cell — .crossword-grid itself
+   supplies the 1px cell-to-cell lines via its own background peeking through a 1px gap
+   (see below) instead of a border on every cell, so adjoining cells share a single hairline
+   instead of doubling up two borders side by side. */
+.crossword-grid-wrap {
+  display: inline-flex;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
 .crossword-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 3px;
-  max-width: 320px;
-  margin: 0 auto;
+  grid-template-columns: repeat(5, 52px);
+  grid-template-rows: repeat(5, 52px);
+  gap: 1px;
+  background: var(--color-divider);
+}
+@media (max-width: 640px) {
+  .crossword-grid { grid-template-columns: repeat(5, 44px); grid-template-rows: repeat(5, 44px); }
 }
 .crossword-cell {
   position: relative;
-  aspect-ratio: 1;
-  background: var(--color-surface);
-  border: 1.5px solid var(--color-neutral-400);
-  border-radius: 3px;
+  background: var(--color-card-surface);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-heading);
-  font-size: 20px;
+  font-weight: 700;
+  font-size: 22px;
   text-transform: uppercase;
   cursor: pointer;
   color: var(--color-text);
+  transition: background-color 150ms ease;
+}
+@media (max-width: 640px) {
+  .crossword-cell { font-size: 18px; }
 }
 /* Blocked squares stay a fixed dark tone in both themes, same reasoning as the shadow
    tokens and .app-mobile-drawer-backdrop's scrim above — a "blocked cell" is a structural
    grid marking, not page content, so it doesn't flip with the palette the way a
-   foreground/background color would. */
-.crossword-cell-black { background: #1a1410; border-color: #1a1410; cursor: default; }
-.crossword-cell-selected { background: color-mix(in srgb, var(--color-accent) 30%, var(--color-surface)); border-color: var(--color-accent); }
-.crossword-cell-active-word { background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface)); }
-.crossword-cell-correct { color: var(--color-accent-700); }
+   foreground/background color would (unlike every other state below, which reads off a
+   real token and adapts per theme). */
+.crossword-cell-black { background: #1a1410; cursor: default; }
+.crossword-cell-selected { background: var(--color-accent); color: #fff; }
+.crossword-cell-selected .crossword-cell-number { color: rgba(255, 255, 255, 0.85); }
+.crossword-cell-active-word { background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card-surface)); }
+/* Applied once the whole puzzle is confirmed correct (status === "won") — see .tag-evidence
+   comment further up for the same reuse-over-invent reasoning: #4CAF7D is literally
+   --color-vitals-mobility already. */
+.crossword-cell-correct { background: color-mix(in srgb, var(--color-vitals-mobility) 15%, var(--color-card-surface)); }
+/* Fires once, when every cell is filled but the grid isn't fully correct yet — a brief
+   "something's off" cue on just the wrong cells, not a hint about which letter is right,
+   since it only ever triggers once nothing is left blank. */
+.crossword-cell-wrong-flash { animation: crossword-flash-fade 500ms ease forwards; }
+@keyframes crossword-flash-fade {
+  from { background-color: color-mix(in srgb, #e85a4a 20%, var(--color-card-surface)); }
+  to { background-color: var(--color-card-surface); }
+}
 .crossword-cell-number {
   position: absolute;
-  top: 2px;
-  left: 3px;
-  font-size: 9px;
+  top: 3px;
+  left: 4px;
+  font-size: 10px;
   font-family: var(--font-body);
   font-weight: 700;
   color: var(--color-neutral-700);
 }
-.crossword-clue-banner { text-align: center; font-size: 13px; min-height: 20px; margin: 12px 0; color: var(--color-neutral-700); }
-.crossword-clue-banner strong { color: var(--color-text); }
-.crossword-clues { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
-.crossword-clue-list-title { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px; }
-.crossword-clue-item {
-  display: flex;
-  gap: 6px;
-  font-size: 13px;
-  padding: 5px 6px;
+
+.crossword-clue-banner {
+  margin-top: 16px;
+  padding: 12px 16px;
   border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-accent) 15%, var(--color-card-surface));
+  border-left: 3px solid var(--color-accent);
+  font-size: 15px;
+  color: var(--color-text);
+  transition: background-color 200ms ease;
+  min-height: 20px;
+  box-sizing: border-box;
+}
+.crossword-clue-banner-num { font-weight: 700; margin-right: 6px; }
+
+.crossword-mobile-keys { display: none; }
+/* Touch-only (not just "narrow screen") — a touch laptop at desktop width still gets it,
+   a mouse/trackpad user on a narrow window still doesn't, matching what the row is
+   actually for: an alternative to a touchscreen's on-screen keyboard, not a breakpoint. */
+@media (hover: none) and (pointer: coarse) {
+  .crossword-mobile-keys { display: flex; gap: 6px; overflow-x: auto; margin-top: 16px; padding-bottom: 4px; }
+}
+.crossword-mobile-key {
+  flex-shrink: 0;
+  min-width: 34px;
+  height: 40px;
+  padding: 0 4px;
+  border-radius: 999px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-card-surface);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
+.crossword-mobile-key:active { background: var(--color-accent); color: #fff; }
+.crossword-mobile-key-back { min-width: 46px; font-size: 13px; color: var(--color-neutral-700); }
+
+.crossword-clues-panel { display: flex; flex-direction: column; gap: 28px; }
+.crossword-clue-section-title {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--color-divider);
+}
+.crossword-clue-item {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border-left: 2px solid transparent;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+}
 .crossword-clue-item:hover { background: var(--color-neutral-100); }
-.crossword-clue-item-active { background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface)); font-weight: 600; }
-.crossword-clue-num { color: var(--color-neutral-700); min-width: 16px; flex-shrink: 0; }
+.crossword-clue-item-active { background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card-surface)); border-left-color: var(--color-accent); }
+.crossword-clue-item-done { opacity: 0.5; text-decoration: line-through; }
+.crossword-clue-num { font-weight: 700; min-width: 20px; flex-shrink: 0; text-align: right; color: var(--color-neutral-700); }
+
+/* — Mini Crossword completion overlay — a centered card over a dimmed backdrop, not a
+   full-screen takeover, so the finished grid stays visible (and dismissible back to) behind
+   it. --color-scrim is the same theme-invariant modal backdrop the Add Event modal and
+   Limbic Calendar's detail panel already use. */
+.crossword-complete-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--color-scrim);
+  animation: fade-in 300ms ease;
+}
+.crossword-complete-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-card-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 36px 32px;
+  text-align: center;
+  max-width: 360px;
+  width: 100%;
+}
+.crossword-complete-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--color-neutral-600);
+  cursor: pointer;
+}
+.crossword-complete-title { font-family: var(--font-heading); font-size: 24px; margin: 0 0 8px; }
+.crossword-complete-time { font-size: 14px; color: var(--color-neutral-700); margin-bottom: 22px; }
+.crossword-complete-actions { display: flex; flex-direction: column; gap: 10px; }
+/* Pure-CSS confetti — a fixed handful of colored pieces (see CONFETTI_PIECES in
+   CrosswordGame.tsx) rather than a physics simulation: each just falls straight down with a
+   full rotation and fades out, staggered by its own animation-delay, no library involved. */
+.crossword-confetti-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.crossword-confetti-piece {
+  position: absolute;
+  top: -14px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  animation: crossword-confetti-fall 1800ms ease-in forwards;
+}
+@keyframes crossword-confetti-fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+  100% { transform: translateY(260px) rotate(360deg); opacity: 0; }
+}
 
 /* — reading streak calendar (GitHub-contributions-style, 365 rolling days) — */
 .reading-calendar { display: flex; gap: 3px; width: max-content; }

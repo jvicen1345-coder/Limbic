@@ -7,24 +7,35 @@ import { CopyIcon, CheckIcon } from "@/components/icons";
  *  same fixed-duration-feedback pattern as ProfessionalDatesForm's SAVED_CHECK_MS. */
 const COPIED_MS = 2000;
 
-/** Copies the current page's URL to the clipboard — the article detail page's action row
- *  (see ArticleReadingPane.tsx) is the only caller today, but this reads location.href
- *  itself rather than taking a url prop so it's correct wherever it's dropped in. */
-export function ShareButton() {
+/** Copies to the clipboard — defaults to the current page's URL (the article detail page's
+ *  action row, see ArticleReadingPane.tsx) but accepts a `text` override for callers that
+ *  want to share something more specific, like a game's result summary (see
+ *  CrosswordGame.tsx's completion overlay) — one copy-to-clipboard codepath rather than a
+ *  duplicated one per caller. `label`/`className` let a caller match its own surrounding
+ *  button row instead of always rendering as a standalone secondary button. */
+export function ShareButton({
+  text,
+  label = "Share",
+  className = "btn btn-secondary",
+}: {
+  text?: string;
+  label?: string;
+  className?: string;
+}) {
   const [copied, setCopied] = useState(false);
 
   return (
     <button
       type="button"
-      className="btn btn-secondary"
+      className={className}
       onClick={async () => {
-        await navigator.clipboard.writeText(window.location.href);
+        await navigator.clipboard.writeText(text ?? window.location.href);
         setCopied(true);
         window.setTimeout(() => setCopied(false), COPIED_MS);
       }}
     >
       {copied ? <CheckIcon size={15} /> : <CopyIcon size={15} />}
-      {copied ? "Copied" : "Share"}
+      {copied ? "Copied" : label}
     </button>
   );
 }
