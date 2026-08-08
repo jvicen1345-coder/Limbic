@@ -24,14 +24,15 @@
      before, just no longer doubling as the page's general surface color. */
   --color-bg: #f8f7f5;
   --color-surface: #ffffff;
-  /* Cards' own background — a soft blue-purple (periwinkle) rather than plain white,
-     bringing back some of the color the very first design pass had (--color-surface
-     itself used to be a pastel blue, #dbe7fb, before the warmth pass above flattened it to
-     white for every surface — inputs, the sidebar, message bubbles, etc.). Scoped to its
-     own token instead of reverting --color-surface, so only actual card-shaped content
-     (.card, plus a few custom "-card" classes that don't share that base class) picks up
-     the tint — chrome like inputs and the sidebar stays neutral. */
-  --color-card-surface: #e4e1fb;
+  /* Cards' own background — a pastel blue rather than plain white, bringing back the color
+     the very first design pass had (--color-surface itself used to be this exact pastel
+     blue, #dbe7fb, before a later warmth pass flattened it to white for every surface —
+     inputs, the sidebar, message bubbles, etc.). Aliased to --color-accent-200 (defined
+     below) rather than a literal duplicate, and scoped to its own token instead of
+     reverting --color-surface, so only actual card-shaped content (.card, plus a few
+     custom "-card" classes that don't share that base class) picks up the tint — chrome
+     like inputs and the sidebar stays neutral. */
+  --color-card-surface: var(--color-accent-200);
   --color-text: #14213d;
   --color-accent: #3b6fe0;
   --color-accent-2: #1fa8d1;
@@ -127,9 +128,10 @@
 html[data-theme="dark"] {
   --color-bg: #0d1220;
   --color-surface: #1a2338;
-  /* A muted indigo, a step more blue-purple than plain --color-surface, so cards still
-     read as distinctly tinted against the navy page background rather than just lighter. */
-  --color-card-surface: #262d54;
+  /* Same --color-accent-200 alias as light mode, so cards stay a clean blue rather than
+     drifting toward purple, just a step more saturated than plain --color-surface so they
+     still read as distinctly tinted against the navy page background. */
+  --color-card-surface: var(--color-accent-200);
   --color-text: #e7ecf7;
   --color-accent: #6d9bf5;
   --color-accent-2: #4dd1ee;
