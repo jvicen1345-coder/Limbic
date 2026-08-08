@@ -1320,22 +1320,24 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 
 .crossword-grid-center { display: flex; justify-content: center; }
-/* The shadow sits on this wrapper (one unit) rather than per-cell — .crossword-grid itself
-   supplies the 1px cell-to-cell lines via its own background peeking through a 1px gap
-   (see below) instead of a border on every cell, so adjoining cells share a single hairline
-   instead of doubling up two borders side by side. */
+/* A soft "frame" (a step more muted than the cells themselves, so they read as sitting
+   forward on top of it) plus a two-layer elevation shadow — a tight contact shadow for
+   grounding and a wide soft one for lift — reads as a real, substantial object rather than
+   a flat table of borders. Individual cells are fully rounded now (see .crossword-cell)
+   and separated by the frame showing through a real gap, instead of the previous
+   hairline-per-edge (1px gap tinted with --color-divider) approach. */
 .crossword-grid-wrap {
   display: inline-flex;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-  border-radius: var(--radius-md);
-  overflow: hidden;
+  background: color-mix(in srgb, var(--color-card-surface) 55%, var(--color-bg) 45%);
+  padding: 10px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 20px 40px rgba(0, 0, 0, 0.16);
 }
 .crossword-grid {
   display: grid;
   grid-template-columns: repeat(5, 52px);
   grid-template-rows: repeat(5, 52px);
-  gap: 1px;
-  background: var(--color-divider);
+  gap: 4px;
 }
 @media (max-width: 640px) {
   .crossword-grid { grid-template-columns: repeat(5, 44px); grid-template-rows: repeat(5, 44px); }
@@ -1343,6 +1345,7 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .crossword-cell {
   position: relative;
   background: var(--color-card-surface);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1352,18 +1355,32 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   text-transform: uppercase;
   cursor: pointer;
   color: var(--color-text);
-  transition: background-color 150ms ease;
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 }
 @media (max-width: 640px) {
   .crossword-cell { font-size: 18px; }
+}
+/* Non-touch only — a touchscreen has no hover state to preview, and this would otherwise
+   stick "on" after a tap until the next touch elsewhere. */
+@media (hover: hover) {
+  .crossword-cell:not(.crossword-cell-black):not(.crossword-cell-selected):hover {
+    background: color-mix(in srgb, var(--color-accent) 18%, var(--color-card-surface));
+  }
 }
 /* Blocked squares stay a fixed dark tone in both themes, same reasoning as the shadow
    tokens and .app-mobile-drawer-backdrop's scrim above — a "blocked cell" is a structural
    grid marking, not page content, so it doesn't flip with the palette the way a
    foreground/background color would (unlike every other state below, which reads off a
-   real token and adapts per theme). */
-.crossword-cell-black { background: #1a1410; cursor: default; }
-.crossword-cell-selected { background: var(--color-accent); color: #fff; }
+   real token and adapts per theme). A subtle diagonal gradient instead of a flat fill gives
+   it the same sense of depth every other cell state below has. */
+.crossword-cell-black { background: linear-gradient(145deg, #241c16, #100c09); cursor: default; }
+.crossword-cell-selected {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--color-accent) 80%, white), var(--color-accent));
+  color: #fff;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent) 45%, transparent), 0 3px 10px color-mix(in srgb, var(--color-accent) 40%, transparent);
+  transform: translateY(-1px);
+  z-index: 1;
+}
 .crossword-cell-selected .crossword-cell-number { color: rgba(255, 255, 255, 0.85); }
 .crossword-cell-active-word { background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card-surface)); }
 /* Applied once the whole puzzle is confirmed correct (status === "won") — see .tag-evidence
@@ -1380,8 +1397,8 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 .crossword-cell-number {
   position: absolute;
-  top: 3px;
-  left: 4px;
+  top: 4px;
+  left: 5px;
   font-size: 10px;
   font-family: var(--font-body);
   font-weight: 700;
