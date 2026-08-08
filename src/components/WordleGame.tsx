@@ -159,6 +159,21 @@ export function WordleGame({
         Guess today&rsquo;s 5-letter health & wellness word in 6 tries.
       </p>
 
+      <div className="wordle-legend">
+        <span className="wordle-legend-item">
+          <span className="wordle-legend-swatch wordle-legend-swatch-correct" />
+          Correct spot
+        </span>
+        <span className="wordle-legend-item">
+          <span className="wordle-legend-swatch wordle-legend-swatch-present" />
+          Wrong spot
+        </span>
+        <span className="wordle-legend-item">
+          <span className="wordle-legend-swatch wordle-legend-swatch-absent" />
+          Not in word
+        </span>
+      </div>
+
       <div style={{ minHeight: 26, marginBottom: 6 }}>
         {message && <span className="tag tag-outline">{message}</span>}
       </div>
