@@ -996,9 +996,7 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .article-topic-tag:hover { background: var(--color-accent-100); border-color: var(--color-accent-600); }
 
 /* — Related articles grid (components/ArticleReadingPane.tsx) — a real card per article
-   (photo on top when one exists, a colored left border keyed to specialty when it doesn't
-   — see .specialty-border-* below — rather than an empty grey placeholder box), 3-up on
-   desktop, 2-up on tablet, 1-up on mobile. */
+   (photo on top when one exists), 3-up on desktop, 2-up on tablet, 1-up on mobile. */
 .article-related-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1010,13 +1008,31 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 @media (max-width: 640px) {
   .article-related-grid { grid-template-columns: 1fr; }
 }
+/* Own background (a step lighter/darker than the warm-tinted .article-reading-card these
+   sit inside — see --color-surface, the app's general "chrome" surface token, as opposed to
+   --color-card-surface's warm tint) plus a heavier shadow than the shared .card-hoverable
+   default, so these read as distinctly clickable rather than blending into their parent
+   card. .card.elev-sm.article-related-card / .card.elev-sm.card-hoverable...:hover below are
+   deliberately over-qualified (3-4 classes) so they beat both the plain .card.elev-sm rule
+   and its dark-mode override on specificity alone, in either theme, without needing our own
+   dark-mode-scoped copy. */
 .article-related-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   padding: 0;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
+  background: var(--color-surface);
+}
+.card.elev-sm.article-related-card {
+  box-shadow: 0 4px 16px rgba(20, 10, 0, 0.12);
+  transition: all 200ms ease;
+}
+.card.elev-sm.card-hoverable.article-related-card:hover {
+  box-shadow: 0 8px 24px rgba(20, 10, 0, 0.18);
+  transform: translateY(-3px);
 }
 .article-related-thumb {
   position: relative;
@@ -1027,10 +1043,11 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 .article-related-body { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px 16px; }
 .article-related-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.article-related-divider { border: none; border-top: 1px solid var(--color-divider); margin: 0; }
 .article-related-title {
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
-  font-size: 14px;
+  font-size: 15.5px;
   line-height: 1.35;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -1039,17 +1056,29 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 .article-related-meta { font-size: 11.5px; color: var(--color-neutral-700); }
 .article-related-date { font-size: 11px; color: var(--color-neutral-600); }
-/* Fallback for a related article with no photo (see .article-related-thumb above) — a
-   colored accent instead of an empty grey box, reusing each specialty's already-established
-   token elsewhere in the app rather than inventing a new 5-color palette (ortho/blue and
-   neuro/teal already anchor the two accent scales; sports/orange, pediatric/green,
-   geriatric/purple reuse Limbic Vitals' three category colors — see --color-vitals-* and
-   the .card-title comment near .tag-evidence-* above for the same reuse-over-invent call). */
-.specialty-border-ortho { border-left: 4px solid var(--color-accent); }
-.specialty-border-neuro { border-left: 4px solid var(--color-accent-2); }
-.specialty-border-sports { border-left: 4px solid var(--color-vitals-strength); }
-.specialty-border-pediatric { border-left: 4px solid var(--color-vitals-mobility); }
-.specialty-border-geriatric { border-left: 4px solid var(--color-vitals-mindfulness); }
+/* A quiet "this is clickable" hint in the corner — muted, not a real button, so it doesn't
+   compete with the title/meta for attention; nudges right on hover as its only signal. */
+.article-related-arrow {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  color: var(--color-neutral-500);
+  font-size: 15px;
+  transition: transform 200ms ease;
+}
+.article-related-card:hover .article-related-arrow { transform: translateX(3px); }
+/* Left border keyed to the card's own evidence badge — RES/RCT/SR/MA/CPG each reuse an
+   existing token that already anchors that color elsewhere (RCT/MA/mindfulness's greens and
+   purples come from Limbic Vitals' category colors, SR from the accent-blue scale); CPG's
+   amber has no existing token close enough to reuse, so it's the one literal hex here.
+   Anything else (Review/Industry/CE/Product, or no evidence level at all) falls back to a
+   plain muted border rather than no border, so every card gets the same left-edge treatment. */
+.article-related-border-res { border-left: 3px solid var(--color-neutral-900); }
+.article-related-border-rct { border-left: 3px solid var(--color-vitals-mobility); }
+.article-related-border-sr { border-left: 3px solid var(--color-accent); }
+.article-related-border-ma { border-left: 3px solid var(--color-vitals-mindfulness); }
+.article-related-border-cpg { border-left: 3px solid #e8a93a; }
+.article-related-border-default { border-left: 3px solid var(--color-neutral-400); }
 
 /* "Latest news" (see components/HomeFeed.tsx) renders twice — once right under the hero,
    once in the aside — and CSS picks which copy shows per breakpoint rather than one
@@ -1603,33 +1632,6 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   height: 500px;
   background: radial-gradient(ellipse at 50% 30%, #10182c 0%, #070a14 65%, #05070d 100%);
 }
-/* Accessible fallback for the D3 spiderweb above it (components/AgentGraph.tsx) — the same
-   nodes as a plain clickable text list, for a reader who'd rather not (or can't) interact
-   with the visual, opening the exact same detail panel a node click does (see
-   components/ThreadsWeb.tsx's handleNodeClick, shared by both). */
-.threads-connections { padding: 16px; background: #0d1428; border-top: 1px solid rgba(140, 170, 255, 0.15); }
-.threads-connections-label {
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #6ea8ff;
-  margin-bottom: 8px;
-}
-.threads-connections-list { display: flex; flex-direction: column; }
-.threads-connections-list button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: none;
-  border-bottom: 1px solid rgba(140, 170, 255, 0.1);
-  cursor: pointer;
-  padding: 9px 2px;
-  font-size: 13px;
-  color: #c7d3ee;
-}
-.threads-connections-list button:last-child { border-bottom: none; }
-.threads-connections-list button:hover { color: #ffffff; }
 .threads-detail-panel {
   position: relative;
   background: #0d1428;

@@ -177,26 +177,6 @@ export function ThreadsWeb({
         />
       </div>
 
-      {/* A plain clickable text list of the same nodes, for a reader who'd rather not (or
-          can't) interact with the D3 canvas above — opens the exact same detail panel a
-          node click does, via the same handleNodeClick. Excludes ring 0 (the center node is
-          the article itself, not one of its connections) and doesn't wait for the reveal
-          animation — the list is available immediately, not staggered in with the visual. */}
-      <div className="threads-connections">
-        <div className="threads-connections-label">Article Connections</div>
-        <ul className="threads-connections-list" style={{ listStyle: "none", margin: 0, padding: 0 }}>
-          {webNodes
-            .filter((n) => n.ring !== 0)
-            .map((n) => (
-              <li key={n.id}>
-                <button type="button" onClick={() => handleNodeClick(n.id)}>
-                  {n.label}
-                </button>
-              </li>
-            ))}
-        </ul>
-      </div>
-
       {/* A normal block below the canvas, not an absolutely-positioned overlay on top of
           it like Limbic Agent's own .agent-detail-card (see globals.css) — Agent's chat is
           a fixed-height full-screen surface where a floating card never blocks anything
