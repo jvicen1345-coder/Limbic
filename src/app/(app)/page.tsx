@@ -1,4 +1,4 @@
-import { getCurrentUser, recordHomeVisit, isStudentEmail } from "@/lib/session";
+import { getCurrentUser, recordHomeVisit } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getArticles } from "@/lib/articles";
 import { decorateArticle, rankFeed, type DecoratedArticle } from "@/lib/feed";
@@ -11,6 +11,8 @@ import { ensureNexusSeedData } from "@/lib/nexus-seed";
 import { getConnectionStates } from "@/lib/nexus";
 import { buildLimbicAgentInsights } from "@/lib/limbic-agent-insights";
 import { todayLocalDateStr } from "@/lib/today";
+import { todayDateKey } from "@/lib/wordle-words";
+import { homeQuestionForDate } from "@/lib/home-questions-static";
 import { HomeFeed } from "@/components/HomeFeed";
 import { LimbicCalendarWidget } from "@/components/LimbicCalendarWidget";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
@@ -120,11 +122,17 @@ export default async function HomePage() {
   const dateLabel = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
   const newStudiesToday = articles.filter((a) => a.type === "research" && a.date === todayStr).length;
   const newGuidelinesToday = articles.filter((a) => a.type === "guideline" && a.date === todayStr).length;
-  // Limbic Boards' daily question is normally a student-only product (see
-  // app/(app)/boards/page.tsx), but a licensed PT/clinician account gets access to just
-  // that one question — not the rest of Boards — so the dashboard card shows for both.
-  const showQuestionOfDay = isStudentEmail(user.email) || user.licenseNumber != null;
   const ceHoursCompleted = (user.ceCategories as unknown as CeCategory[]).reduce((sum, c) => sum + c.completed, 0);
+
+  // Home's own general-audience "Question of the Day" (see components/HomeQuestionCard.tsx)
+  // — distinct from Limbic Boards' student-facing daily question, which stays on
+  // app/(app)/boards/sharpening/page.tsx. Same todayDateKey() rotation + DailyCompletion
+  // persistence pattern as every other daily game in this app.
+  const homeQuestionDateKey = todayDateKey();
+  const homeQuestion = homeQuestionForDate(homeQuestionDateKey);
+  const homeQuestionCompletionPromise = prisma.dailyCompletion.findUnique({
+    where: { userId_kind_dateKey: { userId: user.id, kind: "homeQuestion", dateKey: homeQuestionDateKey } },
+  });
 
   // Falls back to null (renders nothing — see ContinueReadingCard) if there's no reading
   // history yet, or if the most recently read article has since dropped out of the current
@@ -177,10 +185,11 @@ export default async function HomePage() {
       })()
     : Promise.resolve(null);
 
-  const [newsTickerWithRealImages, homeImagedPrefix, nexusSuggestions] = await Promise.all([
+  const [newsTickerWithRealImages, homeImagedPrefix, nexusSuggestions, homeQuestionCompletion] = await Promise.all([
     attachRealImages(newsTickerCandidates),
     resolveHomeImages(ranked),
     nexusSuggestionsPromise,
+    homeQuestionCompletionPromise,
   ]);
   // A second pass, after (not alongside) the real-image fetch above — attachTopicImages
   // only fills in articles that pass 1 left empty (see lib/topic-image.ts), which is most
@@ -225,7 +234,6 @@ export default async function HomePage() {
     dateLabel,
     newStudiesToday,
     newGuidelinesToday,
-    showQuestionOfDay,
     streakDays: user.streakDays,
     ceHoursCompleted,
     savedUnfinishedCount: savedUnreadRows.length,
@@ -255,6 +263,11 @@ export default async function HomePage() {
       savedUnread={savedUnread}
       nexusSuggestions={nexusSuggestions}
       continueReading={continueReading}
+      homeQuestion={{
+        dateKey: homeQuestionDateKey,
+        question: homeQuestion,
+        initialSelectedIndex: homeQuestionCompletion?.selectedIndex ?? null,
+      }}
       dashboard={dashboard}
       hiddenWidgets={user.hiddenHomeWidgets as unknown as string[]}
       limbicAgentInsights={limbicAgentInsights}

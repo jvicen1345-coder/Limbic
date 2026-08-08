@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRightIcon, CheckCircleIcon, ZapIcon } from "@/components/icons";
+import { CheckCircleIcon, ZapIcon } from "@/components/icons";
 import { CountUp } from "@/components/CountUp";
 
 export interface DailyDashboardData {
@@ -7,10 +7,6 @@ export interface DailyDashboardData {
   dateLabel: string;
   newStudiesToday: number;
   newGuidelinesToday: number;
-  /** Limbic Boards' daily question — a student-only product, plus licensed PT/clinician
-   *  accounts get access to just this one question (see app/(app)/boards/page.tsx). False
-   *  for the general population, who see no card at all rather than a locked one. */
-  showQuestionOfDay: boolean;
   streakDays: number;
   ceHoursCompleted: number;
   savedUnfinishedCount: number;
@@ -67,18 +63,6 @@ function MetricTile({
   );
 }
 
-function QuestionOfDayTile() {
-  return (
-    <Link href="/boards" className="card elev-sm dashboard-metric-tile" title="Answer today's question">
-      <div className="card-kicker">Question</div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-        <span className="tag tag-accent">Ready</span>
-        <ChevronRightIcon size={16} style={{ color: "var(--color-accent-700)", flexShrink: 0 }} />
-      </div>
-    </Link>
-  );
-}
-
 /** The Home page's "morning briefing" row — greeting/date live in HomeFeed's own header
  *  (see app/(app)/page.tsx for how both are put together), this is just the scannable
  *  strip of metric tiles underneath it. Labels are kept short deliberately (a fuller
@@ -102,7 +86,6 @@ export function DailyDashboard({ data }: { data: DailyDashboardData }) {
         href="/search?type=guideline&new=1"
         upToDateWhenZero
       />
-      {data.showQuestionOfDay && <QuestionOfDayTile />}
       <MetricTile
         label="Day streak"
         title="Current reading streak"
