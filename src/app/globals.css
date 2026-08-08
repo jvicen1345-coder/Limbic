@@ -2687,84 +2687,193 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 /* — Body Connections (app/(app)/games/body/page.tsx, components/BodyConnectionsGame.tsx,
    components/BodySilhouette.tsx) — */
 .body-page { max-width: 900px; margin: 0 auto; }
-.body-header { text-align: center; margin-bottom: 20px; }
-.body-progress { font-size: 13px; font-weight: 600; color: var(--color-neutral-700); margin: 4px 0 0; }
+.body-header { text-align: center; margin-bottom: 22px; }
+.body-title { font-size: 24px; margin: 4px 0 6px; }
+.body-progress { font-size: 13px; font-weight: 600; color: var(--color-neutral-700); margin: 0 0 8px; }
+.body-progress-bar {
+  width: 100%;
+  max-width: 320px;
+  height: 6px;
+  margin: 0 auto 12px;
+  border-radius: 999px;
+  background: var(--color-neutral-200);
+  overflow: hidden;
+}
+.body-progress-bar-fill {
+  height: 100%;
+  background: var(--color-vitals-mobility);
+  border-radius: 999px;
+  transition: width 400ms ease;
+}
+.body-instruction { font-size: 13px; color: var(--color-neutral-700); margin: 0; }
 
-.body-desktop-layout { display: flex; gap: 36px; align-items: flex-start; }
-.body-silhouette-col { flex: 0 0 260px; }
-.body-functions-col { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.body-desktop-layout { display: flex; gap: 28px; align-items: stretch; }
+.body-silhouette-col { flex: 0 0 45%; min-width: 0; }
+.body-functions-col { flex: 0 0 55%; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
 @media (max-width: 767px) {
-  .body-desktop-layout { flex-direction: column; align-items: center; }
-  .body-silhouette-col { flex: 0 0 auto; width: 100%; max-width: 260px; }
-  .body-functions-col { width: 100%; }
+  .body-desktop-layout { flex-direction: column; }
+  .body-silhouette-col, .body-functions-col { flex: 1 1 auto; width: 100%; }
 }
 
-.body-silhouette { width: 100%; max-width: 260px; display: block; margin: 0 auto; }
-.body-region {
-  fill: var(--color-neutral-300);
-  stroke: var(--color-neutral-500);
+/* A deliberately dark "stage" for the silhouette, distinct from the rest of the page in
+   either theme — never a literal color, so it still automatically tracks light/dark instead
+   of ever inverting to a light card when the site itself is already in dark mode. Light
+   theme mixes --color-bg toward --color-accent-900 (a rich navy in light theme) rather than
+   toward black, since --color-bg there is a warm near-white that flattens to plain grey when
+   darkened with black alone; dark theme's --color-bg is already a dark navy, so mixing
+   toward black there just deepens it further on the same hue. */
+.body-silhouette-card {
+  position: relative;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  border-radius: calc(var(--radius-lg) * 1.15);
+  background: color-mix(in srgb, var(--color-bg) 18%, var(--color-accent-900));
+  box-sizing: border-box;
+}
+html[data-theme="dark"] .body-silhouette-card {
+  background: color-mix(in srgb, var(--color-bg) 55%, black);
+}
+.body-silhouette { width: 100%; max-width: 300px; height: auto; display: block; margin: 0 auto; }
+
+.body-region-decorative {
+  fill: color-mix(in srgb, var(--color-neutral-400) 22%, transparent);
+  stroke: color-mix(in srgb, var(--color-neutral-400) 60%, transparent);
+  stroke-width: 1.2;
+}
+
+.body-region-part {
+  fill: color-mix(in srgb, var(--color-neutral-400) 30%, transparent);
+  stroke: var(--color-neutral-400);
   stroke-width: 1.5;
   cursor: pointer;
-  transition: fill 150ms ease, stroke 150ms ease;
-  transform-box: fill-box;
-  transform-origin: center;
+  transition: fill 150ms ease, stroke 150ms ease, filter 150ms ease;
 }
-.body-region:hover { fill: color-mix(in srgb, var(--color-accent) 35%, var(--color-neutral-300)); stroke: var(--color-accent); }
-.body-region-inactive { fill: var(--color-neutral-200); stroke: var(--color-neutral-300); cursor: default; pointer-events: none; opacity: 0.55; }
-.body-region-selected { fill: var(--color-accent); stroke: var(--color-accent); }
-.body-region-matched { fill: var(--color-vitals-mobility); stroke: var(--color-vitals-mobility); pointer-events: none; }
-.body-region-flash { fill: var(--color-danger); stroke: var(--color-danger); animation: body-region-shake 400ms ease; }
-.body-region-pulsing { fill: color-mix(in srgb, var(--color-accent) 50%, var(--color-neutral-300)); stroke: var(--color-accent); animation: body-region-pulse 1.4s ease-in-out infinite; }
-@keyframes body-region-shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-3px); }
-  75% { transform: translateX(3px); }
+.body-region-part:hover { fill: color-mix(in srgb, var(--color-accent) 40%, transparent); stroke: var(--color-accent); }
+.body-region-inactive {
+  fill: color-mix(in srgb, var(--color-neutral-400) 14%, transparent);
+  stroke: color-mix(in srgb, var(--color-neutral-400) 35%, transparent);
+  cursor: default;
+  pointer-events: none;
+}
+.body-region-selected {
+  fill: color-mix(in srgb, var(--color-accent) 70%, transparent);
+  stroke: var(--color-accent);
+  filter: drop-shadow(0 0 7px var(--color-accent));
+}
+.body-region-matched { fill: color-mix(in srgb, var(--color-vitals-mobility) 60%, transparent); stroke: var(--color-vitals-mobility); pointer-events: none; }
+.body-region-flash { animation: body-region-flash-fade 600ms ease; }
+.body-region-pulsing { animation: body-region-pulse 1.4s ease-in-out infinite; }
+@keyframes body-region-flash-fade {
+  0% { fill: color-mix(in srgb, #e85a4a 40%, transparent); stroke: #e85a4a; }
+  100% { fill: color-mix(in srgb, var(--color-neutral-400) 30%, transparent); stroke: var(--color-neutral-400); }
 }
 @keyframes body-region-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%, 100% { fill: color-mix(in srgb, var(--color-accent) 55%, transparent); }
+  50% { fill: color-mix(in srgb, var(--color-accent) 20%, transparent); }
+}
+
+.body-region-label {
+  fill: color-mix(in srgb, #fff 88%, transparent);
+  font-size: 11px;
+  font-weight: 600;
+  text-anchor: middle;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.body-region-group:hover .body-region-label { opacity: 1; }
+
+.body-selected-tooltip {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 85%, black);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  animation: body-tooltip-fade-in 200ms ease;
+}
+@keyframes body-tooltip-fade-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 .body-function-card {
+  position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  gap: 12px;
   width: 100%;
-  min-height: 48px;
-  padding: 12px 16px;
+  padding: 12px 16px 12px 14px;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-divider);
+  border-left: 3px solid var(--color-accent);
   background: var(--color-surface);
-  font-size: 14px;
-  color: var(--color-text);
   text-align: left;
   cursor: pointer;
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 }
-.body-function-card:hover:not(:disabled) { border-color: var(--color-accent); }
+.body-function-card:hover:not(:disabled) { background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface)); }
 .body-function-card:disabled { cursor: default; }
-.body-function-selected { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
-.body-function-matched {
-  background: color-mix(in srgb, var(--color-vitals-mobility) 14%, var(--color-surface));
-  border-color: var(--color-vitals-mobility);
-  color: var(--color-vitals-mobility);
-  text-decoration: line-through;
-  opacity: 0.75;
+.body-function-letter {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  color: var(--color-accent);
+  font-size: 11px;
+  font-weight: 700;
 }
+.body-function-text-wrap { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.body-function-text { font-size: 13.5px; color: var(--color-text); line-height: 1.4; }
+.body-function-matched-label { font-size: 11.5px; font-weight: 600; color: var(--color-vitals-mobility); }
+
+.body-function-selected { background: var(--color-accent); border-left-color: var(--color-accent-800); }
+.body-function-selected .body-function-text { color: #fff; }
+.body-function-selected .body-function-letter { background: color-mix(in srgb, #fff 25%, transparent); color: #fff; }
+
+.body-function-matched {
+  border-left-color: var(--color-vitals-mobility);
+  background: color-mix(in srgb, var(--color-vitals-mobility) 12%, var(--color-surface));
+  opacity: 0.85;
+}
+.body-function-matched .body-function-letter { background: color-mix(in srgb, var(--color-vitals-mobility) 20%, transparent); color: var(--color-vitals-mobility); }
+
 .body-function-flash {
-  border-color: var(--color-danger);
-  background: color-mix(in srgb, var(--color-danger) 14%, var(--color-surface));
-  animation: body-region-shake 400ms ease;
+  border-left-color: #e85a4a;
+  background: color-mix(in srgb, #e85a4a 14%, var(--color-surface));
+  animation: body-card-shake 400ms ease;
+}
+@keyframes body-card-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }
 
-.body-mobile-layout { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.body-mobile-layout { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; }
 .body-mobile-prompt { font-size: 16px; font-weight: 700; text-align: center; margin: 0; }
 .body-mobile-options { width: 100%; display: flex; flex-direction: column; gap: 10px; }
 .body-mobile-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   min-height: 56px;
   width: 100%;
   padding: 14px 18px;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-divider);
+  border-left: 3px solid var(--color-accent);
   background: var(--color-surface);
   font-size: 14.5px;
   color: var(--color-text);
@@ -2772,15 +2881,39 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   cursor: pointer;
   transition: background-color 150ms ease, border-color 150ms ease;
 }
-.body-mobile-option:hover:not(:disabled) { border-color: var(--color-accent); }
+.body-mobile-option:hover:not(:disabled) { background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface)); }
 .body-mobile-option-wrong {
-  border-color: var(--color-danger);
-  background: color-mix(in srgb, var(--color-danger) 14%, var(--color-surface));
-  animation: body-region-shake 400ms ease;
+  border-left-color: #e85a4a;
+  background: color-mix(in srgb, #e85a4a 14%, var(--color-surface));
+  animation: body-card-shake 400ms ease;
 }
 
-.body-results { display: flex; flex-direction: column; align-items: center; text-align: center; }
-.body-results-score { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 32px; margin: 6px 0 20px; }
+.body-complete-scrim {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 20px;
+}
+.body-complete-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 32px;
+  border-radius: calc(var(--radius-lg) * 1.15);
+  background: var(--color-card-surface);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: body-complete-fade-in 320ms ease;
+}
+@keyframes body-complete-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.body-complete-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; margin: 4px 0 2px; }
+.body-results-score { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 32px; margin: 2px 0 20px; color: var(--color-vitals-mobility); }
 .body-results-review { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
 .body-review-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: var(--radius-md); background: var(--color-surface); border: 1px solid var(--color-divider); }
 .body-review-part { font-size: 13px; font-weight: 600; }

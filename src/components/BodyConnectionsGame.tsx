@@ -8,7 +8,12 @@ import { BodySilhouette, type BodyRegionId } from "@/components/BodySilhouette";
 import { useIsMobile } from "@/lib/use-is-mobile";
 import type { BodyMatchPair } from "@/lib/body-connections-static";
 
-const FLASH_MS = 500;
+// Matches the CSS incorrect-flash animation's duration (see .body-region-flash /
+// .body-function-flash in globals.css) — the JS clears the flash state at the same moment
+// the CSS animation finishes fading it out.
+const FLASH_MS = 600;
+
+const CARD_LETTERS = ["A", "B", "C", "D", "E"];
 
 function hashString(s: string): number {
   let h = 0;
@@ -65,38 +70,50 @@ export function BodyConnectionsGame({
 
     return (
       <div className="screen-pad body-page">
-        <div className="body-results">
-          <div className="card-kicker">Body Connections</div>
-          <div className="body-results-score">
-            {pairs.length} out of {pairs.length}
-          </div>
-          <div className="body-results-review">
-            {pairs.map((p) => (
-              <div key={p.region} className="body-review-row">
-                <div>
-                  <div className="body-review-part">{p.bodyPart}</div>
-                  <div className="body-review-function">{p.function}</div>
+        <div className="body-complete-scrim">
+          <div className="body-complete-card">
+            <div className="card-kicker">Body Connections</div>
+            <div className="body-complete-title">All matched</div>
+            <div className="body-results-score">
+              {pairs.length} of {pairs.length}
+            </div>
+            <div className="body-results-review">
+              {pairs.map((p) => (
+                <div key={p.region} className="body-review-row">
+                  <div>
+                    <div className="body-review-part">{p.bodyPart}</div>
+                    <div className="body-review-function">{p.function}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="body-results-actions">
-            <ShareButton text={shareText} label="Share Results" className="btn btn-primary btn-block" />
-            <Link href="/games" className="btn btn-secondary btn-block">
-              Back to Games
-            </Link>
+              ))}
+            </div>
+            <div className="body-results-actions">
+              <ShareButton text={shareText} label="Share Results" className="btn btn-primary btn-block" />
+              <Link href="/games" className="btn btn-secondary btn-block">
+                Back to Games
+              </Link>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
+  const progressPercent = (matchedRegions.length / pairs.length) * 100;
+
   return (
     <div className="screen-pad body-page">
       <div className="body-header">
         <div className="card-kicker">Body Connections</div>
+        <h1 className="body-title">Body Connections</h1>
         <p className="body-progress">
           {matchedRegions.length} of {pairs.length} matched
+        </p>
+        <div className="body-progress-bar">
+          <div className="body-progress-bar-fill" style={{ width: `${progressPercent}%` }} />
+        </div>
+        <p className="body-instruction">
+          {isMobile ? "Tap the body part being described below" : "Tap a body part, then tap its function"}
         </p>
       </div>
       {isMobile ? (
@@ -169,27 +186,38 @@ function DesktopBody({
     }
   }
 
+  const selectedBodyPart = selectedRegion ? pairs.find((p) => p.region === selectedRegion)?.bodyPart : null;
+
   return (
     <div className="body-desktop-layout">
       <div className="body-silhouette-col">
-        <BodySilhouette
-          activeRegions={activeRegions}
-          matchedRegions={matchedRegions}
-          selectedRegion={selectedRegion}
-          flashRegion={flash?.region ?? null}
-          onRegionClick={clickRegion}
-        />
+        <div className="body-silhouette-card">
+          <BodySilhouette
+            activeRegions={activeRegions}
+            matchedRegions={matchedRegions}
+            selectedRegion={selectedRegion}
+            flashRegion={flash?.region ?? null}
+            onRegionClick={clickRegion}
+          />
+          {selectedBodyPart && <div className="body-selected-tooltip">{selectedBodyPart} selected</div>}
+        </div>
       </div>
       <div className="body-functions-col">
         {functions.map((functionText, idx) => {
-          const isMatched = matchedRegions.some((r) => pairs.find((p) => p.region === r)?.function === functionText);
+          const matchedRegion = matchedRegions.find((r) => pairs.find((p) => p.region === r)?.function === functionText);
+          const isMatched = !!matchedRegion;
+          const matchedBodyPart = isMatched ? pairs.find((p) => p.region === matchedRegion)?.bodyPart : null;
           let cls = "body-function-card";
           if (isMatched) cls += " body-function-matched";
           else if (flash?.functionIdx === idx) cls += " body-function-flash";
           else if (selectedFunctionIdx === idx) cls += " body-function-selected";
           return (
             <button key={functionText} type="button" className={cls} disabled={isMatched} onClick={() => clickFunction(idx)}>
-              {functionText}
+              <span className="body-function-letter">{CARD_LETTERS[idx]}</span>
+              <span className="body-function-text-wrap">
+                <span className="body-function-text">{functionText}</span>
+                {isMatched && <span className="body-function-matched-label">Matched — {matchedBodyPart}</span>}
+              </span>
             </button>
           );
         })}
@@ -235,17 +263,20 @@ function MobileBody({
 
   return (
     <div className="body-mobile-layout">
-      <BodySilhouette activeRegions={activeRegions} matchedRegions={matchedRegions} pulsingRegion={target.region} />
+      <div className="body-silhouette-card">
+        <BodySilhouette activeRegions={activeRegions} matchedRegions={matchedRegions} pulsingRegion={target.region} />
+      </div>
       <p className="body-mobile-prompt">Where is the {target.bodyPart}?</p>
       <div className="body-mobile-options">
-        {options.map((option) => (
+        {options.map((option, idx) => (
           <button
             key={option}
             type="button"
             className={`body-mobile-option${wrongOption === option ? " body-mobile-option-wrong" : ""}`}
             onClick={() => choose(option)}
           >
-            {option}
+            <span className="body-function-letter">{CARD_LETTERS[idx]}</span>
+            <span className="body-function-text">{option}</span>
           </button>
         ))}
       </div>
