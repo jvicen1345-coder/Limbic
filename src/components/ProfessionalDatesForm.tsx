@@ -20,6 +20,10 @@ type ProfessionalDateField =
  *  finishes rather than vanishing mid-animation or lingering invisibly. */
 const SAVED_CHECK_MS = 1600;
 
+function formatDisplayDate(iso: string): string {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
 function DateField({
   field,
   id,
@@ -35,22 +39,38 @@ function DateField({
 }) {
   const [, startTransition] = useTransition();
   const [showSaved, setShowSaved] = useState(false);
+  const [dateValue, setDateValue] = useState(value);
+
+  function commit(next: string) {
+    setDateValue(next);
+    startTransition(() => updateProfessionalDates(field, next));
+    setShowSaved(true);
+    window.setTimeout(() => setShowSaved(false), SAVED_CHECK_MS);
+  }
 
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
-      <input
-        className="input"
-        type="date"
-        id={id}
-        defaultValue={value}
-        onChange={(e) => {
-          const next = e.target.value;
-          startTransition(() => updateProfessionalDates(field, next));
-          setShowSaved(true);
-          window.setTimeout(() => setShowSaved(false), SAVED_CHECK_MS);
-        }}
-      />
+      <div className="date-field-wrap">
+        <input className="date-field-native" type="date" id={id} value={dateValue} onChange={(e) => commit(e.target.value)} />
+        <div className="date-field-display" data-empty={dateValue ? undefined : "true"}>
+          {dateValue ? formatDisplayDate(dateValue) : "Not set"}
+        </div>
+        {dateValue && (
+          <button
+            type="button"
+            className="date-field-clear"
+            aria-label={`Clear ${label}`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              commit("");
+            }}
+          >
+            ×
+          </button>
+        )}
+      </div>
       <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 3, minHeight: 14 }}>
         <span style={{ fontSize: 10.5, color: "var(--color-neutral-700)" }}>{hint}</span>
         {showSaved && <CheckIcon size={11} className="profile-date-saved-check" />}
