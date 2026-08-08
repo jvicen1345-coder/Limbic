@@ -402,6 +402,15 @@ html[data-theme="dark"] .card.elev-lg {
   line-height: 1.22;
   color: #fff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  /* .hero-card-bottom is bottom-anchored over a fixed-height photo (see .hero-card-media)
+     — a long title otherwise just keeps growing upward past the top edge of that photo and
+     gets hard-clipped mid-letter by its overflow: hidden. Clamping to 3 lines guarantees it
+     always fits (checked against both this and the mobile breakpoint's shorter media
+     height) and ends cleanly with an ellipsis instead. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 .hero-card-source {
   margin-top: 5px;
@@ -492,6 +501,41 @@ html[data-theme="dark"] .card.elev-lg {
   .dashboard-metrics-row { flex-direction: column; }
   .dashboard-metric-tile { flex-direction: row; align-items: center; justify-content: space-between; }
 }
+
+/* Profile "Professional Dates" date fields (see components/ProfessionalDatesForm.tsx) — a
+   real <input type="date"> sits invisibly on top (native picker + keyboard/a11y behavior
+   stays intact, including the OS's own date-clearing UI where it has one), while a normal
+   styled div underneath renders the value. Mobile browsers apply their own oversized,
+   inconsistently-styled chrome to a *visible* native date input (large centered text, extra
+   built-in height that ignores our .input sizing) — routing the real control through an
+   invisible overlay instead of relying on that rendering sidesteps it, so the field looks
+   the same compact pill on every platform. The explicit clear button exists because several
+   mobile browsers give a visible native date input a clear ("x") affordance that isn't
+   reachable/usable once it's the invisible overlay (and some never expose one at all on
+   touch), so without this there'd be no way to empty the field again on mobile. */
+.date-field-wrap { position: relative; }
+.date-field-native {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  margin: 0; padding: 0; border: 0; background: transparent;
+  opacity: 0; cursor: pointer; z-index: 1;
+}
+.date-field-display {
+  display: flex; align-items: center; min-height: 36px;
+  padding-inline: 14px; border-radius: 999px;
+  font-size: 14px; color: var(--color-text);
+  background: var(--color-surface); border: 1px solid var(--color-divider);
+  pointer-events: none;
+}
+.date-field-display[data-empty="true"] { color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.date-field-wrap:hover .date-field-display { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.date-field-clear {
+  position: absolute; top: 50%; right: 6px; transform: translateY(-50%);
+  z-index: 2; width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  font-size: 16px; line-height: 1; color: var(--color-neutral-700);
+}
+.date-field-clear:hover { background: color-mix(in srgb, var(--color-text) 10%, transparent); color: var(--color-text); }
 
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 /* Profile "Professional Dates" save confirmation (see components/ProfessionalDatesForm.tsx)
