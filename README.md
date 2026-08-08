@@ -74,6 +74,8 @@ deploys to work too):
 | `ANTHROPIC_API_KEY` | an API key from [console.anthropic.com](https://console.anthropic.com) — powers the "Ask AI to search PubMed" feature (see below); the rest of the app works without it |
 | `YOUTUBE_API_KEY` | a free API key from [console.cloud.google.com](https://console.cloud.google.com) (enable the "YouTube Data API v3" on the project) — powers live-sourced Clips; without it, Clips falls back to only the curated static set |
 | `PEXELS_API_KEY` | a free API key from [pexels.com/api](https://www.pexels.com/api/) — powers topic-matched stock-photo fallback images on Home feed cards that don't have their own real `og:image`; without it, those cards just render without an image |
+| `GOOGLE_CLIENT_ID` | an OAuth 2.0 Client ID (Web application) from [console.cloud.google.com](https://console.cloud.google.com) — powers "Continue with Google" on the sign-in screen; see below |
+| `GOOGLE_CLIENT_SECRET` | the matching client secret from the same OAuth client |
 
 **5. Redeploy** (Vercel → Deployments → ⋯ → Redeploy) so the build picks up the new env
 vars. The build command (`node scripts/apply-migrations.mjs && next build`) applies the
@@ -166,6 +168,29 @@ that was ever actually exercised while building it. Once `YOUTUBE_API_KEY` is se
 worth confirming after deploy that the Clips feed is actually pulling in live results
 (new clip titles beyond the original 9) rather than silently sitting on the static
 fallback because of, say, a quota or key-restriction issue on the Google Cloud project.
+
+## Sign in with Google
+
+The sign-in screen's "Continue with Google" button (`src/components/SignInForm.tsx`) is a
+standard OAuth 2.0 authorization-code flow, hand-rolled against Google's endpoints rather
+than a library — `src/app/auth/google/route.ts` redirects to Google's consent screen with a
+random `state` value in a short-lived cookie; `src/app/auth/google/callback/route.ts`
+checks that `state` on the way back, exchanges the authorization code for an ID token, and
+verifies that token's signature against Google's own published keys (`jose`'s
+`createRemoteJWKSet`, already a dependency for this app's own session cookies — no new
+package needed) before trusting any of its claims. The verified email is upserted into the
+same `User.email` column the General (email) sign-in flow uses (`signInWithGoogle` in
+`src/lib/session.ts`), so a reader who's used both ends up on one account either way. The
+button itself only renders when both `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set.
+
+The redirect URI is hardcoded to `https://limbic.center/auth/google/callback` (must exactly
+match an Authorized redirect URI on the OAuth client in Google Cloud Console) rather than
+derived from the incoming request, so the same registered round trip completes regardless
+of which host actually served the initial request. That also means the full consent flow
+can only be completed on the real deployed domain — I could verify the redirect to Google's
+consent screen is correctly formed, but completing an actual sign-in requires a real
+browser and a real Google account, which isn't something this sandbox could exercise
+end-to-end either.
 
 ## Home page news ticker
 

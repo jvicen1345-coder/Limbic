@@ -1,11 +1,22 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { STATES } from "@/lib/meta";
+import { googleSignInEnabled } from "@/lib/google-oauth";
 import { SignInForm } from "@/components/SignInForm";
 
-export default async function SignInPage() {
+const GOOGLE_ERROR_MESSAGES: Record<string, string> = {
+  google_not_configured: "Google sign-in isn't set up yet.",
+  google_denied: "Sign-in with Google was canceled.",
+  google_state_mismatch: "That Google sign-in link expired — please try again.",
+  google_failed: "Something went wrong signing in with Google. Please try again.",
+};
+
+export default async function SignInPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const user = await getCurrentUser();
   if (user) redirect("/");
+
+  const { error } = await searchParams;
+  const errorMessage = error ? GOOGLE_ERROR_MESSAGES[error] : null;
 
   return (
     <div
@@ -34,7 +45,26 @@ export default async function SignInPage() {
       >
         Empowering clinicians with personalized knowledge to advance healthcare.
       </p>
-      <SignInForm states={STATES} />
+      {errorMessage && (
+        <p
+          style={{
+            fontSize: 12.5,
+            color: "var(--color-danger)",
+            background: "color-mix(in srgb, var(--color-danger) 12%, var(--color-surface))",
+            border: "1px solid color-mix(in srgb, var(--color-danger) 35%, transparent)",
+            borderRadius: "var(--radius-md)",
+            padding: "8px 14px",
+            maxWidth: 380,
+            width: "100%",
+            boxSizing: "border-box",
+            textAlign: "center",
+            margin: 0,
+          }}
+        >
+          {errorMessage}
+        </p>
+      )}
+      <SignInForm states={STATES} googleEnabled={googleSignInEnabled()} />
     </div>
   );
 }

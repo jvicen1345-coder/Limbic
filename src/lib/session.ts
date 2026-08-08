@@ -117,6 +117,25 @@ export async function signInWithEmail(input: { email: string }) {
   await issueSessionCookie(user.id);
 }
 
+/**
+ * Google sign-in: upserts by the verified email from the Google ID token (see
+ * app/auth/google/callback/route.ts, which does the OAuth exchange and token verification
+ * before calling this). Same upsert-by-email pattern as signInWithEmail above — deliberately
+ * so, since it means a reader who previously signed in with the General email flow using the
+ * same address lands back on that exact account via Google instead of getting a duplicate
+ * one. `name` comes from Google's own `name` claim when present; falls back to deriving one
+ * from the email address the same way signInWithEmail does when it's missing.
+ */
+export async function signInWithGoogle(input: { email: string; name?: string | null }) {
+  const email = input.email.trim().toLowerCase();
+  const user = await prisma.user.upsert({
+    where: { email },
+    update: {},
+    create: { email, name: input.name?.trim() || nameFromEmail(email), hasOnboarded: false },
+  });
+  await issueSessionCookie(user.id);
+}
+
 /** Stamps "now" as the user's latest home-feed visit and returns the *previous* value —
  *  the cutoff the feed uses to badge articles published "since you were last here",
  *  captured before it's overwritten. */
