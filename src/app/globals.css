@@ -1467,20 +1467,31 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
    card can afford to float over its fixed-height chat canvas, but Threads' canvas sits in
    a normal scrolling page where a force-simulated node can end up anywhere, including
    right where a docked overlay would sit, silently blocking clicks on whatever's under it. */
+/* A real card rather than a bare text link — the collapsed trigger sits alone in
+   .article-split-threads (see globals.css's .article-split-threads and
+   components/ArticleThreadsSplitView.tsx), a column reserved at fixed width next to the
+   reading pane; an unstyled inline link there used to read as a stray, disconnected
+   fragment floating over a mostly-empty column rather than an intentional "collapsed
+   panel, click to expand" widget. */
 .threads-collapsed-line {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  padding: 0;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
   font-size: 13.5px;
   color: var(--color-accent-700);
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
 }
-.threads-collapsed-line:hover { color: var(--color-accent-800); }
+.threads-collapsed-line:hover { color: var(--color-accent-800); border-color: var(--color-accent-200); box-shadow: var(--shadow-md); }
+.threads-collapsed-line svg:last-child { margin-left: auto; }
 /* box-shadow added so the panel sits at the same visual weight as the rest of the app's
    card system (--shadow-md) instead of reading as a flat bordered rectangle next to it. */
 .threads-wrap {
