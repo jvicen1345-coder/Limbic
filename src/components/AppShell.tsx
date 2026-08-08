@@ -142,14 +142,10 @@ interface NavContentProps {
   practiceState: string;
   hasLicense: boolean;
   isPro: boolean;
-  /** True for a .edu sign-in email (see lib/session.ts isStudentEmail) — Limbic Boards is
-   *  a student-only product, hidden from the nav (and its route redirects to /pro) for
-   *  anyone who doesn't qualify, same as the Pro-only sections below. Limbic Games
-   *  (/wordle) is open to everyone regardless of this flag. */
+  /** True for a .edu sign-in email (see lib/session.ts isStudentEmail) — gates the whole
+   *  Limbic Student section below: hidden entirely (no locked state) for anyone who
+   *  doesn't qualify. Limbic Games (/wordle) is open to everyone regardless of this flag. */
   isStudent: boolean;
-  /** "none" | "studentPro" | "studentProBoards" (see prisma schema User.studentTier) — used
-   *  alongside isPro just for the LimbicPRO section's "Limbic Boards" link's lock badge. */
-  studentTier: string;
   aptaCount: number;
   nexusRequestCount: number;
   /** Called after any nav link is clicked — used to close the mobile drawer on navigation. */
@@ -158,8 +154,7 @@ interface NavContentProps {
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, studentTier, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
-  const hasBoardsAccess = studentTier !== "none" || isPro;
+function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
   return (
     <>
       <NavLink href="/" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
@@ -167,17 +162,18 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
       <NavLink href="/profile" icon={<ProfileIcon />} label="Profile" onNavigate={onNavigate} />
 
+      {isStudent && (
+        <>
+          <div className="nav-section-label">Limbic Student</div>
+          <NavLink href="/student" icon={<GraduationCapIcon />} label="Atrium" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/boards/sharpening" icon={<ZapIcon />} label="Daily Sharpening" bold={false} onNavigate={onNavigate} />
+        </>
+      )}
+
       <div className="nav-section-label nav-section-label--brand">LimbicPRO</div>
       <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
       <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
-      <NavLink
-        href="/boards"
-        icon={<GraduationCapIcon />}
-        label="Limbic Boards"
-        locked={!hasBoardsAccess}
-        bold={false}
-        onNavigate={onNavigate}
-      />
       <NavLink href="/pro/membership" icon={<CreditCardIcon />} label="Membership" bold={false} onNavigate={onNavigate} />
 
       <div className="nav-section-label">Health & Wellness</div>
@@ -188,13 +184,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
 
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
       <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" onNavigate={onNavigate} />
-
-      {isStudent && (
-        <>
-          <div className="nav-section-label">Limbic Boards</div>
-          <NavLink href="/boards" icon={<GraduationCapIcon />} label="Daily Sharpening" bold={false} onNavigate={onNavigate} />
-        </>
-      )}
 
       <div className="nav-section-label">Nexus</div>
       <NavLink href="/nexus" icon={<UsersIcon />} label="Feed" bold={false} onNavigate={onNavigate} />
@@ -261,7 +250,6 @@ export interface AppShellProps {
   hasLicense: boolean;
   isPro: boolean;
   isStudent: boolean;
-  studentTier: string;
   aptaCount: number;
   nexusRequestCount: number;
   savedCount: number;
@@ -275,14 +263,13 @@ export function AppShell({
   hasLicense,
   isPro,
   isStudent,
-  studentTier,
   aptaCount,
   nexusRequestCount,
   savedCount,
   children,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, studentTier, aptaCount, nexusRequestCount };
+  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, aptaCount, nexusRequestCount };
 
   return (
     <div className="app-root">

@@ -502,6 +502,64 @@ html[data-theme="dark"] .card.elev-lg {
   .dashboard-metric-tile { flex-direction: row; align-items: center; justify-content: space-between; }
 }
 
+/* Home's own "Question of the Day" aside card (see components/HomeQuestionCard.tsx) —
+   select-then-reveal flow with its own option states below. */
+.home-question-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.home-question-completed {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--color-neutral-600);
+}
+.home-question-text {
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0 0 12px;
+  color: var(--color-text);
+}
+.home-question-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.home-question-option {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font-size: 13.5px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.home-question-option:disabled { cursor: default; }
+.home-question-option-selected { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+.home-question-option-correct { background: var(--color-vitals-mobility); border-color: var(--color-vitals-mobility); color: #fff; }
+.home-question-option-incorrect {
+  background: color-mix(in srgb, #e85a4a 18%, var(--color-surface));
+  border-color: color-mix(in srgb, #e85a4a 45%, transparent);
+  color: var(--color-text);
+}
+.home-question-explanation {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  line-height: 1.5;
+  margin: 4px 0 0;
+}
+
 /* Profile "Professional Dates" date fields (see components/ProfessionalDatesForm.tsx) — a
    real <input type="date"> sits invisibly on top (native picker + keyboard/a11y behavior
    stays intact, including the OS's own date-clearing UI where it has one), while a normal
@@ -2549,3 +2607,142 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .case-reveal-verdict { font-size: 12.5px; color: var(--color-neutral-700); }
 .case-reveal-explanation { font-size: 13.5px; line-height: 1.6; color: var(--color-text); margin: 0 0 14px; }
 .case-reveal-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* — Limbic Student Atrium (app/(app)/student/*) — deliberately warmer than the rest of the
+   app (see AGENTS.md-adjacent product ask: "like walking into an atrium"), built from the
+   existing --color-vitals-strength (orange) token blended into the neutral bg/surface
+   tokens rather than any new literal color, so light/dark both stay in sync automatically. */
+.atrium-page {
+  --atrium-tint: var(--color-vitals-strength);
+  --atrium-bg: color-mix(in srgb, var(--atrium-tint) 5%, var(--color-bg));
+  --atrium-surface: color-mix(in srgb, var(--atrium-tint) 4%, var(--color-surface));
+  --atrium-border: color-mix(in srgb, var(--atrium-tint) 20%, var(--color-divider));
+  background: var(--atrium-bg);
+  min-height: 100%;
+}
+.atrium-header {
+  margin-bottom: 28px;
+}
+.atrium-greeting {
+  font-size: 28px;
+  margin: 0 0 6px;
+}
+.atrium-header-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--color-neutral-700);
+}
+.atrium-header-dot { color: var(--color-neutral-500); }
+.atrium-header-meta a { color: var(--atrium-tint); text-decoration: none; }
+.atrium-header-meta a:hover { text-decoration: underline; }
+
+.atrium-section-label {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-600);
+  margin: 0 0 14px;
+}
+
+.atrium-paths-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+  margin-bottom: 36px;
+}
+.atrium-path-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px;
+  border-radius: calc(var(--radius-lg) * 1.15);
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+.atrium-path-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--atrium-tint) 16%, transparent);
+  border-color: var(--atrium-tint);
+}
+.atrium-path-icon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--atrium-tint) 16%, transparent);
+  color: var(--atrium-tint);
+}
+.atrium-path-body { flex: 1; min-width: 0; }
+.atrium-path-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15.5px; margin: 0 0 3px; }
+.atrium-path-desc { font-size: 12.5px; color: var(--color-neutral-700); margin: 0; line-height: 1.4; }
+.atrium-path-arrow { flex-shrink: 0; color: var(--atrium-tint); }
+
+.atrium-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+.atrium-dashboard-card {
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.atrium-dashboard-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text);
+}
+.atrium-dashboard-body { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }
+.atrium-dashboard-link { font-size: 12.5px; color: var(--atrium-tint); text-decoration: none; font-weight: 600; margin-top: 2px; }
+.atrium-dashboard-link:hover { text-decoration: underline; }
+.atrium-dashboard-empty { font-size: 12.5px; color: var(--color-neutral-600); font-style: italic; }
+.atrium-dashboard-locked { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--color-neutral-600); }
+
+.atrium-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--atrium-tint);
+  text-decoration: none;
+}
+.atrium-back-link:hover { text-decoration: underline; }
+
+.atrium-upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+  padding: 48px 24px;
+  max-width: 480px;
+  border: 2px dashed var(--atrium-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-neutral-600);
+  font-size: 13.5px;
+}
+
+@media (max-width: 799px) {
+  .atrium-greeting { font-size: 22px; }
+  .atrium-paths-grid { grid-template-columns: minmax(0, 1fr); }
+  .atrium-dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+}

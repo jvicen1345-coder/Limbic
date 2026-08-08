@@ -9,6 +9,7 @@ import { SlidingTabs } from "@/components/SlidingTabs";
 import { ArticleCard } from "@/components/ArticleCard";
 import { HeroFeed } from "@/components/HeroFeed";
 import { ContinueReadingCard, type ContinueReadingData } from "@/components/ContinueReadingCard";
+import { HomeQuestionCard, type HomeQuestionData } from "@/components/HomeQuestionCard";
 import { DailyDashboard, type DailyDashboardData } from "@/components/DailyDashboard";
 import { LimbicAgentCard } from "@/components/LimbicAgentCard";
 import { RefreshHomeFeedButton } from "@/components/RefreshHomeFeedButton";
@@ -63,6 +64,7 @@ export function HomeFeed({
   savedUnread,
   nexusSuggestions,
   continueReading,
+  homeQuestion,
   dashboard,
   hiddenWidgets,
   limbicAgentInsights,
@@ -80,6 +82,7 @@ export function HomeFeed({
   nexusSuggestions: NexusSuggestion[] | null;
   /** null when there's no reading history yet — see app/(app)/page.tsx. */
   continueReading: ContinueReadingData | null;
+  homeQuestion: HomeQuestionData;
   dashboard: DailyDashboardData;
   /** Sidebar widget ids the reader has hidden — see lib/home-widgets.ts and the "Home page
    *  widgets" section on Profile. */
@@ -293,6 +296,7 @@ export function HomeFeed({
         <aside className="home-aside-col">
           <div className="home-aside-scroll">
             {showWidget("continueReading") && <ContinueReadingCard data={continueReading} />}
+            {showWidget("homeQuestion") && <HomeQuestionCard data={homeQuestion} />}
             {showWidget("savedUnread") && <SavedUnreadCard articles={savedUnread} />}
             {showWidget("calendar") && calendarWidget}
             {showWidget("nexus") &&

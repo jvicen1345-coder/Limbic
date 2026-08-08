@@ -3,6 +3,7 @@
  *  toggle list and HomeFeed's own filtering, so the two can never drift out of sync. */
 export const HOME_WIDGETS = [
   { id: "continueReading", label: "Continue Reading" },
+  { id: "homeQuestion", label: "Question of the Day" },
   { id: "savedUnread", label: "Saved, still unread" },
   { id: "calendar", label: "CE & Events calendar" },
   { id: "nexus", label: "Nexus" },

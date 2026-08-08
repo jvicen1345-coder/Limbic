@@ -1,65 +1,34 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getCurrentUser, isStudentEmail } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { GraduationCapIcon } from "@/components/icons";
-import { BoardQuestionCard } from "@/components/BoardQuestionCard";
-import { BoardTermCard } from "@/components/BoardTermCard";
+import { GraduationCapIcon, ChevronRightIcon, ZapIcon } from "@/components/icons";
 import { BoardsStreakCard } from "@/components/BoardsStreakCard";
-import { questionForDate, termForDate, todayDateKey } from "@/lib/board-content";
 import { buildReadingCalendarWeeks } from "@/lib/reading-calendar";
 
 const CALENDAR_WINDOW_DAYS = 365;
 
-export default async function BoardsPage() {
+/** The Limbic Boards hub — a light landing page above the actual daily practice (see
+ *  app/(app)/boards/sharpening/page.tsx, which used to live at this URL before Limbic
+ *  Student split "Boards" and "Daily Sharpening" into two distinct nav items). A licensed
+ *  PT/clinician account only ever gets the one daily question, which lives entirely on the
+ *  Sharpening page — there's nothing hub-worthy to show them here, so they skip straight
+ *  through instead of landing on a page with nothing for them. */
+export default async function BoardsHubPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
   const isStudent = isStudentEmail(user.email);
-  // A licensed PT/clinician account (see lib/session.ts signInWithLicense) gets access to
-  // just today's question — not the rest of Limbic Boards, which stays a student-only
-  // product (see the conditional render below). Anyone who's neither is sent to the Pro
-  // page rather than a dead-end here, same hard-redirect pattern as /agent's isPro gate.
   const isClinician = user.licenseNumber != null;
   if (!isStudent && !isClinician) redirect("/pro");
-
-  const dateKey = todayDateKey();
-  const question = questionForDate(dateKey);
-
-  const questionCompletion = await prisma.dailyCompletion.findUnique({
-    where: { userId_kind_dateKey: { userId: user.id, kind: "boardQuestion", dateKey } },
-  });
-
-  if (!isStudent) {
-    return (
-      <div className="screen-pad" style={{ maxWidth: 640, margin: "0 auto" }}>
-        <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Question of the Day</h1>
-        <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
-          A board-style question for clinicians to keep sharp on — the rest of Limbic Boards is a student product.
-        </p>
-        <BoardQuestionCard
-          dateKey={dateKey}
-          question={question}
-          initialSelectedIndex={questionCompletion?.selectedIndex ?? null}
-          initialElapsedSeconds={questionCompletion?.elapsedSeconds ?? null}
-          nexusOptIn={user.nexusOptIn}
-        />
-      </div>
-    );
-  }
-
-  const term = termForDate(dateKey);
+  if (!isStudent) redirect("/boards/sharpening");
 
   const windowStart = new Date();
   windowStart.setDate(windowStart.getDate() - (CALENDAR_WINDOW_DAYS - 1));
-  const [activityRows, termCompletion] = await Promise.all([
-    prisma.boardActivity.findMany({
-      where: { userId: user.id, createdAt: { gte: windowStart } },
-      select: { createdAt: true },
-    }),
-    prisma.dailyCompletion.findUnique({
-      where: { userId_kind_dateKey: { userId: user.id, kind: "boardTerm", dateKey } },
-    }),
-  ]);
+  const activityRows = await prisma.boardActivity.findMany({
+    where: { userId: user.id, createdAt: { gte: windowStart } },
+    select: { createdAt: true },
+  });
   const weeks = buildReadingCalendarWeeks(activityRows.map((r) => r.createdAt));
 
   return (
@@ -69,26 +38,25 @@ export default async function BoardsPage() {
         <h1 style={{ fontSize: 24, margin: 0 }}>Limbic Boards</h1>
       </div>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
-        Two minutes a day — a board-style question and a term to lock in before your NPTE.
+        Your NPTE prep hub — a board-style question and a term to lock in every day, building toward exam day.
       </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        <BoardQuestionCard
-          dateKey={dateKey}
-          question={question}
-          initialSelectedIndex={questionCompletion?.selectedIndex ?? null}
-          initialElapsedSeconds={questionCompletion?.elapsedSeconds ?? null}
-          nexusOptIn={user.nexusOptIn}
-        />
-        <BoardTermCard
-          dateKey={dateKey}
-          term={term}
-          initialRevealed={termCompletion != null}
-          initialElapsedSeconds={termCompletion?.elapsedSeconds ?? null}
-          nexusOptIn={user.nexusOptIn}
-        />
-        <BoardsStreakCard streakDays={user.boardsStreakDays} weeks={weeks} />
-      </div>
+      <Link
+        href="/boards/sharpening"
+        className="card elev-sm card-hoverable"
+        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, textDecoration: "none", color: "inherit", marginBottom: 14 }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <ZapIcon size={20} style={{ color: "var(--color-accent)", flexShrink: 0 }} />
+          <div>
+            <div className="card-title">Daily Sharpening</div>
+            <p className="card-body" style={{ marginTop: 4 }}>Today&rsquo;s question and term — two minutes a day.</p>
+          </div>
+        </div>
+        <ChevronRightIcon size={18} style={{ color: "var(--color-accent)", flexShrink: 0 }} />
+      </Link>
+
+      <BoardsStreakCard streakDays={user.boardsStreakDays} weeks={weeks} />
     </div>
   );
 }

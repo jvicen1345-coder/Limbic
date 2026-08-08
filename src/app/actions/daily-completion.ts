@@ -30,6 +30,23 @@ export async function recordWordleCompletionAction(
   revalidatePath("/games");
 }
 
+/** Persists an answer to Home's own general-audience "Question of the Day" (see
+ *  components/HomeQuestionCard.tsx, lib/home-questions-static.ts) — distinct from Limbic
+ *  Boards' student-facing daily question below, kind "homeQuestion" instead of
+ *  "boardQuestion" so the two never collide in DailyCompletion and neither's streak/
+ *  activity tracking is touched by the other. No streak of its own — this is a quick daily
+ *  aside for every reader, not a habit-building product like Boards/Games. */
+export async function recordHomeQuestionAction(dateKey: string, selectedIndex: number) {
+  const user = await getCurrentUser();
+  if (!user) return;
+  await prisma.dailyCompletion.upsert({
+    where: { userId_kind_dateKey: { userId: user.id, kind: "homeQuestion", dateKey } },
+    create: { userId: user.id, kind: "homeQuestion", dateKey, selectedIndex },
+    update: { selectedIndex },
+  });
+  revalidatePath("/");
+}
+
 /** Persists a Limbic Boards question answer — same per-user fix as the Wordle action
  *  above, plus still advances the Boards streak the same way it always did. */
 export async function recordBoardQuestionAction(dateKey: string, selectedIndex: number, elapsedSeconds?: number) {
@@ -43,7 +60,8 @@ export async function recordBoardQuestionAction(dateKey: string, selectedIndex: 
     }),
     recordBoardActivity(user.id, dateKey),
   ]);
-  revalidatePath("/boards");
+  revalidatePath("/boards/sharpening");
+  revalidatePath("/student");
 }
 
 /** Persists a Limbic Boards term-of-the-day reveal — same pattern as the question action. */
@@ -58,7 +76,8 @@ export async function recordBoardTermRevealAction(dateKey: string, elapsedSecond
     }),
     recordBoardActivity(user.id, dateKey),
   ]);
-  revalidatePath("/boards");
+  revalidatePath("/boards/sharpening");
+  revalidatePath("/student");
 }
 
 /** Persists a day's Mini Crossword progress/result — same per-user, survives-a-refresh
