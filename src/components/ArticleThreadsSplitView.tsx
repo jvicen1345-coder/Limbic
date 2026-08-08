@@ -17,21 +17,19 @@ import type { ArticleViewData } from "@/lib/article-view";
  *
  * The Threads panel itself always rebuilds fresh around whichever article is current (see
  * the `key={view.article.id}` below) — a web is FOR one article, so that's the correct
- * behavior, not something to preserve. What actually keeps the reader "in flow" is no
- * page reload, and once they've swapped at least once, every subsequent article's Threads
- * panel starts pre-expanded instead of making them click "Explore Connections" again.
+ * behavior, not something to preserve. Threads is always visible and building itself
+ * automatically the moment either the initial page load or a swap lands (see
+ * components/ThreadsWeb.tsx), so unlike before, nothing here needs to remember whether the
+ * reader has swapped at least once.
  */
 export function ArticleThreadsSplitView({
   initialView,
   isPro,
-  initialAutoExpand,
 }: {
   initialView: ArticleViewData;
   isPro: boolean;
-  initialAutoExpand: boolean;
 }) {
   const [view, setView] = useState(initialView);
-  const [hasSwapped, setHasSwapped] = useState(false);
   const [swapError, setSwapError] = useState<string | null>(null);
   // Guards against re-running the swap for the id already on screen — both the click
   // handler and the popstate handler funnel through this.
@@ -47,7 +45,6 @@ export function ArticleThreadsSplitView({
     }
     currentIdRef.current = articleId;
     setView(result.data);
-    setHasSwapped(true);
     if (pushUrl) window.history.pushState(null, "", `/article/${articleId}`);
   }, []);
 
@@ -80,7 +77,6 @@ export function ArticleThreadsSplitView({
             articleId={view.article.id}
             webNodes={view.threadsNodes}
             isPro={isPro}
-            autoExpand={hasSwapped || initialAutoExpand}
             onNavigateToArticle={(id) => swapTo(id, { pushUrl: true })}
           />
         </div>

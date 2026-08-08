@@ -10,8 +10,10 @@ import type { AgentNode, AgentLink } from "@/lib/agent-graph";
 import type { ThreadsNodeData } from "@/lib/threads-graph";
 
 /** Same staggered-reveal pacing as Limbic Agent's own web (see AgentClient.tsx) — slow
- *  and deliberate so each ring reads as appearing in sequence, not dumped on screen. */
-const REVEAL_DELAY_MS = 380;
+ *  and deliberate so each ring reads as appearing in sequence, not dumped on screen. Ring 0
+ *  is always exactly the one center node (see lib/threads.ts), so the gap before ring 1
+ *  starts revealing is REVEAL_DELAY_MS + RING_PAUSE_MS — tuned to land at 800ms. */
+const REVEAL_DELAY_MS = 300;
 const RING_PAUSE_MS = 500;
 
 /**
@@ -35,11 +37,10 @@ function sleep(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
 
-function useContainerSize(active: boolean) {
+function useContainerSize() {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [size, setSize] = useState({ width: 640, height: 420 });
+  const [size, setSize] = useState({ width: 640, height: 500 });
   useEffect(() => {
-    if (!active) return;
     const el = ref.current;
     if (!el) return;
     const observer = new ResizeObserver((entries) => {
@@ -48,7 +49,7 @@ function useContainerSize(active: boolean) {
     });
     observer.observe(el);
     return () => observer.disconnect();
-  }, [active]);
+  }, []);
   return [ref, size] as const;
 }
 
@@ -56,7 +57,6 @@ export function ThreadsWeb({
   articleId,
   webNodes,
   isPro,
-  autoExpand = false,
   onNavigateToArticle,
 }: {
   articleId: string;
@@ -65,7 +65,6 @@ export function ThreadsWeb({
    *  empty/static detail and get theirs lazily (see lib/threads.ts). */
   webNodes: ThreadsNodeData[];
   isPro: boolean;
-  autoExpand?: boolean;
   /** When provided, a "navigate" node whose href points at another article (see
    *  ARTICLE_HREF above) calls this with that article's id instead of doing a real
    *  navigation — see components/ArticleThreadsSplitView.tsx, which swaps the reading
@@ -77,14 +76,13 @@ export function ThreadsWeb({
   onNavigateToArticle?: (articleId: string) => void;
 }) {
   const router = useRouter();
-  const [expanded, setExpanded] = useState(autoExpand);
   const [revealedIds, setRevealedIds] = useState<Set<string>>(new Set());
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [insightCache, setInsightCache] = useState<Record<string, string>>({});
   const [insightError, setInsightError] = useState<Record<string, string>>({});
   const revealStarted = useRef(false);
-  const [containerRef, size] = useContainerSize(expanded);
+  const [containerRef, size] = useContainerSize();
 
   const byId = useMemo(() => new Map(webNodes.map((n) => [n.id, n])), [webNodes]);
   const selectedWeb = selectedId ? (byId.get(selectedId) ?? null) : null;
@@ -115,7 +113,7 @@ export function ThreadsWeb({
   );
 
   useEffect(() => {
-    if (!expanded || revealStarted.current) return;
+    if (revealStarted.current) return;
     revealStarted.current = true;
     (async () => {
       for (const ring of [0, 1, 2, 3] as const) {
@@ -127,35 +125,25 @@ export function ThreadsWeb({
         await sleep(RING_PAUSE_MS);
       }
     })();
-  }, [expanded, webNodes]);
+  }, [webNodes]);
 
-  async function handleNodeClick(node: AgentNode) {
-    setSelectedId(node.id);
-    const web = byId.get(node.id);
+  async function handleNodeClick(nodeId: string) {
+    setSelectedId(nodeId);
+    const web = byId.get(nodeId);
     if (!web || web.action.kind !== "insight") return;
     if (!THREADS_INSIGHTS_ENABLED) return;
     if (!isPro) return;
-    if (insightCache[node.id] || loadingId === node.id) return;
+    if (insightCache[nodeId] || loadingId === nodeId) return;
 
-    setLoadingId(node.id);
-    setInsightError((prev) => ({ ...prev, [node.id]: "" }));
+    setLoadingId(nodeId);
+    setInsightError((prev) => ({ ...prev, [nodeId]: "" }));
     const result = await generateThreadsInsightAction(articleId, web.action.insightKind);
     setLoadingId(null);
     if (result.ok) {
-      setInsightCache((prev) => ({ ...prev, [node.id]: result.detail }));
+      setInsightCache((prev) => ({ ...prev, [nodeId]: result.detail }));
     } else {
-      setInsightError((prev) => ({ ...prev, [node.id]: result.message }));
+      setInsightError((prev) => ({ ...prev, [nodeId]: result.message }));
     }
-  }
-
-  if (!expanded) {
-    return (
-      <button type="button" className="threads-collapsed-line" onClick={() => setExpanded(true)}>
-        <NetworkIcon size={15} style={{ color: "var(--color-accent)" }} />
-        Explore Connections
-        <ChevronRightIcon size={14} />
-      </button>
-    );
   }
 
   const isInsight = selectedWeb?.action.kind === "insight";
@@ -175,7 +163,7 @@ export function ThreadsWeb({
         <NetworkIcon size={16} style={{ color: "#6ea8ff" }} />
         Limbic Threads
       </div>
-      <p className="threads-caption">How this article connects to related research, guidelines, and technique.</p>
+      <p className="threads-caption">Explore connections from this article</p>
       <div className="agent-canvas-wrap threads-canvas-wrap" ref={containerRef}>
         <AgentGraph
           nodes={nodes}
@@ -184,9 +172,29 @@ export function ThreadsWeb({
           loadingId={loadingId}
           width={size.width}
           height={size.height}
-          onNodeClick={handleNodeClick}
+          onNodeClick={(node) => handleNodeClick(node.id)}
           onBackgroundClick={() => setSelectedId(null)}
         />
+      </div>
+
+      {/* A plain clickable text list of the same nodes, for a reader who'd rather not (or
+          can't) interact with the D3 canvas above — opens the exact same detail panel a
+          node click does, via the same handleNodeClick. Excludes ring 0 (the center node is
+          the article itself, not one of its connections) and doesn't wait for the reveal
+          animation — the list is available immediately, not staggered in with the visual. */}
+      <div className="threads-connections">
+        <div className="threads-connections-label">Article Connections</div>
+        <ul className="threads-connections-list" style={{ listStyle: "none", margin: 0, padding: 0 }}>
+          {webNodes
+            .filter((n) => n.ring !== 0)
+            .map((n) => (
+              <li key={n.id}>
+                <button type="button" onClick={() => handleNodeClick(n.id)}>
+                  {n.label}
+                </button>
+              </li>
+            ))}
+        </ul>
       </div>
 
       {/* A normal block below the canvas, not an absolutely-positioned overlay on top of

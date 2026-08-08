@@ -596,6 +596,22 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 /* Larger size modifier for the article detail page's more prominent badge — pairs with
    one of the .tag-evidence-* color classes above, e.g. class="tag tag-lg tag-evidence-rct". */
 .tag-lg { font-size: 13px; padding: 5px 14px; }
+/* The article detail page's hero badge (see components/EvidenceBadge.tsx size="xl") — a
+   solid, saturated fill instead of the tinted .tag-evidence-* pills above, reusing those
+   same anchor hues (just at full strength) rather than inventing new ones. Text color per
+   level is chosen for contrast against ITS OWN fill (white on the darker hues, a near-black
+   on the two brightest — CPG's gold and CE's amber), independent of page theme, so no
+   dark-mode override is needed the way the tinted pills above require. */
+.tag-xl { font-size: 15px; padding: 8px 18px; font-weight: 700; letter-spacing: 0.02em; }
+.tag-xl.tag-evidence-rct { background: #1f9d5e; color: #ffffff; }
+.tag-xl.tag-evidence-sr { background: var(--color-accent); color: #ffffff; }
+.tag-xl.tag-evidence-ma { background: #7c4dbd; color: #ffffff; }
+.tag-xl.tag-evidence-review { background: var(--color-accent-2); color: #ffffff; }
+.tag-xl.tag-evidence-research { background: var(--color-neutral-700); color: #ffffff; }
+.tag-xl.tag-evidence-cpg { background: #d9a400; color: #2b2015; }
+.tag-xl.tag-evidence-industry { background: var(--color-neutral-600); color: #ffffff; }
+.tag-xl.tag-evidence-ce { background: #e0741f; color: #ffffff; }
+.tag-xl.tag-evidence-product { background: var(--color-neutral-800); color: #ffffff; }
 
 /* — app shell layout — */
 .app-root {
@@ -862,95 +878,178 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 
 /* — article reading pane + persistent Limbic Threads panel (see
-   components/ArticleThreadsSplitView.tsx) — wider than the plain .screen-pad single
-   column, since it needs room for two panes side by side. Same two-column mechanics as
-   .home-row/.home-main-col/.home-aside-col above (sticky aside, capped-height internal
-   scroll, stacks below 799px) rather than a new layout convention.
-
-   The reading column is capped at a real editorial line-length (--article-reading-width)
-   rather than stretching flex:1 all the way out to whatever's left next to the Threads
-   panel — on a wide desktop that used to read as a few sparse, overly-long lines of text
-   next to an oversized dark panel; capping it gives the pair a deliberate, proportioned
-   look and leaves the extra width as page margin, the way a real editorial site would. */
+   components/ArticleThreadsSplitView.tsx) — a full-width 60/40 split (article content /
+   Limbic Threads) rather than a capped-width centered pair: Threads is the dominant right
+   column feature here, not a secondary aside, so it earns real, proportioned width instead
+   of a narrow fixed sidebar. Stacks to one column below 1024px (tablet and mobile), same
+   sticky-aside mechanics as .home-row/.home-main-col/.home-aside-col above otherwise. */
 .article-split-pad {
   width: 100%;
   padding: 40px 44px 64px;
-  max-width: 1240px;
+  max-width: 1400px;
   margin: 0 auto;
   box-sizing: border-box;
 }
 .article-split {
   display: flex;
   flex-direction: row;
-  gap: 48px;
+  gap: 40px;
   align-items: flex-start;
-  justify-content: center;
 }
-.article-split-reading { flex: 1; min-width: 0; max-width: 700px; }
+.article-split-reading { flex: 0 0 60%; max-width: 60%; min-width: 0; }
 .article-split-threads {
-  width: 400px;
-  flex-shrink: 0;
+  flex: 0 0 40%;
+  max-width: 40%;
+  min-width: 0;
   position: sticky;
   top: 20px;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
 }
-@media (max-width: 799px) {
-  .article-split-pad { padding: 18px 18px 40px; }
-  .article-split { flex-direction: column; gap: 24px; }
-  .article-split-reading { width: 100%; max-width: none; }
-  .article-split-threads { width: 100%; position: static; max-height: none; overflow-y: visible; }
+@media (max-width: 1023px) {
+  .article-split-pad { padding: 24px 20px 40px; }
+  .article-split { flex-direction: column; gap: 28px; }
+  .article-split-reading, .article-split-threads {
+    flex: 1 1 auto; max-width: none; width: 100%; position: static; max-height: none; overflow-y: visible;
+  }
+}
+@media (max-width: 640px) {
+  .article-split-pad { padding: 18px 16px 40px; }
 }
 
-/* — article detail hero image (components/ArticleReadingPane.tsx) — a clean photo banner
-   above the eyebrow/title, distinct from ArticleCard/HeroArticleCard's text-over-photo
-   treatment (which is a feed-card space-saving device, not appropriate for the article's
-   own page, where the title reads better as normal text below the photo — the convention
-   real editorial sites use for a full article view). Shorter on mobile, same "smaller
-   photo, same proportions" pattern .hero-card-media already uses at its own breakpoint. */
-.article-hero-media {
-  position: relative;
-  width: 100%;
-  height: 360px;
+/* — article reading card (components/ArticleReadingPane.tsx) — the left column's own warm
+   card surface, same background every other card in the app uses, so a full-width redesign
+   still reads as part of the same product rather than a bare, unbounded page of text.
+   Fades in on load — the right column's Threads web gets its own organic build via the
+   staggered node reveal (see components/ThreadsWeb.tsx) instead of a fade. */
+.article-reading-card {
+  background: var(--color-card-surface);
   border-radius: var(--radius-lg);
-  overflow: hidden;
-  margin-bottom: 22px;
-  background: var(--color-neutral-200);
+  box-shadow: var(--shadow-sm);
+  padding: 32px 36px 40px;
+  animation: fade-in 0.5s ease;
 }
-@media (max-width: 799px) {
-  .article-hero-media { height: 220px; margin-bottom: 18px; }
+@media (max-width: 640px) {
+  .article-reading-card { padding: 22px 18px 28px; }
 }
 
-/* — Related articles grid (components/ArticleReadingPane.tsx) — small thumbnail cards
-   instead of the previous plain text rows, two-up on desktop / one column on mobile
-   (matching .article-split-reading's own desktop/mobile split above). */
+/* — article header (components/ArticleReadingPane.tsx) — evidence badge first and most
+   prominent (a filled, solid-color pill instead of the feed card's tinted one — see
+   .tag-xl.tag-evidence-* further down), a one-line plain-language caption under it, then a
+   plain breadcrumb (not another pair of tag pills — the evidence badge already carries the
+   page's visual weight) before the title. */
+.article-evidence-caption {
+  margin: 8px 0 18px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--color-neutral-700);
+  max-width: 480px;
+}
+.article-breadcrumb {
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--color-neutral-700);
+  margin-bottom: 10px;
+}
+.article-hero-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 34px;
+  line-height: 1.28;
+  margin: 0 0 16px;
+}
+@media (max-width: 640px) {
+  .article-hero-title { font-size: 25px; }
+}
+.article-hero-journal { font-size: 15px; font-weight: 700; color: var(--color-text); margin-bottom: 3px; }
+.article-hero-datemeta { font-size: 13px; color: var(--color-neutral-700); }
+.article-hero-divider { border: none; border-top: 1px solid var(--color-divider); margin: 24px 0; }
+
+/* — article body (components/ArticleReadingPane.tsx) — capped at a real editorial
+   line-length regardless of how wide the 60% column itself gets, so text never grows
+   uncomfortably long-lined on a big desktop; other left-column content (actions, topics,
+   Related) intentionally isn't capped here, since those are UI modules, not prose. */
+.article-prose { max-width: 680px; }
+.article-prose p { font-size: 17px; line-height: 1.75; color: var(--color-text); margin: 0 0 18px; }
+.article-prose p.article-lede { font-size: 19px; font-weight: 600; line-height: 1.6; }
+.article-continue-inline { color: var(--color-neutral-700); }
+.article-continue-inline a { color: var(--color-accent-700); font-weight: 600; }
+
+/* — article actions (components/ArticleReadingPane.tsx) — one prominent primary CTA out to
+   the source, full column width, with Save/Share as an even split row underneath. */
+.article-actions { margin-top: 8px; display: flex; flex-direction: column; gap: 10px; }
+.article-actions-primary { width: 100%; font-size: 15px; padding: 13px; }
+.article-actions-secondary { display: flex; gap: 10px; }
+.article-actions-secondary .btn { flex: 1; }
+
+/* — shared small-caps section label (components/ArticleReadingPane.tsx: Topics, Related —
+   and components/ThreadsWeb.tsx: Article Connections, so all three read as one family). */
+.article-section-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin: 28px 0 12px;
+}
+.article-topics-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.article-topic-tag { cursor: pointer; transition: background 150ms ease, border-color 150ms ease; }
+.article-topic-tag:hover { background: var(--color-accent-100); border-color: var(--color-accent-600); }
+
+/* — Related articles grid (components/ArticleReadingPane.tsx) — a real card per article
+   (photo on top when one exists, a colored left border keyed to specialty when it doesn't
+   — see .specialty-border-* below — rather than an empty grey placeholder box), 3-up on
+   desktop, 2-up on tablet, 1-up on mobile. */
 .article-related-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
-@media (max-width: 560px) {
+@media (max-width: 1023px) {
+  .article-related-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
   .article-related-grid { grid-template-columns: 1fr; }
 }
 .article-related-card {
   display: flex;
-  flex-direction: row;
-  gap: 12px;
-  align-items: center;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
   text-decoration: none;
   color: inherit;
-  padding: 10px;
 }
 .article-related-thumb {
   position: relative;
-  width: 56px;
-  height: 56px;
+  width: 100%;
+  height: 140px;
   flex-shrink: 0;
-  border-radius: var(--radius-md);
-  overflow: hidden;
   background: var(--color-neutral-200);
 }
-.article-related-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 13.5px; line-height: 1.3; }
+.article-related-body { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px 16px; }
+.article-related-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.article-related-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 14px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.article-related-meta { font-size: 11.5px; color: var(--color-neutral-700); }
+.article-related-date { font-size: 11px; color: var(--color-neutral-600); }
+/* Fallback for a related article with no photo (see .article-related-thumb above) — a
+   colored accent instead of an empty grey box, reusing each specialty's already-established
+   token elsewhere in the app rather than inventing a new 5-color palette (ortho/blue and
+   neuro/teal already anchor the two accent scales; sports/orange, pediatric/green,
+   geriatric/purple reuse Limbic Vitals' three category colors — see --color-vitals-* and
+   the .card-title comment near .tag-evidence-* above for the same reuse-over-invent call). */
+.specialty-border-ortho { border-left: 4px solid var(--color-accent); }
+.specialty-border-neuro { border-left: 4px solid var(--color-accent-2); }
+.specialty-border-sports { border-left: 4px solid var(--color-vitals-strength); }
+.specialty-border-pediatric { border-left: 4px solid var(--color-vitals-mobility); }
+.specialty-border-geriatric { border-left: 4px solid var(--color-vitals-mindfulness); }
 
 /* "Latest news" (see components/HomeFeed.tsx) renders twice — once right under the hero,
    once in the aside — and CSS picks which copy shows per breakpoint rather than one
@@ -1467,20 +1566,6 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
    card can afford to float over its fixed-height chat canvas, but Threads' canvas sits in
    a normal scrolling page where a force-simulated node can end up anywhere, including
    right where a docked overlay would sit, silently blocking clicks on whatever's under it. */
-.threads-collapsed-line {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 13.5px;
-  color: var(--color-accent-700);
-  cursor: pointer;
-}
-.threads-collapsed-line:hover { color: var(--color-accent-800); }
 /* box-shadow added so the panel sits at the same visual weight as the rest of the app's
    card system (--shadow-md) instead of reading as a flat bordered rectangle next to it. */
 .threads-wrap {
@@ -1493,10 +1578,10 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 14px 16px;
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
-  font-size: 13px;
+  font-size: 14px;
   color: #dbe4f5;
   background: #0b1122;
 }
@@ -1505,15 +1590,46 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .threads-caption {
   padding: 0 16px 14px;
   margin-top: -2px;
-  font-size: 12px;
+  font-size: 12.5px;
   line-height: 1.5;
   color: #9fb0d0;
   background: #0b1122;
 }
+/* Minimum 500px — Threads is the dominant right-column feature on the article detail page
+   now, not a secondary panel, so its canvas gets real, unconditional room regardless of
+   viewport (no shorter mobile override the way .article-hero-media used to have). */
 .threads-canvas-wrap {
-  height: 420px;
+  min-height: 500px;
+  height: 500px;
   background: radial-gradient(ellipse at 50% 30%, #10182c 0%, #070a14 65%, #05070d 100%);
 }
+/* Accessible fallback for the D3 spiderweb above it (components/AgentGraph.tsx) — the same
+   nodes as a plain clickable text list, for a reader who'd rather not (or can't) interact
+   with the visual, opening the exact same detail panel a node click does (see
+   components/ThreadsWeb.tsx's handleNodeClick, shared by both). */
+.threads-connections { padding: 16px; background: #0d1428; border-top: 1px solid rgba(140, 170, 255, 0.15); }
+.threads-connections-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6ea8ff;
+  margin-bottom: 8px;
+}
+.threads-connections-list { display: flex; flex-direction: column; }
+.threads-connections-list button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(140, 170, 255, 0.1);
+  cursor: pointer;
+  padding: 9px 2px;
+  font-size: 13px;
+  color: #c7d3ee;
+}
+.threads-connections-list button:last-child { border-bottom: none; }
+.threads-connections-list button:hover { color: #ffffff; }
 .threads-detail-panel {
   position: relative;
   background: #0d1428;
@@ -1549,10 +1665,6 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   padding: 2px 8px;
   border-radius: 999px;
 }
-@media (max-width: 640px) {
-  .threads-canvas-wrap { height: 340px; }
-}
-
 /* — Feed-card Threads teaser (see components/ArticleCard.tsx) — a direct, always-visible
    link into the article's real Threads web, not a hover-revealed preview. */
 .card-threads-teaser {
