@@ -13,12 +13,13 @@ import {
   type GameKind,
   type CardCompletionState,
 } from "@/lib/games";
-import { DailyTermIcon, MiniCrosswordIcon, CaseOfDayIcon, CheckCircleIcon } from "@/components/icons";
+import { DailyTermIcon, MiniCrosswordIcon, HealthTriviaIcon, BodyConnectionsIcon, CheckCircleIcon } from "@/components/icons";
 
 const GAME_ICON: Record<GameKind, (props: { size?: number }) => React.ReactNode> = {
   wordle: DailyTermIcon,
   crossword: MiniCrosswordIcon,
-  caseOfDay: CaseOfDayIcon,
+  healthTrivia: HealthTriviaIcon,
+  bodyConnections: BodyConnectionsIcon,
 };
 
 const BUTTON_LABEL: Record<CardCompletionState, string> = {

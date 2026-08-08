@@ -4,8 +4,10 @@ import { prisma } from "@/lib/db";
 import { GraduationCapIcon } from "@/components/icons";
 import { BoardQuestionCard } from "@/components/BoardQuestionCard";
 import { BoardTermCard } from "@/components/BoardTermCard";
+import { CaseOfDayCard } from "@/components/CaseOfDayCard";
 import { BoardsStreakCard } from "@/components/BoardsStreakCard";
 import { questionForDate, termForDate, todayDateKey } from "@/lib/board-content";
+import { dayIndexForDateKey, caseForDayIndex } from "@/lib/cases-static";
 import { buildReadingCalendarWeeks } from "@/lib/reading-calendar";
 
 const CALENDAR_WINDOW_DAYS = 365;
@@ -48,16 +50,20 @@ export default async function SharpeningPage() {
   }
 
   const term = termForDate(dateKey);
+  const dayCase = caseForDayIndex(dayIndexForDateKey(dateKey));
 
   const windowStart = new Date();
   windowStart.setDate(windowStart.getDate() - (CALENDAR_WINDOW_DAYS - 1));
-  const [activityRows, termCompletion] = await Promise.all([
+  const [activityRows, termCompletion, caseCompletion] = await Promise.all([
     prisma.boardActivity.findMany({
       where: { userId: user.id, createdAt: { gte: windowStart } },
       select: { createdAt: true },
     }),
     prisma.dailyCompletion.findUnique({
       where: { userId_kind_dateKey: { userId: user.id, kind: "boardTerm", dateKey } },
+    }),
+    prisma.dailyCompletion.findUnique({
+      where: { userId_kind_dateKey: { userId: user.id, kind: "caseOfDay", dateKey } },
     }),
   ]);
   const weeks = buildReadingCalendarWeeks(activityRows.map((r) => r.createdAt));
@@ -69,7 +75,7 @@ export default async function SharpeningPage() {
         <h1 style={{ fontSize: 24, margin: 0 }}>Daily Sharpening</h1>
       </div>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
-        Two minutes a day — a board-style question and a term to lock in before your NPTE.
+        A few minutes a day — a board-style question, a term, and a case to lock in before your NPTE.
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -85,6 +91,15 @@ export default async function SharpeningPage() {
           term={term}
           initialRevealed={termCompletion != null}
           initialElapsedSeconds={termCompletion?.elapsedSeconds ?? null}
+          nexusOptIn={user.nexusOptIn}
+        />
+        <CaseOfDayCard
+          dateKey={dateKey}
+          dayCase={dayCase}
+          initial={{
+            selectedIndex: caseCompletion?.selectedIndex ?? null,
+            elapsedSeconds: caseCompletion?.elapsedSeconds ?? null,
+          }}
           nexusOptIn={user.nexusOptIn}
         />
         <BoardsStreakCard streakDays={user.boardsStreakDays} weeks={weeks} />
