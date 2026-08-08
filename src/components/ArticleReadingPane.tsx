@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { SaveButton } from "@/components/SaveButton";
 import { BackButton } from "@/components/BackButton";
+import { ArticleImage } from "@/components/ArticleImage";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { EVIDENCE_LEVEL_META } from "@/lib/evidence";
 import type { DecoratedArticle } from "@/lib/feed";
@@ -17,6 +18,11 @@ export function ArticleReadingPane({ article, related }: { article: DecoratedArt
   return (
     <div>
       <BackButton />
+      {article.image && (
+        <div className="article-hero-media">
+          <ArticleImage src={article.image} fill />
+        </div>
+      )}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
         <span className={article.typeTagClass}>{article.typeLabel}</span>
         <span className="tag tag-neutral">{article.specialtyLabel}</span>
@@ -72,35 +78,26 @@ export function ArticleReadingPane({ article, related }: { article: DecoratedArt
       )}
 
       {related.length > 0 && (
-        <div style={{ borderTop: "1px solid var(--color-neutral-200)", paddingTop: 18 }}>
+        <div style={{ borderTop: "1px solid var(--color-neutral-200)", paddingTop: 20 }}>
           <div
             style={{
               fontSize: 11,
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               color: "var(--color-neutral-700)",
-              marginBottom: 10,
+              marginBottom: 12,
             }}
           >
             Related
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div className="article-related-grid">
             {related.map((rel) => (
-              <Link
-                key={rel.id}
-                href={`/article/${rel.id}`}
-                style={{
-                  cursor: "pointer",
-                  padding: "12px 14px",
-                  borderRadius: "var(--radius-lg)",
-                  background: "var(--color-neutral-100)",
-                  color: "inherit",
-                  textDecoration: "none",
-                  display: "block",
-                }}
-              >
-                <div style={{ fontSize: 11, color: "var(--color-accent-700)", marginBottom: 3 }}>{rel.typeLabel}</div>
-                <div style={{ fontFamily: "var(--font-heading)", fontSize: 14, lineHeight: 1.25 }}>{rel.title}</div>
+              <Link key={rel.id} href={`/article/${rel.id}`} className="card elev-sm card-hoverable article-related-card">
+                <div className="article-related-thumb">{rel.image && <ArticleImage src={rel.image} fill />}</div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 11, color: "var(--color-accent-700)", marginBottom: 3 }}>{rel.typeLabel}</div>
+                  <div className="article-related-title">{rel.title}</div>
+                </div>
               </Link>
             ))}
           </div>
