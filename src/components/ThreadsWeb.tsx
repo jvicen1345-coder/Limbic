@@ -175,6 +175,7 @@ export function ThreadsWeb({
         <NetworkIcon size={16} style={{ color: "#6ea8ff" }} />
         Limbic Threads
       </div>
+      <p className="threads-caption">How this article connects to related research, guidelines, and technique.</p>
       <div className="agent-canvas-wrap threads-canvas-wrap" ref={containerRef}>
         <AgentGraph
           nodes={nodes}

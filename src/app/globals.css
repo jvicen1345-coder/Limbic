@@ -821,23 +821,30 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
    components/ArticleThreadsSplitView.tsx) — wider than the plain .screen-pad single
    column, since it needs room for two panes side by side. Same two-column mechanics as
    .home-row/.home-main-col/.home-aside-col above (sticky aside, capped-height internal
-   scroll, stacks below 799px) rather than a new layout convention. */
+   scroll, stacks below 799px) rather than a new layout convention.
+
+   The reading column is capped at a real editorial line-length (--article-reading-width)
+   rather than stretching flex:1 all the way out to whatever's left next to the Threads
+   panel — on a wide desktop that used to read as a few sparse, overly-long lines of text
+   next to an oversized dark panel; capping it gives the pair a deliberate, proportioned
+   look and leaves the extra width as page margin, the way a real editorial site would. */
 .article-split-pad {
   width: 100%;
-  padding: 36px 44px 60px;
-  max-width: 1180px;
+  padding: 40px 44px 64px;
+  max-width: 1240px;
   margin: 0 auto;
   box-sizing: border-box;
 }
 .article-split {
   display: flex;
   flex-direction: row;
-  gap: 40px;
+  gap: 48px;
   align-items: flex-start;
+  justify-content: center;
 }
-.article-split-reading { flex: 1; min-width: 0; }
+.article-split-reading { flex: 1; min-width: 0; max-width: 700px; }
 .article-split-threads {
-  width: 420px;
+  width: 400px;
   flex-shrink: 0;
   position: sticky;
   top: 20px;
@@ -847,9 +854,59 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 @media (max-width: 799px) {
   .article-split-pad { padding: 18px 18px 40px; }
   .article-split { flex-direction: column; gap: 24px; }
-  .article-split-reading { width: 100%; }
+  .article-split-reading { width: 100%; max-width: none; }
   .article-split-threads { width: 100%; position: static; max-height: none; overflow-y: visible; }
 }
+
+/* — article detail hero image (components/ArticleReadingPane.tsx) — a clean photo banner
+   above the eyebrow/title, distinct from ArticleCard/HeroArticleCard's text-over-photo
+   treatment (which is a feed-card space-saving device, not appropriate for the article's
+   own page, where the title reads better as normal text below the photo — the convention
+   real editorial sites use for a full article view). Shorter on mobile, same "smaller
+   photo, same proportions" pattern .hero-card-media already uses at its own breakpoint. */
+.article-hero-media {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 22px;
+  background: var(--color-neutral-200);
+}
+@media (max-width: 799px) {
+  .article-hero-media { height: 220px; margin-bottom: 18px; }
+}
+
+/* — Related articles grid (components/ArticleReadingPane.tsx) — small thumbnail cards
+   instead of the previous plain text rows, two-up on desktop / one column on mobile
+   (matching .article-split-reading's own desktop/mobile split above). */
+.article-related-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 560px) {
+  .article-related-grid { grid-template-columns: 1fr; }
+}
+.article-related-card {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  padding: 10px;
+}
+.article-related-thumb {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-neutral-200);
+}
+.article-related-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 13.5px; line-height: 1.3; }
 
 /* "Latest news" (see components/HomeFeed.tsx) renders twice — once right under the hero,
    once in the aside — and CSS picks which copy shows per breakpoint rather than one
@@ -1380,10 +1437,13 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   cursor: pointer;
 }
 .threads-collapsed-line:hover { color: var(--color-accent-800); }
+/* box-shadow added so the panel sits at the same visual weight as the rest of the app's
+   card system (--shadow-md) instead of reading as a flat bordered rectangle next to it. */
 .threads-wrap {
   border: 1px solid var(--color-neutral-200);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  box-shadow: var(--shadow-md);
 }
 .threads-header {
   display: flex;
@@ -1394,6 +1454,16 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   font-weight: var(--font-heading-weight);
   font-size: 13px;
   color: #dbe4f5;
+  background: #0b1122;
+}
+/* A one-line explainer under the header so the panel reads as an explained feature rather
+   than an unlabeled dark box before a reader has clicked anything in it. */
+.threads-caption {
+  padding: 0 16px 14px;
+  margin-top: -2px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #9fb0d0;
   background: #0b1122;
 }
 .threads-canvas-wrap {
