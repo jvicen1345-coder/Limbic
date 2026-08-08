@@ -1,16 +1,16 @@
-/** Shared metadata + stats math for the Limbic Games hub (see app/(app)/games/page.tsx)
- *  and Case of the Day (app/(app)/games/case/page.tsx). Kept free of JSX/server-only
- *  imports, same convention as lib/vitals.ts, so both the server hub page and any client
- *  pieces can import from here. The current-day Games streak itself is a persisted counter
+/** Shared metadata + stats math for the Limbic Games hub (see app/(app)/games/page.tsx).
+ *  Kept free of JSX/server-only imports, same convention as lib/vitals.ts, so both the
+ *  server hub page and any client pieces can import from here. The current-day Games
+ *  streak itself is a persisted counter
  *  on User (gamesStreakDays/lastGamesActivityAt, advanced by lib/game-activity.ts) — same
  *  pattern as the reading streak (streakDays) and Boards streak (boardsStreakDays), so all
  *  three "streaks" in this app are independently tracked rather than sharing one counter.
  *  Best streak and the weekly bar are still computed on the fly here, off the compact
  *  GameActivity table (one row per active day) rather than scanning DailyCompletion. */
 
-export type GameKind = "wordle" | "crossword" | "caseOfDay";
+export type GameKind = "wordle" | "crossword" | "healthTrivia" | "bodyConnections";
 
-export const GAME_KINDS: GameKind[] = ["wordle", "crossword", "caseOfDay"];
+export const GAME_KINDS: GameKind[] = ["wordle", "crossword", "healthTrivia", "bodyConnections"];
 
 export type Difficulty = "Easy" | "Medium" | "Hard";
 
@@ -43,12 +43,20 @@ export const GAMES: GameMeta[] = [
     timeEstimate: "3 min",
   },
   {
-    kind: "caseOfDay",
-    href: "/games/case",
-    title: "Case of the Day",
-    description: "A real patient scenario — what would you do?",
-    difficulty: "Hard",
-    timeEstimate: "5 min",
+    kind: "healthTrivia",
+    href: "/games/trivia",
+    title: "Health Trivia",
+    description: "5 questions about health and wellness — no clinical knowledge needed",
+    difficulty: "Easy",
+    timeEstimate: "3 min",
+  },
+  {
+    kind: "bodyConnections",
+    href: "/games/body",
+    title: "Body Connections",
+    description: "Match body parts to their functions — learn how your body works",
+    difficulty: "Easy",
+    timeEstimate: "3 min",
   },
 ];
 
@@ -57,7 +65,7 @@ export type CardCompletionState = "not-started" | "in-progress" | "completed";
 
 /** A row's `status` column means something different per kind (see
  *  app/actions/daily-completion.ts), but "unset/playing" vs. "anything else" maps
- *  consistently to in-progress vs. completed across all three games. */
+ *  consistently to in-progress vs. completed across all four games. */
 export function completionStateForStatus(status: string | null | undefined): CardCompletionState {
   if (!status) return "not-started";
   if (status === "playing") return "in-progress";
@@ -100,37 +108,4 @@ export function computeBestStreak(dateKeys: Iterable<string>): number {
 export function last7DateKeys(todayKey: string): string[] {
   const todayMs = dateKeyToUtcMs(todayKey);
   return Array.from({ length: 7 }, (_, i) => utcMsToDateKey(todayMs - i * DAY_MS));
-}
-
-/** Case of the Day's "Learn More" link resolves to a real article when one exists — same
- *  "classify/match by keyword" heuristic lib/nutrition-content.ts's isNutritionArticle
- *  already uses for untagged live content, just picking the best-scoring match instead of
- *  a yes/no. Requires at least 2 distinct keyword hits (or the exact first word of
- *  relatedTopic — usually the condition's own name, e.g. "lateral epicondylitis") before
- *  trusting a match; a single incidental word overlap isn't enough to call an article
- *  "about" a case's topic. Falls back to null (caller sends the reader to /search?q=...
- *  instead) when nothing in the current article pool clears that bar. */
-export function findRelatedArticle<T extends { title: string; summary: string }>(
-  articles: T[],
-  relatedTopic: string
-): T | null {
-  const words = relatedTopic
-    .toLowerCase()
-    .split(/[^a-z0-9]+/)
-    .filter((w) => w.length > 3);
-  if (words.length === 0) return null;
-  const headTerm = words[0];
-
-  let best: T | null = null;
-  let bestScore = 0;
-  for (const article of articles) {
-    const text = `${article.title} ${article.summary}`.toLowerCase();
-    const score = words.reduce((sum, w) => sum + (text.includes(w) ? 1 : 0), 0);
-    const clearsBar = score >= 2 || text.includes(headTerm);
-    if (clearsBar && score > bestScore) {
-      bestScore = score;
-      best = article;
-    }
-  }
-  return best;
 }

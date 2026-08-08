@@ -593,18 +593,45 @@ export function MiniCrosswordIcon({ size = 56, className, style }: IconProps) {
   );
 }
 
-/** Limbic Games hub — Case of the Day's card icon: a clipboard (the patient case) with a
- *  stethoscope draped over it. */
-export function CaseOfDayIcon({ size = 56, className, style }: IconProps) {
+/** Limbic Games hub — Health Trivia's card icon: a quiz lightbulb with a question mark. */
+export function HealthTriviaIcon({ size = 56, className, style }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className} style={style} role="img" aria-label="Case of the Day">
-      <rect x="12" y="10" width="30" height="42" rx="4" fill="var(--color-accent-100)" stroke="var(--color-accent-700)" strokeWidth="2.5" />
-      <rect x="21" y="6" width="12" height="8" rx="2" fill="var(--color-accent-700)" />
-      <path d="M18 25h18" stroke="var(--color-accent-700)" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M18 32h18" stroke="var(--color-accent-700)" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M18 39h10" stroke="var(--color-accent-700)" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M38 30v10a7 7 0 0 0 14 0v-3" stroke="var(--color-accent-2)" strokeWidth="2.75" strokeLinecap="round" />
-      <circle cx="52" cy="37" r="3.2" fill="var(--color-accent-2)" />
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className} style={style} role="img" aria-label="Health Trivia">
+      <path
+        d="M32 8c-9.4 0-17 7.4-17 16.6 0 6 3.2 10.9 7.9 13.9 1.4.9 2.1 2.1 2.1 3.5v2h14v-2c0-1.4.7-2.6 2.1-3.5 4.7-3 7.9-7.9 7.9-13.9C49 15.4 41.4 8 32 8z"
+        fill="var(--color-accent-100)"
+        stroke="var(--color-accent-700)"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+      />
+      <path d="M25 50h14" stroke="var(--color-accent-700)" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M27 55h10" stroke="var(--color-accent-700)" strokeWidth="2.5" strokeLinecap="round" />
+      <path
+        d="M28.5 22.5c0-2.2 1.8-4 3.9-4 2.1 0 3.9 1.6 3.9 3.6 0 3.4-4.3 3.2-4.3 7.4"
+        stroke="var(--color-accent-2)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="32.1" cy="34.8" r="1.9" fill="var(--color-accent-2)" />
+    </svg>
+  );
+}
+
+/** Limbic Games hub — Body Connections' card icon: a simple standing human figure outline. */
+export function BodyConnectionsIcon({ size = 56, className, style }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className} style={style} role="img" aria-label="Body Connections">
+      <circle cx="32" cy="13" r="6.5" fill="var(--color-accent-100)" stroke="var(--color-accent-700)" strokeWidth="2.5" />
+      <path
+        d="M32 21c-7 0-12.5 4.6-12.5 10.5V38h5l1.5 18h5l1-14h0l1 14h5l1.5-18h5v-6.5C45.5 25.6 39 21 32 21z"
+        fill="var(--color-accent-100)"
+        stroke="var(--color-accent-700)"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+      />
+      <path d="M19.5 31.5 12 27" stroke="var(--color-accent-2)" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M44.5 31.5 52 27" stroke="var(--color-accent-2)" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
 }

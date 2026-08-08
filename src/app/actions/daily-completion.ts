@@ -103,11 +103,55 @@ export async function recordCrosswordCompletionAction(
   revalidatePath("/games");
 }
 
-/** Persists a day's Case of the Day attempt(s) — reuses the same DailyCompletion columns
- *  as the other games rather than a new migration: `guesses` holds each attempted option
- *  index (as a string, in attempt order), `selectedIndex` the most recent attempt, and
- *  `status` one of "playing" (first attempt was wrong, second still open),
- *  "correct-first"/"correct-second" (scored 3/1), or "wrong" (both attempts wrong, 0). */
+/** Persists progress through Health Trivia's 5 daily questions (see
+ *  components/HealthTriviaGame.tsx) — `answers` holds each answered question's selected
+ *  option index, in question order, growing by one every time a question is revealed, same
+ *  "persist on every step, not just completion" reasoning as Wordle/Crossword above.
+ *  `status` is "playing" until all 5 are answered, then "won" — there's no losing state,
+ *  score is just reviewed on the results screen. */
+export async function recordHealthTriviaAction(dateKey: string, answers: number[], status: "playing" | "won") {
+  const user = await getCurrentUser();
+  if (!user) return;
+  const guesses = answers.map(String);
+  await Promise.all([
+    prisma.dailyCompletion.upsert({
+      where: { userId_kind_dateKey: { userId: user.id, kind: "healthTrivia", dateKey } },
+      create: { userId: user.id, kind: "healthTrivia", dateKey, guesses, status },
+      update: { guesses, status },
+    }),
+    status === "won" ? recordGameActivity(user.id, dateKey) : Promise.resolve(),
+  ]);
+  revalidatePath("/games/trivia");
+  revalidatePath("/games");
+}
+
+/** Persists progress through Body Connections' 5 daily body-part matches (see
+ *  components/BodyConnectionsGame.tsx) — `matchedRegions` holds each correctly-matched
+ *  region id, in the order matched, growing by one per correct match (an incorrect
+ *  attempt is never recorded — the reader just tries again client-side). `status` is
+ *  "playing" until all 5 regions are matched, then "won". */
+export async function recordBodyConnectionsAction(dateKey: string, matchedRegions: string[], status: "playing" | "won") {
+  const user = await getCurrentUser();
+  if (!user) return;
+  await Promise.all([
+    prisma.dailyCompletion.upsert({
+      where: { userId_kind_dateKey: { userId: user.id, kind: "bodyConnections", dateKey } },
+      create: { userId: user.id, kind: "bodyConnections", dateKey, guesses: matchedRegions, status },
+      update: { guesses: matchedRegions, status },
+    }),
+    status === "won" ? recordGameActivity(user.id, dateKey) : Promise.resolve(),
+  ]);
+  revalidatePath("/games/body");
+  revalidatePath("/games");
+}
+
+/** Persists a day's Case of the Day attempt — reuses the same DailyCompletion columns from
+ *  when Case of the Day lived in Limbic Games as a two-attempt scored game, now that it's
+ *  Daily Sharpening's third daily activity (see components/CaseOfDayCard.tsx): a single
+ *  select-then-reveal pass, so `attemptedIndexes` is always one element and `status` is
+ *  always "correct-first" or "wrong" for anything recorded going forward — "playing"/
+ *  "correct-second" only remain valid on the type for rows persisted before this move.
+ *  Counts toward the Boards streak (not the Games streak) now that it's a Boards activity. */
 export async function recordCaseOfDayAction(
   dateKey: string,
   attemptedIndexes: number[],
@@ -124,8 +168,8 @@ export async function recordCaseOfDayAction(
       create: { userId: user.id, kind: "caseOfDay", dateKey, guesses, selectedIndex, status, elapsedSeconds },
       update: { guesses, selectedIndex, status, elapsedSeconds },
     }),
-    status !== "playing" ? recordGameActivity(user.id, dateKey) : Promise.resolve(),
+    status !== "playing" ? recordBoardActivity(user.id, dateKey) : Promise.resolve(),
   ]);
-  revalidatePath("/games/case");
-  revalidatePath("/games");
+  revalidatePath("/boards/sharpening");
+  revalidatePath("/student");
 }

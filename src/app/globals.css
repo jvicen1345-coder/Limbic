@@ -2462,12 +2462,9 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 
 .games-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   margin-bottom: 32px;
-}
-@media (max-width: 900px) {
-  .games-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 620px) {
   .games-grid { grid-template-columns: 1fr; }
@@ -2564,7 +2561,7 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .games-week-dot-active { background: var(--color-games-completed); }
 .games-week-label { font-size: 12.5px; color: var(--color-neutral-700); margin-left: 6px; }
 
-/* — Case of the Day (app/(app)/games/case/page.tsx, components/CaseOfDayGame.tsx) — */
+/* — Case of the Day (app/(app)/boards/sharpening/page.tsx, components/CaseOfDayCard.tsx) — */
 .case-section { margin-bottom: 12px; }
 .case-section-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; margin-bottom: 8px; }
 .case-bullet-list { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.6; color: var(--color-text); }
@@ -2588,6 +2585,7 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 .case-option:hover:not(:disabled) { border-color: var(--color-accent); }
 .case-option:disabled { cursor: default; }
+.case-option-selected { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
 .case-option-correct {
   border-color: var(--color-success);
   background: color-mix(in srgb, var(--color-success) 12%, var(--color-surface));
@@ -2599,14 +2597,195 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   background: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
   opacity: 0.75;
 }
-.case-hint { font-size: 12.5px; color: var(--color-neutral-700); margin: 8px 2px 0; }
 
 .case-reveal { margin-top: 4px; }
-.case-reveal-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
-.case-reveal-points { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; color: var(--color-games-completed); }
-.case-reveal-verdict { font-size: 12.5px; color: var(--color-neutral-700); }
 .case-reveal-explanation { font-size: 13.5px; line-height: 1.6; color: var(--color-text); margin: 0 0 14px; }
-.case-reveal-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* — Health Trivia (app/(app)/games/trivia/page.tsx, components/HealthTriviaGame.tsx) — */
+.trivia-page { max-width: 480px; margin: 0 auto; }
+
+.trivia-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  margin-bottom: 8px;
+}
+.trivia-progress-bar { display: flex; gap: 6px; }
+.trivia-progress-dot { width: 22px; height: 5px; border-radius: 999px; background: var(--color-neutral-200); }
+.trivia-progress-dot-active { background: var(--color-accent); }
+
+.trivia-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  margin: 8px auto 18px;
+  animation: trivia-icon-pulse 700ms ease-out;
+}
+@keyframes trivia-icon-pulse {
+  0% { transform: scale(0.8); opacity: 0; }
+  65% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.trivia-question-text { font-size: 18px; font-weight: 700; line-height: 1.4; text-align: center; margin: 0 0 20px; color: var(--color-text); }
+
+.trivia-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.trivia-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font-size: 14.5px;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.trivia-option:hover:not(:disabled) { border-color: var(--color-accent); }
+.trivia-option:disabled { cursor: default; }
+.trivia-option-selected { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+.trivia-option-correct { background: var(--color-vitals-mobility); border-color: var(--color-vitals-mobility); color: #fff; }
+.trivia-option-incorrect {
+  background: color-mix(in srgb, var(--color-danger) 16%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.trivia-explanation { font-size: 13.5px; line-height: 1.6; color: var(--color-neutral-700); margin: 0 0 16px; }
+
+.trivia-results { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.trivia-results-score {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 32px;
+  margin: 6px 0 20px;
+}
+.trivia-results-review { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
+.trivia-review-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: var(--radius-md); background: var(--color-surface); border: 1px solid var(--color-divider); }
+.trivia-review-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 999px; margin-top: 1px; }
+.trivia-review-icon-correct { background: color-mix(in srgb, var(--color-vitals-mobility) 20%, transparent); color: var(--color-vitals-mobility); }
+.trivia-review-icon-incorrect { background: color-mix(in srgb, var(--color-danger) 16%, transparent); color: var(--color-danger); }
+.trivia-review-question { font-size: 13px; font-weight: 600; margin: 0 0 3px; }
+.trivia-review-answer { font-size: 12.5px; color: var(--color-neutral-700); margin: 0; }
+.trivia-results-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+
+@media (max-width: 620px) {
+  .trivia-option { min-height: 52px; }
+}
+
+/* — Body Connections (app/(app)/games/body/page.tsx, components/BodyConnectionsGame.tsx,
+   components/BodySilhouette.tsx) — */
+.body-page { max-width: 900px; margin: 0 auto; }
+.body-header { text-align: center; margin-bottom: 20px; }
+.body-progress { font-size: 13px; font-weight: 600; color: var(--color-neutral-700); margin: 4px 0 0; }
+
+.body-desktop-layout { display: flex; gap: 36px; align-items: flex-start; }
+.body-silhouette-col { flex: 0 0 260px; }
+.body-functions-col { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+@media (max-width: 767px) {
+  .body-desktop-layout { flex-direction: column; align-items: center; }
+  .body-silhouette-col { flex: 0 0 auto; width: 100%; max-width: 260px; }
+  .body-functions-col { width: 100%; }
+}
+
+.body-silhouette { width: 100%; max-width: 260px; display: block; margin: 0 auto; }
+.body-region {
+  fill: var(--color-neutral-300);
+  stroke: var(--color-neutral-500);
+  stroke-width: 1.5;
+  cursor: pointer;
+  transition: fill 150ms ease, stroke 150ms ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.body-region:hover { fill: color-mix(in srgb, var(--color-accent) 35%, var(--color-neutral-300)); stroke: var(--color-accent); }
+.body-region-inactive { fill: var(--color-neutral-200); stroke: var(--color-neutral-300); cursor: default; pointer-events: none; opacity: 0.55; }
+.body-region-selected { fill: var(--color-accent); stroke: var(--color-accent); }
+.body-region-matched { fill: var(--color-vitals-mobility); stroke: var(--color-vitals-mobility); pointer-events: none; }
+.body-region-flash { fill: var(--color-danger); stroke: var(--color-danger); animation: body-region-shake 400ms ease; }
+.body-region-pulsing { fill: color-mix(in srgb, var(--color-accent) 50%, var(--color-neutral-300)); stroke: var(--color-accent); animation: body-region-pulse 1.4s ease-in-out infinite; }
+@keyframes body-region-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+@keyframes body-region-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.body-function-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font-size: 14px;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.body-function-card:hover:not(:disabled) { border-color: var(--color-accent); }
+.body-function-card:disabled { cursor: default; }
+.body-function-selected { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+.body-function-matched {
+  background: color-mix(in srgb, var(--color-vitals-mobility) 14%, var(--color-surface));
+  border-color: var(--color-vitals-mobility);
+  color: var(--color-vitals-mobility);
+  text-decoration: line-through;
+  opacity: 0.75;
+}
+.body-function-flash {
+  border-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 14%, var(--color-surface));
+  animation: body-region-shake 400ms ease;
+}
+
+.body-mobile-layout { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.body-mobile-prompt { font-size: 16px; font-weight: 700; text-align: center; margin: 0; }
+.body-mobile-options { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.body-mobile-option {
+  min-height: 56px;
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font-size: 14.5px;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+.body-mobile-option:hover:not(:disabled) { border-color: var(--color-accent); }
+.body-mobile-option-wrong {
+  border-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 14%, var(--color-surface));
+  animation: body-region-shake 400ms ease;
+}
+
+.body-results { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.body-results-score { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 32px; margin: 6px 0 20px; }
+.body-results-review { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
+.body-review-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: var(--radius-md); background: var(--color-surface); border: 1px solid var(--color-divider); }
+.body-review-part { font-size: 13px; font-weight: 600; }
+.body-review-function { font-size: 12.5px; color: var(--color-neutral-700); margin-top: 2px; }
+.body-results-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; }
 
 /* — Limbic Student Atrium (app/(app)/student/*) — deliberately warmer than the rest of the
    app (see AGENTS.md-adjacent product ask: "like walking into an atrium"), built from the
