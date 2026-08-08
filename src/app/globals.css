@@ -886,7 +886,7 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 .article-split-pad {
   width: 100%;
   padding: 40px 44px 64px;
-  max-width: 1400px;
+  max-width: 1800px;
   margin: 0 auto;
   box-sizing: border-box;
 }
