@@ -402,6 +402,15 @@ html[data-theme="dark"] .card.elev-lg {
   line-height: 1.22;
   color: #fff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  /* .hero-card-bottom is bottom-anchored over a fixed-height photo (see .hero-card-media)
+     — a long title otherwise just keeps growing upward past the top edge of that photo and
+     gets hard-clipped mid-letter by its overflow: hidden. Clamping to 3 lines guarantees it
+     always fits (checked against both this and the mobile breakpoint's shorter media
+     height) and ends cleanly with an ellipsis instead. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 .hero-card-source {
   margin-top: 5px;
