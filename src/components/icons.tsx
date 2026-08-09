@@ -225,6 +225,16 @@ export function XIcon(props: IconProps) {
   );
 }
 
+/** A simple four-point diamond outline — the Founding Funders sidebar link's icon (see
+ *  AppShell.tsx), not shared elsewhere. */
+export function DiamondIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 2 L20 12 L12 22 L4 12 Z" />
+    </Svg>
+  );
+}
+
 export function CrownIcon(props: IconProps) {
   return (
     <Svg {...props}>

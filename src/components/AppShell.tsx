@@ -18,6 +18,7 @@ import {
   MenuIcon,
   XIcon,
   CrownIcon,
+  DiamondIcon,
   FilmIcon,
   UsersIcon,
   GridIcon,
@@ -125,6 +126,29 @@ function NavLink({
   );
 }
 
+/** Gold rather than the standard blue accent (see NavLink/sidebarNavStyle above) — a
+ *  deliberately different treatment so it reads as its own thing, not another item in
+ *  whatever section happens to sit above it. Stands alone with no section label, set off
+ *  by its own thin top separator (see .nav-founding-separator in globals.css) rather than
+ *  being grouped under one. */
+function FoundingFundersNavLink({ onNavigate }: { onNavigate?: () => void }) {
+  const pathname = usePathname();
+  const active = pathname === "/founding-funders";
+  return (
+    <>
+      <hr className="nav-founding-separator" />
+      <Link
+        href="/founding-funders"
+        className={active ? "nav-founding-link nav-founding-link-active" : "nav-founding-link"}
+        onClick={onNavigate}
+      >
+        <DiamondIcon size={18} />
+        Founding Funders
+      </Link>
+    </>
+  );
+}
+
 function BottomNavLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
   const pathname = usePathname();
   const active = pathname === href;
@@ -160,10 +184,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
-      {/* /founding-funders is intentionally its own standalone page (no sidebar, no
-       *  AppShell — see app/founding-funders/page.tsx) once you land there; this is just
-       *  the entry point into it from the normal nav. */}
-      <NavLink href="/founding-funders" icon={<CrownIcon />} label="Founding Funders" onNavigate={onNavigate} />
 
       {isStudent && (
         <>
@@ -224,6 +244,11 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
           <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" bold={false} onNavigate={onNavigate} />
         </>
       )}
+
+      {/* /founding-funders is intentionally its own standalone page (no sidebar, no
+       *  AppShell — see app/founding-funders/page.tsx) once you land there; this is just
+       *  the entry point into it from the normal nav. */}
+      <FoundingFundersNavLink onNavigate={onNavigate} />
 
       <div className="nav-footer">
         <Link href="/profile" className="nav-footer-nameplate" onClick={onNavigate}>

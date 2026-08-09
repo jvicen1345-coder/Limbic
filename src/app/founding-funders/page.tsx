@@ -66,8 +66,8 @@ export default async function FoundingFundersPage() {
       <div className="ff-container">
         {/* Section 1 — The Letter */}
         <div className="ff-letter">
-          <p>To the Founding Funders,</p>
-          <p>I am a Doctor of Physical Therapy student at Chapman University.</p>
+          <p className="ff-letter-opening">To the Founding Funders,</p>
+          <p>My name is Jonathan Vicencio, a Doctor of Physical Therapy student at Chapman University.</p>
           <p>
             From the beginning of this program I noticed something missing — a single place where clinicians and
             students could access current, evidence based physical therapy without hunting through paywalls,
@@ -83,11 +83,12 @@ export default async function FoundingFundersPage() {
             that platform.
           </p>
           <p>I am looking for 25 people who believe in what this could become.</p>
+          <hr className="ff-letter-signature-rule" />
           <div className="ff-letter-signature">
-            <div>— Jonathan Vicencio</div>
-            <div>— Doctor of Physical Therapy Candidate</div>
-            <div>— Chapman University, Class of 2028</div>
-            <div>— Newport Beach, California</div>
+            <div>Jonathan Vicencio</div>
+            <div>Doctor of Physical Therapy Student</div>
+            <div>Chapman University, Class of 2028</div>
+            <div>Newport Beach, California</div>
           </div>
         </div>
         <hr className="ff-divider" />
