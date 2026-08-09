@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
+import { isSiteAdmin } from "@/lib/admin";
 import { FOUNDING_FUNDERS_TOTAL_SLOTS } from "@/lib/founding-funders-config";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -55,25 +55,6 @@ export async function joinWaitlistAction(email: string): Promise<JoinWaitlistRes
   return { ok: true, waitlistCount: currentCount + 1 };
 }
 
-/** Comma-separated sign-in emails allowed to claim a spot on someone else's behalf — see
- *  .env.example. Matched against both the General sign-in email and a PT license sign-in's
- *  email, case-insensitively, since either can be how an admin's own account signed in. */
-function adminEmails(): string[] {
-  return (process.env.FOUNDING_FUNDERS_ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-}
-
-export async function isFoundingFundersAdmin(): Promise<boolean> {
-  const user = await getCurrentUser();
-  if (!user) return false;
-  const allowed = adminEmails();
-  if (allowed.length === 0) return false;
-  const candidates = [user.email, user.licenseEmail].filter((e): e is string => !!e).map((e) => e.toLowerCase());
-  return candidates.some((e) => allowed.includes(e));
-}
-
 export interface ClaimSpotResult {
   ok: boolean;
   error?: string;
@@ -92,7 +73,7 @@ export async function claimFoundingSpotAction(input: {
 }): Promise<ClaimSpotResult> {
   const currentCount = await prisma.foundingFunder.count({ where: { confirmed: true } });
 
-  if (!(await isFoundingFundersAdmin())) {
+  if (!(await isSiteAdmin())) {
     return { ok: false, error: "Not authorized.", claimedCount: currentCount };
   }
 
