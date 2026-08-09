@@ -3578,3 +3578,60 @@ html[data-theme="dark"] .ff-page {
   .ff-letter p { font-size: 17px; }
   .ff-offer-title { font-size: 28px; }
 }
+
+/* — /terms, /privacy (components/LegalPageLayout.tsx) — plain --color-* tokens, unlike
+   .ff-page above, since these are meant to read as a normal part of the app, not a
+   different visual language. — */
+.legal-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+.legal-back-link {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 150ms ease;
+}
+.legal-back-link:hover { transform: translateX(-2px); }
+
+.legal-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 84px 24px 64px;
+}
+.legal-header { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+.legal-header-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; }
+
+.legal-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; margin: 0 0 6px; }
+.legal-updated { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 36px; }
+
+.legal-section-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 19px;
+  margin: 32px 0 10px;
+}
+.legal-section-title:first-of-type { margin-top: 0; }
+.legal-body { font-size: 16px; line-height: 1.7; margin: 0 0 8px; }
+.legal-list { font-size: 16px; line-height: 1.7; margin: 0 0 8px; padding-left: 22px; }
+.legal-list li { margin-bottom: 8px; }
+.legal-list li:last-child { margin-bottom: 0; }
+
+@media (max-width: 599px) {
+  .legal-container { padding: 72px 18px 48px; }
+  .legal-title { font-size: 24px; }
+}
