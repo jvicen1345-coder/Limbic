@@ -1,13 +1,27 @@
 import { getCurrentUser } from "@/lib/session";
+import { prisma } from "@/lib/db";
 import { ASSESSMENTS } from "@/lib/assessments-static";
 import { AssessmentLogButton } from "@/components/metrics/AssessmentLogButton";
+import { AssessmentScoreCard } from "@/components/metrics/AssessmentScoreCard";
+import type { WellnessProfile } from "@/lib/vitals";
 
 export default async function AssessYourselfPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
+  const row = await prisma.vitalsProfile.findUnique({ where: { userId: user.id } });
+  const profile: WellnessProfile = {
+    age: row?.age ?? null,
+    heightFeet: row?.heightFeet ?? null,
+    heightInches: row?.heightInches ?? null,
+    weightLbs: row?.weightLbs ?? null,
+    biologicalSex: row?.biologicalSex ?? null,
+    activityLevel: row?.activityLevel ?? null,
+    wellnessGoal: row?.wellnessGoal ?? null,
+  };
+
   return (
-    <div className="screen-pad" style={{ maxWidth: 760, margin: "0 auto" }}>
+    <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Assess Yourself</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 14px" }}>
         Simple movement screens you can do at home — based on physical therapy assessment principles.
@@ -17,7 +31,9 @@ export default async function AssessYourselfPage() {
         movement, consult a licensed physical therapist.
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      <AssessmentScoreCard profile={profile} />
+
+      <div className="wellness-card-columns">
         {ASSESSMENTS.map((a) => (
           <div key={a.id} className="wellness-assess-card">
             <div className="wellness-calc-title">{a.title}</div>

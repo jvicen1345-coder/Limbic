@@ -33,6 +33,21 @@ export const WELLNESS_GOAL_OPTIONS = [
 ] as const;
 export type WellnessGoal = (typeof WELLNESS_GOAL_OPTIONS)[number];
 
+/** The single source of personal-profile data (age, body metrics, activity level, goal)
+ *  used everywhere it feeds a calculation — BodyMetricsCard on /wellness/activity is the
+ *  only place it's *entered*; every calculator card (BMI, Max HR, HRV, VO2 Max, Macro,
+ *  the Assess Yourself score) just reads it via this shape instead of collecting its own
+ *  copy of the same fields. */
+export interface WellnessProfile {
+  age: number | null;
+  heightFeet: number | null;
+  heightInches: number | null;
+  weightLbs: number | null;
+  biologicalSex: string | null;
+  activityLevel: string | null;
+  wellnessGoal: string | null;
+}
+
 export interface VitalsLogEntry {
   id: string;
   /** Local ISO "YYYY-MM-DD" — the activity's own date, not when it was logged. */

@@ -18,7 +18,8 @@ export function RpeScaleCard() {
     <div className="wellness-calc-card">
       <div className="wellness-calc-title">RPE Scale — Rate of Perceived Exertion</div>
       <p className="wellness-calc-desc">
-        Not a calculator — an interactive reference. The Borg RPE scale runs from 6 (no exertion) to 20 (maximal effort).
+        Not a calculator — an interactive reference. The Borg RPE scale runs from 6 (no exertion) to 20 (maximal effort). Tap a number
+        below to see what it means.
       </p>
 
       <div className="wellness-rpe-scale">
@@ -35,24 +36,6 @@ export function RpeScaleCard() {
             {point.label && <span className="wellness-rpe-point-label">{point.label}</span>}
           </button>
         ))}
-      </div>
-
-      <div className="field" style={{ marginTop: 14, maxWidth: 320 }}>
-        <label htmlFor="rpe-select">How hard are you working right now?</label>
-        <select
-          className="input"
-          id="rpe-select"
-          value={selected ?? ""}
-          onChange={(e) => setSelected(e.target.value ? Number(e.target.value) : null)}
-        >
-          <option value="">Select a number…</option>
-          {RPE_SCALE.map((point) => (
-            <option key={point.value} value={point.value}>
-              {point.value}
-              {point.label ? ` — ${point.label}` : ""}
-            </option>
-          ))}
-        </select>
       </div>
 
       {interpretation && (

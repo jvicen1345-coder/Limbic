@@ -2,20 +2,10 @@
 
 import { useState, useTransition } from "react";
 import { saveVitalsProfile } from "@/app/actions/vitals";
-import { ACTIVITY_LEVEL_OPTIONS, BIOLOGICAL_SEX_OPTIONS, WELLNESS_GOAL_OPTIONS } from "@/lib/vitals";
+import { ACTIVITY_LEVEL_OPTIONS, BIOLOGICAL_SEX_OPTIONS, WELLNESS_GOAL_OPTIONS, type WellnessProfile } from "@/lib/vitals";
 import { CheckIcon } from "@/components/icons";
 
 const SAVED_CHECK_MS = 1600;
-
-export interface VitalsProfileValues {
-  age: number | null;
-  heightFeet: number | null;
-  heightInches: number | null;
-  weightLbs: number | null;
-  biologicalSex: string | null;
-  activityLevel: string | null;
-  wellnessGoal: string | null;
-}
 
 /** A number input's local string state so the field can sit empty (not "0") — cleared to
  *  null on save when blank. */
@@ -25,7 +15,10 @@ function toNumberOrNull(value: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-export function BodyMetricsCard({ initial }: { initial: VitalsProfileValues }) {
+/** The one place this profile is entered — every calculator elsewhere in Health & Wellness
+ *  (BMI, Max HR, HRV, VO2 Max, Macro, Assess Yourself's score) just reads what's saved here
+ *  via lib/vitals.ts's WellnessProfile shape instead of asking for it again. */
+export function BodyMetricsCard({ initial }: { initial: WellnessProfile }) {
   const [age, setAge] = useState(initial.age?.toString() ?? "");
   const [heightFeet, setHeightFeet] = useState(initial.heightFeet?.toString() ?? "");
   const [heightInches, setHeightInches] = useState(initial.heightInches?.toString() ?? "");
