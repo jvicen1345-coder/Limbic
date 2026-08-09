@@ -2,7 +2,7 @@
 // else on the page needs to change.
 
 /** Section 5 shows the "coming soon" waitlist form while this is false, and the Zelle
- *  payment instructions once it's true. Change to true on August 14th, 2026. */
+ *  payment instructions once it's true. Flip to true on launch day. */
 export const FOUNDING_FUNDERS_OPEN = false;
 
 /** The Founding 25 — fixed, not configurable per round (see FoundingFunder.round in

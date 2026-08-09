@@ -1003,7 +1003,7 @@ html[data-theme="dark"] .nav-founding-link-active {
    sticky-aside mechanics as .home-row/.home-main-col/.home-aside-col above otherwise. */
 .article-split-pad {
   width: 100%;
-  padding: 40px 44px 64px;
+  padding: 28px 32px 48px;
   max-width: 1800px;
   margin: 0 auto;
   box-sizing: border-box;
@@ -1011,7 +1011,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .article-split {
   display: flex;
   flex-direction: row;
-  gap: 40px;
+  gap: 28px;
   align-items: flex-start;
 }
 .article-split-reading { flex: 0 0 60%; max-width: 60%; min-width: 0; }
@@ -1044,11 +1044,11 @@ html[data-theme="dark"] .nav-founding-link-active {
   background: var(--color-card-surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  padding: 32px 36px 40px;
+  padding: 24px 28px 32px;
   animation: fade-in 0.5s ease;
 }
 @media (max-width: 640px) {
-  .article-reading-card { padding: 22px 18px 28px; }
+  .article-reading-card { padding: 20px 16px 24px; }
 }
 
 /* — article header (components/ArticleReadingPane.tsx) — evidence badge first and most
@@ -1057,46 +1057,46 @@ html[data-theme="dark"] .nav-founding-link-active {
    plain breadcrumb (not another pair of tag pills — the evidence badge already carries the
    page's visual weight) before the title. */
 .article-evidence-caption {
-  margin: 8px 0 18px;
-  font-size: 13px;
+  margin: 6px 0 14px;
+  font-size: 12.5px;
   line-height: 1.4;
   color: var(--color-neutral-700);
   max-width: 480px;
 }
 .article-breadcrumb {
-  font-size: 12.5px;
+  font-size: 12px;
   letter-spacing: 0.02em;
   color: var(--color-neutral-700);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .article-hero-title {
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
-  font-size: 34px;
-  line-height: 1.28;
-  margin: 0 0 16px;
+  font-size: 26px;
+  line-height: 1.3;
+  margin: 0 0 12px;
 }
 @media (max-width: 640px) {
-  .article-hero-title { font-size: 25px; }
+  .article-hero-title { font-size: 21px; }
 }
-.article-hero-journal { font-size: 15px; font-weight: 700; color: var(--color-text); margin-bottom: 3px; }
-.article-hero-datemeta { font-size: 13px; color: var(--color-neutral-700); }
-.article-hero-divider { border: none; border-top: 1px solid var(--color-divider); margin: 24px 0; }
+.article-hero-journal { font-size: 14px; font-weight: 700; color: var(--color-text); margin-bottom: 3px; }
+.article-hero-datemeta { font-size: 12.5px; color: var(--color-neutral-700); }
+.article-hero-divider { border: none; border-top: 1px solid var(--color-divider); margin: 18px 0; }
 
 /* — article body (components/ArticleReadingPane.tsx) — capped at a real editorial
    line-length regardless of how wide the 60% column itself gets, so text never grows
    uncomfortably long-lined on a big desktop; other left-column content (actions, topics,
    Related) intentionally isn't capped here, since those are UI modules, not prose. */
 .article-prose { max-width: 680px; }
-.article-prose p { font-size: 17px; line-height: 1.75; color: var(--color-text); margin: 0 0 18px; }
-.article-prose p.article-lede { font-size: 19px; font-weight: 600; line-height: 1.6; }
+.article-prose p { font-size: 15px; line-height: 1.7; color: var(--color-text); margin: 0 0 16px; }
+.article-prose p.article-lede { font-size: 16px; font-weight: 600; line-height: 1.6; }
 .article-continue-inline { color: var(--color-neutral-700); }
 .article-continue-inline a { color: var(--color-accent-700); font-weight: 600; }
 
 /* — article actions (components/ArticleReadingPane.tsx) — one prominent primary CTA out to
    the source, full column width, with Save/Share as an even split row underneath. */
 .article-actions { margin-top: 8px; display: flex; flex-direction: column; gap: 10px; }
-.article-actions-primary { width: 100%; font-size: 15px; padding: 13px; }
+.article-actions-primary { width: 100%; font-size: 14px; padding: 11px; }
 .article-actions-secondary { display: flex; gap: 10px; }
 .article-actions-secondary .btn { flex: 1; }
 
@@ -1107,7 +1107,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-neutral-700);
-  margin: 28px 0 12px;
+  margin: 22px 0 10px;
 }
 .article-topics-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .article-topic-tag { cursor: pointer; transition: background 150ms ease, border-color 150ms ease; }
