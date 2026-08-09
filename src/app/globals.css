@@ -726,6 +726,20 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   border-top: 1px solid var(--color-neutral-200);
 }
 
+/* Takes the reader to /profile — the old dedicated "Profile" nav link was retired in favor
+   of this, so the nameplate itself needs to read as clickable rather than static text. */
+.nav-footer-nameplate {
+  display: block;
+  margin: -6px -8px 4px;
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+.nav-footer-nameplate:hover {
+  background: var(--color-accent-100);
+}
+
 .app-main {
   flex: 1;
   min-width: 0;

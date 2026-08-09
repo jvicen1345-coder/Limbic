@@ -160,7 +160,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
-      <NavLink href="/profile" icon={<ProfileIcon />} label="Profile" onNavigate={onNavigate} />
 
       {isStudent && (
         <>
@@ -223,11 +222,13 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       )}
 
       <div className="nav-footer">
-        <div style={{ fontSize: 12, color: "var(--color-neutral-700)", marginBottom: 4 }}>Signed in as</div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)" }}>{profileName}</div>
-        <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
-          {specialtyLabel} · {practiceState}
-        </div>
+        <Link href="/profile" className="nav-footer-nameplate" onClick={onNavigate}>
+          <div style={{ fontSize: 12, color: "var(--color-neutral-700)", marginBottom: 4 }}>Signed in as</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)" }}>{profileName}</div>
+          <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
+            {specialtyLabel} · {practiceState}
+          </div>
+        </Link>
         <ThemeToggle />
         <form action={signOutAction}>
           <button
