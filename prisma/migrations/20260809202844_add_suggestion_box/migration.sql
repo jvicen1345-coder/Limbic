@@ -1,0 +1,6 @@
+-- CreateTable
+CREATE TABLE "Suggestion" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "body" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

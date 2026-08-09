@@ -173,6 +173,9 @@ interface NavContentProps {
    *  locked state) for anyone who doesn't qualify. Limbic Games (/wordle) is open to
    *  everyone regardless of this flag. */
   isStudent: boolean;
+  /** True for a site admin account (see lib/admin.ts isSiteAdmin) — gates the Admin section
+   *  below, hidden entirely for everyone else. */
+  isAdmin: boolean;
   aptaCount: number;
   nexusRequestCount: number;
   /** Called after any nav link is clicked — used to close the mobile drawer on navigation. */
@@ -181,7 +184,7 @@ interface NavContentProps {
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
+function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
   return (
     <>
       <NavLink href="/" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
@@ -251,6 +254,13 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
         </>
       )}
 
+      {isAdmin && (
+        <>
+          <div className="nav-section-label">Admin</div>
+          <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
+        </>
+      )}
+
       {/* /founding-funders is intentionally its own standalone page (no sidebar, no
        *  AppShell — see app/founding-funders/page.tsx) once you land there; this is just
        *  the entry point into it from the normal nav. */}
@@ -286,6 +296,7 @@ export interface AppShellProps {
   hasLicense: boolean;
   isPro: boolean;
   isStudent: boolean;
+  isAdmin: boolean;
   aptaCount: number;
   nexusRequestCount: number;
   savedCount: number;
@@ -299,13 +310,14 @@ export function AppShell({
   hasLicense,
   isPro,
   isStudent,
+  isAdmin,
   aptaCount,
   nexusRequestCount,
   savedCount,
   children,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, aptaCount, nexusRequestCount };
+  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount };
 
   return (
     <div className="app-root">

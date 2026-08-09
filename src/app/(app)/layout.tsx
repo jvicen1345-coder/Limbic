@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser, hasStudentAccess, hasLicenseAccess } from "@/lib/session";
+import { isSiteAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { getAptaNewsArticles } from "@/lib/articles";
 import { SPECIALTY_META } from "@/lib/meta";
@@ -10,10 +11,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!user) redirect("/sign-in");
   if (!user.hasOnboarded) redirect("/onboarding");
 
-  const [aptaArticles, savedCount, nexusRequestCount] = await Promise.all([
+  const [aptaArticles, savedCount, nexusRequestCount, isAdmin] = await Promise.all([
     getAptaNewsArticles(),
     prisma.savedArticle.count({ where: { userId: user.id } }),
     prisma.connection.count({ where: { recipientId: user.id, status: "pending" } }),
+    isSiteAdmin(),
   ]);
 
   const hasLicense = hasLicenseAccess(user);
@@ -26,6 +28,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       hasLicense={hasLicense}
       isPro={user.isPro}
       isStudent={hasStudentAccess(user)}
+      isAdmin={isAdmin}
       aptaCount={aptaArticles.length}
       nexusRequestCount={nexusRequestCount}
       savedCount={savedCount}
