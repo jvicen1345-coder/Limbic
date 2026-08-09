@@ -14,3 +14,8 @@ export const PRO_TABS: SubTab[] = [
   { href: "/pro", label: "Overview" },
   { href: "/pro/membership", label: "Membership" },
 ];
+
+export const NEWS_TABS: SubTab[] = [
+  { href: "/news", label: "APTA" },
+  { href: "/news/general", label: "General" },
+];

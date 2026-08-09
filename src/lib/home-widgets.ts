@@ -8,7 +8,6 @@ export const HOME_WIDGETS = [
   { id: "calendar", label: "CE & Events calendar" },
   { id: "nexus", label: "Nexus" },
   { id: "stock", label: "PT Industry Index" },
-  { id: "news", label: "Latest news" },
 ] as const;
 
 export type HomeWidgetId = (typeof HOME_WIDGETS)[number]["id"];

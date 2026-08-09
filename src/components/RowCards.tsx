@@ -45,7 +45,20 @@ export function SavedListRow({
   );
 }
 
-export function AptaNewsRow({ article }: { article: DecoratedArticle }) {
+/** Shared row for the News section (see app/(app)/news/page.tsx's APTA tab and
+ *  app/(app)/news/general/page.tsx's General tab) — the APTA tab always passes its own
+ *  fixed badge (matches the original AptaNewsRow's copy exactly, unchanged); the General
+ *  tab leaves it unset, falling back to each article's own type tag/label (Guideline,
+ *  Industry & Policy, Equipment, …) since that list mixes several types together. */
+export function NewsRow({
+  article,
+  badgeLabel,
+  badgeClassName,
+}: {
+  article: DecoratedArticle;
+  badgeLabel?: string;
+  badgeClassName?: string;
+}) {
   const router = useRouter();
   return (
     <div
@@ -62,7 +75,7 @@ export function AptaNewsRow({ article }: { article: DecoratedArticle }) {
     >
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
-          <span className="tag tag-accent">APTA News</span>
+          <span className={badgeClassName ?? article.typeTagClass}>{badgeLabel ?? article.typeLabel}</span>
           <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>
             {article.source} · {article.dateLabel}
           </span>
