@@ -71,6 +71,17 @@ model User {
   stripeCustomerId     String? @unique
   stripeSubscriptionId String? @unique
 
+  // LimbicWellness+ — a separate, additive subscription (not a competing clinician tier
+  // like Pro/Student, which share stripeSubscriptionId above since a reader can only be on
+  // one of those at once) — a PT can be LimbicPro AND LimbicWellness+ simultaneously, so it
+  // gets its own subscription id rather than sharing stripeSubscriptionId. Billing-only for
+  // now (see app/(app)/pro/membership/page.tsx) — no feature gate wired to it yet.
+  isWellnessPlus             Boolean   @default(false)
+  // "month" | "year" — which of the two prices is active, purely for display on the
+  // manage/cancel card; null when isWellnessPlus is false.
+  wellnessPlusInterval       String?
+  wellnessPlusSubscriptionId String?   @unique
+
   // Timestamp of the previous home-feed load, captured before it's overwritten with the
   // current one — this is what lets the feed tell "published since you were last here"
   // apart from everything else (see lib/session.ts recordVisitAndGetPrevious).

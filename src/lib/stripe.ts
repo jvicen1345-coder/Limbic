@@ -37,29 +37,41 @@ export function getStripe(): Stripe {
   return _stripe;
 }
 
-export type BillablePlan = "pro" | "limbicStudent";
+// LimbicWellness+ is two plans, not one — same product/feature (billing-only for now, see
+// app/(app)/wellness/membership/page.tsx), just monthly vs. annual pricing. Kept as
+// separate BillablePlan values (rather than a plan + interval pair) so the rest of this
+// file's one-price-per-plan shape doesn't need to change.
+export type BillablePlan = "pro" | "limbicStudent" | "wellnessPlusMonthly" | "wellnessPlusYearly";
 
 /** Real Price ids created in the Stripe Dashboard (Products & Prices) — see
- *  .env.example/README for the setup steps. Dollar amounts themselves ($25/mo, $5/mo)
- *  live only as display copy in app/(app)/pro/membership/page.tsx; this file never
- *  hardcodes a price, only which env var holds each plan's Price id. */
+ *  .env.example/README for the setup steps. Dollar amounts themselves ($25/mo, $5/mo,
+ *  $3/mo, $18/yr) live only as display copy in app/(app)/pro/membership/page.tsx and
+ *  app/(app)/wellness/membership/page.tsx; this file never hardcodes a price, only which
+ *  env var holds each plan's Price id. */
 export function priceIdForPlan(plan: BillablePlan): string | undefined {
   switch (plan) {
     case "pro":
       return process.env.STRIPE_PRICE_PRO;
     case "limbicStudent":
       return process.env.STRIPE_PRICE_LIMBIC_STUDENT;
+    case "wellnessPlusMonthly":
+      return process.env.STRIPE_PRICE_WELLNESS_PLUS_MONTHLY;
+    case "wellnessPlusYearly":
+      return process.env.STRIPE_PRICE_WELLNESS_PLUS_YEARLY;
   }
 }
 
 /** The reverse lookup (webhook events carry a Price id, not a plan name) — see
  *  app/api/stripe/webhook/route.ts. Falls back to the event's own metadata.plan when set
- *  (see subscribeToProAction/subscribeToStudentTierAction, which stamp it on checkout) so
- *  this still works even before both env vars are filled in during setup. */
+ *  (see subscribeToProAction/subscribeToStudentTierAction/subscribeToWellnessPlus*Action,
+ *  which stamp it on checkout) so this still works even before every env var is filled in
+ *  during setup. */
 export function planForPriceId(priceId: string | undefined): BillablePlan | null {
   if (!priceId) return null;
   if (priceId === process.env.STRIPE_PRICE_PRO) return "pro";
   if (priceId === process.env.STRIPE_PRICE_LIMBIC_STUDENT) return "limbicStudent";
+  if (priceId === process.env.STRIPE_PRICE_WELLNESS_PLUS_MONTHLY) return "wellnessPlusMonthly";
+  if (priceId === process.env.STRIPE_PRICE_WELLNESS_PLUS_YEARLY) return "wellnessPlusYearly";
   return null;
 }
 
