@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasLicenseAccess } from "@/lib/session";
 
 export interface HepExerciseInput {
   name: string;
@@ -13,7 +13,7 @@ export interface HepExerciseInput {
 
 export async function createHepAction(input: { programName: string; exercises: HepExerciseInput[] }) {
   const user = await getCurrentUser();
-  if (!user || !user.licenseNumber) return;
+  if (!user || !hasLicenseAccess(user)) return;
   const programName = input.programName.trim();
   if (!programName || input.exercises.length === 0) return;
 

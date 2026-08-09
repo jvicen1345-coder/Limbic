@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasLicenseAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getUnderReviewArticles } from "@/lib/articles";
 import { decorateArticle } from "@/lib/feed";
@@ -14,7 +14,7 @@ export default async function UnderReviewPage({
   const user = await getCurrentUser();
   if (!user) return null;
 
-  if (!user.licenseNumber) {
+  if (!hasLicenseAccess(user)) {
     return (
       <div className="screen-pad">
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Under Review</h1>

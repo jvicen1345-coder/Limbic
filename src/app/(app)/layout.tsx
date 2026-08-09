@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser, hasStudentAccess } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess, hasLicenseAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getAptaNewsArticles } from "@/lib/articles";
 import { SPECIALTY_META } from "@/lib/meta";
@@ -16,7 +16,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     prisma.connection.count({ where: { recipientId: user.id, status: "pending" } }),
   ]);
 
-  const hasLicense = !!user.licenseNumber;
+  const hasLicense = hasLicenseAccess(user);
 
   return (
     <AppShell

@@ -1,6 +1,6 @@
 "use server";
 
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasLicenseAccess } from "@/lib/session";
 import { startAgentWeb, expandAgentNode, type AgentWebResult, type AgentWebError } from "@/lib/agent";
 import type { AgentRing } from "@/lib/agent-graph";
 
@@ -20,7 +20,7 @@ export async function askAgentAction(question: string): Promise<AgentWebResult |
   if (!user) return NOT_PRO_ERROR;
   const trimmed = question.trim();
   if (!trimmed) return { ok: false, message: "Ask a clinical question or describe a case to get started." };
-  return startAgentWeb(trimmed, !!user.licenseNumber);
+  return startAgentWeb(trimmed, hasLicenseAccess(user));
 }
 
 export async function expandAgentNodeAction(
@@ -40,6 +40,6 @@ export async function expandAgentNodeAction(
     parentRing,
     ancestorLabels,
     existingNodes,
-    !!user.licenseNumber
+    hasLicenseAccess(user)
   );
 }
