@@ -97,11 +97,14 @@ export function youtubeThumbnailUrl(videoUrl: string): string | null {
 }
 
 /** YouTube's no-API-key iframe embed URL. `autoplay` requires `muted` per browser
- *  autoplay policy — the caller is responsible for pairing them. */
+ *  autoplay policy — the caller is responsible for pairing them. Always includes
+ *  `enablejsapi=1` so a caller that needs to toggle mute after the fact (see
+ *  components/ClipsFeed.tsx) can do it via postMessage instead of changing `src` and
+ *  reloading the whole player from the start. */
 export function youtubeEmbedUrl(videoUrl: string, opts?: { autoplay?: boolean; muted?: boolean }): string | null {
   const id = youtubeVideoId(videoUrl);
   if (!id) return null;
-  const params = new URLSearchParams({ playsinline: "1", rel: "0", modestbranding: "1" });
+  const params = new URLSearchParams({ playsinline: "1", rel: "0", modestbranding: "1", enablejsapi: "1" });
   if (opts?.autoplay) params.set("autoplay", "1");
   if (opts?.muted) params.set("mute", "1");
   return `https://www.youtube.com/embed/${id}?${params.toString()}`;
