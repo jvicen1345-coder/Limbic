@@ -726,6 +726,41 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   border-top: 1px solid var(--color-neutral-200);
 }
 
+/* The Founding Funders sidebar link (see AppShell.tsx FoundingFundersNavLink) — a fixed
+   gold, not var(--color-accent), so it stands out from every other (blue) nav item. */
+.nav-founding-separator {
+  border: none;
+  border-top: 1px solid var(--color-neutral-200);
+  margin: 10px 12px;
+}
+.nav-founding-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  border-left: 3px solid transparent;
+  background: none;
+  cursor: pointer;
+  font: 600 14px var(--font-body);
+  padding: 13px 12px;
+  border-radius: var(--radius-lg);
+  width: 100%;
+  color: #c9933a;
+  text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+.nav-founding-link:hover { background: color-mix(in srgb, #c9933a 12%, transparent); }
+.nav-founding-link-active {
+  border-left-color: #c9933a;
+  background: color-mix(in srgb, #c9933a 12%, transparent);
+}
+html[data-theme="dark"] .nav-founding-link { color: #d9a94d; }
+html[data-theme="dark"] .nav-founding-link:hover { background: color-mix(in srgb, #d9a94d 14%, transparent); }
+html[data-theme="dark"] .nav-founding-link-active {
+  border-left-color: #d9a94d;
+  background: color-mix(in srgb, #d9a94d 14%, transparent);
+}
+
 /* Takes the reader to /profile — the old dedicated "Profile" nav link was retired in favor
    of this, so the nameplate itself needs to read as clickable rather than static text. */
 .nav-footer-nameplate {
@@ -3173,15 +3208,20 @@ html[data-theme="dark"] .ff-page {
 .ff-back-link:hover { transform: translateX(-2px); }
 
 /* — Section 1: the letter — */
-.ff-letter { margin-bottom: 40px; }
+.ff-letter { max-width: 620px; margin: 0 auto 40px; }
+.ff-letter-opening {
+  font-size: 20px;
+  margin: 0 0 32px;
+}
 .ff-letter p {
-  margin: 0 0 22px;
+  margin: 0 0 24px;
   font-size: 18px;
   line-height: 1.8;
-  text-indent: 1.4em;
+  text-align: left;
 }
-.ff-letter p:first-child { text-indent: 0; }
+.ff-letter p:last-of-type { margin-bottom: 0; }
 .ff-letter p,
+.ff-letter-signature-rule,
 .ff-letter-signature { opacity: 0; }
 .ff-letter p:nth-child(1) { animation: ff-line-in 600ms ease forwards; animation-delay: 80ms; }
 .ff-letter p:nth-child(2) { animation: ff-line-in 600ms ease forwards; animation-delay: 200ms; }
@@ -3190,19 +3230,28 @@ html[data-theme="dark"] .ff-page {
 .ff-letter p:nth-child(5) { animation: ff-line-in 600ms ease forwards; animation-delay: 560ms; }
 .ff-letter p:nth-child(6) { animation: ff-line-in 600ms ease forwards; animation-delay: 680ms; }
 .ff-letter p:nth-child(7) { animation: ff-line-in 600ms ease forwards; animation-delay: 800ms; }
-.ff-letter-signature { animation-delay: 920ms; text-indent: 1.4em; }
+.ff-letter-signature-rule { animation: ff-line-in 600ms ease forwards; animation-delay: 880ms; }
+.ff-letter-signature { animation: ff-line-in 600ms ease forwards; animation-delay: 960ms; }
 @keyframes ff-line-in {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* A short signoff flourish, not the full-width .ff-divider below the whole letter. */
+.ff-letter-signature-rule {
+  width: 56px;
+  border: none;
+  border-top: 1px solid var(--ff-divider);
+  margin: 32px 0 20px;
+}
 .ff-letter-signature {
-  margin-top: 28px;
   font-style: italic;
-  font-size: 17px;
-  line-height: 1.9;
+  font-size: 15.5px;
+  line-height: 1.8;
   color: var(--ff-text-muted);
 }
+.ff-letter-signature div { margin-bottom: 2px; }
+.ff-letter-signature div:last-child { margin-bottom: 0; }
 
 .ff-divider {
   border: none;
