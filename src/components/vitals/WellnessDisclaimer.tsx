@@ -1,4 +1,4 @@
-/** Shared between /wellness/vitals and /wellness/nutrition — same wording on both per
+/** Shared between /wellness/metrics and /wellness/nutrition — same wording on both per
  *  spec, always visible (not dismissible), subtle but never hidden. */
 export function WellnessDisclaimer() {
   return (

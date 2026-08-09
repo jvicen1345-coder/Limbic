@@ -2291,7 +2291,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .cal-modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
 .cal-modal-reminder-row { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
 
-/* — Limbic Vitals (see app/(app)/wellness/vitals/*, components/vitals/*) — general
+/* — Limbic Vitals (see app/(app)/wellness/metrics/*, components/vitals/*) — general
    wellness tracking, not medical advice. Reuses .card/.field/.input/.btn for the two form
    cards; everything below is specific to the disclaimer banner and the pure-CSS weekly bar
    chart (no charting library — spec requirement). */
@@ -2514,6 +2514,530 @@ html[data-theme="dark"] .nav-founding-link-active {
 /* — Nutrition articles row — */
 .nutrition-articles-row { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 4px; }
 .nutrition-article-card { flex: 0 0 230px; }
+
+/* — Nutrition Sources (Step 9 of the Health & Wellness rebuild) — external link cards
+   pointing to free authoritative nutrition resources, same "point to the real source"
+   approach as the Student Atrium's FSBPT cards. */
+.wellness-sources-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 8px; }
+@media (max-width: 680px) { .wellness-sources-grid { grid-template-columns: 1fr; } }
+.wellness-source-card {
+  display: block;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.wellness-source-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.wellness-source-card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 14.5px;
+}
+.wellness-source-card-desc { font-size: 12.5px; color: var(--color-neutral-700); margin: 6px 0; line-height: 1.5; }
+.wellness-source-card-domain { font-size: 11px; color: var(--color-accent-700); font-weight: 600; }
+
+/* — Macro Calculator's macro-split bar — */
+.wellness-macro-split { margin-top: 8px; }
+.wellness-macro-bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--color-neutral-200); }
+.wellness-macro-bar-segment { height: 100%; }
+.wellness-macro-bar-segment--protein { background: var(--color-accent); }
+.wellness-macro-bar-segment--carb { background: var(--color-vitals-mobility); }
+.wellness-macro-bar-segment--fat { background: var(--color-migration-amber); }
+.wellness-macro-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; font-size: 12px; }
+.wellness-macro-legend-item { display: flex; align-items: center; gap: 6px; }
+.wellness-macro-legend-item::before { content: ""; width: 9px; height: 9px; border-radius: 999px; flex-shrink: 0; }
+.wellness-macro-legend-item--protein::before { background: var(--color-accent); }
+.wellness-macro-legend-item--carb::before { background: var(--color-vitals-mobility); }
+.wellness-macro-legend-item--fat::before { background: var(--color-migration-amber); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   — Health & Wellness rebuild (app/(app)/wellness/*) — a personal health
+   education platform: a hub Overview, Metrics (calculators + tracking),
+   Assess Yourself, Top 10 Exercises, Rep Continuum, and Limbic Agent
+   Wellness. Reuses existing tokens throughout — --color-accent (blue),
+   --color-vitals-mobility (green), --color-migration-amber (amber),
+   --color-vitals-mindfulness (purple), --color-accent-2 (teal), and
+   --color-migration-gold (gold) — rather than inventing new literal colors,
+   so every card/badge/accent here already follows the light/dark toggle for
+   free, same reasoning as the Student Atrium's path-card accents.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* — Overview hub — */
+.wellness-hub-header { margin-bottom: 22px; }
+.wellness-hub-title { font-size: 26px; margin: 0 0 4px; }
+.wellness-hub-subtitle { font-size: 13.5px; color: var(--color-neutral-700); margin: 0; }
+
+.wellness-snapshot-card {
+  padding: 20px 22px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 18px;
+}
+.wellness-snapshot-kicker {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin-bottom: 12px;
+}
+.wellness-snapshot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; }
+.wellness-snapshot-stat-label { font-size: 11px; color: var(--color-neutral-700); margin-bottom: 3px; }
+.wellness-snapshot-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; }
+.wellness-snapshot-stat-note { font-size: 12px; color: var(--color-accent-700); margin-top: 2px; }
+.wellness-snapshot-empty { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 10px; }
+.wellness-snapshot-link { font-size: 12.5px; color: var(--color-accent-700); font-weight: 600; text-decoration: none; display: inline-block; margin-top: 14px; }
+.wellness-snapshot-link:hover { text-decoration: underline; }
+
+.wellness-tip-of-day {
+  padding: 16px 20px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-migration-gold) 8%, var(--color-card-surface));
+  border-left: 4px solid var(--color-migration-gold);
+  margin-bottom: 26px;
+}
+.wellness-tip-of-day-text { font-size: 14.5px; line-height: 1.55; margin: 6px 0 0; }
+
+.wellness-section-label {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-600);
+  margin: 0 0 14px;
+}
+
+.wellness-explore-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 30px; }
+@media (max-width: 800px) { .wellness-explore-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .wellness-explore-grid { grid-template-columns: 1fr; } }
+.wellness-explore-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border-top: 3px solid var(--explore-accent, var(--color-accent));
+  border-left: 1px solid var(--color-divider);
+  border-right: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--color-divider);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.wellness-explore-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.wellness-explore-card--blue { --explore-accent: var(--color-accent); }
+.wellness-explore-card--green { --explore-accent: var(--color-vitals-mobility); }
+.wellness-explore-card--amber { --explore-accent: var(--color-migration-amber); }
+.wellness-explore-card--purple { --explore-accent: var(--color-vitals-mindfulness); }
+.wellness-explore-card--teal { --explore-accent: var(--color-accent-2); }
+.wellness-explore-card--gold { --explore-accent: var(--color-migration-gold); }
+.wellness-explore-card--agent {
+  padding: 22px 20px;
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--color-migration-gold) 18%, transparent);
+}
+.wellness-explore-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-migration-gold);
+  background: color-mix(in srgb, var(--color-migration-gold) 16%, transparent);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+.wellness-explore-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--explore-accent, var(--color-accent)) 16%, transparent);
+  color: var(--explore-accent, var(--color-accent));
+  margin-bottom: 12px;
+}
+.wellness-explore-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15.5px; margin-bottom: 4px; display: block; }
+.wellness-explore-desc { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.45; display: block; padding-right: 20px; }
+.wellness-explore-arrow { position: absolute; bottom: 18px; right: 16px; color: var(--explore-accent, var(--color-accent)); }
+
+.wellness-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-accent-700);
+  text-decoration: none;
+}
+.wellness-back-link:hover { text-decoration: underline; }
+
+@media (max-width: 720px) {
+  .wellness-hub-title { font-size: 22px; }
+}
+
+/* — Shared calculator/card shell (Metrics calculators, Assess cards, Exercise cards,
+   Continuum zone cards, Nutrition's Macro Calculator) — one visual language across every
+   "education card" in this rebuild. */
+.wellness-calc-card,
+.wellness-assess-card {
+  padding: 20px 22px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  box-shadow: var(--shadow-sm);
+}
+.wellness-calc-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; margin-bottom: 6px; }
+.wellness-calc-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; margin: 0 0 14px; }
+.wellness-calc-inputs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.wellness-calc-result {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-divider);
+}
+.wellness-calc-result-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.wellness-calc-result-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; }
+.wellness-calc-result-unit { font-size: 12.5px; color: var(--color-neutral-700); }
+.wellness-calc-education {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--color-text);
+}
+.wellness-calc-education summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-accent-700);
+  font-size: 12.5px;
+}
+.wellness-calc-education p { margin: 10px 0 0; line-height: 1.6; color: var(--color-neutral-700); }
+.wellness-calc-source { font-size: 11px; color: var(--color-neutral-600); margin-top: 10px; }
+
+/* — Status badges (BMI/HRV/VO2 Max/RPE categories) — */
+.wellness-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.wellness-badge-poor { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 15%, transparent); }
+.wellness-badge-fair { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
+.wellness-badge-good { color: var(--color-vitals-mobility); background: color-mix(in srgb, var(--color-vitals-mobility) 16%, transparent); }
+.wellness-badge-excellent { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 16%, transparent); }
+.wellness-badge-superior { color: var(--color-migration-gold); background: color-mix(in srgb, var(--color-migration-gold) 18%, transparent); }
+
+/* — BMI spectrum bar — */
+.wellness-spectrum-bar {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  margin: 14px 0 6px;
+  background: linear-gradient(
+    to right,
+    var(--color-warn) 0%,
+    var(--color-vitals-mobility) 22%,
+    var(--color-vitals-mobility) 45%,
+    var(--color-warn) 62%,
+    var(--color-danger) 100%
+  );
+}
+.wellness-spectrum-marker {
+  position: absolute;
+  top: -3px;
+  width: 4px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--color-text);
+  transform: translateX(-50%);
+}
+.wellness-spectrum-labels { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--color-neutral-600); }
+
+/* — Heart rate zones — */
+.wellness-hr-zones { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.wellness-hr-zone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--zone-color, var(--color-accent));
+  background: color-mix(in srgb, var(--zone-color, var(--color-accent)) 8%, transparent);
+  font-size: 12.5px;
+}
+.wellness-hr-zone--1 { --zone-color: var(--color-vitals-mobility); }
+.wellness-hr-zone--2 { --zone-color: var(--color-accent-2); }
+.wellness-hr-zone--3 { --zone-color: var(--color-accent); }
+.wellness-hr-zone--4 { --zone-color: var(--color-vitals-strength); }
+.wellness-hr-zone--5 { --zone-color: var(--color-danger); }
+.wellness-hr-zone-name { font-weight: 600; flex: 1; min-width: 120px; }
+.wellness-hr-zone-bpm { color: var(--color-text); font-weight: 600; }
+.wellness-hr-zone-purpose { color: var(--color-neutral-700); }
+
+/* — RPE scale — */
+.wellness-rpe-scale { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.wellness-rpe-point {
+  flex: 1 1 56px;
+  min-width: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+.wellness-rpe-point--selected { border-color: var(--color-text); }
+.wellness-rpe-point-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; }
+.wellness-rpe-point-label { font-size: 8.5px; text-align: center; line-height: 1.2; opacity: 0.95; }
+
+/* — Metrics Over Time tracking dashboard — */
+.wellness-tracking-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 20px; }
+@media (max-width: 680px) { .wellness-tracking-grid { grid-template-columns: 1fr; } }
+.wellness-tracking-card {
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+}
+.wellness-tracking-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-700); }
+.wellness-tracking-empty { font-size: 12.5px; color: var(--color-neutral-600); font-style: italic; margin: 10px 0 0; }
+.wellness-tracking-value-row { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; }
+.wellness-tracking-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 20px; }
+.wellness-tracking-trend { font-size: 15px; font-weight: 700; }
+.wellness-tracking-trend--up { color: var(--color-success); }
+.wellness-tracking-trend--down { color: var(--color-danger); }
+.wellness-tracking-trend--stable { color: var(--color-neutral-600); }
+.wellness-tracking-date { font-size: 11px; color: var(--color-neutral-600); }
+
+.wellness-log-history {
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+}
+.wellness-log-history-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-divider);
+  font-size: 13px;
+}
+.wellness-log-history-row:last-of-type { border-bottom: none; }
+.wellness-log-history-date { color: var(--color-neutral-700); font-size: 11.5px; min-width: 50px; }
+.wellness-log-history-metric { flex: 1; font-weight: 600; }
+.wellness-log-history-value { color: var(--color-neutral-700); }
+
+/* — Assess Yourself — */
+.wellness-assess-steps-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-700); margin: 14px 0 6px; }
+.wellness-assess-steps { margin: 0 0 14px; padding-left: 20px; font-size: 13px; line-height: 1.65; color: var(--color-text); }
+.wellness-assess-steps--bullet { list-style-type: disc; }
+.wellness-assess-note { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.55; margin: 0 0 8px; }
+
+.wellness-table-wrap { overflow-x: auto; margin-bottom: 14px; }
+.wellness-table { border-collapse: collapse; width: 100%; font-size: 12.5px; min-width: 420px; }
+.wellness-table th,
+.wellness-table td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--color-divider); }
+.wellness-table th { color: var(--color-neutral-700); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.wellness-table-note { font-size: 11px; color: var(--color-neutral-600); margin: 6px 0 0; font-style: italic; }
+
+.wellness-assess-checklist { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+.wellness-assess-checklist-item { padding: 10px 14px; border-radius: var(--radius-md); background: var(--color-neutral-100); }
+.wellness-assess-checklist-item-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.wellness-assess-checklist-item-body { font-size: 12.5px; color: var(--color-neutral-700); margin: 0 0 4px; line-height: 1.5; }
+.wellness-assess-checklist-item-helps { font-size: 12.5px; color: var(--color-accent-700); margin: 0; line-height: 1.5; }
+
+.wellness-assess-log { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-divider); }
+
+/* — Top 10 Exercises — */
+.wellness-exercise-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.wellness-exercise-number {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+  font-weight: 700;
+  font-size: 12.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.wellness-difficulty-badge { margin-left: auto; font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.03em; }
+.wellness-difficulty-badge--medium { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
+.wellness-difficulty-badge--hard { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 16%, transparent); }
+.wellness-muscle-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.wellness-muscle-chip {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-vitals-mindfulness) 14%, transparent);
+  color: var(--color-vitals-mindfulness);
+}
+.wellness-video-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-accent-700);
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+.wellness-video-link:hover { text-decoration: underline; }
+.wellness-exercise-progressions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 14px 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+}
+@media (max-width: 480px) { .wellness-exercise-progressions { grid-template-columns: 1fr; } }
+.wellness-exercise-progression-label { font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 3px; }
+.wellness-exercise-progression-text { font-size: 12.5px; margin: 0; line-height: 1.5; }
+
+/* — Rep Continuum — */
+.wellness-continuum-bar-wrap {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  margin: 24px 0 8px;
+  background: linear-gradient(to right, var(--color-migration-gold), var(--color-vitals-strength), var(--color-accent), var(--color-vitals-mobility), var(--color-accent-2));
+}
+.wellness-continuum-marker { position: absolute; top: -3px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.wellness-continuum-marker-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--color-surface); border: 3px solid var(--color-text); }
+.wellness-continuum-marker-label { position: absolute; top: 26px; font-size: 10.5px; font-weight: 600; white-space: nowrap; }
+.wellness-continuum-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 10px 0 14px; }
+@media (max-width: 560px) { .wellness-continuum-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.wellness-continuum-stats > div { display: flex; flex-direction: column; gap: 2px; }
+.wellness-continuum-stat-label { font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); }
+.wellness-continuum-stat-value { font-size: 13px; font-weight: 600; }
+.wellness-goal-guide {
+  padding: 20px 22px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, var(--color-accent-100), var(--color-card-surface) 65%);
+  border: 1px solid var(--color-divider);
+}
+
+/* — Limbic Agent Wellness — */
+.wellness-agent-paywall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+}
+.wellness-agent-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  padding: 18px;
+}
+.wellness-agent-personalize { display: flex; flex-direction: column; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--color-divider); }
+.wellness-agent-personalize-label { font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px; }
+.wellness-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.wellness-chip {
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  font: inherit;
+}
+.wellness-chip--selected { background: var(--color-migration-gold); border-color: var(--color-migration-gold); color: #fff; font-weight: 600; }
+
+.wellness-agent-messages { display: flex; flex-direction: column; gap: 14px; min-height: 160px; max-height: 460px; overflow-y: auto; }
+.wellness-agent-empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 20px 10px; }
+.wellness-agent-empty p { font-size: 13px; color: var(--color-neutral-700); margin: 0; max-width: 360px; }
+.wellness-agent-prompts { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 460px; margin-top: 6px; }
+.wellness-agent-prompt {
+  text-align: left;
+  font-size: 12.5px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  font: inherit;
+}
+.wellness-agent-prompt:hover { border-color: var(--color-migration-gold); }
+
+.wellness-agent-msg { max-width: 80%; padding: 12px 16px; border-radius: var(--radius-lg); font-size: 13.5px; line-height: 1.55; }
+.wellness-agent-msg--user { align-self: flex-end; background: var(--color-accent); color: #fff; border-bottom-right-radius: 4px; }
+.wellness-agent-msg--agent { align-self: flex-start; background: var(--color-surface); border: 1px solid var(--color-divider); border-bottom-left-radius: 4px; }
+.wellness-agent-msg--pending { color: var(--color-neutral-600); font-style: italic; }
+.wellness-agent-msg-sources { font-size: 10.5px; color: var(--color-neutral-600); margin-top: 8px; }
+.wellness-agent-msg-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.wellness-agent-feedback-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--color-divider);
+  background: transparent;
+  color: var(--color-neutral-600);
+  cursor: pointer;
+}
+.wellness-agent-feedback-btn--active { color: var(--color-migration-gold); border-color: var(--color-migration-gold); }
+.wellness-agent-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-accent-700);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+}
+.wellness-agent-save-btn:disabled { color: var(--color-neutral-600); cursor: default; }
+.wellness-agent-error { align-self: center; font-size: 12.5px; color: var(--color-danger); }
+
+.wellness-agent-input-row { display: flex; gap: 10px; }
+.wellness-agent-input-row .input { flex: 1; }
+.wellness-agent-new-convo {
+  align-self: center;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+@media (max-width: 620px) {
+  .wellness-agent-msg { max-width: 92%; }
+}
 
 /* — Limbic Games hub (app/(app)/games/page.tsx) — the "game lobby" redesign: header with
    streak, a responsive 3/2/1-column card grid, and a bottom stats section. The completed

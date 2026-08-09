@@ -30,7 +30,7 @@ export async function saveVitalsProfile(input: {
     create: { userId: user.id, ...input },
     update: input,
   });
-  revalidatePath("/wellness/vitals");
+  revalidatePath("/wellness/metrics");
   revalidatePath("/wellness");
   revalidatePath("/wellness/nutrition");
 }
@@ -58,7 +58,7 @@ export async function logVitalsActivity(input: {
       notes: input.notes.trim() || null,
     },
   });
-  revalidatePath("/wellness/vitals");
+  revalidatePath("/wellness/metrics");
   revalidatePath("/wellness");
 }
 
@@ -67,6 +67,6 @@ export async function deleteVitalsLog(id: string) {
   const user = await getCurrentUser();
   if (!user) return;
   await prisma.vitalsLog.deleteMany({ where: { id, userId: user.id } });
-  revalidatePath("/wellness/vitals");
+  revalidatePath("/wellness/metrics");
   revalidatePath("/wellness");
 }

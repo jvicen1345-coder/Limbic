@@ -1,4 +1,4 @@
-/** Shared types/helpers for Limbic Vitals (see app/(app)/wellness/vitals/page.tsx,
+/** Shared types/helpers for Limbic Vitals (see app/(app)/wellness/metrics/page.tsx,
  *  components/vitals/*, app/actions/vitals.ts) — general wellness tracking, not medical
  *  advice or condition-specific. Kept free of server-only imports so client components can
  *  import from here too, same convention as lib/limbic-calendar.ts. */
