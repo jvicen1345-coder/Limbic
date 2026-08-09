@@ -40,15 +40,34 @@ function ClipSlide({
   onToggleMute: () => void;
   saved: boolean;
 }) {
-  const embedUrl = active ? youtubeEmbedUrl(clip.url, { autoplay: true, muted }) : null;
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Built once per activation, not on every `muted` toggle — the initial value baked into
+  // the iframe's `src` (via the `mute` query param) only matters for the very first paint,
+  // satisfying the browser's "autoplay-with-sound needs a prior user gesture" policy.
+  // Toggling mute afterward goes through the postMessage effect below instead, so `src`
+  // never changes on an already-mounted iframe — changing `src` (or a key derived from
+  // `muted`, which this component used to do) makes the browser reload the whole embed,
+  // restarting the clip from 0:00 on every mute/unmute tap.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- deliberately not reactive to `muted`, see above
+  const embedUrl = useMemo(() => (active ? youtubeEmbedUrl(clip.url, { autoplay: true, muted }) : null), [active, clip.url]);
   const thumbUrl = youtubeThumbnailUrl(clip.url);
+
+  // YouTube's postMessage player API (needs `enablejsapi=1`, set in youtubeEmbedUrl) — the
+  // actual mechanism for muting/unmuting an already-playing embed without touching `src`.
+  useEffect(() => {
+    if (!active) return;
+    const win = iframeRef.current?.contentWindow;
+    if (!win) return;
+    win.postMessage(JSON.stringify({ event: "command", func: muted ? "mute" : "unMute", args: [] }), "*");
+  }, [muted, active]);
 
   return (
     <section className="clip-slide" data-slot-id={slotId}>
       <div className="clip-media" onClick={onToggleMute}>
         {embedUrl ? (
           <iframe
-            key={`${slotId}-${muted}`}
+            ref={iframeRef}
             src={embedUrl}
             title={clip.title}
             allow="autoplay; encrypted-media; picture-in-picture"
