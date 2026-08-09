@@ -67,7 +67,7 @@ export default async function ProfilePage() {
         isStudent={isStudent}
       />
 
-      <div className="card elev-sm" style={{ marginBottom: 18, marginTop: 18 }}>
+      <div id="professional-dates" className="card elev-sm" style={{ marginBottom: 18, marginTop: 18, scrollMarginTop: 24 }}>
         <div className="card-kicker">Professional dates</div>
         <p className="card-body" style={{ marginTop: 2 }}>
           Powers the orange dots on your Limbic Calendar and your renewal reminders.
