@@ -7,7 +7,7 @@ export default async function TopExercisesPage() {
   if (!user) return null;
 
   return (
-    <div className="screen-pad" style={{ maxWidth: 760, margin: "0 auto" }}>
+    <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Top 10 Exercises</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 14px" }}>
         The most impactful functional exercises for general health — with guidance on how to perform them safely.
@@ -17,7 +17,7 @@ export default async function TopExercisesPage() {
         appropriate for you.
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      <div className="wellness-card-columns">
         {EXERCISES.map((ex, i) => (
           <div key={ex.id} className="wellness-assess-card">
             <div className="wellness-exercise-header">

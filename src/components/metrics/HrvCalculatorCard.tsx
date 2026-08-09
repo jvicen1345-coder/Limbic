@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { hrvCategory, type HrvCategory } from "@/lib/metrics";
 import { saveMetricLog } from "@/app/actions/metrics";
 import { CheckIcon } from "@/components/icons";
+import type { WellnessProfile } from "@/lib/vitals";
 
 const CATEGORY_CLASS: Record<HrvCategory, string> = {
   Poor: "wellness-badge-poor",
@@ -12,19 +14,19 @@ const CATEGORY_CLASS: Record<HrvCategory, string> = {
   Excellent: "wellness-badge-excellent",
 };
 
-export function HrvCalculatorCard({ initialAge }: { initialAge: number | null }) {
-  const [age, setAge] = useState(initialAge?.toString() ?? "");
+export function HrvCalculatorCard({ profile }: { profile: WellnessProfile }) {
   const [hrv, setHrv] = useState("");
   const [result, setResult] = useState<{ value: number; category: HrvCategory } | null>(null);
   const [saved, setSaved] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  const canCalculate = Number(age) > 0 && Number(hrv) > 0;
+  const hasAge = profile.age != null && profile.age > 0;
+  const canCalculate = hasAge && Number(hrv) > 0;
 
   const handleCalculate = () => {
     if (!canCalculate) return;
     const value = Number(hrv);
-    setResult({ value, category: hrvCategory(Number(age), value) });
+    setResult({ value, category: hrvCategory(profile.age!, value) });
     setSaved(false);
   };
 
@@ -43,20 +45,24 @@ export function HrvCalculatorCard({ initialAge }: { initialAge: number | null })
         From an Apple Watch, Whoop, Garmin, or manual measurement — interpreted against age-adjusted general reference ranges.
       </p>
 
-      <div className="wellness-calc-inputs">
-        <div className="field" style={{ flex: 1, minWidth: 90 }}>
-          <label htmlFor="hrv-age">Age</label>
-          <input className="input" id="hrv-age" type="number" min={0} value={age} onChange={(e) => setAge(e.target.value)} />
+      {!hasAge ? (
+        <div className="wellness-calc-missing-profile">
+          Add your age on the <Link href="/wellness/activity">Activity Log</Link> to interpret your HRV.
         </div>
-        <div className="field" style={{ flex: 1, minWidth: 120 }}>
-          <label htmlFor="hrv-value">HRV (ms)</label>
-          <input className="input" id="hrv-value" type="number" min={0} value={hrv} onChange={(e) => setHrv(e.target.value)} />
-        </div>
-      </div>
+      ) : (
+        <>
+          <div className="wellness-calc-inputs">
+            <div className="field" style={{ flex: 1, minWidth: 120 }}>
+              <label htmlFor="hrv-value">HRV (ms)</label>
+              <input className="input" id="hrv-value" type="number" min={0} value={hrv} onChange={(e) => setHrv(e.target.value)} />
+            </div>
+          </div>
 
-      <button type="button" className="btn btn-primary" disabled={!canCalculate} onClick={handleCalculate}>
-        Calculate
-      </button>
+          <button type="button" className="btn btn-primary" disabled={!canCalculate} onClick={handleCalculate}>
+            Calculate
+          </button>
+        </>
+      )}
 
       {result && (
         <div className="wellness-calc-result">

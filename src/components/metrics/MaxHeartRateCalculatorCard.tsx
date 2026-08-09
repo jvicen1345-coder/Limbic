@@ -1,24 +1,20 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { calculateMaxHeartRate, calculateHeartRateZones, type MaxHrFormula } from "@/lib/metrics";
 import { saveMetricLog } from "@/app/actions/metrics";
 import { CheckIcon } from "@/components/icons";
+import type { WellnessProfile } from "@/lib/vitals";
 
-export function MaxHeartRateCalculatorCard({ initialAge }: { initialAge: number | null }) {
-  const [age, setAge] = useState(initialAge?.toString() ?? "");
+export function MaxHeartRateCalculatorCard({ profile }: { profile: WellnessProfile }) {
   const [formula, setFormula] = useState<MaxHrFormula>("haskell");
-  const [result, setResult] = useState<number | null>(null);
   const [saved, setSaved] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  const canCalculate = Number(age) > 0;
-
-  const handleCalculate = () => {
-    if (!canCalculate) return;
-    setResult(calculateMaxHeartRate(Number(age), formula));
-    setSaved(false);
-  };
+  const hasAge = profile.age != null && profile.age > 0;
+  const result = hasAge ? calculateMaxHeartRate(profile.age!, formula) : null;
+  const zones = result != null ? calculateHeartRateZones(result) : null;
 
   const handleSave = () => {
     if (result == null) return;
@@ -28,30 +24,26 @@ export function MaxHeartRateCalculatorCard({ initialAge }: { initialAge: number 
     });
   };
 
-  const zones = result != null ? calculateHeartRateZones(result) : null;
-
   return (
     <div className="wellness-calc-card">
       <div className="wellness-calc-title">Maximum Heart Rate &amp; Training Zones</div>
       <p className="wellness-calc-desc">Estimates your maximum heart rate and the training zones that fall within it.</p>
 
-      <div className="wellness-calc-inputs">
-        <div className="field" style={{ flex: 1, minWidth: 90 }}>
-          <label htmlFor="mhr-age">Age</label>
-          <input className="input" id="mhr-age" type="number" min={0} value={age} onChange={(e) => setAge(e.target.value)} />
+      {!hasAge ? (
+        <div className="wellness-calc-missing-profile">
+          Add your age on the <Link href="/wellness/activity">Activity Log</Link> to see your training zones.
         </div>
-        <div className="field" style={{ flex: 1, minWidth: 160 }}>
-          <label htmlFor="mhr-formula">Formula</label>
-          <select className="input" id="mhr-formula" value={formula} onChange={(e) => setFormula(e.target.value as MaxHrFormula)}>
-            <option value="haskell">220 − age</option>
-            <option value="tanaka">Tanaka — 208 − (0.7 × age)</option>
-          </select>
+      ) : (
+        <div className="wellness-calc-inputs">
+          <div className="field" style={{ flex: 1, minWidth: 160 }}>
+            <label htmlFor="mhr-formula">Formula</label>
+            <select className="input" id="mhr-formula" value={formula} onChange={(e) => setFormula(e.target.value as MaxHrFormula)}>
+              <option value="haskell">220 − age</option>
+              <option value="tanaka">Tanaka — 208 − (0.7 × age)</option>
+            </select>
+          </div>
         </div>
-      </div>
-
-      <button type="button" className="btn btn-primary" disabled={!canCalculate} onClick={handleCalculate}>
-        Calculate
-      </button>
+      )}
 
       {result != null && zones && (
         <div className="wellness-calc-result">

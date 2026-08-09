@@ -4,16 +4,28 @@ import { BmiCalculatorCard } from "@/components/metrics/BmiCalculatorCard";
 import { MaxHeartRateCalculatorCard } from "@/components/metrics/MaxHeartRateCalculatorCard";
 import { HrvCalculatorCard } from "@/components/metrics/HrvCalculatorCard";
 import { Vo2MaxCalculatorCard } from "@/components/metrics/Vo2MaxCalculatorCard";
+import type { WellnessProfile } from "@/lib/vitals";
 
 /** Pure calculator inputs — tracking/trends now live on the Overview page's "Trends" tab
  *  (see app/(app)/wellness/page.tsx), RPE moved to the Rep Continuum page (it's about
  *  training intensity, not a body metric), and the weekly activity log moved to its own
- *  page at /wellness/activity. This page's job is just: fill in numbers, get a result. */
+ *  page at /wellness/activity. This page's job is just: fill in numbers, get a result —
+ *  the identity fields each calculator needs (age, weight, height, sex...) come from the
+ *  single profile entered on /wellness/activity, not from inputs on this page. */
 export default async function MetricsPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const profile = await prisma.vitalsProfile.findUnique({ where: { userId: user.id } });
+  const row = await prisma.vitalsProfile.findUnique({ where: { userId: user.id } });
+  const profile: WellnessProfile = {
+    age: row?.age ?? null,
+    heightFeet: row?.heightFeet ?? null,
+    heightInches: row?.heightInches ?? null,
+    weightLbs: row?.weightLbs ?? null,
+    biologicalSex: row?.biologicalSex ?? null,
+    activityLevel: row?.activityLevel ?? null,
+    wellnessGoal: row?.wellnessGoal ?? null,
+  };
 
   return (
     <div className="screen-pad" style={{ maxWidth: 720, margin: "0 auto" }}>
@@ -29,18 +41,10 @@ export default async function MetricsPage() {
         Your Health Calculators
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <BmiCalculatorCard
-          initialHeightFeet={profile?.heightFeet ?? null}
-          initialHeightInches={profile?.heightInches ?? null}
-          initialWeightLbs={profile?.weightLbs ?? null}
-        />
-        <MaxHeartRateCalculatorCard initialAge={profile?.age ?? null} />
-        <HrvCalculatorCard initialAge={profile?.age ?? null} />
-        <Vo2MaxCalculatorCard
-          initialAge={profile?.age ?? null}
-          initialWeightLbs={profile?.weightLbs ?? null}
-          initialSex={profile?.biologicalSex ?? null}
-        />
+        <BmiCalculatorCard profile={profile} />
+        <MaxHeartRateCalculatorCard profile={profile} />
+        <HrvCalculatorCard profile={profile} />
+        <Vo2MaxCalculatorCard profile={profile} />
       </div>
     </div>
   );

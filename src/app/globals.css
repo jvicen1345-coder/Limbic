@@ -2439,15 +2439,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   margin-bottom: 8px;
 }
 
-/* — Nutrition of the Day — */
-.nutrition-tip-card {
-  border-left: 4px solid var(--color-accent);
-  border-radius: var(--radius-lg);
-  background: var(--color-card-surface);
-  box-shadow: var(--shadow-sm);
-  padding: 20px 22px;
-  margin-bottom: 20px;
-}
+/* — Nutrition of the Day (now the top section of .nutrition-goal-card) — */
 .nutrition-tip-text { font-size: 17px; line-height: 1.55; margin: 0; }
 
 /* — Quick Tips pill row — */
@@ -2504,7 +2496,9 @@ html[data-theme="dark"] .nav-founding-link-active {
 .nutrition-card-antiinflammatory { border-left-color: var(--color-vitals-mindfulness); }
 .nutrition-card-recovery { border-left-color: var(--color-accent-2); }
 
-/* — Personalized for Your Goal — */
+/* — Today's Nutrition Tip + Personalized for Your Goal, combined into one card at the top
+   of the page (see app/(app)/wellness/nutrition/page.tsx) — the tip stays free/unblurred,
+   only the goal section below the divider is Wellness+-gated. */
 .nutrition-goal-card {
   border-radius: var(--radius-lg);
   background: linear-gradient(160deg, var(--color-accent-100), var(--color-card-surface) 65%);
@@ -2514,6 +2508,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   margin-bottom: 22px;
 }
 .nutrition-goal-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 19px; margin: 2px 0 14px; }
+.nutrition-goal-divider { height: 1px; background: var(--color-divider); margin: 18px 0; }
 
 /* — Nutrition articles row — */
 .nutrition-articles-row { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 4px; }
@@ -2777,6 +2772,30 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wellness-calc-education p { margin: 10px 0 0; line-height: 1.6; color: var(--color-neutral-700); }
 .wellness-calc-source { font-size: 11px; color: var(--color-neutral-600); margin-top: 10px; }
 
+/* — Missing-profile notice — shown instead of a calculator's own input fields for anything
+   now sourced from the single profile on /wellness/activity (see BodyMetricsCard). */
+.wellness-calc-missing-profile {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 4px;
+}
+.wellness-calc-missing-profile a { color: var(--color-accent-700); font-weight: 600; }
+
+/* — Assess Yourself / Top 10 Exercises card grid — a CSS multi-column layout rather than a
+   row-synced grid, since these cards vary a lot in height (norms tables, checklists); this
+   lets shorter and taller cards flow independently instead of every row being as tall as
+   its tallest card, cutting deadspace on desktop while leaving mobile untouched (single
+   column, same as before). */
+.wellness-card-columns { column-count: 1; column-gap: 18px; }
+@media (min-width: 860px) {
+  .wellness-card-columns { column-count: 2; }
+}
+.wellness-card-columns > * { break-inside: avoid; margin-bottom: 18px; }
+
 /* — Status badges (BMI/HRV/VO2 Max/RPE categories) — */
 .wellness-badge {
   display: inline-flex;
@@ -2860,24 +2879,29 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wellness-rpe-point-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; }
 .wellness-rpe-point-label { font-size: 8.5px; text-align: center; line-height: 1.2; opacity: 0.95; }
 
-/* — Metrics Over Time tracking dashboard — */
-.wellness-tracking-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 20px; }
-@media (max-width: 680px) { .wellness-tracking-grid { grid-template-columns: 1fr; } }
-.wellness-tracking-card {
-  padding: 16px;
+/* — Metrics Over Time trends dashboard — one shared line chart (BMI/HRV/VO2 Max as
+   differently colored lines on a shared time axis) plus a legend, instead of three
+   separate per-metric sparkline cards. */
+.wellness-trend-chart-card {
+  padding: 18px 20px;
   border-radius: var(--radius-lg);
   background: var(--color-card-surface);
   border: 1px solid var(--color-divider);
+  margin-bottom: 20px;
 }
 .wellness-tracking-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-700); }
 .wellness-tracking-empty { font-size: 12.5px; color: var(--color-neutral-600); font-style: italic; margin: 10px 0 0; }
-.wellness-tracking-value-row { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; }
-.wellness-tracking-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 20px; }
-.wellness-tracking-trend { font-size: 15px; font-weight: 700; }
+.wellness-tracking-trend { font-size: 13px; font-weight: 700; }
 .wellness-tracking-trend--up { color: var(--color-success); }
 .wellness-tracking-trend--down { color: var(--color-danger); }
 .wellness-tracking-trend--stable { color: var(--color-neutral-600); }
-.wellness-tracking-date { font-size: 11px; color: var(--color-neutral-600); }
+
+.wellness-trend-legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--color-divider); }
+.wellness-trend-legend-item { display: flex; align-items: center; gap: 7px; font-size: 12.5px; }
+.wellness-trend-legend-item--empty { opacity: 0.7; }
+.wellness-trend-legend-dot { width: 9px; height: 9px; border-radius: 999px; flex-shrink: 0; }
+.wellness-trend-legend-label { font-weight: 600; }
+.wellness-trend-legend-value { color: var(--color-neutral-700); }
 
 .wellness-log-history {
   padding: 16px 18px;
@@ -2969,7 +2993,30 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wellness-exercise-progression-label { font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 3px; }
 .wellness-exercise-progression-text { font-size: 12.5px; margin: 0; line-height: 1.5; }
 
-/* — Rep Continuum — */
+/* — Rep Continuum — a two-column layout so "Which zone is right for me?" reads as a
+   sidebar alongside the zone list on desktop, rather than a card stranded at the bottom of
+   a long page; grid-template-areas puts the guide card first in source order (so it lands
+   on top on mobile) while `main guide` on desktop keeps it visually secondary to the right
+   of the primary zone content. */
+.wellness-continuum-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas: "guide" "main";
+  gap: 24px;
+}
+@media (min-width: 900px) {
+  .wellness-continuum-layout {
+    grid-template-columns: 1fr 300px;
+    grid-template-areas: "main guide";
+    align-items: start;
+  }
+}
+.wellness-continuum-main { grid-area: main; min-width: 0; }
+.wellness-continuum-sidebar { grid-area: guide; }
+@media (min-width: 900px) {
+  .wellness-continuum-sidebar { position: sticky; top: 20px; }
+}
+
 .wellness-continuum-bar-wrap {
   position: relative;
   height: 14px;

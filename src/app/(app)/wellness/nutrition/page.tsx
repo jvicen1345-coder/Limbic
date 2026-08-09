@@ -10,6 +10,7 @@ import { LockIcon, ExternalLinkIcon } from "@/components/icons";
 import type { WellnessArticle } from "@/lib/types";
 import { MacroCalculatorCard } from "@/components/metrics/MacroCalculatorCard";
 import { NUTRITION_SOURCES } from "@/lib/nutrition-macros";
+import type { WellnessProfile } from "@/lib/vitals";
 
 const NUTRITION_ARTICLE_LIMIT = 6;
 
@@ -44,6 +45,16 @@ export default async function NutritionPage() {
 
   const dailyTip = nutritionTipForDate(todayDateKey());
 
+  const wellnessProfile: WellnessProfile = {
+    age: profile?.age ?? null,
+    heightFeet: profile?.heightFeet ?? null,
+    heightInches: profile?.heightInches ?? null,
+    weightLbs: profile?.weightLbs ?? null,
+    biologicalSex: profile?.biologicalSex ?? null,
+    activityLevel: profile?.activityLevel ?? null,
+    wellnessGoal: profile?.wellnessGoal ?? null,
+  };
+
   return (
     <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>
       <div className="nutrition-header">
@@ -52,9 +63,65 @@ export default async function NutritionPage() {
         <WellnessDisclaimer />
       </div>
 
-      <div className="nutrition-tip-card">
+      <div className="nutrition-goal-card">
         <div className="nutrition-section-label">Today&rsquo;s Nutrition Tip</div>
         <p className="nutrition-tip-text">{dailyTip}</p>
+
+        <div className="nutrition-goal-divider" />
+
+        {isWellnessPlus ? (
+          <>
+            <div className="nutrition-section-label">Personalized for Your Goal</div>
+            {goal ? (
+              <>
+                <div className="nutrition-goal-value">Your Goal: {goal}</div>
+                <div style={{ marginBottom: 4 }}>
+                  {NUTRITION_GOAL_TIPS[goal].map((tip) => (
+                    <div key={tip} className="vitals-insight-item">
+                      <span className="vitals-insight-dot" />
+                      <span>{tip}</span>
+                    </div>
+                  ))}
+                </div>
+                <Link href="/wellness/activity" className="btn btn-secondary" style={{ marginTop: 14 }}>
+                  → Update your goal
+                </Link>
+              </>
+            ) : (
+              <>
+                <p className="card-body" style={{ margin: "0 0 14px" }}>
+                  Set up your health profile to unlock personalized guidance.
+                </p>
+                <Link href="/wellness/activity" className="btn btn-secondary">
+                  → Go to Activity Log
+                </Link>
+              </>
+            )}
+          </>
+        ) : (
+          <div className="nutrition-paywall">
+            <div className="nutrition-paywall-content">
+              <div className="nutrition-section-label">Personalized for Your Goal</div>
+              <div className="nutrition-goal-value">Your Goal: General Health</div>
+              {NUTRITION_GOAL_TIPS["General Health"].map((tip) => (
+                <div key={tip} className="vitals-insight-item">
+                  <span className="vitals-insight-dot" />
+                  <span>{tip}</span>
+                </div>
+              ))}
+            </div>
+            <div className="nutrition-paywall-overlay">
+              <div className="nutrition-paywall-card">
+                <LockIcon size={20} />
+                <div style={{ fontFamily: "var(--font-heading)", fontSize: 16, marginTop: 6 }}>Unlock personalized nutrition guidance</div>
+                <p>Based on your wellness goal — available with Wellness+</p>
+                <Link href="/pro" className="btn btn-primary">
+                  Upgrade to Wellness+
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="nutrition-quicktips-row">
@@ -70,15 +137,7 @@ export default async function NutritionPage() {
         Macro Calculator
       </div>
       <div style={{ marginBottom: 24 }}>
-        <MacroCalculatorCard
-          initialAge={profile?.age ?? null}
-          initialWeightLbs={profile?.weightLbs ?? null}
-          initialHeightFeet={profile?.heightFeet ?? null}
-          initialHeightInches={profile?.heightInches ?? null}
-          initialSex={profile?.biologicalSex ?? null}
-          initialActivityLevel={profile?.activityLevel ?? null}
-          initialGoal={profile?.wellnessGoal ?? null}
-        />
+        <MacroCalculatorCard profile={wellnessProfile} />
       </div>
 
       <div className="nutrition-cards-grid">
@@ -90,62 +149,6 @@ export default async function NutritionPage() {
           </div>
         ))}
       </div>
-
-      {isWellnessPlus ? (
-        <div className="nutrition-goal-card">
-          <div className="nutrition-section-label">Personalized for Your Goal</div>
-          {goal ? (
-            <>
-              <div className="nutrition-goal-value">Your Goal: {goal}</div>
-              <div style={{ marginBottom: 4 }}>
-                {NUTRITION_GOAL_TIPS[goal].map((tip) => (
-                  <div key={tip} className="vitals-insight-item">
-                    <span className="vitals-insight-dot" />
-                    <span>{tip}</span>
-                  </div>
-                ))}
-              </div>
-              <Link href="/wellness/activity" className="btn btn-secondary" style={{ marginTop: 14 }}>
-                → Update your goal
-              </Link>
-            </>
-          ) : (
-            <>
-              <p className="card-body" style={{ margin: "0 0 14px" }}>
-                Set up your health profile to unlock personalized guidance.
-              </p>
-              <Link href="/wellness/activity" className="btn btn-secondary">
-                → Go to Activity Log
-              </Link>
-            </>
-          )}
-        </div>
-      ) : (
-        <div className="nutrition-paywall" style={{ marginBottom: 22 }}>
-          <div className="nutrition-paywall-content">
-            <div className="nutrition-goal-card" style={{ marginBottom: 0 }}>
-              <div className="nutrition-section-label">Personalized for Your Goal</div>
-              <div className="nutrition-goal-value">Your Goal: General Health</div>
-              {NUTRITION_GOAL_TIPS["General Health"].map((tip) => (
-                <div key={tip} className="vitals-insight-item">
-                  <span className="vitals-insight-dot" />
-                  <span>{tip}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="nutrition-paywall-overlay">
-            <div className="nutrition-paywall-card">
-              <LockIcon size={20} />
-              <div style={{ fontFamily: "var(--font-heading)", fontSize: 16, marginTop: 6 }}>Unlock personalized nutrition guidance</div>
-              <p>Based on your wellness goal — available with Wellness+</p>
-              <Link href="/pro" className="btn btn-primary">
-                Upgrade to Wellness+
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
 
       {nutritionArticles.length > 0 && (
         <div style={{ marginBottom: 24 }}>

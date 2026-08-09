@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { calculateBmi, bmiCategory, bmiSpectrumPercent, type BmiCategory } from "@/lib/metrics";
 import { saveMetricLog } from "@/app/actions/metrics";
 import { CheckIcon } from "@/components/icons";
+import type { WellnessProfile } from "@/lib/vitals";
 
 const CATEGORY_CLASS: Record<BmiCategory, string> = {
   Underweight: "wellness-badge-fair",
@@ -12,29 +14,13 @@ const CATEGORY_CLASS: Record<BmiCategory, string> = {
   Obese: "wellness-badge-poor",
 };
 
-export function BmiCalculatorCard({
-  initialHeightFeet,
-  initialHeightInches,
-  initialWeightLbs,
-}: {
-  initialHeightFeet: number | null;
-  initialHeightInches: number | null;
-  initialWeightLbs: number | null;
-}) {
-  const [heightFeet, setHeightFeet] = useState(initialHeightFeet?.toString() ?? "");
-  const [heightInches, setHeightInches] = useState(initialHeightInches?.toString() ?? "");
-  const [weightLbs, setWeightLbs] = useState(initialWeightLbs?.toString() ?? "");
-  const [result, setResult] = useState<number | null>(null);
+export function BmiCalculatorCard({ profile }: { profile: WellnessProfile }) {
   const [saved, setSaved] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  const canCalculate = Number(heightFeet) > 0 && Number(weightLbs) > 0;
-
-  const handleCalculate = () => {
-    if (!canCalculate) return;
-    setResult(calculateBmi(Number(heightFeet), Number(heightInches) || 0, Number(weightLbs)));
-    setSaved(false);
-  };
+  const hasData = profile.heightFeet != null && profile.heightFeet > 0 && profile.weightLbs != null && profile.weightLbs > 0;
+  const result = hasData ? calculateBmi(profile.heightFeet!, profile.heightInches ?? 0, profile.weightLbs!) : null;
+  const category = result != null ? bmiCategory(result) : null;
 
   const handleSave = () => {
     if (result == null) return;
@@ -44,8 +30,6 @@ export function BmiCalculatorCard({
     });
   };
 
-  const category = result != null ? bmiCategory(result) : null;
-
   return (
     <div className="wellness-calc-card">
       <div className="wellness-calc-title">BMI — Body Mass Index</div>
@@ -53,32 +37,16 @@ export function BmiCalculatorCard({
         A general screening measure comparing your weight to your height, used across population health research.
       </p>
 
-      <div className="wellness-calc-inputs">
-        <div className="field" style={{ flex: 1, minWidth: 90 }}>
-          <label htmlFor="bmi-height-feet">Height (ft)</label>
-          <input className="input" id="bmi-height-feet" type="number" min={0} value={heightFeet} onChange={(e) => setHeightFeet(e.target.value)} />
+      {!hasData ? (
+        <div className="wellness-calc-missing-profile">
+          Add your height and weight on the <Link href="/wellness/activity">Activity Log</Link> to see your BMI.
         </div>
-        <div className="field" style={{ flex: 1, minWidth: 90 }}>
-          <label htmlFor="bmi-height-inches">Height (in)</label>
-          <input
-            className="input"
-            id="bmi-height-inches"
-            type="number"
-            min={0}
-            max={11}
-            value={heightInches}
-            onChange={(e) => setHeightInches(e.target.value)}
-          />
-        </div>
-        <div className="field" style={{ flex: 1, minWidth: 90 }}>
-          <label htmlFor="bmi-weight">Weight (lbs)</label>
-          <input className="input" id="bmi-weight" type="number" min={0} value={weightLbs} onChange={(e) => setWeightLbs(e.target.value)} />
-        </div>
-      </div>
-
-      <button type="button" className="btn btn-primary" disabled={!canCalculate} onClick={handleCalculate}>
-        Calculate
-      </button>
+      ) : (
+        <p className="wellness-calc-desc" style={{ marginTop: -6 }}>
+          Using your saved height ({profile.heightFeet}&rsquo;{profile.heightInches ?? 0}&rdquo;) and weight ({profile.weightLbs} lbs) —{" "}
+          <Link href="/wellness/activity">update</Link>.
+        </p>
+      )}
 
       {result != null && category && (
         <div className="wellness-calc-result">
