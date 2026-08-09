@@ -477,9 +477,16 @@ model HepExercise {
 // even if the reader later edits their profile. `round`/`amount` exist for a possible
 // second cohort after these 25 fill — unused (always round 1, amount 40) until that happens.
 model FoundingFunder {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String  @id @default(cuid())
+  // Nullable, onDelete: SetNull (not Cascade) — deliberately: the /founding-funders page
+  // itself promises the Founding 25 listing is permanent ("your name in Limbic forever"),
+  // so deleting the underlying account (see app/actions/profile.ts deleteAccountAction)
+  // detaches this row from any login instead of erasing it. displayName/credential were
+  // already public (the reader/admin chose to show them in the grid), so keeping them
+  // around isn't exposing anything new.
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
   displayName String
   credential  String?
   round       Int      @default(1)
