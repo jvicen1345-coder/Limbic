@@ -18,7 +18,6 @@ import { GraduationTransitionCard } from "@/components/GraduationTransitionCard"
 import { RefreshHomeFeedButton } from "@/components/RefreshHomeFeedButton";
 import { orderArticlesForGrid, titleFingerprint } from "@/lib/home-grid-rotation";
 import { StockCard } from "@/components/StockCard";
-import { RevolvingNews } from "@/components/RevolvingNews";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
 import { NexusSuggestionsCard, type NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import { NexusJoinPromptCard } from "@/components/NexusJoinPromptCard";
@@ -63,7 +62,6 @@ export function HomeFeed({
   articles,
   calendarWidget,
   stocks,
-  newsTicker,
   license,
   savedUnread,
   nexusSuggestions,
@@ -82,7 +80,6 @@ export function HomeFeed({
   /** Server-rendered — see components/LimbicCalendarWidget.tsx, app/(app)/page.tsx. */
   calendarWidget: ReactNode;
   stocks: StockView[];
-  newsTicker: DecoratedArticle[];
   license: LicenseView | null;
   savedUnread: DecoratedArticle[];
   /** null when the viewer hasn't opted into Nexus yet — renders an invitation instead of
@@ -152,19 +149,14 @@ export function HomeFeed({
   // ranked pool specifically so this doesn't come up short).
   const withImage = useMemo(() => filtered.filter((a) => a.image), [filtered]);
 
-  // The news ticker's own articles are excluded from both the hero and the grid, so the
-  // same story can't show up twice on screen at once.
-  const newsIds = useMemo(() => new Set(newsTicker.map((a) => a.id)), [newsTicker]);
-  const withoutNews = useMemo(() => withImage.filter((a) => !newsIds.has(a.id)), [withImage, newsIds]);
-
   // The hero picks first — top of rank, restricted to HERO_ELIGIBLE_TYPES — precisely so
   // it isn't starved by the grid below greedily claiming the same top-ranked research/
   // guideline articles first (rank order and "is a medical source" correlate heavily,
   // since evidence quality feeds into ranking). Its picture is allowed to repeat one the
   // grid ends up using too; the reader explicitly doesn't mind that repetition.
   const rawHeroPool = useMemo(
-    () => withoutNews.filter((a) => HERO_ELIGIBLE_TYPES.includes(a.type)).slice(0, HERO_SIZE),
-    [withoutNews]
+    () => withImage.filter((a) => HERO_ELIGIBLE_TYPES.includes(a.type)).slice(0, HERO_SIZE),
+    [withImage]
   );
 
   // RefreshHomeFeedButton is meant to only change the grid, never the hero — but switching
@@ -203,15 +195,15 @@ export function HomeFeed({
   // best-ranked set (nothing's been marked seen yet), but after a Refresh click (which
   // marks the previous grid seen — see app/actions/home.ts), the same rank-ordered walk
   // below naturally lands on different articles instead of the same deterministic top-N.
-  const withoutNewsForGrid = useMemo(
-    () => orderArticlesForGrid(withoutNews, gridSeenFingerprints),
-    [withoutNews, gridSeenFingerprints]
+  const orderedForGrid = useMemo(
+    () => orderArticlesForGrid(withImage, gridSeenFingerprints),
+    [withImage, gridSeenFingerprints]
   );
   const gridArticles = useMemo(() => {
     const seenImages = new Set<string>();
     const pickedIds = new Set<string>();
     const picked: DecoratedArticle[] = [];
-    for (const a of withoutNewsForGrid) {
+    for (const a of orderedForGrid) {
       if (picked.length >= gridTarget) break;
       if (heroIds.has(a.id)) continue;
       if (!a.image || seenImages.has(a.image)) continue;
@@ -225,7 +217,7 @@ export function HomeFeed({
     // hero, never already-picked) allowing an image repeat rather than showing fewer cards
     // than guaranteed.
     if (picked.length < gridTarget) {
-      for (const a of withoutNewsForGrid) {
+      for (const a of orderedForGrid) {
         if (picked.length >= gridTarget) break;
         if (heroIds.has(a.id) || pickedIds.has(a.id) || !a.image) continue;
         pickedIds.add(a.id);
@@ -233,7 +225,7 @@ export function HomeFeed({
       }
     }
     return picked;
-  }, [withoutNewsForGrid, heroIds, gridTarget]);
+  }, [orderedForGrid, heroIds, gridTarget]);
 
   // Arriving via a gap-topic link (see LimbicAgentCard.tsx) drops the reader at the top of
   // the page same as any other Home visit — this carries them the rest of the way down to
@@ -308,14 +300,6 @@ export function HomeFeed({
           {heroPool.length > 0 && (
             <div style={{ marginBottom: 16 }}>
               <HeroFeed articles={heroPool} />
-              {/* Mobile keeps "Latest news" right under the hero (its counterpart in the
-               *  aside below is desktop-only — see .home-news-desktop/.home-hero-news-mobile
-               *  in globals.css); on desktop the aside's sidebar copy is the one that shows. */}
-              {showWidget("news") && newsTicker.length > 0 && (
-                <div className="home-hero-news-mobile" style={{ marginTop: 8 }}>
-                  <RevolvingNews articles={newsTicker} />
-                </div>
-              )}
             </div>
           )}
           <div className="cards-grid home-cards-grid">
@@ -334,11 +318,6 @@ export function HomeFeed({
             {showWidget("nexus") &&
               (nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />)}
             {showWidget("stock") && <StockCard stocks={stocks} />}
-            {showWidget("news") && (
-              <div className="home-news-desktop">
-                <RevolvingNews articles={newsTicker} />
-              </div>
-            )}
           </div>
         </aside>
       </div>

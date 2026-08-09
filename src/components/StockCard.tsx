@@ -6,8 +6,8 @@ import type { StockView } from "@/lib/stock";
 const ROTATE_MS = 12000;
 
 /** Cycles between the PT industry's tracked tickers (see lib/stock.ts's
- *  INDUSTRY_TICKERS) on a timer — same auto-rotate pattern as the "Latest news" card
- *  (see RevolvingNews.tsx) and the Home hero (see HeroFeed.tsx). */
+ *  INDUSTRY_TICKERS) on a timer — same auto-rotate pattern as the Home hero (see
+ *  HeroFeed.tsx). */
 export function StockCard({ stocks }: { stocks: StockView[] }) {
   const [index, setIndex] = useState(0);
 

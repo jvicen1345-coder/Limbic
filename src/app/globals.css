@@ -622,7 +622,6 @@ html[data-theme="dark"] .card.elev-lg {
   color: var(--color-accent-2-700);
 }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-.revolving-news-item { animation: fade-in 0.4s ease; }
 /* Continue Reading's progress bar (see components/ContinueReadingCard.tsx). */
 .progress-bar-fade-in { animation: fade-in 0.5s ease; }
 
@@ -1197,19 +1196,6 @@ html[data-theme="dark"] .nav-founding-link-active {
 .article-related-border-ma { border-left: 3px solid var(--color-vitals-mindfulness); }
 .article-related-border-cpg { border-left: 3px solid #e8a93a; }
 .article-related-border-default { border-left: 3px solid var(--color-neutral-400); }
-
-/* "Latest news" (see components/HomeFeed.tsx) renders twice — once right under the hero,
-   once in the aside — and CSS picks which copy shows per breakpoint rather than one
-   component moving between two different flex containers (.home-main-col and
-   .home-aside-col aren't reachable from one another with a media query alone). Desktop
-   shows the aside's sidebar copy; mobile shows the one under the hero instead, since the
-   aside stacks below the entire feed (including pagination) on narrow screens — too far
-   from the hero to read as related. */
-.home-hero-news-mobile { display: none; }
-@media (max-width: 799px) {
-  .home-hero-news-mobile { display: block; }
-  .home-news-desktop { display: none; }
-}
 
 .cards-grid {
   display: grid;

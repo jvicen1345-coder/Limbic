@@ -15,7 +15,7 @@ const placeholderStyle: React.CSSProperties = {
 
 /** Shows the video's real thumbnail when one loads; falls back to the plain play-icon
  *  placeholder on a failed fetch (hotlink protection, a since-removed video, no thumbnail
- *  URL at all) rather than a broken image — same pattern as RevolvingNews's ArticleImage. */
+ *  URL at all) rather than a broken image — same pattern as ArticleImage.tsx. */
 export function VideoThumbnail({ src }: { src: string | null }) {
   const [failed, setFailed] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);

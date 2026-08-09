@@ -7,7 +7,7 @@ import type { DecoratedArticle } from "@/lib/feed";
 const ROTATE_MS = 12000;
 
 /** Auto-rotating hero — cycles through the top of the reader's ranked feed on a timer,
- *  the same rotation pattern as the "Latest news" card (see RevolvingNews.tsx), just
+ *  the same rotation pattern as the Home sidebar's StockCard (see StockCard.tsx), just
  *  wrapping the full HeroArticleCard instead of a compact headline. Only ever fed
  *  articles that already resolved a real image (see HomeFeed's heroPool), so every
  *  rotation shows a picture. */

@@ -18,17 +18,11 @@ import { homeQuestionForDate } from "@/lib/home-questions-static";
 import { HomeFeed } from "@/components/HomeFeed";
 import { LimbicCalendarWidget } from "@/components/LimbicCalendarWidget";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
-import type { Article, ArticleType, CeCategory, Specialty } from "@/lib/types";
+import type { Article, CeCategory, Specialty } from "@/lib/types";
 
 // How many people to suggest connecting with in the Home aside — enough to fill the
 // card without turning it into a second directory.
 const NEXUS_SUGGESTIONS_SIZE = 3;
-
-// "Purely news-based": general news from news outlets, not academic journals — so the
-// revolving card draws from Guidelines/Industry & Policy/Equipment (Google-News-sourced)
-// and excludes Research (PubMed) and CE & Events (a curated calendar, not news).
-const NEWS_TICKER_TYPES: ArticleType[] = ["guideline", "industry", "product"];
-const NEWS_TICKER_SIZE = 6;
 
 // How many saved-but-unread articles to resurface in the sidebar — oldest saved first,
 // since those are the ones most overdue.
@@ -187,12 +181,6 @@ export default async function HomePage() {
     .filter((a) => a.type === "ce")
     .map((a) => ({ id: a.id, date: a.date, title: a.title, source: a.source, readMins: a.readMins }));
 
-  const newsTickerCandidates = articles
-    .filter((a) => NEWS_TICKER_TYPES.includes(a.type))
-    .slice()
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, NEWS_TICKER_SIZE);
-
   // Independent of each other, so run concurrently rather than making the og-image scrape
   // (always runs) wait behind the Nexus lookups (only when nexusOptIn is set), or vice
   // versa. Suggestions are only meaningful (and only shown) once the viewer has opted into
@@ -216,18 +204,11 @@ export default async function HomePage() {
       })()
     : Promise.resolve(null);
 
-  const [newsTickerWithRealImages, homeImagedPrefix, nexusSuggestions, homeQuestionCompletion] = await Promise.all([
-    attachRealImages(newsTickerCandidates),
+  const [homeImagedPrefix, nexusSuggestions, homeQuestionCompletion] = await Promise.all([
     resolveHomeImages(ranked),
     nexusSuggestionsPromise,
     homeQuestionCompletionPromise,
   ]);
-  // A second pass, after (not alongside) the real-image fetch above — attachTopicImages
-  // only fills in articles that pass 1 left empty (see lib/topic-image.ts), which is most
-  // seed/guideline-PDF content, since a PDF has no og:image to find at all. resolveHomeImages
-  // already runs both steps per batch internally.
-  const newsTickerWithImages = await attachTopicImages(newsTickerWithRealImages);
-  const newsTicker = newsTickerWithImages.map((a) => decorateArticle(a, savedIds, null, readIds));
   // resolveHomeImages stops once it's found enough images for the *default* "All" view —
   // everything ranked after that point is still real content (a reader can reach it via a
   // type/specialty tab or a Limbic Agent topic filter — see HomeFeed.tsx), just never
@@ -288,7 +269,6 @@ export default async function HomePage() {
         />
       }
       stocks={industryIndex}
-      newsTicker={newsTicker}
       license={license}
       savedUnread={savedUnread}
       nexusSuggestions={nexusSuggestions}
