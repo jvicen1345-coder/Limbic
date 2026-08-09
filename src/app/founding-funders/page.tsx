@@ -80,17 +80,17 @@ export default async function FoundingFundersPage() {
           <p className="ff-letter-opening">To the Founding Funders,</p>
           <p>My name is Jonathan Vicencio. I am a Doctor of Physical Therapy Student at Chapman University.</p>
           <p>
-            From the beginning of this program I noticed something missing — a single place where clinicians and
-            students could access current, evidence based physical therapy without hunting through paywalls,
-            outdated textbooks, or resources that were never built for us.
+            From the beginning of this program, I noticed something missing. A single place where clinicians and
+            students could access current, evidence-based physical therapy without hunting through paywalls,
+            outdated textbooks, or resources never built for us.
           </p>
           <p>I built Limbic to change that.</p>
           <p>
-            Not just for clinicians. Not just for students. But for everyone within the field — and for the
-            patients who deserve to understand their own care before they ever walk through our doors.
+            Not just for clinicians. Not just for students. But for everyone within the field. For the patients who
+            deserve to understand their own care before they ever walk through our doors.
           </p>
           <p>
-            Limbic exists to bring evidence based physical therapy into the hands of everyone who needs it. This is
+            Limbic exists to bring evidence-based physical therapy into the hands of everyone who needs it. This is
             that platform.
           </p>
           <p>I am looking for 25 people who believe in what this could become.</p>
