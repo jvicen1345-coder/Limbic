@@ -34,17 +34,27 @@ model User {
   // JSON-encoded { name, required, completed }[] of CE categories
   ceCategories      Json     @default("[]")
 
-  // LimbicPro — currently flipped by a demo action (see app/actions/pro.ts), not real
-  // billing. This field is the intended seam for real payment later: a webhook would set
-  // it instead of the demo action, and nothing else in the app needs to change.
+  // LimbicPro — real billing (see lib/stripe.ts, app/actions/pro.ts,
+  // app/api/stripe/webhook/route.ts): set by the Stripe webhook on a confirmed
+  // subscription, not by the account holder's own request directly.
   isPro             Boolean  @default(false)
 
   // Student tiers — "none" | "studentPro" | "studentProBoards" (a superset of studentPro).
   // Only purchasable/visible for accounts signed in with a .edu email (see
   // lib/session.ts isStudentEmail) — Limbic Boards and Daily Term are gated on that check,
   // not on this field, since the tier is about what's purchasable, not who can sign in.
-  // Same demo-purchase pattern as isPro (see app/actions/pro.ts).
+  // Same real-billing pattern as isPro above.
   studentTier       String   @default("none")
+
+  // Stripe billing identity — set the first time this account starts a Checkout session
+  // (see app/actions/pro.ts), reused on every later checkout/portal session rather than
+  // minting a new Stripe Customer each time. stripeSubscriptionId is whichever LimbicPro/
+  // student-tier subscription is currently active (a reader can only be on one paid plan
+  // at once today), used to update an existing subscription's price in place for an
+  // upgrade (e.g. Student PRO -> Student PRO+ Boards) instead of starting a second,
+  // parallel subscription — see subscribeToStudentTierAction.
+  stripeCustomerId     String? @unique
+  stripeSubscriptionId String? @unique
 
   // Timestamp of the previous home-feed load, captured before it's overwritten with the
   // current one — this is what lets the feed tell "published since you were last here"

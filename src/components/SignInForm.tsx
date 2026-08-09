@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { signInAction, signInGeneralAction } from "@/app/actions/auth";
 import { GoogleIcon } from "@/components/icons";
 
@@ -183,6 +184,17 @@ export function SignInForm({ states, googleEnabled }: { states: string[]; google
           </p>
         </form>
       )}
+
+      <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: 0, textAlign: "center" }}>
+        By signing in you agree to our{" "}
+        <Link href="/terms" style={{ color: "var(--color-neutral-700)", textDecoration: "underline" }}>
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link href="/privacy" style={{ color: "var(--color-neutral-700)", textDecoration: "underline" }}>
+          Privacy Policy
+        </Link>
+      </p>
     </div>
   );
 }

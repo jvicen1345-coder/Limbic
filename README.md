@@ -192,6 +192,68 @@ consent screen is correctly formed, but completing an actual sign-in requires a 
 browser and a real Google account, which isn't something this sandbox could exercise
 end-to-end either.
 
+## Stripe subscriptions
+
+LimbicPro ($25/mo) and the two student tiers (Student PRO $5/mo, Student PRO+ Boards
+$15/mo — see `src/app/(app)/pro/membership/page.tsx`) are real, recurring Stripe
+subscriptions, not the instant demo flip they used to be. The flow:
+
+- **Checkout** (`app/actions/pro.ts` `subscribeToProAction`/`subscribeToStudentTierAction`):
+  looks up or creates a Stripe Customer for the reader (`User.stripeCustomerId`, reused on
+  every later checkout/portal visit instead of minting a new one each time), then redirects
+  to a Stripe-hosted Checkout Session. `isPro`/`studentTier` are **not** set here — only the
+  webhook below sets them, once Stripe actually confirms payment.
+- **Upgrading** from Student PRO to Student PRO+ Boards updates the existing subscription's
+  price in place (with proration) via the Stripe API directly, instead of starting a second
+  parallel subscription through Checkout.
+- **Cancellation** (`cancelProAction`/`cancelStudentTierAction`) redirects to the
+  Stripe-hosted Customer Portal, where the reader manages their payment method or cancels
+  — Stripe's default portal cancellation is "at period end," matching the wording in
+  `/terms`.
+- **The webhook** (`src/app/api/stripe/webhook/route.ts`) is the single source of truth:
+  verifies the raw request body against `STRIPE_WEBHOOK_SECRET` before trusting anything in
+  it, then sets `isPro`/`studentTier` off `customer.subscription.created`/`.updated`
+  (active/trialing → on) and `.deleted` (→ off) events. Which internal plan a subscription
+  maps to travels as `metadata.plan` on the Subscription object itself (stamped at
+  checkout), not just the Checkout Session, since subscription-lifecycle events reference
+  the Subscription, not the session that created it.
+
+**Setup, in the Stripe Dashboard:**
+
+1. Create three Products, each with one recurring monthly Price: LimbicPro ($25), Student
+   PRO ($5), Student PRO+ Boards ($15). Copy each Price's id (starts `price_...`, **not**
+   the Product id) into `STRIPE_PRICE_PRO`/`STRIPE_PRICE_STUDENT_PRO`/
+   `STRIPE_PRICE_STUDENT_PRO_BOARDS`.
+2. Settings → Billing → Customer portal: click "Activate test link" (test mode) or
+   otherwise save a portal configuration at least once — `stripe.billingPortal.sessions
+   .create` fails until a configuration exists, even a default one.
+3. Developers → Webhooks → add an endpoint at `https://<your-domain>/api/stripe/webhook`,
+   subscribed to at least `customer.subscription.created`, `customer.subscription.updated`,
+   and `customer.subscription.deleted`. Copy its signing secret into
+   `STRIPE_WEBHOOK_SECRET`.
+4. Copy your secret key (`sk_test_...` while testing, `sk_live_...` once you flip live)
+   into `STRIPE_SECRET_KEY`.
+
+Without `STRIPE_SECRET_KEY` set, every Upgrade/Manage-membership button on
+`/pro/membership` stays disabled with a "Payments aren't set up yet" notice —
+`stripeEnabled()` (`src/lib/stripe.ts`) gates all of it, same graceful-degradation pattern
+as `YOUTUBE_API_KEY`/`GOOGLE_CLIENT_ID` elsewhere in this app, except there's no silent
+demo fallback anymore: showing a fake "purchase" as if it charged a real card would be
+actively misleading now that this is meant to be real billing.
+
+**Same sandbox caveat as the other live integrations above:** this sandbox's network
+policy blocks outbound requests to `api.stripe.com`, so none of this could be exercised
+against a real Stripe account while building it — no `.env` value was set here, `tsc`/
+`eslint`/`next build` all pass, and the webhook route's signature verification and event
+handling were reasoned through against Stripe's documented behavior rather than observed
+live. Worth a real end-to-end test (a real test-mode checkout, confirming `isPro` flips,
+canceling via the portal, confirming it un-flips at period end) the first time this runs
+somewhere with real egress.
+
+Founding Funders (`/founding-funders`) is deliberately **not** part of this — that's a
+one-time $40 payment handled manually via Zelle plus an admin claim panel, by original
+design (see the page itself), not a subscription.
+
 ## Home page news ticker
 
 The "Latest news" card in the Home sidebar (`src/components/RevolvingNews.tsx`) rotates

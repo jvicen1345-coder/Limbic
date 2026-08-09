@@ -1,4 +1,5 @@
 import { getCurrentUser, isStudentEmail } from "@/lib/session";
+import { stripeEnabled } from "@/lib/stripe";
 import {
   subscribeToProAction,
   cancelProAction,
@@ -24,11 +25,17 @@ const STUDENT_TIERS: { id: "studentPro" | "studentProBoards"; name: string; pric
   },
 ];
 
-export default async function ProMembershipPage() {
+export default async function ProMembershipPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ checkout?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!user) return null;
 
   const student = isStudentEmail(user.email);
+  const billingEnabled = stripeEnabled();
+  const { checkout } = await searchParams;
 
   return (
     <div className="screen-pad">
@@ -43,16 +50,62 @@ export default async function ProMembershipPage() {
       </p>
       <SubTabs tabs={PRO_TABS} />
 
+      {checkout === "success" && (
+        <p
+          style={{
+            fontSize: 13,
+            color: "var(--color-success)",
+            background: "color-mix(in srgb, var(--color-success) 12%, var(--color-surface))",
+            border: "1px solid color-mix(in srgb, var(--color-success) 35%, transparent)",
+            borderRadius: "var(--radius-md)",
+            padding: "8px 14px",
+            margin: "0 0 16px",
+          }}
+        >
+          Payment confirmed — thanks for subscribing.
+        </p>
+      )}
+      {checkout === "canceled" && (
+        <p
+          style={{
+            fontSize: 13,
+            color: "var(--color-neutral-700)",
+            background: "var(--color-neutral-100)",
+            borderRadius: "var(--radius-md)",
+            padding: "8px 14px",
+            margin: "0 0 16px",
+          }}
+        >
+          Checkout was canceled — you weren&rsquo;t charged.
+        </p>
+      )}
+      {!billingEnabled && (
+        <p
+          style={{
+            fontSize: 13,
+            color: "var(--color-danger)",
+            background: "color-mix(in srgb, var(--color-danger) 12%, var(--color-surface))",
+            border: "1px solid color-mix(in srgb, var(--color-danger) 35%, transparent)",
+            borderRadius: "var(--radius-md)",
+            padding: "8px 14px",
+            margin: "0 0 16px",
+          }}
+        >
+          Payments aren&rsquo;t set up yet — check back soon.
+        </p>
+      )}
+
       <div className="card elev-sm" style={{ marginBottom: 16 }}>
         {user.isPro ? (
           <>
             <div className="card-kicker">Membership</div>
             <p className="card-body" style={{ marginTop: 6 }}>
-              You have full access to LimbicPro. Manage or cancel your membership below.
+              You have full access to LimbicPro. Manage your payment method or cancel below —
+              cancellation takes effect at the end of your current billing period.
             </p>
             <form action={cancelProAction}>
-              <button type="submit" className="btn btn-secondary" style={{ marginTop: 10 }}>
-                Cancel membership
+              <button type="submit" className="btn btn-secondary" style={{ marginTop: 10 }} disabled={!billingEnabled}>
+                Manage membership
               </button>
             </form>
           </>
@@ -60,11 +113,10 @@ export default async function ProMembershipPage() {
           <>
             <div className="card-kicker">$25/month</div>
             <p className="card-body" style={{ marginTop: 6 }}>
-              Demo only — this doesn&rsquo;t charge a real card. It flips your account to Pro
-              instantly; real billing plugs in here once these features ship.
+              Cancel any time — takes effect at the end of your current billing period.
             </p>
             <form action={subscribeToProAction}>
-              <button type="submit" className="btn btn-primary" style={{ marginTop: 10 }}>
+              <button type="submit" className="btn btn-primary" style={{ marginTop: 10 }} disabled={!billingEnabled}>
                 Upgrade to LimbicPro
               </button>
             </form>
@@ -89,7 +141,7 @@ export default async function ProMembershipPage() {
         ) : user.studentTier === "none" ? (
           <>
             <p className="card-body" style={{ marginTop: 6 }}>
-              Demo only — this doesn&rsquo;t charge a real card. Pick the tier that fits.
+              Pick the tier that fits — cancel any time.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 10 }}>
               {STUDENT_TIERS.map((tier) => (
@@ -114,7 +166,7 @@ export default async function ProMembershipPage() {
                     </p>
                   </div>
                   <form action={subscribeToStudentTierAction.bind(null, tier.id)}>
-                    <button type="submit" className="btn btn-primary" style={{ flexShrink: 0 }}>
+                    <button type="submit" className="btn btn-primary" style={{ flexShrink: 0 }} disabled={!billingEnabled}>
                       Upgrade
                     </button>
                   </form>
@@ -132,14 +184,14 @@ export default async function ProMembershipPage() {
             <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
               {user.studentTier === "studentPro" && (
                 <form action={subscribeToStudentTierAction.bind(null, "studentProBoards")}>
-                  <button type="submit" className="btn btn-primary">
+                  <button type="submit" className="btn btn-primary" disabled={!billingEnabled}>
                     Upgrade to Student PRO+ Boards
                   </button>
                 </form>
               )}
               <form action={cancelStudentTierAction}>
-                <button type="submit" className="btn btn-secondary">
-                  Cancel membership
+                <button type="submit" className="btn btn-secondary" disabled={!billingEnabled}>
+                  Manage membership
                 </button>
               </form>
             </div>
