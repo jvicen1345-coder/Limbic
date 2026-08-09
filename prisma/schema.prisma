@@ -576,3 +576,15 @@ model WipeCode {
   code      String   @unique
   createdAt DateTime @default(now())
 }
+
+// The Profile page's anonymous Suggestion Box (see submitSuggestionAction in
+// app/actions/suggestions.ts, the admin-only listing at app/(app)/admin/suggestions) —
+// deliberately has no userId/user relation at all, unlike every other per-account model in
+// this schema, so a submission can never be traced back to the account that sent it, even
+// by an admin reading the raw table. Only visible to a site admin (see lib/admin.ts
+// isSiteAdmin), same access pattern as WipeCode/FoundingFunderWaitlist above.
+model Suggestion {
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+}

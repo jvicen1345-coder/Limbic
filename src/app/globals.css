@@ -4271,3 +4271,16 @@ html[data-theme="dark"] .ff-page {
   .legal-container { padding: 72px 18px 48px; }
   .legal-title { font-size: 24px; }
 }
+
+/* — Admin Suggestions list (app/(app)/admin/suggestions/page.tsx) — a simple row-per-
+   suggestion list, same shape as .vitals-log-row. */
+.suggestion-admin-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--color-divider);
+}
+.suggestion-admin-row:last-child { border-bottom: none; }
+.suggestion-admin-date { font-size: 11px; color: var(--color-neutral-600); margin-bottom: 3px; }
+.suggestion-admin-body { font-size: 13.5px; line-height: 1.55; margin: 0; white-space: pre-wrap; }

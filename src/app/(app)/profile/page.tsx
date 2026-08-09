@@ -14,6 +14,7 @@ import { GamesStreakCard } from "@/components/GamesStreakCard";
 import { HomeWidgetToggle } from "@/components/HomeWidgetToggle";
 import { DeleteAccountSection } from "@/components/DeleteAccountSection";
 import { AccountSecuritySection } from "@/components/AccountSecuritySection";
+import { SuggestionBoxCard } from "@/components/SuggestionBoxCard";
 import { goAddLicenseAction } from "@/app/actions/profile";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
 import { HOME_WIDGETS } from "@/lib/home-widgets";
@@ -228,6 +229,10 @@ export default async function ProfilePage() {
             <HomeWidgetToggle key={w.id} id={w.id} label={w.label} visible={!hiddenHomeWidgets.includes(w.id)} />
           ))}
         </div>
+      </div>
+
+      <div style={{ marginTop: 18 }}>
+        <SuggestionBoxCard />
       </div>
 
       <DeleteAccountSection hasFoundingSpot={hasFoundingSpot} />
