@@ -272,6 +272,7 @@ export default async function HomePage() {
       hiddenWidgets={user.hiddenHomeWidgets as unknown as string[]}
       limbicAgentInsights={limbicAgentInsights}
       isPro={user.isPro}
+      gridSeenFingerprints={(user.homeGridSeenFingerprints as unknown as string[]) ?? []}
     />
   );
 }

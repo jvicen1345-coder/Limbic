@@ -107,6 +107,19 @@ model User {
   // never-seen clips first each visit instead of always restarting from the same c1.
   clipsSeenIds Json @default("[]")
 
+  // Normalized-title fingerprints (see lib/home-grid-rotation.ts titleFingerprint) shown in
+  // the Home main feed's grid (see components/HomeFeed.tsx) since the reader last clicked
+  // Refresh — a content fingerprint rather than the article's own id, deliberately: Google
+  // News RSS's <link> for the same story isn't stable across separate fetches (it's the
+  // basis for this app's article ids — see lib/news-live.ts stableId), so id-based seen-
+  // tracking couldn't actually recognize "already showed this one" for that content. NOT
+  // touched on an ordinary page load, only appended to when Refresh is clicked (see
+  // app/actions/home.ts refreshHomeFeedAction), so a normal visit always shows the
+  // best-ranked set but Refresh reliably rotates to different articles instead of
+  // re-fetching and landing back on the same deterministic top-N. Bounded/pruned the same
+  // way as clipsSeenIds/wellnessOpenedIds.
+  homeGridSeenFingerprints Json @default("[]")
+
   // Professional dates (see components/LimbicCalendarWidget.tsx, app/actions/profile.ts
   // updateProfessionalDates) — self-reported deadlines a reader tracks on the Limbic
   // Calendar's orange dots, editable from the Profile "Professional Dates" section.
