@@ -160,6 +160,10 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
+      {/* /founding-funders is intentionally its own standalone page (no sidebar, no
+       *  AppShell — see app/founding-funders/page.tsx) once you land there; this is just
+       *  the entry point into it from the normal nav. */}
+      <NavLink href="/founding-funders" icon={<CrownIcon />} label="Founding Funders" onNavigate={onNavigate} />
 
       {isStudent && (
         <>
