@@ -67,7 +67,7 @@ export default async function FoundingFundersPage() {
         {/* Section 1 — The Letter */}
         <div className="ff-letter">
           <p className="ff-letter-opening">To the Founding Funders,</p>
-          <p>My name is Jonathan Vicencio, a Doctor of Physical Therapy student at Chapman University.</p>
+          <p>My name is Jonathan Vicencio. I am a Doctor of Physical Therapy Student at Chapman University.</p>
           <p>
             From the beginning of this program I noticed something missing — a single place where clinicians and
             students could access current, evidence based physical therapy without hunting through paywalls,
@@ -97,9 +97,6 @@ export default async function FoundingFundersPage() {
         <div className="ff-offer">
           <h1 className="ff-offer-title">Founding Funders</h1>
           <p className="ff-offer-line">25 spots. ${FOUNDING_FUNDERS_PRICE_USD}. Lifetime access. Your name in Limbic forever.</p>
-          <p className="ff-offer-line ff-offer-muted">
-            This offer closes when the 25 spots are filled. It will never be offered again.
-          </p>
         </div>
 
         {/* Section 3 — What You Get */}
@@ -183,6 +180,22 @@ export default async function FoundingFundersPage() {
             Built by a PT student, for everyone.
           </p>
           <p className="ff-footer-url">limbic.center</p>
+        </div>
+
+        {/* Legal disclaimer — the very last thing on the page */}
+        <div className="ff-disclaimer">
+          <p className="ff-disclaimer-title">Important — Please Read</p>
+          <p className="ff-disclaimer-body">
+            A Founding Funder membership is a lifetime subscription to Limbic. It is not an investment, equity
+            stake, or ownership interest of any kind in Limbic, its research curation, its intellectual property, or
+            any affiliated entity.
+          </p>
+          <p className="ff-disclaimer-body">
+            Founding Funders receive lifetime access to LimbicPRO features and founding member recognition. They do
+            not acquire any financial interest, ownership rights, or claims to Limbic content, data, or future
+            revenue.
+          </p>
+          <p className="ff-disclaimer-body">This is a membership.</p>
         </div>
       </div>
 

@@ -3159,6 +3159,10 @@ html[data-theme="dark"] .body-silhouette-card {
   --ff-gold-tint: color-mix(in srgb, #c9933a 14%, transparent);
   --ff-shadow: 0 4px 20px color-mix(in srgb, #2b2015 8%, transparent);
   --ff-slot-empty-border: color-mix(in srgb, #23304a 20%, transparent);
+  /* Neutral, deliberately not gold — the legal disclaimer card is the one section on this
+     page that intentionally stays out of the founding-gold color language. */
+  --ff-neutral-tint: color-mix(in srgb, #23304a 4%, var(--ff-bg));
+  --ff-neutral-border: color-mix(in srgb, #23304a 14%, transparent);
 
   min-height: 100vh;
   background: var(--ff-bg);
@@ -3176,6 +3180,8 @@ html[data-theme="dark"] .ff-page {
   --ff-gold-tint: color-mix(in srgb, #d9a94d 16%, transparent);
   --ff-shadow: 0 4px 20px color-mix(in srgb, #000 26%, transparent);
   --ff-slot-empty-border: color-mix(in srgb, #f2ece1 22%, transparent);
+  --ff-neutral-tint: color-mix(in srgb, #f2ece1 6%, var(--ff-bg));
+  --ff-neutral-border: color-mix(in srgb, #f2ece1 16%, transparent);
 }
 @keyframes ff-page-in {
   from { opacity: 0; }
@@ -3525,6 +3531,31 @@ html[data-theme="dark"] .ff-page {
   font-size: 12.5px;
   color: var(--ff-text-muted);
 }
+
+/* — Legal disclaimer, the very last thing on the page. Deliberately neutral
+   (var(--ff-neutral-*), never --ff-gold) — informational, not another highlight. — */
+.ff-disclaimer {
+  background: var(--ff-neutral-tint);
+  border: 1px solid var(--ff-neutral-border);
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
+  margin-top: 40px;
+}
+.ff-disclaimer-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ff-text-muted);
+  margin: 0 0 12px;
+}
+.ff-disclaimer-body {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ff-text-muted);
+  margin: 0 0 12px;
+}
+.ff-disclaimer-body:last-child { margin-bottom: 0; }
 
 /* — Admin claim panel: deliberately plain/utilitarian, not styled to match the letter —
    an internal operator tool tucked below the real page content, only rendered for
