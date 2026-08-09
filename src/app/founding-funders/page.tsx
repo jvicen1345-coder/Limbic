@@ -97,9 +97,6 @@ export default async function FoundingFundersPage() {
         <div className="ff-offer">
           <h1 className="ff-offer-title">Founding Funders</h1>
           <p className="ff-offer-line">25 spots. ${FOUNDING_FUNDERS_PRICE_USD}. Lifetime access. Your name in Limbic forever.</p>
-          <p className="ff-offer-line ff-offer-muted">
-            This offer closes when the 25 spots are filled. It will never be offered again.
-          </p>
         </div>
 
         {/* Section 3 — What You Get */}
@@ -110,22 +107,6 @@ export default async function FoundingFundersPage() {
               <p className="ff-benefit-card-desc">{b.description}</p>
             </div>
           ))}
-        </div>
-
-        {/* Legal disclaimer — between "What You Get" and the 25 Slots grid */}
-        <div className="ff-disclaimer">
-          <p className="ff-disclaimer-title">Important — Please Read</p>
-          <p className="ff-disclaimer-body">
-            A Founding Funder membership is a lifetime subscription to Limbic. It is not an investment, equity
-            stake, or ownership interest of any kind in Limbic, its research curation, its intellectual property, or
-            any affiliated entity.
-          </p>
-          <p className="ff-disclaimer-body">
-            Founding Funders receive lifetime access to LimbicPRO features and founding member recognition. They do
-            not acquire any financial interest, ownership rights, or claims to Limbic content, data, or future
-            revenue.
-          </p>
-          <p className="ff-disclaimer-body">This is a membership.</p>
         </div>
 
         {/* Section 4 — The 25 Slots */}
@@ -199,6 +180,22 @@ export default async function FoundingFundersPage() {
             Built by a PT student, for everyone.
           </p>
           <p className="ff-footer-url">limbic.center</p>
+        </div>
+
+        {/* Legal disclaimer — the very last thing on the page */}
+        <div className="ff-disclaimer">
+          <p className="ff-disclaimer-title">Important — Please Read</p>
+          <p className="ff-disclaimer-body">
+            A Founding Funder membership is a lifetime subscription to Limbic. It is not an investment, equity
+            stake, or ownership interest of any kind in Limbic, its research curation, its intellectual property, or
+            any affiliated entity.
+          </p>
+          <p className="ff-disclaimer-body">
+            Founding Funders receive lifetime access to LimbicPRO features and founding member recognition. They do
+            not acquire any financial interest, ownership rights, or claims to Limbic content, data, or future
+            revenue.
+          </p>
+          <p className="ff-disclaimer-body">This is a membership.</p>
         </div>
       </div>
 

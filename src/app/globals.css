@@ -3317,31 +3317,6 @@ html[data-theme="dark"] .ff-page {
   .ff-benefits-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* — Legal disclaimer, between "What You Get" and the 25 Slots grid. Deliberately neutral
-   (var(--ff-neutral-*), never --ff-gold) — informational, not another highlight. — */
-.ff-disclaimer {
-  background: var(--ff-neutral-tint);
-  border: 1px solid var(--ff-neutral-border);
-  border-radius: var(--radius-md);
-  padding: 24px 28px;
-  margin-bottom: 48px;
-}
-.ff-disclaimer-title {
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ff-text-muted);
-  margin: 0 0 12px;
-}
-.ff-disclaimer-body {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--ff-text-muted);
-  margin: 0 0 12px;
-}
-.ff-disclaimer-body:last-child { margin-bottom: 0; }
-
 /* — Section 4: the 25 slots — */
 .ff-slots-section { text-align: center; margin-bottom: 48px; }
 .ff-slots-title {
@@ -3556,6 +3531,31 @@ html[data-theme="dark"] .ff-page {
   font-size: 12.5px;
   color: var(--ff-text-muted);
 }
+
+/* — Legal disclaimer, the very last thing on the page. Deliberately neutral
+   (var(--ff-neutral-*), never --ff-gold) — informational, not another highlight. — */
+.ff-disclaimer {
+  background: var(--ff-neutral-tint);
+  border: 1px solid var(--ff-neutral-border);
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
+  margin-top: 40px;
+}
+.ff-disclaimer-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ff-text-muted);
+  margin: 0 0 12px;
+}
+.ff-disclaimer-body {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ff-text-muted);
+  margin: 0 0 12px;
+}
+.ff-disclaimer-body:last-child { margin-bottom: 0; }
 
 /* — Admin claim panel: deliberately plain/utilitarian, not styled to match the letter —
    an internal operator tool tucked below the real page content, only rendered for
