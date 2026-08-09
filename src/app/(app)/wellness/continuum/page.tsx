@@ -13,7 +13,7 @@ export default async function RepContinuumPage() {
   const guidance = goal ? GOAL_ZONE_GUIDANCE[goal] : null;
 
   return (
-    <div className="screen-pad" style={{ maxWidth: 960, margin: "0 auto" }}>
+    <div className="screen-pad" style={{ maxWidth: 1040, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>The Rep Continuum</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 6px" }}>
         Understanding how repetitions and load relate to your training goal.

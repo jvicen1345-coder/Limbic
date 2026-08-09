@@ -45,7 +45,7 @@ export default async function ActivityLogPage() {
   const recentLogs = [...logs].sort((a, b) => b.createdAtMs - a.createdAtMs).slice(0, 5);
 
   return (
-    <div className="screen-pad" style={{ maxWidth: 640, margin: "0 auto" }}>
+    <div className="screen-pad" style={{ maxWidth: 760, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Activity Log</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 14px" }}>
         Track your own general wellness activity, week to week.

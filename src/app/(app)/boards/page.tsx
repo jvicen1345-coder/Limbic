@@ -30,7 +30,7 @@ export default async function BoardsHubPage() {
 
   if (!isStudent) {
     return (
-      <div className="screen-pad" style={{ maxWidth: 640, margin: "0 auto" }}>
+      <div className="screen-pad" style={{ maxWidth: 760, margin: "0 auto" }}>
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Question of the Day</h1>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
           A board-style question for clinicians to keep sharp on — the rest of Limbic Boards is a student product.
@@ -55,7 +55,7 @@ export default async function BoardsHubPage() {
   ]);
 
   return (
-    <div className="screen-pad" style={{ maxWidth: 640, margin: "0 auto" }}>
+    <div className="screen-pad" style={{ maxWidth: 760, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
         <GraduationCapIcon size={22} style={{ color: "var(--color-accent)" }} />
         <h1 style={{ fontSize: 24, margin: 0 }}>Limbic Boards</h1>
