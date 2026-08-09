@@ -3000,35 +3000,85 @@ html[data-theme="dark"] .body-silhouette-card {
 .body-results-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; }
 
 /* — Limbic Student Atrium (app/(app)/student/*) — deliberately warmer than the rest of the
-   app (see AGENTS.md-adjacent product ask: "like walking into an atrium"), built from the
-   existing --color-vitals-strength (orange) token blended into the neutral bg/surface
-   tokens rather than any new literal color, so light/dark both stay in sync automatically. */
+   app (see AGENTS.md-adjacent product ask: "like walking into an atrium") and visually
+   distinct from it: an explicit warm dark-slate / warm off-white pair of backgrounds
+   rather than a tint of the main app's own --color-bg, following the same "owns its own
+   colors" approach as .ff-page above. Every rule below reads var(--atrium-*) so the main
+   app's theme tokens can shift later without bleeding into the Atrium. */
 .atrium-page {
-  --atrium-tint: var(--color-vitals-strength);
-  --atrium-bg: color-mix(in srgb, var(--atrium-tint) 5%, var(--color-bg));
-  --atrium-surface: color-mix(in srgb, var(--atrium-tint) 4%, var(--color-surface));
-  --atrium-border: color-mix(in srgb, var(--atrium-tint) 20%, var(--color-divider));
+  --atrium-tint: #c9933a;
+  --atrium-green: #4caf7d;
+  --atrium-blue: var(--color-accent);
+  --atrium-purple: #9b7fd4;
+  --atrium-rose: #d47f9b;
+  --atrium-bg: #f9f7f4;
+  --atrium-surface: color-mix(in srgb, var(--atrium-tint) 4%, #ffffff);
+  --atrium-surface-2: color-mix(in srgb, var(--atrium-tint) 8%, #ffffff);
+  --atrium-border: color-mix(in srgb, var(--atrium-tint) 22%, var(--color-divider));
   background: var(--atrium-bg);
+  color: var(--color-text);
   min-height: 100%;
 }
+html[data-theme="dark"] .atrium-page {
+  --atrium-bg: #1c1a2e;
+  --atrium-surface: color-mix(in srgb, var(--atrium-tint) 8%, #262340);
+  --atrium-surface-2: color-mix(in srgb, var(--atrium-tint) 13%, #262340);
+  --atrium-border: color-mix(in srgb, var(--atrium-tint) 30%, transparent);
+}
+
 .atrium-header {
-  margin-bottom: 28px;
+  margin-bottom: 22px;
 }
 .atrium-greeting {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
   font-size: 28px;
   margin: 0 0 6px;
 }
 .atrium-header-meta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
   font-size: 13.5px;
   color: var(--color-neutral-700);
+  margin: 0 0 16px;
 }
-.atrium-header-dot { color: var(--color-neutral-500); }
-.atrium-header-meta a { color: var(--atrium-tint); text-decoration: none; }
-.atrium-header-meta a:hover { text-decoration: underline; }
+
+.atrium-countdown { display: flex; flex-direction: column; gap: 0; margin-top: 4px; }
+.atrium-countdown-number {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 44px;
+  line-height: 1.05;
+  color: var(--atrium-tint);
+}
+.atrium-countdown-label { font-size: 12.5px; color: var(--color-neutral-700); }
+.atrium-countdown-prompt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  color: var(--color-neutral-700);
+  margin: 0;
+}
+.atrium-countdown-prompt a { color: var(--atrium-tint); font-weight: 600; text-decoration: none; }
+.atrium-countdown-prompt a:hover { text-decoration: underline; }
+
+.atrium-greeting-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--atrium-surface);
+  border-left: 4px solid var(--atrium-tint);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 28px;
+}
+.atrium-greeting-card p { margin: 0; font-size: 13.5px; line-height: 1.55; }
+.atrium-greeting-card p:first-child {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15.5px;
+  color: var(--color-text);
+}
+.atrium-greeting-card p:not(:first-child) { color: var(--color-neutral-700); }
 
 .atrium-section-label {
   font-size: 12px;
@@ -3039,51 +3089,59 @@ html[data-theme="dark"] .body-silhouette-card {
 }
 
 .atrium-paths-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 14px;
-  margin-bottom: 36px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 40px;
 }
 .atrium-path-card {
+  flex: 1 1 250px;
+  max-width: 288px;
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 20px;
+  padding: 22px;
   border-radius: calc(var(--radius-lg) * 1.15);
   background: var(--atrium-surface);
   border: 1px solid var(--atrium-border);
+  border-top: 3px solid var(--path-accent, var(--atrium-tint));
   text-decoration: none;
   color: inherit;
   transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
 }
 .atrium-path-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px color-mix(in srgb, var(--atrium-tint) 16%, transparent);
-  border-color: var(--atrium-tint);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--path-accent, var(--atrium-tint)) 22%, transparent);
 }
+.atrium-path-card--amber  { --path-accent: var(--atrium-tint); }
+.atrium-path-card--green  { --path-accent: var(--atrium-green); }
+.atrium-path-card--blue   { --path-accent: var(--atrium-blue); }
+.atrium-path-card--purple { --path-accent: var(--atrium-purple); }
+.atrium-path-card--rose   { --path-accent: var(--atrium-rose); }
 .atrium-path-icon {
   flex-shrink: 0;
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--atrium-tint) 16%, transparent);
-  color: var(--atrium-tint);
+  background: color-mix(in srgb, var(--path-accent, var(--atrium-tint)) 16%, transparent);
+  color: var(--path-accent, var(--atrium-tint));
 }
 .atrium-path-body { flex: 1; min-width: 0; }
-.atrium-path-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15.5px; margin: 0 0 3px; }
-.atrium-path-desc { font-size: 12.5px; color: var(--color-neutral-700); margin: 0; line-height: 1.4; }
-.atrium-path-arrow { flex-shrink: 0; color: var(--atrium-tint); }
+.atrium-path-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; margin: 0 0 4px; }
+.atrium-path-desc { font-size: 12.5px; color: var(--color-neutral-700); margin: 0; line-height: 1.45; }
+.atrium-path-arrow { flex-shrink: 0; color: var(--path-accent, var(--atrium-tint)); }
 
 .atrium-dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 14px;
 }
 .atrium-dashboard-card {
-  padding: 18px;
+  padding: 16px;
   border-radius: var(--radius-lg);
   background: var(--atrium-surface);
   border: 1px solid var(--atrium-border);
@@ -3094,15 +3152,16 @@ html[data-theme="dark"] .body-silhouette-card {
 .atrium-dashboard-title {
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
-  font-size: 13.5px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   gap: 6px;
   color: var(--color-text);
 }
-.atrium-dashboard-body { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }
-.atrium-dashboard-link { font-size: 12.5px; color: var(--atrium-tint); text-decoration: none; font-weight: 600; margin-top: 2px; }
+.atrium-dashboard-body { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }
+.atrium-dashboard-link { font-size: 12.5px; color: var(--atrium-blue); text-decoration: none; font-weight: 600; margin-top: 2px; }
 .atrium-dashboard-link:hover { text-decoration: underline; }
+.atrium-dashboard-link--amber { color: var(--atrium-tint); }
 .atrium-dashboard-empty { font-size: 12.5px; color: var(--color-neutral-600); font-style: italic; }
 .atrium-dashboard-locked { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--color-neutral-600); }
 
@@ -3132,10 +3191,60 @@ html[data-theme="dark"] .body-silhouette-card {
   font-size: 13.5px;
 }
 
+.atrium-resources {
+  margin-top: 8px;
+  padding: 24px;
+  border-radius: calc(var(--radius-lg) * 1.15);
+  background: var(--atrium-surface-2);
+  border: 1px solid var(--atrium-border);
+}
+.atrium-resources-heading {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 19px;
+  margin: 0 0 6px;
+}
+.atrium-resources-subtitle {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  line-height: 1.5;
+  max-width: 560px;
+  margin: 0 0 18px;
+}
+.atrium-resources-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.atrium-resource-card {
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.atrium-resource-badge {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 16%, transparent);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+
 @media (max-width: 799px) {
   .atrium-greeting { font-size: 22px; }
-  .atrium-paths-grid { grid-template-columns: minmax(0, 1fr); }
+  .atrium-countdown-number { font-size: 34px; }
+  .atrium-paths-grid { flex-direction: column; align-items: stretch; }
+  .atrium-path-card { max-width: none; }
   .atrium-dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+  .atrium-resources { padding: 18px; }
+  .atrium-resources-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* — /founding-funders: a deliberately different visual language from the rest of the

@@ -22,35 +22,40 @@ import {
 const PATHS = [
   {
     title: "Break Down Slides",
-    description: "Upload lecture slides and get summaries",
+    description: "Upload your lecture slides and get plain language summaries, key concepts, and practice questions.",
     href: "/student/slides",
     icon: FileTextIcon,
+    accent: "amber",
   },
   {
     title: "Find a Study Buddy",
-    description: "Connect with classmates anonymously",
+    description: "Connect anonymously with classmates who match your schedule and study style.",
     href: "/student/study",
     icon: UsersIcon,
+    accent: "green",
   },
   {
     title: "Practice a SOAP Note",
-    description: "Build and get feedback on SOAP notes",
+    description: "Build SOAP notes with structured templates and get feedback on your clinical documentation.",
     href: "/student/soap",
     icon: PencilIcon,
+    accent: "blue",
   },
   {
     title: "Review Boards Content",
-    description: "Go to your daily sharpening",
+    description: "Go to your daily sharpening — one question, one term, one case. Five minutes a day builds board readiness.",
     href: "/boards/sharpening",
     icon: GraduationCapIcon,
+    accent: "purple",
   },
   {
     title: "Talk to Someone",
-    description: "Mental wellness resources",
+    description: "PT school is demanding. This is a safe, private space with mental wellness resources and support.",
     href: "/student/wellness",
     icon: HeartIcon,
+    accent: "rose",
   },
-];
+] as const;
 
 // Free, official FSBPT resources — linked out to, never copied/republished here (FSBPT's
 // own site carries only a blanket "All Rights Reserved" notice, no reuse license), same
@@ -89,6 +94,17 @@ function lastSevenDateKeys(): string[] {
     keys.push(d.toISOString().slice(0, 10));
   }
   return keys;
+}
+
+// Where a reader is in the term shapes the tone of the encouragement more than any single
+// day's activity does — early weeks need a "you're building something" framing, later ones
+// need a "the end is close" one. Same four-band shape the spec called for, kept as a plain
+// function since it's pure text selection with no page-only state.
+function weekEncouragement(week: number): string {
+  if (week <= 4) return "The foundation is everything. You are building it.";
+  if (week <= 8) return "You are finding your rhythm. Keep going.";
+  if (week <= 12) return "You are past the halfway point. The hard part is behind you.";
+  return "The finish line is closer than it feels.";
 }
 
 export default async function StudentAtriumPage() {
@@ -166,30 +182,50 @@ export default async function StudentAtriumPage() {
 
   const limbicAgentEligible = user.isPro || user.studentTier === "limbicStudent";
 
+  // Greeting card, line 2 — today's focus. Falls back to a general nudge when there isn't
+  // enough of this week's Boards activity yet to point at a specific weak domain.
+  const focusLine = weakestDomain
+    ? `Today's focus: ${weakestDomain}. A little extra attention here goes a long way.`
+    : "Every question you answer today moves you closer to exam-ready.";
+
+  // Greeting card, line 3 — one actionable nudge, never a guilt trip about a missed day.
+  const momentumLine = boardsToday
+    ? "You are on track today. Keep the momentum."
+    : "Your daily sharpening is waiting — 5 minutes keeps your streak alive.";
+
   return (
-    <div className="screen-pad atrium-page" style={{ maxWidth: 880 }}>
+    <div className="screen-pad atrium-page" style={{ maxWidth: 960 }}>
       <div className="atrium-header">
         <h1 className="atrium-greeting">{greeting}</h1>
-        <div className="atrium-header-meta">
-          <span>
-            Week {weekNumber} of Semester
-          </span>
-          <span className="atrium-header-dot">·</span>
-          {npteDays !== null ? (
-            <span>
-              NPTE in {npteDays} day{npteDays === 1 ? "" : "s"}
-            </span>
-          ) : (
-            <Link href="/profile">Set your NPTE date in Profile Settings</Link>
-          )}
-        </div>
+        <p className="atrium-header-meta">Week {weekNumber} of your DPT journey</p>
+
+        {npteDays !== null && npteDays >= 0 ? (
+          <div className="atrium-countdown">
+            <span className="atrium-countdown-number">{npteDays}</span>
+            <span className="atrium-countdown-label">day{npteDays === 1 ? "" : "s"} until your NPTE</span>
+          </div>
+        ) : npteDays !== null ? (
+          <p className="atrium-countdown-prompt">
+            Your NPTE date has passed — <Link href="/profile#professional-dates">update it in Profile Settings →</Link>
+          </p>
+        ) : (
+          <p className="atrium-countdown-prompt">
+            Add your NPTE date to unlock your countdown <Link href="/profile#professional-dates">→ Profile Settings</Link>
+          </p>
+        )}
+      </div>
+
+      <div className="atrium-greeting-card">
+        <p>{weekEncouragement(weekNumber)}</p>
+        <p>{focusLine}</p>
+        <p>{momentumLine}</p>
       </div>
 
       <div className="atrium-paths-grid">
         {PATHS.map((path) => {
           const Icon = path.icon;
           return (
-            <Link key={path.href} href={path.href} className="atrium-path-card">
+            <Link key={path.href} href={path.href} className={`atrium-path-card atrium-path-card--${path.accent}`}>
               <span className="atrium-path-icon">
                 <Icon size={20} />
               </span>
@@ -212,15 +248,15 @@ export default async function StudentAtriumPage() {
             <ZapIcon size={15} />
             Daily Sharpening
           </div>
-          <p className="atrium-dashboard-body">
-            {boardsToday ? "You've completed today's sharpening." : "You haven't done today's sharpening yet."}
-            {" "}
-            {user.boardsStreakDays > 0
-              ? `${user.boardsStreakDays} day streak.`
-              : "Start your streak today."}
-          </p>
+          {boardsToday ? (
+            <p className="atrium-dashboard-body">
+              Done for today. {user.boardsStreakDays} day{user.boardsStreakDays === 1 ? "" : "s"} streak and counting.
+            </p>
+          ) : (
+            <p className="atrium-dashboard-body">Day 1 is always the hardest. Start your streak today.</p>
+          )}
           <Link href="/boards/sharpening" className="atrium-dashboard-link">
-            Go to Daily Sharpening →
+            {boardsToday ? "View your progress →" : "Go to Daily Sharpening →"}
           </Link>
         </div>
 
@@ -230,17 +266,64 @@ export default async function StudentAtriumPage() {
             Boards Progress
           </div>
           {weekCompletions.length === 0 ? (
-            <p className="atrium-dashboard-empty">Complete a few days of Daily Sharpening to see your weakest domain here.</p>
+            <p className="atrium-dashboard-empty">
+              Your readiness builds one day at a time. Start your daily sharpening to see your domain strengths and
+              weaknesses.
+            </p>
           ) : weakestDomain ? (
             <p className="atrium-dashboard-body">
-              This week&rsquo;s focus area: <strong>{weakestDomain}</strong>
+              Focus area this week — <strong>{weakestDomain}</strong>. Keep practicing to improve your readiness score.
             </p>
           ) : (
-            <p className="atrium-dashboard-body">Strong across all domains this week.</p>
+            <p className="atrium-dashboard-body">Strong across all domains this week. Keep up the great work.</p>
           )}
-          <Link href="/boards/sharpening" className="atrium-dashboard-link">
-            Keep practicing →
+          <Link href={weekCompletions.length === 0 ? "/boards/sharpening" : "/boards"} className="atrium-dashboard-link">
+            {weekCompletions.length === 0 ? "Start today →" : "View full progress →"}
           </Link>
+        </div>
+
+        <div className="atrium-dashboard-card">
+          <div className="atrium-dashboard-title">
+            <UsersIcon size={15} />
+            Study Group
+          </div>
+          {connectionIds.length === 0 ? (
+            <p className="atrium-dashboard-empty">
+              Your cohort is here. Find a study partner who matches your schedule and study style.
+            </p>
+          ) : (
+            <p className="atrium-dashboard-body">
+              {connectionIds.length} study partner{connectionIds.length === 1 ? "" : "s"} connected
+            </p>
+          )}
+          <Link href={connectionIds.length === 0 ? "/nexus/directory" : "/nexus/messages"} className="atrium-dashboard-link">
+            {connectionIds.length === 0 ? "Find classmates →" : "View your group →"}
+          </Link>
+        </div>
+
+        <div className="atrium-dashboard-card">
+          <div className="atrium-dashboard-title">
+            <NetworkIcon size={15} />
+            Limbic Agent
+          </div>
+          {limbicAgentEligible ? (
+            <>
+              <p className="atrium-dashboard-body">Ask Limbic Agent about anything from your coursework or Boards prep.</p>
+              <Link href="/agent" className="atrium-dashboard-link atrium-dashboard-link--amber">
+                Open Limbic Agent →
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="atrium-dashboard-body">Quick access to Limbic Agent is included with PRO or Boards+.</p>
+              <span className="atrium-dashboard-locked">
+                <LockIcon size={11} />
+                <Link href="/pro" className="atrium-dashboard-link atrium-dashboard-link--amber" style={{ margin: 0 }}>
+                  Upgrade →
+                </Link>
+              </span>
+            </>
+          )}
         </div>
 
         <div className="atrium-dashboard-card">
@@ -255,76 +338,39 @@ export default async function StudentAtriumPage() {
               {upcoming.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
             </p>
           ) : (
-            <p className="atrium-dashboard-empty">No upcoming dates yet — add one on your Limbic Calendar.</p>
-          )}
-          <Link href="/calendar" className="atrium-dashboard-link">
-            View Limbic Calendar →
-          </Link>
-        </div>
-
-        <div className="atrium-dashboard-card">
-          <div className="atrium-dashboard-title">
-            <UsersIcon size={15} />
-            Study Group
-          </div>
-          {connectionIds.length === 0 ? (
-            <p className="atrium-dashboard-empty">You haven&rsquo;t connected with any classmates yet.</p>
-          ) : (
-            <p className="atrium-dashboard-body">
-              You have {connectionIds.length} study connection{connectionIds.length === 1 ? "" : "s"}.
+            <p className="atrium-dashboard-empty">
+              Add your rotation dates and NPTE exam date to see your timeline here.
             </p>
           )}
-          <Link href={connectionIds.length === 0 ? "/nexus/directory" : "/nexus/messages"} className="atrium-dashboard-link">
-            {connectionIds.length === 0 ? "Find classmates →" : "Message your group →"}
+          <Link href="/calendar" className="atrium-dashboard-link">
+            Limbic Calendar →
           </Link>
-        </div>
-
-        <div className="atrium-dashboard-card">
-          <div className="atrium-dashboard-title">
-            <NetworkIcon size={15} />
-            Limbic Agent
-          </div>
-          {limbicAgentEligible ? (
-            <>
-              <p className="atrium-dashboard-body">Ask Limbic Agent about anything from your coursework or Boards prep.</p>
-              <Link href="/agent" className="atrium-dashboard-link">
-                Open Limbic Agent →
-              </Link>
-            </>
-          ) : (
-            <>
-              <p className="atrium-dashboard-body">Quick access to Limbic Agent is included with PRO or Boards+.</p>
-              <span className="atrium-dashboard-locked">
-                <LockIcon size={11} />
-                <Link href="/pro" className="atrium-dashboard-link" style={{ margin: 0 }}>
-                  Upgrade →
-                </Link>
-              </span>
-            </>
-          )}
         </div>
       </div>
 
-      <div className="atrium-section-label">Licensure &amp; Exam Resources</div>
-      <p style={{ fontSize: 12.5, color: "var(--color-neutral-700)", margin: "-6px 0 12px" }}>
-        Free, official resources from FSBPT — the national board that runs the NPTE and coordinates PT licensure.
-      </p>
-      <div className="atrium-dashboard-grid">
-        {FSBPT_RESOURCES.map((resource) => (
-          <div key={resource.href} className="atrium-dashboard-card">
-            <div className="atrium-dashboard-title">{resource.title}</div>
-            <p className="atrium-dashboard-body">{resource.description}</p>
-            <a
-              href={resource.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="atrium-dashboard-link"
-              style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
-            >
-              fsbpt.org <ExternalLinkIcon size={11} />
-            </a>
-          </div>
-        ))}
+      <div className="atrium-resources" style={{ marginTop: 36 }}>
+        <div className="atrium-resources-heading">Official NPTE Resources</div>
+        <p className="atrium-resources-subtitle">
+          Free official resources from FSBPT — the national board that runs the NPTE and coordinates PT licensure.
+        </p>
+        <div className="atrium-resources-grid">
+          {FSBPT_RESOURCES.map((resource) => (
+            <div key={resource.href} className="atrium-resource-card">
+              <span className="atrium-resource-badge">Official Source</span>
+              <div className="atrium-dashboard-title">{resource.title}</div>
+              <p className="atrium-dashboard-body">{resource.description}</p>
+              <a
+                href={resource.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="atrium-dashboard-link"
+                style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
+              >
+                fsbpt.org <ExternalLinkIcon size={11} />
+              </a>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
