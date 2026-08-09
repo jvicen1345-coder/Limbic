@@ -91,40 +91,42 @@ export function BodyMetricsCard({ initial }: { initial: WellnessProfile }) {
           </div>
         </div>
 
-        <div className="field">
-          <label htmlFor="vitals-sex">Biological sex</label>
-          <select className="input" id="vitals-sex" value={biologicalSex} onChange={(e) => setBiologicalSex(e.target.value)}>
-            <option value="">Select…</option>
-            {BIOLOGICAL_SEX_OPTIONS.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
-        </div>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <div className="field" style={{ flex: 1, minWidth: 150 }}>
+            <label htmlFor="vitals-sex">Biological sex</label>
+            <select className="input" id="vitals-sex" value={biologicalSex} onChange={(e) => setBiologicalSex(e.target.value)}>
+              <option value="">Select…</option>
+              {BIOLOGICAL_SEX_OPTIONS.map((o) => (
+                <option key={o} value={o}>
+                  {o}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="field">
-          <label htmlFor="vitals-activity">Activity level</label>
-          <select className="input" id="vitals-activity" value={activityLevel} onChange={(e) => setActivityLevel(e.target.value)}>
-            <option value="">Select…</option>
-            {ACTIVITY_LEVEL_OPTIONS.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="field" style={{ flex: 1, minWidth: 150 }}>
+            <label htmlFor="vitals-activity">Activity level</label>
+            <select className="input" id="vitals-activity" value={activityLevel} onChange={(e) => setActivityLevel(e.target.value)}>
+              <option value="">Select…</option>
+              {ACTIVITY_LEVEL_OPTIONS.map((o) => (
+                <option key={o} value={o}>
+                  {o}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="field">
-          <label htmlFor="vitals-goal">Primary wellness goal</label>
-          <select className="input" id="vitals-goal" value={wellnessGoal} onChange={(e) => setWellnessGoal(e.target.value)}>
-            <option value="">Select…</option>
-            {WELLNESS_GOAL_OPTIONS.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
+          <div className="field" style={{ flex: 1, minWidth: 170 }}>
+            <label htmlFor="vitals-goal">Primary wellness goal</label>
+            <select className="input" id="vitals-goal" value={wellnessGoal} onChange={(e) => setWellnessGoal(e.target.value)}>
+              <option value="">Select…</option>
+              {WELLNESS_GOAL_OPTIONS.map((o) => (
+                <option key={o} value={o}>
+                  {o}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>

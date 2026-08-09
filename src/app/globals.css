@@ -307,7 +307,10 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
      shared token, since --space-3 also drives unrelated gaps/margins elsewhere that
      weren't asked to grow. */
   padding: 16px;
-  border-radius: calc(var(--radius-lg) * 1.15); background: var(--color-card-surface);
+  /* Same --radius-lg every other card-shaped element in the system uses (calculators,
+     nutrition cards, explore tiles, …) — this one used to run 15% rounder than everything
+     else for no functional reason, which read as an extra-bubbly outlier next to them. */
+  border-radius: var(--radius-lg); background: var(--color-card-surface);
   /* 200ms hover lift (see .card:hover below) needs something to transition. */
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
@@ -945,7 +948,10 @@ html[data-theme="dark"] .nav-founding-link-active {
 .screen-pad {
   width: 100%;
   padding: 36px 44px 60px;
-  max-width: 720px;
+  /* Widened from 720px — any page that doesn't set its own wider inline max-width was
+     sitting in a narrow centered column with a few hundred px of bare gutter on either
+     side on a normal desktop viewport; every such page picks up the extra room for free. */
+  max-width: 900px;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -2501,8 +2507,8 @@ html[data-theme="dark"] .nav-founding-link-active {
    only the goal section below the divider is Wellness+-gated. */
 .nutrition-goal-card {
   border-radius: var(--radius-lg);
-  background: linear-gradient(160deg, var(--color-accent-100), var(--color-card-surface) 65%);
-  border: 1px solid var(--color-divider);
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-card-surface);
   box-shadow: var(--shadow-sm);
   padding: 22px 24px;
   margin-bottom: 22px;
@@ -3035,8 +3041,9 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wellness-goal-guide {
   padding: 20px 22px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(160deg, var(--color-accent-100), var(--color-card-surface) 65%);
-  border: 1px solid var(--color-divider);
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-card-surface);
+  box-shadow: var(--shadow-sm);
 }
 
 /* — Limbic Agent Wellness — */

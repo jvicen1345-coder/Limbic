@@ -28,7 +28,7 @@ export default async function MetricsPage() {
   };
 
   return (
-    <div className="screen-pad" style={{ maxWidth: 720, margin: "0 auto" }}>
+    <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Limbic Metrics</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 14px" }}>
         Understand the numbers that matter for your health.
@@ -40,7 +40,7 @@ export default async function MetricsPage() {
       <div id="calculators" className="wellness-section-label" style={{ marginTop: 8 }}>
         Your Health Calculators
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div className="wellness-card-columns">
         <BmiCalculatorCard profile={profile} />
         <MaxHeartRateCalculatorCard profile={profile} />
         <HrvCalculatorCard profile={profile} />
