@@ -103,6 +103,7 @@ export default async function HomePage() {
   ]);
   const savedIds = savedRows.map((r) => r.articleId);
   const readIds = readRows.map((r) => r.articleId);
+  const readIdSet = new Set(readIds);
   const limbicAgentInsights = buildLimbicAgentInsights(
     readRows,
     articles,
@@ -150,7 +151,14 @@ export default async function HomePage() {
       })()
     : null;
 
-  const ranked = rankFeed(articles, user.specialty as Specialty, user.followedTopics as unknown as string[]);
+  // Already-read articles don't resurface as fresh recommendations on Home — Continue
+  // Reading (below) is the dedicated path back to something already opened, and every
+  // other Home surface (hero, grid, type tabs — all built from `ranked`) is meant to be
+  // "what's new for you". Filtered before resolveHomeImages/attachTopicImages run below so
+  // the "every visible card needs a real picture" guarantee sizes itself off the actual
+  // unread pool instead of coming up short after read articles get dropped later.
+  const rankedAll = rankFeed(articles, user.specialty as Specialty, user.followedTopics as unknown as string[]);
+  const ranked = rankedAll.filter((a) => !readIdSet.has(a.id));
 
   const ceEvents = articles
     .filter((a) => a.type === "ce")
@@ -210,7 +218,6 @@ export default async function HomePage() {
   const rankedForDisplay = [...homeImagedPrefix, ...rankedTail];
   const decorated = rankedForDisplay.map((a) => decorateArticle(a, savedIds, previousVisit, readIds));
 
-  const readIdSet = new Set(readIds);
   const decoratedById = new Map(decorated.map((a) => [a.id, a]));
   const savedUnreadRows = savedRows.filter((r) => !readIdSet.has(r.articleId));
   const savedUnread = savedUnreadRows
