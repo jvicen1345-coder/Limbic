@@ -3018,6 +3018,12 @@ html[data-theme="dark"] .body-silhouette-card {
   background: var(--atrium-bg);
   color: var(--color-text);
   min-height: 100%;
+  /* .app-main is a column flex container (see its own comment above) with a single tall
+     child here — without this, flexbox's default shrink behavior treats the min-height
+     above as a lower floor than the page's actual content and compresses this box down to
+     one viewport-tall, leaving the rest of the content to visually overflow past it and
+     paint on top of .app-main's own (cooler) background instead of this page's warm one. */
+  flex-shrink: 0;
 }
 html[data-theme="dark"] .atrium-page {
   --atrium-bg: #1c1a2e;
