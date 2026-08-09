@@ -212,14 +212,15 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  /* Bolder than --font-heading-weight (400) on purpose — that token is shared by a lot of
-     UI chrome that isn't a real heading (.card-title, .btn, .nav-section-label, …), so
-     bumping it directly would bold all of those too. Real h1-h6 elements (page titles like
-     Home's greeting, the article detail title, …) get their own stronger weight instead.
-     Caprasimo only ships a single 400 weight file (see app/layout.tsx), so this renders as
-     the browser's synthetic bold — acceptable here since Caprasimo is already a heavy
-     display face by design. */
-  font-weight: 800;
+  /* Matches --font-heading-weight (400) — the only weight Caprasimo actually ships (see
+     app/layout.tsx). This used to be hardcoded to 800 for extra emphasis on real headings,
+     but Caprasimo has no bold font file to back that up, so the browser was faking it with
+     synthetic/faux bold — which renders visibly blurry, especially white-on-dark in dark
+     mode (light text already "bleeds" more against a dark background than dark text does
+     against light, and synthetic bold's crude stroke-thickening makes that far worse).
+     Caprasimo is already a heavy display face at 400 by design, so real weight matches the
+     actual font file and reads crisp in both themes. */
+  font-weight: var(--font-heading-weight);
   line-height: 1.12;
   letter-spacing: -0.015em;
   margin: 0 0 var(--space-2);
@@ -408,7 +409,10 @@ html[data-theme="dark"] .card.elev-lg {
 }
 .hero-card-title {
   font-family: var(--font-heading);
-  font-weight: 800;
+  /* var(--font-heading-weight), not a hardcoded 800 — Caprasimo only ships weight 400 (see
+     app/layout.tsx), so anything heavier is the browser's blurry synthetic bold, most
+     visible right here since this title sits directly on a photo. */
+  font-weight: var(--font-heading-weight);
   font-size: 24px;
   line-height: 1.22;
   color: #fff;
@@ -1454,7 +1458,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   align-items: center;
   justify-content: center;
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: var(--font-heading-weight);
   font-size: 22px;
   text-transform: uppercase;
   cursor: pointer;
@@ -1539,7 +1543,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   border: 1px solid var(--color-divider);
   background: var(--color-card-surface);
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: var(--font-heading-weight);
   font-size: 15px;
   color: var(--color-text);
   display: flex;
