@@ -48,6 +48,58 @@ interface YouTubeSearchItem {
   snippet?: { title?: string; channelTitle?: string; description?: string };
 }
 
+interface YouTubeVideoStatusItem {
+  id?: string;
+  status?: { embeddable?: boolean; privacyStatus?: string };
+}
+
+// videos.list allows up to 50 ids per call, matching search.list's own maxResults above.
+const VIDEOS_STATUS_BATCH_SIZE = 50;
+
+/**
+ * search.list's snippet part says nothing about whether a video actually plays once
+ * embedded — a channel can disable embedding, or the video can go private/be deleted
+ * after being indexed, and it still shows up in search results, just as a "video
+ * unavailable" placeholder in our <iframe> (see components/ClipsFeed.tsx and this exact
+ * failure mode's report). A second, much cheaper call (1 quota unit per call vs. 100 for
+ * search.list, since cost is per-call not per-id) checks videos.list's `status.embeddable`
+ * + `status.privacyStatus` for every candidate before any of them reach the pool. Returns
+ * the subset of `videoIds` that are actually safe to embed; swallows failures the same way
+ * searchYouTube does, since a broken status check should degrade to "trust nothing new"
+ * rather than crash the whole live pool.
+ */
+async function embeddableVideoIds(videoIds: string[]): Promise<Set<string>> {
+  const verified = new Set<string>();
+  for (let i = 0; i < videoIds.length; i += VIDEOS_STATUS_BATCH_SIZE) {
+    const batch = videoIds.slice(i, i + VIDEOS_STATUS_BATCH_SIZE);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+    try {
+      const params = new URLSearchParams({ part: "status", id: batch.join(","), key: YOUTUBE_API_KEY! });
+      const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?${params}`, {
+        signal: controller.signal,
+        next: { revalidate: 21600 },
+      });
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        console.error(`[clips-live] YouTube videos.list status check failed (${res.status}): ${body.slice(0, 500)}`);
+        continue;
+      }
+      const json = (await res.json()) as { items?: YouTubeVideoStatusItem[] };
+      for (const item of json.items ?? []) {
+        if (item.id && item.status?.embeddable && item.status.privacyStatus === "public") {
+          verified.add(item.id);
+        }
+      }
+    } catch (err) {
+      console.error("[clips-live] YouTube videos.list status check threw:", err);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  return verified;
+}
+
 async function searchYouTube(query: string): Promise<YouTubeSearchItem[]> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
@@ -115,7 +167,7 @@ export async function fetchLiveClips(): Promise<Clip[]> {
   const rawCount = results.reduce((n, items) => n + items.length, 0);
 
   const seen = new Set<string>();
-  const clips: Clip[] = [];
+  const candidates: { videoId: string; title: string; description: string; channelTitle: string }[] = [];
   for (const items of results) {
     for (const item of items) {
       const videoId = item.id?.videoId;
@@ -128,22 +180,39 @@ export async function fetchLiveClips(): Promise<Clip[]> {
       if (!RELEVANCE_KEYWORDS.some((kw) => haystack.includes(kw))) continue;
 
       seen.add(videoId);
-      const { specialty } = classify(`${title} ${description}`, "research");
-      clips.push({
-        id: `yt-${videoId}`,
-        title,
-        source: item.snippet?.channelTitle?.trim() || "YouTube",
-        specialty,
-        url: `https://www.youtube.com/watch?v=${videoId}`,
-      });
+      candidates.push({ videoId, title, description, channelTitle: item.snippet?.channelTitle?.trim() || "YouTube" });
     }
+  }
+
+  // See embeddableVideoIds' own doc comment — search.list says nothing about whether a
+  // result actually plays once embedded, so this is what keeps a disabled-embedding,
+  // private, or deleted video from ever reaching the pool as a dead "video unavailable"
+  // placeholder in the feed.
+  const embeddable = await embeddableVideoIds(candidates.map((c) => c.videoId));
+
+  const clips: Clip[] = [];
+  for (const c of candidates) {
+    if (!embeddable.has(c.videoId)) continue;
+    const { specialty } = classify(`${c.title} ${c.description}`, "research");
+    clips.push({
+      id: `yt-${c.videoId}`,
+      title: c.title,
+      source: c.channelTitle,
+      specialty,
+      url: `https://www.youtube.com/watch?v=${c.videoId}`,
+    });
   }
 
   // A one-line health check for the Vercel function logs: rawCount 0 across every query
   // means the API calls themselves are failing (see the per-query error above for why);
-  // rawCount > 0 but clips.length 0 means results came back but none passed the relevance
-  // filter, which would point at CLIP_QUERIES/RELEVANCE_KEYWORDS rather than the API call.
-  console.log(`[clips-live] fetched ${rawCount} raw result(s) across ${CLIP_QUERIES.length} queries, ${clips.length} passed relevance filtering`);
+  // rawCount > 0 but candidates.length 0 means results came back but none passed the
+  // relevance filter (CLIP_QUERIES/RELEVANCE_KEYWORDS); candidates.length > 0 but
+  // clips.length 0 means the relevance filter is fine but the embeddability check is
+  // rejecting everything, which would point at YOUTUBE_API_KEY's quota/permissions rather
+  // than either query list.
+  console.log(
+    `[clips-live] fetched ${rawCount} raw result(s) across ${CLIP_QUERIES.length} queries, ${candidates.length} passed relevance filtering, ${clips.length} passed the embeddability check`
+  );
 
   cache = { at: Date.now(), clips };
   return clips;
