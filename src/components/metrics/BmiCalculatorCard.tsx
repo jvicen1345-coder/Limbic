@@ -101,6 +101,11 @@ export function BmiCalculatorCard({
             </button>
             {saved && <CheckIcon size={14} className="profile-date-saved-check" />}
           </div>
+
+          <p className="wellness-calc-caution">
+            BMI does not account for muscle mass, bone density, age, or body composition — it&rsquo;s a general population screening
+            measure, not a diagnostic one. A very muscular person can score as &ldquo;overweight&rdquo; despite low body fat.
+          </p>
         </div>
       )}
 
@@ -113,7 +118,9 @@ export function BmiCalculatorCard({
           health.
         </p>
       </details>
-      <div className="wellness-calc-source">Source: World Health Organization (WHO)</div>
+      <div className="wellness-calc-source">
+        Source: World Health Organization (WHO) — <a href="https://www.who.int/news-room/fact-sheets/detail/obesity-and-overweight" target="_blank" rel="noopener noreferrer">who.int obesity and overweight fact sheet</a>
+      </div>
     </div>
   );
 }

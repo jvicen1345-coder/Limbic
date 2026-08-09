@@ -68,7 +68,7 @@ export function LogActivityForm({ recentLogs }: { recentLogs: VitalsLogEntry[] }
             id="vitals-log-activity"
             value={activity}
             onChange={(e) => setActivity(e.target.value)}
-            placeholder={`e.g. ${VITALS_CATEGORY_SUGGESTIONS[category].join(", ")}`}
+            placeholder={`e.g. ${VITALS_CATEGORY_SUGGESTIONS[category].slice(0, 2).join(", ")}`}
           />
         </div>
 

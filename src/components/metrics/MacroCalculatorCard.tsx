@@ -37,13 +37,17 @@ export function MacroCalculatorCard({
     (initialActivityLevel as MacroActivityLevel) || "Sedentary"
   );
   const [goal, setGoal] = useState<WellnessGoal>((initialGoal as WellnessGoal) || "General Health");
+  const [expectedWeightLbs, setExpectedWeightLbs] = useState("");
+  const [timelineWeeks, setTimelineWeeks] = useState("");
   const [result, setResult] = useState<MacroResult | null>(null);
 
+  const isWeightManagement = goal === "Weight Management";
   const canCalculate = Number(age) > 0 && Number(weightLbs) > 0 && Number(heightFeet) >= 0;
 
   const handleCalculate = () => {
     if (!canCalculate) return;
     const totalInches = Number(heightFeet) * 12 + (Number(heightInches) || 0);
+    const hasWeightGoal = isWeightManagement && Number(expectedWeightLbs) > 0 && Number(timelineWeeks) > 0;
     setResult(
       calculateMacros({
         age: Number(age),
@@ -52,6 +56,7 @@ export function MacroCalculatorCard({
         sex,
         activityLevel,
         goal,
+        weightGoal: hasWeightGoal ? { expectedWeightLbs: Number(expectedWeightLbs), timelineWeeks: Number(timelineWeeks) } : undefined,
       })
     );
   };
@@ -117,6 +122,36 @@ export function MacroCalculatorCard({
         </div>
       </div>
 
+      {isWeightManagement && (
+        <div className="wellness-calc-inputs wellness-macro-weightgoal">
+          <div className="field" style={{ flex: 1, minWidth: 130 }}>
+            <label htmlFor="macro-expected-weight">Target weight (lbs)</label>
+            <input
+              className="input"
+              id="macro-expected-weight"
+              type="number"
+              min={0}
+              value={expectedWeightLbs}
+              onChange={(e) => setExpectedWeightLbs(e.target.value)}
+              placeholder="e.g. 150"
+            />
+          </div>
+          <div className="field" style={{ flex: 1, minWidth: 130 }}>
+            <label htmlFor="macro-timeline">Timeline (weeks)</label>
+            <input
+              className="input"
+              id="macro-timeline"
+              type="number"
+              min={1}
+              value={timelineWeeks}
+              onChange={(e) => setTimelineWeeks(e.target.value)}
+              placeholder="e.g. 12"
+            />
+          </div>
+          <p className="wellness-macro-weightgoal-hint">Optional — add these to dial your calorie target to a specific weight and timeline instead of a flat maintenance estimate.</p>
+        </div>
+      )}
+
       <button type="button" className="btn btn-primary" disabled={!canCalculate} onClick={handleCalculate}>
         Calculate
       </button>
@@ -127,6 +162,24 @@ export function MacroCalculatorCard({
             <span className="wellness-calc-result-value">{result.calories.toLocaleString()}</span>
             <span className="wellness-calc-result-unit">calories / day</span>
           </div>
+
+          {result.weightGoalAdjustment && (
+            <p className="wellness-macro-weightgoal-result">
+              {result.weightGoalAdjustment.weeklyRateLbs > 0
+                ? `About ${Math.abs(result.weightGoalAdjustment.weeklyRateLbs).toFixed(1)} lb/week loss`
+                : result.weightGoalAdjustment.weeklyRateLbs < 0
+                  ? `About ${Math.abs(result.weightGoalAdjustment.weeklyRateLbs).toFixed(1)} lb/week gain`
+                  : "Maintenance pace"}{" "}
+              at this calorie target.
+              {result.weightGoalAdjustment.wasClamped && (
+                <span className="wellness-macro-weightgoal-warning">
+                  {" "}
+                  Your requested pace ({Math.abs(result.weightGoalAdjustment.requestedWeeklyRateLbs).toFixed(1)} lb/week) was faster than
+                  generally recommended, so this is adjusted to a safer rate.
+                </span>
+              )}
+            </p>
+          )}
 
           <div className="wellness-macro-split">
             <div className="wellness-macro-bar">
@@ -145,6 +198,12 @@ export function MacroCalculatorCard({
                 Fat — {result.fatGrams}g ({result.fatPct}%)
               </span>
             </div>
+            {result.proteinCapped && (
+              <p className="wellness-macro-weightgoal-hint" style={{ marginTop: 8 }}>
+                Protein was capped to keep this calorie target realistic across all three macros — a very low calorie target can&rsquo;t
+                fit a full bodyweight-based protein goal.
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -153,7 +212,11 @@ export function MacroCalculatorCard({
         These are estimated general guidelines based on population averages. Individual needs vary. Consult a registered dietitian for
         personalized nutrition planning.
       </p>
-      <div className="wellness-calc-source">Source: Mifflin MD, St Jeor ST, et al. Journal of the American Dietetic Association, 1990</div>
+      <div className="wellness-calc-source">
+        Sources: Mifflin MD, St Jeor ST, et al. Journal of the American Dietetic Association, 1990 (calories) · ISSN Position Stand on
+        Protein and Exercise (protein target) · the widely-used ~3,500 kcal/lb rule of thumb (weight timeline — a simplification, not an
+        exact prediction)
+      </div>
     </div>
   );
 }

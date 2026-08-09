@@ -208,6 +208,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <div className="nav-section-label">Health & Wellness</div>
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
       <NavLink href="/wellness/metrics" icon={<ActivityIcon />} label="Metrics" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/wellness/activity" icon={<ZapIcon />} label="Activity Log" bold={false} onNavigate={onNavigate} />
       <NavLink href="/wellness/nutrition" icon={<AppleIcon />} label="Nutrition" bold={false} onNavigate={onNavigate} />
       <NavLink href="/wellness/assess" icon={<CheckCircleIcon />} label="Assess Yourself" bold={false} onNavigate={onNavigate} />
       <NavLink href="/wellness/exercises" icon={<DumbbellIcon />} label="Top 10 Exercises" bold={false} onNavigate={onNavigate} />

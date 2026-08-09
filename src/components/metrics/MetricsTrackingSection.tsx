@@ -36,9 +36,9 @@ export function MetricsTrackingSection({ logs }: { logs: MetricsLogEntry[] }) {
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
           BMI, HRV, and VO2 Max results you&rsquo;ve saved from the calculators above, over time.
         </p>
-        <a href="#calculators" className="wellness-snapshot-link" style={{ marginTop: 0, whiteSpace: "nowrap" }}>
+        <Link href="/wellness/metrics#calculators" className="wellness-snapshot-link" style={{ marginTop: 0, whiteSpace: "nowrap" }}>
           Log today&rsquo;s metrics →
-        </a>
+        </Link>
       </div>
 
       <div className="wellness-tracking-grid">

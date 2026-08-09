@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { REP_CONTINUUM_ZONES, GOAL_ZONE_GUIDANCE } from "@/lib/rep-continuum-static";
 import type { WellnessGoal } from "@/lib/vitals";
+import { RpeScaleCard } from "@/components/metrics/RpeScaleCard";
 
 export default async function RepContinuumPage() {
   const user = await getCurrentUser();
@@ -70,6 +71,11 @@ export default async function RepContinuumPage() {
         ))}
       </div>
 
+      <div className="wellness-section-label">Rate Your Effort</div>
+      <div style={{ marginBottom: 32 }}>
+        <RpeScaleCard />
+      </div>
+
       <div className="wellness-goal-guide">
         <div className="wellness-calc-title">Which zone is right for me?</div>
         {guidance ? (
@@ -78,7 +84,7 @@ export default async function RepContinuumPage() {
           </p>
         ) : (
           <div>
-            <p className="wellness-calc-desc">Set a wellness goal on Metrics to see a personalized recommendation. General guidelines:</p>
+            <p className="wellness-calc-desc">Set a wellness goal on your Activity Log to see a personalized recommendation. General guidelines:</p>
             <ul className="wellness-assess-steps wellness-assess-steps--bullet">
               {Object.entries(GOAL_ZONE_GUIDANCE).map(([g, info]) => (
                 <li key={g}>

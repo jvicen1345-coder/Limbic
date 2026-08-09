@@ -105,17 +105,17 @@ export default async function NutritionPage() {
                   </div>
                 ))}
               </div>
-              <Link href="/wellness/metrics" className="btn btn-secondary" style={{ marginTop: 14 }}>
+              <Link href="/wellness/activity" className="btn btn-secondary" style={{ marginTop: 14 }}>
                 → Update your goal
               </Link>
             </>
           ) : (
             <>
               <p className="card-body" style={{ margin: "0 0 14px" }}>
-                Set up your Vitals profile to unlock personalized guidance.
+                Set up your health profile to unlock personalized guidance.
               </p>
-              <Link href="/wellness/metrics" className="btn btn-secondary">
-                → Go to Vitals
+              <Link href="/wellness/activity" className="btn btn-secondary">
+                → Go to Activity Log
               </Link>
             </>
           )}
