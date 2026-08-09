@@ -1,8 +1,6 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/db";
 import { getCurrentUser, isStudentEmail } from "@/lib/session";
 import { getStripe, stripeEnabled, priceIdForPlan, getOrCreateStripeCustomerId, appOrigin, type BillablePlan } from "@/lib/stripe";
 
@@ -39,40 +37,14 @@ export async function subscribeToProAction() {
   await startCheckout("pro");
 }
 
-/**
- * Student tiers only ever have one active subscription per reader — upgrading from
- * Student PRO to Student PRO+ Boards updates that existing subscription's price in place
- * (with proration) instead of starting a second, parallel one through Checkout. A reader
- * with no subscription yet goes through startCheckout exactly like subscribeToProAction.
- */
-export async function subscribeToStudentTierAction(tier: "studentPro" | "studentProBoards") {
+/** LimbicStudent — the single student plan (see /pro/membership); re-checks the .edu email
+ *  itself rather than trusting the page that rendered the button, since a Server Action is
+ *  its own callable endpoint (see app/actions/agent.ts requireProUser for the same
+ *  reasoning). */
+export async function subscribeToStudentTierAction() {
   const user = await getCurrentUser();
-  if (!user || !isStudentEmail(user.email) || !stripeEnabled()) return;
-
-  const priceId = priceIdForPlan(tier);
-  if (!priceId) return;
-
-  if (user.stripeSubscriptionId) {
-    const stripe = getStripe();
-    const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
-    const item = subscription.items.data[0];
-    if (item) {
-      await stripe.subscriptions.update(user.stripeSubscriptionId, {
-        items: [{ id: item.id, price: priceId }],
-        proration_behavior: "create_prorations",
-        metadata: { userId: user.id, plan: tier },
-      });
-      // The webhook's customer.subscription.updated handler also does this, but that
-      // event can take a moment to arrive — updating here too means the reader sees their
-      // new tier immediately on the page Stripe's API call already confirmed succeeded,
-      // rather than briefly showing their old one until the webhook catches up.
-      await prisma.user.update({ where: { id: user.id }, data: { studentTier: tier } });
-      revalidatePath("/", "layout");
-      return;
-    }
-  }
-
-  await startCheckout(tier);
+  if (!user || !isStudentEmail(user.email)) return;
+  await startCheckout("limbicStudent");
 }
 
 /** Redirects to the Stripe-hosted Customer Portal, where a reader manages payment methods
