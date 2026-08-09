@@ -67,7 +67,7 @@ export default async function FoundingFundersPage() {
         {/* Section 1 — The Letter */}
         <div className="ff-letter">
           <p className="ff-letter-opening">To the Founding Funders,</p>
-          <p>My name is Jonathan Vicencio, a Doctor of Physical Therapy student at Chapman University.</p>
+          <p>My name is Jonathan Vicencio. I am a Doctor of Physical Therapy Student at Chapman University.</p>
           <p>
             From the beginning of this program I noticed something missing — a single place where clinicians and
             students could access current, evidence based physical therapy without hunting through paywalls,
