@@ -9,6 +9,7 @@ import { ArrowLeftIcon, LogoIcon } from "@/components/icons";
 import { WaitlistForm } from "@/components/founding-funders/WaitlistForm";
 import { FoundingAdminPanel } from "@/components/founding-funders/FoundingAdminPanel";
 import { WipeAllUsersPanel } from "@/components/founding-funders/WipeAllUsersPanel";
+import { RegisteredUsersPanel } from "@/components/founding-funders/RegisteredUsersPanel";
 
 const BENEFITS = [
   {
@@ -59,8 +60,13 @@ export default async function FoundingFundersPage() {
 
   const [data, isAdmin] = await Promise.all([getFoundingFundersData(), isSiteAdmin()]);
   const slots = Array.from({ length: data.totalSlots }, (_, i) => data.funders[i] ?? null);
-  // Only fetched for an admin — no reason to run an extra count query for every visitor.
-  const userCount = isAdmin ? await prisma.user.count() : 0;
+  // Only fetched for an admin — no reason to run this for every visitor.
+  const registeredUsers = isAdmin
+    ? await prisma.user.findMany({
+        orderBy: { createdAt: "desc" },
+        select: { name: true, email: true, licenseNumber: true, licenseEmail: true, isPro: true, createdAt: true },
+      })
+    : [];
 
   return (
     <div className="ff-page">
@@ -207,7 +213,8 @@ export default async function FoundingFundersPage() {
       {isAdmin && (
         <>
           <FoundingAdminPanel />
-          <WipeAllUsersPanel userCount={userCount} />
+          <RegisteredUsersPanel users={registeredUsers} />
+          <WipeAllUsersPanel userCount={registeredUsers.length} />
         </>
       )}
     </div>
