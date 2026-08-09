@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser, isStudentEmail } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { CrownIcon } from "@/components/icons";
 import { PRO_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
@@ -9,9 +9,10 @@ import { SubTabs } from "@/components/SubTabs";
  * that audience actually needs — LimbicStudent for coursework/boards prep, LimbicPro for
  * practicing clinicians. LimbicStudent and LimbicPro are real, billable tiers now (see
  * lib/stripe.ts), gated to .edu sign-ins (see the membership card below and
- * lib/session.ts isStudentEmail) — Limbic Boards (/boards) and Limbic Agent (/agent,
- * currently in demo mode) are the built rows; HEP Builder/Verified Badge/Certified
- * Clips/Weekly Roundup differentiation below is still just the plan. Limbic Games
+ * lib/session.ts hasStudentAccess, which also admits site admin accounts) — Limbic Boards
+ * (/boards) and Limbic Agent (/agent, currently in demo mode) are the built rows; HEP
+ * Builder/Verified Badge/Certified Clips/Weekly Roundup differentiation below is still
+ * just the plan. Limbic Games
  * (/wordle) is open to everyone and isn't part of this tier comparison.
  */
 const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
@@ -70,7 +71,7 @@ export default async function ProOverviewPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const student = isStudentEmail(user.email);
+  const student = hasStudentAccess(user);
   const studentTierLabel = user.studentTier === "limbicStudent" ? "LimbicStudent" : null;
 
   return (

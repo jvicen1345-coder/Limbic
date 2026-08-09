@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser, isStudentEmail } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getAptaNewsArticles } from "@/lib/articles";
 import { SPECIALTY_META } from "@/lib/meta";
@@ -25,7 +25,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       practiceState={user.practiceState}
       hasLicense={hasLicense}
       isPro={user.isPro}
-      isStudent={isStudentEmail(user.email)}
+      isStudent={hasStudentAccess(user)}
       aptaCount={aptaArticles.length}
       nexusRequestCount={nexusRequestCount}
       savedCount={savedCount}

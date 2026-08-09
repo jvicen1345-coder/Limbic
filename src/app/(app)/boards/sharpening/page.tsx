@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser, isStudentEmail } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { GraduationCapIcon } from "@/components/icons";
 import { BoardQuestionCard } from "@/components/BoardQuestionCard";
@@ -16,7 +16,7 @@ export default async function SharpeningPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const isStudent = isStudentEmail(user.email);
+  const isStudent = hasStudentAccess(user);
   // A licensed PT/clinician account (see lib/session.ts signInWithLicense) gets access to
   // just today's question — not the rest of Limbic Boards, which stays a student-only
   // product (see the conditional render below). Anyone who's neither is sent to the Pro

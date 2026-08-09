@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getCurrentUser, isStudentEmail } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { firstName, timeOfDayGreeting } from "@/lib/meta";
 import { questionForDate, todayDateKey } from "@/lib/board-content";
@@ -69,7 +69,8 @@ export default async function StudentAtriumPage() {
 
   // Limbic Student is gated purely on a .edu email — not studentTier, which only affects
   // what's purchasable inside Boards, not who can reach the Atrium (see lib/session.ts).
-  if (!isStudentEmail(user.email)) redirect("/");
+  // A site admin gets through too (see hasStudentAccess).
+  if (!hasStudentAccess(user)) redirect("/");
 
   const now = new Date();
   const greeting = `${timeOfDayGreeting(now.getHours())}, ${firstName(user.name)}`;

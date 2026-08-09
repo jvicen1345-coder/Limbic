@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getCurrentUser, isStudentEmail } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { GraduationCapIcon, ChevronRightIcon, ZapIcon } from "@/components/icons";
 import { BoardsStreakCard } from "@/components/BoardsStreakCard";
@@ -18,7 +18,7 @@ export default async function BoardsHubPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const isStudent = isStudentEmail(user.email);
+  const isStudent = hasStudentAccess(user);
   const isClinician = user.licenseNumber != null;
   if (!isStudent && !isClinician) redirect("/pro");
   if (!isStudent) redirect("/boards/sharpening");

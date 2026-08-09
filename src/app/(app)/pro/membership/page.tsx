@@ -1,5 +1,6 @@
-import { getCurrentUser, isStudentEmail } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { stripeEnabled } from "@/lib/stripe";
+import { isSiteAdmin } from "@/lib/admin";
 import {
   subscribeToProAction,
   cancelProAction,
@@ -18,8 +19,13 @@ export default async function ProMembershipPage({
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const student = isStudentEmail(user.email);
+  const student = hasStudentAccess(user);
   const billingEnabled = stripeEnabled();
+  // A site admin's isPro/studentTier read as fully active (see lib/session.ts
+  // getCurrentUser()) without a real Stripe subscription behind them, so "Manage
+  // membership" would just be a dead button — swap in a plain "you have full access as a
+  // site admin" line instead of trying to open a Customer Portal session that doesn't exist.
+  const adminAccess = await isSiteAdmin();
   const { checkout } = await searchParams;
 
   return (
@@ -85,14 +91,17 @@ export default async function ProMembershipPage({
           <>
             <div className="card-kicker">Membership</div>
             <p className="card-body" style={{ marginTop: 6 }}>
-              You have full access to LimbicPro. Manage your payment method or cancel below —
-              cancellation takes effect at the end of your current billing period.
+              {adminAccess
+                ? "You have full access to LimbicPro as a site admin."
+                : "You have full access to LimbicPro. Manage your payment method or cancel below — cancellation takes effect at the end of your current billing period."}
             </p>
-            <form action={cancelProAction}>
-              <button type="submit" className="btn btn-secondary" style={{ marginTop: 10 }} disabled={!billingEnabled}>
-                Manage membership
-              </button>
-            </form>
+            {!adminAccess && (
+              <form action={cancelProAction}>
+                <button type="submit" className="btn btn-secondary" style={{ marginTop: 10 }} disabled={!billingEnabled}>
+                  Manage membership
+                </button>
+              </form>
+            )}
           </>
         ) : (
           <>
@@ -125,14 +134,17 @@ export default async function ProMembershipPage({
         ) : user.studentTier === "limbicStudent" ? (
           <>
             <p className="card-body" style={{ marginTop: 6 }}>
-              You&rsquo;re on LimbicStudent. Manage your payment method or cancel below —
-              cancellation takes effect at the end of your current billing period.
+              {adminAccess
+                ? "You have full access to LimbicStudent as a site admin."
+                : "You’re on LimbicStudent. Manage your payment method or cancel below — cancellation takes effect at the end of your current billing period."}
             </p>
-            <form action={cancelStudentTierAction}>
-              <button type="submit" className="btn btn-secondary" style={{ marginTop: 10 }} disabled={!billingEnabled}>
-                Manage membership
-              </button>
-            </form>
+            {!adminAccess && (
+              <form action={cancelStudentTierAction}>
+                <button type="submit" className="btn btn-secondary" style={{ marginTop: 10 }} disabled={!billingEnabled}>
+                  Manage membership
+                </button>
+              </form>
+            )}
           </>
         ) : (
           <>
