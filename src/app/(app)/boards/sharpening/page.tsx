@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser, hasStudentAccess } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess, hasLicenseAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { GraduationCapIcon } from "@/components/icons";
 import { BoardQuestionCard } from "@/components/BoardQuestionCard";
@@ -21,7 +21,7 @@ export default async function SharpeningPage() {
   // just today's question — not the rest of Limbic Boards, which stays a student-only
   // product (see the conditional render below). Anyone who's neither is sent to the Pro
   // page rather than a dead-end here, same hard-redirect pattern as /agent's isPro gate.
-  const isClinician = user.licenseNumber != null;
+  const isClinician = hasLicenseAccess(user);
   if (!isStudent && !isClinician) redirect("/pro");
 
   const dateKey = todayDateKey();

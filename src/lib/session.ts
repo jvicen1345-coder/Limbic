@@ -121,6 +121,18 @@ export function hasStudentAccess(user: { email: string | null; licenseEmail: str
   return isStudentEmail(user.email) || isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
 }
 
+/** Everywhere clinician-only surfaces (HEP Builder, Retracted Articles, the sidebar's
+ *  "Clinician tools" section) gate on "does this account have a real PT license on file"
+ *  (see user.licenseNumber), an admin account should get through too — same reasoning as
+ *  hasStudentAccess above, just for the clinician identity gate instead of the student one. */
+export function hasLicenseAccess(user: {
+  licenseNumber: string | null;
+  email: string | null;
+  licenseEmail: string | null;
+}): boolean {
+  return user.licenseNumber != null || isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
+}
+
 /**
  * Demo sign-in: any license number works, matching the prototype. Signing in again with the
  * same license number returns to the same persisted profile/saved data instead of creating a

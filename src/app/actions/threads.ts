@@ -1,6 +1,6 @@
 "use server";
 
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasLicenseAccess } from "@/lib/session";
 import { getArticleById } from "@/lib/articles";
 import { generateThreadsInsight, type ThreadsInsightResult, type ThreadsInsightError } from "@/lib/threads-agent";
 import type { ThreadsInsightKind } from "@/lib/threads-graph";
@@ -21,5 +21,5 @@ export async function generateThreadsInsightAction(
   const article = await getArticleById(articleId);
   if (!article) return NOT_FOUND_ERROR;
 
-  return generateThreadsInsight(article, insightKind, !!user.licenseNumber);
+  return generateThreadsInsight(article, insightKind, hasLicenseAccess(user));
 }
