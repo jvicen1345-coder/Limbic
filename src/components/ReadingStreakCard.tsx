@@ -1,37 +1,28 @@
-import { ReadingCalendar } from "@/components/ReadingCalendar";
-import type { ReadingCalendarDay } from "@/lib/reading-calendar";
+import { ZapIcon } from "@/components/icons";
 
-/** How many trailing weeks fit the ~200px aside column without horizontal scrolling. */
-const COMPACT_WEEKS = 12;
-
-export function ReadingStreakCard({
-  streakDays,
-  weeks,
-  compact = false,
-}: {
-  streakDays: number;
-  weeks: ReadingCalendarDay[][];
-  /** Aside-column placement: fewer weeks shown, tighter copy, no marginBottom (the
-   *  aside stacks cards with its own gap). */
-  compact?: boolean;
-}) {
-  const displayWeeks = compact ? weeks.slice(-COMPACT_WEEKS) : weeks;
+export function ReadingStreakCard({ streakDays }: { streakDays: number }) {
   return (
-    <div className="card elev-sm" style={compact ? undefined : { marginBottom: 18 }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-        <div style={{ fontFamily: "var(--font-heading)", fontSize: compact ? 13 : 15 }}>
-          {streakDays > 0 ? `${streakDays}-day streak` : "Reading activity"}
-        </div>
-        <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>
-          {compact ? "12 wks" : "Last 365 days"}
+    <div className="card elev-sm streak-card" style={{ marginBottom: 18 }}>
+      <div className="card-kicker">Reading activity</div>
+      <div className="streak-card-row">
+        <span className="streak-card-badge" aria-hidden="true">
+          <ZapIcon size={18} />
         </span>
+        {streakDays > 0 ? (
+          <div>
+            <div className="streak-card-value">
+              {streakDays}
+              <span className="streak-card-unit">day{streakDays === 1 ? "" : "s"} streak</span>
+            </div>
+            <div className="streak-card-caption">Read an article today to keep it going.</div>
+          </div>
+        ) : (
+          <div>
+            <div className="streak-card-value streak-card-value--zero">No streak yet</div>
+            <div className="streak-card-caption">Read an article to start one.</div>
+          </div>
+        )}
       </div>
-      {!compact && (
-        <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", margin: "2px 0 12px" }}>
-          {streakDays > 0 ? "Read an article today to keep it going." : "Read an article to start a streak."}
-        </p>
-      )}
-      <ReadingCalendar weeks={displayWeeks} />
     </div>
   );
 }

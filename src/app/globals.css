@@ -1601,7 +1601,9 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   100% { transform: translateY(260px) rotate(360deg); opacity: 0; }
 }
 
-/* — reading streak calendar (GitHub-contributions-style, 365 rolling days) — */
+/* — reading streak calendar (GitHub-contributions-style, 365 rolling days) — still used by
+   BoardsStreakCard (/boards, /boards/sharpening); ReadingStreakCard/GamesStreakCard moved
+   to the plain numeric .streak-card treatment below. — */
 .reading-calendar { display: flex; gap: 3px; width: max-content; }
 .reading-calendar-week { display: flex; flex-direction: column; gap: 3px; }
 .reading-calendar-day {
@@ -1610,6 +1612,37 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 .reading-calendar-day-read { background: var(--color-accent); }
 .reading-calendar-day-today { box-shadow: 0 0 0 1px var(--color-accent-700); }
+
+/* — streak-card: current-streak-only summary (Reading/Limbic Games activity on Profile) — */
+.streak-card-row { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+.streak-card-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+  flex-shrink: 0;
+}
+.streak-card-value {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--color-text);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.streak-card-value--zero { font-size: 15px; font-weight: 600; }
+.streak-card-unit {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-neutral-700);
+}
+.streak-card-caption { font-size: 11.5px; color: var(--color-neutral-700); margin-top: 3px; }
 
 /* Never show an unpaired trailing card in the 2-column desktop grid — assumes more
    content exists on another page, which is true for every paginated .cards-grid (Search,
