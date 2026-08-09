@@ -508,3 +508,15 @@ model FoundingFunderWaitlist {
   email     String   @unique
   createdAt DateTime @default(now())
 }
+
+// A single-use authorization code for wipeAllUsersAction (see app/actions/admin.ts) — an
+// admin generates one (generateWipeCodeAction), sees it exactly once, and it's deleted the
+// moment it's either spent on a successful wipe or superseded by generating a fresh one.
+// At most one row exists at a time; typing the admin allowlist + the "WIPE ALL USERS"
+// confirm phrase alone is deliberately not enough to wipe anything without also holding
+// whatever code currently exists here.
+model WipeCode {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  createdAt DateTime @default(now())
+}

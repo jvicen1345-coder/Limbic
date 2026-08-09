@@ -11,12 +11,21 @@ const GOOGLE_ERROR_MESSAGES: Record<string, string> = {
   google_failed: "Something went wrong signing in with Google. Please try again.",
 };
 
-export default async function SignInPage({ searchParams }: { searchParams: Promise<{ error?: string; deleted?: string }> }) {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; deleted?: string; wiped?: string }>;
+}) {
   const user = await getCurrentUser();
   if (user) redirect("/");
 
-  const { error, deleted } = await searchParams;
+  const { error, deleted, wiped } = await searchParams;
   const errorMessage = error ? GOOGLE_ERROR_MESSAGES[error] : null;
+  const successMessage = deleted === "1"
+    ? "Your account and all its data have been permanently deleted."
+    : wiped === "1"
+      ? "All accounts and their data have been permanently wiped."
+      : null;
 
   return (
     <div
@@ -64,7 +73,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
           {errorMessage}
         </p>
       )}
-      {deleted === "1" && (
+      {successMessage && (
         <p
           style={{
             fontSize: 12.5,
@@ -80,7 +89,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
             margin: 0,
           }}
         >
-          Your account and all its data have been permanently deleted.
+          {successMessage}
         </p>
       )}
       <SignInForm states={STATES} googleEnabled={googleSignInEnabled()} />

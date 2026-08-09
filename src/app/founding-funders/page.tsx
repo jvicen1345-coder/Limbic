@@ -1,11 +1,14 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
-import { getFoundingFundersData, isFoundingFundersAdmin } from "@/app/actions/founding-funders";
+import { prisma } from "@/lib/db";
+import { isSiteAdmin } from "@/lib/admin";
+import { getFoundingFundersData } from "@/app/actions/founding-funders";
 import { FOUNDING_FUNDERS_OPEN, FOUNDING_FUNDERS_PRICE_USD, FOUNDING_FUNDERS_ZELLE_CONTACT } from "@/lib/founding-funders-config";
 import { ArrowLeftIcon, LogoIcon } from "@/components/icons";
 import { WaitlistForm } from "@/components/founding-funders/WaitlistForm";
 import { FoundingAdminPanel } from "@/components/founding-funders/FoundingAdminPanel";
+import { WipeAllUsersPanel } from "@/components/founding-funders/WipeAllUsersPanel";
 
 const BENEFITS = [
   {
@@ -54,8 +57,10 @@ export default async function FoundingFundersPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/");
 
-  const [data, isAdmin] = await Promise.all([getFoundingFundersData(), isFoundingFundersAdmin()]);
+  const [data, isAdmin] = await Promise.all([getFoundingFundersData(), isSiteAdmin()]);
   const slots = Array.from({ length: data.totalSlots }, (_, i) => data.funders[i] ?? null);
+  // Only fetched for an admin — no reason to run an extra count query for every visitor.
+  const userCount = isAdmin ? await prisma.user.count() : 0;
 
   return (
     <div className="ff-page">
@@ -199,7 +204,12 @@ export default async function FoundingFundersPage() {
         </div>
       </div>
 
-      {isAdmin && <FoundingAdminPanel />}
+      {isAdmin && (
+        <>
+          <FoundingAdminPanel />
+          <WipeAllUsersPanel userCount={userCount} />
+        </>
+      )}
     </div>
   );
 }
