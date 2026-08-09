@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
+import { prisma } from "@/lib/db";
 import { buildLicenseView } from "@/lib/license";
 import { SUGGESTED_TOPICS } from "@/lib/meta";
 import { allKnownKeywordTopics } from "@/lib/news-live";
@@ -11,6 +12,7 @@ import { TopicBrowser } from "@/components/TopicBrowser";
 import { ReadingStreakCard } from "@/components/ReadingStreakCard";
 import { GamesStreakCard } from "@/components/GamesStreakCard";
 import { HomeWidgetToggle } from "@/components/HomeWidgetToggle";
+import { DeleteAccountSection } from "@/components/DeleteAccountSection";
 import { goAddLicenseAction } from "@/app/actions/profile";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
 import { HOME_WIDGETS } from "@/lib/home-widgets";
@@ -38,6 +40,7 @@ export default async function ProfilePage() {
 
   const isStudent = user.studentTier !== "none";
   const showPracticeStartDate = user.isPro || isRecentGraduate(user.graduationDate);
+  const hasFoundingSpot = (await prisma.foundingFunder.count({ where: { userId: user.id } })) > 0;
 
   return (
     <div className="screen-pad">
@@ -219,6 +222,8 @@ export default async function ProfilePage() {
           ))}
         </div>
       </div>
+
+      <DeleteAccountSection hasFoundingSpot={hasFoundingSpot} />
     </div>
   );
 }

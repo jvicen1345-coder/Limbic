@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { getCurrentUser, clearSessionForAddLicense } from "@/lib/session";
+import { getCurrentUser, clearSessionForAddLicense, signOutSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 // A Server Action is callable as its own HTTP endpoint independent of which component
@@ -72,4 +72,30 @@ export async function updateProfessionalDates(field: ProfessionalDateField, valu
   const parsed = value ? new Date(`${value}T00:00:00`) : null;
   await prisma.user.update({ where: { id: user.id }, data: { [field]: parsed } });
   revalidatePath("/", "layout");
+}
+
+/** Permanently deletes the signed-in reader's account and everything that cascades off it
+ *  in schema.prisma — saved articles/wellness/clips, reading and games/boards history,
+ *  HEP programs, calendar events, vitals, Nexus posts/likes/comments/connections/messages.
+ *  One deliberate exception: a claimed FoundingFunder row survives (see its userId being
+ *  nullable with onDelete: SetNull) — that display name/credential were already public,
+ *  and /founding-funders itself promises the Founding 25 listing is permanent regardless
+ *  of what happens to the account later. Also forgets a pre-launch waitlist signup made
+ *  with the same email, since that's the same "please forget me" request even though
+ *  FoundingFunderWaitlist isn't a User relation at all (see schema.prisma).
+ *
+ *  No "type DELETE to confirm" check here — that's components/DeleteAccountSection.tsx's
+ *  job; this trusts it's only ever called after that confirmation, same as every other
+ *  action in this app trusting its caller did its own client-side gating. */
+export async function deleteAccountAction() {
+  const user = await getCurrentUser();
+  if (!user) return;
+
+  await prisma.$transaction([
+    prisma.foundingFunderWaitlist.deleteMany({ where: { email: user.email ?? "" } }),
+    prisma.user.delete({ where: { id: user.id } }),
+  ]);
+
+  await signOutSession();
+  redirect("/sign-in?deleted=1");
 }
