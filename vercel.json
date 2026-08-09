@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/migration-reminders",
+      "schedule": "0 13 * * *"
+    }
+  ]
+}

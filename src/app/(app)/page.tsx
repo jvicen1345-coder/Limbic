@@ -1,4 +1,6 @@
-import { getCurrentUser, recordHomeVisit } from "@/lib/session";
+import { getCurrentUser, recordHomeVisit, hasBackupSigninFlag } from "@/lib/session";
+import { hasMigrationBannerDismissed } from "@/app/actions/account-migration";
+import { GRADUATION_TRANSITION_SNOOZE_DAYS } from "@/lib/migration-reminder";
 import { prisma } from "@/lib/db";
 import { getArticles } from "@/lib/articles";
 import { decorateArticle, rankFeed, type DecoratedArticle } from "@/lib/feed";
@@ -83,24 +85,46 @@ export default async function HomePage() {
   const user = await getCurrentUser();
   if (!user) return null; // layout already redirects; guards TS narrowing below
 
-  const [articles, savedRows, readRows, industryIndex, previousVisit, lastReadArticle] = await Promise.all([
-    getArticles(),
-    prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true, createdAt: true } }),
-    // Ordered most-recently-touched first — also feeds buildLimbicAgentInsights below,
-    // which needs that ordering to find each topic's most recent read in one pass.
-    prisma.readArticle.findMany({
-      where: { userId: user.id },
-      orderBy: { updatedAt: "desc" },
-      select: { articleId: true, updatedAt: true },
-    }),
-    getIndustryIndexView(),
-    recordHomeVisit(user),
-    prisma.readArticle.findFirst({
-      where: { userId: user.id },
-      orderBy: { updatedAt: "desc" },
-      select: { articleId: true, scrollProgress: true },
-    }),
-  ]);
+  const [articles, savedRows, readRows, industryIndex, previousVisit, lastReadArticle, backupSigninFlag, migrationBannerDismissed] =
+    await Promise.all([
+      getArticles(),
+      prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true, createdAt: true } }),
+      // Ordered most-recently-touched first — also feeds buildLimbicAgentInsights below,
+      // which needs that ordering to find each topic's most recent read in one pass.
+      prisma.readArticle.findMany({
+        where: { userId: user.id },
+        orderBy: { updatedAt: "desc" },
+        select: { articleId: true, updatedAt: true },
+      }),
+      getIndustryIndexView(),
+      recordHomeVisit(user),
+      prisma.readArticle.findFirst({
+        where: { userId: user.id },
+        orderBy: { updatedAt: "desc" },
+        select: { articleId: true, scrollProgress: true },
+      }),
+      hasBackupSigninFlag(),
+      hasMigrationBannerDismissed(),
+    ]);
+
+  // Same server-clock snapshot DailyDashboard's greeting/date use further down — one `now`
+  // for the whole render rather than separate Date.now() calls scattered through it.
+  const now = new Date();
+
+  // The three account-migration surfaces (see components/BackupSigninBanner.tsx,
+  // MigrationReminderBanner.tsx, GraduationTransitionCard.tsx) — computed here rather than
+  // in HomeFeed so the client component only ever gets plain booleans, never raw account
+  // fields it doesn't otherwise need.
+  const isStudentTier = user.studentTier !== "none";
+  const showBackupSigninBanner = backupSigninFlag;
+  const showMigrationReminderBanner =
+    isStudentTier && user.backupEmail === null && user.migrationEmailSentAt !== null && !migrationBannerDismissed;
+  const showGraduationTransitionCard =
+    isStudentTier &&
+    user.graduationDate !== null &&
+    user.graduationDate.getTime() <= now.getTime() &&
+    (user.graduationTransitionShownAt === null ||
+      now.getTime() - user.graduationTransitionShownAt.getTime() >= GRADUATION_TRANSITION_SNOOZE_DAYS * 24 * 60 * 60 * 1000);
   const savedIds = savedRows.map((r) => r.articleId);
   const readIds = readRows.map((r) => r.articleId);
   const readIdSet = new Set(readIds);
@@ -115,7 +139,6 @@ export default async function HomePage() {
   // off the server's local clock, same as every other "today" concept in this app (see
   // lib/reading-calendar.ts, components/CalendarCard.tsx — none of them track a per-user
   // timezone either).
-  const now = new Date();
   const todayStr = todayLocalDateStr(now);
   const credential = credentialFromName(user.name);
   const greetingName = firstNameOf(user.name);
@@ -280,6 +303,9 @@ export default async function HomePage() {
       limbicAgentInsights={limbicAgentInsights}
       isPro={user.isPro}
       gridSeenFingerprints={(user.homeGridSeenFingerprints as unknown as string[]) ?? []}
+      showBackupSigninBanner={showBackupSigninBanner}
+      showMigrationReminderBanner={showMigrationReminderBanner}
+      showGraduationTransitionCard={showGraduationTransitionCard}
     />
   );
 }

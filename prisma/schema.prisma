@@ -25,6 +25,20 @@ model User {
   // same persistence model as licenseNumber for PTs.
   email             String?  @unique
 
+  // Personal backup email a student can add so they keep access after their .edu email
+  // stops working post-graduation (see lib/migration-reminder.ts, app/actions/
+  // account-migration.ts, and the "Account Security" section on Profile). Sign-in checks
+  // both `email` and `backupEmail` (see lib/session.ts signInWithEmail/signInWithGoogle).
+  backupEmail          String?   @unique
+  backupEmailAddedAt   DateTime?
+  // Set once checkMigrationReminders() sends this account its one-time in-app reminder
+  // (see lib/migration-reminder.ts) — also doubles as "don't send again".
+  migrationEmailSentAt DateTime?
+  // True once backupEmail has been swapped in as the primary email (see
+  // app/actions/account-migration.ts makePrimaryEmail).
+  accountMigrated      Boolean   @default(false)
+  migrationDate        DateTime?
+
   name              String   @default("Dr. Amara Chen, PT")
   specialty         String   @default("ortho")
   practiceState     String   @default("California")
@@ -139,6 +153,10 @@ model User {
   rotationStartDate DateTime?
   rotationEndDate   DateTime?
   graduationDate    DateTime?
+  // Set when the one-time graduation-transition card on Home is dismissed via "Maybe
+  // later" (re-shown after 7 days — see components/HomeFeed.tsx) — null means never shown
+  // or already past its 7-day snooze.
+  graduationTransitionShownAt DateTime?
   // Visible to every account:
   ceuDeadline         DateTime?
   certificationExpiry DateTime?
