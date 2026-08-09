@@ -49,7 +49,7 @@ const TIMELINE = [
       "The build — a working platform with research feeds, clinical tools, professional networking, daily games, and an AI clinical decision support system.",
   },
   {
-    year: "August 14, 2026",
+    year: "Coming Soon",
     description: "The founding — 25 people say yes first.",
   },
 ];
@@ -159,7 +159,7 @@ export default async function FoundingFundersPage() {
             </>
           ) : (
             <>
-              <h2 className="ff-cta-title">Founding Funders opens August 14th</h2>
+              <h2 className="ff-cta-title">Founding Funders — Coming Soon</h2>
               <p className="ff-cta-body">
                 Be the first to know when spots open. Leave your email and you&rsquo;ll be notified the moment the
                 founding era begins.
