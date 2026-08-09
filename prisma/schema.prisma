@@ -150,6 +150,7 @@ model User {
   calendarEvents      UserCalendarEvent[]
   vitalsProfile       VitalsProfile?
   vitalsLogs          VitalsLog[]
+  foundingFunder      FoundingFunder?
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -467,4 +468,36 @@ model HepExercise {
   reps      String
   notes     String
   order     Int        @default(0)
+}
+
+// One of the 25 "Founding 25" spots on /founding-funders — created by claimFoundingSpot
+// (see app/actions/founding-funders.ts), triggered manually by an admin once a $40 Zelle
+// payment is confirmed. displayName/credential are captured at claim time rather than read
+// live off User (name/specialty) so the founding-grid entry stays exactly what was agreed
+// even if the reader later edits their profile. `round`/`amount` exist for a possible
+// second cohort after these 25 fill — unused (always round 1, amount 40) until that happens.
+model FoundingFunder {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName String
+  credential  String?
+  round       Int      @default(1)
+  amount      Int      @default(40)
+  claimedAt   DateTime @default(now())
+  // Always true from creation — claimFoundingSpot only ever creates a row once payment is
+  // confirmed, there's no separate "pending claim" step today. Kept as a real column (not
+  // inferred from row existence) so the grid/count queries have an explicit, future-proof
+  // filter if an unconfirmed intermediate state gets added later.
+  confirmed   Boolean  @default(false)
+}
+
+// A pre-launch email signup for /founding-funders, collected while
+// lib/founding-funders-config.ts's FOUNDING_FUNDERS_OPEN is still false. Deliberately not
+// tied to a User — a visitor can join the waitlist without an account existing yet (though
+// in practice the page itself is sign-in gated; this just doesn't assume that stays true).
+model FoundingFunderWaitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
 }

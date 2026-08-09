@@ -3105,3 +3105,396 @@ html[data-theme="dark"] .body-silhouette-card {
   .atrium-paths-grid { grid-template-columns: minmax(0, 1fr); }
   .atrium-dashboard-grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* — /founding-funders: a deliberately different visual language from the rest of the
+   (dashboard-shaped) app — a letter, not a product screen. Same "owns its own colors"
+   approach as .agent-page above, except this one still has to answer the light/dark
+   toggle (with its own warm-flavored pair of palettes) rather than staying fixed, since
+   the spec calls for both a light and a dark state here. Every rule below reads var(--ff-*)
+   exclusively — never var(--color-*) — so switching the main app's theme tokens later can
+   never accidentally bleed into this page, and vice versa. */
+.ff-page {
+  --ff-bg: #f9f7f4;
+  --ff-surface: #ffffff;
+  --ff-text: #23304a;
+  --ff-text-muted: color-mix(in srgb, #23304a 62%, transparent);
+  --ff-divider: color-mix(in srgb, #23304a 14%, transparent);
+  --ff-accent: var(--color-accent);
+  --ff-gold: #c9933a;
+  --ff-gold-tint: color-mix(in srgb, #c9933a 14%, transparent);
+  --ff-shadow: 0 4px 20px color-mix(in srgb, #2b2015 8%, transparent);
+  --ff-slot-empty-border: color-mix(in srgb, #23304a 20%, transparent);
+
+  min-height: 100vh;
+  background: var(--ff-bg);
+  color: var(--ff-text);
+  font-family: var(--font-body);
+  animation: ff-page-in 400ms ease both;
+}
+html[data-theme="dark"] .ff-page {
+  --ff-bg: #1a1510;
+  --ff-surface: #241d15;
+  --ff-text: #f2ece1;
+  --ff-text-muted: color-mix(in srgb, #f2ece1 62%, transparent);
+  --ff-divider: color-mix(in srgb, #f2ece1 16%, transparent);
+  --ff-gold: #d9a94d;
+  --ff-gold-tint: color-mix(in srgb, #d9a94d 16%, transparent);
+  --ff-shadow: 0 4px 20px color-mix(in srgb, #000 26%, transparent);
+  --ff-slot-empty-border: color-mix(in srgb, #f2ece1 22%, transparent);
+}
+@keyframes ff-page-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ff-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 84px 24px 64px;
+}
+
+.ff-back-link {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--ff-surface);
+  color: var(--ff-text);
+  box-shadow: var(--ff-shadow);
+  text-decoration: none;
+  transition: transform 150ms ease;
+}
+.ff-back-link:hover { transform: translateX(-2px); }
+
+/* — Section 1: the letter — */
+.ff-letter { margin-bottom: 40px; }
+.ff-letter p {
+  margin: 0 0 22px;
+  font-size: 18px;
+  line-height: 1.8;
+  text-indent: 1.4em;
+}
+.ff-letter p:first-child { text-indent: 0; }
+.ff-letter p,
+.ff-letter-signature { opacity: 0; }
+.ff-letter p:nth-child(1) { animation: ff-line-in 600ms ease forwards; animation-delay: 80ms; }
+.ff-letter p:nth-child(2) { animation: ff-line-in 600ms ease forwards; animation-delay: 200ms; }
+.ff-letter p:nth-child(3) { animation: ff-line-in 600ms ease forwards; animation-delay: 320ms; }
+.ff-letter p:nth-child(4) { animation: ff-line-in 600ms ease forwards; animation-delay: 440ms; }
+.ff-letter p:nth-child(5) { animation: ff-line-in 600ms ease forwards; animation-delay: 560ms; }
+.ff-letter p:nth-child(6) { animation: ff-line-in 600ms ease forwards; animation-delay: 680ms; }
+.ff-letter p:nth-child(7) { animation: ff-line-in 600ms ease forwards; animation-delay: 800ms; }
+.ff-letter-signature { animation-delay: 920ms; text-indent: 1.4em; }
+@keyframes ff-line-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ff-letter-signature {
+  margin-top: 28px;
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.9;
+  color: var(--ff-text-muted);
+}
+
+.ff-divider {
+  border: none;
+  border-top: 1px solid var(--ff-divider);
+  margin: 0 0 40px;
+}
+
+/* — Section 2: the offer — */
+.ff-offer { text-align: center; margin-bottom: 48px; }
+.ff-offer-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 34px;
+  color: var(--ff-gold);
+  margin: 0 0 18px;
+}
+.ff-offer-line {
+  font-size: 18px;
+  line-height: 1.7;
+  margin: 0 0 6px;
+}
+.ff-offer-muted {
+  font-size: 14px;
+  color: var(--ff-text-muted);
+  margin-top: 14px;
+}
+
+/* — Section 3: benefit cards — */
+.ff-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.ff-benefit-card {
+  background: var(--ff-surface);
+  border-left: 3px solid var(--ff-gold);
+  border-radius: var(--radius-md);
+  box-shadow: var(--ff-shadow);
+  padding: 22px 24px;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.ff-benefit-card:hover { transform: translateY(-2px); }
+.ff-benefit-card-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 16.5px;
+  margin: 0 0 8px;
+}
+.ff-benefit-card-desc {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ff-text-muted);
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .ff-benefits-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* — Section 4: the 25 slots — */
+.ff-slots-section { text-align: center; margin-bottom: 48px; }
+.ff-slots-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 24px;
+  margin: 0 0 6px;
+}
+.ff-slots-subtitle {
+  font-size: 14.5px;
+  color: var(--ff-text-muted);
+  margin: 0 0 26px;
+}
+.ff-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px 10px;
+}
+.ff-slot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ff-slot-circle {
+  width: 100%;
+  max-width: 64px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+}
+.ff-slot-circle-empty {
+  border: 2px solid var(--ff-slot-empty-border);
+  color: var(--ff-text-muted);
+}
+.ff-slot-circle-claimed {
+  background: var(--ff-gold);
+  color: #241704;
+  font-size: 11.5px;
+  padding: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: 0 0 0 4px var(--ff-gold-tint), 0 2px 10px color-mix(in srgb, var(--ff-gold) 45%, transparent);
+  animation: ff-slot-fill 600ms ease both;
+}
+@keyframes ff-slot-fill {
+  from { transform: scale(0.6); opacity: 0; box-shadow: 0 0 0 0 transparent; }
+  to { transform: scale(1); opacity: 1; }
+}
+.ff-slot-label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ff-text-muted);
+}
+.ff-slot-credential {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ff-text);
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  animation: ff-line-in 500ms ease 500ms both;
+}
+@media (max-width: 520px) {
+  .ff-slots-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px 6px; }
+  .ff-slot-credential { font-size: 9.5px; max-width: 56px; }
+}
+
+/* — Section 5: waitlist / payment — */
+.ff-cta-section {
+  background: var(--ff-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--ff-shadow);
+  padding: 36px 32px;
+  text-align: center;
+  margin-bottom: 48px;
+}
+.ff-cta-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 21px;
+  margin: 0 0 10px;
+}
+.ff-cta-body {
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--ff-text-muted);
+  margin: 0 0 22px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.ff-waitlist-form {
+  display: flex;
+  gap: 10px;
+  max-width: 380px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.ff-waitlist-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--ff-divider);
+  background: var(--ff-bg);
+  color: var(--ff-text);
+  font-size: 15px;
+  font-family: var(--font-body);
+}
+.ff-waitlist-input:focus { outline: 2px solid var(--ff-gold); outline-offset: 1px; }
+.ff-waitlist-button {
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: none;
+  background: var(--ff-gold);
+  color: #241704;
+  font-weight: 700;
+  font-size: 14.5px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: opacity 150ms ease;
+}
+.ff-waitlist-button:hover { opacity: 0.88; }
+.ff-waitlist-button:disabled { opacity: 0.55; cursor: default; }
+.ff-waitlist-error { color: var(--color-danger); font-size: 13px; margin-top: 10px; }
+.ff-waitlist-confirmation {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ff-gold);
+  animation: ff-line-in 400ms ease both;
+}
+.ff-cta-count {
+  margin-top: 18px;
+  font-size: 13px;
+  color: var(--ff-text-muted);
+}
+.ff-zelle-box {
+  background: var(--ff-gold-tint);
+  border: 1px solid color-mix(in srgb, var(--ff-gold) 45%, transparent);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin: 0 auto 18px;
+  max-width: 380px;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 18px;
+  color: var(--ff-gold);
+}
+
+/* — Section 6: the story so far — */
+.ff-timeline { margin-bottom: 48px; }
+.ff-timeline-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 24px;
+  text-align: center;
+  margin: 0 0 32px;
+}
+.ff-timeline-entries { position: relative; padding-left: 26px; }
+.ff-timeline-entries::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--ff-divider);
+}
+.ff-timeline-entry { position: relative; margin-bottom: 28px; }
+.ff-timeline-entry:last-child { margin-bottom: 0; }
+.ff-timeline-entry::before {
+  content: "";
+  position: absolute;
+  left: -26px;
+  top: 6px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ff-gold);
+}
+.ff-timeline-year {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 16px;
+  color: var(--ff-gold);
+  margin: 0 0 4px;
+}
+.ff-timeline-desc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ff-text-muted);
+  margin: 0;
+}
+
+/* — Section 7: footer — */
+.ff-footer {
+  text-align: center;
+  padding-top: 32px;
+  border-top: 1px solid var(--ff-divider);
+}
+.ff-footer-tagline {
+  font-size: 13px;
+  color: var(--ff-text-muted);
+  margin: 10px 0 4px;
+}
+.ff-footer-url {
+  font-size: 12.5px;
+  color: var(--ff-text-muted);
+}
+
+/* — Admin claim panel: deliberately plain/utilitarian, not styled to match the letter —
+   an internal operator tool tucked below the real page content, only rendered for
+   accounts on the FOUNDING_FUNDERS_ADMIN_EMAILS allowlist (see app/actions/founding-funders.ts). */
+.ff-admin {
+  max-width: 720px;
+  margin: 40px auto 0;
+  padding: 20px 24px;
+  border: 1px dashed var(--ff-divider);
+  border-radius: var(--radius-md);
+}
+.ff-admin-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ff-text-muted); margin: 0 0 12px; }
+.ff-admin-form { display: flex; flex-direction: column; gap: 10px; max-width: 360px; }
+.ff-admin-message { font-size: 13px; margin-top: 8px; }
+.ff-admin-message--ok { color: var(--ff-gold); }
+.ff-admin-message--error { color: var(--color-danger); }
+
+@media (max-width: 599px) {
+  .ff-container { padding: 72px 18px 48px; }
+  .ff-letter p { font-size: 17px; }
+  .ff-offer-title { font-size: 28px; }
+}
