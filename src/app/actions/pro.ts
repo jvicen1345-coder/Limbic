@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { getCurrentUser, isStudentEmail } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { getStripe, stripeEnabled, priceIdForPlan, getOrCreateStripeCustomerId, appOrigin, type BillablePlan } from "@/lib/stripe";
 
 /** Starts a real Stripe Checkout session for `plan` and redirects the reader there — isPro/
@@ -45,7 +45,7 @@ export async function subscribeToProAction() {
  *  reasoning). */
 export async function subscribeToStudentTierAction() {
   const user = await getCurrentUser();
-  if (!user || !isStudentEmail(user.email)) return;
+  if (!user || !hasStudentAccess(user)) return;
   await startCheckout("limbicStudent", "/pro/membership");
 }
 

@@ -58,11 +58,46 @@ const DEFAULT_CE_CATEGORIES = [
   { name: "General / Elective", required: 19, completed: 9 },
 ];
 
-/** Reads the signed-in user (guest or licensed) from the session cookie, or null if signed out. */
+/** Comma-separated sign-in emails allowed into every admin-only surface and, with the
+ *  overlay below, every gated feature in the app — see lib/admin.ts isSiteAdmin, which
+ *  delegates to isAdminEmail here rather than re-parsing this env var itself. Kept in this
+ *  file (not lib/admin.ts) so getCurrentUser() can check it without importing lib/admin.ts,
+ *  which itself imports getCurrentUser — that would be a circular import. */
+function adminAllowlist(): string[] {
+  return (process.env.FOUNDING_FUNDERS_ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+/** Whether `email` is on the site-admin allowlist. Matched case-insensitively against
+ *  either a General sign-in email or a PT license sign-in's email (see isSiteAdmin/
+ *  hasStudentAccess below, and lib/admin.ts, which call this once per candidate email). */
+export function isAdminEmail(email: string | null | undefined): boolean {
+  if (!email) return false;
+  const allowed = adminAllowlist();
+  return allowed.length > 0 && allowed.includes(email.trim().toLowerCase());
+}
+
+/** Reads the signed-in user (guest or licensed) from the session cookie, or null if signed
+ *  out. Admin accounts (see isAdminEmail above) get every paid tier's access overlaid onto
+ *  the object this returns — isPro/studentTier/isWellnessPlus — WITHOUT writing any of that
+ *  to the database: the underlying row (and everything Stripe's webhook keeps in sync, see
+ *  app/api/stripe/webhook/route.ts) stays whatever it really is, since real billing state
+ *  should never quietly depend on who happens to be signed in as an admin at the time. This
+ *  is why it lives here rather than as a scattered `|| isSiteAdmin` check at each of the
+ *  dozen or so call sites that read these three fields — one overlay, applied once, that
+ *  every existing and future isPro/studentTier/isWellnessPlus check benefits from for free.
+ *  The parallel identity-based gates (Boards, the Student Atrium, etc. — see
+ *  hasStudentAccess below) aren't fields on this object, so they're handled separately. */
 export async function getCurrentUser(): Promise<User | null> {
   const userId = await readUserIdFromCookie();
   if (!userId) return null;
   const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) return null;
+  if (isAdminEmail(user.email) || isAdminEmail(user.licenseEmail)) {
+    return { ...user, isPro: true, studentTier: "limbicStudent", isWellnessPlus: true };
+  }
   return user;
 }
 
@@ -74,6 +109,16 @@ export async function getCurrentUser(): Promise<User | null> {
  */
 export function isStudentEmail(email: string | null | undefined): boolean {
   return !!email && /\.edu$/i.test(email.trim());
+}
+
+/** Everywhere Limbic Boards/Daily Sharpening/the Student Atrium gate on "is this a student
+ *  account" (see isStudentEmail above), an admin account should get through too — same
+ *  "admin logins get every feature" reasoning as the isPro/studentTier/isWellnessPlus
+ *  overlay in getCurrentUser() above, just handled explicitly here since email-suffix
+ *  identity isn't a field getCurrentUser() can quietly override without corrupting the
+ *  account's real sign-in email. */
+export function hasStudentAccess(user: { email: string | null; licenseEmail: string | null }): boolean {
+  return isStudentEmail(user.email) || isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
 }
 
 /**

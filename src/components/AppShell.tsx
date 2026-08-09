@@ -166,9 +166,10 @@ interface NavContentProps {
   practiceState: string;
   hasLicense: boolean;
   isPro: boolean;
-  /** True for a .edu sign-in email (see lib/session.ts isStudentEmail) — gates the whole
-   *  Limbic Student section below: hidden entirely (no locked state) for anyone who
-   *  doesn't qualify. Limbic Games (/wordle) is open to everyone regardless of this flag. */
+  /** True for a .edu sign-in email or a site admin account (see lib/session.ts
+   *  hasStudentAccess) — gates the whole Limbic Student section below: hidden entirely (no
+   *  locked state) for anyone who doesn't qualify. Limbic Games (/wordle) is open to
+   *  everyone regardless of this flag. */
   isStudent: boolean;
   aptaCount: number;
   nexusRequestCount: number;
