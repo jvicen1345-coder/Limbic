@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/db";
 import { buildLicenseView } from "@/lib/license";
 import { SUGGESTED_TOPICS } from "@/lib/meta";
 import { allKnownKeywordTopics } from "@/lib/news-live";
-import { buildReadingCalendarWeeks } from "@/lib/reading-calendar";
 import type { CeCategory } from "@/lib/types";
 import { ProfileForm } from "@/components/ProfileForm";
 import { ProfessionalDatesForm } from "@/components/ProfessionalDatesForm";
@@ -22,8 +20,6 @@ import { isRecentGraduate } from "@/lib/professional-dates";
 // fixed vocabulary rather than whatever's currently loaded (see allKnownKeywordTopics).
 const BROWSABLE_TOPICS = allKnownKeywordTopics().filter((t) => !SUGGESTED_TOPICS.includes(t));
 
-const READING_CALENDAR_WINDOW_DAYS = 365;
-
 export default async function ProfilePage() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -40,21 +36,6 @@ export default async function ProfilePage() {
       )
     : null;
 
-  const readingCalendarStart = new Date();
-  readingCalendarStart.setDate(readingCalendarStart.getDate() - (READING_CALENDAR_WINDOW_DAYS - 1));
-  const [readCalendarRows, gameCalendarRows] = await Promise.all([
-    prisma.readArticle.findMany({
-      where: { userId: user.id, createdAt: { gte: readingCalendarStart } },
-      select: { createdAt: true },
-    }),
-    prisma.gameActivity.findMany({
-      where: { userId: user.id, createdAt: { gte: readingCalendarStart } },
-      select: { createdAt: true },
-    }),
-  ]);
-  const readingWeeks = buildReadingCalendarWeeks(readCalendarRows.map((r) => r.createdAt));
-  const gamesWeeks = buildReadingCalendarWeeks(gameCalendarRows.map((r) => r.createdAt));
-
   const isStudent = user.studentTier !== "none";
   const showPracticeStartDate = user.isPro || isRecentGraduate(user.graduationDate);
 
@@ -62,8 +43,8 @@ export default async function ProfilePage() {
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 18px" }}>Profile</h1>
 
-      <ReadingStreakCard streakDays={user.streakDays} weeks={readingWeeks} />
-      <GamesStreakCard streakDays={user.gamesStreakDays} weeks={gamesWeeks} />
+      <ReadingStreakCard streakDays={user.streakDays} />
+      <GamesStreakCard streakDays={user.gamesStreakDays} />
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">About you</div>
