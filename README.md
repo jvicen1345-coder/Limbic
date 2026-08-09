@@ -194,18 +194,17 @@ end-to-end either.
 
 ## Stripe subscriptions
 
-LimbicPro ($25/mo) and the two student tiers (Student PRO $5/mo, Student PRO+ Boards
-$15/mo — see `src/app/(app)/pro/membership/page.tsx`) are real, recurring Stripe
-subscriptions, not the instant demo flip they used to be. The flow:
+LimbicPro ($25/mo) and LimbicStudent ($5/mo — see
+`src/app/(app)/pro/membership/page.tsx`) are real, recurring Stripe subscriptions, not the
+instant demo flip they used to be. LimbicStudent is a single plan (an earlier, separate
+higher "Student PRO+ Boards" tier was retired in favor of one plan covering everything,
+including Limbic Agent eligibility — see `src/app/(app)/student/page.tsx`). The flow:
 
 - **Checkout** (`app/actions/pro.ts` `subscribeToProAction`/`subscribeToStudentTierAction`):
   looks up or creates a Stripe Customer for the reader (`User.stripeCustomerId`, reused on
   every later checkout/portal visit instead of minting a new one each time), then redirects
   to a Stripe-hosted Checkout Session. `isPro`/`studentTier` are **not** set here — only the
   webhook below sets them, once Stripe actually confirms payment.
-- **Upgrading** from Student PRO to Student PRO+ Boards updates the existing subscription's
-  price in place (with proration) via the Stripe API directly, instead of starting a second
-  parallel subscription through Checkout.
 - **Cancellation** (`cancelProAction`/`cancelStudentTierAction`) redirects to the
   Stripe-hosted Customer Portal, where the reader manages their payment method or cancels
   — Stripe's default portal cancellation is "at period end," matching the wording in
@@ -220,10 +219,9 @@ subscriptions, not the instant demo flip they used to be. The flow:
 
 **Setup, in the Stripe Dashboard:**
 
-1. Create three Products, each with one recurring monthly Price: LimbicPro ($25), Student
-   PRO ($5), Student PRO+ Boards ($15). Copy each Price's id (starts `price_...`, **not**
-   the Product id) into `STRIPE_PRICE_PRO`/`STRIPE_PRICE_STUDENT_PRO`/
-   `STRIPE_PRICE_STUDENT_PRO_BOARDS`.
+1. Create two Products, each with one recurring monthly Price: LimbicPro ($25) and
+   LimbicStudent ($5). Copy each Price's id (starts `price_...`, **not** the Product id)
+   into `STRIPE_PRICE_PRO`/`STRIPE_PRICE_LIMBIC_STUDENT`.
 2. Settings → Billing → Customer portal: click "Activate test link" (test mode) or
    otherwise save a portal configuration at least once — `stripe.billingPortal.sessions
    .create` fails until a configuration exists, even a default one.

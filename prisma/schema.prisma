@@ -39,7 +39,9 @@ model User {
   // subscription, not by the account holder's own request directly.
   isPro             Boolean  @default(false)
 
-  // Student tiers — "none" | "studentPro" | "studentProBoards" (a superset of studentPro).
+  // The student tier — "none" | "limbicStudent" (a single $5/mo plan; there used to be a
+  // second, higher "studentProBoards" tier, retired in favor of one plan covering
+  // everything, including Limbic Agent eligibility — see app/(app)/student/page.tsx).
   // Only purchasable/visible for accounts signed in with a .edu email (see
   // lib/session.ts isStudentEmail) — Limbic Boards and Daily Term are gated on that check,
   // not on this field, since the tier is about what's purchasable, not who can sign in.
@@ -49,10 +51,9 @@ model User {
   // Stripe billing identity — set the first time this account starts a Checkout session
   // (see app/actions/pro.ts), reused on every later checkout/portal session rather than
   // minting a new Stripe Customer each time. stripeSubscriptionId is whichever LimbicPro/
-  // student-tier subscription is currently active (a reader can only be on one paid plan
-  // at once today), used to update an existing subscription's price in place for an
-  // upgrade (e.g. Student PRO -> Student PRO+ Boards) instead of starting a second,
-  // parallel subscription — see subscribeToStudentTierAction.
+  // LimbicStudent subscription is currently active (a reader can only be on one paid plan
+  // at once today) — the webhook (app/api/stripe/webhook/route.ts) is what actually keeps
+  // it and isPro/studentTier in sync.
   stripeCustomerId     String? @unique
   stripeSubscriptionId String? @unique
 

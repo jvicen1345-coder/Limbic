@@ -10,21 +10,6 @@ import { CrownIcon, GraduationCapIcon } from "@/components/icons";
 import { PRO_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
 
-const STUDENT_TIERS: { id: "studentPro" | "studentProBoards"; name: string; price: string; blurb: string }[] = [
-  {
-    id: "studentPro",
-    name: "Student PRO",
-    price: "$5/month",
-    blurb: "HEP templates for coursework, the student verified badge, and a coursework-curated weekly roundup.",
-  },
-  {
-    id: "studentProBoards",
-    name: "Student PRO+ Boards",
-    price: "$15/month",
-    blurb: "Everything in Student PRO, plus full access to Limbic Boards — Daily Term and Daily Sharpening.",
-  },
-];
-
 export default async function ProMembershipPage({
   searchParams,
 }: {
@@ -128,73 +113,40 @@ export default async function ProMembershipPage({
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
           <GraduationCapIcon size={18} style={{ color: "var(--color-accent)" }} />
           <div className="card-kicker" style={{ margin: 0 }}>
-            Student tiers
+            LimbicStudent
           </div>
         </div>
 
         {!student ? (
           <p className="card-body" style={{ marginTop: 6 }}>
-            Student PRO and Student PRO+ Boards are only available with a student email —
-            sign in on the General tab with an address ending in <strong>.edu</strong> to unlock
-            them.
+            LimbicStudent is only available with a student email — sign in on the General
+            tab with an address ending in <strong>.edu</strong> to unlock it.
           </p>
-        ) : user.studentTier === "none" ? (
+        ) : user.studentTier === "limbicStudent" ? (
           <>
             <p className="card-body" style={{ marginTop: 6 }}>
-              Pick the tier that fits — cancel any time.
+              You&rsquo;re on LimbicStudent. Manage your payment method or cancel below —
+              cancellation takes effect at the end of your current billing period.
             </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 10 }}>
-              {STUDENT_TIERS.map((tier) => (
-                <div
-                  key={tier.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 12,
-                    padding: "10px 12px",
-                    borderRadius: "var(--radius-lg)",
-                    background: "var(--color-neutral-100)",
-                  }}
-                >
-                  <div>
-                    <div style={{ fontFamily: "var(--font-heading)", fontSize: 14 }}>
-                      {tier.name} <span style={{ fontWeight: 400, fontSize: 12 }}>· {tier.price}</span>
-                    </div>
-                    <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: "2px 0 0", maxWidth: 420 }}>
-                      {tier.blurb}
-                    </p>
-                  </div>
-                  <form action={subscribeToStudentTierAction.bind(null, tier.id)}>
-                    <button type="submit" className="btn btn-primary" style={{ flexShrink: 0 }} disabled={!billingEnabled}>
-                      Upgrade
-                    </button>
-                  </form>
-                </div>
-              ))}
-            </div>
+            <form action={cancelStudentTierAction}>
+              <button type="submit" className="btn btn-secondary" style={{ marginTop: 10 }} disabled={!billingEnabled}>
+                Manage membership
+              </button>
+            </form>
           </>
         ) : (
           <>
-            <p className="card-body" style={{ marginTop: 6 }}>
-              You&rsquo;re on{" "}
-              {user.studentTier === "studentProBoards" ? "Student PRO+ Boards" : "Student PRO"}.
-              {user.studentTier === "studentPro" && " Upgrade any time to add full Limbic Boards access."}
+            <div style={{ fontFamily: "var(--font-heading)", fontSize: 14, marginTop: 6 }}>$5/month</div>
+            <p className="card-body" style={{ marginTop: 4 }}>
+              HEP templates for coursework, the student verified badge, a coursework-curated
+              weekly roundup, and full access to Limbic Boards — Daily Term and Daily
+              Sharpening. Cancel any time.
             </p>
-            <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-              {user.studentTier === "studentPro" && (
-                <form action={subscribeToStudentTierAction.bind(null, "studentProBoards")}>
-                  <button type="submit" className="btn btn-primary" disabled={!billingEnabled}>
-                    Upgrade to Student PRO+ Boards
-                  </button>
-                </form>
-              )}
-              <form action={cancelStudentTierAction}>
-                <button type="submit" className="btn btn-secondary" disabled={!billingEnabled}>
-                  Manage membership
-                </button>
-              </form>
-            </div>
+            <form action={subscribeToStudentTierAction}>
+              <button type="submit" className="btn btn-primary" style={{ marginTop: 10 }} disabled={!billingEnabled}>
+                Upgrade to LimbicStudent
+              </button>
+            </form>
           </>
         )}
       </div>

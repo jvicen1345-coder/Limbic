@@ -4,12 +4,11 @@ import { getStripe, stripeEnabled, planForPriceId } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
 
 /**
- * The single source of truth for isPro/studentTier — see app/actions/pro.ts, which starts
- * checkout/portal sessions but never flips either field itself except as an optimistic
- * same-request update on the subscription-upgrade path (still corrected by this webhook
- * if it ever disagrees). Verifies the raw request body against STRIPE_WEBHOOK_SECRET
- * before trusting anything in it — an unverified POST to this URL is just
- * attacker-controlled JSON, same reasoning as lib/google-oauth.ts's ID token verification.
+ * The single source of truth for isPro/studentTier — app/actions/pro.ts only ever starts
+ * checkout/portal sessions, never flips either field itself. Verifies the raw request body
+ * against STRIPE_WEBHOOK_SECRET before trusting anything in it — an unverified POST to
+ * this URL is just attacker-controlled JSON, same reasoning as lib/google-oauth.ts's ID
+ * token verification.
  *
  * Configure this route's URL (https://<your-domain>/api/stripe/webhook) as a webhook
  * endpoint in the Stripe Dashboard, subscribed to at least: customer.subscription.created,
@@ -81,7 +80,7 @@ async function syncSubscription(subscription: Stripe.Subscription) {
   }
 
   const priceId = subscription.items.data[0]?.price.id;
-  const plan = (subscription.metadata?.plan as "pro" | "studentPro" | "studentProBoards" | undefined) ?? planForPriceId(priceId);
+  const plan = (subscription.metadata?.plan as "pro" | "limbicStudent" | undefined) ?? planForPriceId(priceId);
   if (!plan) {
     console.error("[stripe webhook] could not resolve plan for subscription", subscription.id);
     return;
@@ -110,7 +109,7 @@ async function clearSubscription(subscription: Stripe.Subscription) {
   if (user?.stripeSubscriptionId !== subscription.id) return;
 
   const plan =
-    (subscription.metadata?.plan as "pro" | "studentPro" | "studentProBoards" | undefined) ??
+    (subscription.metadata?.plan as "pro" | "limbicStudent" | undefined) ??
     planForPriceId(subscription.items.data[0]?.price.id);
   if (!plan) {
     console.error("[stripe webhook] could not resolve plan for canceled subscription", subscription.id);

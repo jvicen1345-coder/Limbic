@@ -6,13 +6,13 @@ import { SubTabs } from "@/components/SubTabs";
 
 /**
  * The Pro roadmap: two tiers sharing the same six feature areas, each scoped to what
- * that audience actually needs — Student PRO for coursework/boards prep, LimbicPro for
- * practicing clinicians. Student PRO and Student PRO+ Boards are real (demo) purchasable
- * tiers now, gated to .edu sign-ins (see the membership card below and lib/session.ts
- * isStudentEmail) — Limbic Boards (/boards) and Limbic Agent (/agent, currently
- * in demo mode) are the built rows; HEP Builder/Verified Badge/Certified Clips/Weekly
- * Roundup differentiation below is still just the plan. Limbic Games (/wordle) is open to
- * everyone and isn't part of this tier comparison.
+ * that audience actually needs — LimbicStudent for coursework/boards prep, LimbicPro for
+ * practicing clinicians. LimbicStudent and LimbicPro are real, billable tiers now (see
+ * lib/stripe.ts), gated to .edu sign-ins (see the membership card below and
+ * lib/session.ts isStudentEmail) — Limbic Boards (/boards) and Limbic Agent (/agent,
+ * currently in demo mode) are the built rows; HEP Builder/Verified Badge/Certified
+ * Clips/Weekly Roundup differentiation below is still just the plan. Limbic Games
+ * (/wordle) is open to everyone and isn't part of this tier comparison.
  */
 const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
   {
@@ -22,7 +22,7 @@ const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
   },
   {
     feature: "Limbic Agent",
-    student: "Not included — Agent is a PRO-only product.",
+    student: "Demo mode live now — full clinical decision support launching in a future phase.",
     pro: "Demo mode live now — full clinical decision support launching in a future phase.",
   },
   {
@@ -52,16 +52,15 @@ const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
   },
 ];
 
-/** The tier ladder — order reflects a clinician's career stage (free -> student -> boards
- *  prep -> new grad -> full LimbicPro -> clinic/team), not sorted by price. LimbicPro,
- *  Student PRO, and Student PRO+ Boards are purchasable today (demo — see the membership
- *  card below); New Grad PRO and Clinic PRO are priced but not yet built or billable. */
-const PURCHASABLE_TIERS = new Set(["LimbicPro", "Student PRO", "Student PRO+ Boards"]);
+/** The tier ladder — order reflects a clinician's career stage (free -> student ->
+ *  new grad -> full LimbicPro -> clinic/team), not sorted by price. LimbicPro and
+ *  LimbicStudent are purchasable today (see the membership card below); New Grad PRO and
+ *  Clinic PRO are priced but not yet built or billable. */
+const PURCHASABLE_TIERS = new Set(["LimbicPro", "LimbicStudent"]);
 
 const PRICING_TIERS: { name: string; price: string; who: string }[] = [
   { name: "Free", price: "$0", who: "General public" },
-  { name: "Student PRO", price: "$5/mo", who: "PT students" },
-  { name: "Student PRO+ Boards", price: "$15/mo", who: "PT students serious about boards" },
+  { name: "LimbicStudent", price: "$5/mo", who: "PT students" },
   { name: "New Grad PRO", price: "$12/mo", who: "First year post-graduation" },
   { name: "LimbicPro", price: "$25/mo", who: "Practicing PTs" },
   { name: "Clinic PRO", price: "$100/mo", who: "Up to 6 clinicians · $15/seat above that" },
@@ -72,8 +71,7 @@ export default async function ProOverviewPage() {
   if (!user) return null;
 
   const student = isStudentEmail(user.email);
-  const studentTierLabel =
-    user.studentTier === "studentProBoards" ? "Student PRO+ Boards" : user.studentTier === "studentPro" ? "Student PRO" : null;
+  const studentTierLabel = user.studentTier === "limbicStudent" ? "LimbicStudent" : null;
 
   return (
     <div className="screen-pad">
@@ -87,14 +85,14 @@ export default async function ProOverviewPage() {
           : studentTierLabel
             ? `You're a ${studentTierLabel} member — thanks for supporting Limbic.`
             : student
-              ? "PT student? Student PRO and Student PRO+ Boards are available for your .edu account below."
+              ? "PT student? LimbicStudent is available for your .edu account below."
               : "Clinician tools built for how you actually practice — all in the app, nothing emailed out."}
       </p>
       <SubTabs tabs={PRO_TABS} />
 
       <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
         <div className="card elev-sm" style={{ flex: 1 }}>
-          <div className="card-kicker">Student PRO</div>
+          <div className="card-kicker">LimbicStudent</div>
           <p className="card-body" style={{ marginTop: 4 }}>
             Built around learning and preparation.
           </p>
@@ -133,9 +131,8 @@ export default async function ProOverviewPage() {
           ))}
         </div>
         <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: "10px 0 0" }}>
-          LimbicPro and the two Student tiers are available to purchase today (demo) — Student
-          PRO and Student PRO+ Boards require a .edu sign-in. New Grad PRO and Clinic PRO are
-          priced but not yet built.
+          LimbicPro and LimbicStudent are available to purchase today — LimbicStudent
+          requires a .edu sign-in. New Grad PRO and Clinic PRO are priced but not yet built.
         </p>
       </div>
 
@@ -162,7 +159,7 @@ export default async function ProOverviewPage() {
               }}
             >
               <div>Feature</div>
-              <div>Student PRO</div>
+              <div>LimbicStudent</div>
               <div>LimbicPro</div>
             </div>
             {TIER_COMPARISON.map((row) => (
@@ -200,7 +197,7 @@ export default async function ProOverviewPage() {
           <>
             <div className="card-kicker">$25/month</div>
             <p className="card-body" style={{ marginTop: 6 }}>
-              Demo only — this doesn&rsquo;t charge a real card.
+              Cancel any time — takes effect at the end of your current billing period.
             </p>
             <Link href="/pro/membership" className="btn btn-primary" style={{ marginTop: 10 }}>
               Upgrade to LimbicPro
@@ -223,12 +220,12 @@ export default async function ProOverviewPage() {
             </>
           ) : (
             <>
-              <div className="card-kicker">Student PRO · from $5/month</div>
+              <div className="card-kicker">LimbicStudent · $5/month</div>
               <p className="card-body" style={{ marginTop: 6 }}>
-                Demo only — this doesn&rsquo;t charge a real card.
+                Cancel any time — takes effect at the end of your current billing period.
               </p>
               <Link href="/pro/membership" className="btn btn-primary" style={{ marginTop: 10 }}>
-                See student tiers
+                See LimbicStudent
               </Link>
             </>
           )}

@@ -37,32 +37,29 @@ export function getStripe(): Stripe {
   return _stripe;
 }
 
-export type BillablePlan = "pro" | "studentPro" | "studentProBoards";
+export type BillablePlan = "pro" | "limbicStudent";
 
 /** Real Price ids created in the Stripe Dashboard (Products & Prices) — see
- *  .env.example/README for the setup steps. Dollar amounts themselves ($25/mo, $5/mo,
- *  $15/mo) live only as display copy in app/(app)/pro/membership/page.tsx; this file never
+ *  .env.example/README for the setup steps. Dollar amounts themselves ($25/mo, $5/mo)
+ *  live only as display copy in app/(app)/pro/membership/page.tsx; this file never
  *  hardcodes a price, only which env var holds each plan's Price id. */
 export function priceIdForPlan(plan: BillablePlan): string | undefined {
   switch (plan) {
     case "pro":
       return process.env.STRIPE_PRICE_PRO;
-    case "studentPro":
-      return process.env.STRIPE_PRICE_STUDENT_PRO;
-    case "studentProBoards":
-      return process.env.STRIPE_PRICE_STUDENT_PRO_BOARDS;
+    case "limbicStudent":
+      return process.env.STRIPE_PRICE_LIMBIC_STUDENT;
   }
 }
 
 /** The reverse lookup (webhook events carry a Price id, not a plan name) — see
  *  app/api/stripe/webhook/route.ts. Falls back to the event's own metadata.plan when set
  *  (see subscribeToProAction/subscribeToStudentTierAction, which stamp it on checkout) so
- *  this still works even before all three env vars are filled in during setup. */
+ *  this still works even before both env vars are filled in during setup. */
 export function planForPriceId(priceId: string | undefined): BillablePlan | null {
   if (!priceId) return null;
   if (priceId === process.env.STRIPE_PRICE_PRO) return "pro";
-  if (priceId === process.env.STRIPE_PRICE_STUDENT_PRO) return "studentPro";
-  if (priceId === process.env.STRIPE_PRICE_STUDENT_PRO_BOARDS) return "studentProBoards";
+  if (priceId === process.env.STRIPE_PRICE_LIMBIC_STUDENT) return "limbicStudent";
   return null;
 }
 

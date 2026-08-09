@@ -135,7 +135,7 @@ export default async function StudentAtriumPage() {
   upcomingCandidates.sort((a, b) => a.date.getTime() - b.date.getTime());
   const upcoming = upcomingCandidates[0] ?? null;
 
-  const limbicAgentEligible = user.isPro || user.studentTier === "studentProBoards";
+  const limbicAgentEligible = user.isPro || user.studentTier === "limbicStudent";
 
   return (
     <div className="screen-pad atrium-page" style={{ maxWidth: 880 }}>
