@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { getStripe, stripeEnabled, planForPriceId } from "@/lib/stripe";
+import { getStripe, stripeEnabled, planForPriceId, type BillablePlan } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
 
 /**
- * The single source of truth for isPro/studentTier — app/actions/pro.ts only ever starts
- * checkout/portal sessions, never flips either field itself. Verifies the raw request body
- * against STRIPE_WEBHOOK_SECRET before trusting anything in it — an unverified POST to
- * this URL is just attacker-controlled JSON, same reasoning as lib/google-oauth.ts's ID
- * token verification.
+ * The single source of truth for isPro/studentTier/isWellnessPlus — app/actions/pro.ts
+ * only ever starts checkout/portal sessions, never flips any of those fields itself.
+ * Verifies the raw request body against STRIPE_WEBHOOK_SECRET before trusting anything in
+ * it — an unverified POST to this URL is just attacker-controlled JSON, same reasoning as
+ * lib/google-oauth.ts's ID token verification.
  *
  * Configure this route's URL (https://<your-domain>/api/stripe/webhook) as a webhook
  * endpoint in the Stripe Dashboard, subscribed to at least: customer.subscription.created,
@@ -72,6 +72,12 @@ async function resolveUserId(subscription: Stripe.Subscription): Promise<string 
   return user?.id ?? null;
 }
 
+function resolvePlan(subscription: Stripe.Subscription): BillablePlan | null {
+  return (subscription.metadata?.plan as BillablePlan | undefined) ?? planForPriceId(subscription.items.data[0]?.price.id);
+}
+
+const WELLNESS_PLUS_PLANS = new Set<BillablePlan>(["wellnessPlusMonthly", "wellnessPlusYearly"]);
+
 async function syncSubscription(subscription: Stripe.Subscription) {
   const userId = await resolveUserId(subscription);
   if (!userId) {
@@ -79,8 +85,7 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     return;
   }
 
-  const priceId = subscription.items.data[0]?.price.id;
-  const plan = (subscription.metadata?.plan as "pro" | "limbicStudent" | undefined) ?? planForPriceId(priceId);
+  const plan = resolvePlan(subscription);
   if (!plan) {
     console.error("[stripe webhook] could not resolve plan for subscription", subscription.id);
     return;
@@ -88,13 +93,27 @@ async function syncSubscription(subscription: Stripe.Subscription) {
 
   const active = subscription.status === "active" || subscription.status === "trialing";
 
+  // LimbicWellness+ is additive (a reader can also be LimbicPro/LimbicStudent at the same
+  // time), so it gets its own subscription-id column rather than sharing
+  // stripeSubscriptionId, which only ever tracks one of the two mutually-exclusive
+  // clinician tiers.
+  if (WELLNESS_PLUS_PLANS.has(plan)) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        wellnessPlusSubscriptionId: subscription.id,
+        isWellnessPlus: active,
+        wellnessPlusInterval: active ? (plan === "wellnessPlusMonthly" ? "month" : "year") : null,
+      },
+    });
+    return;
+  }
+
   await prisma.user.update({
     where: { id: userId },
     data: {
       stripeSubscriptionId: subscription.id,
-      ...(plan === "pro"
-        ? { isPro: active }
-        : { studentTier: active ? plan : "none" }),
+      ...(plan === "pro" ? { isPro: active } : { studentTier: active ? plan : "none" }),
     },
   });
 }
@@ -103,18 +122,26 @@ async function clearSubscription(subscription: Stripe.Subscription) {
   const userId = await resolveUserId(subscription);
   if (!userId) return;
 
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { stripeSubscriptionId: true } });
-  // Only clear if this is still the subscription on file — an older, already-superseded
-  // subscription's belated "deleted" event shouldn't cancel a newer, still-active one.
-  if (user?.stripeSubscriptionId !== subscription.id) return;
-
-  const plan =
-    (subscription.metadata?.plan as "pro" | "limbicStudent" | undefined) ??
-    planForPriceId(subscription.items.data[0]?.price.id);
+  const plan = resolvePlan(subscription);
   if (!plan) {
     console.error("[stripe webhook] could not resolve plan for canceled subscription", subscription.id);
     return;
   }
+
+  if (WELLNESS_PLUS_PLANS.has(plan)) {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { wellnessPlusSubscriptionId: true } });
+    // Only clear if this is still the subscription on file — an older, already-superseded
+    // subscription's belated "deleted" event shouldn't cancel a newer, still-active one.
+    if (user?.wellnessPlusSubscriptionId !== subscription.id) return;
+    await prisma.user.update({
+      where: { id: userId },
+      data: { wellnessPlusSubscriptionId: null, isWellnessPlus: false, wellnessPlusInterval: null },
+    });
+    return;
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { stripeSubscriptionId: true } });
+  if (user?.stripeSubscriptionId !== subscription.id) return;
 
   await prisma.user.update({
     where: { id: userId },

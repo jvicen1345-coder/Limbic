@@ -5,12 +5,14 @@ import { getCurrentUser, isStudentEmail } from "@/lib/session";
 import { getStripe, stripeEnabled, priceIdForPlan, getOrCreateStripeCustomerId, appOrigin, type BillablePlan } from "@/lib/stripe";
 
 /** Starts a real Stripe Checkout session for `plan` and redirects the reader there — isPro/
- *  studentTier itself is only ever set afterward, by the webhook confirming payment (see
- *  app/api/stripe/webhook/route.ts), not synchronously here. `subscription_data.metadata`
- *  (not just the Checkout Session's own metadata) carries which internal plan this is,
- *  since subscription-lifecycle events later reference the Subscription object, not the
- *  Checkout Session that created it. */
-async function startCheckout(plan: BillablePlan) {
+ *  studentTier/isWellnessPlus itself is only ever set afterward, by the webhook confirming
+ *  payment (see app/api/stripe/webhook/route.ts), not synchronously here.
+ *  `subscription_data.metadata` (not just the Checkout Session's own metadata) carries
+ *  which internal plan this is, since subscription-lifecycle events later reference the
+ *  Subscription object, not the Checkout Session that created it. `returnPath` is whichever
+ *  membership page started the checkout (/pro/membership or /wellness/membership), so the
+ *  reader lands back where they clicked from rather than always on Pro's page. */
+async function startCheckout(plan: BillablePlan, returnPath: string) {
   const user = await getCurrentUser();
   if (!user || !stripeEnabled()) return;
 
@@ -26,15 +28,15 @@ async function startCheckout(plan: BillablePlan) {
     customer: customerId,
     line_items: [{ price: priceId, quantity: 1 }],
     subscription_data: { metadata: { userId: user.id, plan } },
-    success_url: `${origin}/pro/membership?checkout=success`,
-    cancel_url: `${origin}/pro/membership?checkout=canceled`,
+    success_url: `${origin}${returnPath}?checkout=success`,
+    cancel_url: `${origin}${returnPath}?checkout=canceled`,
   });
 
   if (session.url) redirect(session.url);
 }
 
 export async function subscribeToProAction() {
-  await startCheckout("pro");
+  await startCheckout("pro", "/pro/membership");
 }
 
 /** LimbicStudent — the single student plan (see /pro/membership); re-checks the .edu email
@@ -44,17 +46,28 @@ export async function subscribeToProAction() {
 export async function subscribeToStudentTierAction() {
   const user = await getCurrentUser();
   if (!user || !isStudentEmail(user.email)) return;
-  await startCheckout("limbicStudent");
+  await startCheckout("limbicStudent", "/pro/membership");
+}
+
+/** LimbicWellness+ — billing-only for now (see app/(app)/wellness/membership/page.tsx),
+ *  offered as two separate plans (monthly/yearly) rather than one plan with an interval
+ *  toggle, matching how the two Prices were set up in Stripe. */
+export async function subscribeToWellnessPlusMonthlyAction() {
+  await startCheckout("wellnessPlusMonthly", "/wellness/membership");
+}
+
+export async function subscribeToWellnessPlusYearlyAction() {
+  await startCheckout("wellnessPlusYearly", "/wellness/membership");
 }
 
 /** Redirects to the Stripe-hosted Customer Portal, where a reader manages payment methods
- *  and cancels their own subscription — Stripe's default portal cancellation is "at period
- *  end" (matches /terms' "Cancellation takes effect at the end of your current billing
- *  period"), and customer.subscription.deleted (see the webhook) is what actually flips
- *  isPro/studentTier off, exactly when Stripe confirms the period has ended. Shared by both
- *  LimbicPro and student-tier cancellation — there's nothing plan-specific about the portal
- *  itself, it already knows which subscription(s) this customer has. */
-async function openBillingPortal() {
+ *  and cancels their own subscription(s) — Stripe's default portal cancellation is "at
+ *  period end" (matches /terms' "Cancellation takes effect at the end of your current
+ *  billing period"), and customer.subscription.deleted (see the webhook) is what actually
+ *  flips isPro/studentTier/isWellnessPlus off, exactly when Stripe confirms the period has
+ *  ended. Shared by every plan's cancel button — there's nothing plan-specific about the
+ *  portal itself, it already knows which subscription(s) this customer has. */
+async function openBillingPortal(returnPath: string) {
   const user = await getCurrentUser();
   if (!user || !stripeEnabled() || !user.stripeCustomerId) return;
 
@@ -62,15 +75,19 @@ async function openBillingPortal() {
   const origin = await appOrigin();
   const session = await stripe.billingPortal.sessions.create({
     customer: user.stripeCustomerId,
-    return_url: `${origin}/pro/membership`,
+    return_url: `${origin}${returnPath}`,
   });
   redirect(session.url);
 }
 
 export async function cancelProAction() {
-  await openBillingPortal();
+  await openBillingPortal("/pro/membership");
 }
 
 export async function cancelStudentTierAction() {
-  await openBillingPortal();
+  await openBillingPortal("/pro/membership");
+}
+
+export async function cancelWellnessPlusAction() {
+  await openBillingPortal("/wellness/membership");
 }
