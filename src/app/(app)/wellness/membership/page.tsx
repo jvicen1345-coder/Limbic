@@ -28,7 +28,7 @@ export default async function WellnessMembershipPage({
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         {user.isWellnessPlus
           ? "You're a LimbicWellness+ member — thanks for supporting Limbic."
-          : "Support Limbic's Health & Wellness content, with early access to what's next as it ships."}
+          : "Unlock Limbic Agent Wellness and support Limbic's Health & Wellness content."}
       </p>
 
       {checkout === "success" && (
@@ -101,10 +101,10 @@ export default async function WellnessMembershipPage({
           </>
         ) : (
           <>
-            <div className="card-kicker">Billing only, for now</div>
+            <div className="card-kicker">What you get</div>
             <p className="card-body" style={{ marginTop: 6 }}>
-              LimbicWellness+ doesn&rsquo;t unlock anything new in the app yet — it&rsquo;s a
-              way to support Limbic&rsquo;s Health &amp; Wellness content today, with early
+              LimbicWellness+ unlocks Limbic Agent Wellness — evidence based exercise and nutrition guidance in a warm,
+              conversational chat. It&rsquo;s also a way to support Limbic&rsquo;s Health &amp; Wellness content, with early
               access to whatever we build here next. Cancel any time.
             </p>
             <div style={{ display: "flex", gap: 10, marginTop: 10, flexWrap: "wrap" }}>

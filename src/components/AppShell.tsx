@@ -32,6 +32,8 @@ import {
   CalendarIcon,
   ActivityIcon,
   AppleIcon,
+  DumbbellIcon,
+  RefreshIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -202,9 +204,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
 
       <div className="nav-section-label">Health & Wellness</div>
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/wellness/metrics" icon={<ActivityIcon />} label="Metrics" bold={false} onNavigate={onNavigate} />
       <NavLink href="/wellness/nutrition" icon={<AppleIcon />} label="Nutrition" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/wellness/vitals" icon={<ActivityIcon />} label="Vitals" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/wellness/membership" icon={<CreditCardIcon />} label="Membership" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/wellness/assess" icon={<CheckCircleIcon />} label="Assess Yourself" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/wellness/exercises" icon={<DumbbellIcon />} label="Top 10 Exercises" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/wellness/continuum" icon={<RefreshIcon />} label="Rep Continuum" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/saved/wellness" icon={<WellnessIcon />} label="Saved Wellness" bold={false} onNavigate={onNavigate} />
 
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
       <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" onNavigate={onNavigate} />

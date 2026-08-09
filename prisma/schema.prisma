@@ -190,6 +190,7 @@ model User {
   calendarEvents      UserCalendarEvent[]
   vitalsProfile       VitalsProfile?
   vitalsLogs          VitalsLog[]
+  metricsLogs         MetricsLog[]
   foundingFunder      FoundingFunder?
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
@@ -328,7 +329,7 @@ model UserCalendarEvent {
   createdAt DateTime @default(now())
 }
 
-// Limbic Vitals (see app/(app)/wellness/vitals/page.tsx) — general wellness tracking, not
+// Limbic Vitals (see app/(app)/wellness/metrics/page.tsx) — general wellness tracking, not
 // medical advice or condition-specific. VitalsProfile is the reader's self-reported body
 // metrics (one row per user); VitalsLog is one row per logged activity, aggregated
 // client-side into the weekly bar chart rather than pre-summarized here, same "store the
@@ -359,6 +360,21 @@ model VitalsLog {
   activity  String
   notes     String?
   createdAt DateTime @default(now())
+}
+
+// Limbic Metrics (see app/(app)/wellness/metrics/page.tsx) — one row per calculator result
+// or self-assessment score a reader chooses to save, same "raw rows, derive views on read"
+// shape as VitalsLog above rather than one wide row per user. `metric` has no DB-level
+// enum, same reasoning as VitalsLog's `category` — checked against a documented string
+// union in the write path instead (see lib/metrics.ts).
+model MetricsLog {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  metric   String // "bmi" | "hrv" | "vo2max" | "restingHR" | "maxHR" | "singleLegStance" | "sitAndRise" | "wallSit" | "shoulderScratch"
+  value    Float
+  notes    String?
+  loggedAt DateTime @default(now())
 }
 
 // A bookmark on a Health & Wellness article or video, snapshot at save time — same

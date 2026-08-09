@@ -6,8 +6,10 @@ import { NUTRITION_SECTIONS, NUTRITION_GOAL_TIPS, NUTRITION_QUICK_TIPS, nutritio
 import { todayDateKey } from "@/lib/wordle-words";
 import type { WellnessGoal } from "@/lib/vitals";
 import { WellnessDisclaimer } from "@/components/vitals/WellnessDisclaimer";
-import { LockIcon } from "@/components/icons";
+import { LockIcon, ExternalLinkIcon } from "@/components/icons";
 import type { WellnessArticle } from "@/lib/types";
+import { MacroCalculatorCard } from "@/components/metrics/MacroCalculatorCard";
+import { NUTRITION_SOURCES } from "@/lib/nutrition-macros";
 
 const NUTRITION_ARTICLE_LIMIT = 6;
 
@@ -64,6 +66,21 @@ export default async function NutritionPage() {
         ))}
       </div>
 
+      <div className="nutrition-section-label" style={{ marginBottom: 12 }}>
+        Macro Calculator
+      </div>
+      <div style={{ marginBottom: 24 }}>
+        <MacroCalculatorCard
+          initialAge={profile?.age ?? null}
+          initialWeightLbs={profile?.weightLbs ?? null}
+          initialHeightFeet={profile?.heightFeet ?? null}
+          initialHeightInches={profile?.heightInches ?? null}
+          initialSex={profile?.biologicalSex ?? null}
+          initialActivityLevel={profile?.activityLevel ?? null}
+          initialGoal={profile?.wellnessGoal ?? null}
+        />
+      </div>
+
       <div className="nutrition-cards-grid">
         {NUTRITION_SECTIONS.map((section, i) => (
           <div key={section.title} className={`nutrition-content-card ${CARD_META[i].className}`}>
@@ -88,7 +105,7 @@ export default async function NutritionPage() {
                   </div>
                 ))}
               </div>
-              <Link href="/wellness/vitals" className="btn btn-secondary" style={{ marginTop: 14 }}>
+              <Link href="/wellness/metrics" className="btn btn-secondary" style={{ marginTop: 14 }}>
                 → Update your goal
               </Link>
             </>
@@ -97,7 +114,7 @@ export default async function NutritionPage() {
               <p className="card-body" style={{ margin: "0 0 14px" }}>
                 Set up your Vitals profile to unlock personalized guidance.
               </p>
-              <Link href="/wellness/vitals" className="btn btn-secondary">
+              <Link href="/wellness/metrics" className="btn btn-secondary">
                 → Go to Vitals
               </Link>
             </>
@@ -131,7 +148,7 @@ export default async function NutritionPage() {
       )}
 
       {nutritionArticles.length > 0 && (
-        <div>
+        <div style={{ marginBottom: 24 }}>
           <div className="nutrition-section-label">From the Feed</div>
           <div className="nutrition-articles-row">
             {nutritionArticles.map((a) => (
@@ -140,6 +157,20 @@ export default async function NutritionPage() {
           </div>
         </div>
       )}
+
+      <div className="nutrition-section-label">Nutrition Sources</div>
+      <div className="wellness-sources-grid">
+        {NUTRITION_SOURCES.map((source) => (
+          <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" className="wellness-source-card">
+            <div className="wellness-source-card-title">
+              {source.title}
+              <ExternalLinkIcon size={12} />
+            </div>
+            <p className="wellness-source-card-desc">{source.description}</p>
+            <span className="wellness-source-card-domain">{source.domain}</span>
+          </a>
+        ))}
+      </div>
     </div>
   );
 }

@@ -646,6 +646,48 @@ export function BodyConnectionsIcon({ size = 56, className, style }: IconProps) 
   );
 }
 
+/** Top 10 Exercises' nav/card icon — a barbell. */
+export function DumbbellIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M14.4 14.4 9.6 9.6" />
+      <path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z" />
+      <path d="m21.5 21.5-1.4-1.4" />
+      <path d="M3.9 3.9 2.5 2.5" />
+      <path d="M6.404 3.343a2 2 0 1 1 2.829 2.829L7.466 7.94a2 2 0 1 1-2.829-2.829z" />
+    </Svg>
+  );
+}
+
+/** Nutrition's card icon on the Wellness Overview — a simple leaf. */
+export function LeafIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+      <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 11 13 11 11" />
+    </Svg>
+  );
+}
+
+/** Limbic Agent Wellness' response feedback buttons — thumbs up/down. */
+export function ThumbsUpIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M7 10v12" />
+      <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" />
+    </Svg>
+  );
+}
+
+export function ThumbsDownIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M17 14V2" />
+      <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z" />
+    </Svg>
+  );
+}
+
 /** Google's own multi-color "G" mark (see app/(app)/../sign-in — components/SignInForm.tsx's
  *  "Continue with Google" button) — fixed brand colors, not currentColor, same reasoning as
  *  LogoIcon above: this one isn't meant to be recolored by the surrounding theme either. */
