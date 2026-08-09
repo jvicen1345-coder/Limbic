@@ -13,6 +13,7 @@ import { ReadingStreakCard } from "@/components/ReadingStreakCard";
 import { GamesStreakCard } from "@/components/GamesStreakCard";
 import { HomeWidgetToggle } from "@/components/HomeWidgetToggle";
 import { DeleteAccountSection } from "@/components/DeleteAccountSection";
+import { AccountSecuritySection } from "@/components/AccountSecuritySection";
 import { goAddLicenseAction } from "@/app/actions/profile";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
 import { HOME_WIDGETS } from "@/lib/home-widgets";
@@ -60,7 +61,13 @@ export default async function ProfilePage() {
         />
       </div>
 
-      <div className="card elev-sm" style={{ marginBottom: 18 }}>
+      <AccountSecuritySection
+        backupEmail={user.backupEmail}
+        backupEmailAddedAt={user.backupEmailAddedAt?.toISOString() ?? null}
+        isStudent={isStudent}
+      />
+
+      <div className="card elev-sm" style={{ marginBottom: 18, marginTop: 18 }}>
         <div className="card-kicker">Professional dates</div>
         <p className="card-body" style={{ marginTop: 2 }}>
           Powers the orange dots on your Limbic Calendar and your renewal reminders.

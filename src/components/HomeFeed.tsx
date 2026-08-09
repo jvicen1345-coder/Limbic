@@ -12,6 +12,9 @@ import { ContinueReadingCard, type ContinueReadingData } from "@/components/Cont
 import { HomeQuestionCard, type HomeQuestionData } from "@/components/HomeQuestionCard";
 import { DailyDashboard, type DailyDashboardData } from "@/components/DailyDashboard";
 import { LimbicAgentCard } from "@/components/LimbicAgentCard";
+import { BackupSigninBanner } from "@/components/BackupSigninBanner";
+import { MigrationReminderBanner } from "@/components/MigrationReminderBanner";
+import { GraduationTransitionCard } from "@/components/GraduationTransitionCard";
 import { RefreshHomeFeedButton } from "@/components/RefreshHomeFeedButton";
 import { orderArticlesForGrid, titleFingerprint } from "@/lib/home-grid-rotation";
 import { StockCard } from "@/components/StockCard";
@@ -71,6 +74,9 @@ export function HomeFeed({
   limbicAgentInsights,
   isPro,
   gridSeenFingerprints,
+  showBackupSigninBanner,
+  showMigrationReminderBanner,
+  showGraduationTransitionCard,
 }: {
   articles: DecoratedArticle[];
   /** Server-rendered — see components/LimbicCalendarWidget.tsx, app/(app)/page.tsx. */
@@ -95,6 +101,14 @@ export function HomeFeed({
    *  grid has already shown this reader since their last Refresh click — see
    *  app/actions/home.ts refreshHomeFeedAction. */
   gridSeenFingerprints: string[];
+  /** One-time — see lib/session.ts hasBackupSigninFlag. */
+  showBackupSigninBanner: boolean;
+  /** Student tier, no backup email, already sent the reminder, not dismissed this session
+   *  — see app/(app)/page.tsx and app/actions/account-migration.ts hasMigrationBannerDismissed. */
+  showMigrationReminderBanner: boolean;
+  /** Student tier, graduationDate passed, not shown (or snoozed 7+ days ago) — see
+   *  app/(app)/page.tsx. */
+  showGraduationTransitionCard: boolean;
 }) {
   const showWidget = (id: string) => !hiddenWidgets.includes(id);
   const [filter, setFilter] = useState<ArticleType | "all">("all");
@@ -256,6 +270,10 @@ export function HomeFeed({
               </Link>
             </div>
           </div>
+
+          {showBackupSigninBanner && <BackupSigninBanner />}
+          {showGraduationTransitionCard && <GraduationTransitionCard />}
+          {showMigrationReminderBanner && <MigrationReminderBanner />}
 
           <div style={{ marginBottom: 20 }}>
             <DailyDashboard data={dashboard} />

@@ -65,6 +65,15 @@
   --color-vitals-mobility: #4caf7d;
   --color-vitals-mindfulness: #9b7fd4;
 
+  /* Account migration surfaces (Profile's Account Security section, Home's
+     migration-reminder banner and graduation-transition card — see
+     components/AccountSecuritySection.tsx, HomeFeed.tsx) — same named-token pattern as
+     --color-warn/--color-success above, not a literal hex in the components themselves.
+     --color-migration-gold's dark value reuses the exact brightened gold .ff-page (Founding
+     Funders) already uses for the same warm-celebratory meaning in dark mode. */
+  --color-migration-amber: #e8a93a;
+  --color-migration-gold: #c9933a;
+
   --color-neutral-100: #fcfdfe;
   --color-neutral-200: #f2f5fa;
   --color-neutral-300: #d3deec;
@@ -142,6 +151,8 @@ html[data-theme="dark"] {
   --color-vitals-strength: #f0a578;
   --color-vitals-mobility: #7dd8a8;
   --color-vitals-mindfulness: #c0acea;
+  --color-migration-amber: #f3c169;
+  --color-migration-gold: #d9a94d;
 
   --color-neutral-100: #1a2136;
   --color-neutral-200: #212a44;

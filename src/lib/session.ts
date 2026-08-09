@@ -9,6 +9,14 @@ import type { User } from "@/generated/prisma/client";
 const COOKIE_NAME = "pt_news_session";
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
+// Set for one sign-in only, when the match was via backupEmail rather than the primary
+// email — drives the one-time "you signed in with your backup email" banner on Home (see
+// app/(app)/page.tsx, app/actions/account-migration.ts). Read-only from a Server
+// Component (cookies() can't be mutated during render); the banner's own Yes/Dismiss
+// actions clear it explicitly, with this short maxAge as a natural fallback.
+const BACKUP_SIGNIN_COOKIE = "pt_news_backup_signin";
+const BACKUP_SIGNIN_COOKIE_MAX_AGE = 60 * 10;
+
 function secretKey() {
   const secret = process.env.SESSION_SECRET;
   if (!secret) throw new Error("SESSION_SECRET is not set");
@@ -97,11 +105,32 @@ export async function signInAsGuest() {
   await issueSessionCookie(user.id);
 }
 
+/** Shared by signInWithEmail/signInWithGoogle below: issues the session cookie, and — when
+ *  the match was via backupEmail rather than the primary email — sets the one-time
+ *  "signed in with backup email" flag the Home banner reads. */
+async function signInToUserRecord(user: User, viaBackupEmail: boolean) {
+  await issueSessionCookie(user.id);
+  const store = await cookies();
+  if (viaBackupEmail) {
+    store.set(BACKUP_SIGNIN_COOKIE, "1", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: BACKUP_SIGNIN_COOKIE_MAX_AGE,
+    });
+  } else {
+    store.delete(BACKUP_SIGNIN_COOKIE);
+  }
+}
+
 /**
  * General (non-PT) sign-in: no license required, just an email. Signing in again with the
  * same email returns to the same persisted profile/saved data, same pattern as
  * signInWithLicense above — this is what makes it distinct from the anonymous, one-off
- * "Continue as guest" flow.
+ * "Continue as guest" flow. Also matches against backupEmail (see the "Account Security"
+ * section on Profile) so a graduated student whose .edu address stopped working can still
+ * sign back into this same account with the personal email they added ahead of time.
  */
 export async function signInWithEmail(input: { email: string }) {
   const email = input.email.trim().toLowerCase();
@@ -109,31 +138,54 @@ export async function signInWithEmail(input: { email: string }) {
     await signInAsGuest();
     return;
   }
-  const user = await prisma.user.upsert({
-    where: { email },
-    update: {},
-    create: { email, name: nameFromEmail(email), hasOnboarded: false },
+  const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { backupEmail: email }] } });
+  if (existing) {
+    await signInToUserRecord(existing, existing.email !== email && existing.backupEmail === email);
+    return;
+  }
+  const user = await prisma.user.create({
+    data: { email, name: nameFromEmail(email), hasOnboarded: false },
   });
-  await issueSessionCookie(user.id);
+  await signInToUserRecord(user, false);
 }
 
 /**
- * Google sign-in: upserts by the verified email from the Google ID token (see
+ * Google sign-in: matches by the verified email from the Google ID token (see
  * app/auth/google/callback/route.ts, which does the OAuth exchange and token verification
- * before calling this). Same upsert-by-email pattern as signInWithEmail above — deliberately
- * so, since it means a reader who previously signed in with the General email flow using the
- * same address lands back on that exact account via Google instead of getting a duplicate
- * one. `name` comes from Google's own `name` claim when present; falls back to deriving one
- * from the email address the same way signInWithEmail does when it's missing.
+ * before calling this) against both `email` and `backupEmail`, same reasoning and pattern
+ * as signInWithEmail above — deliberately so, since it means a reader who previously signed
+ * in with the General email flow (or added this address as a backup email) lands back on
+ * that exact account via Google instead of getting a duplicate one. `name` comes from
+ * Google's own `name` claim when present; falls back to deriving one from the email address
+ * the same way signInWithEmail does when it's missing.
  */
 export async function signInWithGoogle(input: { email: string; name?: string | null }) {
   const email = input.email.trim().toLowerCase();
-  const user = await prisma.user.upsert({
-    where: { email },
-    update: {},
-    create: { email, name: input.name?.trim() || nameFromEmail(email), hasOnboarded: false },
+  const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { backupEmail: email }] } });
+  if (existing) {
+    await signInToUserRecord(existing, existing.email !== email && existing.backupEmail === email);
+    return;
+  }
+  const user = await prisma.user.create({
+    data: { email, name: input.name?.trim() || nameFromEmail(email), hasOnboarded: false },
   });
-  await issueSessionCookie(user.id);
+  await signInToUserRecord(user, false);
+}
+
+/** Read-only check for the one-time "signed in with backup email" banner (see
+ *  app/(app)/page.tsx) — Server Components can't mutate cookies during render, so clearing
+ *  this is left to clearBackupSigninFlag below, called from the banner's own Yes/Dismiss
+ *  actions (see app/actions/account-migration.ts). */
+export async function hasBackupSigninFlag(): Promise<boolean> {
+  const store = await cookies();
+  return store.get(BACKUP_SIGNIN_COOKIE)?.value === "1";
+}
+
+/** Clears the one-time "signed in with backup email" flag — called from a Server Action
+ *  (Yes or Dismiss on the Home banner), never from a Server Component render. */
+export async function clearBackupSigninFlag() {
+  const store = await cookies();
+  store.delete(BACKUP_SIGNIN_COOKIE);
 }
 
 /** Stamps "now" as the user's latest home-feed visit and returns the *previous* value —
