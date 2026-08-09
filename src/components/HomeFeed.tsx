@@ -13,6 +13,7 @@ import { HomeQuestionCard, type HomeQuestionData } from "@/components/HomeQuesti
 import { DailyDashboard, type DailyDashboardData } from "@/components/DailyDashboard";
 import { LimbicAgentCard } from "@/components/LimbicAgentCard";
 import { RefreshHomeFeedButton } from "@/components/RefreshHomeFeedButton";
+import { orderArticlesForGrid, titleFingerprint } from "@/lib/home-grid-rotation";
 import { StockCard } from "@/components/StockCard";
 import { RevolvingNews } from "@/components/RevolvingNews";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
@@ -69,6 +70,7 @@ export function HomeFeed({
   hiddenWidgets,
   limbicAgentInsights,
   isPro,
+  gridSeenFingerprints,
 }: {
   articles: DecoratedArticle[];
   /** Server-rendered — see components/LimbicCalendarWidget.tsx, app/(app)/page.tsx. */
@@ -89,6 +91,10 @@ export function HomeFeed({
   hiddenWidgets: string[];
   limbicAgentInsights: LimbicAgentInsights;
   isPro: boolean;
+  /** Title fingerprints (see lib/home-grid-rotation.ts titleFingerprint) of articles the
+   *  grid has already shown this reader since their last Refresh click — see
+   *  app/actions/home.ts refreshHomeFeedAction. */
+  gridSeenFingerprints: string[];
 }) {
   const showWidget = (id: string) => !hiddenWidgets.includes(id);
   const [filter, setFilter] = useState<ArticleType | "all">("all");
@@ -179,11 +185,19 @@ export function HomeFeed({
   // whatever the hero already claimed keeps the same story from appearing in both places
   // at once.
   const heroIds = useMemo(() => new Set(heroPool.map((a) => a.id)), [heroPool]);
+  // Unseen-first, not a straight rank sort — so a normal visit still shows the actual
+  // best-ranked set (nothing's been marked seen yet), but after a Refresh click (which
+  // marks the previous grid seen — see app/actions/home.ts), the same rank-ordered walk
+  // below naturally lands on different articles instead of the same deterministic top-N.
+  const withoutNewsForGrid = useMemo(
+    () => orderArticlesForGrid(withoutNews, gridSeenFingerprints),
+    [withoutNews, gridSeenFingerprints]
+  );
   const gridArticles = useMemo(() => {
     const seenImages = new Set<string>();
     const pickedIds = new Set<string>();
     const picked: DecoratedArticle[] = [];
-    for (const a of withoutNews) {
+    for (const a of withoutNewsForGrid) {
       if (picked.length >= gridTarget) break;
       if (heroIds.has(a.id)) continue;
       if (!a.image || seenImages.has(a.image)) continue;
@@ -197,7 +211,7 @@ export function HomeFeed({
     // hero, never already-picked) allowing an image repeat rather than showing fewer cards
     // than guaranteed.
     if (picked.length < gridTarget) {
-      for (const a of withoutNews) {
+      for (const a of withoutNewsForGrid) {
         if (picked.length >= gridTarget) break;
         if (heroIds.has(a.id) || pickedIds.has(a.id) || !a.image) continue;
         pickedIds.add(a.id);
@@ -205,7 +219,7 @@ export function HomeFeed({
       }
     }
     return picked;
-  }, [withoutNews, heroIds, gridTarget]);
+  }, [withoutNewsForGrid, heroIds, gridTarget]);
 
   // Arriving via a gap-topic link (see LimbicAgentCard.tsx) drops the reader at the top of
   // the page same as any other Home visit — this carries them the rest of the way down to
@@ -236,7 +250,7 @@ export function HomeFeed({
               )}
             </div>
             <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-              <RefreshHomeFeedButton />
+              <RefreshHomeFeedButton gridArticleFingerprints={gridArticles.map((a) => titleFingerprint(a.title))} />
               <Link href="/search" className="btn btn-secondary btn-icon" aria-label="Search">
                 <SearchIcon size={17} />
               </Link>
