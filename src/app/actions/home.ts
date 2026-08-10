@@ -38,5 +38,5 @@ export async function refreshHomeFeedAction(currentGridFingerprints: string[]) {
   invalidateLiveArticlesCache();
   updateTag("live-news");
   updateTag("live-research");
-  revalidatePath("/");
+  revalidatePath("/home");
 }

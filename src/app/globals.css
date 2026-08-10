@@ -4394,3 +4394,240 @@ html[data-theme="dark"] .ff-page {
 .suggestion-admin-row:last-child { border-bottom: none; }
 .suggestion-admin-date { font-size: 11px; color: var(--color-neutral-600); margin-bottom: 3px; }
 .suggestion-admin-body { font-size: 13.5px; line-height: 1.55; margin: 0; white-space: pre-wrap; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   — Landing page (components/LandingPage.tsx, rendered by app/page.tsx for a
+   signed-out visitor) — every color here routes through the same tokens the
+   rest of the app already uses (--color-* / --font-* / --radius-* /
+   --shadow-*), no new literal colors, so this reads as the same product's
+   front door rather than a separate template. --color-migration-gold is the
+   same gold already established on /founding-funders (.ff-page's --ff-gold
+   is a literal copy of this exact token, see its comment in :root above).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.landing-page {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+/* — Shared button styles — same pill shape/interaction language as .btn, just with a
+   couple of landing-only variants (outline, gold, a larger "-lg" size for hero/founding
+   CTAs) that don't belong on the general-purpose .btn used throughout the authenticated
+   app. */
+.landing-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 200ms ease, background 150ms ease, opacity 150ms ease;
+  white-space: nowrap;
+}
+.landing-btn:active { transform: scale(0.97); }
+.landing-btn-lg { padding: 14px 30px; font-size: 15.5px; }
+.landing-btn-outline { border-color: var(--color-text); color: var(--color-text); }
+.landing-btn-outline:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.landing-btn-primary { background: var(--color-accent); color: var(--color-bg); }
+.landing-btn-primary:hover { background: var(--color-accent-600); }
+.landing-btn-gold { background: var(--color-migration-gold); color: #241704; }
+.landing-btn-gold:hover {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-migration-gold) 22%, transparent), 0 4px 16px color-mix(in srgb, var(--color-migration-gold) 35%, transparent);
+}
+
+/* — Section 1: nav — */
+.landing-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 32px;
+  background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-divider);
+}
+.landing-nav-brand { display: flex; align-items: center; gap: 9px; }
+.landing-nav-wordmark { font-family: var(--font-heading); font-weight: 800; font-size: 20px; color: var(--color-text); }
+.landing-nav-actions { display: flex; align-items: center; gap: 10px; }
+@media (max-width: 640px) {
+  .landing-nav { flex-direction: column; align-items: stretch; padding: 14px 20px; }
+  .landing-nav-brand { justify-content: center; }
+  .landing-nav-actions { flex-direction: column; }
+  .landing-nav-actions .landing-btn { width: 100%; }
+}
+
+/* — Section 2: hero — */
+.landing-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 100vh;
+  padding: 64px 24px;
+  box-sizing: border-box;
+  background: radial-gradient(circle at 50% 30%, var(--color-surface), var(--color-bg));
+}
+@media (max-width: 640px) {
+  .landing-hero { min-height: 80vh; padding: 48px 20px; }
+}
+.landing-hero-headline {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: clamp(30px, 5.4vw, 54px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  max-width: 900px;
+  margin: 0 0 20px;
+  opacity: 0;
+  animation: landing-fade-up 700ms ease 80ms forwards;
+}
+.landing-hero-subheadline {
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--color-neutral-700);
+  max-width: 560px;
+  margin: 0 0 34px;
+  opacity: 0;
+  animation: landing-fade-up 700ms ease 220ms forwards;
+}
+.landing-hero-ctas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: landing-fade-up 700ms ease 360ms forwards;
+}
+@keyframes landing-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero-headline, .landing-hero-subheadline, .landing-hero-ctas { animation: none; opacity: 1; }
+}
+
+/* — Section 3: who it's for — */
+.landing-audience { padding: 88px 32px; max-width: 1080px; margin: 0 auto; box-sizing: border-box; }
+.landing-audience-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 860px) {
+  .landing-audience-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.landing-audience-card {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  padding: 28px 26px;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.landing-audience-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.landing-audience-card-label {
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 12px;
+}
+.landing-audience-card-title {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 19px;
+  margin: 0 0 10px;
+}
+.landing-audience-card-body { font-size: 14.5px; line-height: 1.65; color: var(--color-neutral-700); margin: 0; }
+
+/* — Section 4: feature grid — */
+.landing-features { padding: 20px 32px 96px; max-width: 1080px; margin: 0 auto; box-sizing: border-box; }
+.landing-section-heading {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 30px;
+  text-align: center;
+  margin: 0 0 40px;
+}
+.landing-features-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 900px) {
+  .landing-features-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .landing-features-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.landing-feature-card {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 24px 24px;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.landing-feature-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.landing-feature-card-name { font-family: var(--font-heading); font-weight: 800; font-size: 16.5px; margin: 0 0 8px; }
+.landing-feature-card-body { font-size: 14px; line-height: 1.6; color: var(--color-neutral-700); margin: 0; }
+
+/* — Section 5: founding funders — a real section, not a thin banner, hence the generous
+   vertical padding and the same gold-tint treatment already established on the Wellness
+   overview's "Tip of the Day" card. */
+.landing-founding {
+  padding: 96px 32px;
+  text-align: center;
+  border-top: 4px solid var(--color-migration-gold);
+  background: color-mix(in srgb, var(--color-migration-gold) 7%, var(--color-bg));
+}
+.landing-founding-heading {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 30px;
+  color: var(--color-migration-gold);
+  margin: 0 0 18px;
+}
+.landing-founding-body {
+  font-size: 16.5px;
+  line-height: 1.75;
+  max-width: 580px;
+  margin: 0 auto 30px;
+}
+.landing-founding-legal {
+  font-size: 12px;
+  color: var(--color-neutral-600);
+  max-width: 460px;
+  margin: 18px auto 0;
+  line-height: 1.6;
+}
+
+/* — Section 6: footer — */
+.landing-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 28px 32px;
+  border-top: 1px solid var(--color-divider);
+}
+.landing-footer-copyright { font-size: 13px; color: var(--color-neutral-700); }
+.landing-footer-links { font-size: 13px; }
+.landing-footer-link { color: var(--color-neutral-700); text-decoration: none; }
+.landing-footer-link:hover { color: var(--color-accent-700); text-decoration: underline; }
+.landing-footer-dot { margin: 0 8px; color: var(--color-neutral-600); }
+.landing-footer-disclaimer {
+  flex-basis: 100%;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--color-neutral-600);
+  text-align: center;
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .landing-footer { flex-direction: column; text-align: center; padding: 24px 20px; }
+}

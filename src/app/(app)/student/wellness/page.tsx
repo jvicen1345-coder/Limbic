@@ -5,7 +5,7 @@ import { StudentPlaceholderPage } from "@/components/StudentPlaceholderPage";
 export default async function StudentWellnessPage() {
   const user = await getCurrentUser();
   if (!user) return null;
-  if (!hasStudentAccess(user)) redirect("/");
+  if (!hasStudentAccess(user)) redirect("/home");
 
   return (
     <StudentPlaceholderPage

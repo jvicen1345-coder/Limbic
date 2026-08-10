@@ -9,7 +9,7 @@ import { SuggestionsAdminList } from "@/components/SuggestionsAdminList";
  *  than conditionally rendered since this whole page has nothing for a non-admin — same
  *  "must be signed in" idiom app/(app)/layout.tsx already uses, extended to admin status. */
 export default async function AdminSuggestionsPage() {
-  if (!(await isSiteAdmin())) redirect("/");
+  if (!(await isSiteAdmin())) redirect("/home");
 
   const rows = await prisma.suggestion.findMany({ orderBy: { createdAt: "desc" } });
   const suggestions = rows.map((r) => ({ id: r.id, body: r.body, createdAt: r.createdAt.toISOString() }));

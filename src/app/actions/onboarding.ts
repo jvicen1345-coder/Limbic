@@ -14,5 +14,5 @@ export async function completeOnboardingAction() {
   if (!user) redirect("/sign-in");
   await prisma.user.update({ where: { id: user.id }, data: { hasOnboarded: true } });
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/home");
 }
