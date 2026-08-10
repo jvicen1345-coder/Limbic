@@ -20,7 +20,7 @@ export function ProfileForm({
   const [, startTransition] = useTransition();
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 10 }}>
+    <div className="profile-form-fields">
       <div className="field">
         <label htmlFor="pf-name">Name</label>
         <input

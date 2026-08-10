@@ -45,6 +45,7 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
 
   return (
     <div
+      className="signin-card"
       style={{
         width: "100%",
         maxWidth: 380,
