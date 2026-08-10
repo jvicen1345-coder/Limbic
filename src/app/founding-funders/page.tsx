@@ -1,6 +1,4 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { isSiteAdmin } from "@/lib/admin";
 import { getFoundingFundersData } from "@/app/actions/founding-funders";
@@ -54,10 +52,12 @@ const TIMELINE = [
   },
 ];
 
+// Public — a signed-out visitor can read the pitch and join the waitlist without an
+// account (see robots.ts, which allow-lists this path specifically for that reason).
+// getFoundingFundersData()/joinWaitlistAction() below don't touch any per-user data, and
+// the admin-only panels stay gated behind isSiteAdmin(), which already safely returns
+// false for a signed-out visitor.
 export default async function FoundingFundersPage() {
-  const user = await getCurrentUser();
-  if (!user) redirect("/");
-
   const [data, isAdmin] = await Promise.all([getFoundingFundersData(), isSiteAdmin()]);
   const slots = Array.from({ length: data.totalSlots }, (_, i) => data.funders[i] ?? null);
   // Only fetched for an admin — no reason to run this for every visitor.
