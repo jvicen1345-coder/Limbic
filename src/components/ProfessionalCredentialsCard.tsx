@@ -23,7 +23,7 @@ export function ProfessionalCredentialsCard({
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div className="card elev-sm" style={{ marginBottom: 18 }}>
+    <div className="card elev-sm license-verification-card" style={{ marginBottom: 18 }}>
       <div className="card-kicker">Professional Credentials</div>
 
       {isStudent ? (

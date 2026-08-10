@@ -58,7 +58,7 @@ export function DirectoryList({ people }: { people: DirectoryPerson[] }) {
         ))}
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div className="directory-list">
         {filtered.map((p) => (
           <div key={p.id} className="card elev-sm" style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
             <Link href={`/nexus/profile/${p.id}`} style={{ display: "flex", gap: 12, alignItems: "center", flex: 1, minWidth: 0, textDecoration: "none", color: "inherit" }}>

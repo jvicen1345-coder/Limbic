@@ -52,8 +52,10 @@ export default async function ProfilePage() {
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 18px" }}>Profile</h1>
 
-      <ReadingStreakCard streakDays={user.streakDays} />
-      <GamesStreakCard streakDays={user.gamesStreakDays} />
+      <div className="profile-header-grid">
+        <ReadingStreakCard streakDays={user.streakDays} />
+        <GamesStreakCard streakDays={user.gamesStreakDays} />
+      </div>
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">About you</div>

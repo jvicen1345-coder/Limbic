@@ -300,6 +300,25 @@ input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height:
   .input { font-size: 16px; }
 }
 
+/* Base (all viewports) layout for a few field/list wrappers that used to be inline
+   `style={{display:"flex", flexDirection:"column", gap:...}}` — pulled out into real
+   classes, with the exact same values, purely so a desktop-only override further down
+   (see the `@media (min-width: 1024px)` block at the end of this file) has something to
+   attach to; an inline style can't be overridden by an external stylesheet. Nothing about
+   the rendered layout below 1024px changes because of this move. */
+.profile-form-fields,
+.professional-dates-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+}
+.directory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 /* — cards — */
 .card {
   display: flex; flex-direction: column; gap: var(--space-2); min-width: 0;
@@ -4676,4 +4695,115 @@ html[data-theme="dark"] .atrium-page {
 }
 @media (max-width: 640px) {
   .landing-footer { flex-direction: column; text-align: center; padding: 24px 20px; }
+}
+
+/* ============================================================================
+   DESKTOP OVERRIDES (>= 1024px) — makes the authenticated app feel like a real
+   desktop product (structured columns, contained content, more breathing room)
+   instead of a phone layout stretched wide. Every rule below is additive: it
+   only takes effect at this breakpoint and never changes anything below it.
+   Mobile/base styles above this block are untouched.
+
+   Real .app-root/.app-sidebar/.app-main shell is a two-column flex layout
+   (fixed 252px sidebar + flexible main), not three columns — there is no
+   single shared "right sidebar" component; it only exists per-page (Home's
+   .home-aside-col, Wellness Continuum's .wellness-continuum-sidebar). The
+   left sidebar is already correct per the brief and isn't touched here. */
+
+@media (min-width: 1024px) {
+  /* — typography: a slight desktop bump, scaled from this app's actual base
+     sizes (16px body, 42/32/25px h1-h3) rather than smaller generic values —
+     see comment in the block above for why literal boilerplate sizes would
+     have shrunk headings here instead of growing them. */
+  h1 { font-size: 44px; }
+  h2 { font-size: 34px; }
+  h3 { font-size: 26px; }
+
+  /* — Home feed: a centered, Facebook-style content column beside a real
+     right rail, instead of stretching the feed across the whole viewport. */
+  .home-pad { max-width: 1136px; }
+  .home-row { gap: 56px; justify-content: flex-start; }
+  .home-main-col { max-width: 680px; }
+  .home-aside-col { width: 320px; }
+  .cards-grid.home-cards-grid { gap: 24px; }
+
+  /* — Nexus feed: same content-column width as Home, since it's the same
+     kind of vertical post feed with no right rail of its own. */
+  .nexus-feed-pad { max-width: 680px; }
+
+  /* — Nexus directory: was a plain stacked list (inline flex-column style,
+     no class) — .directory-list above (in the base "— cards —" section)
+     replaces that inline style 1:1, so this grid conversion is the only
+     thing that actually changes at desktop width. Each row card keeps its
+     own row-oriented internal layout (avatar/name/connect button). */
+  .directory-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+
+  /* — Boards: the daily question (and the student hub stacked beneath it)
+     read better as a single contained column than stretched to 760px — the
+     !important is only needed because the page sets its own inline
+     max-width for the same element; nothing else here relies on it. */
+  .boards-question-pad { max-width: 680px !important; }
+
+  /* — Founding Funders (dedicated page) and its landing-page teaser section:
+     widen both to the same 800px content width. */
+  .ff-container { max-width: 800px; }
+  .landing-founding-body { max-width: 800px; }
+
+  /* — Landing hero: keep the headline/subheadline block from stretching too
+     wide on very large screens. */
+  .landing-hero-headline { max-width: 720px; }
+
+  /* — Student Atrium path cards: a real 3-column grid instead of flex-wrap,
+     which only wraps to 3-across incidentally depending on viewport width. */
+  .atrium-paths-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .atrium-path-card { max-width: none; }
+
+  /* — Card system: every .card-based component (article cards, form cards,
+     directory rows, message rows, dashboard tiles, …) gets a touch more
+     interior room; grid gaps get a little more breathing space too. */
+  .card { padding: 20px; }
+  .games-grid { gap: 20px; }
+  .wellness-explore-grid { gap: 18px; }
+  .ff-benefits-grid { gap: 20px; }
+  .landing-audience-grid { gap: 24px; }
+  .landing-features-grid { gap: 22px; }
+
+  /* — Forms: sign-in and onboarding are the only real "standalone form in
+     the middle of the screen" cases in this app (everything else — Add
+     Event, Add License — already sits in the 420px .cal-modal shell, or is
+     a data-entry section inside a wider page, handled separately below). */
+  .signin-card { max-width: 480px !important; }
+  .onboarding-card { max-width: 480px !important; }
+  .cal-modal { width: 480px; }
+
+  /* — Buttons: the mobile-CTA .btn-block pattern only reverts to auto width
+     inside the sign-in/onboarding cards above — everywhere else .btn-block
+     pairs equal-width action buttons inside a contained card/widget (Trivia
+     results, Body Connections results, Home Question card, the sidebar's
+     Sign out/theme toggle, the Nexus join-prompt card), which should keep
+     filling their own card rather than shrinking to content width. */
+  .signin-card .btn-block,
+  .onboarding-card .btn-block {
+    width: auto;
+    align-self: center;
+    padding: 10px 28px;
+  }
+
+  /* — Profile: pair the two streak cards into a "header" row (avatar/name-
+     style content doesn't exist on this profile — these are the closest
+     existing analog to stats/badges) instead of stacking them full-width. */
+  .profile-header-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-bottom: 18px; }
+  .profile-header-grid .streak-card { margin-bottom: 0 !important; }
+
+  /* .profile-form-fields/.professional-dates-fields replace an inline
+     flex-column style 1:1 as their base (see ProfileForm.tsx/
+     ProfessionalDatesForm.tsx) — identical stacked-field look under this
+     breakpoint, two-column data-entry grid only from here up. */
+  .profile-form-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px; }
+  .profile-form-fields .field:has(textarea) { grid-column: 1 / -1; }
+  .professional-dates-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px; }
+
+  /* License verification card: contained like a form, not stretched across
+     the full profile content column. */
+  .license-verification-card { max-width: 560px; }
 }

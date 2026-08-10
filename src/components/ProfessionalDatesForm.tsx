@@ -105,7 +105,7 @@ export function ProfessionalDatesForm({
   const iso = (d: Date | null) => (d ? dateToLocalIso(d) : "");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 10 }}>
+    <div className="professional-dates-fields">
       {isStudent && (
         <DateField
           field="npteExamDate"
