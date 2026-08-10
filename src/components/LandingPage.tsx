@@ -77,7 +77,7 @@ export function LandingPage() {
       </nav>
 
       <section className="landing-hero">
-        <h1 className="landing-hero-headline">One Platform. Every PT Professional. Their Entire Career.</h1>
+        <h1 className="landing-hero-headline">The research, the profession, and the public. Finally in one place.</h1>
         <p className="landing-hero-subheadline">
           The only platform that keeps physical therapy professionals current and connected — while making that
           same knowledge accessible to the patients and public they serve.
