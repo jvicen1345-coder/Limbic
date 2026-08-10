@@ -6,14 +6,6 @@ import { AssessmentScoreCard } from "@/components/metrics/AssessmentScoreCard";
 import { PlayIcon } from "@/components/icons";
 import type { WellnessProfile } from "@/lib/vitals";
 
-const VIDEO_REFERENCE_TESTS = [
-  "Single Leg Stance Test",
-  "Wall Sit Test",
-  "Sit and Rise Test",
-  "Shoulder Mobility Scratch Test",
-  "Overhead Squat Screen",
-];
-
 function youtubeSearchUrl(testName: string): string {
   const query = `${testName} physical therapy`.toLowerCase();
   return `https://www.youtube.com/results?search_query=${encodeURIComponent(query).replace(/%20/g, "+")}`;
@@ -48,8 +40,7 @@ export default async function AssessYourselfPage() {
       <AssessmentScoreCard profile={profile} />
 
       <div className="assess-page-layout">
-        <div className="assess-cards-column">
-          {ASSESSMENTS.map((a) => (
+        {ASSESSMENTS.map((a, idx) => [
             <div key={a.id} className="wellness-assess-card assess-test-card">
               <div className="wellness-calc-title">{a.title}</div>
               <p className="wellness-calc-desc">
@@ -144,29 +135,26 @@ export default async function AssessYourselfPage() {
               <div className="wellness-calc-source">Source: {a.source}</div>
 
               {a.metric && a.unitLabel && <AssessmentLogButton metric={a.metric} unitLabel={a.unitLabel} label="Log" />}
-            </div>
-          ))}
-        </div>
+            </div>,
 
-        <aside className="assess-right-panel">
-          <div className="assess-right-panel-heading">Video References</div>
-          {VIDEO_REFERENCE_TESTS.map((testName) => (
-            <div key={testName} className="assess-video-card">
-              <div className="assess-video-title">{testName}</div>
-              <div className="assess-video-thumb">
-                <PlayIcon size={28} className="assess-video-thumb-icon" />
+            <div key={`${a.id}-video`} className="assess-video-cell">
+              {idx === 0 && <div className="assess-right-panel-heading">Video References</div>}
+              <div className="assess-video-card">
+                <div className="assess-video-title">{a.title}</div>
+                <div className="assess-video-thumb">
+                  <PlayIcon size={28} className="assess-video-thumb-icon" />
+                </div>
+                <a
+                  className="assess-video-link"
+                  href={youtubeSearchUrl(a.title)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Watch demonstration
+                </a>
               </div>
-              <a
-                className="assess-video-link"
-                href={youtubeSearchUrl(testName)}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Watch demonstration
-              </a>
-            </div>
-          ))}
-        </aside>
+            </div>,
+          ])}
       </div>
     </div>
   );
