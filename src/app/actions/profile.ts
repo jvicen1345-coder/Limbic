@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { getCurrentUser, clearSessionForAddLicense, signOutSession } from "@/lib/session";
+import { getCurrentUser, signOutSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 // A Server Action is callable as its own HTTP endpoint independent of which component
@@ -39,13 +39,6 @@ export async function toggleHomeWidgetAction(widgetId: string) {
   const next = current.includes(widgetId) ? current.filter((w) => w !== widgetId) : [...current, widgetId];
   await prisma.user.update({ where: { id: user.id }, data: { hiddenHomeWidgets: next } });
   revalidatePath("/", "layout");
-}
-
-/** "Add license" from the guest profile screen — matches the prototype's behavior of
- *  sending the user back to the license sign-in form. */
-export async function goAddLicenseAction() {
-  await clearSessionForAddLicense();
-  redirect("/sign-in");
 }
 
 // Same runtime-whitelist reasoning as EDITABLE_FIELDS above — see components/

@@ -13,35 +13,30 @@ const TABS = [
 /** localStorage keys for remembering what a returning visitor last typed, so they don't
  *  have to retype it. Device-local convenience only — not part of the auth flow itself. */
 const STORAGE_KEYS = {
-  licenseNumber: "limbic:signIn:licenseNumber",
-  licenseState: "limbic:signIn:licenseState",
+  ptEmail: "limbic:signIn:ptEmail",
   generalEmail: "limbic:signIn:generalEmail",
 };
 
-export function SignInForm({ states, googleEnabled }: { states: string[]; googleEnabled: boolean }) {
+export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
   const [mode, setMode] = useState<"pt" | "general">("pt");
-  const numberRef = useRef<HTMLInputElement>(null);
-  const stateRef = useRef<HTMLSelectElement>(null);
+  const ptEmailRef = useRef<HTMLInputElement>(null);
   const generalEmailRef = useRef<HTMLInputElement>(null);
 
-  // Fills in whatever this tab's inputs are mounted (imperatively, via ref — not React
+  // Fills in whatever this tab's input is mounted (imperatively, via ref — not React
   // state, so there's no server/client markup to reconcile and nothing to hydrate around).
   // Re-runs on every tab switch so each tab's own remembered value is restored.
   useEffect(() => {
     if (mode === "pt") {
-      const savedNumber = localStorage.getItem(STORAGE_KEYS.licenseNumber);
-      if (savedNumber && numberRef.current) numberRef.current.value = savedNumber;
-      const savedState = localStorage.getItem(STORAGE_KEYS.licenseState);
-      if (savedState && stateRef.current) stateRef.current.value = savedState;
+      const savedEmail = localStorage.getItem(STORAGE_KEYS.ptEmail);
+      if (savedEmail && ptEmailRef.current) ptEmailRef.current.value = savedEmail;
     } else {
       const savedEmail = localStorage.getItem(STORAGE_KEYS.generalEmail);
       if (savedEmail && generalEmailRef.current) generalEmailRef.current.value = savedEmail;
     }
   }, [mode]);
 
-  const rememberPtFields = () => {
-    if (numberRef.current?.value) localStorage.setItem(STORAGE_KEYS.licenseNumber, numberRef.current.value);
-    if (stateRef.current?.value) localStorage.setItem(STORAGE_KEYS.licenseState, stateRef.current.value);
+  const rememberPtEmail = () => {
+    if (ptEmailRef.current?.value) localStorage.setItem(STORAGE_KEYS.ptEmail, ptEmailRef.current.value);
   };
 
   const rememberGeneralEmail = () => {
@@ -96,50 +91,25 @@ export function SignInForm({ states, googleEnabled }: { states: string[]; google
       {mode === "pt" ? (
         <form
           action={signInAction}
-          onSubmit={rememberPtFields}
+          onSubmit={rememberPtEmail}
           style={{ display: "flex", flexDirection: "column", gap: 16 }}
         >
           <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
-            Sign in with your license to track renewals and CE requirements alongside your feed.
+            Sign in as a physical therapist — you can verify your license anytime from your profile to unlock
+            clinician features.
           </p>
 
           <div className="field">
-            <label htmlFor="li-number">License number</label>
-            <input
-              ref={numberRef}
-              className="input"
-              id="li-number"
-              name="number"
-              placeholder="PT-48213"
-              autoComplete="username"
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="li-state">Issuing state</label>
-            <select
-              ref={stateRef}
-              className="input"
-              id="li-state"
-              name="state"
-              defaultValue="California"
-              autoComplete="address-level1"
-            >
-              {states.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="field">
             <label htmlFor="li-email">Email</label>
             <input
+              ref={ptEmailRef}
               className="input"
               id="li-email"
               name="email"
               type="email"
               placeholder="you@clinic.com"
               autoComplete="email"
+              required
             />
           </div>
 
@@ -147,7 +117,7 @@ export function SignInForm({ states, googleEnabled }: { states: string[]; google
             Sign in
           </button>
           <p style={{ fontSize: 11, color: "var(--color-neutral-700)", margin: 0, textAlign: "center" }}>
-            Demo sign-in — any license number works.
+            Demo sign-in — any email works.
           </p>
         </form>
       ) : (

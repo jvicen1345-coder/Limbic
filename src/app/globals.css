@@ -2301,6 +2301,44 @@ html[data-theme="dark"] .nav-founding-link-active {
 .cal-modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
 .cal-modal-reminder-row { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
 
+/* — Add License modal (components/AddLicenseModal.tsx) — sits inside the same .cal-modal
+   shell above, just with its own step-progress bar and step-specific bits. */
+.license-modal-progress { display: flex; gap: 5px; }
+.license-modal-progress-seg { flex: 1; height: 4px; border-radius: 999px; background: var(--color-divider); }
+.license-modal-progress-seg--done { background: var(--color-accent); }
+.license-modal-helper { font-size: 12px; color: var(--color-neutral-600); margin: 6px 0 0; line-height: 1.5; }
+.license-modal-warning { font-size: 12.5px; color: var(--color-warn); margin: 8px 0 0; line-height: 1.5; }
+.license-modal-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  margin-bottom: 16px;
+}
+.license-modal-summary-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.license-modal-summary-label { font-size: 11.5px; color: var(--color-neutral-700); }
+.license-modal-summary-value { font-size: 13.5px; font-weight: 600; text-align: right; }
+.license-modal-attestation {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.license-modal-attestation input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; }
+
+/* — Professional Credentials card's status badges (components/ProfessionalCredentialsCard.tsx)
+   — same pill shape as .wellness-badge, kept as its own small class rather than reusing that
+   one directly since this card isn't a Wellness feature. */
+.license-badge { display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+.license-badge--student { color: var(--color-accent-700); background: color-mix(in srgb, var(--color-accent) 16%, transparent); }
+.license-badge--pending { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
+.license-badge--verified { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 16%, transparent); }
+
 /* — Limbic Vitals (see app/(app)/wellness/metrics/*, components/vitals/*) — general
    wellness tracking, not medical advice. Reuses .card/.field/.input/.btn for the two form
    cards; everything below is specific to the disclaimer banner and the pure-CSS weekly bar

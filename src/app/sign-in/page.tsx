@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { STATES } from "@/lib/meta";
 import { googleSignInEnabled } from "@/lib/google-oauth";
 import { SignInForm } from "@/components/SignInForm";
 
@@ -92,7 +91,7 @@ export default async function SignInPage({
           {successMessage}
         </p>
       )}
-      <SignInForm states={STATES} googleEnabled={googleSignInEnabled()} />
+      <SignInForm googleEnabled={googleSignInEnabled()} />
     </div>
   );
 }

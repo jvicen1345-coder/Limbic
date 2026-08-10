@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, isStudentEmail } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { buildLicenseView } from "@/lib/license";
 import { SUGGESTED_TOPICS } from "@/lib/meta";
@@ -7,6 +7,7 @@ import { allKnownKeywordTopics } from "@/lib/news-live";
 import type { CeCategory } from "@/lib/types";
 import { ProfileForm } from "@/components/ProfileForm";
 import { ProfessionalDatesForm } from "@/components/ProfessionalDatesForm";
+import { ProfessionalCredentialsCard } from "@/components/ProfessionalCredentialsCard";
 import { TopicChip } from "@/components/TopicChip";
 import { TopicBrowser } from "@/components/TopicBrowser";
 import { ReadingStreakCard } from "@/components/ReadingStreakCard";
@@ -15,7 +16,6 @@ import { HomeWidgetToggle } from "@/components/HomeWidgetToggle";
 import { DeleteAccountSection } from "@/components/DeleteAccountSection";
 import { AccountSecuritySection } from "@/components/AccountSecuritySection";
 import { SuggestionBoxCard } from "@/components/SuggestionBoxCard";
-import { goAddLicenseAction } from "@/app/actions/profile";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
 import { HOME_WIDGETS } from "@/lib/home-widgets";
 import { isRecentGraduate } from "@/lib/professional-dates";
@@ -41,6 +41,10 @@ export default async function ProfilePage() {
     : null;
 
   const isStudent = user.studentTier !== "none";
+  // Broader than isStudent above (which is purely the paid studentTier, used for the
+  // Professional Dates form) — the Professional Credentials card's "no license needed"
+  // badge should also cover a .edu account that hasn't purchased Limbic Student.
+  const isStudentForCredentials = isStudentEmail(user.email) || isStudent;
   const showPracticeStartDate = user.isPro || isRecentGraduate(user.graduationDate);
   const hasFoundingSpot = (await prisma.foundingFunder.count({ where: { userId: user.id } })) > 0;
 
@@ -86,6 +90,15 @@ export default async function ProfilePage() {
           showPracticeStartDate={showPracticeStartDate}
         />
       </div>
+
+      <ProfessionalCredentialsCard
+        licenseStatus={user.licenseStatus}
+        licenseNumber={user.licenseNumber}
+        licenseState={user.licenseState}
+        licenseVerifiedAt={user.licenseVerifiedAt?.toISOString() ?? null}
+        isStudent={isStudentForCredentials}
+        accountName={user.name}
+      />
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">Nexus</div>
@@ -206,16 +219,10 @@ export default async function ProfilePage() {
             </div>
           </>
         ) : (
-          <>
-            <p className="card-body" style={{ marginTop: 8 }}>
-              Add your license to track renewal dates and CE requirements.
-            </p>
-            <form action={goAddLicenseAction}>
-              <button type="submit" className="btn btn-secondary" style={{ marginTop: 8 }}>
-                Add license
-              </button>
-            </form>
-          </>
+          <p className="card-body" style={{ marginTop: 8 }}>
+            Once your license is verified under Professional Credentials above, renewal dates and CE requirements will show up
+            here.
+          </p>
         )}
       </div>
 
