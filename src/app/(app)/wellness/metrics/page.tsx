@@ -40,7 +40,7 @@ export default async function MetricsPage() {
       <div id="calculators" className="wellness-section-label" style={{ marginTop: 8 }}>
         Your Health Calculators
       </div>
-      <div className="wellness-card-columns">
+      <div className="metrics-calc-grid">
         <BmiCalculatorCard profile={profile} />
         <MaxHeartRateCalculatorCard profile={profile} />
         <HrvCalculatorCard profile={profile} />

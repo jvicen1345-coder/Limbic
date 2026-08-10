@@ -28,7 +28,12 @@ export const REP_CONTINUUM_ZONES: RepContinuumZone[] = [
     rest: "3 to 5 minutes between sets",
     sets: "3 to 5",
     whoItsFor: "Athletes, advanced lifters, those training for explosive performance",
-    whatItDevelops: "Maximal force production, neuromuscular efficiency",
+    // NSCA distinguishes power specifically by bar speed/explosive intent, not just being
+    // the heaviest end of the strength continuum — a near-max single lifted slowly is
+    // maximal-strength work, not power work. Named clearly here rather than left implicit,
+    // since "explosive intent" is the one thing that actually separates this zone's real
+    // training effect from Zone 2 (Strength) below it at a similar %1RM.
+    whatItDevelops: "Maximal force production and neuromuscular efficiency — achieved through explosive, high-velocity bar speed, not just the heavy load alone",
     exampleExercises: "Olympic lifts, heavy squats, heavy deadlifts",
     source: "NSCA Essentials of Strength Training and Conditioning",
     barPosition: 10,

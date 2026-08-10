@@ -10,7 +10,7 @@ import { getStripe, stripeEnabled, priceIdForPlan, getOrCreateStripeCustomerId, 
  *  `subscription_data.metadata` (not just the Checkout Session's own metadata) carries
  *  which internal plan this is, since subscription-lifecycle events later reference the
  *  Subscription object, not the Checkout Session that created it. `returnPath` is whichever
- *  membership page started the checkout (/pro/membership or /wellness/membership), so the
+ *  membership page started the checkout (/profile/membership or /wellness/membership), so the
  *  reader lands back where they clicked from rather than always on Pro's page. */
 async function startCheckout(plan: BillablePlan, returnPath: string) {
   const user = await getCurrentUser();
@@ -36,17 +36,17 @@ async function startCheckout(plan: BillablePlan, returnPath: string) {
 }
 
 export async function subscribeToProAction() {
-  await startCheckout("pro", "/pro/membership");
+  await startCheckout("pro", "/profile/membership");
 }
 
-/** LimbicStudent — the single student plan (see /pro/membership); re-checks the .edu email
+/** LimbicStudent — the single student plan (see /profile/membership); re-checks the .edu email
  *  itself rather than trusting the page that rendered the button, since a Server Action is
  *  its own callable endpoint (see app/actions/agent.ts requireProUser for the same
  *  reasoning). */
 export async function subscribeToStudentTierAction() {
   const user = await getCurrentUser();
   if (!user || !hasStudentAccess(user)) return;
-  await startCheckout("limbicStudent", "/pro/membership");
+  await startCheckout("limbicStudent", "/profile/membership");
 }
 
 /** LimbicWellness+ — billing-only for now (see app/(app)/wellness/membership/page.tsx),
@@ -81,11 +81,11 @@ async function openBillingPortal(returnPath: string) {
 }
 
 export async function cancelProAction() {
-  await openBillingPortal("/pro/membership");
+  await openBillingPortal("/profile/membership");
 }
 
 export async function cancelStudentTierAction() {
-  await openBillingPortal("/pro/membership");
+  await openBillingPortal("/profile/membership");
 }
 
 export async function cancelWellnessPlusAction() {

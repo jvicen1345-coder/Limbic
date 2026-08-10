@@ -8,6 +8,11 @@
  *  Best streak and the weekly bar are still computed on the fly here, off the compact
  *  GameActivity table (one row per active day) rather than scanning DailyCompletion. */
 
+// "bodyConnections" stays in the type/kinds list even though GAMES below no longer lists
+// it as a playable card (see app/(app)/games/body/page.tsx, now a redirect to /games) —
+// historical DailyCompletion/GameActivity rows still use this kind, and totalCompleted/
+// streak math below reads across all of GAME_KINDS so a reader's past Body Connections
+// days still count toward their stats even though the game itself is retired.
 export type GameKind = "wordle" | "crossword" | "healthTrivia" | "bodyConnections";
 
 export const GAME_KINDS: GameKind[] = ["wordle", "crossword", "healthTrivia", "bodyConnections"];
@@ -47,14 +52,6 @@ export const GAMES: GameMeta[] = [
     href: "/games/trivia",
     title: "Health Trivia",
     description: "5 questions about health and wellness — no clinical knowledge needed",
-    difficulty: "Easy",
-    timeEstimate: "3 min",
-  },
-  {
-    kind: "bodyConnections",
-    href: "/games/body",
-    title: "Body Connections",
-    description: "Match body parts to their functions — learn how your body works",
     difficulty: "Easy",
     timeEstimate: "3 min",
   },

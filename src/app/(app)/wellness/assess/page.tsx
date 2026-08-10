@@ -48,69 +48,82 @@ export default async function AssessYourselfPage() {
               ))}
             </ol>
 
-            {a.norms && (
-              <div className="wellness-table-wrap">
-                <table className="wellness-table">
-                  <thead>
-                    <tr>
-                      <th>Age</th>
-                      <th>Poor</th>
-                      <th>Fair</th>
-                      <th>Good</th>
-                      <th>Excellent</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {a.norms.map((row) => (
-                      <tr key={row.ageLabel}>
-                        <td>{row.ageLabel}</td>
-                        <td>{row.poor}</td>
-                        <td>{row.fair}</td>
-                        <td>{row.good}</td>
-                        <td>{row.excellent}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {a.normsNote && <p className="wellness-table-note">{a.normsNote}</p>}
-              </div>
-            )}
-
-            {a.scoringTable && (
-              <div className="wellness-table-wrap">
-                <table className="wellness-table">
-                  <thead>
-                    <tr>
-                      <th>Score</th>
-                      <th>Interpretation</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {a.scoringTable.map((row) => (
-                      <tr key={row.score}>
-                        <td>{row.score}</td>
-                        <td>{row.interpretation}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
             {a.indicatesIfPoor && <p className="wellness-assess-note">{a.indicatesIfPoor}</p>}
             {a.whenToSeePt && <p className="wellness-assess-note">{a.whenToSeePt}</p>}
             {a.interpretationNote && <p className="wellness-assess-note">{a.interpretationNote}</p>}
 
+            {/* Norms/scoring tables and the movement checklist are what make these cards vary
+               so wildly in height (a 6-row norms table vs. a single short note) — tucked
+               behind a toggle, closed by default, so every card in the grid starts at a
+               similar, symmetrical height and a reader who wants the detail opens it. */}
+            {a.norms && (
+              <details className="wellness-calc-education">
+                <summary>View age norms</summary>
+                <div className="wellness-table-wrap" style={{ marginTop: 10 }}>
+                  <table className="wellness-table">
+                    <thead>
+                      <tr>
+                        <th>Age</th>
+                        <th>Poor</th>
+                        <th>Fair</th>
+                        <th>Good</th>
+                        <th>Excellent</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {a.norms.map((row) => (
+                        <tr key={row.ageLabel}>
+                          <td>{row.ageLabel}</td>
+                          <td>{row.poor}</td>
+                          <td>{row.fair}</td>
+                          <td>{row.good}</td>
+                          <td>{row.excellent}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {a.normsNote && <p className="wellness-table-note">{a.normsNote}</p>}
+                </div>
+              </details>
+            )}
+
+            {a.scoringTable && (
+              <details className="wellness-calc-education">
+                <summary>View scoring guide</summary>
+                <div className="wellness-table-wrap" style={{ marginTop: 10 }}>
+                  <table className="wellness-table">
+                    <thead>
+                      <tr>
+                        <th>Score</th>
+                        <th>Interpretation</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {a.scoringTable.map((row) => (
+                        <tr key={row.score}>
+                          <td>{row.score}</td>
+                          <td>{row.interpretation}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+            )}
+
             {a.checklist && (
-              <div className="wellness-assess-checklist">
-                {a.checklist.map((item) => (
-                  <div key={item.item} className="wellness-assess-checklist-item">
-                    <div className="wellness-assess-checklist-item-title">{item.item}</div>
-                    <p className="wellness-assess-checklist-item-body">{item.ifItFails}</p>
-                    <p className="wellness-assess-checklist-item-helps">{item.whatHelps}</p>
-                  </div>
-                ))}
-              </div>
+              <details className="wellness-calc-education">
+                <summary>View movement checklist</summary>
+                <div className="wellness-assess-checklist" style={{ marginTop: 10 }}>
+                  {a.checklist.map((item) => (
+                    <div key={item.item} className="wellness-assess-checklist-item">
+                      <div className="wellness-assess-checklist-item-title">{item.item}</div>
+                      <p className="wellness-assess-checklist-item-body">{item.ifItFails}</p>
+                      <p className="wellness-assess-checklist-item-helps">{item.whatHelps}</p>
+                    </div>
+                  ))}
+                </div>
+              </details>
             )}
 
             <div className="wellness-calc-source">Source: {a.source}</div>

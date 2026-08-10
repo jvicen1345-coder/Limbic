@@ -22,13 +22,21 @@ export function ArticleImage({ src, height = 90, fill = false }: { src: string; 
       onError={() => setFailed(true)}
       style={
         fill
-          ? { position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }
+          ? {
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center",
+              display: "block",
+            }
           : {
               width: "100%",
               height,
               objectFit: "cover",
+              objectPosition: "center",
               borderRadius: "var(--radius-md)",
-              marginBottom: 8,
               display: "block",
             }
       }

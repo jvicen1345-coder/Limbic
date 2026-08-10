@@ -25,8 +25,8 @@ import {
   ListIcon,
   UserPlusIcon,
   MessageCircleIcon,
-  CreditCardIcon,
   GraduationCapIcon,
+  FileTextIcon,
   NetworkIcon,
   LockIcon,
   CalendarIcon,
@@ -196,13 +196,13 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
           <div className="nav-section-label">Limbic Student</div>
           <NavLink href="/student" icon={<GraduationCapIcon />} label="Atrium" bold={false} onNavigate={onNavigate} />
           <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/student/resources" icon={<FileTextIcon />} label="NPTE Resources" bold={false} onNavigate={onNavigate} />
         </>
       )}
 
       <div className="nav-section-label nav-section-label--brand">LimbicPRO</div>
       <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
       <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/pro/membership" icon={<CreditCardIcon />} label="Membership" bold={false} onNavigate={onNavigate} />
 
       <div className="nav-section-label">Health & Wellness</div>
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
