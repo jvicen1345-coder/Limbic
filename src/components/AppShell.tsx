@@ -257,6 +257,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
         <>
           <div className="nav-section-label">Admin</div>
           <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/admin/licenses" icon={<CheckCircleIcon />} label="License Queue" bold={false} onNavigate={onNavigate} />
         </>
       )}
 

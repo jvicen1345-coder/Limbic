@@ -20,6 +20,17 @@ model User {
   licenseEmail      String?
   licenseExpiration DateTime?
 
+  // Post-signup license verification (see app/actions/license.ts, components/
+  // AddLicenseModal.tsx, app/(app)/admin/licenses/page.tsx) — separate from the fields
+  // above, which a legacy account may already have from the old sign-in-with-license flow
+  // without ever having gone through this verification queue. licenseStatus is null until
+  // the reader submits the Add License flow, then "pending" | "verified" | "rejected".
+  licenseFullName    String?
+  licenseStatus      String?
+  licenseSubmittedAt DateTime?
+  licenseVerifiedAt  DateTime?
+  licenseAttestation Boolean   @default(false)
+
   // General (non-PT) sign-in — separate from licenseEmail, which belongs to the PT flow
   // and isn't unique. Signing in again with the same email returns to this same account,
   // same persistence model as licenseNumber for PTs.

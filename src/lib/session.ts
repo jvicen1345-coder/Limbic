@@ -1,5 +1,4 @@
 import "server-only";
-import { randomUUID } from "node:crypto";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
@@ -51,12 +50,6 @@ async function readUserIdFromCookie(): Promise<string | null> {
     return null;
   }
 }
-
-const DEFAULT_CE_CATEGORIES = [
-  { name: "Ethics & Jurisprudence", required: 3, completed: 3 },
-  { name: "Direct Access", required: 2, completed: 2 },
-  { name: "General / Elective", required: 19, completed: 9 },
-];
 
 /** Comma-separated sign-in emails allowed into every admin-only surface and, with the
  *  overlay below, every gated feature in the app — see lib/admin.ts isSiteAdmin, which
@@ -133,30 +126,6 @@ export function hasLicenseAccess(user: {
   return user.licenseNumber != null || isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
 }
 
-/**
- * Demo sign-in: any license number works, matching the prototype. Signing in again with the
- * same license number returns to the same persisted profile/saved data instead of creating a
- * new account each time. A blank submission gets its own fresh, unique account rather than a
- * shared fallback — otherwise every visitor who skips the field would land in the same row
- * and see each other's saved articles, HEP programs, and messages.
- */
-export async function signInWithLicense(input: { number: string; state: string; email: string }) {
-  const licenseNumber = input.number.trim() || `guest-pt-${randomUUID()}`;
-  const user = await prisma.user.upsert({
-    where: { licenseNumber },
-    update: { licenseState: input.state, licenseEmail: input.email },
-    create: {
-      licenseNumber,
-      licenseState: input.state,
-      licenseEmail: input.email,
-      licenseExpiration: new Date("2027-03-31"),
-      ceCategories: DEFAULT_CE_CATEGORIES,
-      hasOnboarded: false,
-    },
-  });
-  await issueSessionCookie(user.id);
-}
-
 export async function signInAsGuest() {
   const user = await prisma.user.create({ data: { isGuest: true, hasOnboarded: false } });
   await issueSessionCookie(user.id);
@@ -182,12 +151,16 @@ async function signInToUserRecord(user: User, viaBackupEmail: boolean) {
 }
 
 /**
- * General (non-PT) sign-in: no license required, just an email. Signing in again with the
- * same email returns to the same persisted profile/saved data, same pattern as
- * signInWithLicense above — this is what makes it distinct from the anonymous, one-off
- * "Continue as guest" flow. Also matches against backupEmail (see the "Account Security"
- * section on Profile) so a graduated student whose .edu address stopped working can still
- * sign back into this same account with the personal email they added ahead of time.
+ * Sign-in: just an email, no license required — the only sign-in path now that license
+ * number has moved to a post-signup verification flow (see app/actions/license.ts,
+ * components/AddLicenseModal.tsx). Signing in again with the same email returns to the same
+ * persisted profile/saved data, which is what makes this distinct from the anonymous,
+ * one-off "Continue as guest" flow. Matches against backupEmail (see the "Account Security"
+ * section on Profile — lets a graduated student whose .edu address stopped working sign
+ * back in with the personal email they added ahead of time) and licenseEmail (a pre-
+ * existing account created back when sign-in collected a license number/email — its `email`
+ * column was never set, only `licenseEmail`, so without this an old PT account would get a
+ * duplicate created instead of signing back into its real one).
  */
 export async function signInWithEmail(input: { email: string }) {
   const email = input.email.trim().toLowerCase();
@@ -195,7 +168,7 @@ export async function signInWithEmail(input: { email: string }) {
     await signInAsGuest();
     return;
   }
-  const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { backupEmail: email }] } });
+  const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { backupEmail: email }, { licenseEmail: email }] } });
   if (existing) {
     await signInToUserRecord(existing, existing.email !== email && existing.backupEmail === email);
     return;
@@ -209,16 +182,16 @@ export async function signInWithEmail(input: { email: string }) {
 /**
  * Google sign-in: matches by the verified email from the Google ID token (see
  * app/auth/google/callback/route.ts, which does the OAuth exchange and token verification
- * before calling this) against both `email` and `backupEmail`, same reasoning and pattern
- * as signInWithEmail above — deliberately so, since it means a reader who previously signed
- * in with the General email flow (or added this address as a backup email) lands back on
- * that exact account via Google instead of getting a duplicate one. `name` comes from
- * Google's own `name` claim when present; falls back to deriving one from the email address
- * the same way signInWithEmail does when it's missing.
+ * before calling this) against `email`, `backupEmail`, and `licenseEmail`, same reasoning
+ * and pattern as signInWithEmail above — deliberately so, since it means a reader who
+ * previously signed in with the email flow (or the old license flow, or added this address
+ * as a backup email) lands back on that exact account via Google instead of getting a
+ * duplicate one. `name` comes from Google's own `name` claim when present; falls back to
+ * deriving one from the email address the same way signInWithEmail does when it's missing.
  */
 export async function signInWithGoogle(input: { email: string; name?: string | null }) {
   const email = input.email.trim().toLowerCase();
-  const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { backupEmail: email }] } });
+  const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { backupEmail: email }, { licenseEmail: email }] } });
   if (existing) {
     await signInToUserRecord(existing, existing.email !== email && existing.backupEmail === email);
     return;
@@ -257,10 +230,4 @@ export async function recordHomeVisit(user: User): Promise<Date | null> {
 export async function signOutSession() {
   const store = await cookies();
   store.delete(COOKIE_NAME);
-}
-
-/** Guests can "add a license" from the profile screen, which is equivalent to signing back out
- *  to the license sign-in form (matches the prototype's `goAddLicense: () => this.signOut()`). */
-export async function clearSessionForAddLicense() {
-  await signOutSession();
 }
