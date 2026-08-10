@@ -3051,7 +3051,37 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wellness-assess-checklist-item-body { font-size: 12.5px; color: var(--color-neutral-700); margin: 0 0 4px; line-height: 1.5; }
 .wellness-assess-checklist-item-helps { font-size: 12.5px; color: var(--color-accent-700); margin: 0; line-height: 1.5; }
 
-.wellness-assess-log { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-divider); }
+/* A distinct "log your result" footer zone: border-top separates it from the card content
+   above, and the background is the card surface nudged a few percent toward --color-text —
+   a small, theme-safe shift (mixing toward text darkens on a light surface, lightens on a
+   dark one) rather than a hardcoded shade, so it stays "just a shade off" in both themes. */
+.wellness-assess-log {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding: 14px;
+  border-top: 1px solid var(--color-divider);
+  background: color-mix(in srgb, var(--color-card-surface) 94%, var(--color-text) 6%);
+  border-radius: var(--radius-md);
+}
+.wellness-assess-log-field { flex: 1 1 auto; min-width: 0; }
+.wellness-assess-log-field > label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-neutral-500);
+  margin-bottom: 6px;
+}
+.wellness-assess-log-field .input { padding: 8px 12px; }
+.wellness-assess-log-field .input::placeholder { color: var(--color-neutral-500); }
+.wellness-assess-log-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+@media (max-width: 799px) {
+  .wellness-assess-log { flex-direction: column; align-items: stretch; }
+  .wellness-assess-log-actions { width: 100%; }
+  .wellness-assess-log-actions .btn { flex: 1; }
+}
 
 /* — Assess Yourself: two-column layout (left test cards / right sticky video panel) —
    scoped to this page only; .wellness-assess-card and .wellness-card-columns are shared

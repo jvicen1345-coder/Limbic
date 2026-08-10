@@ -143,9 +143,7 @@ export default async function AssessYourselfPage() {
 
               <div className="wellness-calc-source">Source: {a.source}</div>
 
-              {a.metric && a.unitLabel && (
-                <AssessmentLogButton metric={a.metric} unitLabel={a.unitLabel} label={a.unitLabel.includes("second") ? "Log your time" : "Log your score"} />
-              )}
+              {a.metric && a.unitLabel && <AssessmentLogButton metric={a.metric} unitLabel={a.unitLabel} label="Log" />}
             </div>
           ))}
         </div>

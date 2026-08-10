@@ -22,13 +22,14 @@ export function AssessmentLogButton({ metric, unitLabel, label }: { metric: Metr
 
   return (
     <div className="wellness-assess-log">
-      <div className="field" style={{ flex: 1, maxWidth: 160 }}>
+      <div className="field wellness-assess-log-field">
         <label htmlFor={`assess-${metric}`}>Your result ({unitLabel})</label>
         <input
           className="input"
           id={`assess-${metric}`}
           type="number"
           step="any"
+          placeholder="Enter result..."
           value={value}
           onChange={(e) => {
             setValue(e.target.value);
@@ -36,8 +37,8 @@ export function AssessmentLogButton({ metric, unitLabel, label }: { metric: Metr
           }}
         />
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <button type="button" className="btn btn-secondary" disabled={!canSave || pending} onClick={handleSave}>
+      <div className="wellness-assess-log-actions">
+        <button type="button" className="btn btn-primary" disabled={!canSave || pending} onClick={handleSave}>
           {pending ? "Saving…" : label}
         </button>
         {saved && <CheckIcon size={14} className="profile-date-saved-check" />}
