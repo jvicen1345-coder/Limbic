@@ -190,7 +190,7 @@ export default async function ProOverviewPage() {
             <p className="card-body" style={{ marginTop: 6 }}>
               You have full access to LimbicPro.
             </p>
-            <Link href="/pro/membership" className="btn btn-secondary" style={{ marginTop: 10 }}>
+            <Link href="/profile/membership" className="btn btn-secondary" style={{ marginTop: 10 }}>
               Manage membership
             </Link>
           </>
@@ -200,7 +200,7 @@ export default async function ProOverviewPage() {
             <p className="card-body" style={{ marginTop: 6 }}>
               Cancel any time — takes effect at the end of your current billing period.
             </p>
-            <Link href="/pro/membership" className="btn btn-primary" style={{ marginTop: 10 }}>
+            <Link href="/profile/membership" className="btn btn-primary" style={{ marginTop: 10 }}>
               Upgrade to LimbicPro
             </Link>
           </>
@@ -215,7 +215,7 @@ export default async function ProOverviewPage() {
               <p className="card-body" style={{ marginTop: 6 }}>
                 You have {studentTierLabel} access.
               </p>
-              <Link href="/pro/membership" className="btn btn-secondary" style={{ marginTop: 10 }}>
+              <Link href="/profile/membership" className="btn btn-secondary" style={{ marginTop: 10 }}>
                 Manage membership
               </Link>
             </>
@@ -225,7 +225,7 @@ export default async function ProOverviewPage() {
               <p className="card-body" style={{ marginTop: 6 }}>
                 Cancel any time — takes effect at the end of your current billing period.
               </p>
-              <Link href="/pro/membership" className="btn btn-primary" style={{ marginTop: 10 }}>
+              <Link href="/profile/membership" className="btn btn-primary" style={{ marginTop: 10 }}>
                 See LimbicStudent
               </Link>
             </>

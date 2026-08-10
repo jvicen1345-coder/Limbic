@@ -20,6 +20,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const hasLicense = hasLicenseAccess(user);
 
+  // Same "since you were last here" cutoff the Home feed's own New badges use (see
+  // lib/session.ts recordHomeVisit/lib/feed.ts isNew) — the nav badge's job is "how many
+  // News items appeared since your last visit," not "how many exist right now," so a
+  // reader who's already seen all of today's articles doesn't keep seeing a stuck count.
+  const sinceVisit = user.lastVisitedAt?.getTime() ?? 0;
+  const newAptaCount = aptaArticles.filter((a) => new Date(a.date).getTime() > sinceVisit).length;
+
   return (
     <AppShell
       profileName={user.name}
@@ -29,7 +36,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       isPro={user.isPro}
       isStudent={hasStudentAccess(user)}
       isAdmin={isAdmin}
-      aptaCount={aptaArticles.length}
+      aptaCount={newAptaCount}
       nexusRequestCount={nexusRequestCount}
       savedCount={savedCount}
     >

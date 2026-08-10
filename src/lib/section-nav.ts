@@ -10,9 +10,18 @@ export const NEXUS_TABS: SubTab[] = [
   { href: "/nexus/messages", label: "Messages" },
 ];
 
+// LimbicPro's Overview no longer has a sibling Membership page of its own — Membership
+// moved under Profile (see PROFILE_TABS below, app/(app)/profile/membership/page.tsx) —
+// but this one-item list stays so /pro's own SubTabs bar still renders (and still links
+// out to where Membership actually lives now) rather than needing its own special case.
 export const PRO_TABS: SubTab[] = [
   { href: "/pro", label: "Overview" },
-  { href: "/pro/membership", label: "Membership" },
+  { href: "/profile/membership", label: "Membership" },
+];
+
+export const PROFILE_TABS: SubTab[] = [
+  { href: "/profile", label: "Profile" },
+  { href: "/profile/membership", label: "Membership" },
 ];
 
 export const NEWS_TABS: SubTab[] = [

@@ -19,6 +19,8 @@ import { SuggestionBoxCard } from "@/components/SuggestionBoxCard";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
 import { HOME_WIDGETS } from "@/lib/home-widgets";
 import { isRecentGraduate } from "@/lib/professional-dates";
+import { PROFILE_TABS } from "@/lib/section-nav";
+import { SubTabs } from "@/components/SubTabs";
 
 // The long tail of keyword topics not already covered by SUGGESTED_TOPICS — comes from a
 // fixed vocabulary rather than whatever's currently loaded (see allKnownKeywordTopics).
@@ -50,7 +52,10 @@ export default async function ProfilePage() {
 
   return (
     <div className="screen-pad">
-      <h1 style={{ fontSize: 24, margin: "0 0 18px" }}>Profile</h1>
+      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Profile</h1>
+      <div style={{ marginBottom: 14 }}>
+        <SubTabs tabs={PROFILE_TABS} />
+      </div>
 
       <div className="profile-header-grid">
         <ReadingStreakCard streakDays={user.streakDays} />

@@ -93,7 +93,7 @@ export default async function GamesPage() {
           const Icon = GAME_ICON[game.kind];
           const state = completionStateForStatus(todayStatusByKind.get(game.kind));
           return (
-            <Link key={game.kind} href={game.href} className={`game-card game-card-${state}`}>
+            <Link key={game.kind} href={game.href} className={`game-card game-card-${state} game-card-kind-${game.kind}`}>
               {state === "completed" && (
                 <span className="game-card-check-badge">
                   <CheckCircleIcon size={18} />

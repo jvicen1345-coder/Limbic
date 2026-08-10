@@ -1283,6 +1283,19 @@ html[data-theme="dark"] .nav-founding-link-active {
   cursor: pointer;
   white-space: nowrap;
 }
+/* Chip.tsx's inactive state combines .tag-outline (border + colored text, no background)
+   with .filter-chip above — since .filter-chip's `border: none` comes later in the
+   cascade at equal specificity, it was silently canceling .tag-outline's border, and with
+   no background of its own either, the element fell through to the browser's default
+   <button> chrome: a light grey/white pill that read fine-ish in light mode but was hard
+   to read against dark mode's navy background (see the specialty filters on the Nexus
+   Directory page). This restores the intended outline look at higher specificity, with an
+   explicit transparent background so no default button styling can show through in either
+   theme. */
+.tag-outline.filter-chip {
+  border: 1px solid var(--color-accent);
+  background: none;
+}
 
 /* — Nexus — */
 .avatar {
@@ -2859,6 +2872,21 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 .wellness-card-columns > * { break-inside: avoid; margin-bottom: 18px; }
 
+/* — Metrics page's calculator grid — unlike .wellness-card-columns above, these four cards
+   (BMI/Max HR/HRV/VO2 Max) are similar enough in height that a real row-synced grid reads
+   as more deliberately "even" than letting them flow into masonry columns — a real grid
+   with align-items: stretch so paired cards in the same row match height exactly. */
+.metrics-calc-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: stretch; }
+@media (min-width: 860px) {
+  .metrics-calc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.metrics-calc-grid > .wellness-calc-card { display: flex; flex-direction: column; height: 100%; }
+/* Pins each card's result block to the bottom of its (now stretched) card, so all four
+   results line up on the same baseline instead of trailing at whatever height each card's
+   own description/input text happens to end. */
+.metrics-calc-grid .wellness-calc-result { margin-top: auto; }
+.metrics-calc-grid .wellness-calc-missing-profile { margin-top: auto; margin-bottom: 0; }
+
 /* — Status badges (BMI/HRV/VO2 Max/RPE categories) — */
 .wellness-badge {
   display: inline-flex;
@@ -3260,14 +3288,40 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 .game-card-completed { background: color-mix(in srgb, var(--color-games-completed) 8%, var(--color-surface)); opacity: 0.88; }
 
-.game-card-icon { margin-bottom: 14px; }
+/* Each remaining game gets its own light hearted tint (same design language as the
+   Student Atrium path cards' --path-accent) instead of every card sharing one identical
+   blue gradient — still entirely from the existing palette, just one accent per game
+   rather than the same one everywhere. */
+.game-card-kind-wordle { --game-accent: var(--color-accent); }
+.game-card-kind-crossword { --game-accent: var(--color-accent-2); }
+.game-card-kind-healthTrivia { --game-accent: var(--color-vitals-mindfulness); }
+.game-card-fresh.game-card-kind-wordle,
+.game-card-fresh.game-card-kind-crossword,
+.game-card-fresh.game-card-kind-healthTrivia,
+.game-card-progress.game-card-kind-wordle,
+.game-card-progress.game-card-kind-crossword,
+.game-card-progress.game-card-kind-healthTrivia {
+  background: linear-gradient(165deg, color-mix(in srgb, var(--game-accent) 16%, var(--color-accent-100)), var(--color-card-surface) 55%);
+  border-top: 3px solid var(--game-accent);
+}
+
+.game-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--game-accent, var(--color-accent)) 16%, transparent);
+}
 .game-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 19px; margin: 0 0 6px; }
 .game-card-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.45; margin: 0 0 14px; flex: 1; }
 
 .game-card-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 12px; color: var(--color-neutral-700); }
 .game-card-dots { display: inline-flex; gap: 3px; align-items: center; }
 .game-card-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--color-neutral-300); }
-.game-card-dot-filled { background: var(--color-accent); }
+.game-card-dot-filled { background: var(--game-accent, var(--color-accent)); }
 
 .game-card-btn {
   display: inline-flex;
@@ -3282,7 +3336,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   border: none;
 }
 .game-card-fresh .game-card-btn, .game-card-progress .game-card-btn {
-  background: var(--color-accent);
+  background: var(--game-accent, var(--color-accent));
   color: #fff;
 }
 .game-card-completed .game-card-btn {
@@ -4719,12 +4773,9 @@ html[data-theme="dark"] .atrium-page {
   h2 { font-size: 34px; }
   h3 { font-size: 26px; }
 
-  /* — Home feed: a centered, Facebook-style content column beside a real
-     right rail, instead of stretching the feed across the whole viewport. */
-  .home-pad { max-width: 1136px; }
-  .home-row { gap: 56px; justify-content: flex-start; }
-  .home-main-col { max-width: 680px; }
-  .home-aside-col { width: 320px; }
+  /* — Home feed: cards stay at their original, wider width (no capped content
+     column) — a narrower "Facebook-style" column was tried and rejected. Only
+     the card gap gets a touch more breathing room on desktop. */
   .cards-grid.home-cards-grid { gap: 24px; }
 
   /* — Nexus feed: same content-column width as Home, since it's the same
