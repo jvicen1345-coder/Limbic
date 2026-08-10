@@ -39,6 +39,12 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Limbic — PT News",
   description: "Up-to-date news, guidelines, and clinical tools for physical therapists.",
+  // Google Search Console's HTML-tag ownership verification — additional to the domain's
+  // existing DNS-based verification, not a replacement for it. Search Console's own
+  // instructions warn not to remove this once added, even after verification succeeds.
+  verification: {
+    google: "3j5CTxNE7wiihYyR_Bdd1ior2PdZ60XenEqYqyaH19k",
+  },
 };
 
 // Sets html[data-theme] before the first paint, so the page never flashes light and then
