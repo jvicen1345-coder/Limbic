@@ -24,9 +24,13 @@ export interface PlatformEvent {
 export async function LimbicCalendarWidget({
   personalDates,
   platformEvents,
+  isAdmin,
 }: {
   personalDates: PersonalDates;
   platformEvents: PlatformEvent[];
+  /** Nexus is gated to admins only for now (see app/(app)/nexus/layout.tsx) — real post
+   *  content (author names, body text) must not surface here for anyone else. */
+  isAdmin: boolean;
 }) {
   const today = todayLocalDateStr();
 
@@ -58,11 +62,13 @@ export async function LimbicCalendarWidget({
   // only ever shows a post created moments in the future relative to the query, which in
   // practice is effectively never. Implemented literally as specified; a real event-date
   // field on NexusPost would be needed for this to show anything in normal use.
-  const candidatePosts = await prisma.nexusPost.findMany({
-    select: { id: true, body: true, articleTitle: true, createdAt: true, sourceUrl: true, authorId: true },
-    orderBy: { createdAt: "desc" },
-    take: 300,
-  });
+  const candidatePosts = isAdmin
+    ? await prisma.nexusPost.findMany({
+        select: { id: true, body: true, articleTitle: true, createdAt: true, sourceUrl: true, authorId: true },
+        orderBy: { createdAt: "desc" },
+        take: 300,
+      })
+    : [];
   for (const post of candidatePosts) {
     const postDate = dateToLocalIso(post.createdAt);
     if (postDate < today) continue;

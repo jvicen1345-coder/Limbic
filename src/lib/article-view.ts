@@ -18,7 +18,7 @@ export interface ArticleViewData {
  *  Limbic Threads node click, see components/ArticleThreadsSplitView.tsx) — so the two
  *  paths can never quietly drift apart from each other. Returns null for an unknown
  *  article id; the caller decides what that means (404 vs. a swap error message). */
-export async function buildArticleView(articleId: string, userId: string): Promise<ArticleViewData | null> {
+export async function buildArticleView(articleId: string, userId: string, isAdmin: boolean): Promise<ArticleViewData | null> {
   const [raw, allArticles, savedRows] = await Promise.all([
     getArticleById(articleId),
     getArticles(),
@@ -37,7 +37,7 @@ export async function buildArticleView(articleId: string, userId: string): Promi
     .filter((a) => a.id !== raw.id && (a.type === raw.type || a.specialty === raw.specialty))
     .slice(0, 3)
     .map((a) => decorateArticle(a, savedIds));
-  const threadsNodes = await buildThreadsWeb(raw, allArticles);
+  const threadsNodes = await buildThreadsWeb(raw, allArticles, isAdmin);
 
   return { article, related, threadsNodes };
 }
