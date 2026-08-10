@@ -34,6 +34,7 @@ import {
   AppleIcon,
   DumbbellIcon,
   RefreshIcon,
+  ChevronRightIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -185,6 +186,14 @@ interface NavContentProps {
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
 function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
+  const pathname = usePathname();
+  // Collapsed by default unless already somewhere under /nexus (so landing on, say,
+  // /nexus/messages via a direct link or a widget elsewhere in the app doesn't hide the
+  // very section that link belongs to) — collapsing is purely a sidebar decluttering
+  // preference from here on, not tied to route changes, so a manual toggle isn't fought by
+  // navigating between the four Nexus sub-pages themselves.
+  const [nexusExpanded, setNexusExpanded] = useState(pathname.startsWith("/nexus"));
+
   return (
     <>
       <NavLink href="/home" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
@@ -216,25 +225,37 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
       <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" onNavigate={onNavigate} />
 
-      <div className="nav-section-label">Nexus</div>
-      <NavLink href="/nexus" icon={<UsersIcon />} label="Feed" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/nexus/directory" icon={<ListIcon />} label="Directory" bold={false} onNavigate={onNavigate} />
-      <NavLink
-        href="/nexus/connections"
-        icon={<UserPlusIcon />}
-        label="Connections"
-        badge={nexusRequestCount}
-        bold={false}
-        onNavigate={onNavigate}
-      />
-      <NavLink
-        href="/nexus/messages"
-        icon={<MessageCircleIcon />}
-        label="Messages"
-        exact={false}
-        bold={false}
-        onNavigate={onNavigate}
-      />
+      <button
+        type="button"
+        className="nav-section-label nav-section-label--toggle"
+        aria-expanded={nexusExpanded}
+        onClick={() => setNexusExpanded((v) => !v)}
+      >
+        Nexus
+        <ChevronRightIcon size={13} className={nexusExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
+      </button>
+      {nexusExpanded && (
+        <>
+          <NavLink href="/nexus" icon={<UsersIcon />} label="Feed" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/nexus/directory" icon={<ListIcon />} label="Directory" bold={false} onNavigate={onNavigate} />
+          <NavLink
+            href="/nexus/connections"
+            icon={<UserPlusIcon />}
+            label="Connections"
+            badge={nexusRequestCount}
+            bold={false}
+            onNavigate={onNavigate}
+          />
+          <NavLink
+            href="/nexus/messages"
+            icon={<MessageCircleIcon />}
+            label="Messages"
+            exact={false}
+            bold={false}
+            onNavigate={onNavigate}
+          />
+        </>
+      )}
 
       <div className="nav-section-label">Saved</div>
       <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" bold={false} onNavigate={onNavigate} />

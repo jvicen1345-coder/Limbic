@@ -756,6 +756,25 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
    than being flattened into the same all-caps treatment as "Limbic". */
 .nav-section-label--brand { text-transform: none; }
 
+/* A collapsible section label (currently just Nexus — see AppShell.tsx) is the same
+   .nav-section-label text treatment rendered as a <button> instead of a <div>, so it needs
+   its own reset: a bare <button> would otherwise show the browser's default button chrome
+   (background/border) since .nav-section-label itself never had any to override — same
+   bug shape as .filter-chip's button reset above, fixed the same way. */
+.nav-section-label--toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+.nav-section-label--toggle:hover { color: var(--color-neutral-700); }
+.nav-section-label--toggle-chevron { transition: transform 150ms ease; flex-shrink: 0; }
+.nav-section-label--toggle-chevron.expanded { transform: rotate(90deg); }
+
 .nav-footer {
   margin-top: auto;
   padding-top: 16px;
