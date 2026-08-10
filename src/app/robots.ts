@@ -5,7 +5,19 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/admin/"],
+      disallow: [
+        "/api/",
+        "/admin/",
+        "/profile/",
+        "/nexus/messages",
+        "/nexus/connections",
+        "/calendar",
+        "/wellness/metrics",
+        "/wellness/assess",
+        "/saved/",
+        "/student/",
+        "/boards/",
+      ],
     },
     sitemap: "https://limbic.center/sitemap.xml",
   };
