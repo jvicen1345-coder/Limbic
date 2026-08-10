@@ -6,7 +6,7 @@ import { FileTextIcon } from "@/components/icons";
 export default async function SlidesPage() {
   const user = await getCurrentUser();
   if (!user) return null;
-  if (!hasStudentAccess(user)) redirect("/");
+  if (!hasStudentAccess(user)) redirect("/home");
 
   return (
     <StudentPlaceholderPage

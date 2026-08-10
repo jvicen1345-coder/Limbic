@@ -10,14 +10,14 @@ export async function signInAction(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   await signInWithLicense({ number, state, email });
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/home");
 }
 
 export async function signInGeneralAction(formData: FormData) {
   const email = String(formData.get("generalEmail") ?? "");
   await signInWithEmail({ email });
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/home");
 }
 
 export async function signOutAction() {

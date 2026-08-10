@@ -114,7 +114,7 @@ export default async function StudentAtriumPage() {
   // Limbic Student is gated purely on a .edu email — not studentTier, which only affects
   // what's purchasable inside Boards, not who can reach the Atrium (see lib/session.ts).
   // A site admin gets through too (see hasStudentAccess).
-  if (!hasStudentAccess(user)) redirect("/");
+  if (!hasStudentAccess(user)) redirect("/home");
 
   const now = new Date();
   const greeting = `${timeOfDayGreeting(now.getHours())}, ${firstName(user.name)}`;

@@ -44,7 +44,7 @@ export async function recordHomeQuestionAction(dateKey: string, selectedIndex: n
     create: { userId: user.id, kind: "homeQuestion", dateKey, selectedIndex },
     update: { selectedIndex },
   });
-  revalidatePath("/");
+  revalidatePath("/home");
 }
 
 /** Persists a Limbic Boards question answer — same per-user fix as the Wordle action

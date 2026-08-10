@@ -12,7 +12,7 @@ import { completeOnboardingAction } from "@/app/actions/onboarding";
 export default async function OnboardingPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
-  if (user.hasOnboarded) redirect("/");
+  if (user.hasOnboarded) redirect("/home");
 
   const followedTopics = user.followedTopics as unknown as string[];
 

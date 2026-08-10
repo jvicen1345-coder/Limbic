@@ -187,7 +187,7 @@ interface NavContentProps {
 function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
   return (
     <>
-      <NavLink href="/" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
+      <NavLink href="/home" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
 
@@ -351,7 +351,7 @@ export function AppShell({
       </main>
 
       <nav className="app-bottomnav">
-        <BottomNavLink href="/" icon={<HomeIcon size={20} />} label="Home" />
+        <BottomNavLink href="/home" icon={<HomeIcon size={20} />} label="Home" />
         <BottomNavLink href="/search" icon={<SearchIcon size={20} />} label="Search" />
         <BottomNavLink href="/profile" icon={<ProfileIcon size={20} />} label="Profile" />
       </nav>

@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     return failure("google_failed");
   }
 
-  const response = NextResponse.redirect(new URL("/", request.url));
+  const response = NextResponse.redirect(new URL("/home", request.url));
   response.cookies.delete(STATE_COOKIE);
   return response;
 }

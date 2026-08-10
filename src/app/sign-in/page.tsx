@@ -17,7 +17,7 @@ export default async function SignInPage({
   searchParams: Promise<{ error?: string; deleted?: string; wiped?: string }>;
 }) {
   const user = await getCurrentUser();
-  if (user) redirect("/");
+  if (user) redirect("/home");
 
   const { error, deleted, wiped } = await searchParams;
   const errorMessage = error ? GOOGLE_ERROR_MESSAGES[error] : null;
