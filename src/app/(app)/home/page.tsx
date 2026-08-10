@@ -1,4 +1,4 @@
-import { getCurrentUser, recordHomeVisit, hasBackupSigninFlag } from "@/lib/session";
+import { getCurrentUser, recordHomeVisit, hasBackupSigninFlag, isAdminEmail } from "@/lib/session";
 import { hasMigrationBannerDismissed } from "@/app/actions/account-migration";
 import { GRADUATION_TRANSITION_SNOOZE_DAYS } from "@/lib/migration-reminder";
 import { prisma } from "@/lib/db";
@@ -185,7 +185,12 @@ export default async function HomePage() {
   // (always runs) wait behind the Nexus lookups (only when nexusOptIn is set), or vice
   // versa. Suggestions are only meaningful (and only shown) once the viewer has opted into
   // Nexus themselves — otherwise the aside offers a join prompt instead (see HomeFeed).
-  const nexusSuggestionsPromise: Promise<NexusSuggestion[] | null> = user.nexusOptIn
+  // Nexus itself is gated to admins only for now (see app/(app)/nexus/layout.tsx) — a
+  // non-admin's nexusOptIn just means "on the waitlist," so real suggested-people data
+  // (names, headlines, working Connect buttons) must not reach the Home sidebar for them
+  // the way it does for an admin, even though the flag is set the same way for both.
+  const isAdminUser = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
+  const nexusSuggestionsPromise: Promise<NexusSuggestion[] | null> = user.nexusOptIn && isAdminUser
     ? (async () => {
         await ensureNexusSeedData();
         const [nexusCandidates, connectionStates] = await Promise.all([
@@ -266,12 +271,14 @@ export default async function HomePage() {
             practiceStartDate: user.practiceStartDate,
           }}
           platformEvents={ceEvents}
+          isAdmin={isAdminUser}
         />
       }
       stocks={industryIndex}
       license={license}
       savedUnread={savedUnread}
       nexusSuggestions={nexusSuggestions}
+      nexusOnWaitlist={!isAdminUser && user.nexusOptIn}
       continueReading={continueReading}
       homeQuestion={{
         dateKey: homeQuestionDateKey,

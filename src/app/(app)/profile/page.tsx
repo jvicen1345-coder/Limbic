@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser, isStudentEmail } from "@/lib/session";
+import { getCurrentUser, isStudentEmail, isAdminEmail } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { buildLicenseView } from "@/lib/license";
 import { SUGGESTED_TOPICS } from "@/lib/meta";
@@ -49,6 +49,11 @@ export default async function ProfilePage() {
   const isStudentForCredentials = isStudentEmail(user.email) || isStudent;
   const showPracticeStartDate = user.isPro || isRecentGraduate(user.graduationDate);
   const hasFoundingSpot = (await prisma.foundingFunder.count({ where: { userId: user.id } })) > 0;
+  // Nexus isn't launched yet for anyone but site admins (see app/(app)/nexus/layout.tsx,
+  // which gates every /nexus route the same way) — this card's copy needs to match that
+  // "coming soon" state for everyone else, or "Go to Nexus"/"you're part of Nexus" would
+  // be a lie the moment they click through.
+  const isAdminUser = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
 
   return (
     <div className="screen-pad">
@@ -109,32 +114,58 @@ export default async function ProfilePage() {
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">Nexus</div>
-        {user.nexusOptIn ? (
-          <>
-            <p className="card-body" style={{ marginTop: 6 }}>
-              You&rsquo;re part of Nexus — visible in the directory and reachable for connection
-              requests and messages.
-            </p>
-            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-              <Link href="/nexus" className="btn btn-secondary">
-                Go to Nexus
-              </Link>
-              <form action={leaveNexusAction}>
-                <button type="submit" className="btn btn-ghost">
-                  Leave Nexus
+        {isAdminUser ? (
+          user.nexusOptIn ? (
+            <>
+              <p className="card-body" style={{ marginTop: 6 }}>
+                You&rsquo;re part of Nexus — visible in the directory and reachable for connection
+                requests and messages.
+              </p>
+              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                <Link href="/nexus" className="btn btn-secondary">
+                  Go to Nexus
+                </Link>
+                <form action={leaveNexusAction}>
+                  <button type="submit" className="btn btn-ghost">
+                    Leave Nexus
+                  </button>
+                </form>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="card-body" style={{ marginTop: 6 }}>
+                Join Nexus to appear in the directory and connect with other PTs, OTs, and
+                healthcare & wellness professionals.
+              </p>
+              <form action={optInToNexusAction}>
+                <button type="submit" className="btn btn-primary" style={{ marginTop: 8 }}>
+                  Join Nexus
                 </button>
               </form>
-            </div>
+            </>
+          )
+        ) : user.nexusOptIn ? (
+          <>
+            <p className="card-body" style={{ marginTop: 6 }}>
+              Nexus is coming soon — you&rsquo;re on the list and we&rsquo;ll let you know the
+              moment it launches.
+            </p>
+            <form action={leaveNexusAction}>
+              <button type="submit" className="btn btn-ghost" style={{ marginTop: 8 }}>
+                Remove me from the list
+              </button>
+            </form>
           </>
         ) : (
           <>
             <p className="card-body" style={{ marginTop: 6 }}>
-              Join Nexus to appear in the directory and connect with other PTs, OTs, and
-              healthcare & wellness professionals.
+              Nexus — a networking space for PTs, OTs, and the wider healthcare & wellness
+              community — is coming soon.
             </p>
             <form action={optInToNexusAction}>
               <button type="submit" className="btn btn-primary" style={{ marginTop: 8 }}>
-                Join Nexus
+                Notify me when it launches
               </button>
             </form>
           </>

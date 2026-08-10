@@ -65,6 +65,7 @@ export function HomeFeed({
   license,
   savedUnread,
   nexusSuggestions,
+  nexusOnWaitlist,
   continueReading,
   homeQuestion,
   dashboard,
@@ -85,6 +86,11 @@ export function HomeFeed({
   /** null when the viewer hasn't opted into Nexus yet — renders an invitation instead of
    *  a list of people they can't act on. */
   nexusSuggestions: NexusSuggestion[] | null;
+  /** True when the reader has opted into Nexus but nexusSuggestions is still null because
+   *  Nexus itself is coming-soon for non-admins (see app/(app)/nexus/layout.tsx) — shows a
+   *  waitlist confirmation instead of asking them to join again. Always false once real
+   *  suggestions are being shown. */
+  nexusOnWaitlist: boolean;
   /** null when there's no reading history yet — see app/(app)/page.tsx. */
   continueReading: ContinueReadingData | null;
   homeQuestion: HomeQuestionData;
@@ -316,7 +322,11 @@ export function HomeFeed({
             {showWidget("savedUnread") && <SavedUnreadCard articles={savedUnread} />}
             {showWidget("calendar") && calendarWidget}
             {showWidget("nexus") &&
-              (nexusSuggestions ? <NexusSuggestionsCard people={nexusSuggestions} /> : <NexusJoinPromptCard />)}
+              (nexusSuggestions ? (
+                <NexusSuggestionsCard people={nexusSuggestions} />
+              ) : (
+                <NexusJoinPromptCard onWaitlist={nexusOnWaitlist} />
+              ))}
             {showWidget("stock") && <StockCard stocks={stocks} />}
           </div>
         </aside>

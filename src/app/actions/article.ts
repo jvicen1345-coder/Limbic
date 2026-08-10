@@ -1,6 +1,6 @@
 "use server";
 
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, isAdminEmail } from "@/lib/session";
 import { buildArticleView, type ArticleViewData } from "@/lib/article-view";
 
 export interface SwapArticleResult {
@@ -22,7 +22,8 @@ export async function swapArticleAction(articleId: string): Promise<SwapArticleR
   const user = await getCurrentUser();
   if (!user) return NOT_SIGNED_IN_ERROR;
 
-  const data = await buildArticleView(articleId, user.id);
+  const isAdmin = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
+  const data = await buildArticleView(articleId, user.id, isAdmin);
   if (!data) return NOT_FOUND_ERROR;
 
   return { ok: true, data };

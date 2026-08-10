@@ -5,6 +5,7 @@ import type { User } from "@/generated/prisma/client";
 import { dateToLocalIso, isEventPost, PERSONAL_DEADLINE_FIELDS } from "@/lib/limbic-calendar";
 import { todayLocalDateStr } from "@/lib/today";
 import type { CalendarEvent } from "@/lib/calendar-events";
+import { isAdminEmail } from "@/lib/session";
 
 /** Builds every event the full /calendar page can show for `user` — personal deadlines,
  *  future PT platform (CE) articles, future Limbic community (Nexus) events, and the
@@ -28,20 +29,27 @@ export async function buildCalendarEvents(user: User): Promise<CalendarEvent[]> 
     });
   }
 
+  // Nexus is gated to admins only for now (see app/(app)/nexus/layout.tsx) — real post
+  // content (author names, body text) must not surface here for anyone else, even as a
+  // brief calendar preview.
+  const isAdmin = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
+
   const [articles, communityPosts, userEvents] = await Promise.all([
     getArticles(),
-    prisma.nexusPost.findMany({
-      select: {
-        id: true,
-        body: true,
-        articleTitle: true,
-        createdAt: true,
-        sourceUrl: true,
-        author: { select: { name: true } },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 300,
-    }),
+    isAdmin
+      ? prisma.nexusPost.findMany({
+          select: {
+            id: true,
+            body: true,
+            articleTitle: true,
+            createdAt: true,
+            sourceUrl: true,
+            author: { select: { name: true } },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 300,
+        })
+      : Promise.resolve([]),
     prisma.userCalendarEvent.findMany({ where: { userId: user.id }, orderBy: { date: "asc" } }),
   ]);
 
