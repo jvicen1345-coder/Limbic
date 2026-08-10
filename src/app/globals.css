@@ -3894,40 +3894,44 @@ html[data-theme="dark"] .atrium-page {
    the spec calls for both a light and a dark state here. Every rule below reads var(--ff-*)
    exclusively — never var(--color-*) — so switching the main app's theme tokens later can
    never accidentally bleed into this page, and vice versa. */
+/* Always dark, regardless of the site-wide light/dark toggle — a deliberate exception
+   (like .agent-page/.threads-*, see the file-level comment at the top of this file) rather
+   than following html[data-theme]. Founding Funders reads as a distinct, premium moment
+   set apart from the rest of the app, not something that should flip to a light page.
+   Redefines the *real* --color-* tokens too (not just the --ff-* ones below), since a
+   couple of things on this page — the admin panel's shared .btn/.input, the disclaimer's
+   --color-danger — read from the global token set directly; without this override they'd
+   still follow the site's actual theme instead of staying dark. */
 .ff-page {
-  --ff-bg: #f9f7f4;
-  --ff-surface: #ffffff;
-  --ff-text: #23304a;
-  --ff-text-muted: color-mix(in srgb, #23304a 62%, transparent);
-  --ff-divider: color-mix(in srgb, #23304a 14%, transparent);
-  --ff-accent: var(--color-accent);
-  --ff-gold: #c9933a;
-  --ff-gold-tint: color-mix(in srgb, #c9933a 14%, transparent);
-  --ff-shadow: 0 4px 20px color-mix(in srgb, #2b2015 8%, transparent);
-  --ff-slot-empty-border: color-mix(in srgb, #23304a 20%, transparent);
-  /* Neutral, deliberately not gold — the legal disclaimer card is the one section on this
-     page that intentionally stays out of the founding-gold color language. */
-  --ff-neutral-tint: color-mix(in srgb, #23304a 4%, var(--ff-bg));
-  --ff-neutral-border: color-mix(in srgb, #23304a 14%, transparent);
+  --color-bg: #1a1510;
+  --color-surface: #241d15;
+  --color-text: #f2ece1;
+  --color-divider: color-mix(in srgb, #f2ece1 16%, transparent);
+  --color-danger: #e08883;
+  --color-accent: #6d9bf5;
+  --color-accent-600: #8fb2f8;
 
-  min-height: 100vh;
-  background: var(--ff-bg);
-  color: var(--ff-text);
-  font-family: var(--font-body);
-  animation: ff-page-in 400ms ease both;
-}
-html[data-theme="dark"] .ff-page {
   --ff-bg: #1a1510;
   --ff-surface: #241d15;
   --ff-text: #f2ece1;
   --ff-text-muted: color-mix(in srgb, #f2ece1 62%, transparent);
   --ff-divider: color-mix(in srgb, #f2ece1 16%, transparent);
+  --ff-accent: var(--color-accent);
   --ff-gold: #d9a94d;
   --ff-gold-tint: color-mix(in srgb, #d9a94d 16%, transparent);
   --ff-shadow: 0 4px 20px color-mix(in srgb, #000 26%, transparent);
   --ff-slot-empty-border: color-mix(in srgb, #f2ece1 22%, transparent);
+  /* Neutral, deliberately not gold — the legal disclaimer card is the one section on this
+     page that intentionally stays out of the founding-gold color language. */
   --ff-neutral-tint: color-mix(in srgb, #f2ece1 6%, var(--ff-bg));
   --ff-neutral-border: color-mix(in srgb, #f2ece1 16%, transparent);
+
+  color-scheme: dark;
+  min-height: 100vh;
+  background: var(--ff-bg);
+  color: var(--ff-text);
+  font-family: var(--font-body);
+  animation: ff-page-in 400ms ease both;
 }
 @keyframes ff-page-in {
   from { opacity: 0; }
@@ -4406,15 +4410,18 @@ html[data-theme="dark"] .ff-page {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .landing-page {
+  --landing-radius: 10px;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
 }
 
-/* — Shared button styles — same pill shape/interaction language as .btn, just with a
-   couple of landing-only variants (outline, gold, a larger "-lg" size for hero/founding
-   CTAs) that don't belong on the general-purpose .btn used throughout the authenticated
-   app. */
+/* — Shared button styles — a squared-off rounded-rect rather than .btn's pill shape
+   (--landing-radius below), on purpose: a full pill reads as friendly/consumer, a tighter
+   rect reads closer to the restrained, enterprise-grade feel the rest of this page is going
+   for. Couple of landing-only variants (outline, gold, a larger "-lg" size for hero/
+   founding CTAs) that don't belong on the general-purpose .btn used throughout the
+   authenticated app. */
 .landing-btn {
   display: inline-flex;
   align-items: center;
@@ -4425,7 +4432,7 @@ html[data-theme="dark"] .ff-page {
   font-size: 14px;
   text-decoration: none;
   padding: 10px 20px;
-  border-radius: 999px;
+  border-radius: var(--landing-radius);
   border: 1.5px solid transparent;
   cursor: pointer;
   transition: transform 150ms ease, box-shadow 200ms ease, background 150ms ease, opacity 150ms ease;
@@ -4439,7 +4446,7 @@ html[data-theme="dark"] .ff-page {
 .landing-btn-primary:hover { background: var(--color-accent-600); }
 .landing-btn-gold { background: var(--color-migration-gold); color: #241704; }
 .landing-btn-gold:hover {
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-migration-gold) 22%, transparent), 0 4px 16px color-mix(in srgb, var(--color-migration-gold) 35%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-migration-gold) 16%, transparent), 0 3px 12px color-mix(in srgb, var(--color-migration-gold) 28%, transparent);
 }
 
 /* — Section 1: nav — */
@@ -4526,13 +4533,14 @@ html[data-theme="dark"] .ff-page {
   .landing-audience-grid { grid-template-columns: minmax(0, 1fr); }
 }
 .landing-audience-card {
-  background: var(--color-card-surface);
+  background: var(--color-surface);
   border: 1px solid var(--color-divider);
-  border-radius: var(--radius-lg);
+  border-top: 2px solid var(--color-accent);
+  border-radius: var(--landing-radius);
   padding: 28px 26px;
-  transition: transform 200ms ease, box-shadow 200ms ease;
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
 }
-.landing-audience-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.landing-audience-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 .landing-audience-card-label {
   font-size: 10.5px;
   letter-spacing: 0.09em;
@@ -4565,13 +4573,13 @@ html[data-theme="dark"] .ff-page {
   .landing-features-grid { grid-template-columns: minmax(0, 1fr); }
 }
 .landing-feature-card {
-  background: var(--color-card-surface);
+  background: var(--color-surface);
   border: 1px solid var(--color-divider);
-  border-radius: var(--radius-md);
+  border-radius: var(--landing-radius);
   padding: 24px 24px;
-  transition: transform 200ms ease, box-shadow 200ms ease;
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
 }
-.landing-feature-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.landing-feature-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-divider)); }
 .landing-feature-card-name { font-family: var(--font-heading); font-weight: 800; font-size: 16.5px; margin: 0 0 8px; }
 .landing-feature-card-body { font-size: 14px; line-height: 1.6; color: var(--color-neutral-700); margin: 0; }
 
@@ -4581,8 +4589,8 @@ html[data-theme="dark"] .ff-page {
 .landing-founding {
   padding: 96px 32px;
   text-align: center;
-  border-top: 4px solid var(--color-migration-gold);
-  background: color-mix(in srgb, var(--color-migration-gold) 7%, var(--color-bg));
+  border-top: 2px solid var(--color-migration-gold);
+  background: color-mix(in srgb, var(--color-migration-gold) 4%, var(--color-bg));
 }
 .landing-founding-heading {
   font-family: var(--font-heading);
