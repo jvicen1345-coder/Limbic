@@ -3083,10 +3083,16 @@ html[data-theme="dark"] .nav-founding-link-active {
   .wellness-assess-log-actions .btn { flex: 1; }
 }
 
-/* — Assess Yourself: two-column layout (left test cards / right sticky video panel) —
+/* — Assess Yourself: each test card is paired with its own video-reference card —
    scoped to this page only; .wellness-assess-card and .wellness-card-columns are shared
    with /wellness/exercises so they are left untouched and this page opts out of the
-   shared column-grid via .assess-cards-column instead. */
+   shared column-grid via .assess-page-layout instead. On mobile the two are simply
+   stacked in DOM order (test, its video, next test, its video, ...) so the reference stays
+   right next to its test. On desktop, .assess-page-layout becomes a 2-column grid with the
+   same interleaved DOM order — CSS grid auto-placement fills left-then-right per row, so
+   each video cell lands in the same row as its matching test card without any JS height
+   matching; align-items: start keeps the (usually much shorter) video cell pinned to the
+   top of that row instead of stretching. */
 .assess-page-layout {
   display: flex;
   flex-direction: column;
@@ -3100,23 +3106,9 @@ html[data-theme="dark"] .nav-founding-link-active {
     align-items: start;
   }
 }
-.assess-cards-column { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .assess-test-card { border-left: 3px solid var(--color-accent); }
 
-.assess-right-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-@media (min-width: 1024px) {
-  .assess-right-panel {
-    position: sticky;
-    top: 24px;
-    height: fit-content;
-    max-height: calc(100vh - 48px);
-    overflow-y: auto;
-  }
-}
+.assess-video-cell { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .assess-right-panel-heading { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700); margin: 0 0 2px; }
 
 .assess-video-card {
