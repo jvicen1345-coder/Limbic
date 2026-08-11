@@ -19,7 +19,8 @@ export interface SubmitVisitRequestResult {
 }
 
 /** ConnexionScheduleSection's "Request Your Visit" submit — the scheduling form embedded on
- *  /connexion, /connexion/safety-score, and /connexion/bettie. Only name/phone/email are
+ *  /connexion and /connexion/delia (/connexion/afit and /connexion/safety-score only link
+ *  out to /connexion's copy of the form, neither embeds its own). Only name/phone/email are
  *  required; preferredDate/preferredTime/message are all optional, matching the form itself. */
 export async function submitVisitRequest(input: SubmitVisitRequestInput): Promise<SubmitVisitRequestResult> {
   const name = input.name.trim();
@@ -42,8 +43,7 @@ export async function submitVisitRequest(input: SubmitVisitRequestInput): Promis
   });
 
   revalidatePath("/connexion");
-  revalidatePath("/connexion/safety-score");
-  revalidatePath("/connexion/bettie");
+  revalidatePath("/connexion/delia");
   revalidatePath("/admin/connexion-visits");
   return { ok: true };
 }

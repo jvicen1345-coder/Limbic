@@ -602,7 +602,7 @@ model FoundingFunderWaitlist {
 
 // A home-visit request submitted from The Connexion Method's scheduling form — see
 // ConnexionScheduleSection.tsx (embedded on /connexion, /connexion/safety-score, and
-// /connexion/bettie) and submitVisitRequest in app/actions/connexion.ts. Not tied to a
+// /connexion/delia) and submitVisitRequest in app/actions/connexion.ts. Not tied to a
 // User (same reasoning FoundingFunderWaitlist/the old ConnexionWaitlist this replaces
 // used) — a visitor can request a visit without a Limbic account existing at all in
 // principle, even though every page the form lives on is sign-in gated in practice.

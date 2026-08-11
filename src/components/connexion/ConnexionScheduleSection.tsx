@@ -4,10 +4,12 @@ import { useState, useTransition, type FormEvent } from "react";
 import { submitVisitRequest } from "@/app/actions/connexion";
 
 /** The Connexion Method's "Schedule Your Visit" section — the same dark CTA card + form
- *  embedded on /connexion, /connexion/safety-score, and /connexion/bettie (replaces the
- *  old email-only ConnexionWaitlistForm everywhere it appeared). Renders the full section
- *  — heading, body, form, disclaimer — not just the form, so every page that wants "Schedule
- *  Your Visit" gets an identical, self-contained block. */
+ *  embedded on /connexion and /connexion/delia (replaces the old email-only
+ *  ConnexionWaitlistForm everywhere it appeared). /connexion/afit and /connexion/safety-score
+ *  both link out to this instead of embedding their own copy. Renders the full section —
+ *  heading, body, form, disclaimer — not just the form, so every page that wants "Schedule
+ *  Your Visit" gets an identical, self-contained block. The `id="schedule"` anchor is what
+ *  /connexion/afit's "Schedule Your Assessment" button targets via `/connexion#schedule`. */
 export function ConnexionScheduleSection() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -36,16 +38,16 @@ export function ConnexionScheduleSection() {
   };
 
   return (
-    <div className="connexion-cta-card">
+    <div className="connexion-cta-card" id="schedule">
       <div className="connexion-cta-title">Schedule Your Visit</div>
       <p className="connexion-cta-body">
-        Book a home safety assessment with Bettie Vicencio, PT — serving Orange County, California. A licensed
+        Book a home safety assessment with Delia Vicencio, PT, DPT — serving Orange County, California. A licensed
         physical therapist with 30 years of home health experience comes to you.
       </p>
 
       {submitted ? (
         <p className="connexion-visit-confirmation">
-          Your request has been received. Bettie will be in touch within 24 hours to confirm your visit.
+          Your request has been received. Delia will be in touch within 24 hours to confirm your visit.
         </p>
       ) : (
         <form className="connexion-visit-form" onSubmit={onSubmit}>

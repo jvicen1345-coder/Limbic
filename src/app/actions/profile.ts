@@ -77,7 +77,7 @@ export async function updateProfessionalDates(field: ProfessionalDateField, valu
  *  with the same email, since that's the same "please forget me" request even though
  *  FoundingFunderWaitlist isn't a User relation at all (see schema.prisma). A submitted
  *  ConnexionVisitRequest is deliberately NOT cleaned up here, unlike the waitlist — it's a
- *  real appointment record Bettie may still need for scheduling/billing, not a marketing
+ *  real appointment record Delia may still need for scheduling/billing, not a marketing
  *  signup, so it isn't part of this "forget me" sweep.
  *
  *  No "type DELETE to confirm" check here — that's components/DeleteAccountSection.tsx's
