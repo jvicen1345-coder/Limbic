@@ -5111,6 +5111,72 @@ html[data-theme="dark"] .atrium-page {
   .landing-footer { flex-direction: column; text-align: center; padding: 24px 20px; }
 }
 
+/* — /boards/npte-breakdown — a static reference page, so it leans on the same shells the
+   rest of Boards already uses (.card.elev-sm, .card-kicker) rather than inventing a new
+   card language; only the pieces that page doesn't have a precedent for (the weighted
+   system grid, the amber caution card, the accordion deep-dives) get their own npte- rules
+   below. Section 3's stat row reuses .dashboard-metric-tile directly, and Section 2/7's
+   progress bars reuse .progress-bar (see the Daily PT Dashboard / generic progress-bar
+   rules above), same reasoning. */
+.npte-systems-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin-bottom: 14px; }
+.npte-system-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.npte-system-weight {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 26px;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.npte-system-desc { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; margin: 10px 0 0; }
+
+.npte-warning-card {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 12%, transparent);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.npte-warning-card-title { font-weight: 700; margin: 0 0 4px; color: var(--color-warn); }
+.npte-warning-card p { margin: 0; color: var(--color-text); }
+
+.npte-bullet-list { margin: 12px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.65; color: var(--color-text); }
+.npte-bullet-list li { margin-bottom: 4px; }
+
+.npte-accordion-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.npte-accordion {
+  background: var(--color-card-surface);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+}
+.npte-accordion summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 14px;
+}
+.npte-accordion summary::-webkit-details-marker { display: none; }
+.npte-accordion summary::after {
+  content: "+";
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--color-neutral-700);
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.npte-accordion[open] summary::after { content: "\2212"; }
+.npte-accordion p { margin: 12px 0 0; font-size: 13px; line-height: 1.6; color: var(--color-neutral-700); }
+
+.npte-stat-lines { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-divider); display: flex; flex-direction: column; gap: 6px; }
+.npte-stat-line { font-size: 13px; color: var(--color-neutral-700); }
+.npte-stat-line strong { color: var(--color-text); }
+
 /* ============================================================================
    DESKTOP OVERRIDES (>= 1024px) — makes the authenticated app feel like a real
    desktop product (structured columns, contained content, more breathing room)
@@ -5154,6 +5220,10 @@ html[data-theme="dark"] .atrium-page {
      !important is only needed because the page sets its own inline
      max-width for the same element; nothing else here relies on it. */
   .boards-question-pad { max-width: 680px !important; }
+
+  /* — NPTE Exam Breakdown: the 5 system cards read better as 2 across than a single
+     stretched-wide column once there's room. */
+  .npte-systems-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   /* — Founding Funders (dedicated page) and its landing-page teaser section:
      widen both to the same 800px content width. */
