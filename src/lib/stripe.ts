@@ -75,6 +75,16 @@ export function planForPriceId(priceId: string | undefined): BillablePlan | null
   return null;
 }
 
+/** A Checkout Session's `payment_intent` is a plain string id unless the session was
+ *  fetched with that field expanded, in which case it's the full PaymentIntent object —
+ *  used by both the checkout.session.completed webhook handler
+ *  (app/api/stripe/webhook/route.ts) and the /founding-funders success-page backup
+ *  confirmation (createFoundingFunderCheckout's companions in app/actions/founding-funders.ts). */
+export function paymentIntentIdFromSession(session: Stripe.Checkout.Session): string | null {
+  if (!session.payment_intent) return null;
+  return typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent.id;
+}
+
 /** Looks up (or creates, on a reader's first-ever checkout) this user's Stripe Customer,
  *  reusing it on every later checkout/portal session rather than minting a new one each
  *  time — see User.stripeCustomerId in schema.prisma. */

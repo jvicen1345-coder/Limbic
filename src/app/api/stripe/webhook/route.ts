@@ -1,18 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { getStripe, stripeEnabled, planForPriceId, type BillablePlan } from "@/lib/stripe";
+import { getStripe, stripeEnabled, planForPriceId, paymentIntentIdFromSession, type BillablePlan } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
 
 /**
  * The single source of truth for isPro/studentTier/isWellnessPlus — app/actions/pro.ts
- * only ever starts checkout/portal sessions, never flips any of those fields itself.
+ * only ever starts checkout/portal sessions, never flips any of those fields itself. Also
+ * the primary path (see confirmFoundingFunderCheckoutSession below) for confirming the
+ * one-time $40 Founding Funder purchase started by createFoundingFunderCheckout
+ * (app/actions/founding-funders.ts) — the /founding-funders success page does its own
+ * backup check of the Checkout Session directly, in case this webhook is delayed.
  * Verifies the raw request body against STRIPE_WEBHOOK_SECRET before trusting anything in
  * it — an unverified POST to this URL is just attacker-controlled JSON, same reasoning as
  * lib/google-oauth.ts's ID token verification.
  *
  * Configure this route's URL (https://<your-domain>/api/stripe/webhook) as a webhook
  * endpoint in the Stripe Dashboard, subscribed to at least: customer.subscription.created,
- * customer.subscription.updated, customer.subscription.deleted.
+ * customer.subscription.updated, customer.subscription.deleted, checkout.session.completed.
  */
 export async function POST(request: NextRequest) {
   if (!stripeEnabled() || !process.env.STRIPE_WEBHOOK_SECRET) {
@@ -44,6 +48,9 @@ export async function POST(request: NextRequest) {
         break;
       case "customer.subscription.deleted":
         await clearSubscription(event.data.object as Stripe.Subscription);
+        break;
+      case "checkout.session.completed":
+        await confirmFoundingFunderCheckoutSession(event.data.object as Stripe.Checkout.Session);
         break;
       default:
         // Every other event type is intentionally ignored — this app only needs to know
@@ -148,6 +155,35 @@ async function clearSubscription(subscription: Stripe.Subscription) {
     data: {
       stripeSubscriptionId: null,
       ...(plan === "pro" ? { isPro: false } : { studentTier: "none" }),
+    },
+  });
+}
+
+/** checkout.session.completed fires for every completed Checkout Session this app creates —
+ *  subscription-mode (LimbicPro/Student/Wellness+, handled above by
+ *  customer.subscription.created/.updated instead) and payment-mode (the one-time $40
+ *  Founding Funder purchase) alike. Purely additive: a subscription checkout's Session has
+ *  no metadata.foundingFunderId, so this returns immediately and never touches subscription
+ *  state — see createFoundingFunderCheckout in app/actions/founding-funders.ts for where
+ *  that metadata gets stamped. */
+async function confirmFoundingFunderCheckoutSession(session: Stripe.Checkout.Session) {
+  const foundingFunderId = session.metadata?.foundingFunderId;
+  if (!foundingFunderId) return;
+
+  const record = await prisma.foundingFunder.findUnique({ where: { id: foundingFunderId } });
+  if (!record) {
+    console.error("[stripe webhook] no FoundingFunder record for id", foundingFunderId);
+    return;
+  }
+
+  await prisma.foundingFunder.update({
+    where: { id: foundingFunderId },
+    data: {
+      paymentStatus: "confirmed",
+      confirmed: true,
+      stripeSessionId: session.id,
+      stripePaymentId: paymentIntentIdFromSession(session),
+      confirmedAt: new Date(),
     },
   });
 }

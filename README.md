@@ -248,6 +248,55 @@ live. Worth a real end-to-end test (a real test-mode checkout, confirming `isPro
 canceling via the portal, confirming it un-flips at period end) the first time this runs
 somewhere with real egress.
 
+## Founding Funders payments
+
+The one-time $40 "Claim a Spot" purchase on `/founding-funders` (see
+`src/lib/founding-funders-config.ts`'s `FOUNDING_FUNDERS_OPEN` flag,
+`components/founding-funders/ClaimSpotButton.tsx`) is a real, single-charge Stripe
+Checkout Session — `mode: "payment"`, not a subscription — kept separate from the
+recurring-billing flow above because it's a different Checkout mode with its own Price id
+and its own webhook event.
+
+- **Checkout** (`app/actions/founding-funders.ts` `createFoundingFunderCheckout`): creates
+  a `FoundingFunder` row with `paymentStatus: "pending"` first (so the spot counts against
+  the 25-spot cap immediately, before payment even starts), then a Checkout Session with
+  `metadata.foundingFunderId` pointing back at that row. Unlike `subscribeToProAction`
+  above, this doesn't `redirect()` itself — it returns the Session URL so
+  `ClaimSpotButton.tsx` (a Client Component) can show its own "Processing..." state before
+  navigating there.
+- **The webhook** now also handles `checkout.session.completed` (fired by every completed
+  Checkout Session, subscription or one-time alike) — purely additive: a subscription
+  checkout's Session has no `metadata.foundingFunderId`, so it's a no-op for
+  LimbicPro/Student/Wellness+ and only ever flips a Founding Funder row to
+  `paymentStatus: "confirmed"`.
+- **Backup confirmation**: since webhook delivery can lag behind the browser's own redirect
+  back from Stripe, the success page (`?success=true&session_id=...`) re-checks the session
+  directly and confirms right away if the webhook hasn't landed yet
+  (`confirmFoundingFunderPaymentIfNeeded`). The cancel page
+  (`?canceled=true&session_id=...`) deletes the pending row for an abandoned checkout
+  (`cleanupCanceledFoundingFunderCheckout`), so it doesn't sit around counting against the
+  cap forever.
+- **Admin override**: `components/founding-funders/FoundingFundersRoster.tsx` (visible to
+  `FOUNDING_FUNDERS_ADMIN_EMAILS` accounts at the bottom of the page) lists every pending/
+  confirmed claim with a manual "Confirm Payment" button for when a webhook never fires, and
+  "Remove" to delete a stale claim and reopen the spot.
+
+**Setup, in the Stripe Dashboard, before flipping `FOUNDING_FUNDERS_OPEN` to `true`:**
+
+1. Create one Product — name it **Limbic Founding Funder** — with a single **one-time**
+   Price of **$40** (not recurring). Copy that Price's id (starts `price_...`, **not** the
+   Product id) into `STRIPE_FOUNDING_FUNDER_PRICE_ID`.
+2. Developers → Webhooks → the same endpoint from the subscriptions section above
+   (`https://<your-domain>/api/stripe/webhook`) — just add `checkout.session.completed` to
+   its subscribed events (alongside the three `customer.subscription.*` ones). One endpoint
+   handles both flows; no second webhook needed.
+3. `STRIPE_SECRET_KEY`/`STRIPE_WEBHOOK_SECRET` are shared with the subscriptions flow above
+   — nothing extra to set there.
+
+Without `STRIPE_FOUNDING_FUNDER_PRICE_ID` set (even with `STRIPE_SECRET_KEY` configured),
+`createFoundingFunderCheckout` returns "Payments aren't set up yet" rather than starting a
+checkout with no real price behind it.
+
 Founding Funders (`/founding-funders`) is deliberately **not** part of this — that's a
 one-time $40 payment handled manually via Zelle plus an admin claim panel, by original
 design (see the page itself), not a subscription.

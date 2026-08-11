@@ -1,8 +1,11 @@
 // Config surface for /founding-funders — flip the one flag below on launch day, nothing
 // else on the page needs to change.
 
-/** Section 5 shows the "coming soon" waitlist form while this is false, and the Zelle
- *  payment instructions once it's true. Flip to true on launch day. */
+/** Section 5 shows the "coming soon" waitlist form while this is false, and the "Claim a
+ *  Spot" button (self-serve $40 Stripe Checkout — see ClaimSpotButton.tsx,
+ *  createFoundingFunderCheckout) once it's true. Flip to true on launch day, after
+ *  completing the "Founding Funders payments" setup steps in README.md (creating the $40
+ *  Stripe product/price and setting STRIPE_FOUNDING_FUNDER_PRICE_ID). */
 export const FOUNDING_FUNDERS_OPEN = false;
 
 /** The Founding 25 — fixed, not configurable per round (see FoundingFunder.round in

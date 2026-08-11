@@ -537,12 +537,14 @@ model HepExercise {
   order     Int        @default(0)
 }
 
-// One of the 25 "Founding 25" spots on /founding-funders — created by claimFoundingSpot
-// (see app/actions/founding-funders.ts), triggered manually by an admin once a $40 Zelle
-// payment is confirmed. displayName/credential are captured at claim time rather than read
-// live off User (name/specialty) so the founding-grid entry stays exactly what was agreed
-// even if the reader later edits their profile. `round`/`amount` exist for a possible
-// second cohort after these 25 fill — unused (always round 1, amount 40) until that happens.
+// One of the 25 "Founding 25" spots on /founding-funders. Created two ways: self-serve via
+// createFoundingFunderCheckout (a real one-time $40 Stripe Checkout, see
+// app/actions/founding-funders.ts and app/api/stripe/webhook/route.ts), or manually by an
+// admin via claimFoundingSpotAction once an out-of-band payment is confirmed. displayName/
+// credential are captured at claim time rather than read live off User (name/specialty) so
+// the founding-grid entry stays exactly what was agreed even if the reader later edits their
+// profile. `round`/`amount` exist for a possible second cohort after these 25 fill — unused
+// (always round 1, amount 40) until that happens.
 model FoundingFunder {
   id     String  @id @default(cuid())
   // Nullable, onDelete: SetNull (not Cascade) — deliberately: the /founding-funders page
@@ -550,7 +552,8 @@ model FoundingFunder {
   // so deleting the underlying account (see app/actions/profile.ts deleteAccountAction)
   // detaches this row from any login instead of erasing it. displayName/credential were
   // already public (the reader/admin chose to show them in the grid), so keeping them
-  // around isn't exposing anything new.
+  // around isn't exposing anything new. Also left null entirely for a self-serve Stripe
+  // claim — that flow never requires an existing Limbic account (see createFoundingFunderCheckout).
   userId String? @unique
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
@@ -559,11 +562,23 @@ model FoundingFunder {
   round       Int      @default(1)
   amount      Int      @default(40)
   claimedAt   DateTime @default(now())
-  // Always true from creation — claimFoundingSpot only ever creates a row once payment is
-  // confirmed, there's no separate "pending claim" step today. Kept as a real column (not
-  // inferred from row existence) so the grid/count queries have an explicit, future-proof
-  // filter if an unconfirmed intermediate state gets added later.
+  // Kept alongside paymentStatus below (always true when paymentStatus is "confirmed",
+  // false otherwise) purely for backward compatibility with existing reads/writes that
+  // predate paymentStatus — paymentStatus is the real source of truth for the grid/admin's
+  // three-state (empty/pending/confirmed) display.
   confirmed   Boolean  @default(false)
+
+  /// "pending" | "confirmed" | "failed" — set to "pending" the moment a Stripe Checkout
+  /// Session is created (createFoundingFunderCheckout), flipped to "confirmed" by the
+  /// checkout.session.completed webhook (or the /founding-funders success-page backup check,
+  /// or an admin's manual "Confirm Payment" override). A row an admin claims directly
+  /// (claimFoundingSpotAction, no Stripe involved) is created already "confirmed". Pending
+  /// rows count toward the 25-spot cap the same as confirmed ones, so a spot can't be
+  /// oversold while a Checkout Session is still in flight.
+  paymentStatus   String    @default("pending")
+  stripeSessionId String?
+  stripePaymentId String?
+  confirmedAt     DateTime?
 }
 
 // A pre-launch email signup for /founding-funders, collected while
