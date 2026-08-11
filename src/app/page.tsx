@@ -6,7 +6,7 @@ import { LandingPage } from "@/components/LandingPage";
 export const metadata: Metadata = {
   title: "Limbic — The Physical Therapy Platform",
   description:
-    "The only platform that keeps physical therapy professionals current and connected, while making that same knowledge accessible to the patients and public they serve.",
+    "Limbic Center is the physical therapy platform built for DPT students, clinicians, and the public they serve. Evidence-based research, clinical tools, and professional community — all in one place.",
   openGraph: {
     title: "Limbic — The Physical Therapy Platform",
     description: "One platform. Every PT professional. Their entire career.",

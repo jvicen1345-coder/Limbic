@@ -131,7 +131,7 @@ export function LandingPage() {
       </section>
 
       <footer className="landing-footer">
-        <div className="landing-footer-copyright">© 2026 Limbic</div>
+        <div className="landing-footer-copyright">© 2026 Limbic Center — limbic.center</div>
         <div className="landing-footer-links">
           {FOOTER_LINKS.map((l, i) => (
             <span key={l.href}>
