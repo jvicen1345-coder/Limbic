@@ -3486,7 +3486,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .games-week-dot-active { background: var(--color-games-completed); }
 .games-week-label { font-size: 12.5px; color: var(--color-neutral-700); margin-left: 6px; }
 
-/* — Case of the Day (app/(app)/boards/sharpening/page.tsx, components/CaseOfDayCard.tsx) — */
+/* — Case of the Day (components/DailySharpeningSession.tsx) — */
 .case-section { margin-bottom: 12px; }
 .case-section-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; margin-bottom: 8px; }
 .case-bullet-list { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.6; color: var(--color-text); }
@@ -3525,6 +3525,103 @@ html[data-theme="dark"] .nav-founding-link-active {
 
 .case-reveal { margin-top: 4px; }
 .case-reveal-explanation { font-size: 13.5px; line-height: 1.6; color: var(--color-text); margin: 0 0 14px; }
+
+/* — Daily Sharpening timed session (components/DailySharpeningSession.tsx) — the unified
+   flow that replaced Board Question/Term/Case of the Day opening as three independent
+   cards on /boards. Reuses .case-* rules above plus .btn/.card-kicker/.dashboard-metric-*
+   throughout for each step's own content so this only adds the pieces those don't already
+   cover: the idle teaser cards, the pre-session stat row's container, the timer/progress
+   chrome, the per-question result banner, and the summary screen. */
+.sharpen-intro-cards { display: flex; flex-direction: column; gap: 12px; }
+.sharpen-intro-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border: none;
+  font: inherit;
+  color: inherit;
+}
+.sharpen-intro-card-body { min-width: 0; }
+.sharpen-intro-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; margin: 4px 0 0; }
+.sharpen-intro-card-hint { font-size: 12.5px; color: var(--color-accent-700); font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+
+.sharpen-done-card { text-align: center; padding: 28px 20px; }
+.sharpen-done-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; margin: 0 0 6px; }
+.sharpen-done-body { font-size: 13px; color: var(--color-neutral-700); margin: 0; }
+
+.sharpen-preview-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 20px; margin: 0 0 4px; }
+.sharpen-preview-subtitle { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 16px; }
+.sharpen-preview-desc { font-size: 13px; line-height: 1.6; color: var(--color-neutral-700); margin: 16px 0 20px; }
+.sharpen-begin-btn { width: 100%; font-size: 15px; padding: 13px; }
+.sharpen-preview-footnote { font-size: 12px; color: var(--color-neutral-600); text-align: center; margin: 10px 0 0; }
+
+.sharpen-active-header { margin-bottom: 14px; }
+.sharpen-timer {
+  font-family: "SF Mono", "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.sharpen-progress-row { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.sharpen-progress-label { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-700); }
+.sharpen-progress-dots { display: flex; gap: 8px; }
+.sharpen-progress-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--color-neutral-300); }
+.sharpen-progress-dot--done { background: var(--color-success); }
+.sharpen-progress-dot--current { background: var(--color-accent); }
+
+.sharpen-result-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  margin: 14px 0 8px;
+}
+.sharpen-result-banner--correct { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 12%, transparent); }
+.sharpen-result-banner--incorrect { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 10%, transparent); }
+.sharpen-result-explanation { font-size: 13px; line-height: 1.6; color: var(--color-neutral-700); margin: 0 0 16px; }
+
+.sharpen-summary-time { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; text-align: center; margin: 0 0 4px; }
+.sharpen-summary-score { font-size: 14px; text-align: center; color: var(--color-neutral-700); margin: 0 0 14px; }
+.sharpen-summary-context {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin: 0 0 16px;
+  text-align: center;
+}
+.sharpen-perfect-badge {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-warn) 40%, transparent);
+  border-radius: 999px;
+  padding: 5px 14px;
+}
+.sharpen-breakdown-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.sharpen-breakdown-item { padding: 12px 14px; border-radius: var(--radius-md); background: var(--color-neutral-100); }
+.sharpen-breakdown-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sharpen-breakdown-title { font-size: 13.5px; font-weight: 600; }
+.sharpen-breakdown-status { font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.sharpen-breakdown-status--correct { color: var(--color-success); }
+.sharpen-breakdown-status--incorrect { color: var(--color-danger); }
+.sharpen-breakdown-answer { font-size: 12.5px; color: var(--color-neutral-700); margin: 6px 0 0; }
+.sharpen-summary-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
 /* — Health Trivia (app/(app)/games/trivia/page.tsx, components/HealthTriviaGame.tsx) — */
 .trivia-page { max-width: 480px; margin: 0 auto; }
@@ -5111,6 +5208,72 @@ html[data-theme="dark"] .atrium-page {
   .landing-footer { flex-direction: column; text-align: center; padding: 24px 20px; }
 }
 
+/* — /boards/npte-breakdown — a static reference page, so it leans on the same shells the
+   rest of Boards already uses (.card.elev-sm, .card-kicker) rather than inventing a new
+   card language; only the pieces that page doesn't have a precedent for (the weighted
+   system grid, the amber caution card, the accordion deep-dives) get their own npte- rules
+   below. Section 3's stat row reuses .dashboard-metric-tile directly, and Section 2/7's
+   progress bars reuse .progress-bar (see the Daily PT Dashboard / generic progress-bar
+   rules above), same reasoning. */
+.npte-systems-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin-bottom: 14px; }
+.npte-system-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.npte-system-weight {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 26px;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.npte-system-desc { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; margin: 10px 0 0; }
+
+.npte-warning-card {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 12%, transparent);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.npte-warning-card-title { font-weight: 700; margin: 0 0 4px; color: var(--color-warn); }
+.npte-warning-card p { margin: 0; color: var(--color-text); }
+
+.npte-bullet-list { margin: 12px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.65; color: var(--color-text); }
+.npte-bullet-list li { margin-bottom: 4px; }
+
+.npte-accordion-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.npte-accordion {
+  background: var(--color-card-surface);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+}
+.npte-accordion summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 14px;
+}
+.npte-accordion summary::-webkit-details-marker { display: none; }
+.npte-accordion summary::after {
+  content: "+";
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--color-neutral-700);
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.npte-accordion[open] summary::after { content: "\2212"; }
+.npte-accordion p { margin: 12px 0 0; font-size: 13px; line-height: 1.6; color: var(--color-neutral-700); }
+
+.npte-stat-lines { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-divider); display: flex; flex-direction: column; gap: 6px; }
+.npte-stat-line { font-size: 13px; color: var(--color-neutral-700); }
+.npte-stat-line strong { color: var(--color-text); }
+
 /* ============================================================================
    DESKTOP OVERRIDES (>= 1024px) — makes the authenticated app feel like a real
    desktop product (structured columns, contained content, more breathing room)
@@ -5154,6 +5317,10 @@ html[data-theme="dark"] .atrium-page {
      !important is only needed because the page sets its own inline
      max-width for the same element; nothing else here relies on it. */
   .boards-question-pad { max-width: 680px !important; }
+
+  /* — NPTE Exam Breakdown: the 5 system cards read better as 2 across than a single
+     stretched-wide column once there's room. */
+  .npte-systems-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   /* — Founding Funders (dedicated page) and its landing-page teaser section:
      widen both to the same 800px content width. */

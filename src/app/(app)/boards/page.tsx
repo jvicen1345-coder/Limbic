@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getCurrentUser, hasStudentAccess, hasLicenseAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { GraduationCapIcon } from "@/components/icons";
+import { GraduationCapIcon, ChevronRightIcon } from "@/components/icons";
 import { BoardQuestionCard } from "@/components/BoardQuestionCard";
-import { BoardTermCard } from "@/components/BoardTermCard";
-import { CaseOfDayCard } from "@/components/CaseOfDayCard";
+import { DailySharpeningSession } from "@/components/DailySharpeningSession";
 import { BoardsStreakCard } from "@/components/BoardsStreakCard";
 import { questionForDate, termForDate, todayDateKey } from "@/lib/board-content";
 import { dayIndexForDateKey, caseForDayIndex } from "@/lib/cases-static";
@@ -60,32 +60,23 @@ export default async function BoardsHubPage() {
         <GraduationCapIcon size={22} style={{ color: "var(--color-accent)" }} />
         <h1 style={{ fontSize: 24, margin: 0 }}>Limbic Boards</h1>
       </div>
-      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
+      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 8px" }}>
         Your NPTE prep hub — a board-style question and a term to lock in every day, building toward exam day.
       </p>
+      <Link
+        href="/boards/npte-breakdown"
+        style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 13, fontWeight: 600, color: "var(--color-accent-700)", textDecoration: "none", marginBottom: 16 }}
+      >
+        NPTE Exam Breakdown <ChevronRightIcon size={13} />
+      </Link>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        <BoardQuestionCard
+        <DailySharpeningSession
           dateKey={dateKey}
           question={question}
-          initialSelectedIndex={questionCompletion?.selectedIndex ?? null}
-          initialElapsedSeconds={questionCompletion?.elapsedSeconds ?? null}
-          nexusOptIn={user.nexusOptIn}
-        />
-        <BoardTermCard
-          dateKey={dateKey}
           term={term}
-          initialRevealed={termCompletion != null}
-          initialElapsedSeconds={termCompletion?.elapsedSeconds ?? null}
-          nexusOptIn={user.nexusOptIn}
-        />
-        <CaseOfDayCard
-          dateKey={dateKey}
           dayCase={dayCase}
-          initial={{
-            selectedIndex: caseCompletion?.selectedIndex ?? null,
-            elapsedSeconds: caseCompletion?.elapsedSeconds ?? null,
-          }}
+          alreadyComplete={questionCompletion?.selectedIndex != null && termCompletion != null && caseCompletion?.selectedIndex != null}
           nexusOptIn={user.nexusOptIn}
         />
         <BoardsStreakCard streakDays={user.boardsStreakDays} />
