@@ -2,40 +2,68 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
+import { isSiteAdmin } from "@/lib/admin";
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-/** The Connexion Method certification waitlist count — read on /connexion and
- *  /connexion/safety-score (see ConnexionWaitlistForm) before any join happens, so both
- *  pages can show "X people are already waiting" without duplicating this query. */
-export async function getConnexionWaitlistCount(): Promise<number> {
-  return prisma.connexionWaitlist.count();
+export interface SubmitVisitRequestInput {
+  name: string;
+  phone: string;
+  email: string;
+  preferredDate?: string;
+  preferredTime?: string;
+  message?: string;
 }
 
-export interface JoinConnexionWaitlistResult {
+export interface SubmitVisitRequestResult {
   ok: boolean;
   error?: string;
-  waitlistCount: number;
 }
 
-/** Same shape as joinWaitlistAction in app/actions/founding-funders.ts — collects an email
- *  into ConnexionWaitlist for the (not-yet-launched) Connexion Certified Provider program.
- *  Called from ConnexionWaitlistForm on both /connexion and /connexion/safety-score. */
-export async function joinConnexionWaitlistAction(email: string): Promise<JoinConnexionWaitlistResult> {
-  const trimmed = email.trim().toLowerCase();
-  const currentCount = await prisma.connexionWaitlist.count();
+/** ConnexionScheduleSection's "Request Your Visit" submit — the scheduling form embedded on
+ *  /connexion, /connexion/safety-score, and /connexion/bettie. Only name/phone/email are
+ *  required; preferredDate/preferredTime/message are all optional, matching the form itself. */
+export async function submitVisitRequest(input: SubmitVisitRequestInput): Promise<SubmitVisitRequestResult> {
+  const name = input.name.trim();
+  const phone = input.phone.trim();
+  const email = input.email.trim();
 
-  if (!EMAIL_PATTERN.test(trimmed)) {
-    return { ok: false, error: "Enter a valid email address.", waitlistCount: currentCount };
+  if (!name || !phone || !email) {
+    return { ok: false, error: "Name, phone, and email are required." };
   }
 
-  const existing = await prisma.connexionWaitlist.findUnique({ where: { email: trimmed } });
-  if (existing) {
-    return { ok: false, error: "You're already on the list.", waitlistCount: currentCount };
-  }
+  await prisma.connexionVisitRequest.create({
+    data: {
+      name,
+      phone,
+      email,
+      preferredDate: input.preferredDate ? new Date(`${input.preferredDate}T00:00:00`) : null,
+      preferredTime: input.preferredTime || null,
+      message: input.message?.trim() || null,
+    },
+  });
 
-  await prisma.connexionWaitlist.create({ data: { email: trimmed } });
   revalidatePath("/connexion");
   revalidatePath("/connexion/safety-score");
-  return { ok: true, waitlistCount: currentCount + 1 };
+  revalidatePath("/connexion/bettie");
+  revalidatePath("/admin/connexion-visits");
+  return { ok: true };
+}
+
+const VISIT_STATUSES = ["new", "contacted", "scheduled", "completed"] as const;
+export type ConnexionVisitStatus = (typeof VISIT_STATUSES)[number];
+
+export interface AdminActionResult {
+  ok: boolean;
+  error?: string;
+}
+
+/** Admin-only status update for /admin/connexion-visits' per-row dropdown — same
+ *  isSiteAdmin() gate and AdminActionResult shape as verifyLicenseAction/rejectLicenseAction
+ *  in app/actions/license.ts. */
+export async function updateVisitRequestStatusAction(id: string, status: ConnexionVisitStatus): Promise<AdminActionResult> {
+  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!VISIT_STATUSES.includes(status)) return { ok: false, error: "Invalid status." };
+
+  await prisma.connexionVisitRequest.update({ where: { id }, data: { status } });
+  revalidatePath("/admin/connexion-visits");
+  return { ok: true };
 }

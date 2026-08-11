@@ -1,28 +1,27 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
-import { getConnexionWaitlistCount } from "@/app/actions/connexion";
-import { ConnexionWaitlistForm } from "@/components/connexion/ConnexionWaitlistForm";
+import { ConnexionScheduleSection } from "@/components/connexion/ConnexionScheduleSection";
 import { HeartIcon, FileTextIcon, ActivityIcon, LockIcon } from "@/components/icons";
 
 const AUDIENCE = [
-  "Older adults aging at home",
-  "Adult children of aging parents",
-  "Home care agencies",
-  "Realtors working with seniors",
-  "Elder law attorneys",
-  "Rehabilitation professionals",
+  "Seniors aging independently at home",
+  "Adult children planning for a parent's safety",
+  "Patients recovering after hospitalization",
+  "Home care and caregiving agencies",
+  "Realtors serving senior clients",
+  "Elder law and estate planning attorneys",
+  "Contractors specializing in accessibility",
+  "Physical therapists seeking certification",
 ];
 
 /** The Connexion Method hub — a partner program between Limbic and a proprietary senior
- *  home safety/mobility system developed by Bettie Vicencio, PT. Public to every signed-in
- *  reader (unlike Protocol/Safety Score below it in the sidebar, which are LimbicPRO-gated
- *  on their own pages) — this page just links out to those, showing a lock badge on the two
- *  PRO features rather than gating itself. */
+ *  home safety/mobility system developed by Bettie Vicencio, PT (bio at /connexion/bettie).
+ *  Public to every signed-in reader (unlike Protocol/Safety Score below it in the sidebar,
+ *  which are LimbicPRO-gated on their own pages) — this page just links out to those,
+ *  showing a lock badge on the two PRO features rather than gating itself. */
 export default async function ConnexionOverviewPage() {
   const user = await getCurrentUser();
   if (!user) return null;
-
-  const waitlistCount = await getConnexionWaitlistCount();
 
   return (
     <div className="screen-pad" style={{ maxWidth: 960, margin: "0 auto" }}>
@@ -32,7 +31,12 @@ export default async function ConnexionOverviewPage() {
           A standardized, evidence-based system for senior home safety, mobility optimization, and post-hospital
           recovery — developed by a licensed physical therapist with 30 years of home health experience.
         </p>
-        <p className="connexion-hero-partner">A Limbic partner program — developed by Bettie Vicencio, PT</p>
+        <p className="connexion-hero-partner">
+          A Limbic partner program — developed by{" "}
+          <Link href="/connexion/bettie" style={{ color: "var(--color-migration-gold)" }}>
+            Bettie Vicencio, PT
+          </Link>
+        </p>
       </div>
 
       <div className="connexion-mission-card">
@@ -94,21 +98,13 @@ export default async function ConnexionOverviewPage() {
       <h2 style={{ fontSize: 19, margin: "0 0 14px" }}>Who The Connexion Method Serves</h2>
       <div className="connexion-audience-grid">
         {AUDIENCE.map((a) => (
-          <span key={a} className="connexion-audience-tag">
+          <div key={a} className="connexion-audience-tag">
             {a}
-          </span>
+          </div>
         ))}
       </div>
 
-      <div className="connexion-cta-card">
-        <div className="connexion-cta-title">Become a Connexion Certified Provider</div>
-        <p className="connexion-cta-body">
-          Training and certification coming soon. Join the waitlist to be notified when the Connexion Method
-          certification program launches.
-        </p>
-        <ConnexionWaitlistForm initialCount={waitlistCount} />
-        <p className="connexion-cta-fineprint">For licensed physical therapists and rehabilitation professionals</p>
-      </div>
+      <ConnexionScheduleSection />
     </div>
   );
 }
