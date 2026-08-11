@@ -4,8 +4,7 @@ import { getCurrentUser, hasStudentAccess, hasLicenseAccess } from "@/lib/sessio
 import { prisma } from "@/lib/db";
 import { GraduationCapIcon, ChevronRightIcon } from "@/components/icons";
 import { BoardQuestionCard } from "@/components/BoardQuestionCard";
-import { BoardTermCard } from "@/components/BoardTermCard";
-import { CaseOfDayCard } from "@/components/CaseOfDayCard";
+import { DailySharpeningSession } from "@/components/DailySharpeningSession";
 import { BoardsStreakCard } from "@/components/BoardsStreakCard";
 import { questionForDate, termForDate, todayDateKey } from "@/lib/board-content";
 import { dayIndexForDateKey, caseForDayIndex } from "@/lib/cases-static";
@@ -72,27 +71,12 @@ export default async function BoardsHubPage() {
       </Link>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        <BoardQuestionCard
+        <DailySharpeningSession
           dateKey={dateKey}
           question={question}
-          initialSelectedIndex={questionCompletion?.selectedIndex ?? null}
-          initialElapsedSeconds={questionCompletion?.elapsedSeconds ?? null}
-          nexusOptIn={user.nexusOptIn}
-        />
-        <BoardTermCard
-          dateKey={dateKey}
           term={term}
-          initialRevealed={termCompletion != null}
-          initialElapsedSeconds={termCompletion?.elapsedSeconds ?? null}
-          nexusOptIn={user.nexusOptIn}
-        />
-        <CaseOfDayCard
-          dateKey={dateKey}
           dayCase={dayCase}
-          initial={{
-            selectedIndex: caseCompletion?.selectedIndex ?? null,
-            elapsedSeconds: caseCompletion?.elapsedSeconds ?? null,
-          }}
+          alreadyComplete={questionCompletion?.selectedIndex != null && termCompletion != null && caseCompletion?.selectedIndex != null}
           nexusOptIn={user.nexusOptIn}
         />
         <BoardsStreakCard streakDays={user.boardsStreakDays} />

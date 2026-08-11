@@ -147,7 +147,7 @@ export async function recordBodyConnectionsAction(dateKey: string, matchedRegion
 
 /** Persists a day's Case of the Day attempt — reuses the same DailyCompletion columns from
  *  when Case of the Day lived in Limbic Games as a two-attempt scored game, now that it's
- *  Daily Sharpening's third daily activity (see components/CaseOfDayCard.tsx): a single
+ *  Daily Sharpening's third step (see components/DailySharpeningSession.tsx): a single
  *  select-then-reveal pass, so `attemptedIndexes` is always one element and `status` is
  *  always "correct-first" or "wrong" for anything recorded going forward — "playing"/
  *  "correct-second" only remain valid on the type for rows persisted before this move.
