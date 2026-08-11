@@ -5312,6 +5312,275 @@ html[data-theme="dark"] .atrium-page {
 .npte-stat-line { font-size: 13px; color: var(--color-neutral-700); }
 .npte-stat-line strong { color: var(--color-text); }
 
+/* — The Connexion Method (/connexion, /connexion/caregiver, /connexion/protocol,
+   /connexion/safety-score) — a partner program section, so it gets a warm amber/gold
+   identity (var(--color-migration-gold), the same token /founding-funders' gold and
+   Limbic Agent Wellness already use elsewhere) instead of the standard blue accent —
+   sidebar section label, mission card, step numbers, badges, tags. Content classes reuse
+   .card/.card-title/.card-body/.btn/.tag/.dashboard-metric-tile/.wellness-agent-paywall
+   like every other section in the app; only what has no existing precedent gets its own
+   connexion- rules below. */
+.nav-section-label--connexion { color: var(--color-migration-gold); }
+
+.connexion-hero { margin-bottom: 22px; }
+.connexion-hero-title { font-size: 30px; margin: 0 0 10px; }
+.connexion-hero-subtitle { font-size: 15px; line-height: 1.6; color: var(--color-neutral-700); max-width: 640px; margin: 0 0 10px; }
+.connexion-hero-partner { font-size: 12.5px; color: var(--color-migration-gold); font-weight: 600; margin: 0; }
+
+.connexion-mission-card {
+  padding: 22px 24px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-migration-gold) 10%, var(--color-card-surface));
+  border-left: 4px solid var(--color-migration-gold);
+  margin-bottom: 26px;
+}
+.connexion-mission-kicker { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-migration-gold); margin-bottom: 8px; }
+.connexion-mission-text { font-size: 15px; line-height: 1.6; margin: 0; color: var(--color-text); }
+
+/* Desktop-first base (3 columns), shrinking at narrower widths — same pattern
+   .wellness-explore-grid already uses. */
+.connexion-feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 30px; }
+@media (max-width: 800px) { .connexion-feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .connexion-feature-grid { grid-template-columns: 1fr; } }
+.connexion-feature-card {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border-top: 3px solid var(--color-migration-gold);
+  border-left: 1px solid var(--color-divider);
+  border-right: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--color-divider);
+}
+.connexion-feature-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; margin: 0 0 8px; }
+.connexion-feature-body { font-size: 13px; line-height: 1.6; color: var(--color-neutral-700); flex: 1; margin: 0 0 16px; }
+.connexion-feature-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-migration-gold);
+  background: color-mix(in srgb, var(--color-migration-gold) 16%, transparent);
+  border-radius: 999px;
+  padding: 3px 9px;
+  margin-bottom: 12px;
+}
+
+.connexion-audience-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+.connexion-audience-tag {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: 999px;
+  padding: 8px 16px;
+}
+
+/* "Coming soon" pill — same shape as .wellness-explore-badge, reused everywhere Connexion
+   needs to mark a feature/module/step as not-yet-real (feature cards, module accordions,
+   protocol steps, safety-score domain previews). */
+.connexion-badge-soon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-migration-gold);
+  background: color-mix(in srgb, var(--color-migration-gold) 16%, transparent);
+  border-radius: 999px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+/* Gold pill tag — the 5 upcoming diagnosis-specific protocol names on /connexion/protocol. */
+.connexion-tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.connexion-tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-migration-gold);
+  background: color-mix(in srgb, var(--color-migration-gold) 12%, transparent);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+
+/* — Bottom "Become a Connexion Certified Provider" CTA — a deliberately fixed dark card,
+   not theme-adaptive (same reasoning/literal palette as .threads-detail-panel's always-dark
+   canvas above): a high-contrast banner that should read the same regardless of light/dark
+   mode, not flip between a dark and light card depending on the reader's theme. */
+.connexion-cta-card {
+  text-align: center;
+  padding: 44px 24px;
+  border-radius: var(--radius-lg);
+  background: #0d1428;
+  color: #dbe4f5;
+  margin-bottom: 8px;
+}
+.connexion-cta-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; margin: 0 0 10px; color: #fff; }
+.connexion-cta-body { font-size: 13.5px; line-height: 1.6; max-width: 480px; margin: 0 auto 22px; color: #9fb0d0; }
+.connexion-cta-fineprint { font-size: 11.5px; margin: 16px 0 0; color: #9fb0d0; }
+
+.connexion-waitlist-form { display: flex; gap: 10px; max-width: 380px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+.connexion-waitlist-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(219, 228, 245, 0.25);
+  background: rgba(255, 255, 255, 0.06);
+  color: #dbe4f5;
+  font-size: 14px;
+  font-family: var(--font-body);
+}
+.connexion-waitlist-input::placeholder { color: #6d7ea3; }
+.connexion-waitlist-input:focus { outline: 2px solid var(--color-migration-gold); outline-offset: 1px; }
+.connexion-waitlist-button {
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-migration-gold);
+  color: #241704;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: opacity 150ms ease;
+}
+.connexion-waitlist-button:hover { opacity: 0.88; }
+.connexion-waitlist-button:disabled { opacity: 0.55; cursor: default; }
+.connexion-waitlist-error { color: #ff8a8a; font-size: 13px; margin-top: 10px; }
+.connexion-waitlist-confirmation { font-size: 16px; font-weight: 600; color: var(--color-migration-gold); }
+.connexion-waitlist-count { margin-top: 14px; font-size: 12.5px; color: #9fb0d0; }
+
+/* — /connexion/caregiver's 6 module cards — pure-CSS <details> accordion, same mechanism as
+   .npte-accordion, but each summary shows a title + always-visible one-line description
+   (not just a title) since the collapsed state itself needs to explain what's inside. */
+.connexion-module-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.connexion-module {
+  background: var(--color-card-surface);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+}
+.connexion-module summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.connexion-module summary::-webkit-details-marker { display: none; }
+.connexion-module-summary-text { flex: 1; min-width: 0; }
+.connexion-module-title-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.connexion-module-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15.5px; }
+.connexion-module-desc { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }
+.connexion-module summary::after {
+  content: "+";
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--color-neutral-700);
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+.connexion-module[open] summary::after { content: "\2212"; }
+.connexion-module-body { margin: 14px 0 0; padding-top: 14px; border-top: 1px solid var(--color-divider); font-size: 13px; line-height: 1.6; color: var(--color-neutral-700); }
+
+/* A free reader's locked preview of a module beyond the "unlocked" cutoff (see
+   CAREGIVER_MODULES.slice in app/(app)/connexion/caregiver/page.tsx) — same title + one-line
+   description as an unlocked module, but no <details> expand affordance, just a note
+   pointing at Wellness+. */
+.connexion-module--locked {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--color-card-surface);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  opacity: 0.75;
+}
+.connexion-module-locked-note {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-migration-gold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.connexion-assessment-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 24px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-migration-gold) 8%, var(--color-card-surface));
+  border: 1px solid color-mix(in srgb, var(--color-migration-gold) 25%, transparent);
+  margin-top: 8px;
+}
+.connexion-assessment-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; margin: 0; }
+.connexion-assessment-body { font-size: 13px; line-height: 1.6; color: var(--color-neutral-700); margin: 0; }
+
+/* — /connexion/protocol's 8 numbered step cards — the number is a large, muted background
+   element (color-mixed gold, not full-strength) so it reads as decorative structure behind
+   the real content, not competing text. */
+.connexion-step-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+.connexion-step-card {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 20px 22px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+}
+.connexion-step-number {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 44px;
+  line-height: 1;
+  color: color-mix(in srgb, var(--color-migration-gold) 32%, transparent);
+  flex-shrink: 0;
+  min-width: 44px;
+}
+.connexion-step-body { flex: 1; min-width: 0; }
+.connexion-step-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16.5px; margin: 0 0 6px; }
+.connexion-step-desc { font-size: 13px; line-height: 1.6; color: var(--color-neutral-700); margin: 0 0 10px; }
+@media (max-width: 480px) {
+  .connexion-step-card { gap: 12px; padding: 16px; }
+  .connexion-step-number { font-size: 32px; min-width: 32px; }
+}
+
+/* — /connexion/safety-score's 4 domain-preview cards (Environmental Risk, Mobility and
+   Balance, Fall Risk Factors, Caregiver Support) — locked, quiet neutral tiles, same
+   reasoning as .dashboard-metric-tile: utility/status chrome, not a content card. */
+.connexion-domain-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 24px 0; }
+@media (max-width: 560px) { .connexion-domain-grid { grid-template-columns: 1fr; } }
+.connexion-domain-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-200);
+}
+.connexion-domain-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--color-neutral-600); }
+.connexion-domain-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; }
+.connexion-domain-desc { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }
+
+.connexion-coming-soon-card { text-align: center; padding: 40px 28px; }
+.connexion-coming-soon-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; margin: 0 0 12px; }
+.connexion-coming-soon-body { font-size: 14px; line-height: 1.6; color: var(--color-neutral-700); max-width: 520px; margin: 0 auto 28px; }
+
 /* ============================================================================
    DESKTOP OVERRIDES (>= 1024px) — makes the authenticated app feel like a real
    desktop product (structured columns, contained content, more breathing room)

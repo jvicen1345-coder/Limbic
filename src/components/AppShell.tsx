@@ -35,6 +35,8 @@ import {
   DumbbellIcon,
   RefreshIcon,
   ChevronRightIcon,
+  ShieldIcon,
+  HeartIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -200,6 +202,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
 
+      <div className="nav-section-label nav-section-label--connexion">The Connexion Method</div>
+      <NavLink href="/connexion" icon={<ShieldIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/connexion/caregiver" icon={<HeartIcon />} label="Caregiver Education" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/connexion/protocol" icon={<FileTextIcon />} label="Protocol" locked={!isPro} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/connexion/safety-score" icon={<ActivityIcon />} label="Safety Score" locked={!isPro} bold={false} onNavigate={onNavigate} />
+
       {isStudent && (
         <>
           <div className="nav-section-label">Limbic Student</div>
@@ -279,6 +287,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
           <div className="nav-section-label">Admin</div>
           <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
           <NavLink href="/admin/licenses" icon={<CheckCircleIcon />} label="License Queue" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/admin/connexion-waitlist" icon={<ShieldIcon />} label="Connexion Waitlist" bold={false} onNavigate={onNavigate} />
         </>
       )}
 

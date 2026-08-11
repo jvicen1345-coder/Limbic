@@ -600,6 +600,16 @@ model FoundingFunderWaitlist {
   createdAt DateTime @default(now())
 }
 
+// A pre-launch email signup for /connexion, The Connexion Method's certification waitlist
+// (see app/actions/connexion.ts joinConnexionWaitlistAction). Same "not tied to a User"
+// reasoning as FoundingFunderWaitlist above — a visitor can join without an account
+// existing yet, even though /connexion itself is sign-in gated in practice.
+model ConnexionWaitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
 // A single-use authorization code for wipeAllUsersAction (see app/actions/admin.ts) — an
 // admin generates one (generateWipeCodeAction), sees it exactly once, and it's deleted the
 // moment it's either spent on a successful wipe or superseded by generating a fresh one.
