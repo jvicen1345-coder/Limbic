@@ -120,7 +120,7 @@ export function LandingPage() {
         <h2 className="landing-founding-heading">The people who believed first</h2>
         <p className="landing-founding-body">
           Limbic is launching August 14th, 2026. Twenty-five founding spots are available — lifetime access for the
-          people who show up before there&rsquo;s proof. This is not equity. This is recognition.
+          people who back Limbic from day one. This is not equity. This is recognition.
         </p>
         <Link href="/founding-funders" className="landing-btn landing-btn-gold landing-btn-lg">
           See Founding Funders
