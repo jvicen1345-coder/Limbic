@@ -5431,6 +5431,27 @@ html[data-theme="dark"] .atrium-page {
 .connexion-visit-field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
 .connexion-visit-field-row { display: flex; gap: 14px; }
 .connexion-visit-field label { font-size: 12px; color: #9fb0d0; }
+/* Wraps "Preferred date"'s label + Clear button on one row — same height as the plain
+   <label> above "Preferred time" next to it, so the two fields in .connexion-visit-field-row
+   stay symmetrical whether or not Clear is showing (it only renders once a date is picked). */
+.connexion-visit-field-label-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.connexion-visit-field-label-row label { margin: 0; }
+/* A native <input type="date">'s own reset affordance is unreliable across mobile browsers
+   (on some devices, "clearing" it actually steps the date back by one day instead of
+   emptying the field — see the bug this button was added to fix) — this bypasses the native
+   widget entirely and just resets the field's own React state to "" directly. */
+.connexion-visit-clear-btn {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-migration-gold);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.connexion-visit-clear-btn:hover { text-decoration: underline; }
+.connexion-visit-clear-btn:disabled { opacity: 0.5; cursor: default; }
 .connexion-visit-input {
   width: 100%;
   padding: 10px 14px;
