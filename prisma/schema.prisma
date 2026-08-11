@@ -130,6 +130,15 @@ model User {
   lastBoardsActivityAt DateTime?
   boardsStreakDays     Int      @default(0)
 
+  // Daily Sharpening's "beat your time" pacing target (see DailySharpeningSession.tsx,
+  // recordSharpeningTargetAction in app/actions/daily-completion.ts). Null means "use the
+  // standard NPTE 3-question benchmark" (NPTE_THREE_QUESTION_BENCHMARK_SECONDS in
+  // lib/board-content.ts). Set to that day's actual completion time whenever a session
+  // finishes slower than the benchmark — the reader's own time becomes tomorrow's target —
+  // and reset back to null the next time they finish under the real benchmark, so a bad day
+  // doesn't permanently soften the goal once they're back on pace.
+  boardsSharpeningTargetSeconds Int?
+
   // Limbic Games (Daily Term / Mini Crossword / Case of the Day) streak — same
   // nextStreak() logic and same "separate streak per feature" reasoning as the reading and
   // Boards streaks above, driven off GameActivity rows instead of ReadArticle/

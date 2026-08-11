@@ -3532,12 +3532,10 @@ html[data-theme="dark"] .nav-founding-link-active {
    throughout for each step's own content so this only adds the pieces those don't already
    cover: the idle teaser cards, the pre-session stat row's container, the timer/progress
    chrome, the per-question result banner, and the summary screen. */
-.sharpen-intro-cards { display: flex; flex-direction: column; gap: 12px; }
-.sharpen-intro-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+/* Idle state — one consolidated "Daily Dose" entry point (replaces three separate
+   per-activity teaser cards) covering all 3 steps at once. */
+.sharpen-dose-card {
+  display: block;
   width: 100%;
   text-align: left;
   cursor: pointer;
@@ -3545,8 +3543,18 @@ html[data-theme="dark"] .nav-founding-link-active {
   font: inherit;
   color: inherit;
 }
-.sharpen-intro-card-body { min-width: 0; }
-.sharpen-intro-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; margin: 4px 0 0; }
+.sharpen-dose-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; margin: 6px 0 10px; }
+.sharpen-dose-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.sharpen-dose-meta span {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+.sharpen-dose-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 14px; border-top: 1px solid var(--color-divider); }
+.sharpen-dose-target { font-size: 12.5px; color: var(--color-neutral-700); }
 .sharpen-intro-card-hint { font-size: 12.5px; color: var(--color-accent-700); font-weight: 600; white-space: nowrap; flex-shrink: 0; }
 
 .sharpen-done-card { text-align: center; padding: 28px 20px; }
@@ -3567,7 +3575,10 @@ html[data-theme="dark"] .nav-founding-link-active {
   line-height: 1.1;
   text-align: center;
   margin-bottom: 10px;
+  transition: color 200ms ease;
 }
+.sharpen-timer--over { color: var(--color-danger); }
+.sharpen-timer-over-label { font-size: 11.5px; font-weight: 600; color: var(--color-danger); text-align: center; margin: -6px 0 10px; }
 .sharpen-progress-row { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .sharpen-progress-label { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-700); }
 .sharpen-progress-dots { display: flex; gap: 8px; }
@@ -3600,6 +3611,16 @@ html[data-theme="dark"] .nav-founding-link-active {
   margin: 0 0 16px;
   text-align: center;
 }
+.sharpen-summary-target {
+  font-size: 12.5px;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 12%, transparent);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin: 0 0 16px;
+  text-align: center;
+}
+.sharpen-summary-target--beat { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 12%, transparent); }
 .sharpen-perfect-badge {
   display: block;
   width: fit-content;

@@ -6,7 +6,7 @@ import { GraduationCapIcon, ChevronRightIcon } from "@/components/icons";
 import { BoardQuestionCard } from "@/components/BoardQuestionCard";
 import { DailySharpeningSession } from "@/components/DailySharpeningSession";
 import { BoardsStreakCard } from "@/components/BoardsStreakCard";
-import { questionForDate, termForDate, todayDateKey } from "@/lib/board-content";
+import { questionForDate, termForDate, todayDateKey, NPTE_THREE_QUESTION_BENCHMARK_SECONDS } from "@/lib/board-content";
 import { dayIndexForDateKey, caseForDayIndex } from "@/lib/cases-static";
 
 /** Limbic Boards — the hub and the daily practice combined onto one page (previously split
@@ -77,6 +77,7 @@ export default async function BoardsHubPage() {
           term={term}
           dayCase={dayCase}
           alreadyComplete={questionCompletion?.selectedIndex != null && termCompletion != null && caseCompletion?.selectedIndex != null}
+          targetSeconds={user.boardsSharpeningTargetSeconds ?? NPTE_THREE_QUESTION_BENCHMARK_SECONDS}
           nexusOptIn={user.nexusOptIn}
         />
         <BoardsStreakCard streakDays={user.boardsStreakDays} />
