@@ -26,12 +26,13 @@ const AFIT_DOMAINS = [
   { name: "Endurance", description: "Cardiovascular and muscular endurance for sustained activity" },
 ];
 
-/** The Adult Functional Independence Test — Delia Vicencio, PT, DPT's proprietary
- *  performance-based functional assessment, integrated into every Connexion Method visit
- *  (see Step 2 of /connexion/protocol, and the "AFIT" card on /connexion/delia). Open to
- *  every signed-in reader, same as Caregiver Education — this is educational/marketing
- *  content about the assessment itself, not the proprietary Protocol or Safety Score tool,
- *  so it isn't LimbicPRO-gated. */
+/** The Adult Functional Independence Test — a performance-based functional assessment
+ *  Delia Vicencio, PT, DPT uses (not developed) as part of every Connexion Method visit
+ *  (see Step 2 of /connexion/protocol, and the "AFIT" card on /connexion/delia — Delia
+ *  founded The Connexion Method itself, but the AFIT is a distinct assessment she applies
+ *  within it, not one she authored). Open to every signed-in reader, same as Caregiver
+ *  Education — this is educational/marketing content about the assessment itself, not the
+ *  proprietary Protocol or Safety Score tool, so it isn't LimbicPRO-gated. */
 export default async function ConnexionAfitPage() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -44,7 +45,7 @@ export default async function ConnexionAfitPage() {
           AFIT Functional Wellness Assessment
         </p>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 4px" }}>
-          Developed by Delia Vicencio, PT, DPT — 30 years of home health experience
+          Used by Delia Vicencio, PT, DPT in every Connexion Method assessment — 30 years of home health experience
         </p>
         <p className="connexion-hero-partner">Helping adults stay strong, mobile, and independent as they age.</p>
       </div>
