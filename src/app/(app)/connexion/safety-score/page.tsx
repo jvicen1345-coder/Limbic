@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
-import { getConnexionWaitlistCount } from "@/app/actions/connexion";
-import { ConnexionWaitlistForm } from "@/components/connexion/ConnexionWaitlistForm";
+import { ConnexionScheduleSection } from "@/components/connexion/ConnexionScheduleSection";
 import { LockIcon } from "@/components/icons";
 
 const DOMAINS = [
@@ -41,8 +40,6 @@ export default async function ConnexionSafetyScorePage() {
     );
   }
 
-  const waitlistCount = await getConnexionWaitlistCount();
-
   return (
     <div className="screen-pad" style={{ maxWidth: 760, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Connexion Safety Score</h1>
@@ -72,10 +69,7 @@ export default async function ConnexionSafetyScorePage() {
         </div>
       </div>
 
-      <div className="connexion-cta-card">
-        <div className="connexion-cta-title">Join the waitlist to be notified at launch</div>
-        <ConnexionWaitlistForm initialCount={waitlistCount} />
-      </div>
+      <ConnexionScheduleSection />
     </div>
   );
 }

@@ -207,6 +207,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/connexion/caregiver" icon={<HeartIcon />} label="Caregiver Education" bold={false} onNavigate={onNavigate} />
       <NavLink href="/connexion/protocol" icon={<FileTextIcon />} label="Protocol" locked={!isPro} bold={false} onNavigate={onNavigate} />
       <NavLink href="/connexion/safety-score" icon={<ActivityIcon />} label="Safety Score" locked={!isPro} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/connexion/bettie" icon={<ProfileIcon />} label="About Bettie Vicencio, PT" bold={false} onNavigate={onNavigate} />
 
       {isStudent && (
         <>
@@ -287,7 +288,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
           <div className="nav-section-label">Admin</div>
           <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
           <NavLink href="/admin/licenses" icon={<CheckCircleIcon />} label="License Queue" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/admin/connexion-waitlist" icon={<ShieldIcon />} label="Connexion Waitlist" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/admin/connexion-visits" icon={<ShieldIcon />} label="Connexion Visits" bold={false} onNavigate={onNavigate} />
         </>
       )}
 

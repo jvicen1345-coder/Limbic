@@ -75,7 +75,10 @@ export async function updateProfessionalDates(field: ProfessionalDateField, valu
  *  and /founding-funders itself promises the Founding 25 listing is permanent regardless
  *  of what happens to the account later. Also forgets a pre-launch waitlist signup made
  *  with the same email, since that's the same "please forget me" request even though
- *  FoundingFunderWaitlist/ConnexionWaitlist aren't User relations at all (see schema.prisma).
+ *  FoundingFunderWaitlist isn't a User relation at all (see schema.prisma). A submitted
+ *  ConnexionVisitRequest is deliberately NOT cleaned up here, unlike the waitlist — it's a
+ *  real appointment record Bettie may still need for scheduling/billing, not a marketing
+ *  signup, so it isn't part of this "forget me" sweep.
  *
  *  No "type DELETE to confirm" check here — that's components/DeleteAccountSection.tsx's
  *  job; this trusts it's only ever called after that confirmation, same as every other
@@ -86,7 +89,6 @@ export async function deleteAccountAction() {
 
   await prisma.$transaction([
     prisma.foundingFunderWaitlist.deleteMany({ where: { email: user.email ?? "" } }),
-    prisma.connexionWaitlist.deleteMany({ where: { email: user.email ?? "" } }),
     prisma.user.delete({ where: { id: user.id } }),
   ]);
 
