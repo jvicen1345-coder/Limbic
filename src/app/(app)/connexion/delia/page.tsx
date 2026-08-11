@@ -8,7 +8,7 @@ const CREDENTIALS = [
   "Doctor of Physical Therapy",
   "30+ years of home health and outpatient experience",
   "Founder of The Connexion Method",
-  "Developer of the Adult Functional Independence Test",
+  "Uses the Adult Functional Independence Test (AFIT) in every assessment",
 ];
 
 /** Bio page for The Connexion Method's founder — linked from the "developed by Delia
@@ -17,7 +17,9 @@ const CREDENTIALS = [
  *  the page ships now so the link target and layout exist, not because the bio is finished.
  *  Route is /connexion/delia — was /connexion/bettie before the founder's name was
  *  corrected; see AppShell.tsx and every other Link pointing here for the other half of
- *  that rename. */
+ *  that rename. Delia founded The Connexion Method itself, but did NOT develop the AFIT —
+ *  she uses it as part of her process (a correction from an earlier draft that credited her
+ *  as its developer); see /connexion/afit for the same distinction. */
 export default async function ConnexionDeliaPage() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -51,17 +53,18 @@ export default async function ConnexionDeliaPage() {
         <p className="card-body" style={{ marginTop: 8 }}>
           Delia Vicencio is a licensed physical therapist and Doctor of Physical Therapy with more than 30 years of
           experience working with older adults and medically complex patients in the home. She developed The
-          Connexion Method and the Adult Functional Independence Test to bring standardized, evidence-based
-          assessment to senior home safety and mobility optimization.
+          Connexion Method, using the Adult Functional Independence Test as its functional assessment, to bring
+          standardized, evidence-based assessment to senior home safety and mobility optimization.
         </p>
       </div>
 
       <div className="card elev-sm" style={{ marginBottom: 20 }}>
-        <div className="card-title">The AFIT — Developed by Delia</div>
+        <div className="card-title">The AFIT — Part of Every Connexion Method Visit</div>
         <p className="card-body" style={{ marginTop: 8, marginBottom: 14 }}>
-          The Adult Functional Independence Test is a proprietary, performance-based functional assessment
-          developed from 30 years of direct patient care. It evaluates posture, flexibility, strength, balance, and
-          endurance — and forms the functional foundation of every Connexion Method assessment.
+          The Adult Functional Independence Test is a performance-based functional assessment that Delia
+          incorporates into every Connexion Method visit, applying more than 30 years of direct patient care to how
+          it&rsquo;s administered. It evaluates posture, flexibility, strength, balance, and endurance — and forms
+          the functional foundation of every Connexion Method assessment.
         </p>
         <Link href="/connexion/afit" className="btn btn-secondary" style={{ alignSelf: "flex-start" }}>
           Learn About the AFIT
