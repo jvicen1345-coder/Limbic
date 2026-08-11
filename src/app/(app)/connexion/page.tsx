@@ -15,10 +15,10 @@ const AUDIENCE = [
 ];
 
 /** The Connexion Method hub — a partner program between Limbic and a proprietary senior
- *  home safety/mobility system developed by Bettie Vicencio, PT (bio at /connexion/bettie).
- *  Public to every signed-in reader (unlike Protocol/Safety Score below it in the sidebar,
- *  which are LimbicPRO-gated on their own pages) — this page just links out to those,
- *  showing a lock badge on the two PRO features rather than gating itself. */
+ *  home safety/mobility system developed by Delia Vicencio, PT, DPT (bio at
+ *  /connexion/delia). Public to every signed-in reader (unlike Protocol/Safety Score below
+ *  it in the sidebar, which are LimbicPRO-gated on their own pages) — this page just links
+ *  out to those, showing a lock badge on the two PRO features rather than gating itself. */
 export default async function ConnexionOverviewPage() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -28,13 +28,13 @@ export default async function ConnexionOverviewPage() {
       <div className="connexion-hero">
         <h1 className="connexion-hero-title">The Connexion Method</h1>
         <p className="connexion-hero-subtitle">
-          A standardized, evidence-based system for senior home safety, mobility optimization, and post-hospital
-          recovery — developed by a licensed physical therapist with 30 years of home health experience.
+          A standardized, evidence-based system for senior home safety, mobility optimization, and fall prevention
+          — designed to identify risk before an event occurs and support recovery after one does.
         </p>
         <p className="connexion-hero-partner">
           A Limbic partner program — developed by{" "}
-          <Link href="/connexion/bettie" style={{ color: "var(--color-migration-gold)" }}>
-            Bettie Vicencio, PT
+          <Link href="/connexion/delia" style={{ color: "var(--color-migration-gold)" }}>
+            Delia Vicencio, PT, DPT
           </Link>
         </p>
       </div>
@@ -43,7 +43,8 @@ export default async function ConnexionOverviewPage() {
         <div className="connexion-mission-kicker">Mission</div>
         <p className="connexion-mission-text">
           To improve the safety, independence, and quality of life of older adults by delivering a standardized,
-          evidence-based home mobility and safety system that can be consistently implemented by trained clinicians.
+          evidence-based home mobility and safety system — one that identifies the likelihood of a fall or injury
+          before it happens, and guides recovery when it does.
         </p>
       </div>
 
@@ -86,8 +87,9 @@ export default async function ConnexionOverviewPage() {
           )}
           <div className="connexion-feature-title">Connexion Safety Score</div>
           <p className="connexion-feature-body">
-            A proprietary scoring system that combines environmental, medical, and mobility risk factors into a
-            single actionable assessment.
+            A proprietary scoring system that combines functional assessment findings, environmental factors, and
+            medical history to predict the likelihood of a fall or injury — giving clinicians and families a clear,
+            actionable risk picture.
           </p>
           <Link href="/connexion/safety-score" className="btn btn-secondary">
             Calculate Score

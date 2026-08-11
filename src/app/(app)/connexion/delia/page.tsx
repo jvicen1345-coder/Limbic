@@ -5,15 +5,20 @@ import { ArrowLeftIcon } from "@/components/icons";
 
 const CREDENTIALS = [
   "Licensed Physical Therapist — California",
+  "Doctor of Physical Therapy",
   "30+ years of home health and outpatient experience",
   "Founder of The Connexion Method",
+  "Developer of the Adult Functional Independence Test",
 ];
 
-/** Bio page for The Connexion Method's founder — linked from the "developed by Bettie
- *  Vicencio, PT" line on /connexion and from its own sidebar entry. Every section below is
- *  placeholder content pending real material from Bettie herself (see the TODO comments) —
- *  the page ships now so the link target and layout exist, not because the bio is finished. */
-export default async function ConnexionBettiePage() {
+/** Bio page for The Connexion Method's founder — linked from the "developed by Delia
+ *  Vicencio, PT, DPT" line on /connexion and from its own sidebar entry. Every section below
+ *  is placeholder content pending real material from Delia herself (see the TODO comments) —
+ *  the page ships now so the link target and layout exist, not because the bio is finished.
+ *  Route is /connexion/delia — was /connexion/bettie before the founder's name was
+ *  corrected; see AppShell.tsx and every other Link pointing here for the other half of
+ *  that rename. */
+export default async function ConnexionDeliaPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
@@ -26,27 +31,46 @@ export default async function ConnexionBettiePage() {
         <ArrowLeftIcon size={14} /> Back to The Connexion Method
       </Link>
 
-      <div className="connexion-bettie-header">
+      <div className="connexion-delia-header">
         {/* TODO: Add photo when available */}
-        <div className="connexion-bettie-avatar" aria-hidden="true">
-          BV
+        <div className="connexion-delia-avatar" aria-hidden="true">
+          DV
         </div>
         <div>
-          <h1 className="connexion-bettie-name">Bettie Vicencio, PT</h1>
-          <p className="connexion-bettie-subtitle">Licensed Physical Therapist — 30 Years of Home Health Experience</p>
-          <p className="connexion-bettie-location">Orange County, California</p>
+          <h1 className="connexion-delia-name">Delia Vicencio, PT, DPT</h1>
+          <p className="connexion-delia-subtitle">
+            Licensed Physical Therapist, Doctor of Physical Therapy — 30 Years of Home Health Experience
+          </p>
+          <p className="connexion-delia-location">Orange County, California</p>
         </div>
       </div>
 
       <div className="card elev-sm" style={{ marginBottom: 20 }}>
-        <div className="card-title">About Bettie</div>
-        {/* TODO: Bettie to provide biography text */}
-        <p className="card-body" style={{ marginTop: 8 }}>Content coming soon — biography and clinical background will be added here.</p>
+        <div className="card-title">About Delia</div>
+        {/* TODO: Delia to review and expand biography */}
+        <p className="card-body" style={{ marginTop: 8 }}>
+          Delia Vicencio is a licensed physical therapist and Doctor of Physical Therapy with more than 30 years of
+          experience working with older adults and medically complex patients in the home. She developed The
+          Connexion Method and the Adult Functional Independence Test to bring standardized, evidence-based
+          assessment to senior home safety and mobility optimization.
+        </p>
+      </div>
+
+      <div className="card elev-sm" style={{ marginBottom: 20 }}>
+        <div className="card-title">The AFIT — Developed by Delia</div>
+        <p className="card-body" style={{ marginTop: 8, marginBottom: 14 }}>
+          The Adult Functional Independence Test is a proprietary, performance-based functional assessment
+          developed from 30 years of direct patient care. It evaluates posture, flexibility, strength, balance, and
+          endurance — and forms the functional foundation of every Connexion Method assessment.
+        </p>
+        <Link href="/connexion/afit" className="btn btn-secondary" style={{ alignSelf: "flex-start" }}>
+          Learn About the AFIT
+        </Link>
       </div>
 
       <div className="card elev-sm" style={{ marginBottom: 20 }}>
         <div className="card-title">Credentials and Experience</div>
-        {/* TODO: Bettie to confirm full credential list */}
+        {/* TODO: Delia to confirm full credential list */}
         <ul className="connexion-credential-list">
           {CREDENTIALS.map((c) => (
             <li key={c} className="connexion-credential-item">
@@ -64,7 +88,7 @@ export default async function ConnexionBettiePage() {
         <div className="connexion-mission-kicker">Founder of The Connexion Method</div>
         <p className="connexion-mission-text" style={{ marginBottom: 14 }}>
           The Connexion Method is a standardized, evidence-based system for senior home safety, mobility
-          optimization, and post-hospital recovery — developed from 30 years of direct patient care.
+          optimization, and fall prevention — developed from 30 years of direct patient care.
         </p>
         <Link href="/connexion" className="btn btn-primary">
           Learn About The Connexion Method

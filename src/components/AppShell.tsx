@@ -204,10 +204,11 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
 
       <div className="nav-section-label nav-section-label--connexion">The Connexion Method</div>
       <NavLink href="/connexion" icon={<ShieldIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/connexion/caregiver" icon={<HeartIcon />} label="Caregiver Education" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/connexion/protocol" icon={<FileTextIcon />} label="Protocol" locked={!isPro} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/connexion/afit" icon={<DumbbellIcon />} label="AFIT Assessment" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/connexion/protocol" icon={<FileTextIcon />} label="What to Expect" locked={!isPro} bold={false} onNavigate={onNavigate} />
       <NavLink href="/connexion/safety-score" icon={<ActivityIcon />} label="Safety Score" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/connexion/bettie" icon={<ProfileIcon />} label="About Bettie Vicencio, PT" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/connexion/caregiver" icon={<HeartIcon />} label="Caregiver Education" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/connexion/delia" icon={<ProfileIcon />} label="About Delia Vicencio, PT, DPT" bold={false} onNavigate={onNavigate} />
 
       {isStudent && (
         <>

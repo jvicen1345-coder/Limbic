@@ -5408,7 +5408,7 @@ html[data-theme="dark"] .atrium-page {
 }
 
 /* — Bottom "Schedule Your Visit" CTA (see ConnexionScheduleSection.tsx, embedded on
-   /connexion, /connexion/safety-score, /connexion/bettie) — a deliberately fixed dark card,
+   /connexion, /connexion/safety-score, /connexion/delia) — a deliberately fixed dark card,
    not theme-adaptive (same reasoning/literal palette as .threads-detail-panel's always-dark
    canvas above): a high-contrast banner that should read the same regardless of light/dark
    mode, not flip between a dark and light card depending on the reader's theme. */
@@ -5565,39 +5565,102 @@ select.connexion-visit-input { color-scheme: dark; }
 .connexion-step-body { flex: 1; min-width: 0; }
 .connexion-step-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16.5px; margin: 0 0 6px; }
 .connexion-step-desc { font-size: 13px; line-height: 1.6; color: var(--color-neutral-700); margin: 0 0 10px; }
+/* Step 2 (Standardized Assessment) only — the amber "Includes AFIT" tag + outbound link to
+   /connexion/afit (see PROTOCOL_STEPS' `afit` flag in protocol/page.tsx). */
+.connexion-step-afit-block { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.connexion-step-afit-tag {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-migration-gold);
+  background: color-mix(in srgb, var(--color-migration-gold) 14%, transparent);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+.connexion-step-link { font-size: 12.5px; font-weight: 600; color: var(--color-migration-gold); text-decoration: none; }
+.connexion-step-link:hover { text-decoration: underline; }
 @media (max-width: 480px) {
   .connexion-step-card { gap: 12px; padding: 16px; }
   .connexion-step-number { font-size: 32px; min-width: 32px; }
 }
 
-/* — /connexion/safety-score's 4 domain-preview cards (Environmental Risk, Mobility and
-   Balance, Fall Risk Factors, Caregiver Support) — locked, quiet neutral tiles, same
-   reasoning as .dashboard-metric-tile: utility/status chrome, not a content card. */
-.connexion-domain-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 24px 0; }
-@media (max-width: 560px) { .connexion-domain-grid { grid-template-columns: 1fr; } }
-.connexion-domain-card {
+/* — /connexion/safety-score's real (placeholder) calculator structure, replacing the old
+   generic "coming soon" state — 3 domain cards, each with its own greyed-out score rows,
+   feeding into a score output card below. See the TODO comments in safety-score/page.tsx
+   for exactly where Delia's real scoring rubric plugs in. */
+.connexion-score-domain-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 28px; }
+@media (max-width: 800px) { .connexion-score-domain-grid { grid-template-columns: 1fr; } }
+.connexion-score-domain-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
   padding: 18px 20px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+}
+.connexion-score-domain-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; margin-bottom: 6px; }
+.connexion-score-domain-desc { font-size: 12.5px; line-height: 1.5; color: var(--color-neutral-700); margin: 0 0 12px; }
+.connexion-score-row-list { display: flex; flex-direction: column; gap: 8px; margin: 14px 0 0; }
+.connexion-score-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.connexion-score-row-label { font-size: 13px; color: var(--color-text); }
+/* Greyed out / not-yet-functional — a disabled input rather than plain text so the row
+   visually reads as "a field that will collect a real score later", not a settled value. */
+.connexion-score-row-input {
+  width: 52px;
+  text-align: center;
+  padding: 4px 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-neutral-200);
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-600);
+  font-size: 13px;
+  cursor: not-allowed;
+}
+.connexion-score-row-note { font-size: 11px; color: var(--color-neutral-600); margin: 12px 0 0; font-style: italic; }
+
+.connexion-score-output-card {
+  text-align: center;
+  padding: 36px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  margin-bottom: 8px;
+}
+.connexion-score-output-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 19px; margin-bottom: 20px; }
+/* Same "empty gauge" idea as a real score dial, minus any actual data — a plain circle with
+   an em dash rather than a half-built chart component that has nothing to render yet. */
+.connexion-score-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 22px;
+  border-radius: 50%;
+  border: 3px solid var(--color-neutral-200);
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-500);
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 36px;
+}
+.connexion-score-risk-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.connexion-score-risk-pill {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-neutral-500);
   background: var(--color-neutral-100);
   border: 1px solid var(--color-neutral-200);
+  border-radius: 999px;
+  padding: 5px 14px;
 }
-.connexion-domain-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--color-neutral-600); }
-.connexion-domain-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; }
-.connexion-domain-desc { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }
 
-.connexion-coming-soon-card { text-align: center; padding: 40px 28px; }
-.connexion-coming-soon-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; margin: 0 0 12px; }
-.connexion-coming-soon-body { font-size: 14px; line-height: 1.6; color: var(--color-neutral-700); max-width: 520px; margin: 0 auto 28px; }
-
-/* — /connexion/bettie — a bio page for The Connexion Method's founder. */
-.connexion-bettie-header { display: flex; align-items: center; gap: 20px; margin-bottom: 26px; flex-wrap: wrap; }
+/* — /connexion/delia — a bio page for The Connexion Method's founder (was /connexion/bettie
+   before her name was corrected — see AppShell.tsx/app/(app)/connexion/delia/page.tsx). */
+.connexion-delia-header { display: flex; align-items: center; gap: 20px; margin-bottom: 26px; flex-wrap: wrap; }
 /* No photo yet (see the page's own TODO comment) — a plain initials circle in the section's
    gold rather than a broken/empty <img>, same "graceful placeholder" idea as every other
    "coming soon" badge on this page, just shaped as an avatar instead of a pill. */
-.connexion-bettie-avatar {
+.connexion-delia-avatar {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5611,13 +5674,51 @@ select.connexion-visit-input { color-scheme: dark; }
   font-size: 28px;
   flex-shrink: 0;
 }
-.connexion-bettie-name { font-size: 26px; margin: 0 0 4px; }
-.connexion-bettie-subtitle { font-size: 14px; color: var(--color-neutral-700); margin: 0 0 4px; }
-.connexion-bettie-location { font-size: 12.5px; color: var(--color-migration-gold); font-weight: 600; margin: 0; }
+.connexion-delia-name { font-size: 26px; margin: 0 0 4px; }
+.connexion-delia-subtitle { font-size: 14px; color: var(--color-neutral-700); margin: 0 0 4px; }
+.connexion-delia-location { font-size: 12.5px; color: var(--color-migration-gold); font-weight: 600; margin: 0; }
 
 .connexion-credential-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
 .connexion-credential-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13.5px; color: var(--color-text); padding-bottom: 10px; border-bottom: 1px solid var(--color-divider); }
 .connexion-credential-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+/* — /connexion/afit — "Your Body Has a Functional Story"'s six question cards: 2 columns
+   desktop (3 rows), 1 column mobile. Plain quiet boxes, not amber-accented like
+   .connexion-audience-tag — these are prompts to read, not a category/tag being applied. */
+.connexion-question-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 8px; }
+@media (max-width: 640px) { .connexion-question-grid { grid-template-columns: 1fr; } }
+.connexion-question-card {
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  background: var(--color-card-surface);
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* "Who Is the AFIT For?"'s 5 goal pills — reuses .connexion-audience-tag's card-like pill
+   styling (amber left border, var(--color-surface) background) from the Overview page's
+   audience grid, just in a 2-column container instead of 4. */
+.connexion-afit-goal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 8px; }
+@media (max-width: 560px) { .connexion-afit-goal-grid { grid-template-columns: 1fr; } }
+
+/* "A 30-Minute Functional Snapshot"'s 5 domain cards — one row on desktop, wrapping to a
+   2-3 column grid on narrower screens. Distinct from .connexion-domain-card (the old Safety
+   Score "coming soon" tiles, since removed) and from .connexion-score-domain-card (the new
+   Safety Score calculator's bigger row-list cards below) — this one is just a name + one-line
+   description, centered, amber top border. */
+.connexion-afit-domain-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 8px; }
+@media (max-width: 860px) { .connexion-afit-domain-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .connexion-afit-domain-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.connexion-afit-domain-card {
+  text-align: center;
+  padding: 18px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-card-surface);
+  border-top: 3px solid var(--color-migration-gold);
+}
+.connexion-afit-domain-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; margin-bottom: 6px; }
+.connexion-afit-domain-desc { font-size: 12px; line-height: 1.5; color: var(--color-neutral-700); margin: 0; }
 
 /* ============================================================================
    DESKTOP OVERRIDES (>= 1024px) — makes the authenticated app feel like a real
