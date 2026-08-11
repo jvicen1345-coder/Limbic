@@ -1695,8 +1695,9 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 
 /* — reading streak calendar (GitHub-contributions-style, 365 rolling days) — still used by
-   BoardsStreakCard (/boards, /boards/sharpening); ReadingStreakCard/GamesStreakCard moved
-   to the plain numeric .streak-card treatment below. — */
+   ReadingCalendar (/home); ReadingStreakCard/GamesStreakCard moved to the plain numeric
+   .streak-card treatment below, and the Boards streak is a compact header badge instead
+   (.boards-header-streak, /boards). — */
 .reading-calendar { display: flex; gap: 3px; width: max-content; }
 .reading-calendar-week { display: flex; flex-direction: column; gap: 3px; }
 .reading-calendar-day {
@@ -1736,6 +1737,22 @@ html[data-theme="dark"] .nav-founding-link-active {
   color: var(--color-neutral-700);
 }
 .streak-card-caption { font-size: 11.5px; color: var(--color-neutral-700); margin-top: 3px; }
+
+/* — Boards header streak: a compact pill in the /boards page header, replacing the old
+   full-width BoardsStreakCard below the Daily Dose card (see boards/page.tsx). Same accent
+   coloring as .streak-card-badge above, just condensed into one inline row. */
+.boards-header-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-accent-700);
+  background: var(--color-accent-100);
+  padding: 5px 12px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
 
 /* Never show an unpaired trailing card in the 2-column desktop grid — assumes more
    content exists on another page, which is true for every paginated .cards-grid (Search,

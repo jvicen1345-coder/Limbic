@@ -1,9 +1,11 @@
 import { ZapIcon } from "@/components/icons";
 
-/** Same shape as ReadingStreakCard/BoardsStreakCard, Games-specific copy — its own
- *  component rather than a shared prop since all three streaks are unrelated concepts
- *  (reading an article, a Boards daily habit, finishing a Limbic Games game) that just
- *  happen to share a rendering pattern (see lib/game-activity.ts). */
+/** Same shape as ReadingStreakCard, Games-specific copy — its own
+ *  component rather than a shared prop since reading and Limbic Games streaks are unrelated
+ *  concepts that just happen to share a rendering pattern (see lib/game-activity.ts). The
+ *  Boards streak is a third, separate concept again, but renders inline in its own compact
+ *  header badge on /boards rather than this full-card treatment — see .boards-header-streak
+ *  in globals.css. */
 export function GamesStreakCard({ streakDays }: { streakDays: number }) {
   return (
     <div className="card elev-sm streak-card" style={{ marginBottom: 18 }}>
