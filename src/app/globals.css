@@ -5461,6 +5461,8 @@ html[data-theme="dark"] .atrium-page {
   color: #dbe4f5;
   font-size: 14px;
   font-family: var(--font-body);
+  min-height: 41px;
+  box-sizing: border-box;
 }
 textarea.connexion-visit-input { min-height: 76px; resize: vertical; }
 .connexion-visit-input::placeholder { color: #6d7ea3; }
@@ -5470,6 +5472,25 @@ textarea.connexion-visit-input { min-height: 76px; resize: vertical; }
    as invisible dark-on-dark against this always-dark card. */
 .connexion-visit-input[type="date"],
 select.connexion-visit-input { color-scheme: dark; }
+/* A bare <input type="date"> renders its own native internal layout (segmented mm/dd/yyyy
+   fields + calendar icon), which some mobile browsers size/pad differently from a plain text
+   input — without this reset it can render visibly taller or off-center next to the other
+   fields in this form. Stripping the native appearance and pinning padding/alignment forces
+   it to match .connexion-visit-input's own box exactly, the same way every other field here
+   does. */
+.connexion-visit-input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: flex;
+  align-items: center;
+}
+.connexion-visit-input[type="date"]::-webkit-date-and-time-value { text-align: left; }
+.connexion-visit-input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.7;
+  padding: 0;
+  margin-left: 8px;
+}
 .connexion-visit-button {
   padding: 12px 22px;
   border-radius: 999px;
