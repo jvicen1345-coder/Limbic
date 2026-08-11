@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { recordBoardQuestionAction, recordBoardTermRevealAction, recordCaseOfDayAction } from "@/app/actions/daily-completion";
+import {
+  recordBoardQuestionAction,
+  recordBoardTermRevealAction,
+  recordCaseOfDayAction,
+  recordSharpeningTargetAction,
+} from "@/app/actions/daily-completion";
 import { ShareCompletionButton } from "@/components/ShareCompletionButton";
 import { formatElapsed } from "@/lib/meta";
-import type { BoardQuestion, BoardTerm } from "@/lib/board-content";
+import { NPTE_THREE_QUESTION_BENCHMARK_SECONDS, type BoardQuestion, type BoardTerm } from "@/lib/board-content";
 import type { DailyCase } from "@/lib/cases-static";
 
 type SessionState = "idle" | "preview" | "active" | "complete";
@@ -35,6 +40,7 @@ export function DailySharpeningSession({
   term,
   dayCase,
   alreadyComplete,
+  targetSeconds,
   nexusOptIn,
 }: {
   dateKey: string;
@@ -45,6 +51,11 @@ export function DailySharpeningSession({
    *  render — the session still tracks its own `finishedNow` on top of this so clicking
    *  Done reflects the completed state immediately, without needing a full page reload. */
   alreadyComplete: boolean;
+  /** Today's "beat the clock" pacing target in seconds — the standard NPTE 3-question
+   *  benchmark unless a previous session ran over it, in which case that session's own time
+   *  becomes the target until a session finally beats the real benchmark again (see
+   *  User.boardsSharpeningTargetSeconds, recordSharpeningTargetAction). */
+  targetSeconds: number;
   nexusOptIn: boolean;
 }) {
   const [sessionState, setSessionState] = useState<SessionState>("idle");
@@ -125,6 +136,7 @@ export function DailySharpeningSession({
       recordBoardQuestionAction(dateKey, questionSelected, results[0].elapsedSeconds);
       recordBoardTermRevealAction(dateKey, results[1].elapsedSeconds);
       recordCaseOfDayAction(dateKey, [caseSelected], caseSelected, caseSelected === dayCase.correctIndex ? "correct-first" : "wrong", results[2].elapsedSeconds);
+      recordSharpeningTargetAction(elapsedSeconds);
     });
   }
 
@@ -139,36 +151,25 @@ export function DailySharpeningSession({
       );
     }
     return (
-      <div className="sharpen-intro-cards">
-        <button type="button" className="card elev-sm sharpen-intro-card" onClick={() => setSessionState("preview")}>
-          <div className="sharpen-intro-card-body">
-            <div className="card-kicker">Question of the day · {question.domain}</div>
-            <div className="sharpen-intro-card-title">{question.question}</div>
-          </div>
+      <button type="button" className="card elev-sm sharpen-dose-card" onClick={() => setSessionState("preview")}>
+        <div className="card-kicker">Daily Dose</div>
+        <div className="sharpen-dose-title">3 board-level questions — one from each category</div>
+        <div className="sharpen-dose-meta">
+          <span>Board Question</span>
+          <span>Term of the Day</span>
+          <span>Case of the Day</span>
+        </div>
+        <div className="sharpen-dose-footer">
+          <span className="sharpen-dose-target">Beat your time: {formatElapsed(targetSeconds)}</span>
           <span className="sharpen-intro-card-hint">Tap to begin →</span>
-        </button>
-        <button type="button" className="card elev-sm sharpen-intro-card" onClick={() => setSessionState("preview")}>
-          <div className="sharpen-intro-card-body">
-            <div className="card-kicker">Term of the day</div>
-            <div className="sharpen-intro-card-title">{term.term}</div>
-          </div>
-          <span className="sharpen-intro-card-hint">Tap to begin →</span>
-        </button>
-        <button type="button" className="card elev-sm sharpen-intro-card" onClick={() => setSessionState("preview")}>
-          <div className="sharpen-intro-card-body">
-            <div className="card-kicker">{dayCase.specialty} · Case of the Day</div>
-            <div className="sharpen-intro-card-title">
-              {dayCase.patientAge}-year-old {dayCase.patientSex} — {dayCase.chiefComplaint}
-            </div>
-          </div>
-          <span className="sharpen-intro-card-hint">Tap to begin →</span>
-        </button>
-      </div>
+        </div>
+      </button>
     );
   }
 
   // — preview —
   if (sessionState === "preview") {
+    const isPersonalTarget = targetSeconds !== NPTE_THREE_QUESTION_BENCHMARK_SECONDS;
     return (
       <div className="card elev-sm">
         <div className="sharpen-preview-title">Daily Sharpening Session</div>
@@ -183,13 +184,15 @@ export function DailySharpeningSession({
             <div className="dashboard-metric-value">1.4 min</div>
           </div>
           <div className="dashboard-metric-tile">
-            <div className="card-kicker">Suggested target</div>
-            <div className="dashboard-metric-value">Under 5 min</div>
+            <div className="card-kicker">Beat your time</div>
+            <div className="dashboard-metric-value">{formatElapsed(targetSeconds)}</div>
           </div>
         </div>
         <p className="sharpen-preview-desc">
           Each session includes one board question, one clinical term, and one case scenario — mirroring the structure of the
-          NPTE. Your timer starts when you begin and stops when you submit your last answer.
+          NPTE. Your timer starts when you begin and keeps running the whole session — the NPTE&rsquo;s recommended pace for 3
+          questions is {formatElapsed(NPTE_THREE_QUESTION_BENCHMARK_SECONDS)}
+          {isPersonalTarget ? `, but today's target is ${formatElapsed(targetSeconds)} — your own time to beat from a slower day. Get under the real benchmark and it resets.` : "."}
         </p>
         <button type="button" className="btn btn-primary sharpen-begin-btn" onClick={beginSession}>
           Begin Session
@@ -203,11 +206,13 @@ export function DailySharpeningSession({
   if (sessionState === "active") {
     const currentResult = showingResult ? results[stepIndex] : null;
     const explanation = stepIndex === 0 ? question.explanation : stepIndex === 1 ? (term.memoryAid ?? "Definition revealed.") : dayCase.explanation;
+    const overTime = elapsedSeconds > targetSeconds;
 
     return (
       <div>
         <div className="sharpen-active-header">
-          <div className="sharpen-timer">{formatElapsed(elapsedSeconds)}</div>
+          <div className={`sharpen-timer${overTime ? " sharpen-timer--over" : ""}`}>{formatElapsed(elapsedSeconds)}</div>
+          {overTime && <div className="sharpen-timer-over-label">Over time — target was {formatElapsed(targetSeconds)}</div>}
           <div className="sharpen-progress-row">
             <div className="sharpen-progress-label">
               Question {stepIndex + 1} of {STEP_COUNT}
@@ -337,6 +342,7 @@ export function DailySharpeningSession({
   const correctCount = results.filter((r) => r.correct).length;
   const avgSeconds = Math.round(elapsedSeconds / STEP_COUNT);
   const allCorrect = correctCount === STEP_COUNT;
+  const beatBenchmark = elapsedSeconds < NPTE_THREE_QUESTION_BENCHMARK_SECONDS;
 
   return (
     <div className="card elev-sm">
@@ -347,6 +353,11 @@ export function DailySharpeningSession({
       {allCorrect && <span className="sharpen-perfect-badge">Perfect Session</span>}
       <p className="sharpen-summary-context">
         The NPTE allows ~1.4 minutes per question. Your average: {avgSeconds} second{avgSeconds === 1 ? "" : "s"} per question.
+      </p>
+      <p className={`sharpen-summary-target${beatBenchmark ? " sharpen-summary-target--beat" : ""}`}>
+        {beatBenchmark
+          ? `You beat the NPTE benchmark of ${formatElapsed(NPTE_THREE_QUESTION_BENCHMARK_SECONDS)}. Tomorrow's target resets to the benchmark.`
+          : `Tomorrow's target to beat: ${formatElapsed(elapsedSeconds)} — get under the NPTE benchmark of ${formatElapsed(NPTE_THREE_QUESTION_BENCHMARK_SECONDS)} to reset it.`}
       </p>
       <div className="sharpen-breakdown-list">
         {results.map((r, i) => (

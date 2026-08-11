@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { recordBoardActivity } from "@/lib/board-activity";
 import { recordGameActivity } from "@/lib/game-activity";
+import { NPTE_THREE_QUESTION_BENCHMARK_SECONDS } from "@/lib/board-content";
 
 /** Persists a day's Daily Term (Wordle) progress/result for the signed-in user — replaces
  *  what used to be a "limbic:wordle:<dateKey>" localStorage key with no userId in it at
@@ -172,4 +173,19 @@ export async function recordCaseOfDayAction(
   ]);
   revalidatePath("/boards/sharpening");
   revalidatePath("/student");
+}
+
+/** Updates Daily Sharpening's "beat your time" pacing target after a session finishes (see
+ *  DailySharpeningSession.tsx's "Done" click). Always compares against the fixed NPTE
+ *  benchmark, never against whatever personal target was in effect today: finishing under
+ *  the real benchmark resets the target back to null (the standard benchmark, for tomorrow
+ *  and beyond); finishing at or over it sets today's own time as tomorrow's target — so a
+ *  personal target ratchets toward the benchmark one day at a time, but never lingers once
+ *  the reader is back on pace, and a single slow day never requires beating a time they
+ *  clearly weren't ready for yet. */
+export async function recordSharpeningTargetAction(totalElapsedSeconds: number) {
+  const user = await getCurrentUser();
+  if (!user) return;
+  const nextTarget = totalElapsedSeconds < NPTE_THREE_QUESTION_BENCHMARK_SECONDS ? null : totalElapsedSeconds;
+  await prisma.user.update({ where: { id: user.id }, data: { boardsSharpeningTargetSeconds: nextTarget } });
 }

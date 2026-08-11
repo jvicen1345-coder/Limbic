@@ -281,3 +281,9 @@ export function termForDate(dateKey: string): BoardTerm {
 export function todayDateKey(): string {
   return new Date().toISOString().slice(0, 10);
 }
+
+/** The NPTE's own per-question pace (~1.4 min, see /boards/npte-breakdown) times 3 —
+ *  Daily Sharpening's default "beat the clock" target before a reader has any personal
+ *  time on file (see User.boardsSharpeningTargetSeconds, DailySharpeningSession.tsx). */
+export const NPTE_THREE_QUESTION_BENCHMARK_SECONDS = 252; // 4:12
+
