@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { isSiteAdmin } from "@/lib/admin";
-import { getFoundingFundersData } from "@/app/actions/founding-funders";
-import { FOUNDING_FUNDERS_OPEN, FOUNDING_FUNDERS_PRICE_USD, FOUNDING_FUNDERS_ZELLE_CONTACT } from "@/lib/founding-funders-config";
+import {
+  getFoundingFundersData,
+  confirmFoundingFunderPaymentIfNeeded,
+  cleanupCanceledFoundingFunderCheckout,
+} from "@/app/actions/founding-funders";
+import { FOUNDING_FUNDERS_OPEN, FOUNDING_FUNDERS_PRICE_USD } from "@/lib/founding-funders-config";
 import { ArrowLeftIcon, LogoIcon } from "@/components/icons";
 import { WaitlistForm } from "@/components/founding-funders/WaitlistForm";
+import { ClaimSpotButton } from "@/components/founding-funders/ClaimSpotButton";
 import { FoundingAdminPanel } from "@/components/founding-funders/FoundingAdminPanel";
+import { FoundingFundersRoster } from "@/components/founding-funders/FoundingFundersRoster";
 import { WipeAllUsersPanel } from "@/components/founding-funders/WipeAllUsersPanel";
 import { RegisteredUsersPanel } from "@/components/founding-funders/RegisteredUsersPanel";
 
@@ -57,22 +63,52 @@ const TIMELINE = [
 // getFoundingFundersData()/joinWaitlistAction() below don't touch any per-user data, and
 // the admin-only panels stay gated behind isSiteAdmin(), which already safely returns
 // false for a signed-out visitor.
-export default async function FoundingFundersPage() {
+export default async function FoundingFundersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ success?: string; canceled?: string; session_id?: string }>;
+}) {
+  const { success, canceled, session_id: sessionId } = await searchParams;
+
+  // Backup confirmation / cleanup — the checkout.session.completed webhook
+  // (app/api/stripe/webhook/route.ts) is the primary path, but it can lag behind the
+  // browser's own redirect back from Stripe, so this page re-checks the session directly
+  // before rendering the grid/counts below. Both are safe no-ops without a session_id (e.g.
+  // a visitor bookmarked/shared a bare "?success=true" URL).
+  if (success === "true" && sessionId) await confirmFoundingFunderPaymentIfNeeded(sessionId);
+  if (canceled === "true" && sessionId) await cleanupCanceledFoundingFunderCheckout(sessionId);
+
   const [data, isAdmin] = await Promise.all([getFoundingFundersData(), isSiteAdmin()]);
   const slots = Array.from({ length: data.totalSlots }, (_, i) => data.funders[i] ?? null);
-  // Only fetched for an admin — no reason to run this for every visitor.
-  const registeredUsers = isAdmin
-    ? await prisma.user.findMany({
-        orderBy: { createdAt: "desc" },
-        select: { name: true, email: true, licenseNumber: true, licenseEmail: true, isPro: true, createdAt: true },
-      })
-    : [];
+  // Only fetched for an admin — no reason to run these for every visitor.
+  const [registeredUsers, rosterEntries] = isAdmin
+    ? await Promise.all([
+        prisma.user.findMany({
+          orderBy: { createdAt: "desc" },
+          select: { name: true, email: true, licenseNumber: true, licenseEmail: true, isPro: true, createdAt: true },
+        }),
+        prisma.foundingFunder.findMany({
+          where: { paymentStatus: { in: ["confirmed", "pending"] } },
+          orderBy: { claimedAt: "asc" },
+          select: { id: true, displayName: true, credential: true, paymentStatus: true },
+        }),
+      ])
+    : [[], []];
 
   return (
     <div className="ff-page">
       <Link href="/" className="ff-back-link" aria-label="Back to home">
         <ArrowLeftIcon size={17} />
       </Link>
+
+      {success === "true" && (
+        <div className="ff-banner ff-banner--success">
+          Payment confirmed. You&rsquo;re a Founding Funder. Welcome to the beginning.
+        </div>
+      )}
+      {canceled === "true" && (
+        <div className="ff-banner ff-banner--canceled">No charge was made. Your spot is still available.</div>
+      )}
 
       <div className="ff-container">
         {/* Section 1 — The Letter */}
@@ -129,15 +165,20 @@ export default async function FoundingFundersPage() {
           <div className="ff-slots-grid">
             {slots.map((funder, i) => (
               <div className="ff-slot" key={i}>
-                {funder ? (
+                {!funder ? (
                   <>
-                    <div className="ff-slot-circle ff-slot-circle-claimed">{funder.displayName.split(" ")[0]}</div>
-                    <div className="ff-slot-credential">{funder.credential ?? "Founding Funder"}</div>
+                    <div className="ff-slot-circle ff-slot-circle-empty">{i + 1}</div>
+                    <div className="ff-slot-label">Open</div>
+                  </>
+                ) : funder.paymentStatus === "pending" ? (
+                  <>
+                    <div className="ff-slot-circle ff-slot-circle-pending">{funder.displayName.split(" ")[0]}</div>
+                    <div className="ff-slot-label ff-slot-label-pending">Pending</div>
                   </>
                 ) : (
                   <>
-                    <div className="ff-slot-circle ff-slot-circle-empty">{i + 1}</div>
-                    <div className="ff-slot-label">Available</div>
+                    <div className="ff-slot-circle ff-slot-circle-claimed">{funder.displayName.split(" ")[0]}</div>
+                    <div className="ff-slot-credential">{funder.credential ?? "Founding Funder"}</div>
                   </>
                 )}
               </div>
@@ -151,11 +192,10 @@ export default async function FoundingFundersPage() {
             <>
               <h2 className="ff-cta-title">Ready to claim your spot?</h2>
               <p className="ff-cta-body">
-                Send ${FOUNDING_FUNDERS_PRICE_USD} via Zelle to the contact below. Include your name and credential
-                in the memo. Your spot is reserved immediately. Your name appears in the grid within 24 hours once
-                payment is confirmed.
+                ${FOUNDING_FUNDERS_PRICE_USD}, once, for lifetime access. Your spot is reserved the moment checkout
+                starts and confirmed automatically the moment payment goes through.
               </p>
-              <div className="ff-zelle-box">{FOUNDING_FUNDERS_ZELLE_CONTACT}</div>
+              <ClaimSpotButton />
             </>
           ) : (
             <>
@@ -212,6 +252,7 @@ export default async function FoundingFundersPage() {
 
       {isAdmin && (
         <>
+          <FoundingFundersRoster entries={rosterEntries} confirmedCount={data.confirmedCount} pendingCount={data.pendingCount} />
           <FoundingAdminPanel />
           <RegisteredUsersPanel users={registeredUsers} />
           <WipeAllUsersPanel userCount={registeredUsers.length} />
