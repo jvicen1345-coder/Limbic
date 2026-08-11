@@ -88,7 +88,19 @@ export function ConnexionScheduleSection() {
           </div>
           <div className="connexion-visit-field-row">
             <div className="connexion-visit-field">
-              <label htmlFor="connexion-visit-date">Preferred date</label>
+              <div className="connexion-visit-field-label-row">
+                <label htmlFor="connexion-visit-date">Preferred date</label>
+                {preferredDate && (
+                  <button
+                    type="button"
+                    className="connexion-visit-clear-btn"
+                    onClick={() => setPreferredDate("")}
+                    disabled={pending}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
               <input
                 id="connexion-visit-date"
                 type="date"
