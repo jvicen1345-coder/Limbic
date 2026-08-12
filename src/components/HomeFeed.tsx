@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SearchIcon, XIcon } from "@/components/icons";
@@ -16,6 +16,8 @@ import { BackupSigninBanner } from "@/components/BackupSigninBanner";
 import { MigrationReminderBanner } from "@/components/MigrationReminderBanner";
 import { GraduationTransitionCard } from "@/components/GraduationTransitionCard";
 import { RefreshHomeFeedButton } from "@/components/RefreshHomeFeedButton";
+import { PullToRefresh } from "@/components/PullToRefresh";
+import { refreshHomeFeedAction } from "@/app/actions/home";
 import { orderArticlesForGrid, titleFingerprint } from "@/lib/home-grid-rotation";
 import { StockCard } from "@/components/StockCard";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
@@ -243,7 +245,23 @@ export function HomeFeed({
     if (topicParam) feedSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [topicParam]);
 
+  // Same action + router.refresh() RefreshHomeFeedButton's onClick already does — pull-to-
+  // refresh (see components/PullToRefresh.tsx) is just a second, touch-driven entry point
+  // into the identical refresh, not a separate mechanism. `pending` drives the indicator's
+  // "settle back down" moment for the same reason it drives the button's own spin: it only
+  // flips false once the transition (server action + the router.refresh() re-render) has
+  // actually committed, not on a guessed timeout.
+  const [pending, startTransition] = useTransition();
+  const handlePullRefresh = () => {
+    const fingerprints = gridArticles.map((a) => titleFingerprint(a.title));
+    startTransition(async () => {
+      await refreshHomeFeedAction(fingerprints);
+      router.refresh();
+    });
+  };
+
   return (
+    <PullToRefresh refreshing={pending} onRefresh={handlePullRefresh}>
     <div className="home-pad">
       <div className="home-row">
         <div className="home-main-col">
@@ -332,5 +350,6 @@ export function HomeFeed({
         </aside>
       </div>
     </div>
+    </PullToRefresh>
   );
 }

@@ -878,6 +878,13 @@ html[data-theme="dark"] .nav-founding-link-active {
      widest descendant (e.g. a chip row meant to scroll internally) rather than clamping
      to the viewport, which dragged every page wider than the screen on mobile. */
   overflow-x: hidden;
+  /* Keeps the browser's own overscroll bounce (mobile Safari/Chrome both apply this to any
+     scrollable element, not just the document) from fighting Home's custom pull-to-refresh
+     indicator (see components/PullToRefresh.tsx) — "contain" rather than "none" so it still
+     stops scroll chaining to whatever's behind it, just without also rubber-banding on top
+     of the custom drag effect. Harmless on every other page — none of them implement a pull
+     gesture, so this only ever prevents a bounce nothing else here relies on. */
+  overscroll-behavior-y: contain;
   /* A flex column (not just a plain block) so a full-height page (see .agent-page) can
      use flex:1 to fill exactly what's left after .app-mobile-topbar, instead of guessing
      that height with a CSS percentage that has no way to know the topbar is there. Every
@@ -1045,6 +1052,20 @@ html[data-theme="dark"] .nav-founding-link-active {
   max-width: 1400px;
   margin: 0 auto;
   box-sizing: border-box;
+}
+
+/* Pull-to-refresh (see components/PullToRefresh.tsx) — .pull-refresh-root is the direct
+   child that component mounts into .app-main, wrapping .home-pad rather than being it, so
+   the indicator can sit visually above the feed content without being part of .home-pad's
+   own max-width/padding box. clip is load-bearing: the indicator's height animates from 0,
+   and without clipping it would briefly show through above the app the instant it appears. */
+.pull-refresh-root { overflow: clip; }
+.pull-refresh-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--color-accent);
 }
 @media (max-width: 799px) {
   .screen-pad, .home-pad { padding: 18px 18px 40px; }
