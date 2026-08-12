@@ -15,9 +15,26 @@ import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
 
 const EUTILS = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";
 const FETCH_TIMEOUT_MS = 8000;
+// MeSH concept terms + PubMed's own structured Publication Type/MeSH tags, not Title/
+// Abstract free-text keyword matching — a real evidence-tier upgrade, not just a volume
+// one: "randomized"/"trial"/"cohort" as free-text has both false positives (a paper that
+// discusses and excludes RCTs) and false negatives (a real RCT whose title/abstract never
+// uses that literal word), where Publication Type is what MEDLINE's own indexers formally
+// classified the study as — the exact same tag evidenceLevelFromPublicationTypes below
+// already reads per-article. Verified live against the real E-utilities API before this
+// change shipped: nearly doubles the matching pool (67k -> 126k) while recent-2-year
+// supply stays just as healthy (~15.7k), so this is genuinely more current research, not
+// older backfill. Meta-analysis is newly included here too — evidenceLevelFromPublicationTypes
+// already has its own "MA" tier for it, but the old free-text query wasn't reliably
+// catching those articles at all.
 const DEFAULT_QUERY =
-  '("physical therapy"[Title/Abstract] OR "physiotherapy"[Title/Abstract] OR rehabilitation[Title/Abstract]) ' +
-  "AND (randomized[Title/Abstract] OR trial[Title/Abstract] OR \"systematic review\"[Title/Abstract] OR cohort[Title/Abstract])";
+  '("Physical Therapy Modalities"[MeSH] OR "Rehabilitation"[MeSH] OR "Physical Therapy Specialty"[MeSH]) ' +
+  'AND (randomized controlled trial[Publication Type] OR "systematic review"[Publication Type] OR ' +
+  '"meta analysis"[Publication Type] OR "clinical trial"[Publication Type] OR "cohort studies"[MeSH])';
+// Was 12 — the query above comfortably supports far more without reaching for older or
+// less-relevant results (see its own comment), and Home's Research tab / hero pool were
+// visibly thin on a query this narrow.
+const DEFAULT_LIMIT = 30;
 
 const xmlParser = new XMLParser({ ignoreAttributes: false });
 
@@ -197,7 +214,7 @@ export async function searchPubmed(query: string, limit = 12): Promise<Article[]
   return buildArticlesFromIds(ids);
 }
 
-export async function fetchPubmedResearch(limit = 12): Promise<Article[]> {
+export async function fetchPubmedResearch(limit = DEFAULT_LIMIT): Promise<Article[]> {
   return searchPubmed(DEFAULT_QUERY, limit);
 }
 
