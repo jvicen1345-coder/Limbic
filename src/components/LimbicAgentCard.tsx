@@ -66,7 +66,7 @@ export function LimbicAgentCard({ insights, isPro }: { insights: LimbicAgentInsi
                 n.recommendedArticle ? (
                   <Link
                     key={n.topic}
-                    href={`/?topic=${slugifyTopic(n.topic)}`}
+                    href={`/home?topic=${slugifyTopic(n.topic)}`}
                     style={{
                       display: "flex",
                       alignItems: "center",

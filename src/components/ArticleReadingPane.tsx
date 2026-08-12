@@ -112,7 +112,7 @@ export function ArticleReadingPane({ article, related }: { article: DecoratedArt
           <div className="article-section-label">Topics</div>
           <div className="article-topics-row">
             {article.tags.map((tag) => (
-              <Link key={tag} href={`/?topic=${slugifyTopic(tag)}`} className="tag tag-outline article-topic-tag">
+              <Link key={tag} href={`/home?topic=${slugifyTopic(tag)}`} className="tag tag-outline article-topic-tag">
                 {tag}
               </Link>
             ))}
