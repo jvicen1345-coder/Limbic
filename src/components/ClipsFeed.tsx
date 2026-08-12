@@ -7,6 +7,7 @@ import { markClipSeenAction } from "@/app/actions/clips";
 import { VolumeIcon, VolumeMuteIcon, ExternalLinkIcon } from "@/components/icons";
 import { SPECIALTY_META, youtubeEmbedUrl, youtubeThumbnailUrl } from "@/lib/meta";
 import { shuffle } from "@/lib/shuffle";
+import { loadYouTubeIframeApi, type YouTubePlayer } from "@/lib/youtube-iframe-api";
 import type { Clip } from "@/lib/types";
 
 // The curated clip list is small and finite, so a continuous ("for you"-style) feed loops
@@ -31,6 +32,7 @@ function ClipSlide({
   active,
   muted,
   onToggleMute,
+  onEnded,
   saved,
 }: {
   clip: Clip;
@@ -38,29 +40,88 @@ function ClipSlide({
   active: boolean;
   muted: boolean;
   onToggleMute: () => void;
+  onEnded: () => void;
   saved: boolean;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const playerRef = useRef<YouTubePlayer | null>(null);
+  const [playerReady, setPlayerReady] = useState(false);
 
-  // Built once per activation, not on every `muted` toggle — the initial value baked into
-  // the iframe's `src` (via the `mute` query param) only matters for the very first paint,
-  // satisfying the browser's "autoplay-with-sound needs a prior user gesture" policy.
-  // Toggling mute afterward goes through the postMessage effect below instead, so `src`
-  // never changes on an already-mounted iframe — changing `src` (or a key derived from
-  // `muted`, which this component used to do) makes the browser reload the whole embed,
-  // restarting the clip from 0:00 on every mute/unmute tap.
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- deliberately not reactive to `muted`, see above
-  const embedUrl = useMemo(() => (active ? youtubeEmbedUrl(clip.url, { autoplay: true, muted }) : null), [active, clip.url]);
-  const thumbUrl = youtubeThumbnailUrl(clip.url);
-
-  // YouTube's postMessage player API (needs `enablejsapi=1`, set in youtubeEmbedUrl) — the
-  // actual mechanism for muting/unmuting an already-playing embed without touching `src`.
+  // Read inside the API callbacks below instead of closed over — those callbacks are
+  // registered once (see the mount effect) and would otherwise only ever see the `active`
+  // value from that first render. Synced via an effect (not during render) since mutating
+  // a ref while rendering is itself unsafe.
+  const activeRef = useRef(active);
+  const onEndedRef = useRef(onEnded);
   useEffect(() => {
-    if (!active) return;
-    const win = iframeRef.current?.contentWindow;
-    if (!win) return;
-    win.postMessage(JSON.stringify({ event: "command", func: muted ? "mute" : "unMute", args: [] }), "*");
-  }, [muted, active]);
+    activeRef.current = active;
+    onEndedRef.current = onEnded;
+  });
+
+  const thumbUrl = youtubeThumbnailUrl(clip.url);
+  // Muted, no autoplay param — playback itself is driven entirely by the YT.Player API
+  // (see the effects below), not by src query params, so this URL never needs to change
+  // (and therefore never reloads the iframe) as the slide activates/deactivates.
+  const embedUrl = useMemo(() => youtubeEmbedUrl(clip.url, { muted: true }), [clip.url]);
+
+  // Every clip's iframe mounts once and stays mounted for the component's whole lifetime —
+  // switching the active clip pauses/plays via the API (see below) instead of unmounting,
+  // which is what was leaving previously-active clips frozen (a fresh iframe with no
+  // player state starts from scratch every time it remounts).
+  useEffect(() => {
+    if (!iframeRef.current) return;
+    let cancelled = false;
+    let player: YouTubePlayer | null = null;
+
+    loadYouTubeIframeApi().then((YT) => {
+      if (cancelled || !iframeRef.current) return;
+      player = new YT.Player(iframeRef.current, {
+        events: {
+          onReady: () => {
+            if (cancelled) return;
+            setPlayerReady(true);
+            if (activeRef.current) player?.playVideo();
+          },
+          onStateChange: (event) => {
+            if (!cancelled && event.data === YT.PlayerState.ENDED && activeRef.current) {
+              onEndedRef.current();
+            }
+          },
+        },
+      });
+      playerRef.current = player;
+    });
+
+    return () => {
+      cancelled = true;
+      playerRef.current?.destroy();
+      playerRef.current = null;
+    };
+  }, []);
+
+  // Plays/pauses the already-mounted player as the active slide changes, rather than
+  // mounting/unmounting the iframe itself.
+  useEffect(() => {
+    if (!playerReady) return;
+    if (active) playerRef.current?.playVideo();
+    else playerRef.current?.pauseVideo();
+  }, [active, playerReady]);
+
+  useEffect(() => {
+    if (!playerReady) return;
+    if (muted) playerRef.current?.mute();
+    else playerRef.current?.unMute();
+  }, [muted, playerReady]);
+
+  const handleMuteClick = (e: React.MouseEvent) => {
+    // .clip-media and .clip-overlay are siblings, so this click can't actually bubble into
+    // .clip-media's own onClick — stopped anyway per the DOM-isolation requirement, and so
+    // this handler stays a pure "toggle mute, nothing else" action even if the markup
+    // around it changes later.
+    e.stopPropagation();
+    e.preventDefault();
+    onToggleMute();
+  };
 
   return (
     <section className="clip-slide" data-slot-id={slotId}>
@@ -95,7 +156,7 @@ function ClipSlide({
         </div>
 
         <div className="clip-actions">
-          <button type="button" className="clip-action-btn" onClick={onToggleMute} aria-label={muted ? "Unmute" : "Mute"}>
+          <button type="button" className="clip-action-btn" onClick={handleMuteClick} aria-label={muted ? "Unmute" : "Mute"}>
             {muted ? <VolumeMuteIcon size={20} /> : <VolumeIcon size={20} />}
           </button>
           <ClipSaveButton clip={clip} saved={saved} />
@@ -173,6 +234,18 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
     if (active) markClipSeenAction(active.clip.id);
   }, [activeSlotId, slots]);
 
+  // Same scroll target/behavior a manual swipe already lands on (scroll-snap handles the
+  // rest) — just triggered by the video ending instead of a touch gesture.
+  const advanceToNext = (slotId: string) => {
+    const container = containerRef.current;
+    if (!container) return;
+    const index = slots.findIndex((s) => s.slotId === slotId);
+    if (index === -1) return;
+    const nextSlot = slots[index + 1];
+    if (!nextSlot) return;
+    container.querySelector(`[data-slot-id="${CSS.escape(nextSlot.slotId)}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <div className="clips-feed-wrap">
       <div className="clips-feed" ref={containerRef}>
@@ -184,6 +257,7 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
             active={slot.slotId === activeSlotId}
             muted={muted}
             onToggleMute={() => setMuted((m) => !m)}
+            onEnded={() => advanceToNext(slot.slotId)}
             saved={savedClipIds.includes(slot.clip.id)}
           />
         ))}

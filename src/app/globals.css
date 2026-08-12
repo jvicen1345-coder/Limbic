@@ -16,13 +16,17 @@
    override right after its light rule below. */
 
 :root {
-  /* A very subtle warm off-white rather than pure white, with card surfaces a step
-     brighter than the page itself (see --color-surface below) — the page/card contrast
-     now comes from that tonal step plus --shadow-* (also warmed, further down) instead of
-     a blue tint. --color-accent/--color-accent-2 are deliberately untouched here: blue
-     stays reserved for interactive elements (buttons, active states, links) exactly as
-     before, just no longer doubling as the page's general surface color. */
-  --color-bg: #f8f7f5;
+  /* A warm off-white rather than pure white, with card surfaces a step brighter than the
+     page itself (see --color-surface below) — the page/card contrast now comes from that
+     tonal step plus --shadow-* (also warmed, further down) instead of a blue tint.
+     --color-accent/--color-accent-2 are deliberately untouched here: blue stays reserved
+     for interactive elements (buttons, active states, links) exactly as before, just no
+     longer doubling as the page's general surface color. Shifted a further step warmer/
+     darker (was #f8f7f5) so --color-surface's plain white actually reads as a distinct
+     layer above the page instead of nearly matching it — see --color-divider below for the
+     border half of that same "cards must be clearly separated" fix. Dark mode's own
+     --color-bg (further down) is untouched. */
+  --color-bg: #f4f4f0;
   --color-surface: #ffffff;
   /* Cards' own background — a pastel blue rather than plain white, bringing back the color
      the very first design pass had (--color-surface itself used to be this exact pastel
@@ -33,13 +37,25 @@
      custom "-card" classes that don't share that base class) picks up the tint — chrome
      like inputs and the sidebar stays neutral. */
   --color-card-surface: var(--color-accent-200);
-  --color-text: #14213d;
+  /* One step darker than --color-bg — the sidebar, mobile top bar, and mobile drawer read
+     as their own secondary layer instead of just matching the page (or, before this pass,
+     actually being *lighter* than the page via --color-surface, backwards from what a
+     "structured, layered" editorial UI wants). Dark mode mirrors dark's own --color-surface
+     value here (unchanged from before this pass) rather than getting its own darker step,
+     since dark mode wasn't part of this fix. */
+  --color-surface-secondary: #ebe9e2;
+  --color-text: #1a1a1a;
   --color-accent: #3b6fe0;
   --color-accent-2: #1fa8d1;
   /* Muted, not alarm-red — for Sign out and other clearly-destructive-but-not-scary
      actions (see .nav-footer's Sign out button). */
   --color-danger: #b0413e;
-  --color-divider: color-mix(in srgb, #14213d 16%, transparent);
+  /* A literal warm gray rather than the previous navy-tinted color-mix — visibly more
+     present now that --color-bg/--color-surface sit closer together in lightness (see
+     both above), so every card/input/tile that borders on var(--color-divider) actually
+     lifts off the page instead of blending into it. Dark mode's own --color-divider
+     (further down) is untouched. */
+  --color-divider: #e2e0d8;
 
   /* Two semantic hues the design system doesn't otherwise name — reusing the exact same
      literal values already established elsewhere for the same meaning (CE evidence badge/
@@ -74,13 +90,22 @@
   --color-migration-amber: #e8a93a;
   --color-migration-gold: #c9933a;
 
+  /* One step darker than --color-bg — the "secondary background" for chrome that should
+     sit visually behind the page content rather than level with cards (sidebar, mobile
+     topbar, mobile drawer). Deliberately its own token rather than reusing --color-surface
+     (white, used by cards/inputs/etc.) or --color-bg itself. */
+  --color-surface-secondary: #ebe9e2;
+
   --color-neutral-100: #fcfdfe;
   --color-neutral-200: #f2f5fa;
   --color-neutral-300: #d3deec;
   --color-neutral-400: #b0c0da;
   --color-neutral-500: #8ba0c2;
   --color-neutral-600: #66799e;
-  --color-neutral-700: #4a5a78;
+  /* Warm gray, not the cool navy-tinted #4a5a78 this used to be — this token is the
+     app-wide muted/secondary text color, so shifting it warm keeps it in step with the
+     warm off-white page/card system above instead of reading as a mismatched cool gray. */
+  --color-neutral-700: #6b6860;
   --color-neutral-800: #33405c;
   --color-neutral-900: #1f2940;
 
@@ -153,6 +178,12 @@ html[data-theme="dark"] {
   --color-vitals-mindfulness: #c0acea;
   --color-migration-amber: #f3c169;
   --color-migration-gold: #d9a94d;
+
+  /* Mirrors dark's existing --color-surface exactly (not a new dark value) — the light-mode
+     side of this token exists to darken sidebar/topbar/drawer chrome a step below the page
+     background; dark mode's chrome was already --color-surface before this token existed,
+     so this keeps dark mode's rendered output unchanged. */
+  --color-surface-secondary: var(--color-surface);
 
   --color-neutral-100: #1a2136;
   --color-neutral-200: #212a44;
@@ -726,11 +757,11 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   flex-direction: column;
   gap: 4px;
   padding: 24px 16px;
-  /* Explicit, rather than inheriting .app-root's --color-bg like it used to (before that
-     token and the sidebar's own background were the same value anyway) — now that the
-     page background is a step warmer/darker than card surfaces, the sidebar needs its own
-     white to stay visually with the cards, not the page behind them. */
-  background: var(--color-surface);
+  /* --color-surface-secondary, not --color-surface (white, used by cards/inputs) — the
+     sidebar is structural chrome that should sit a step darker than the page background,
+     not level with cards. In dark mode this token mirrors --color-surface exactly, so this
+     is unchanged there. */
+  background: var(--color-surface-secondary);
   border-right: 1px solid var(--color-neutral-200);
   height: 100vh;
   overflow-y: auto;
@@ -744,13 +775,19 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   text-transform: uppercase;
   /* A literal warm medium grey rather than the (navy-hued, per-theme-flipped)
      --color-neutral-600 token — section labels are structural chrome, not content, so
-     they read better a step quieter than the nav links below them. One value for both
-     themes: #8a8075 sits close enough to mid-lightness that it reads clearly against
-     both the light and dark page backgrounds without needing its own dark-mode variant. */
+     they read better a step quieter than the nav links below them. #8a8075 is the shared
+     base value; light mode darkens it below (see .nav-section-label dark-mode override)
+     since the sidebar background is now --color-surface-secondary (#ebe9e2), and #8a8075
+     alone no longer clears comfortable contrast against that darker warm background. */
   color: #8a8075;
   margin: 14px 0 2px;
   padding: 0 12px;
 }
+/* Light-mode-only darkening for adequate contrast against the #ebe9e2 sidebar background
+   (see .app-sidebar) — dark mode keeps the original #8a8075 exactly via the override below,
+   since dark's sidebar background didn't change. */
+html:not([data-theme="dark"]) .nav-section-label { color: #5c554a; }
+html[data-theme="dark"] .nav-section-label { color: #8a8075; }
 /* Renders its literal text as-typed ("LimbicPRO") instead of the uppercase transform
    every other section label gets, so "PRO" reads as a distinct, deliberate suffix rather
    than being flattened into the same all-caps treatment as "Limbic". */
@@ -855,7 +892,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   align-items: center;
   justify-content: space-between;
   padding: 14px 18px;
-  background: var(--color-bg);
+  background: var(--color-surface-secondary);
   position: sticky;
   top: 0;
   z-index: 15;
@@ -871,6 +908,9 @@ html[data-theme="dark"] .nav-founding-link-active {
   background: var(--color-bg);
   border-top: 1px solid var(--color-neutral-200);
   padding: 8px 4px;
+  /* iPhone home-indicator clearance — without this the bar sits under the gesture
+     indicator instead of above it. */
+  padding-bottom: env(safe-area-inset-bottom);
   z-index: 20;
 }
 
@@ -895,7 +935,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   flex-direction: column;
   gap: 4px;
   padding: 20px 16px;
-  background: var(--color-bg);
+  background: var(--color-surface-secondary);
   box-shadow: var(--shadow-lg);
   z-index: 31;
   overflow-y: auto;
@@ -905,7 +945,11 @@ html[data-theme="dark"] .nav-founding-link-active {
   .app-sidebar { display: none; }
   .app-mobile-topbar { display: flex; }
   .app-bottomnav { display: flex; }
-  .app-main { padding-bottom: 76px; }
+  /* 76px clears .app-bottomnav's own flow height; the safe-area term additionally clears
+     the iPhone home-indicator space .app-bottomnav now reserves for itself (see its own
+     padding-bottom above) — without it the bar grows taller on notched devices and the
+     last bit of scrollable content ends up hidden behind that extra height. */
+  .app-main { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
 }
 
 /* The drawer is a mobile-only affordance — its trigger button lives in
