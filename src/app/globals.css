@@ -5356,6 +5356,124 @@ html[data-theme="dark"] .atrium-page {
 .npte-stat-line { font-size: 13px; color: var(--color-neutral-700); }
 .npte-stat-line strong { color: var(--color-text); }
 
+/* — Limbic Boards tab bar (app/(app)/boards/page.tsx via components/BoardsTabs.tsx) — three
+   equal-width flat-underline tabs driven by React state, not routes (unlike the Link-based
+   .sub-tabs/.sub-tab pattern used for multi-page sections elsewhere), so the header/streak
+   badge above never remounts on switch. Background is --color-card-surface — the same tint
+   every .card already uses — so the bar reads as its own strip of chrome sitting on the
+   page rather than blending into it, without inventing a new surface color. */
+.boards-tabs {
+  display: flex;
+  width: 100%;
+  background: var(--color-card-surface);
+  border-radius: var(--radius-md);
+  border-bottom: 1px solid var(--color-divider);
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+.boards-tab {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  padding: 12px 10px;
+  font: 600 13.5px var(--font-body);
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.boards-tab.active { color: var(--color-accent-700); font-weight: 700; border-bottom-color: var(--color-accent); }
+/* Shrinks the label instead of letting 3 equal-width tabs force a scrollbar — every tab
+   stays visible and legible even at the narrowest supported phone width. */
+@media (max-width: 480px) {
+  .boards-tab { font-size: 11.5px; padding: 10px 4px; }
+}
+
+/* — Daily Sharpening tab's streak section (below the Daily Dose card, see
+   components/BoardsTabs.tsx) — same two-stat-tile + weekly-dots shape as Limbic Games' own
+   stats section (.games-stats-grid/.games-week-bar), but its own boards-scoped classes
+   since the "filled dot" color here is brand blue (matching .boards-header-streak) rather
+   than Games' green --color-games-completed, which means a different thing on this page. */
+.boards-streak-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 12px 0 16px; }
+.boards-streak-stat { text-align: center; padding: 14px 8px; }
+.boards-streak-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; color: var(--color-accent-700); }
+.boards-streak-stat-label { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
+.boards-streak-week { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.boards-streak-week-dot { width: 22px; height: 22px; border-radius: 999px; background: var(--color-neutral-200); flex-shrink: 0; }
+.boards-streak-week-dot-active { background: var(--color-accent); }
+.boards-streak-week-label { font-size: 12.5px; color: var(--color-neutral-700); margin-left: 6px; }
+
+/* — Resources tab (components/BoardsTabs.tsx) — the FSBPT link list's arrow is a literal
+   unicode character via ::after, same "no icon component" approach .article-related-arrow
+   already uses elsewhere, not a new icon. The Study Strategy numbered steps mirror
+   /connexion/protocol's .connexion-step-number treatment (a large, muted background
+   number) but in brand blue instead of Connexion's gold. The Coming Soon card's muted
+   background/border is set inline on the element itself (see LimbicAgentCard.tsx for the
+   same "override .card's background inline, not via a new class" convention) — only its
+   list/badge need dedicated classes here. */
+.boards-resource-link-list { display: flex; flex-direction: column; }
+.boards-resource-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-divider);
+  text-decoration: none;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+.boards-resource-link:last-child { border-bottom: none; }
+.boards-resource-link::after {
+  content: "↗";
+  font-size: 14px;
+  color: var(--color-accent);
+  flex-shrink: 0;
+  transition: transform 150ms ease;
+}
+.boards-resource-link:hover::after { transform: translate(2px, -2px); }
+.boards-resource-disclaimer { font-size: 11.5px; color: var(--color-neutral-700); margin: 12px 0 0; }
+
+.boards-strategy-list { display: flex; flex-direction: column; gap: 14px; }
+.boards-strategy-item { display: flex; gap: 14px; align-items: flex-start; }
+.boards-strategy-number {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 28px;
+  line-height: 1;
+  color: color-mix(in srgb, var(--color-accent) 32%, transparent);
+  flex-shrink: 0;
+  min-width: 28px;
+}
+.boards-strategy-body { flex: 1; min-width: 0; font-size: 13.5px; line-height: 1.6; color: var(--color-text); margin: 0; }
+
+.boards-comingsoon-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.boards-comingsoon-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13.5px; color: var(--color-neutral-700); }
+/* Same amber as .npte-warning-card elsewhere on this page (--color-warn) rather than the
+   gold /connexion/founding-funders use for their own "coming soon" pill — Boards has
+   already established --color-warn as its own amber, so this stays consistent with that
+   instead of borrowing a different feature's brand color. */
+.boards-badge-soon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 16%, transparent);
+  border-radius: 999px;
+  padding: 3px 9px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* — The Connexion Method (/connexion, /connexion/caregiver, /connexion/protocol,
    /connexion/safety-score) — a partner program section, so it gets a warm amber/gold
    identity (var(--color-migration-gold), the same token /founding-funders' gold and
