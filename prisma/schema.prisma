@@ -176,6 +176,19 @@ model User {
   // way as clipsSeenIds/wellnessOpenedIds.
   homeGridSeenFingerprints Json @default("[]")
 
+  // Cached implicit-interest signal for Home feed ranking (see lib/llm-interest-profile.ts,
+  // lib/feed.ts rankFeed) — an LLM-generated read on *why* this reader engages with what
+  // they engage with, on top of the purely behavioral tag/specialty affinity rankFeed
+  // already computes from ReadArticle/SavedArticle history. Null until first generated;
+  // ranking works fully without it (see lib/feed.ts) so this only ever sharpens the feed,
+  // never gates it. JSON-encoded LlmInterestProfile ({ topics: {label,weight}[], summary,
+  // generatedAt }). Deliberately never generated inline on a Home request — an LLM call on
+  // every page load doesn't scale — see the daily cron in app/api/cron/
+  // refresh-interest-profiles/route.ts, which regenerates it for active readers on a
+  // schedule instead.
+  llmInterestProfile          Json?
+  llmInterestProfileUpdatedAt DateTime?
+
   // Professional dates (see components/LimbicCalendarWidget.tsx, app/actions/profile.ts
   // updateProfessionalDates) — self-reported deadlines a reader tracks on the Limbic
   // Calendar's orange dots, editable from the Profile "Professional Dates" section.
