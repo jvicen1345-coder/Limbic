@@ -1056,11 +1056,22 @@ html[data-theme="dark"] .nav-founding-link-active {
 
 /* Pull-to-refresh (see components/PullToRefresh.tsx) — .pull-refresh-root is the direct
    child that component mounts into .app-main, wrapping .home-pad rather than being it, so
-   the indicator can sit visually above the feed content without being part of .home-pad's
-   own max-width/padding box. clip is load-bearing: the indicator's height animates from 0,
-   and without clipping it would briefly show through above the app the instant it appears. */
-.pull-refresh-root { overflow: clip; }
+   the indicators can sit visually above/below the feed content without being part of
+   .home-pad's own max-width/padding box. position: relative anchors the two absolutely
+   positioned indicators (see .pull-refresh-indicator below) to this box specifically,
+   not some further-out ancestor. clip hides whatever part of each indicator's fixed
+   MAX_PULL height is still translated outside .pull-refresh-root's own bounds at rest. */
+.pull-refresh-root { position: relative; overflow: clip; }
+/* Absolutely positioned (not left in normal document flow before/after the content div) so
+   an indicator's own presence never pushes the content div's layout position — content
+   moves purely via its own translateY (see PullToRefresh.tsx), and each indicator reveals
+   itself by sliding into view via its own translateY on the exact same distance scale.
+   Position (top vs bottom) and the translateY itself are set inline per indicator — this
+   shared rule only carries what's identical between the two. */
 .pull-refresh-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
