@@ -117,7 +117,7 @@ export function HomeFeed({
   const [filter, setFilter] = useState<ArticleType | "all">("all");
 
   // Set by clicking a gap-topic row on the Limbic Agent card (see LimbicAgentCard.tsx,
-  // which links to /?topic=<slug>) — pre-filters the feed to that topic on arrival. Read
+  // which links to /home?topic=<slug>) — pre-filters the feed to that topic on arrival. Read
   // straight from the URL (not local state initialized once) so clicking a *different*
   // gap-topic row while already on Home updates the filter too, not just the first visit.
   const router = useRouter();
