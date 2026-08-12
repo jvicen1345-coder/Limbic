@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOutAction } from "@/app/actions/auth";
@@ -109,7 +109,7 @@ function NavLink({
   const active = exact ? pathname === href : pathname.startsWith(href);
   const showBadge = typeof badge === "string" ? badge.length > 0 : badge != null && badge > 0;
   return (
-    <Link href={href} style={sidebarNavStyle(active, bold)} onClick={onNavigate}>
+    <Link href={href} style={sidebarNavStyle(active, bold)} onClick={onNavigate} data-active={active}>
       {icon}
       {label}
       {locked ? (
@@ -349,7 +349,22 @@ export function AppShell({
   children,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const drawerRef = useRef<HTMLElement>(null);
   const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount };
+
+  // Restores scroll position on reopen by re-centering the active link instead — the drawer
+  // is unmounted on close (see the drawerOpen && (...) below), which resets its scrollTop to
+  // 0 on every open, so there's no scroll position to actually preserve across that unmount.
+  // Runs after the open animation (see .app-mobile-drawer in globals.css) rather than
+  // immediately, so the drawer isn't still mid-transition when it jumps.
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const timer = setTimeout(() => {
+      const activeLink = drawerRef.current?.querySelector<HTMLElement>('[data-active="true"]');
+      activeLink?.scrollIntoView({ behavior: "instant", block: "center" });
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [drawerOpen]);
 
   return (
     <div className="app-root">
@@ -392,7 +407,7 @@ export function AppShell({
       {drawerOpen && (
         <>
           <div className="app-mobile-drawer-backdrop" onClick={() => setDrawerOpen(false)} />
-          <nav className="app-mobile-drawer" aria-label="Menu">
+          <nav className="app-mobile-drawer" aria-label="Menu" ref={drawerRef}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <LogoIcon size={22} />
