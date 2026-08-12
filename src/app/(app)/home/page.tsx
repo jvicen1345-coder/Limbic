@@ -12,6 +12,7 @@ import { buildLicenseView } from "@/lib/license";
 import { ensureNexusSeedData } from "@/lib/nexus-seed";
 import { getConnectionStates } from "@/lib/nexus";
 import { buildLimbicAgentInsights } from "@/lib/limbic-agent-insights";
+import { parseInterestProfile } from "@/lib/llm-interest-profile";
 import { todayLocalDateStr } from "@/lib/today";
 import { todayDateKey } from "@/lib/wordle-words";
 import { homeQuestionForDate } from "@/lib/home-questions-static";
@@ -88,7 +89,10 @@ export default async function HomePage() {
       prisma.readArticle.findMany({
         where: { userId: user.id },
         orderBy: { updatedAt: "desc" },
-        select: { articleId: true, updatedAt: true },
+        // scrollProgress feeds rankFeed's implicit affinity model below (a completed read
+        // counts for more than a bounce) — updatedAt/articleId alone used to be enough
+        // when this only fed buildLimbicAgentInsights' recency lookup.
+        select: { articleId: true, updatedAt: true, scrollProgress: true },
       }),
       getIndustryIndexView(),
       recordHomeVisit(user),
@@ -174,7 +178,14 @@ export default async function HomePage() {
   // "what's new for you". Filtered before resolveHomeImages/attachTopicImages run below so
   // the "every visible card needs a real picture" guarantee sizes itself off the actual
   // unread pool instead of coming up short after read articles get dropped later.
-  const rankedAll = rankFeed(articles, user.specialty as Specialty, user.followedTopics as unknown as string[]);
+  const rankedAll = rankFeed({
+    articles,
+    specialty: user.specialty as Specialty,
+    followedTopics: user.followedTopics as unknown as string[],
+    readRows,
+    savedRows,
+    llmProfile: parseInterestProfile(user.llmInterestProfile),
+  });
   const ranked = rankedAll.filter((a) => !readIdSet.has(a.id));
 
   const ceEvents = articles
