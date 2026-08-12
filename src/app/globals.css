@@ -3014,7 +3014,6 @@ html[data-theme="dark"] .nav-founding-link-active {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
   padding: 8px 12px;
   border-radius: var(--radius-md);
   border-left: 3px solid var(--zone-color, var(--color-accent));
@@ -3026,9 +3025,9 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wellness-hr-zone--3 { --zone-color: var(--color-accent); }
 .wellness-hr-zone--4 { --zone-color: var(--color-vitals-strength); }
 .wellness-hr-zone--5 { --zone-color: var(--color-danger); }
-.wellness-hr-zone-name { font-weight: 600; flex: 1; min-width: 120px; }
-.wellness-hr-zone-bpm { color: var(--color-text); font-weight: 600; }
-.wellness-hr-zone-purpose { color: var(--color-neutral-700); }
+.wellness-hr-zone-name { font-weight: 600; min-width: 100px; }
+.wellness-hr-zone-bpm { color: var(--color-text); font-weight: 600; min-width: 80px; }
+.wellness-hr-zone-purpose { color: var(--color-neutral-700); margin-left: auto; }
 
 /* — RPE scale — */
 .wellness-rpe-scale { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }

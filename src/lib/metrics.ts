@@ -73,7 +73,7 @@ export interface HeartRateZone {
 
 export const HEART_RATE_ZONES: Omit<HeartRateZone, "zone">[] = [
   { name: "Zone 1", pctLow: 0.5, pctHigh: 0.6, purpose: "Recovery" },
-  { name: "Zone 2", pctLow: 0.6, pctHigh: 0.7, purpose: "Fat burning, aerobic base" },
+  { name: "Zone 2", pctLow: 0.6, pctHigh: 0.7, purpose: "Aerobic base" },
   { name: "Zone 3", pctLow: 0.7, pctHigh: 0.8, purpose: "Aerobic fitness" },
   { name: "Zone 4", pctLow: 0.8, pctHigh: 0.9, purpose: "Anaerobic threshold" },
   { name: "Zone 5", pctLow: 0.9, pctHigh: 1.0, purpose: "Maximum effort" },
