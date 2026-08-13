@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { DailySharpeningSession } from "@/components/DailySharpeningSession";
 import { ExternalLinkIcon } from "@/components/icons";
 import type { BoardQuestion, BoardTerm } from "@/lib/board-content";
@@ -144,7 +145,13 @@ export function BoardsTabs({
   /** Oldest first (7 entries, ending today) — see app/(app)/boards/page.tsx. */
   weekDays: { dateKey: string; completed: boolean }[];
 }) {
-  const [activeTab, setActiveTab] = useState<BoardsTab>("sharpening");
+  // ?tab=breakdown deep-links here from outside the page (e.g. the specialty tracks' Board
+  // Connections tab) straight into NPTE Breakdown instead of always landing on Daily
+  // Sharpening — read once at mount, same as any other client-only initial-state read.
+  const requestedTab = useSearchParams().get("tab");
+  const [activeTab, setActiveTab] = useState<BoardsTab>(
+    TABS.some((t) => t.id === requestedTab) ? (requestedTab as BoardsTab) : "sharpening"
+  );
   const completedThisWeek = weekDays.filter((d) => d.completed).length;
 
   return (

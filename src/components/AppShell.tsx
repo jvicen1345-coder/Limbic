@@ -39,6 +39,7 @@ import {
   HeartIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { SPORTS } from "@/lib/specialty-content";
 
 function sidebarNavStyle(active: boolean, bold: boolean): React.CSSProperties {
   return {
@@ -195,6 +196,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
   // preference from here on, not tied to route changes, so a manual toggle isn't fought by
   // navigating between the four Nexus sub-pages themselves.
   const [nexusExpanded, setNexusExpanded] = useState(pathname.startsWith("/nexus"));
+  // Same collapse-by-default-unless-already-there reasoning as Nexus above. Sports isn't a
+  // manual toggle like Specialties/Nexus are — its 5 sport sub-links only ever show
+  // alongside the Sports track itself being active, so that one just reads straight off the
+  // route rather than tracking its own open/closed state.
+  const [specialtiesExpanded, setSpecialtiesExpanded] = useState(pathname.startsWith("/student/specialties"));
+  const sportsActive = pathname.startsWith("/student/specialties/sports");
 
   return (
     <>
@@ -215,6 +222,42 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
           <div className="nav-section-label">Limbic Student</div>
           <NavLink href="/student" icon={<GraduationCapIcon />} label="Atrium" bold={false} onNavigate={onNavigate} />
           <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" bold={false} onNavigate={onNavigate} />
+          <button
+            type="button"
+            className="nav-section-label nav-section-label--toggle"
+            aria-expanded={specialtiesExpanded}
+            onClick={() => setSpecialtiesExpanded((v) => !v)}
+          >
+            Specialties
+            <ChevronRightIcon
+              size={13}
+              className={specialtiesExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"}
+            />
+          </button>
+          {specialtiesExpanded && (
+            <>
+              <NavLink href="/student/specialties/musculoskeletal" icon={<BandageIcon />} label="Musculoskeletal" bold={false} onNavigate={onNavigate} />
+              <NavLink href="/student/specialties/neurological" icon={<ActivityIcon />} label="Neurological" bold={false} onNavigate={onNavigate} />
+              <NavLink href="/student/specialties/cardiopulmonary" icon={<HeartIcon />} label="Cardiopulmonary" bold={false} onNavigate={onNavigate} />
+              <NavLink href="/student/specialties/pediatrics" icon={<UsersIcon />} label="Pediatrics" bold={false} onNavigate={onNavigate} />
+              <NavLink href="/student/specialties/geriatrics" icon={<ShieldIcon />} label="Geriatrics" bold={false} onNavigate={onNavigate} />
+              <NavLink href="/student/specialties/sports" icon={<DumbbellIcon />} label="Sports" exact={false} bold={false} onNavigate={onNavigate} />
+              {sportsActive && (
+                <div style={{ paddingLeft: 14, display: "flex", flexDirection: "column", gap: 0 }}>
+                  {SPORTS.map((sport) => (
+                    <NavLink
+                      key={sport.slug}
+                      href={`/student/specialties/sports/${sport.slug}`}
+                      icon={<DumbbellIcon size={15} />}
+                      label={sport.name}
+                      bold={false}
+                      onNavigate={onNavigate}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </>
       )}
 
