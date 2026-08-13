@@ -75,12 +75,10 @@ export function NexusPostCard({ post, currentUserName }: { post: NexusPostData; 
       )}
 
       {post.type === "article" && post.imageUrls[0] && (
-        // eslint-disable-next-line @next/next/no-img-element -- data-URL image, next/image can't optimize it anyway
-        <img
-          src={post.imageUrls[0]}
-          alt=""
-          style={{ width: "100%", borderRadius: "var(--radius-md)", marginTop: 8, display: "block" }}
-        />
+        <div className="hero-image-container" style={{ marginTop: 8 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- data-URL image, next/image can't optimize it anyway */}
+          <img src={post.imageUrls[0]} alt="" />
+        </div>
       )}
 
       <p className="card-body" style={{ whiteSpace: "pre-wrap" }}>

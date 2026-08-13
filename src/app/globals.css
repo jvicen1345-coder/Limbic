@@ -682,6 +682,78 @@ html[data-theme="dark"] .card.elev-lg {
 /* Continue Reading's progress bar (see components/ContinueReadingCard.tsx). */
 .progress-bar-fade-in { animation: fade-in 0.5s ease; }
 
+/* — perceived-performance: nav loading bar, skeletons, page-enter fade, tap feedback —
+   see components/TopLoadingBar.tsx, components/SkeletonCard.tsx, and each route's
+   loading.tsx under app/(app)/*. */
+.top-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--color-accent);
+  transition: width 300ms ease, opacity 200ms ease;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* .skeleton-card reuses .card's own background/radius/padding so the swap into real
+   content doesn't itself cause a jump — only the shimmering lines inside are placeholder.
+   The lines' gradient runs through --color-divider (always visibly a "bar") rather than
+   matching the card's own background at its low point, so nothing ever reads as blank. */
+.skeleton-card { gap: 10px; }
+.skeleton-line {
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--color-divider) 25%, var(--color-card-surface) 50%, var(--color-divider) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+/* prefers-reduced-motion: a shimmer is motion for motion's sake, unlike the page-enter
+   fade below (which reads as content simply appearing) — this is the one animation in this
+   block worth turning off outright rather than just shortening. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-line { animation: none; background-position: 0 0; }
+}
+
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-enter { animation: page-fade-in 0.2s ease forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .page-enter { animation: none; }
+}
+
+/* A reusable fixed-ratio placeholder for any image whose real dimensions aren't known
+   until it loads — most of this app's own images already avoid the problem with a fixed
+   pixel height (see .hero-card-media, ArticleImage.tsx, VideoThumbnail.tsx); this covers
+   the remaining case, user-uploaded Nexus post images, which have no such guarantee (see
+   components/NexusPostCard.tsx). */
+.hero-image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--color-neutral-200);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+.hero-image-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Tactile tap feedback for touch devices — desktop already gets this for real buttons via
+   .btn:active above; this extends the same idea to plain links and clickable cards, and
+   only at mobile widths, where a press-down cue matters most (no hover state to lean on). */
+@media (max-width: 768px) {
+  button:active:not(:disabled),
+  a:active,
+  .card.card-hoverable:active {
+    transform: scale(0.98);
+    transition: transform 100ms ease;
+  }
+}
+
 /* — tags — */
 .tag {
   display: inline-flex; align-items: center; font-size: 11px;
@@ -1127,6 +1199,11 @@ html[data-theme="dark"] .nav-founding-link-active {
   max-height: calc(100vh - 40px);
   overflow-y: auto;
 }
+/* A conservative floor under each widget so the aside column's overall height doesn't
+   depend entirely on which widgets happen to have content this render (see HomeFeed.tsx's
+   showWidget calls) — well under any real widget's actual height, so this never visibly
+   changes one, just guards the transition from home/loading.tsx's skeleton. */
+.home-aside-scroll > * { min-height: 60px; }
 @media (max-width: 799px) {
   .home-row { flex-direction: column; gap: 24px; }
   .home-main-col { width: 100%; }
@@ -1366,7 +1443,10 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 .nexus-image-grid img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .nexus-image-grid--1 { grid-template-columns: 1fr; }
-.nexus-image-grid--1 img { max-height: 420px; }
+/* aspect-ratio (not just the pre-existing max-height cap) — a single post image's real
+   proportions aren't known until it loads, so max-height alone still let the row grow from
+   0 up to 420px as it came in; a fixed ratio reserves that space immediately. */
+.nexus-image-grid--1 img { aspect-ratio: 16 / 9; max-height: 420px; }
 .nexus-image-grid--2 { grid-template-columns: 1fr 1fr; }
 .nexus-image-grid--2 img { aspect-ratio: 1; }
 .nexus-image-grid--3 { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; }

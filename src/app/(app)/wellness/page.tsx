@@ -74,7 +74,7 @@ export default async function WellnessOverviewPage() {
     .slice(0, 3);
 
   return (
-    <div className="screen-pad wellness-hub-page" style={{ maxWidth: 980 }}>
+    <div className="screen-pad wellness-hub-page page-enter" style={{ maxWidth: 980 }}>
       <div className="wellness-hub-header">
         <h1 className="wellness-hub-title">Health and Wellness</h1>
         <p className="wellness-hub-subtitle">Your personal health hub</p>
