@@ -4076,8 +4076,16 @@ html[data-theme="dark"] .body-silhouette-card {
    distinct from it: an explicit warm dark-slate / warm off-white pair of backgrounds
    rather than a tint of the main app's own --color-bg, following the same "owns its own
    colors" approach as .ff-page above. Every rule below reads var(--atrium-*) so the main
-   app's theme tokens can shift later without bleeding into the Atrium. */
-.atrium-page {
+   app's theme tokens can shift later without bleeding into the Atrium.
+
+   The tokens themselves live on .app-root--atrium (AppShell adds this class whenever
+   pathname starts with /student — see AppShell.tsx), not on .atrium-page — .app-sidebar,
+   .app-mobile-topbar/-drawer and .app-bottomnav are .atrium-page's siblings, not its
+   descendants, so a page-scoped class could never reach them. Defining the tokens one level
+   up means every piece of chrome around the page can pick up the same warm palette instead
+   of butting a warm page against plain-neutral chrome, which read as an unstyled seam
+   rather than a deliberate two-tone design. */
+.app-root--atrium {
   --atrium-tint: #c9933a;
   --atrium-green: #4caf7d;
   --atrium-blue: var(--color-accent);
@@ -4087,6 +4095,25 @@ html[data-theme="dark"] .body-silhouette-card {
   --atrium-surface: color-mix(in srgb, var(--atrium-tint) 4%, #ffffff);
   --atrium-surface-2: color-mix(in srgb, var(--atrium-tint) 8%, #ffffff);
   --atrium-border: color-mix(in srgb, var(--atrium-tint) 22%, var(--color-divider));
+  --atrium-chrome-bg: color-mix(in srgb, var(--atrium-tint) 10%, #ebe9e2);
+}
+html[data-theme="dark"] .app-root--atrium {
+  --atrium-bg: #1c1a2e;
+  --atrium-surface: color-mix(in srgb, var(--atrium-tint) 8%, #262340);
+  --atrium-surface-2: color-mix(in srgb, var(--atrium-tint) 13%, #262340);
+  --atrium-border: color-mix(in srgb, var(--atrium-tint) 30%, transparent);
+  --atrium-chrome-bg: color-mix(in srgb, var(--atrium-tint) 10%, #262340);
+}
+/* The sidebar/topbar/drawer/bottomnav all normally read --color-surface-secondary — swap
+   them onto the same warm family as the page they're framing whenever it's active. */
+.app-root--atrium .app-sidebar,
+.app-root--atrium .app-mobile-topbar,
+.app-root--atrium .app-mobile-drawer,
+.app-root--atrium .app-bottomnav {
+  background: var(--atrium-chrome-bg);
+  border-color: var(--atrium-border);
+}
+.atrium-page {
   background: var(--atrium-bg);
   color: var(--color-text);
   min-height: 100%;
@@ -4096,12 +4123,6 @@ html[data-theme="dark"] .body-silhouette-card {
      one viewport-tall, leaving the rest of the content to visually overflow past it and
      paint on top of .app-main's own (cooler) background instead of this page's warm one. */
   flex-shrink: 0;
-}
-html[data-theme="dark"] .atrium-page {
-  --atrium-bg: #1c1a2e;
-  --atrium-surface: color-mix(in srgb, var(--atrium-tint) 8%, #262340);
-  --atrium-surface-2: color-mix(in srgb, var(--atrium-tint) 13%, #262340);
-  --atrium-border: color-mix(in srgb, var(--atrium-tint) 30%, transparent);
 }
 
 .atrium-header {
