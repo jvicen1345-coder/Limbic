@@ -6,7 +6,7 @@ import { WELLNESS_GOAL_OPTIONS } from "@/lib/vitals";
 import { NetworkIcon, SendIcon, ThumbsUpIcon, ThumbsDownIcon, BookmarkIcon } from "@/components/icons";
 
 const EQUIPMENT_OPTIONS = [
-  "No equipment — bodyweight only",
+  "No equipment, bodyweight only",
   "Resistance bands",
   "Dumbbells",
   "Kettlebells",
@@ -18,7 +18,7 @@ const EQUIPMENT_OPTIONS = [
 
 const SUGGESTED_PROMPTS = [
   "What should I eat to support my strength training goal?",
-  "I have dumbbells and a resistance band — what exercises can I do at home?",
+  "I have dumbbells and a resistance band, what exercises can I do at home?",
   "How do I interpret my HRV score of 58ms?",
   "What does Zone 2 cardio feel like and how do I do it?",
   "How many calories should I be eating for my goal?",
@@ -128,7 +128,7 @@ export function WellnessAgentChat({ initialGoal }: { initialGoal: string | null 
         {messages.length === 0 && (
           <div className="wellness-agent-empty">
             <NetworkIcon size={28} style={{ color: "var(--color-migration-gold)" }} />
-            <p>Ask about exercise, nutrition, recovery, or how to interpret a metric — here are a few ideas:</p>
+            <p>Ask about exercise, nutrition, recovery, or how to interpret a metric; here are a few ideas:</p>
             <div className="wellness-agent-prompts">
               {SUGGESTED_PROMPTS.map((prompt) => (
                 <button key={prompt} type="button" className="wellness-agent-prompt" onClick={() => send(prompt)}>

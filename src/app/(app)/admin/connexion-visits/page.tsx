@@ -28,7 +28,7 @@ export default async function AdminConnexionVisitsPage() {
     <div className="screen-pad" style={{ maxWidth: 960, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Connexion Visit Requests</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
-        Home visit requests from /connexion and /connexion/delia — {requests.length} total,{" "}
+        Home visit requests from /connexion and /connexion/delia, {requests.length} total,{" "}
         {newCount} new. Visible only to site admins.
       </p>
 

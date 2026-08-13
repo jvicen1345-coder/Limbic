@@ -42,7 +42,7 @@ export function FoundingFundersRoster({ entries, confirmedCount, pendingCount }:
 
   return (
     <div className="ff-admin ff-roster">
-      <p className="ff-admin-title">Founding Funders — payment roster</p>
+      <p className="ff-admin-title">Founding Funders, payment roster</p>
 
       <div className="ff-roster-counts">
         <div className="ff-roster-count ff-roster-count--confirmed">

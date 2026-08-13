@@ -67,7 +67,7 @@ export default async function ActivityLogPage() {
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">This week&rsquo;s activity</div>
         <p className="card-body" style={{ marginTop: 2 }}>
-          Monday through Sunday — last week shown as a faint bar behind this week&rsquo;s.
+          Monday through Sunday, last week shown as a faint bar behind this week&rsquo;s.
         </p>
         <WeeklyActivityChart thisWeek={thisWeek} lastWeek={lastWeek} weekStartIso={thisWeekStartIso} />
       </div>

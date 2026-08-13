@@ -15,7 +15,7 @@ export default async function SavedClipsPage() {
 
       {rows.length === 0 ? (
         <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
-          No saved clips yet — bookmark one from the Clips feed to see it here.
+          No saved clips yet, bookmark one from the Clips feed to see it here.
         </p>
       ) : (
         <div className="video-grid">

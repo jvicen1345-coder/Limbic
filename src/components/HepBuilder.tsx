@@ -53,7 +53,7 @@ export function HepBuilder() {
           <input
             className="input"
             id="hep-program"
-            placeholder="Post-op ACL — Phase 2"
+            placeholder="Post-op ACL, Phase 2"
             value={programName}
             onChange={(e) => setProgramName(e.target.value)}
           />

@@ -51,7 +51,7 @@ export default async function NexusMessagesPage() {
 
       {conversations.length === 0 ? (
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)" }}>
-          Messaging opens up once you connect with someone — visit the Directory to get started.
+          Messaging opens up once you connect with someone; visit the Directory to get started.
         </p>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -77,7 +77,7 @@ export default async function NexusMessagesPage() {
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {lastMessage ? lastMessage.body : "Say hello — you're connected."}
+                  {lastMessage ? lastMessage.body : "Say hello, you're connected."}
                 </div>
               </div>
               {lastMessage && (

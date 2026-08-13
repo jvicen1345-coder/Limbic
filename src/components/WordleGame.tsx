@@ -214,9 +214,9 @@ export function WordleGame({
               body={
                 status === "won"
                   ? `Solved today's Limbic Games in ${guesses.length}/${MAX_GUESSES} guesses${
-                      elapsedSeconds != null ? ` — ${formatElapsed(elapsedSeconds)}` : ""
+                      elapsedSeconds != null ? `, ${formatElapsed(elapsedSeconds)}` : ""
                     } 🎯`
-                  : `Gave today's Limbic Games a shot${elapsedSeconds != null ? ` (${formatElapsed(elapsedSeconds)})` : ""} — back at it tomorrow.`
+                  : `Gave today's Limbic Games a shot${elapsedSeconds != null ? ` (${formatElapsed(elapsedSeconds)})` : ""}, back at it tomorrow.`
               }
             />
           </div>

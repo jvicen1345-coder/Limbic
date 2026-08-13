@@ -37,7 +37,7 @@ export function MacroCalculatorCard({ profile }: { profile: WellnessProfile }) {
   return (
     <div className="wellness-calc-card">
       <div className="wellness-calc-title">Macro Calculator</div>
-      <p className="wellness-calc-desc">Estimates your daily calorie and macronutrient targets — free for everyone.</p>
+      <p className="wellness-calc-desc">Estimates your daily calorie and macronutrient targets, free for everyone.</p>
 
       {!hasProfile ? (
         <div className="wellness-calc-missing-profile">
@@ -47,7 +47,7 @@ export function MacroCalculatorCard({ profile }: { profile: WellnessProfile }) {
       ) : (
         <>
           <p className="wellness-calc-desc" style={{ marginTop: -6 }}>
-            Using your saved profile — {profile.age}yo, {profile.weightLbs} lbs, {profile.heightFeet}&rsquo;{profile.heightInches ?? 0}
+            Using your saved profile, {profile.age}yo, {profile.weightLbs} lbs, {profile.heightFeet}&rsquo;{profile.heightInches ?? 0}
             &rdquo;, {activityLevel}, goal: {goal}. <Link href="/wellness/activity">Update</Link>
           </p>
 
@@ -77,7 +77,7 @@ export function MacroCalculatorCard({ profile }: { profile: WellnessProfile }) {
                   placeholder="e.g. 12"
                 />
               </div>
-              <p className="wellness-macro-weightgoal-hint">Optional — add these to dial your calorie target to a specific weight and timeline instead of a flat maintenance estimate.</p>
+              <p className="wellness-macro-weightgoal-hint">Optional; add these to dial your calorie target to a specific weight and timeline instead of a flat maintenance estimate.</p>
             </div>
           )}
 
@@ -120,18 +120,18 @@ export function MacroCalculatorCard({ profile }: { profile: WellnessProfile }) {
             </div>
             <div className="wellness-macro-legend">
               <span className="wellness-macro-legend-item wellness-macro-legend-item--protein">
-                Protein — {result.proteinGrams}g ({result.proteinPct}%)
+                Protein: {result.proteinGrams}g ({result.proteinPct}%)
               </span>
               <span className="wellness-macro-legend-item wellness-macro-legend-item--carb">
-                Carbs — {result.carbGrams}g ({result.carbPct}%)
+                Carbs: {result.carbGrams}g ({result.carbPct}%)
               </span>
               <span className="wellness-macro-legend-item wellness-macro-legend-item--fat">
-                Fat — {result.fatGrams}g ({result.fatPct}%)
+                Fat: {result.fatGrams}g ({result.fatPct}%)
               </span>
             </div>
             {result.proteinCapped && (
               <p className="wellness-macro-weightgoal-hint" style={{ marginTop: 8 }}>
-                Protein was capped to keep this calorie target realistic across all three macros — a very low calorie target can&rsquo;t
+                Protein was capped to keep this calorie target realistic across all three macros; a very low calorie target can&rsquo;t
                 fit a full bodyweight-based protein goal.
               </p>
             )}
@@ -145,7 +145,7 @@ export function MacroCalculatorCard({ profile }: { profile: WellnessProfile }) {
       </p>
       <div className="wellness-calc-source">
         Sources: Mifflin MD, St Jeor ST, et al. Journal of the American Dietetic Association, 1990 (calories) · ISSN Position Stand on
-        Protein and Exercise (protein target) · the widely-used ~3,500 kcal/lb rule of thumb (weight timeline — a simplification, not an
+        Protein and Exercise (protein target) · the widely-used ~3,500 kcal/lb rule of thumb (weight timeline, a simplification, not an
         exact prediction)
       </div>
     </div>

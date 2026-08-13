@@ -75,13 +75,13 @@ export const ASSESSMENTS: Assessment[] = [
       "Lower yourself to sitting on the floor",
       "Rise back to standing",
       "Do not use your hands, knees, or forearms for support",
-      "Score out of 10 — start at 10, subtract 1 for each support used, subtract 0.5 for each loss of balance",
+      "Score out of 10, start at 10, subtract 1 for each support used, subtract 0.5 for each loss of balance",
     ],
     scoringTable: [
       { score: "8-10", interpretation: "Excellent functional mobility" },
-      { score: "6-7.5", interpretation: "Good — room for improvement" },
-      { score: "3.5-5.5", interpretation: "Fair — consider mobility training" },
-      { score: "Below 3.5", interpretation: "Poor — see a physical therapist" },
+      { score: "6-7.5", interpretation: "Good, room for improvement" },
+      { score: "3.5-5.5", interpretation: "Fair, consider mobility training" },
+      { score: "Below 3.5", interpretation: "Poor, see a physical therapist" },
     ],
     source: "European Journal of Preventive Cardiology, 2012",
     metric: "sitAndRise",
@@ -94,7 +94,7 @@ export const ASSESSMENTS: Assessment[] = [
     steps: [
       "Stand with your back flat against a wall",
       "Slide down until your thighs are parallel to the floor",
-      "Hold the position — time it",
+      "Hold the position, time it",
       "Stop when you can no longer maintain the position",
     ],
     norms: [
@@ -105,7 +105,7 @@ export const ASSESSMENTS: Assessment[] = [
       { ageLabel: "60+ (Men)", poor: "Below 10s", fair: "10-20s", good: "20-30s", excellent: "Above 30s" },
       { ageLabel: "60+ (Women)", poor: "Below 10s", fair: "10-15s", good: "15-25s", excellent: "Above 25s" },
     ],
-    normsNote: "General reference ranges, not a single universally-agreed standard — treat these as a rough guide rather than an exact cutoff.",
+    normsNote: "General reference ranges, not a single universally-agreed standard; treat these as a rough guide rather than an exact cutoff.",
     source: "ACSM Health Related Physical Fitness Assessment Manual",
     metric: "wallSit",
     unitLabel: "seconds",
@@ -118,12 +118,12 @@ export const ASSESSMENTS: Assessment[] = [
       "Reach one arm over your shoulder and down your back",
       "Reach the other arm behind your back and up",
       "Measure the distance between your middle fingers",
-      "Positive score — fingers overlap — record as positive centimeters",
-      "Negative score — fingers do not reach — record as negative centimeters",
+      "Positive score (fingers overlap): record as positive centimeters",
+      "Negative score (fingers do not reach): record as negative centimeters",
       "Repeat on both sides",
     ],
-    interpretationNote: "Symmetry between sides is more important than the absolute score — a large difference side to side is more worth noting than either number alone.",
-    source: "FMS — Functional Movement Screen",
+    interpretationNote: "Symmetry between sides is more important than the absolute score; a large difference side to side is more worth noting than either number alone.",
+    source: "FMS (Functional Movement Screen)",
     metric: "shoulderScratch",
     unitLabel: "cm (+ overlap / − gap)",
   },
@@ -141,7 +141,7 @@ export const ASSESSMENTS: Assessment[] = [
       {
         item: "Heels stay flat",
         ifItFails: "If they rise off the floor, this points to an ankle mobility limitation.",
-        whatHelps: "A PT can assess ankle dorsiflexion — calf stretching and ankle mobility drills often help.",
+        whatHelps: "A PT can assess ankle dorsiflexion; calf stretching and ankle mobility drills often help.",
       },
       {
         item: "Knees track over toes",
@@ -151,7 +151,7 @@ export const ASSESSMENTS: Assessment[] = [
       {
         item: "Arms stay overhead",
         ifItFails: "If they fall forward, this points to a shoulder mobility limitation.",
-        whatHelps: "A PT can screen thoracic spine and shoulder mobility — thoracic extension work often helps.",
+        whatHelps: "A PT can screen thoracic spine and shoulder mobility; thoracic extension work often helps.",
       },
       {
         item: "Torso stays upright",
@@ -159,6 +159,6 @@ export const ASSESSMENTS: Assessment[] = [
         whatHelps: "Hip flexor stretching and the ankle mobility work above are common starting points.",
       },
     ],
-    source: "NASM — National Academy of Sports Medicine",
+    source: "NASM (National Academy of Sports Medicine)",
   },
 ];

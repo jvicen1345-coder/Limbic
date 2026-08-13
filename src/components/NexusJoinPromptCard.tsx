@@ -22,7 +22,7 @@ export function NexusJoinPromptCard({ onWaitlist = false }: { onWaitlist?: boole
       </div>
       {onWaitlist ? (
         <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: 0 }}>
-          Coming soon — you&rsquo;re on the list and we&rsquo;ll let you know when it launches.
+          Coming soon, you&rsquo;re on the list and we&rsquo;ll let you know when it launches.
         </p>
       ) : (
         <>

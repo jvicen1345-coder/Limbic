@@ -6,7 +6,7 @@ import type { Clip } from "@/lib/types";
 export const CLIPS: Clip[] = [
   {
     id: "c1",
-    title: "Top Knee Exercise — Physical Therapy Tip",
+    title: "Top Knee Exercise, Physical Therapy Tip",
     source: "YouTube",
     specialty: "ortho",
     url: "https://www.youtube.com/shorts/02wqRrOBgWY",
@@ -42,7 +42,7 @@ export const CLIPS: Clip[] = [
   {
     id: "c6",
     title: "What Is the Role of Physical Therapy in Stroke Recovery?",
-    source: "Kristen Bolen, PT — St. Luke's Hospital",
+    source: "Kristen Bolen, PT, St. Luke's Hospital",
     specialty: "neuro",
     url: "https://www.youtube.com/watch?v=EMOCEu_Ve4k",
   },

@@ -32,14 +32,14 @@ export function ProfessionalCredentialsCard({
             <span className="license-badge license-badge--student">DPT Student</span>
           </div>
           <p className="card-body" style={{ marginTop: 8 }}>
-            No license required while you&rsquo;re a student — you&rsquo;ll be able to verify your license once you&rsquo;re
+            No license required while you&rsquo;re a student, you&rsquo;ll be able to verify your license once you&rsquo;re
             practicing.
           </p>
         </>
       ) : licenseStatus === "verified" && licenseNumber ? (
         <>
           <div style={{ marginTop: 8 }}>
-            <span className="license-badge license-badge--verified">Licensed PT — Verified</span>
+            <span className="license-badge license-badge--verified">Licensed PT, Verified</span>
           </div>
           <div style={{ marginTop: 10, fontSize: 13.5 }}>{maskLicenseNumber(licenseNumber)}</div>
           <div style={{ fontSize: 12, color: "var(--color-neutral-700)", marginTop: 2 }}>

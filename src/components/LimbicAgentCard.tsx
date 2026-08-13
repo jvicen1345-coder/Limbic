@@ -80,14 +80,14 @@ export function LimbicAgentCard({ insights, isPro }: { insights: LimbicAgentInsi
                   >
                     <span>
                       <strong>{n.topic}</strong>
-                      <span style={{ color: "var(--color-neutral-700)" }}> — {gapTrailer(n.gapDays)}</span>
+                      <span style={{ color: "var(--color-neutral-700)" }}>, {gapTrailer(n.gapDays)}</span>
                     </span>
                     <ChevronRightIcon size={14} style={{ color: "var(--color-accent-700)", flexShrink: 0 }} />
                   </Link>
                 ) : (
                   <div key={n.topic} style={{ fontSize: 13, padding: "4px 0" }}>
                     <strong>{n.topic}</strong>
-                    <span style={{ color: "var(--color-neutral-700)" }}> — {gapTrailer(n.gapDays)}</span>
+                    <span style={{ color: "var(--color-neutral-700)" }}>, {gapTrailer(n.gapDays)}</span>
                   </div>
                 )
               )}

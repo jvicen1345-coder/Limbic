@@ -18,7 +18,7 @@ export default async function AdminSuggestionsPage() {
     <div className="screen-pad" style={{ maxWidth: 720, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Suggestions</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
-        Anonymous suggestions submitted from the Profile page — {suggestions.length} total. Visible only to site admins.
+        Anonymous suggestions submitted from the Profile page, {suggestions.length} total. Visible only to site admins.
       </p>
 
       <div className="card elev-sm">

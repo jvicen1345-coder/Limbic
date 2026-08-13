@@ -18,7 +18,7 @@ export function SuggestionBoxCard() {
         setBody("");
         setSent(true);
       } else {
-        setError(result.error ?? "Something went wrong — try again.");
+        setError(result.error ?? "Something went wrong, try again.");
       }
     });
   };
@@ -27,7 +27,7 @@ export function SuggestionBoxCard() {
     <div className="card elev-sm" style={{ marginBottom: 18 }}>
       <div className="card-kicker">Suggestion box</div>
       <p className="card-body" style={{ marginTop: 2 }}>
-        Have an idea or some feedback for Limbic? Send it below — this is completely anonymous, nothing here is
+        Have an idea or some feedback for Limbic? Send it below: this is completely anonymous; nothing here is
         tied back to your account.
       </p>
 
@@ -57,7 +57,7 @@ export function SuggestionBoxCard() {
         {sent && (
           <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12.5, color: "var(--color-success)" }}>
             <CheckIcon size={13} />
-            Sent anonymously — thank you
+            Sent anonymously, thank you
           </span>
         )}
       </div>

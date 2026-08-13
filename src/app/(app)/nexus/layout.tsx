@@ -25,8 +25,8 @@ export default async function NexusLayout({ children }: { children: React.ReactN
           <CheckCircleIcon size={32} style={{ color: "var(--color-success)", margin: "0 auto 12px" }} />
           <h1 style={{ fontSize: 22, margin: "0 0 8px" }}>You&rsquo;re on the list</h1>
           <p style={{ fontSize: 13.5, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
-            Nexus — a networking space for PTs, OTs, and the wider healthcare & wellness
-            community — is coming soon. We&rsquo;ll let you know the moment it&rsquo;s
+            Nexus, a networking space for PTs, OTs, and the wider healthcare & wellness
+            community, is coming soon. We&rsquo;ll let you know the moment it&rsquo;s
             live.
           </p>
           <form action={leaveNexusAction}>
@@ -40,8 +40,8 @@ export default async function NexusLayout({ children }: { children: React.ReactN
           <BellIcon size={32} style={{ color: "var(--color-accent)", margin: "0 auto 12px" }} />
           <h1 style={{ fontSize: 22, margin: "0 0 8px" }}>Nexus is coming soon</h1>
           <p style={{ fontSize: 13.5, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
-            A networking space for PTs, OTs, and the wider healthcare & wellness community
-            — a directory to find other clinicians, connections, a feed, and direct
+            A networking space for PTs, OTs, and the wider healthcare & wellness community,
+            a directory to find other clinicians, connections, a feed, and direct
             messaging. We&rsquo;re still building it.
           </p>
           <div className="card elev-sm" style={{ textAlign: "left", marginBottom: 20 }}>

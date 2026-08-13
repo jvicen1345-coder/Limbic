@@ -196,7 +196,7 @@ export interface NutritionSource {
 export const NUTRITION_SOURCES: NutritionSource[] = [
   {
     title: "USDA Dietary Guidelines",
-    description: "The federal government's official dietary guidance — evidence-based recommendations on what and how much to eat.",
+    description: "The federal government's official dietary guidance, evidence-based recommendations on what and how much to eat.",
     url: "https://www.dietaryguidelines.gov",
     domain: "dietaryguidelines.gov",
   },

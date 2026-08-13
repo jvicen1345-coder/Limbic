@@ -216,11 +216,11 @@ export function PullToRefresh({
   return (
     <div ref={rootRef} className="pull-refresh-root">
       {/* Absolutely positioned, always MAX_PULL tall, revealed purely by sliding into view
-          via translateY — content below moves by that same topDisplay/bottomDisplay value
+          via translateY, content below moves by that same topDisplay/bottomDisplay value
           via its own translateY, so the two track in lockstep on one shared scale instead
           of each independently pushing the other (a fixed-height indicator sitting in
           normal flow before/after content would push it *again* on top of the transform,
-          doubling the visual travel for a given pull distance — measured and confirmed
+          doubling the visual travel for a given pull distance, measured and confirmed
           during development, not a hypothetical). */}
       <div
         className="pull-refresh-indicator"

@@ -96,7 +96,7 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
           style={{ display: "flex", flexDirection: "column", gap: 16 }}
         >
           <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
-            Sign in as a physical therapist — you can verify your license anytime from your profile to unlock
+            Sign in as a physical therapist; you can verify your license anytime from your profile to unlock
             clinician features.
           </p>
 
@@ -118,7 +118,7 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
             Sign in
           </button>
           <p style={{ fontSize: 11, color: "var(--color-neutral-700)", margin: 0, textAlign: "center" }}>
-            Demo sign-in — any email works.
+            Demo sign-in, any email works.
           </p>
         </form>
       ) : (
@@ -150,7 +150,7 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
             Sign in
           </button>
           <p style={{ fontSize: 11, color: "var(--color-neutral-700)", margin: 0, textAlign: "center" }}>
-            Demo sign-in — any email works. Signing in again with the same email returns to your
+            Demo sign-in, any email works. Signing in again with the same email returns to your
             saved articles and profile.
           </p>
         </form>

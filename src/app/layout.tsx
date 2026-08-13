@@ -27,7 +27,7 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "Limbic — PT News",
+  title: "Limbic, PT News",
   description: "Up-to-date news, guidelines, and clinical tools for physical therapists.",
   // Google Search Console's HTML-tag ownership verification — additional to the domain's
   // existing DNS-based verification, not a replacement for it. Search Console's own

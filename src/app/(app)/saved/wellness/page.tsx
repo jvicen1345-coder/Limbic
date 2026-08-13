@@ -23,7 +23,7 @@ export default async function SavedWellnessPage() {
 
       {articles.length === 0 && videos.length === 0 ? (
         <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
-          No saved wellness reading or videos yet — bookmark something from Health & Wellness to see it here.
+          No saved wellness reading or videos yet, bookmark something from Health & Wellness to see it here.
         </p>
       ) : (
         <>

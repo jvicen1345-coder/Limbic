@@ -10,7 +10,7 @@ export default async function StudyBuddyPage() {
   return (
     <StudentPlaceholderPage
       title="Study Buddy"
-      subtitle="Coming soon — find an anonymous study partner matched by school, cohort, and study style."
+      subtitle="Coming soon, find an anonymous study partner matched by school, cohort, and study style."
     />
   );
 }

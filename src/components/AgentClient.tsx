@@ -204,9 +204,9 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
         <span>
           <strong>Clinical decision support, not diagnosis.</strong>{" "}
           {AGENT_DEMO_MODE
-            ? "Sample reasoning web — full AI-generated answers for your own questions are coming soon. "
+            ? "Sample reasoning web, full AI-generated answers for your own questions are coming soon. "
             : ""}
-          Never diagnoses, never recommends medication — always defer to your own direct patient assessment.
+          Never diagnoses, never recommends medication, always defer to your own direct patient assessment.
         </span>
       </div>
 
@@ -252,7 +252,7 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
         <input
           placeholder={
             AGENT_DEMO_MODE
-              ? "Try any question — see a sample reasoning web…"
+              ? "Try any question, see a sample reasoning web…"
               : "Ask a clinical question or describe a case…"
           }
           value={question}

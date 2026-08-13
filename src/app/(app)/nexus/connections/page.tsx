@@ -60,7 +60,7 @@ export default async function NexusConnectionsPage() {
       </div>
       {accepted.length === 0 ? (
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)" }}>
-          No connections yet — visit the Directory to start connecting.
+          No connections yet, visit the Directory to start connecting.
         </p>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

@@ -89,7 +89,7 @@ export const CASES: DailyCase[] = [
     options: ["Anterior cruciate ligament (ACL) tear", "Meniscus tear alone", "Patellar dislocation", "MCL sprain"],
     correctIndex: 0,
     explanation:
-      "A noncontact \"pop,\" rapid effusion, instability, and positive Lachman/anterior drawer tests together are classic for an ACL tear — the Lachman test is generally considered the most sensitive clinical test for ACL integrity. Rehabilitation, with or without surgical reconstruction, is typically guided by activity goals and instability.",
+      "A noncontact \"pop,\" rapid effusion, instability, and positive Lachman/anterior drawer tests together are classic for an ACL tear; the Lachman test is generally considered the most sensitive clinical test for ACL integrity. Rehabilitation, with or without surgical reconstruction, is typically guided by activity goals and instability.",
     relatedTopic: "ACL tear knee injury",
   },
   {
@@ -119,7 +119,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Recurrent falls in an older adult warrant a multifactorial falls risk assessment, since contributing factors here include possible orthostatic hypotension, reduced strength, and slower functional mobility. Falls are common but not inevitable — addressing modifiable contributors through balance and strength work is a standard general approach.",
+      "Recurrent falls in an older adult warrant a multifactorial falls risk assessment, since contributing factors here include possible orthostatic hypotension, reduced strength, and slower functional mobility. Falls are common but not inevitable; addressing modifiable contributors through balance and strength work is a standard general approach.",
     relatedTopic: "falls risk assessment older adults",
   },
   {
@@ -289,7 +289,7 @@ export const CASES: DailyCase[] = [
     options: ["Slipped capital femoral epiphysis (SCFE)", "Simple muscle strain", "Growing pains", "Plantar fasciitis"],
     correctIndex: 0,
     explanation:
-      "Hip or referred knee pain with a limp, limited internal rotation, and obligate external rotation on hip flexion in an adolescent — especially with higher body weight — raises concern for slipped capital femoral epiphysis, which needs urgent orthopedic evaluation to prevent further slippage.",
+      "Hip or referred knee pain with a limp, limited internal rotation, and obligate external rotation on hip flexion in an adolescent, especially with higher body weight, raises concern for slipped capital femoral epiphysis, which needs urgent orthopedic evaluation to prevent further slippage.",
     relatedTopic: "slipped capital femoral epiphysis SCFE",
   },
   {
@@ -342,14 +342,14 @@ export const CASES: DailyCase[] = [
     ],
     question: "Based on the Ottawa Ankle Rules, is an X-ray indicated?",
     options: [
-      "No — he can bear weight for four steps and tenderness is over the ligament, not bone",
-      "Yes — any ankle swelling requires an X-ray",
-      "Yes — all sports injuries require an X-ray",
-      "No — X-rays are never needed for ankle sprains",
+      "No, he can bear weight for four steps and tenderness is over the ligament, not bone",
+      "Yes, any ankle swelling requires an X-ray",
+      "Yes, all sports injuries require an X-ray",
+      "No, X-rays are never needed for ankle sprains",
     ],
     correctIndex: 0,
     explanation:
-      "The Ottawa Ankle Rules suggest X-ray is indicated only with bony tenderness at specific landmarks or inability to bear weight for four steps. Here, weight-bearing is possible and tenderness is over the ligament, making a low-risk lateral ankle sprain more likely — these rules are meant to reduce unnecessary imaging, not replace clinical judgment.",
+      "The Ottawa Ankle Rules suggest X-ray is indicated only with bony tenderness at specific landmarks or inability to bear weight for four steps. Here, weight-bearing is possible and tenderness is over the ligament, making a low-risk lateral ankle sprain more likely; these rules are meant to reduce unnecessary imaging, not replace clinical judgment.",
     relatedTopic: "ankle sprain Ottawa ankle rules",
   },
   {
@@ -369,7 +369,7 @@ export const CASES: DailyCase[] = [
     options: ["Parkinson's disease", "Essential tremor", "Multiple sclerosis", "Peripheral neuropathy"],
     correctIndex: 0,
     explanation:
-      "Resting tremor, bradykinesia, cogwheel rigidity, and a shuffling gait are hallmark features of parkinsonism, most commonly Parkinson's disease. Essential tremor, by contrast, is typically an action/postural tremor that improves at rest — the opposite pattern seen here.",
+      "Resting tremor, bradykinesia, cogwheel rigidity, and a shuffling gait are hallmark features of parkinsonism, most commonly Parkinson's disease. Essential tremor, by contrast, is typically an action/postural tremor that improves at rest, the opposite pattern seen here.",
     relatedTopic: "Parkinson's disease movement",
   },
   {
@@ -754,7 +754,7 @@ export const CASES: DailyCase[] = [
     options: ["Radial head subluxation (\"nursemaid's elbow\")", "Elbow fracture with deformity", "Shoulder dislocation", "Septic elbow joint"],
     correctIndex: 0,
     explanation:
-      "A young child who won't use an arm after being pulled or swung by the hand/wrist, holding the arm slightly flexed without swelling or deformity, is a classic presentation of radial head subluxation, commonly called nursemaid's elbow — a common, generally benign pediatric injury.",
+      "A young child who won't use an arm after being pulled or swung by the hand/wrist, holding the arm slightly flexed without swelling or deformity, is a classic presentation of radial head subluxation, commonly called nursemaid's elbow, a common, generally benign pediatric injury.",
     relatedTopic: "nursemaid's elbow radial head subluxation",
   },
   {
@@ -996,7 +996,7 @@ export const CASES: DailyCase[] = [
     options: ["Thoracic outlet syndrome", "Cervical radiculopathy", "Carpal tunnel syndrome", "Rotator cuff tendinopathy"],
     correctIndex: 0,
     explanation:
-      "Positional arm symptoms provoked by overhead posture, with a positive Roos test and vascular changes, suggest thoracic outlet syndrome — compression of the neurovascular bundle near the neck and shoulder. General management typically starts with postural correction and nerve-gliding and strengthening exercises.",
+      "Positional arm symptoms provoked by overhead posture, with a positive Roos test and vascular changes, suggest thoracic outlet syndrome, compression of the neurovascular bundle near the neck and shoulder. General management typically starts with postural correction and nerve-gliding and strengthening exercises.",
     relatedTopic: "thoracic outlet syndrome",
   },
   {
@@ -1106,7 +1106,7 @@ export const CASES: DailyCase[] = [
     options: ["Piriformis syndrome", "Lumbar radiculopathy", "Sacroiliac joint dysfunction", "Hip labral tear"],
     correctIndex: 0,
     explanation:
-      "Deep buttock pain provoked by prolonged sitting, with a positive piriformis stretch test and normal reflexes/strength, suggests piriformis syndrome — irritation of the sciatic nerve by the piriformis muscle rather than a true nerve root radiculopathy. General management often includes stretching and hip strengthening.",
+      "Deep buttock pain provoked by prolonged sitting, with a positive piriformis stretch test and normal reflexes/strength, suggests piriformis syndrome, irritation of the sciatic nerve by the piriformis muscle rather than a true nerve root radiculopathy. General management often includes stretching and hip strengthening.",
     relatedTopic: "piriformis syndrome buttock pain",
   },
   {
@@ -1768,7 +1768,7 @@ export const CASES: DailyCase[] = [
     options: ["Bell's palsy", "Stroke", "Trigeminal neuralgia", "Myasthenia gravis"],
     correctIndex: 0,
     explanation:
-      "Weakness involving the entire side of the face, including the forehead, without limb weakness, points to a peripheral facial nerve issue like Bell's palsy rather than a stroke — a stroke typically spares the forehead due to bilateral cortical innervation of the upper face. This distinction is an important general teaching point, and prompt medical evaluation is still generally recommended to confirm the diagnosis.",
+      "Weakness involving the entire side of the face, including the forehead, without limb weakness, points to a peripheral facial nerve issue like Bell's palsy rather than a stroke, since a stroke typically spares the forehead due to bilateral cortical innervation of the upper face. This distinction is an important general teaching point, and prompt medical evaluation is still generally recommended to confirm the diagnosis.",
     relatedTopic: "Bell's palsy facial weakness",
   },
   {
@@ -1813,7 +1813,7 @@ export const CASES: DailyCase[] = [
     options: ["Meralgia paresthetica (lateral femoral cutaneous nerve entrapment)", "L4 radiculopathy", "Hip osteoarthritis", "Piriformis syndrome"],
     correctIndex: 0,
     explanation:
-      "Isolated numbness over the outer thigh without weakness or reflex changes, aggravated by tight clothing or belts, is characteristic of meralgia paresthetica — entrapment of the lateral femoral cutaneous nerve. General management often starts with removing the compressive source (like a tight waistband) and activity modification.",
+      "Isolated numbness over the outer thigh without weakness or reflex changes, aggravated by tight clothing or belts, is characteristic of meralgia paresthetica, entrapment of the lateral femoral cutaneous nerve. General management often starts with removing the compressive source (like a tight waistband) and activity modification.",
     relatedTopic: "meralgia paresthetica thigh numbness",
   },
   {
@@ -1901,7 +1901,7 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Saddle anesthesia", "Reduced anal sphincter tone", "Bilateral lower extremity weakness", "Urinary retention noted"],
     question: "What is the most appropriate immediate action?",
     options: [
-      "Emergency medical evaluation — this is a red flag for cauda equina syndrome",
+      "Emergency medical evaluation; this is a red flag for cauda equina syndrome",
       "Routine outpatient physical therapy referral",
       "Home exercise program and reassessment in two weeks",
       "Over-the-counter pain medication and rest",
@@ -1968,7 +1968,7 @@ export const CASES: DailyCase[] = [
     options: ["Essential tremor", "Parkinson's disease", "Cerebellar ataxia", "Hyperthyroidism-related tremor"],
     correctIndex: 0,
     explanation:
-      "An action/postural tremor that improves at rest, with a positive family history and no rigidity or bradykinesia, is characteristic of essential tremor — distinct from the resting tremor typical of Parkinson's disease. General management often includes adaptive strategies and weighted utensils alongside medical treatment.",
+      "An action/postural tremor that improves at rest, with a positive family history and no rigidity or bradykinesia, is characteristic of essential tremor, distinct from the resting tremor typical of Parkinson's disease. General management often includes adaptive strategies and weighted utensils alongside medical treatment.",
     relatedTopic: "essential tremor",
   },
   {
@@ -2041,7 +2041,7 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Currently normal neurological exam", "History consistent with a transient focal neurological event", "Known vascular risk factors present", "No current facial droop or weakness"],
     question: "What is the most appropriate response to this history?",
     options: [
-      "Urgent medical evaluation — this describes a transient ischemic attack (TIA), a warning sign for stroke",
+      "Urgent medical evaluation; this describes a transient ischemic attack (TIA), a warning sign for stroke",
       "No action needed since the symptoms resolved on their own",
       "Routine outpatient follow-up in a few weeks",
       "Reassurance that this was just anxiety",
@@ -2061,7 +2061,7 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Progressive confusion since the fall", "Mild gait unsteadiness", "No focal weakness currently", "History of anticoagulant use"],
     question: "What is the most appropriate concern here?",
     options: [
-      "Subdural hematoma — warrants urgent medical evaluation given anticoagulant use and a head injury",
+      "Subdural hematoma: warrants urgent medical evaluation given anticoagulant use and a head injury",
       "Normal aging, no further workup needed",
       "Simple post-concussive symptoms that will resolve on their own",
       "Dehydration alone",
@@ -2156,7 +2156,7 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Significantly elevated blood pressure", "Flushing and sweating above the level of injury", "Slow heart rate", "Distended bladder suspected"],
     question: "What is the most appropriate immediate response?",
     options: [
-      "Treat this as autonomic dysreflexia — a medical emergency requiring immediate identification and removal of the triggering stimulus (e.g., bladder issue)",
+      "Treat this as autonomic dysreflexia, a medical emergency requiring immediate identification and removal of the triggering stimulus (e.g., bladder issue)",
       "Give reassurance and wait for symptoms to pass",
       "Have the person lie flat and rest",
       "Delay action until the next scheduled therapy session",
@@ -2213,7 +2213,7 @@ export const CASES: DailyCase[] = [
     options: ["Chronic fatigue syndrome / myalgic encephalomyelitis", "Fibromyalgia alone", "Depression alone", "Hypothyroidism"],
     correctIndex: 0,
     explanation:
-      "Profound, prolonged fatigue with a hallmark pattern of post-exertional malaise — worsening symptoms after activity — is characteristic of chronic fatigue syndrome/myalgic encephalomyelitis. General management emphasizes careful activity pacing to avoid triggering post-exertional flares, rather than a standard progressive exercise program.",
+      "Profound, prolonged fatigue with a hallmark pattern of post-exertional malaise, worsening symptoms after activity, is characteristic of chronic fatigue syndrome/myalgic encephalomyelitis. General management emphasizes careful activity pacing to avoid triggering post-exertional flares, rather than a standard progressive exercise program.",
     relatedTopic: "chronic fatigue syndrome post-exertional malaise",
   },
   {
@@ -2343,7 +2343,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "True radiculopathy involves objective, focal neurological findings — sensory loss, reflex changes, or motor weakness — matching a specific nerve root distribution, whereas nonspecific referred leg pain from the back typically lacks these focal findings. This distinction generally guides how a clinician interprets and manages leg pain accompanying low back pain.",
+      "True radiculopathy involves objective, focal neurological findings (sensory loss, reflex changes, or motor weakness) matching a specific nerve root distribution, whereas nonspecific referred leg pain from the back typically lacks these focal findings. This distinction generally guides how a clinician interprets and manages leg pain accompanying low back pain.",
     relatedTopic: "sciatica versus radiculopathy differentiation",
   },
   {
@@ -2498,7 +2498,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "A first-time seizure-like event generally prompts general safety education — such as activity and driving precautions — while a full medical workup determines the underlying cause, rather than assuming the exam being currently normal means no further caution is needed. This kind of safety counseling is a reasonable general topic even outside of managing the seizure itself.",
+      "A first-time seizure-like event generally prompts general safety education, such as activity and driving precautions, while a full medical workup determines the underlying cause, rather than assuming the exam being currently normal means no further caution is needed. This kind of safety counseling is a reasonable general topic even outside of managing the seizure itself.",
     relatedTopic: "new onset seizure safety education",
   },
   {
@@ -2558,7 +2558,7 @@ export const CASES: DailyCase[] = [
     options: ["Diabetic third cranial nerve palsy (pupil-sparing)", "Stroke", "Myasthenia gravis", "Bell's palsy"],
     correctIndex: 0,
     explanation:
-      "A pupil-sparing third nerve palsy — ptosis and eye movement impairment with a normally reactive pupil — in someone with longstanding diabetes is a classic presentation of diabetic (microvascular) third nerve palsy, distinct from a compressive cause where the pupil is typically involved. This still generally warrants prompt medical evaluation to be certain of the cause, since the distinction can be subtle.",
+      "A pupil-sparing third nerve palsy (ptosis and eye movement impairment with a normally reactive pupil) in someone with longstanding diabetes is a classic presentation of diabetic (microvascular) third nerve palsy, distinct from a compressive cause where the pupil is typically involved. This still generally warrants prompt medical evaluation to be certain of the cause, since the distinction can be subtle.",
     relatedTopic: "diabetic third nerve palsy pupil-sparing",
   },
   {
@@ -2743,7 +2743,7 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Elevated core body temperature", "Altered mental status", "Hot, dry skin noted (reduced sweating)", "Rapid heart rate"],
     question: "What is the most appropriate immediate action?",
     options: [
-      "Treat as a heat emergency — immediate cooling and emergency medical evaluation",
+      "Treat as a heat emergency, immediate cooling and emergency medical evaluation",
       "Have the person keep running to \"sweat it out\"",
       "Wait to see if symptoms resolve on their own",
       "Give only a small sip of water and continue observing",
@@ -2820,7 +2820,7 @@ export const CASES: DailyCase[] = [
     options: ["Stinger/burner (transient brachial plexus injury)", "Cervical spinal cord injury", "Rotator cuff tear", "Clavicle fracture"],
     correctIndex: 0,
     explanation:
-      "Transient burning pain and weakness down one arm after the head and shoulder are forced apart, resolving within minutes, is characteristic of a \"stinger\" or \"burner\" — a brief traction injury to the brachial plexus. Even though symptoms resolve quickly, the athlete should still be evaluated before returning to play, and recurrent episodes warrant further workup.",
+      "Transient burning pain and weakness down one arm after the head and shoulder are forced apart, resolving within minutes, is characteristic of a \"stinger\" or \"burner\", a brief traction injury to the brachial plexus. Even though symptoms resolve quickly, the athlete should still be evaluated before returning to play, and recurrent episodes warrant further workup.",
     relatedTopic: "stinger burner brachial plexus football",
   },
   {
@@ -2833,7 +2833,7 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Neck pain with midline tenderness", "Reported numbness/tingling in the limbs", "Player remains still per athletic trainer instruction", "Mechanism consistent with axial loading of the cervical spine"],
     question: "What is the most appropriate immediate sideline action?",
     options: [
-      "Immobilize and activate emergency spine injury protocol — do not move the player",
+      "Immobilize and activate emergency spine injury protocol; do not move the player",
       "Help the player up and walk them off the field",
       "Have the player try to move the neck to see if it hurts",
       "Assume it's just a stinger and continue the game",
@@ -3170,7 +3170,7 @@ export const CASES: DailyCase[] = [
     options: ["Mallet finger (extensor tendon injury)", "Boutonniere deformity", "Trigger finger", "PIP dislocation"],
     correctIndex: 0,
     explanation:
-      "Inability to actively extend the very tip of the finger, with preserved passive extension, after a direct blow to an extended fingertip, is classic for mallet finger — an extensor tendon injury at the DIP joint. General management typically involves continuous splinting of the DIP joint in extension for a period of weeks.",
+      "Inability to actively extend the very tip of the finger, with preserved passive extension, after a direct blow to an extended fingertip, is classic for mallet finger, an extensor tendon injury at the DIP joint. General management typically involves continuous splinting of the DIP joint in extension for a period of weeks.",
     relatedTopic: "mallet finger volleyball",
   },
   {
@@ -3225,7 +3225,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Diffuse muscle soreness appearing a day or two after unaccustomed or intense exercise, without focal injury signs, is typical of delayed onset muscle soreness — a normal, generally self-limiting response. General guidance reassures that this differs from a true muscle strain, though very severe swelling, dark urine, or inability to move a limb would warrant medical evaluation.",
+      "Diffuse muscle soreness appearing a day or two after unaccustomed or intense exercise, without focal injury signs, is typical of delayed onset muscle soreness, a normal, generally self-limiting response. General guidance reassures that this differs from a true muscle strain, though very severe swelling, dark urine, or inability to move a limb would warrant medical evaluation.",
     relatedTopic: "delayed onset muscle soreness DOMS",
   },
   {
@@ -3270,7 +3270,7 @@ export const CASES: DailyCase[] = [
     options: ["Navicular stress fracture", "Extensor tendinopathy", "Midfoot sprain", "Plantar fasciitis"],
     correctIndex: 0,
     explanation:
-      "Focal midfoot tenderness that progressively worsens with training, especially in a jumping athlete, raises concern for a navicular stress fracture — an injury known for being high-risk given the bone's limited blood supply. This generally requires prompt activity restriction and further evaluation rather than continued training through the pain.",
+      "Focal midfoot tenderness that progressively worsens with training, especially in a jumping athlete, raises concern for a navicular stress fracture, an injury known for being high-risk given the bone's limited blood supply. This generally requires prompt activity restriction and further evaluation rather than continued training through the pain.",
     relatedTopic: "navicular stress fracture track athlete",
   },
   {
@@ -3383,7 +3383,7 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Severe pain disproportionate to the injury", "Pain with passive stretch of the toes", "Tense, swollen compartment", "Diminished sensation in the foot"],
     question: "What is the most appropriate immediate concern?",
     options: [
-      "Acute compartment syndrome — a surgical emergency requiring immediate medical evaluation",
+      "Acute compartment syndrome, a surgical emergency requiring immediate medical evaluation",
       "Normal post-fracture pain, manage with reassurance",
       "Simple swelling that will resolve with elevation alone",
       "Wait 24 hours to see if it improves before acting",
@@ -3403,14 +3403,14 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Significantly worsened symptoms compared to the first concussion", "Currently symptomatic at rest", "Not yet medically cleared from the first injury", "Requires urgent evaluation"],
     question: "What important safety concept does this scenario illustrate?",
     options: [
-      "Second impact syndrome risk — the danger of a repeat head injury before full recovery from a prior concussion",
+      "Second impact syndrome risk, the danger of a repeat head injury before full recovery from a prior concussion",
       "This is simply a coincidence with no special significance",
       "The athlete should have played through the first concussion",
       "A second concussion is always milder than the first",
     ],
     correctIndex: 0,
     explanation:
-      "Sustaining a second head injury before fully recovering from a prior concussion carries a small but serious risk of rapid, severe brain swelling — a concept generally referred to as second impact syndrome. This underscores why an athlete should never return to play until properly cleared, even if symptoms seem mild.",
+      "Sustaining a second head injury before fully recovering from a prior concussion carries a small but serious risk of rapid, severe brain swelling, a concept generally referred to as second impact syndrome. This underscores why an athlete should never return to play until properly cleared, even if symptoms seem mild.",
     relatedTopic: "second impact syndrome concussion education",
   },
   {
@@ -3470,7 +3470,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Structured neuromuscular training warm-up programs — emphasizing proper landing mechanics, strength, and balance — are a well-supported general strategy associated with reduced ACL injury rates, particularly in populations like adolescent female athletes who carry a higher baseline risk. This is a legitimate general educational topic, distinct from managing an existing injury.",
+      "Structured neuromuscular training warm-up programs, emphasizing proper landing mechanics, strength, and balance, are a well-supported general strategy associated with reduced ACL injury rates, particularly in populations like adolescent female athletes who carry a higher baseline risk. This is a legitimate general educational topic, distinct from managing an existing injury.",
     relatedTopic: "ACL injury prevention female athlete",
   },
   {
@@ -3727,7 +3727,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Swallowing difficulty developing alongside general muscle weakness and frailty, without a distinct neurological event, suggests sarcopenic dysphagia — age- and frailty-related weakness affecting the swallowing muscles themselves. General management often includes swallow-safety strategies alongside broader strength and nutrition-focused interventions.",
+      "Swallowing difficulty developing alongside general muscle weakness and frailty, without a distinct neurological event, suggests sarcopenic dysphagia, age- and frailty-related weakness affecting the swallowing muscles themselves. General management often includes swallow-safety strategies alongside broader strength and nutrition-focused interventions.",
     relatedTopic: "sarcopenic dysphagia frailty",
   },
   {
@@ -3747,7 +3747,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Isolated orthostatic hypotension in an otherwise active older adult generally warrants general management strategies — gradual position changes, hydration, and sometimes compression garments — combined with medical follow-up to identify any contributing cause, rather than being dismissed as untreatable.",
+      "Isolated orthostatic hypotension in an otherwise active older adult generally warrants general management strategies, gradual position changes, hydration, and sometimes compression garments, combined with medical follow-up to identify any contributing cause, rather than being dismissed as untreatable.",
     relatedTopic: "orthostatic hypotension older adult",
   },
   {
@@ -3800,14 +3800,14 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Non-blanchable redness over a bony prominence", "Limited spontaneous position changes observed", "No current skin breakdown", "Reduced mobility confirmed on functional assessment"],
     question: "What is the most appropriate general priority?",
     options: [
-      "Pressure injury prevention — repositioning schedule, pressure-relieving surfaces, and skin monitoring",
+      "Pressure injury prevention: repositioning schedule, pressure-relieving surfaces, and skin monitoring",
       "No action needed since the skin isn't broken yet",
       "Increase time spent in the same position to \"toughen\" the skin",
       "This is purely a nursing issue with no role for rehabilitation"
     ],
     correctIndex: 0,
     explanation:
-      "Non-blanchable redness over a bony prominence in someone with limited mobility is an early warning sign for pressure injury, and general prevention — regular repositioning, pressure-relieving support surfaces, and ongoing skin monitoring — is a standard priority before skin breakdown occurs. Mobility-focused rehabilitation is a meaningful part of this general prevention effort.",
+      "Non-blanchable redness over a bony prominence in someone with limited mobility is an early warning sign for pressure injury, and general prevention (regular repositioning, pressure-relieving support surfaces, and ongoing skin monitoring) is a standard priority before skin breakdown occurs. Mobility-focused rehabilitation is a meaningful part of this general prevention effort.",
     relatedTopic: "pressure injury prevention immobility",
   },
   {
@@ -3867,7 +3867,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Fear of falling can develop after a fall even without ongoing physical impairment, and the resulting activity avoidance can paradoxically increase future fall risk through deconditioning — a well-recognized cycle in geriatric care. General management often includes graded activity exposure and confidence-building alongside standard balance training.",
+      "Fear of falling can develop after a fall even without ongoing physical impairment, and the resulting activity avoidance can paradoxically increase future fall risk through deconditioning, a well-recognized cycle in geriatric care. General management often includes graded activity exposure and confidence-building alongside standard balance training.",
     relatedTopic: "fear of falling activity avoidance older adult",
   },
   {
@@ -3947,7 +3947,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "A slow, progressive decline in balance function over years, without acute vertigo episodes, is consistent with age-related vestibular hypofunction, sometimes called presbyvestibulopathy — distinct from the more sudden-onset conditions like vestibular neuritis or BPPV. General management typically includes vestibular and balance rehabilitation tailored for gradual, multisensory decline.",
+      "A slow, progressive decline in balance function over years, without acute vertigo episodes, is consistent with age-related vestibular hypofunction, sometimes called presbyvestibulopathy, distinct from the more sudden-onset conditions like vestibular neuritis or BPPV. General management typically includes vestibular and balance rehabilitation tailored for gradual, multisensory decline.",
     relatedTopic: "presbyvestibulopathy age-related vestibular decline",
   },
   {
@@ -4027,7 +4027,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General strategies supported for reducing post-surgical delirium risk in older adults include pre-operative education, early mobilization after surgery, and attention to factors like sleep, hydration, and reorientation — not heavy sedation, which can actually worsen confusion risk. Proactive, pre-emptive planning is a reasonable general topic before surgery occurs.",
+      "General strategies supported for reducing post-surgical delirium risk in older adults include pre-operative education, early mobilization after surgery, and attention to factors like sleep, hydration, and reorientation, not heavy sedation, which can actually worsen confusion risk. Proactive, pre-emptive planning is a reasonable general topic before surgery occurs.",
     relatedTopic: "post-surgical delirium prevention older adult",
   },
   {
@@ -4090,7 +4090,7 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Cognitive testing performed in the morning shows better performance than afternoon reports", "No signs of acute infection or new medical issue", "Consistent daily pattern reported by caregivers", "Sleep-wake cycle somewhat disrupted"],
     question: "What is this pattern generally referred to as, and what does it suggest for scheduling?",
     options: [
-      "\"Sundowning\" — later-day worsening common in dementia, suggesting therapy sessions may go better earlier in the day",
+      "\"Sundowning\", later-day worsening common in dementia, suggesting therapy sessions may go better earlier in the day",
       "This has no established pattern or name",
       "This always indicates a new stroke",
       "Scheduling time of day makes no difference"
@@ -4297,7 +4297,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "A sudden, rapid change in confusion — distinct from someone's typical gradual dementia trajectory — should prompt consideration of a reversible acute contributor like dehydration, infection, or another medical cause, rather than being automatically attributed to dementia progression. This distinction is an important general safety principle in geriatric care.",
+      "A sudden, rapid change in confusion, distinct from someone's typical gradual dementia trajectory, should prompt consideration of a reversible acute contributor like dehydration, infection, or another medical cause, rather than being automatically attributed to dementia progression. This distinction is an important general safety principle in geriatric care.",
     relatedTopic: "dehydration confusion dementia differentiation",
   },
   {
@@ -4437,7 +4437,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Gait speed is a well-studied, simple general marker associated with overall functional status in older adults, and a notable slowing — even without one obvious specific cause — is a reasonable general prompt to address through structured conditioning and further evaluation, rather than being dismissed since no injury is present.",
+      "Gait speed is a well-studied, simple general marker associated with overall functional status in older adults, and a notable slowing, even without one obvious specific cause, is a reasonable general prompt to address through structured conditioning and further evaluation, rather than being dismissed since no injury is present.",
     relatedTopic: "gait speed functional marker older adult",
   },
   {
@@ -4537,7 +4537,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Footwear is a recognized general modifiable fall-risk factor, and supportive, well-fitting shoes with good tread — rather than loose slippers or unsupportive footwear — are a reasonable general recommendation for older adults working on fall prevention.",
+      "Footwear is a recognized general modifiable fall-risk factor, and supportive, well-fitting shoes with good tread, rather than loose slippers or unsupportive footwear, are a reasonable general recommendation for older adults working on fall prevention.",
     relatedTopic: "footwear fall risk older adult",
   },
   {
@@ -4577,7 +4577,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "For an older adult with multiple stable, medically managed conditions, general guidance supports a well-rounded activity program — combining aerobic, strength, and balance elements — individualized to her overall tolerance and specific conditions, rather than avoiding activity altogether or addressing only one condition in isolation.",
+      "For an older adult with multiple stable, medically managed conditions, general guidance supports a well-rounded activity program, combining aerobic, strength, and balance elements, individualized to her overall tolerance and specific conditions, rather than avoiding activity altogether or addressing only one condition in isolation.",
     relatedTopic: "multiple chronic conditions general activity older adult",
   },
 
@@ -4794,7 +4794,7 @@ export const CASES: DailyCase[] = [
     options: ["Sinding-Larsen-Johansson syndrome", "Osgood-Schlatter disease", "Patellar tendon rupture", "Patellofemoral pain syndrome"],
     correctIndex: 0,
     explanation:
-      "Tenderness specifically at the inferior pole of the patella (rather than the tibial tuberosity) in a growing, active child is characteristic of Sinding-Larsen-Johansson syndrome, a traction apophysitis at the patellar tendon's origin — a close relative of Osgood-Schlatter disease but at a different location. General management is similarly activity modification and gradual loading.",
+      "Tenderness specifically at the inferior pole of the patella (rather than the tibial tuberosity) in a growing, active child is characteristic of Sinding-Larsen-Johansson syndrome, a traction apophysitis at the patellar tendon's origin, a close relative of Osgood-Schlatter disease but at a different location. General management is similarly activity modification and gradual loading.",
     relatedTopic: "Sinding-Larsen-Johansson syndrome knee",
   },
   {
@@ -4844,7 +4844,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Spina bifida (myelomeningocele) generally requires ongoing, developmentally-tailored rehabilitation as the child grows, addressing changing mobility needs, orthotic/equipment adjustments, and attention to skin and bowel/bladder care — not a single, time-limited course of therapy.",
+      "Spina bifida (myelomeningocele) generally requires ongoing, developmentally-tailored rehabilitation as the child grows, addressing changing mobility needs, orthotic/equipment adjustments, and attention to skin and bowel/bladder care, not a single, time-limited course of therapy.",
     relatedTopic: "spina bifida myelomeningocele mobility",
   },
   {
@@ -4864,7 +4864,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "For a child with autism spectrum disorder and sensory sensitivities, a general sensory-informed, individualized approach — with predictable structure and gradual, paced exposure — tends to support better participation than forcing exposure or ignoring these considerations. Motor skill development remains a relevant general goal, addressed through this more tailored approach.",
+      "For a child with autism spectrum disorder and sensory sensitivities, a general sensory-informed, individualized approach, with predictable structure and gradual, paced exposure, tends to support better participation than forcing exposure or ignoring these considerations. Motor skill development remains a relevant general goal, addressed through this more tailored approach.",
     relatedTopic: "autism motor planning sensory considerations",
   },
   {
@@ -4899,7 +4899,7 @@ export const CASES: DailyCase[] = [
     options: ["Klumpke's palsy (lower brachial plexus birth injury)", "Erb's palsy", "Radial nerve palsy", "Congenital muscular torticollis"],
     correctIndex: 0,
     explanation:
-      "A \"claw hand\" presentation with relatively preserved shoulder movement, sometimes accompanied by Horner's sign, points to Klumpke's palsy — a lower brachial plexus birth injury, distinct from the more common upper plexus Erb's palsy pattern. General management similarly includes gentle range-of-motion exercises with close monitoring of recovery.",
+      "A \"claw hand\" presentation with relatively preserved shoulder movement, sometimes accompanied by Horner's sign, points to Klumpke's palsy, a lower brachial plexus birth injury, distinct from the more common upper plexus Erb's palsy pattern. General management similarly includes gentle range-of-motion exercises with close monitoring of recovery.",
     relatedTopic: "Klumpke's palsy lower brachial plexus birth injury",
   },
   {
@@ -4914,7 +4914,7 @@ export const CASES: DailyCase[] = [
     options: ["Calcaneovalgus foot (positional)", "Clubfoot (talipes equinovarus)", "Vertical talus", "Metatarsus adductus"],
     correctIndex: 0,
     explanation:
-      "A flexible, passively correctable foot position of dorsiflexion and eversion at birth, related to intrauterine positioning, is characteristic of a calcaneovalgus foot — a benign, generally self-resolving positional variation, distinct from the rigid, non-correctable presentation of true clubfoot. General management, if any, often just involves gentle stretching.",
+      "A flexible, passively correctable foot position of dorsiflexion and eversion at birth, related to intrauterine positioning, is characteristic of a calcaneovalgus foot, a benign, generally self-resolving positional variation, distinct from the rigid, non-correctable presentation of true clubfoot. General management, if any, often just involves gentle stretching.",
     relatedTopic: "calcaneovalgus foot infant",
   },
   {
@@ -4992,7 +4992,7 @@ export const CASES: DailyCase[] = [
     keyFindings: ["High fever documented", "Severe pain with any hip motion, held in a guarded position", "Child appears clinically unwell (\"toxic\" appearing)", "Significant guarding of the joint"],
     question: "What is the most appropriate immediate action given this presentation?",
     options: [
-      "Urgent/emergency medical evaluation — this presentation is concerning for septic arthritis",
+      "Urgent/emergency medical evaluation, this presentation is concerning for septic arthritis",
       "Routine outpatient physical therapy referral",
       "Reassurance and a follow-up appointment next week",
       "Home rest and over-the-counter fever reducer only",
@@ -5044,7 +5044,7 @@ export const CASES: DailyCase[] = [
     options: ["Panner's disease (osteochondrosis of the capitellum)", "Little League elbow (medial apophysitis)", "Radial head fracture", "Cubital tunnel syndrome"],
     correctIndex: 0,
     explanation:
-      "Outer (lateral) elbow pain with capitellum tenderness in a younger child (typically under 10) is characteristic of Panner's disease, a self-limiting condition affecting the growing capitellum — distinct from Little League elbow, which affects the inner elbow and is more common in slightly older throwing athletes. General management typically involves activity modification while the area heals.",
+      "Outer (lateral) elbow pain with capitellum tenderness in a younger child (typically under 10) is characteristic of Panner's disease, a self-limiting condition affecting the growing capitellum, distinct from Little League elbow, which affects the inner elbow and is more common in slightly older throwing athletes. General management typically involves activity modification while the area heals.",
     relatedTopic: "Panner's disease elbow young athlete",
   },
   {
@@ -5059,7 +5059,7 @@ export const CASES: DailyCase[] = [
     options: ["Clavicle fracture (birth-related)", "Erb's palsy", "Humeral fracture", "Congenital muscular torticollis"],
     correctIndex: 0,
     explanation:
-      "A palpable bony irregularity over the clavicle with guarded arm movement, following a delivery involving shoulder dystocia, is classic for a birth-related clavicle fracture — one of the more common birth injuries, generally healing well with gentle handling alone. This should still be distinguished from a brachial plexus injury, which can occur alongside it.",
+      "A palpable bony irregularity over the clavicle with guarded arm movement, following a delivery involving shoulder dystocia, is classic for a birth-related clavicle fracture, one of the more common birth injuries, generally healing well with gentle handling alone. This should still be distinguished from a brachial plexus injury, which can occur alongside it.",
     relatedTopic: "pediatric clavicle fracture birth injury",
   },
   {
@@ -5089,7 +5089,7 @@ export const CASES: DailyCase[] = [
     options: ["Torus (buckle) fracture of the distal radius", "Complete displaced fracture", "Wrist sprain alone", "Scaphoid fracture"],
     correctIndex: 0,
     explanation:
-      "A relatively mild presentation — mild swelling and tenderness without deformity — after a fall onto an outstretched hand in a young child is often a torus (buckle) fracture, a stable, incomplete fracture common in this age group given more pliable pediatric bone. This still generally requires imaging confirmation and appropriate immobilization.",
+      "A relatively mild presentation, mild swelling and tenderness without deformity, after a fall onto an outstretched hand in a young child is often a torus (buckle) fracture, a stable, incomplete fracture common in this age group given more pliable pediatric bone. This still generally requires imaging confirmation and appropriate immobilization.",
     relatedTopic: "torus buckle fracture distal radius child",
   },
   {
@@ -5102,7 +5102,7 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Significant elbow swelling and deformity", "Severe pain with any attempted movement", "Careful neurovascular exam is critical given this injury pattern", "Unable to actively move the elbow"],
     question: "What is the most important immediate concern with this specific injury pattern?",
     options: [
-      "Supracondylar humerus fracture — careful neurovascular assessment is critical given the risk of nerve/vessel involvement",
+      "Supracondylar humerus fracture, careful neurovascular assessment is critical given the risk of nerve/vessel involvement",
       "This is definitely a minor sprain requiring only rest",
       "No urgency since children heal quickly regardless of injury type",
       "This is always a clavicle fracture based on the mechanism"
@@ -5204,7 +5204,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Selective dorsal rhizotomy reduces spasticity but predictably results in some new muscle weakness that requires intensive, structured post-operative strengthening — an expected part of the recovery process, not a complication. This combination of reduced spasticity and targeted strengthening is generally intended to improve function over time.",
+      "Selective dorsal rhizotomy reduces spasticity but predictably results in some new muscle weakness that requires intensive, structured post-operative strengthening, an expected part of the recovery process, not a complication. This combination of reduced spasticity and targeted strengthening is generally intended to improve function over time.",
     relatedTopic: "selective dorsal rhizotomy post-op rehabilitation",
   },
   {
@@ -5224,7 +5224,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Torticollis and plagiocephaly commonly occur together, since the neck tightness leads to a preferred, consistent head position that in turn contributes to positional skull flattening on that side. General management addresses both together — neck stretching/positioning for the torticollis alongside repositioning strategies for the head shape.",
+      "Torticollis and plagiocephaly commonly occur together, since the neck tightness leads to a preferred, consistent head position that in turn contributes to positional skull flattening on that side. General management addresses both together, neck stretching/positioning for the torticollis alongside repositioning strategies for the head shape.",
     relatedTopic: "torticollis plagiocephaly combined infant",
   },
   {
@@ -5257,7 +5257,7 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Currently normal strength and sensation in the arm", "No neck tenderness", "Full, pain-free neck range of motion now", "History consistent with a traction injury"],
     question: "What is the most likely diagnosis, and what is the appropriate next step even though symptoms resolved?",
     options: [
-      "A stinger/burner (transient brachial plexus injury) — still requires evaluation before returning to play, especially given any prior episodes",
+      "A stinger/burner (transient brachial plexus injury), still requires evaluation before returning to play, especially given any prior episodes",
       "Definitely a fracture, requiring immediate casting",
       "Nothing further is needed since symptoms fully resolved",
       "This must be a spinal cord injury requiring immobilization now"
@@ -5374,7 +5374,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Hypotonia in an infant is a general finding with a wide range of possible underlying causes — neurological, muscular, genetic, or otherwise — so it generally warrants broader medical evaluation to identify the specific cause, alongside supportive developmental physical therapy in the meantime rather than assuming any single diagnosis.",
+      "Hypotonia in an infant is a general finding with a wide range of possible underlying causes, neurological, muscular, genetic, or otherwise, so it generally warrants broader medical evaluation to identify the specific cause, alongside supportive developmental physical therapy in the meantime rather than assuming any single diagnosis.",
     relatedTopic: "hypotonic infant floppy baby differential",
   },
   {
@@ -5414,7 +5414,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "When in-toeing is present but hip rotation is normal, the cause is more likely internal tibial torsion — a rotational variation at the level of the shin bone rather than the hip. Like femoral anteversion, this is usually a benign, self-resolving variation, but the distinction matters for accurately explaining the pattern to families.",
+      "When in-toeing is present but hip rotation is normal, the cause is more likely internal tibial torsion, a rotational variation at the level of the shin bone rather than the hip. Like femoral anteversion, this is usually a benign, self-resolving variation, but the distinction matters for accurately explaining the pattern to families.",
     relatedTopic: "internal tibial torsion in-toeing",
   },
   {
@@ -5449,7 +5449,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General ergonomic guidance for school-age children commonly recommends keeping backpack weight to a reasonable fraction of body weight, using both straps evenly rather than slinging it over one shoulder, and general postural awareness — simple, practical adjustments rather than more extreme measures.",
+      "General ergonomic guidance for school-age children commonly recommends keeping backpack weight to a reasonable fraction of body weight, using both straps evenly rather than slinging it over one shoulder, and general postural awareness, simple, practical adjustments rather than more extreme measures.",
     relatedTopic: "school backpack postural strain ergonomics",
   },
   {
@@ -5469,7 +5469,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "For a typically developing toddler, general guidance emphasizes varied, active play — climbing, running, ball skills — as the natural and appropriate way to support ongoing motor development, rather than a formal structured exercise program, which isn't generally necessary or appropriate at this age.",
+      "For a typically developing toddler, general guidance emphasizes varied, active play, climbing, running, ball skills, as the natural and appropriate way to support ongoing motor development, rather than a formal structured exercise program, which isn't generally necessary or appropriate at this age.",
     relatedTopic: "toddler gross motor development play",
   },
   {
@@ -5489,7 +5489,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Even after a fracture is medically healed and cleared, a gradual, progressive return to sport-specific activity is generally recommended, since it allows strength and confidence to rebuild together — abruptly returning to full competitive play, or dismissing lingering apprehension, isn't generally the best general approach.",
+      "Even after a fracture is medically healed and cleared, a gradual, progressive return to sport-specific activity is generally recommended, since it allows strength and confidence to rebuild together, abruptly returning to full competitive play, or dismissing lingering apprehension, isn't generally the best general approach.",
     relatedTopic: "pediatric fracture return to sport",
   },
   {
@@ -5571,7 +5571,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "For someone returning to exercise after a long sedentary period, general guidance favors a gradual, progressive approach — building duration and intensity slowly over weeks — rather than starting at high intensity, which raises injury and adherence risk. This general pacing principle applies broadly to new exercisers.",
+      "For someone returning to exercise after a long sedentary period, general guidance favors a gradual, progressive approach, building duration and intensity slowly over weeks, rather than starting at high intensity, which raises injury and adherence risk. This general pacing principle applies broadly to new exercisers.",
     relatedTopic: "starting exercise after inactivity general guidance",
   },
   {
@@ -5591,7 +5591,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "For an uncomplicated, medically cleared pregnancy, general guidance supports continuing moderate exercise with some general modifications — like avoiding overheating, high-fall-risk activities, and prolonged supine positioning later in pregnancy — rather than stopping activity altogether, since general exercise is associated with a range of benefits when appropriately modified.",
+      "For an uncomplicated, medically cleared pregnancy, general guidance supports continuing moderate exercise with some general modifications, like avoiding overheating, high-fall-risk activities, and prolonged supine positioning later in pregnancy, rather than stopping activity altogether, since general exercise is associated with a range of benefits when appropriately modified.",
     relatedTopic: "exercise during pregnancy general guidance",
   },
   {
@@ -5631,7 +5631,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General wellness guidance for type 2 diabetes commonly includes regular physical activity — combining aerobic and resistance exercise — as a supportive part of overall management alongside medical treatment, rather than something to avoid. This is general information, not a replacement for individualized medical guidance.",
+      "General wellness guidance for type 2 diabetes commonly includes regular physical activity, combining aerobic and resistance exercise, as a supportive part of overall management alongside medical treatment, rather than something to avoid. This is general information, not a replacement for individualized medical guidance.",
     relatedTopic: "exercise type 2 diabetes general guidance",
   },
   {
@@ -5651,7 +5651,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General wellness guidance for weight management typically favors gradual, sustainable habit changes — combining general dietary awareness and regular physical activity — over short-term restrictive dieting, since this approach tends to be more sustainable long-term than extreme restriction.",
+      "General wellness guidance for weight management typically favors gradual, sustainable habit changes, combining general dietary awareness and regular physical activity, over short-term restrictive dieting, since this approach tends to be more sustainable long-term than extreme restriction.",
     relatedTopic: "sustainable weight management general lifestyle",
   },
   {
@@ -5671,7 +5671,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General home office ergonomic guidance typically covers monitor height (roughly eye level), adequate chair support, comfortable forearm positioning, and regular movement breaks — all reasonable general recommendations regardless of whether the workspace is a traditional office or a home setup.",
+      "General home office ergonomic guidance typically covers monitor height (roughly eye level), adequate chair support, comfortable forearm positioning, and regular movement breaks, all reasonable general recommendations regardless of whether the workspace is a traditional office or a home setup.",
     relatedTopic: "home office ergonomic setup general guidance",
   },
   {
@@ -5711,7 +5711,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General guidance for reducing \"tech neck\" strain includes raising device screens closer to eye level when practical, along with regular posture breaks and simple neck/shoulder stretches — practical adjustments rather than complete avoidance of technology, which usually isn't realistic.",
+      "General guidance for reducing \"tech neck\" strain includes raising device screens closer to eye level when practical, along with regular posture breaks and simple neck/shoulder stretches, practical adjustments rather than complete avoidance of technology, which usually isn't realistic.",
     relatedTopic: "tech neck screen posture prevention",
   },
   {
@@ -5731,7 +5731,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "A general warm-up gradually increases blood flow, tissue temperature, and neuromuscular readiness for activity, which is broadly associated with reduced injury risk and improved performance — general reasoning that applies to recreational exercisers, not just competitive athletes.",
+      "A general warm-up gradually increases blood flow, tissue temperature, and neuromuscular readiness for activity, which is broadly associated with reduced injury risk and improved performance, general reasoning that applies to recreational exercisers, not just competitive athletes.",
     relatedTopic: "warm-up importance general exercise",
   },
   {
@@ -5791,7 +5791,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "For a beginner, general strength training guidance emphasizes starting with lighter loads to build proper movement patterns and form, then progressively increasing resistance over time — a foundational approach that supports both safety and long-term progress.",
+      "For a beginner, general strength training guidance emphasizes starting with lighter loads to build proper movement patterns and form, then progressively increasing resistance over time, a foundational approach that supports both safety and long-term progress.",
     relatedTopic: "beginner strength training general guidance",
   },
   {
@@ -5811,7 +5811,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General wellness guidance for bone health commonly emphasizes incorporating weight-bearing and resistance exercise, since bone tissue tends to respond to mechanical loading over time — a helpful general addition alongside, not necessarily a replacement for, lower-impact activities someone already enjoys.",
+      "General wellness guidance for bone health commonly emphasizes incorporating weight-bearing and resistance exercise, since bone tissue tends to respond to mechanical loading over time, a helpful general addition alongside, not necessarily a replacement for, lower-impact activities someone already enjoys.",
     relatedTopic: "bone health weight-bearing exercise general guidance",
   },
   {
@@ -5831,7 +5831,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "A commonly cited general guideline for adults suggests roughly 150 minutes of moderate-intensity aerobic activity per week (or an equivalent combination), along with muscle-strengthening activity on 2 or more days — a general target, not a strict requirement for everyone.",
+      "A commonly cited general guideline for adults suggests roughly 150 minutes of moderate-intensity aerobic activity per week (or an equivalent combination), along with muscle-strengthening activity on 2 or more days, a general target, not a strict requirement for everyone.",
     relatedTopic: "general adult activity guidelines minutes per week",
   },
   {
@@ -5871,7 +5871,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General guidance for exercising with mild seasonal allergies includes checking pollen forecasts, timing outdoor activity around lower-pollen periods (often different times of day), and having an indoor alternative on higher-pollen days — practical adjustments rather than stopping outdoor exercise altogether.",
+      "General guidance for exercising with mild seasonal allergies includes checking pollen forecasts, timing outdoor activity around lower-pollen periods (often different times of day), and having an indoor alternative on higher-pollen days, practical adjustments rather than stopping outdoor exercise altogether.",
     relatedTopic: "exercise seasonal allergies general guidance",
   },
   {
@@ -5911,7 +5911,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General guidance for maintaining activity while traveling favors flexible, accessible options — bodyweight exercises, walking, using hotel amenities when available — over an all-or-nothing mindset that assumes nothing can be done without a full gym setup.",
+      "General guidance for maintaining activity while traveling favors flexible, accessible options, bodyweight exercises, walking, using hotel amenities when available, over an all-or-nothing mindset that assumes nothing can be done without a full gym setup.",
     relatedTopic: "travel activity routine general guidance",
   },
   {
@@ -5931,7 +5931,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General guidance for reducing discomfort during long study sessions includes regular posture breaks, a reasonably set-up study space, and periodic movement, similar in principle to general office ergonomic guidance — practical habits rather than fixed, prolonged static positioning.",
+      "General guidance for reducing discomfort during long study sessions includes regular posture breaks, a reasonably set-up study space, and periodic movement, similar in principle to general office ergonomic guidance, practical habits rather than fixed, prolonged static positioning.",
     relatedTopic: "student posture study session general guidance",
   },
   {
@@ -5951,7 +5951,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Diffuse muscle soreness a day or two after starting an unfamiliar activity is commonly delayed onset muscle soreness, a normal, generally self-limiting response that tends to improve with continued gentle movement and time — general reassurance appropriate for this common experience.",
+      "Diffuse muscle soreness a day or two after starting an unfamiliar activity is commonly delayed onset muscle soreness, a normal, generally self-limiting response that tends to improve with continued gentle movement and time, general reassurance appropriate for this common experience.",
     relatedTopic: "muscle soreness new activity general guidance",
   },
   {
@@ -5971,7 +5971,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General guidance for a walking routine recommends supportive, well-fitting athletic footwear appropriate for the activity, replaced periodically as cushioning and support wear down over time — a simple, practical general recommendation for comfort and reducing injury risk.",
+      "General guidance for a walking routine recommends supportive, well-fitting athletic footwear appropriate for the activity, replaced periodically as cushioning and support wear down over time, a simple, practical general recommendation for comfort and reducing injury risk.",
     relatedTopic: "footwear walking exercise general guidance",
   },
   {
@@ -6051,7 +6051,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "For a generally active person noticing mild balance changes, general guidance supports incorporating balance and lower-body strengthening exercises proactively, rather than waiting for an actual fall to occur — general prevention is a reasonable and encouraged wellness topic at this stage.",
+      "For a generally active person noticing mild balance changes, general guidance supports incorporating balance and lower-body strengthening exercises proactively, rather than waiting for an actual fall to occur, general prevention is a reasonable and encouraged wellness topic at this stage.",
     relatedTopic: "proactive fall prevention exercise general",
   },
   {
@@ -6071,7 +6071,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General guidance for long flights includes periodic movement or walking when possible, simple seated stretches, and staying adequately hydrated — practical general strategies for comfort, distinct from specific medical advice for people with individual risk factors like a history of blood clots.",
+      "General guidance for long flights includes periodic movement or walking when possible, simple seated stretches, and staying adequately hydrated, practical general strategies for comfort, distinct from specific medical advice for people with individual risk factors like a history of blood clots.",
     relatedTopic: "long flight travel stiffness general guidance",
   },
   {
@@ -6171,7 +6171,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "A commonly cited general guideline suggests a light meal or snack pairing carbohydrate with some protein in the hours before exercise, with a similar combination afterward to support recovery — general, non-athlete-specific nutrition timing information.",
+      "A commonly cited general guideline suggests a light meal or snack pairing carbohydrate with some protein in the hours before exercise, with a similar combination afterward to support recovery, general, non-athlete-specific nutrition timing information.",
     relatedTopic: "nutrition timing exercise general guidance",
   },
   {
@@ -6184,14 +6184,14 @@ export const CASES: DailyCase[] = [
     keyFindings: ["Reports symptoms correlate with prolonged uninterrupted screen time", "No current diagnosed eye condition", "No red flags", "Motivated to adopt general screen-break habits"],
     question: "What is a commonly cited general guideline for reducing digital eye strain?",
     options: [
-      "The \"20-20-20\" rule — roughly every 20 minutes, looking at something about 20 feet away for about 20 seconds",
+      "The \"20-20-20\" rule, roughly every 20 minutes, looking at something about 20 feet away for about 20 seconds",
       "Screen breaks have no effect on eye strain",
       "Staring continuously at a screen without breaks reduces eye fatigue over time",
       "Only reducing screen brightness addresses eye strain, with no role for breaks",
     ],
     correctIndex: 0,
     explanation:
-      "A commonly cited general guideline for reducing digital eye strain is the \"20-20-20\" rule — taking a brief break roughly every 20 minutes to look at something about 20 feet away for about 20 seconds — a simple, practical general habit for people with prolonged screen-based work.",
+      "A commonly cited general guideline for reducing digital eye strain is the \"20-20-20\" rule, taking a brief break roughly every 20 minutes to look at something about 20 feet away for about 20 seconds, a simple, practical general habit for people with prolonged screen-based work.",
     relatedTopic: "digital eye strain 20-20-20 rule general guidance",
   },
   {
@@ -6211,7 +6211,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General guidance for prolonged standing occupations includes supportive footwear, taking brief seated breaks or shifting weight when possible, and general lower-body strengthening to build tolerance — practical strategies distinct from, but complementary to, guidance for prolonged sitting.",
+      "General guidance for prolonged standing occupations includes supportive footwear, taking brief seated breaks or shifting weight when possible, and general lower-body strengthening to build tolerance, practical strategies distinct from, but complementary to, guidance for prolonged sitting.",
     relatedTopic: "prolonged standing occupation general guidance",
   },
   {
@@ -6231,7 +6231,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "A commonly cited general body mechanics principle for manual lifting emphasizes keeping the load close to the body and using leg strength rather than rounding through the low back — practical general education relevant to occupations involving frequent lifting.",
+      "A commonly cited general body mechanics principle for manual lifting emphasizes keeping the load close to the body and using leg strength rather than rounding through the low back, practical general education relevant to occupations involving frequent lifting.",
     relatedTopic: "safe lifting body mechanics general guidance",
   },
   {
@@ -6251,7 +6251,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General sleep hygiene principles — like a consistent wind-down routine and a dark, quiet sleep environment — can still be adapted to a rotating shift schedule, and flexible activity timing (matching energy levels around the person's actual schedule) is a reasonable general strategy rather than assuming shift workers can't improve these habits.",
+      "General sleep hygiene principles, like a consistent wind-down routine and a dark, quiet sleep environment, can still be adapted to a rotating shift schedule, and flexible activity timing (matching energy levels around the person's actual schedule) is a reasonable general strategy rather than assuming shift workers can't improve these habits.",
     relatedTopic: "shift work sleep activity general guidance",
   },
   {
@@ -6264,14 +6264,14 @@ export const CASES: DailyCase[] = [
     keyFindings: ["No red flags", "No current diagnosed mental health condition", "Motivated to try general breathing-based strategies", "Reports minimal current relaxation practice"],
     question: "What is a commonly cited general breathing technique for everyday stress management?",
     options: [
-      "Diaphragmatic (\"belly\") breathing — slow, deep breaths engaging the diaphragm rather than shallow chest breathing",
+      "Diaphragmatic (\"belly\") breathing, slow, deep breaths engaging the diaphragm rather than shallow chest breathing",
       "Breathing techniques have no general relationship to stress levels",
       "Rapid, shallow breathing is the recommended general technique for relaxation",
       "Breath-holding for extended periods is a commonly recommended general relaxation strategy",
     ],
     correctIndex: 0,
     explanation:
-      "A commonly cited general technique for everyday stress management is diaphragmatic (\"belly\") breathing — slow, deep breaths that engage the diaphragm rather than shallow chest breathing — a simple, accessible general relaxation strategy, distinct from a broader stress-management discussion.",
+      "A commonly cited general technique for everyday stress management is diaphragmatic (\"belly\") breathing, slow, deep breaths that engage the diaphragm rather than shallow chest breathing, a simple, accessible general relaxation strategy, distinct from a broader stress-management discussion.",
     relatedTopic: "diaphragmatic breathing stress management general",
   },
   {
@@ -6331,7 +6331,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General reassurance for someone anxious about starting movement-based care emphasizes that activity is typically introduced gradually and safely, and that appropriately dosed movement is generally supportive of recovery rather than something to fear — general encouragement rather than dismissing the anxiety.",
+      "General reassurance for someone anxious about starting movement-based care emphasizes that activity is typically introduced gradually and safely, and that appropriately dosed movement is generally supportive of recovery rather than something to fear, general encouragement rather than dismissing the anxiety.",
     relatedTopic: "fear avoidance movement anxiety general reassurance",
   },
   {
@@ -6351,7 +6351,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "For a new gym member feeling overwhelmed, general guidance suggests starting with a simple routine, or seeking a brief orientation from gym staff, rather than trying to use every available piece of equipment right away — practical, general advice to reduce overwhelm and support a sustainable start.",
+      "For a new gym member feeling overwhelmed, general guidance suggests starting with a simple routine, or seeking a brief orientation from gym staff, rather than trying to use every available piece of equipment right away, practical, general advice to reduce overwhelm and support a sustainable start.",
     relatedTopic: "new gym member beginner general guidance",
   },
   {
@@ -6371,7 +6371,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General wellness guidance describes rest days as a normal, recommended part of a balanced exercise routine, allowing tissues to recover and adapt to training — general recovery is a legitimate part of \"active\" wellness, not evidence of laziness.",
+      "General wellness guidance describes rest days as a normal, recommended part of a balanced exercise routine, allowing tissues to recover and adapt to training, general recovery is a legitimate part of \"active\" wellness, not evidence of laziness.",
     relatedTopic: "rest days recovery general exercise guidance",
   },
   {
@@ -6391,7 +6391,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "For someone beginning core-focused exercise, general guidance suggests starting with basic, controlled stabilization exercises and proper form, then progressing gradually to more advanced movements — a foundational approach that applies broadly, not only to people managing existing back pain.",
+      "For someone beginning core-focused exercise, general guidance suggests starting with basic, controlled stabilization exercises and proper form, then progressing gradually to more advanced movements, a foundational approach that applies broadly, not only to people managing existing back pain.",
     relatedTopic: "core strengthening basics general guidance",
   },
   {
@@ -6431,7 +6431,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General wellness guidance suggests moderate caffeine intake is generally fine for most people, while balancing it with adequate plain water intake and avoiding caffeine too close to bedtime, since timing can affect sleep quality — practical, general balance rather than an extreme recommendation.",
+      "General wellness guidance suggests moderate caffeine intake is generally fine for most people, while balancing it with adequate plain water intake and avoiding caffeine too close to bedtime, since timing can affect sleep quality, practical, general balance rather than an extreme recommendation.",
     relatedTopic: "caffeine hydration sleep general guidance",
   },
   {
@@ -6471,7 +6471,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "A commonly cited general framework for fitness goal-setting is the \"SMART\" approach — specific, measurable, realistic, and time-bound goals — building gradually rather than setting overly ambitious, all-or-nothing targets that are harder to sustain.",
+      "A commonly cited general framework for fitness goal-setting is the \"SMART\" approach, specific, measurable, realistic, and time-bound goals, building gradually rather than setting overly ambitious, all-or-nothing targets that are harder to sustain.",
     relatedTopic: "SMART fitness goal setting general guidance",
   },
   {
@@ -6551,7 +6551,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "General body mechanics guidance for repeatedly lifting a young child includes bending at the knees/hips rather than the low back, keeping the child close to the body, and varying carrying sides/positions when possible — practical general habits, since even lighter, frequent loads can add up over a day.",
+      "General body mechanics guidance for repeatedly lifting a young child includes bending at the knees/hips rather than the low back, keeping the child close to the body, and varying carrying sides/positions when possible, practical general habits, since even lighter, frequent loads can add up over a day.",
     relatedTopic: "new parent lifting body mechanics general guidance",
   },
   {
@@ -6631,7 +6631,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "For someone with a physically demanding job, general guidance suggests considering total physical demand across both work and exercise, adjusting personal exercise intensity or volume on particularly demanding work weeks — a general, common-sense approach to avoiding excessive cumulative fatigue.",
+      "For someone with a physically demanding job, general guidance suggests considering total physical demand across both work and exercise, adjusting personal exercise intensity or volume on particularly demanding work weeks, a general, common-sense approach to avoiding excessive cumulative fatigue.",
     relatedTopic: "physically demanding job exercise balance general guidance",
   },
   {
@@ -6651,7 +6651,7 @@ export const CASES: DailyCase[] = [
     ],
     correctIndex: 0,
     explanation:
-      "A reasonable general perspective on long-term activity is that levels will naturally fluctuate with different life demands, and the general goal of returning to some activity after a lower period — rather than viewing any gap as a complete failure — tends to support more sustainable, compassionate long-term engagement with exercise.",
+      "A reasonable general perspective on long-term activity is that levels will naturally fluctuate with different life demands, and the general goal of returning to some activity after a lower period, rather than viewing any gap as a complete failure, tends to support more sustainable, compassionate long-term engagement with exercise.",
     relatedTopic: "long-term exercise motivation life phases general guidance",
   },
 ];

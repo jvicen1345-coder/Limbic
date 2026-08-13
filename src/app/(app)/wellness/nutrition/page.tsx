@@ -114,7 +114,7 @@ export default async function NutritionPage() {
               <div className="nutrition-paywall-card">
                 <LockIcon size={20} />
                 <div style={{ fontFamily: "var(--font-heading)", fontSize: 16, marginTop: 6 }}>Unlock personalized nutrition guidance</div>
-                <p>Based on your wellness goal — available with Wellness+</p>
+                <p>Based on your wellness goal, available with Wellness+</p>
                 <Link href="/pro" className="btn btn-primary">
                   Upgrade to Wellness+
                 </Link>

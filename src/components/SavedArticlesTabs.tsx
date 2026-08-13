@@ -25,7 +25,7 @@ export function SavedArticlesTabs({ articles }: { articles: DecoratedArticle[] }
         </>
       ) : (
         <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
-          No saved articles yet — bookmark research, industry or CE items to see them here.
+          No saved articles yet, bookmark research, industry or CE items to see them here.
         </p>
       )}
     </div>

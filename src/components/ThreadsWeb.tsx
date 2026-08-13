@@ -178,11 +178,11 @@ export function ThreadsWeb({
       </div>
 
       {/* A normal block below the canvas, not an absolutely-positioned overlay on top of
-          it like Limbic Agent's own .agent-detail-card (see globals.css) — Agent's chat is
+          it like Limbic Agent's own .agent-detail-card (see globals.css), Agent's chat is
           a fixed-height full-screen surface where a floating card never blocks anything
           meaningful, but Threads' canvas sits in a normal scrolling article page where a
           force-simulated node can end up anywhere, including right where a docked overlay
-          would sit — which made whatever was underneath the previous card unclickable. */}
+          would sit, which made whatever was underneath the previous card unclickable. */}
       {selectedWeb && (
         <div className="threads-detail-panel">
           <button type="button" className="agent-detail-close" aria-label="Close" onClick={() => setSelectedId(null)}>
@@ -196,7 +196,7 @@ export function ThreadsWeb({
 
           {comingSoon ? (
             <p className="agent-detail-body">
-              Limbic Agent&rsquo;s AI-generated clinical reasoning is still in development for this node — check back soon.
+              Limbic Agent&rsquo;s AI-generated clinical reasoning is still in development for this node, check back soon.
             </p>
           ) : gated ? (
             selectedWeb.action.kind === "agent-handoff" ? (

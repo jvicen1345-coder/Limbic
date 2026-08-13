@@ -45,15 +45,15 @@ export default async function ConnexionAfitPage() {
           AFIT Functional Wellness Assessment
         </p>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 4px" }}>
-          Used by Delia Vicencio, PT, DPT in every Connexion Method assessment — 30 years of home health experience
+          Used by Delia Vicencio, PT, DPT in every Connexion Method assessment, 30 years of home health experience
         </p>
         <p className="connexion-hero-partner">Helping adults stay strong, mobile, and independent as they age.</p>
       </div>
 
       <div className="connexion-mission-card">
         <p className="connexion-mission-text">
-          After more than 30 years as a physical therapist — including extensive experience working with older
-          adults and medically complex patients in the home — I have seen firsthand how small changes in strength,
+          After more than 30 years as a physical therapist, including extensive experience working with older
+          adults and medically complex patients in the home, I have seen firsthand how small changes in strength,
           balance, flexibility, endurance, and mobility can become major problems when they are not recognized
           early. The AFIT provides a structured, performance-based way to identify those changes before they become
           crises.
@@ -112,7 +112,7 @@ export default async function ConnexionAfitPage() {
         </p>
         <p className="connexion-cta-body">
           The AFIT is conducted by a licensed Doctor of Physical Therapy as part of a Connexion Method home visit.
-          This is not a self-assessment — it is a professional evaluation designed to give you a clear, objective
+          This is not a self-assessment; it is a professional evaluation designed to give you a clear, objective
           picture of your functional status.
         </p>
         <p className="connexion-cta-fineprint" style={{ margin: "0 0 20px" }}>

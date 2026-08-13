@@ -11,7 +11,7 @@ export function RegisteredUsersPanel({
   return (
     <div className="ff-admin">
       <p className="ff-admin-title">
-        Admin — registered users ({users.length})
+        Admin, registered users ({users.length})
       </p>
       {users.length === 0 ? (
         <p style={{ fontSize: 12.5, color: "var(--color-neutral-700)", margin: 0 }}>No accounts yet.</p>
@@ -31,7 +31,7 @@ export function RegisteredUsersPanel({
                 <tr key={i} style={{ borderTop: "1px solid var(--color-neutral-200)" }}>
                   <td style={{ padding: "6px 10px 6px 0" }}>{u.name}</td>
                   <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)" }}>
-                    {u.email ?? u.licenseEmail ?? u.licenseNumber ?? "—"}
+                    {u.email ?? u.licenseEmail ?? u.licenseNumber ?? "N/A"}
                   </td>
                   <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
                     {u.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}

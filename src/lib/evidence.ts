@@ -37,25 +37,25 @@ export const EVIDENCE_LEVEL_META: Record<EvidenceLevel, EvidenceLevelMeta> = {
   RCT: {
     shortLabel: "RCT",
     label: "Randomized Controlled Trial",
-    description: "Randomized Controlled Trial — highest level of primary evidence",
+    description: "Randomized Controlled Trial, highest level of primary evidence",
     className: "tag-evidence-rct",
   },
   SR: {
     shortLabel: "SR",
     label: "Systematic Review",
-    description: "Systematic Review — synthesizes multiple studies",
+    description: "Systematic Review, synthesizes multiple studies",
     className: "tag-evidence-sr",
   },
   MA: {
     shortLabel: "MA",
     label: "Meta-Analysis",
-    description: "Meta-Analysis — statistical combination of multiple studies",
+    description: "Meta-Analysis, statistical combination of multiple studies",
     className: "tag-evidence-ma",
   },
   Review: {
     shortLabel: "REV",
     label: "Review Article",
-    description: "Review Article — summarizes existing literature",
+    description: "Review Article, summarizes existing literature",
     className: "tag-evidence-review",
   },
   Research: {

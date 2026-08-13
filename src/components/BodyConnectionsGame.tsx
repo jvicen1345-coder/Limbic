@@ -66,7 +66,7 @@ export function BodyConnectionsGame({
 
   if (phase === "results") {
     const dateLabel = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-    const shareText = `Limbic Body Connections — ${dateLabel}\nMatched: ${pairs.length}/${pairs.length}\nlimbic.center/games/body`;
+    const shareText = `Limbic Body Connections, ${dateLabel}\nMatched: ${pairs.length}/${pairs.length}\nlimbic.center/games/body`;
 
     return (
       <div className="screen-pad body-page">
@@ -216,7 +216,7 @@ function DesktopBody({
               <span className="body-function-letter">{CARD_LETTERS[idx]}</span>
               <span className="body-function-text-wrap">
                 <span className="body-function-text">{functionText}</span>
-                {isMatched && <span className="body-function-matched-label">Matched — {matchedBodyPart}</span>}
+                {isMatched && <span className="body-function-matched-label">Matched, {matchedBodyPart}</span>}
               </span>
             </button>
           );

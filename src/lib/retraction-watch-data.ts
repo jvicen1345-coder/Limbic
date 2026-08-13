@@ -14,7 +14,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1177/02692155251345412",
     "date": "2025-06-05",
     "readMins": 3,
-    "summary": "Retraction issued on 2025-06-05 by Clinical Rehabilitation — Concerns/Issues about Data; Investigation by Journal/Publisher; Investigation by Third Party. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2025-06-05 by Clinical Rehabilitation: Concerns/Issues about Data; Investigation by Journal/Publisher; Investigation by Third Party. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -35,7 +35,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
       "Retraction"
     ],
     "reviewStatus": "Retraction",
-    "underReview": "Flagged by Retraction Watch — see notice for details."
+    "underReview": "Flagged by Retraction Watch, see notice for details."
   },
   {
     "id": "rw-55795",
@@ -46,7 +46,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://retractionwatch.com/2022/11/09/pain-researchers-lose-three-papers-after-cochrane-group-questioned-data/",
     "date": "2024-08-15",
     "readMins": 3,
-    "summary": "Retraction issued on 2024-08-15 by Clinical Rehabilitation — Concerns/Issues about Data; Investigation by Journal/Publisher; Investigation by Third Party. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2024-08-15 by Clinical Rehabilitation: Concerns/Issues about Data; Investigation by Journal/Publisher; Investigation by Third Party. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -62,7 +62,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1177/02692155241265796",
     "date": "2024-08-15",
     "readMins": 3,
-    "summary": "Retraction issued on 2024-08-15 by Clinical Rehabilitation — Concerns/Issues about Data; Investigation by Journal/Publisher; Investigation by Third Party. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2024-08-15 by Clinical Rehabilitation: Concerns/Issues about Data; Investigation by Journal/Publisher; Investigation by Third Party. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -78,7 +78,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://retractionwatch.com/2022/11/09/pain-researchers-lose-three-papers-after-cochrane-group-questioned-data/",
     "date": "2024-08-15",
     "readMins": 3,
-    "summary": "Retraction issued on 2024-08-15 by Clinical Rehabilitation — Concerns/Issues about Data; Investigation by Journal/Publisher; Investigation by Third Party. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2024-08-15 by Clinical Rehabilitation: Concerns/Issues about Data; Investigation by Journal/Publisher; Investigation by Third Party. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -94,7 +94,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://retractionwatch.com/2022/11/09/pain-researchers-lose-three-papers-after-cochrane-group-questioned-data/",
     "date": "2023-07-27",
     "readMins": 3,
-    "summary": "Expression of concern issued on 2023-07-27 by Clinical Rehabilitation — Concerns/Issues about Data; Investigation by Journal/Publisher; Updated to Retraction. See the retraction notice for full details.",
+    "summary": "Expression of concern issued on 2023-07-27 by Clinical Rehabilitation: Concerns/Issues about Data; Investigation by Journal/Publisher; Updated to Retraction. See the retraction notice for full details.",
     "tags": [
       "Expression of concern"
     ],
@@ -110,7 +110,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://retractionwatch.com/2022/11/09/pain-researchers-lose-three-papers-after-cochrane-group-questioned-data/",
     "date": "2023-07-27",
     "readMins": 3,
-    "summary": "Expression of concern issued on 2023-07-27 by Clinical Rehabilitation — Concerns/Issues about Data; Investigation by Journal/Publisher; Updated to Retraction. See the retraction notice for full details.",
+    "summary": "Expression of concern issued on 2023-07-27 by Clinical Rehabilitation: Concerns/Issues about Data; Investigation by Journal/Publisher; Updated to Retraction. See the retraction notice for full details.",
     "tags": [
       "Expression of concern"
     ],
@@ -126,7 +126,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://retractionwatch.com/2022/11/09/pain-researchers-lose-three-papers-after-cochrane-group-questioned-data/",
     "date": "2023-07-27",
     "readMins": 3,
-    "summary": "Expression of concern issued on 2023-07-27 by Clinical Rehabilitation — Concerns/Issues about Data; Investigation by Journal/Publisher; Updated to Retraction. See the retraction notice for full details.",
+    "summary": "Expression of concern issued on 2023-07-27 by Clinical Rehabilitation: Concerns/Issues about Data; Investigation by Journal/Publisher; Updated to Retraction. See the retraction notice for full details.",
     "tags": [
       "Expression of concern"
     ],
@@ -142,7 +142,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://retractionwatch.com/2022/11/09/pain-researchers-lose-three-papers-after-cochrane-group-questioned-data/",
     "date": "2022-10-24",
     "readMins": 3,
-    "summary": "Retraction issued on 2022-10-24 by European Journal of Physical and Rehabilitation Medicine — Error in Data. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2022-10-24 by European Journal of Physical and Rehabilitation Medicine: Error in Data. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -158,7 +158,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://retractionwatch.com/2022/11/09/pain-researchers-lose-three-papers-after-cochrane-group-questioned-data/",
     "date": "2022-09-13",
     "readMins": 3,
-    "summary": "Retraction issued on 2022-09-13 by Disability and Rehabilitation — Concerns/Issues about Data; Unreliable Data. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2022-09-13 by Disability and Rehabilitation: Concerns/Issues about Data; Unreliable Data. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -174,7 +174,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://retractionwatch.com/2022/11/09/pain-researchers-lose-three-papers-after-cochrane-group-questioned-data/",
     "date": "2022-09-07",
     "readMins": 3,
-    "summary": "Retraction issued on 2022-09-07 by Clinical Rehabilitation — Concerns/Issues about Data; Concerns/Issues about Results and/or Conclusions; Unreliable Results and/or Conclusions. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2022-09-07 by Clinical Rehabilitation: Concerns/Issues about Data; Concerns/Issues about Results and/or Conclusions; Unreliable Results and/or Conclusions. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -190,7 +190,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/?s=%22jun+iwamoto%22",
     "date": "2021-02-01",
     "readMins": 3,
-    "summary": "Retraction issued on 2021-02-01 by American Journal of Physical Medicine & Rehabilitation — Concerns/Issues about Data; Concerns/Issues about Results and/or Conclusions; Duplication of Text. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2021-02-01 by American Journal of Physical Medicine & Rehabilitation: Concerns/Issues about Data; Concerns/Issues about Results and/or Conclusions; Duplication of Text. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -206,7 +206,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1177/0269215521990590",
     "date": "2021-01-20",
     "readMins": 3,
-    "summary": "Retraction issued on 2021-01-20 by Clinical Rehabilitation — Error in Analyses; Error in Data; Error in Text. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2021-01-20 by Clinical Rehabilitation: Error in Analyses; Error in Data; Error in Text. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -222,7 +222,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.jphys.2020.08.003",
     "date": "2020-09-15",
     "readMins": 3,
-    "summary": "Reinstatement issued on 2020-09-15 by Journal of Physiotherapy — Retract and Replace; Temporary Removal; Removed. See the retraction notice for full details.",
+    "summary": "Reinstatement issued on 2020-09-15 by Journal of Physiotherapy: Retract and Replace; Temporary Removal; Removed. See the retraction notice for full details.",
     "tags": [
       "Reinstatement"
     ],
@@ -238,7 +238,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.021",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -254,7 +254,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.020",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -270,7 +270,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.030",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -286,7 +286,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.018",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -302,7 +302,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.010",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -318,7 +318,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.029",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -334,7 +334,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.007",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -350,7 +350,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.019",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -366,7 +366,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.006",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -382,7 +382,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.017",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of/in Article; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of/in Article; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -398,7 +398,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.012",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -414,7 +414,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.024",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -430,7 +430,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.028",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -446,7 +446,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.026",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -462,7 +462,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.014",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -478,7 +478,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.016",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -494,7 +494,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.015",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -510,7 +510,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.013",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -526,7 +526,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.011",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -542,7 +542,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.009",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -558,7 +558,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.008",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -574,7 +574,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.022",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -590,7 +590,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.027",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -606,7 +606,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.025",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -622,7 +622,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.ptsp.2020.04.023",
     "date": "2020-09-06",
     "readMins": 3,
-    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport — Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2020-09-06 by Physical Therapy in Sport: Duplication of Content through Error by Journal/Publisher; Removed. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -638,7 +638,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1097/PHM.0000000000001348",
     "date": "2019-11-15",
     "readMins": 3,
-    "summary": "Retraction issued on 2019-11-15 by American Journal of Physical Medicine & Rehabilitation — Ethical Violations by Author; Investigation by Company/Institution; Misconduct - Official Investigation(s) and/or Finding(s). See the retraction notice for full details.",
+    "summary": "Retraction issued on 2019-11-15 by American Journal of Physical Medicine & Rehabilitation: Ethical Violations by Author; Investigation by Company/Institution; Misconduct - Official Investigation(s) and/or Finding(s). See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -654,7 +654,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1097/PHM.0000000000001348",
     "date": "2019-11-15",
     "readMins": 3,
-    "summary": "Retraction issued on 2019-11-15 by American Journal of Physical Medicine & Rehabilitation — Ethical Violations by Author; Investigation by Company/Institution; Misconduct - Official Investigation(s) and/or Finding(s). See the retraction notice for full details.",
+    "summary": "Retraction issued on 2019-11-15 by American Journal of Physical Medicine & Rehabilitation: Ethical Violations by Author; Investigation by Company/Institution; Misconduct - Official Investigation(s) and/or Finding(s). See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -670,7 +670,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.apmr.2019.08.468",
     "date": "2019-11-06",
     "readMins": 3,
-    "summary": "Reinstatement issued on 2019-11-06 by Archives of Physical Medicine and Rehabilitation — Retract and Replace; Temporary Removal. See the retraction notice for full details.",
+    "summary": "Reinstatement issued on 2019-11-06 by Archives of Physical Medicine and Rehabilitation: Retract and Replace; Temporary Removal. See the retraction notice for full details.",
     "tags": [
       "Reinstatement"
     ],
@@ -686,7 +686,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1097/PHM.0000000000001297",
     "date": "2019-09-04",
     "readMins": 3,
-    "summary": "Expression of concern issued on 2019-09-04 by American Journal of Physical Medicine & Rehabilitation — Concerns/Issues about Data; Updated to Retraction. See the retraction notice for full details.",
+    "summary": "Expression of concern issued on 2019-09-04 by American Journal of Physical Medicine & Rehabilitation: Concerns/Issues about Data; Updated to Retraction. See the retraction notice for full details.",
     "tags": [
       "Expression of concern"
     ],
@@ -702,7 +702,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1097/PHM.0000000000001297",
     "date": "2019-09-04",
     "readMins": 3,
-    "summary": "Expression of concern issued on 2019-09-04 by American Journal of Physical Medicine & Rehabilitation — Concerns/Issues about Data; Updated to Retraction. See the retraction notice for full details.",
+    "summary": "Expression of concern issued on 2019-09-04 by American Journal of Physical Medicine & Rehabilitation: Concerns/Issues about Data; Updated to Retraction. See the retraction notice for full details.",
     "tags": [
       "Expression of concern"
     ],
@@ -718,7 +718,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.17116/kurort2016436-41",
     "date": "2019-07-21",
     "readMins": 3,
-    "summary": "Retraction issued on 2019-07-21 by Issues of Health Care, Physiotherapy and Therapeutic Physical Education(Вопросы Курортологии, Физиотерапии И Лечебной Физической Культуры) — Plagiarism of/in Article. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2019-07-21 by Issues of Health Care, Physiotherapy and Therapeutic Physical Education(Вопросы Курортологии, Физиотерапии И Лечебной Физической Культуры): Plagiarism of/in Article. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -734,7 +734,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.physio.2019.05.001",
     "date": "2019-05-07",
     "readMins": 3,
-    "summary": "Retraction issued on 2019-05-07 by Physiotherapy — Not Presented at Conference. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2019-05-07 by Physiotherapy: Not Presented at Conference. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -750,7 +750,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/?s=yoshihiro+sato",
     "date": "2019-03-19",
     "readMins": 3,
-    "summary": "Retraction issued on 2019-03-19 by Archives of Physical Medicine and Rehabilitation — Concerns/Issues about Authorship/Affiliation; Concerns/Issues about Data; Duplication of Data. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2019-03-19 by Archives of Physical Medicine and Rehabilitation: Concerns/Issues about Authorship/Affiliation; Concerns/Issues about Data; Duplication of Data. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -766,7 +766,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/2019/03/11/journal-temporarily-withdraws-eight-papers-after-publisher-mistake/",
     "date": "2019-02-27",
     "readMins": 3,
-    "summary": "Reinstatement issued on 2019-02-27 by Physical Therapy — Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
+    "summary": "Reinstatement issued on 2019-02-27 by Physical Therapy: Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
     "tags": [
       "Reinstatement"
     ],
@@ -782,7 +782,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/2019/03/11/journal-temporarily-withdraws-eight-papers-after-publisher-mistake/",
     "date": "2019-02-27",
     "readMins": 3,
-    "summary": "Reinstatement issued on 2019-02-27 by Physical Therapy — Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
+    "summary": "Reinstatement issued on 2019-02-27 by Physical Therapy: Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
     "tags": [
       "Reinstatement"
     ],
@@ -798,7 +798,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/2019/03/11/journal-temporarily-withdraws-eight-papers-after-publisher-mistake/",
     "date": "2019-02-27",
     "readMins": 3,
-    "summary": "Reinstatement issued on 2019-02-27 by Physical Therapy — Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
+    "summary": "Reinstatement issued on 2019-02-27 by Physical Therapy: Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
     "tags": [
       "Reinstatement"
     ],
@@ -814,7 +814,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/2019/03/11/journal-temporarily-withdraws-eight-papers-after-publisher-mistake/",
     "date": "2019-02-26",
     "readMins": 3,
-    "summary": "Reinstatement issued on 2019-02-26 by Physical Therapy — Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
+    "summary": "Reinstatement issued on 2019-02-26 by Physical Therapy: Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
     "tags": [
       "Reinstatement"
     ],
@@ -830,7 +830,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/2019/03/11/journal-temporarily-withdraws-eight-papers-after-publisher-mistake/",
     "date": "2019-02-26",
     "readMins": 3,
-    "summary": "Reinstatement issued on 2019-02-26 by Physical Therapy — Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
+    "summary": "Reinstatement issued on 2019-02-26 by Physical Therapy: Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
     "tags": [
       "Reinstatement"
     ],
@@ -846,7 +846,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/2019/03/11/journal-temporarily-withdraws-eight-papers-after-publisher-mistake/",
     "date": "2019-02-26",
     "readMins": 3,
-    "summary": "Reinstatement issued on 2019-02-26 by Physical Therapy — Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
+    "summary": "Reinstatement issued on 2019-02-26 by Physical Therapy: Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
     "tags": [
       "Reinstatement"
     ],
@@ -862,7 +862,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/2019/03/11/journal-temporarily-withdraws-eight-papers-after-publisher-mistake/",
     "date": "2019-02-26",
     "readMins": 3,
-    "summary": "Reinstatement issued on 2019-02-26 by Physical Therapy — Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
+    "summary": "Reinstatement issued on 2019-02-26 by Physical Therapy: Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
     "tags": [
       "Reinstatement"
     ],
@@ -878,7 +878,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/2019/03/11/journal-temporarily-withdraws-eight-papers-after-publisher-mistake/",
     "date": "2019-02-25",
     "readMins": 3,
-    "summary": "Reinstatement issued on 2019-02-25 by Physical Therapy — Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
+    "summary": "Reinstatement issued on 2019-02-25 by Physical Therapy: Error by Journal/Publisher; Retract and Replace; Temporary Removal. See the retraction notice for full details.",
     "tags": [
       "Reinstatement"
     ],
@@ -894,7 +894,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/?s=yoshihiro+sato",
     "date": "2019-02-19",
     "readMins": 3,
-    "summary": "Retraction issued on 2019-02-19 by Archives of Physical Medicine and Rehabilitation — Cites Retracted Work; Investigation by Company/Institution; Misconduct - Official Investigation(s) and/or Finding(s). See the retraction notice for full details.",
+    "summary": "Retraction issued on 2019-02-19 by Archives of Physical Medicine and Rehabilitation: Cites Retracted Work; Investigation by Company/Institution; Misconduct - Official Investigation(s) and/or Finding(s). See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -910,7 +910,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/?s=yoshihiro+sato",
     "date": "2019-02-19",
     "readMins": 3,
-    "summary": "Retraction issued on 2019-02-19 by Archives of Physical Medicine and Rehabilitation — Concerns/Issues about Authorship/Affiliation; Concerns/Issues about Data; Investigation by Company/Institution. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2019-02-19 by Archives of Physical Medicine and Rehabilitation: Concerns/Issues about Authorship/Affiliation; Concerns/Issues about Data; Investigation by Company/Institution. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -926,7 +926,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/?s=jun+iwamoto",
     "date": "2018-08-30",
     "readMins": 3,
-    "summary": "Retraction issued on 2018-08-30 by American Journal of Physical Medicine & Rehabilitation — Concerns/Issues about Authorship/Affiliation; Falsification/Fabrication of Data; Investigation by Company/Institution. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2018-08-30 by American Journal of Physical Medicine & Rehabilitation: Concerns/Issues about Authorship/Affiliation; Falsification/Fabrication of Data; Investigation by Company/Institution. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -942,7 +942,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1177/0269215517752416",
     "date": "2018-01-24",
     "readMins": 3,
-    "summary": "Retraction issued on 2018-01-24 by Clinical Rehabilitation — Plagiarism of/in Article. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2018-01-24 by Clinical Rehabilitation: Plagiarism of/in Article. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -958,7 +958,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/?s=yoshihiro+sato",
     "date": "2018-01-18",
     "readMins": 3,
-    "summary": "Retraction issued on 2018-01-18 by American Journal of Physical Medicine & Rehabilitation — Concerns/Issues about Data; Concerns/Issues about Results and/or Conclusions; Investigation by Company/Institution. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2018-01-18 by American Journal of Physical Medicine & Rehabilitation: Concerns/Issues about Data; Concerns/Issues about Results and/or Conclusions; Investigation by Company/Institution. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -974,7 +974,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/?s=yoshihiro+sato",
     "date": "2018-01-18",
     "readMins": 3,
-    "summary": "Retraction issued on 2018-01-18 by American Journal of Physical Medicine & Rehabilitation — Concerns/Issues about Authorship/Affiliation; Falsification/Fabrication of Data; Investigation by Company/Institution. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2018-01-18 by American Journal of Physical Medicine & Rehabilitation: Concerns/Issues about Authorship/Affiliation; Falsification/Fabrication of Data; Investigation by Company/Institution. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -995,7 +995,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
       "Retraction"
     ],
     "reviewStatus": "Retraction",
-    "underReview": "Flagged by Retraction Watch — see notice for details."
+    "underReview": "Flagged by Retraction Watch, see notice for details."
   },
   {
     "id": "rw-11293",
@@ -1006,7 +1006,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.apmr.2017.07.001",
     "date": "2017-09-01",
     "readMins": 3,
-    "summary": "Retraction issued on 2017-09-01 by Archives of Physical Medicine and Rehabilitation — Plagiarism of/in Article. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2017-09-01 by Archives of Physical Medicine and Rehabilitation: Plagiarism of/in Article. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1022,7 +1022,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/?s=yoshihiro+sato",
     "date": "2017-09-01",
     "readMins": 3,
-    "summary": "Expression of concern issued on 2017-09-01 by American Journal of Physical Medicine & Rehabilitation — Concerns/Issues about Data; Concerns/Issues about Results and/or Conclusions; Investigation by Company/Institution. See the retraction notice for full details.",
+    "summary": "Expression of concern issued on 2017-09-01 by American Journal of Physical Medicine & Rehabilitation: Concerns/Issues about Data; Concerns/Issues about Results and/or Conclusions; Investigation by Company/Institution. See the retraction notice for full details.",
     "tags": [
       "Expression of concern"
     ],
@@ -1038,7 +1038,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/?s=yoshihiro+sato",
     "date": "2017-09-01",
     "readMins": 3,
-    "summary": "Expression of concern issued on 2017-09-01 by American Journal of Physical Medicine & Rehabilitation — Concerns/Issues about Data; Concerns/Issues about Results and/or Conclusions; Investigation by Company/Institution. See the retraction notice for full details.",
+    "summary": "Expression of concern issued on 2017-09-01 by American Journal of Physical Medicine & Rehabilitation: Concerns/Issues about Data; Concerns/Issues about Results and/or Conclusions; Investigation by Company/Institution. See the retraction notice for full details.",
     "tags": [
       "Expression of concern"
     ],
@@ -1059,7 +1059,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
       "Retraction"
     ],
     "reviewStatus": "Retraction",
-    "underReview": "Flagged by Retraction Watch — see notice for details."
+    "underReview": "Flagged by Retraction Watch, see notice for details."
   },
   {
     "id": "rw-7954",
@@ -1070,7 +1070,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1123/jsr.2017-0118",
     "date": "2017-03-01",
     "readMins": 3,
-    "summary": "Retraction issued on 2017-03-01 by The Journal of Sport Rehabilitation — Error in Data. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2017-03-01 by The Journal of Sport Rehabilitation: Error in Data. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1086,7 +1086,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1002/pri.1685",
     "date": "2017-01-12",
     "readMins": 3,
-    "summary": "Retraction issued on 2017-01-12 by Physiotherapy Research International: The Journal for Researchers and Clinicians in Physical Therapy — Error in Methods. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2017-01-12 by Physiotherapy Research International: The Journal for Researchers and Clinicians in Physical Therapy: Error in Methods. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1102,7 +1102,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/2017/03/06/author-says-lied-approval-animal-research/",
     "date": "2016-12-29",
     "readMins": 3,
-    "summary": "Retraction issued on 2016-12-29 by Journal of Physical Therapy Science — Ethical Violations by Author; Lack of IRB/IACUC Approval and/or Compliance. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2016-12-29 by Journal of Physical Therapy Science: Ethical Violations by Author; Lack of IRB/IACUC Approval and/or Compliance. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1118,7 +1118,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "http://retractionwatch.com/2016/09/21/amid-controversial-sarepta-approval-decision-fda-head-calls-for-key-study-retraction/",
     "date": "2016-08-01",
     "readMins": 3,
-    "summary": "Retraction issued on 2016-08-01 by Physical Therapy — Error in Methods; Unreliable Data; Unreliable Results and/or Conclusions. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2016-08-01 by Physical Therapy: Error in Methods; Unreliable Data; Unreliable Results and/or Conclusions. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1134,7 +1134,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.physio.2016.02.003",
     "date": "2016-04-30",
     "readMins": 3,
-    "summary": "Retraction issued on 2016-04-30 by Physiotherapy — False/Forged Authorship; Lack of Approval from Author. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2016-04-30 by Physiotherapy: False/Forged Authorship; Lack of Approval from Author. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1150,7 +1150,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.jht.2015.12.003",
     "date": "2016-04-01",
     "readMins": 3,
-    "summary": "Retraction issued on 2016-04-01 by Journal of Hand Therapy — Retract and Replace. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2016-04-01 by Journal of Hand Therapy: Retract and Replace. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1166,7 +1166,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1589/jpts.27.627r1",
     "date": "2015-10-30",
     "readMins": 3,
-    "summary": "Retraction issued on 2015-10-30 by Journal of Physical Therapy Science — Duplication of/in Article. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2015-10-30 by Journal of Physical Therapy Science: Duplication of/in Article. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1182,7 +1182,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/unavailable",
     "date": "2015-04-01",
     "readMins": 3,
-    "summary": "Retraction issued on 2015-04-01 by European Journal of Physical and Rehabilitation Medicine — Concerns/Issues about Authorship/Affiliation; Copyright Claims; Duplication of Text. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2015-04-01 by European Journal of Physical and Rehabilitation Medicine: Concerns/Issues about Authorship/Affiliation; Copyright Claims; Duplication of Text. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1198,7 +1198,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.3233/NRE-151288",
     "date": "2015-01-01",
     "readMins": 3,
-    "summary": "Retraction issued on 2015-01-01 by NeuroRehabilitation — Error in Data; Error in Methods; Unreliable Data. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2015-01-01 by NeuroRehabilitation: Error in Data; Error in Methods; Unreliable Data. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1214,7 +1214,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.3109/17483107.2014.962290",
     "date": "2014-09-15",
     "readMins": 3,
-    "summary": "Retraction issued on 2014-09-15 by Disability and Rehabilitation. Assistive technology — Duplication of Content through Error by Journal/Publisher; Euphemisms for Duplication. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2014-09-15 by Disability and Rehabilitation. Assistive technology: Duplication of Content through Error by Journal/Publisher; Euphemisms for Duplication. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1230,7 +1230,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1177/1545968314536858",
     "date": "2014-05-22",
     "readMins": 3,
-    "summary": "Retraction issued on 2014-05-22 by Neurorehabilitation and Neural Repair — Euphemisms for Plagiarism; Plagiarism of Text. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2014-05-22 by Neurorehabilitation and Neural Repair: Euphemisms for Plagiarism; Plagiarism of Text. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1246,7 +1246,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1589/jpts.23.697",
     "date": "2011-11-25",
     "readMins": 3,
-    "summary": "Retraction issued on 2011-11-25 by Journal of Physical Therapy Science — Plagiarism of/in Article. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2011-11-25 by Journal of Physical Therapy Science: Plagiarism of/in Article. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1262,7 +1262,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.gaitpost.2010.09.011",
     "date": "2010-10-25",
     "readMins": 3,
-    "summary": "Retraction issued on 2010-10-25 by Gait & Posture — Concerns/Issues about Data; Copyright Claims. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2010-10-25 by Gait & Posture: Concerns/Issues about Data; Copyright Claims. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1278,7 +1278,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1080/17483100903126066",
     "date": "2009-09-09",
     "readMins": 3,
-    "summary": "Retraction issued on 2009-09-09 by Disability and Rehabilitation. Assistive technology — Error by Journal/Publisher. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2009-09-09 by Disability and Rehabilitation. Assistive technology: Error by Journal/Publisher. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1294,7 +1294,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1080/09638280902834364",
     "date": "2009-07-07",
     "readMins": 3,
-    "summary": "Retraction issued on 2009-07-07 by Disability and Rehabilitation — Duplication of Content through Error by Journal/Publisher. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2009-07-07 by Disability and Rehabilitation: Duplication of Content through Error by Journal/Publisher. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],
@@ -1310,7 +1310,7 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "sourceUrl": "https://doi.org/10.1016/j.gaitpost.2003.08.007",
     "date": "2003-12-01",
     "readMins": 3,
-    "summary": "Retraction issued on 2003-12-01 by Gait & Posture — Plagiarism of/in Article. See the retraction notice for full details.",
+    "summary": "Retraction issued on 2003-12-01 by Gait & Posture: Plagiarism of/in Article. See the retraction notice for full details.",
     "tags": [
       "Retraction"
     ],

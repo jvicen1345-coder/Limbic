@@ -57,13 +57,13 @@ export function LicenseVerificationQueue({ rows }: { rows: PendingLicenseRow[] }
           {rows.map((r) => (
             <tr key={r.id} style={{ borderTop: "1px solid var(--color-neutral-200)" }}>
               <td style={{ padding: "8px 10px 8px 0" }}>{r.name}</td>
-              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)" }}>{r.licenseState ?? "—"}</td>
-              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)" }}>{r.licenseNumber ?? "—"}</td>
-              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)" }}>{r.licenseFullName ?? "—"}</td>
+              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)" }}>{r.licenseState ?? "N/A"}</td>
+              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)" }}>{r.licenseNumber ?? "N/A"}</td>
+              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)" }}>{r.licenseFullName ?? "N/A"}</td>
               <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
                 {r.submittedAt
                   ? new Date(r.submittedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-                  : "—"}
+                  : "N/A"}
               </td>
               <td style={{ padding: "8px 0 8px 10px", whiteSpace: "nowrap" }}>
                 <div style={{ display: "flex", gap: 6 }}>

@@ -67,7 +67,7 @@ export function WeeklyActivityChart({ thisWeek, lastWeek, weekStartIso }: { this
           <div key={c} className="vitals-chart-legend-item">
             <span className={`vitals-chart-legend-dot vitals-color-${c}`} />
             <span>{VITALS_CATEGORY_LABEL[c]}</span>
-            <span className="vitals-chart-legend-total">— {thisWeek.totals[c]} min</span>
+            <span className="vitals-chart-legend-total">: {thisWeek.totals[c]} min</span>
           </div>
         ))}
       </div>

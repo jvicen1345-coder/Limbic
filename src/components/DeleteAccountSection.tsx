@@ -33,7 +33,7 @@ export function DeleteAccountSection({ hasFoundingSpot }: { hasFoundingSpot: boo
         Danger zone
       </div>
       <p className="card-body" style={{ marginTop: 6 }}>
-        Permanently delete your account and everything tied to it — saved articles, reading
+        Permanently delete your account and everything tied to it, saved articles, reading
         history, Nexus connections and messages, HEP programs, calendar events, and vitals.
         This can&rsquo;t be undone.
       </p>
@@ -57,13 +57,13 @@ export function DeleteAccountSection({ hasFoundingSpot }: { hasFoundingSpot: boo
             </div>
 
             <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--color-text)", margin: 0 }}>
-              This permanently deletes your account and everything tied to it — saved
+              This permanently deletes your account and everything tied to it, saved
               articles, reading history, Nexus connections and messages, HEP programs,
               calendar events, and vitals. This can&rsquo;t be undone.
             </p>
             {hasFoundingSpot && (
               <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--color-neutral-700)", margin: "10px 0 0" }}>
-                Your Founding Funder listing will stay in the Founding 25 grid — that
+                Your Founding Funder listing will stay in the Founding 25 grid, that
                 stays permanent regardless of what happens to this account.
               </p>
             )}

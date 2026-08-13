@@ -32,7 +32,7 @@ export function BmiCalculatorCard({ profile }: { profile: WellnessProfile }) {
 
   return (
     <div className="wellness-calc-card">
-      <div className="wellness-calc-title">BMI — Body Mass Index</div>
+      <div className="wellness-calc-title">BMI, Body Mass Index</div>
       <p className="wellness-calc-desc">
         A general screening measure comparing your weight to your height, used across population health research.
       </p>
@@ -43,7 +43,7 @@ export function BmiCalculatorCard({ profile }: { profile: WellnessProfile }) {
         </div>
       ) : (
         <p className="wellness-calc-desc" style={{ marginTop: -6 }}>
-          Using your saved height ({profile.heightFeet}&rsquo;{profile.heightInches ?? 0}&rdquo;) and weight ({profile.weightLbs} lbs) —{" "}
+          Using your saved height ({profile.heightFeet}&rsquo;{profile.heightInches ?? 0}&rdquo;) and weight ({profile.weightLbs} lbs),{" "}
           <Link href="/wellness/activity">update</Link>.
         </p>
       )}
@@ -71,7 +71,7 @@ export function BmiCalculatorCard({ profile }: { profile: WellnessProfile }) {
           </div>
 
           <p className="wellness-calc-caution">
-            BMI does not account for muscle mass, bone density, age, or body composition — it&rsquo;s a general population screening
+            BMI does not account for muscle mass, bone density, age, or body composition, it&rsquo;s a general population screening
             measure, not a diagnostic one. A very muscular person can score as &ldquo;overweight&rdquo; despite low body fat.
           </p>
         </div>
@@ -81,7 +81,7 @@ export function BmiCalculatorCard({ profile }: { profile: WellnessProfile }) {
         <summary>What does this mean?</summary>
         <p>
           BMI is a simple ratio of weight to height used as a general population-level screening tool. It doesn&rsquo;t directly measure body
-          fat, and it has real limitations — BMI does not account for muscle mass, bone density, or body composition. A very muscular
+          fat, and it has real limitations: BMI does not account for muscle mass, bone density, or body composition. A very muscular
           person can score as &ldquo;overweight&rdquo; despite low body fat. Use it as one general data point, not a complete picture of
           health.
         </p>

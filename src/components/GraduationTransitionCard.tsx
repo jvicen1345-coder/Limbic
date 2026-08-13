@@ -32,7 +32,7 @@ export function GraduationTransitionCard() {
         Your Limbic Student account is ready to transition to New Grad PRO.
       </p>
       <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--color-neutral-700)", margin: "0 0 14px" }}>
-        Everything carries over — your reading history, boards progress, streaks, saved
+        Everything carries over, your reading history, boards progress, streaks, saved
         articles, and Nexus profile are all waiting for you.
       </p>
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>

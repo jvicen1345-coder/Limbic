@@ -11,7 +11,7 @@ export default async function SlidesPage() {
   return (
     <StudentPlaceholderPage
       title="Slide Breakdown"
-      subtitle="Coming soon — upload your lecture slides and get summaries, key concepts, and practice questions."
+      subtitle="Coming soon, upload your lecture slides and get summaries, key concepts, and practice questions."
     >
       <div className="atrium-upload-placeholder">
         <FileTextIcon size={28} />

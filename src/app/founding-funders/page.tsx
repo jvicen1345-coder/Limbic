@@ -37,7 +37,7 @@ const BENEFITS = [
   },
   {
     title: "First Access Always",
-    description: "Every new feature — Limbic Agent, Limbic Boards, The Movement Lab — you get it before anyone else.",
+    description: "Every new feature (Limbic Agent, Limbic Boards, The Movement Lab) you get it before anyone else.",
   },
 ];
 
@@ -45,16 +45,16 @@ const TIMELINE = [
   {
     year: "2025",
     description:
-      "The idea — a Chapman University DPT student notices something missing in how physical therapy knowledge reaches clinicians, students, and patients.",
+      "The idea: a Chapman University DPT student notices something missing in how physical therapy knowledge reaches clinicians, students, and patients.",
   },
   {
     year: "2026",
     description:
-      "The build — a working platform with research feeds, clinical tools, professional networking, daily games, and an AI clinical decision support system.",
+      "The build: a working platform with research feeds, clinical tools, professional networking, daily games, and an AI clinical decision support system.",
   },
   {
     year: "Coming Soon",
-    description: "The founding — 25 people say yes first.",
+    description: "The founding: 25 people say yes first.",
   },
 ];
 
@@ -199,7 +199,7 @@ export default async function FoundingFundersPage({
             </>
           ) : (
             <>
-              <h2 className="ff-cta-title">Founding Funders — Coming Soon</h2>
+              <h2 className="ff-cta-title">Founding Funders: Coming Soon</h2>
               <p className="ff-cta-body">
                 Be the first to know when spots open. Leave your email and you&rsquo;ll be notified the moment the
                 founding era begins.
@@ -235,7 +235,7 @@ export default async function FoundingFundersPage({
 
         {/* Legal disclaimer — the very last thing on the page */}
         <div className="ff-disclaimer">
-          <p className="ff-disclaimer-title">Important — Please Read</p>
+          <p className="ff-disclaimer-title">Important: Please Read</p>
           <p className="ff-disclaimer-body">
             A Founding Funder membership is a lifetime subscription to Limbic. It is not an investment, equity
             stake, or ownership interest of any kind in Limbic, its research curation, its intellectual property, or

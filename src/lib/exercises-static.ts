@@ -103,7 +103,7 @@ export const EXERCISES: Exercise[] = [
     youtubeUrl: "https://www.youtube.com/watch?v=aNUSgyWRJYA",
     steps: [
       "Hang from a bar with an overhand grip, slightly wider than shoulder width",
-      "Engage your shoulder blades — pull them down and back",
+      "Engage your shoulder blades; pull them down and back",
       "Pull your chest up toward the bar, leading with your elbows",
       "Get your chin over the bar without excessive swinging",
       "Lower back down under control to a full hang",
@@ -177,11 +177,11 @@ export const EXERCISES: Exercise[] = [
       "Start in a push up position with hands slightly wider than shoulders",
       "Lower your chest toward the floor with elbows at roughly a 45-degree angle",
       "Push back up to the top of the push up",
-      "At the top, push a little further — round your upper back and let your shoulder blades spread apart (the 'plus')",
+      "At the top, push a little further; round your upper back and let your shoulder blades spread apart (the 'plus')",
       "Return to the standard top position and repeat",
     ],
     commonErrors: [
-      "Skipping the 'plus' — stopping at a standard push up top position",
+      "Skipping the 'plus', stopping at a standard push up top position",
       "Letting the hips sag or pike up",
       "Shrugging the shoulders instead of protracting the shoulder blades",
     ],
@@ -193,7 +193,7 @@ export const EXERCISES: Exercise[] = [
     id: "nordic-hamstring-curl",
     name: "Nordic Hamstring Curl",
     difficulty: "Hard",
-    muscles: ["Hamstrings — eccentric emphasis"],
+    muscles: ["Hamstrings, eccentric emphasis"],
     benefits:
       "The most evidence supported exercise for hamstring injury prevention. Eccentric loading builds resilience that concentric training cannot.",
     youtubeUrl: "https://www.youtube.com/watch?v=Yn7aqLkeF0U",
@@ -207,11 +207,11 @@ export const EXERCISES: Exercise[] = [
     commonErrors: [
       "Bending at the hips instead of staying in a straight line",
       "Dropping too fast instead of resisting the descent with control",
-      "Attempting too many reps too soon — this exercise causes significant soreness for beginners",
+      "Attempting too many reps too soon; this exercise causes significant soreness for beginners",
     ],
     regression: "Partner assisted with resistance band",
     progression: "Slow tempo increase",
-    setsReps: "2-3 sets of 3-6 reps, as a general guideline — start very conservatively",
+    setsReps: "2-3 sets of 3-6 reps, as a general guideline; start very conservatively",
   },
   {
     id: "bear-crawl",
@@ -243,13 +243,13 @@ export const EXERCISES: Exercise[] = [
     difficulty: "Medium",
     muscles: ["Deep core", "Anti-extension stability"],
     benefits:
-      "One of the safest and most effective core exercises. Teaches the core to stabilize while the limbs move — exactly what it needs to do in real life.",
+      "One of the safest and most effective core exercises. Teaches the core to stabilize while the limbs move, exactly what it needs to do in real life.",
     youtubeUrl: "https://www.youtube.com/watch?v=bxn9FBrt4-A",
     steps: [
       "Lie on your back with arms reaching toward the ceiling and knees bent 90 degrees over your hips",
       "Press your lower back flat into the floor and brace your core",
       "Slowly lower one arm overhead and the opposite leg toward the floor",
-      "Keep your lower back pressed flat the whole time — stop before it arches",
+      "Keep your lower back pressed flat the whole time; stop before it arches",
       "Return to the starting position and repeat on the other side",
     ],
     commonErrors: [

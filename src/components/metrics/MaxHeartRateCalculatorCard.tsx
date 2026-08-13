@@ -39,7 +39,7 @@ export function MaxHeartRateCalculatorCard({ profile }: { profile: WellnessProfi
             <label htmlFor="mhr-formula">Formula</label>
             <select className="input" id="mhr-formula" value={formula} onChange={(e) => setFormula(e.target.value as MaxHrFormula)}>
               <option value="haskell">220 − age</option>
-              <option value="tanaka">Tanaka — 208 − (0.7 × age)</option>
+              <option value="tanaka">Tanaka, 208 − (0.7 × age)</option>
             </select>
           </div>
         </div>
@@ -79,7 +79,7 @@ export function MaxHeartRateCalculatorCard({ profile }: { profile: WellnessProfi
         <summary>What does this mean?</summary>
         <p>
           Zone 1 (Recovery) is easy effort for active recovery days. Zone 2 (Fat burning, aerobic base) is a conversational pace that
-          builds your aerobic engine over time — most endurance training research points to this zone as underrated for long-term
+          builds your aerobic engine over time, most endurance training research points to this zone as underrated for long-term
           health. Zone 3 (Aerobic fitness) is a moderately hard, sustainable effort. Zone 4 (Anaerobic threshold) is the pace you could
           hold for maybe 20-60 minutes at a hard effort. Zone 5 (Maximum effort) is only sustainable for short bursts, used for interval
           training.

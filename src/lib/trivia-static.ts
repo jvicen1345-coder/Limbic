@@ -81,7 +81,7 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     question: "Which of these is an early sign of dehydration?",
     options: ["Bright yellow, clear urine", "Feeling thirsty", "Increased energy", "Lower heart rate"],
     correctIndex: 1,
-    explanation: "Thirst is the body's early signal that fluid intake is running low — a simple, practical cue to drink more water.",
+    explanation: "Thirst is the body's early signal that fluid intake is running low, a simple, practical cue to drink more water.",
   },
   {
     id: "exercise-2",
@@ -145,7 +145,7 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     question: "Which of these is generally considered a lean protein source?",
     options: ["Chicken breast", "Bacon", "Butter", "Fried dough"],
     correctIndex: 0,
-    explanation: "Chicken breast is a commonly cited lean protein source — high in protein, relatively low in saturated fat.",
+    explanation: "Chicken breast is a commonly cited lean protein source, high in protein, relatively low in saturated fat.",
   },
   {
     id: "mental-3",
@@ -201,7 +201,7 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     question: "Which of these is a common sign that someone may benefit from mental health support?",
     options: ["Persistent low mood for weeks", "Feeling tired after a long day", "Being nervous before a big event", "Preferring quiet time occasionally"],
     correctIndex: 0,
-    explanation: "A persistent low mood lasting weeks — rather than a brief, situational dip — is a common sign worth discussing with someone.",
+    explanation: "A persistent low mood lasting weeks, rather than a brief, situational dip, is a common sign worth discussing with someone.",
   },
   {
     id: "general-4",
@@ -217,7 +217,7 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     question: "Which of these is a commonly recommended wind-down habit before bed?",
     options: ["Intense exercise", "A large heavy meal", "Reading or relaxing quietly", "A loud, bright room"],
     correctIndex: 2,
-    explanation: "A quiet, relaxing wind-down routine — like reading — is commonly recommended to help the body prepare for sleep.",
+    explanation: "A quiet, relaxing wind-down routine, like reading, is commonly recommended to help the body prepare for sleep.",
   },
   {
     id: "hydration-5",
@@ -233,7 +233,7 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     question: "What does \"weight-bearing exercise\" primarily help support?",
     options: ["Eyesight", "Bone density", "Digestion", "Hearing"],
     correctIndex: 1,
-    explanation: "Weight-bearing exercise — like walking or dancing — helps support and maintain bone density over time.",
+    explanation: "Weight-bearing exercise, like walking or dancing, helps support and maintain bone density over time.",
   },
   {
     id: "nutrition-5",

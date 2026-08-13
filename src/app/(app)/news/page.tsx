@@ -33,7 +33,7 @@ export default async function NewsPage({
         <a href="https://www.apta.org/news" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>
           apta.org
         </a>{" "}
-        and other outlets — each story links back to its original source below.
+        and other outlets, each story links back to its original source below.
       </p>
       <SubTabs tabs={NEWS_TABS} />
       {aptaArticles.length > 0 ? (

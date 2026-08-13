@@ -30,7 +30,7 @@ export async function generatePubmedQuery(description: string): Promise<string> 
       system:
         "You translate a physical therapist's plain-language description of a topic into a " +
         "single, well-formed PubMed search query using field tags and boolean operators. Keep " +
-        "it focused on physical therapy / rehabilitation literature specifically — add " +
+        "it focused on physical therapy / rehabilitation literature specifically, add " +
         '("physical therapy"[Title/Abstract] OR "physiotherapy"[Title/Abstract] OR ' +
         'rehabilitation[Title/Abstract]) as an AND clause unless the description is already ' +
         "clearly scoped to that literature.",

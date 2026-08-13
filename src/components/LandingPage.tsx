@@ -4,7 +4,7 @@ import { LogoIcon } from "@/components/icons";
 const AUDIENCE_CARDS = [
   {
     title: "Built for the DPT journey",
-    body: "From orientation to boards prep to your first clinical rotation — Limbic keeps you sharp every step of the way.",
+    body: "From orientation to boards prep to your first clinical rotation, Limbic keeps you sharp every step of the way.",
     label: "Limbic Student",
   },
   {
@@ -79,7 +79,7 @@ export function LandingPage() {
       <section className="landing-hero">
         <h1 className="landing-hero-headline">The research, the profession, and the public. Finally in one place.</h1>
         <p className="landing-hero-subheadline">
-          The only platform that keeps physical therapy professionals current and connected — while making that
+          The only platform that keeps physical therapy professionals current and connected, while making that
           same knowledge accessible to the patients and public they serve.
         </p>
         <div className="landing-hero-ctas">
@@ -119,7 +119,7 @@ export function LandingPage() {
       <section className="landing-founding">
         <h2 className="landing-founding-heading">The people who believed first</h2>
         <p className="landing-founding-body">
-          Limbic is launching August 14th, 2026. Twenty-five founding spots are available — lifetime access for the
+          Limbic is launching August 14th, 2026. Twenty-five founding spots are available, lifetime access for the
           people who back Limbic from day one. This is not equity. This is recognition.
         </p>
         <Link href="/founding-funders" className="landing-btn landing-btn-gold landing-btn-lg">
@@ -131,7 +131,7 @@ export function LandingPage() {
       </section>
 
       <footer className="landing-footer">
-        <div className="landing-footer-copyright">© 2026 Limbic Center — limbic.center</div>
+        <div className="landing-footer-copyright">© 2026 Limbic Center, limbic.center</div>
         <div className="landing-footer-links">
           {FOOTER_LINKS.map((l, i) => (
             <span key={l.href}>
@@ -143,7 +143,7 @@ export function LandingPage() {
           ))}
         </div>
         <p className="landing-footer-disclaimer">
-          Limbic provides clinical decision support — not medical advice. Always consult a licensed physician or
+          Limbic provides clinical decision support, not medical advice. Always consult a licensed physician or
           physical therapist.
         </p>
       </footer>

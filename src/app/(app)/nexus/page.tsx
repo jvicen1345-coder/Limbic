@@ -88,7 +88,7 @@ export default async function NexusFeedPage({ searchParams }: { searchParams: Pr
           }}
         >
           <span style={{ fontSize: 13, color: "var(--color-accent-800)" }}>
-            Showing discussions related to {filterTags.join(", ")} — {decorated.length}{" "}
+            Showing discussions related to {filterTags.join(", ")}, {decorated.length}{" "}
             {decorated.length === 1 ? "post" : "posts"}
           </span>
           <Link href="/nexus" className="btn btn-ghost">
@@ -101,7 +101,7 @@ export default async function NexusFeedPage({ searchParams }: { searchParams: Pr
 
       {filterTags.length > 0 && decorated.length === 0 ? (
         <p style={{ fontSize: 14, color: "var(--color-neutral-700)", marginTop: 14 }}>
-          No discussions on this topic yet — be the first to start one above.
+          No discussions on this topic yet, be the first to start one above.
         </p>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 14 }}>

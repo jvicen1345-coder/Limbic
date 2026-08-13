@@ -153,7 +153,7 @@ export function DailySharpeningSession({
     return (
       <button type="button" className="card elev-sm sharpen-dose-card" onClick={() => setSessionState("preview")}>
         <div className="card-kicker">Daily Dose</div>
-        <div className="sharpen-dose-title">3 board-level questions — one from each category</div>
+        <div className="sharpen-dose-title">3 board-level questions, one from each category</div>
         <div className="sharpen-dose-meta">
           <span>Board Question</span>
           <span>Term of the Day</span>
@@ -173,7 +173,7 @@ export function DailySharpeningSession({
     return (
       <div className="card elev-sm">
         <div className="sharpen-preview-title">Daily Sharpening Session</div>
-        <p className="sharpen-preview-subtitle">3 board-level questions — one from each category</p>
+        <p className="sharpen-preview-subtitle">3 board-level questions, one from each category</p>
         <div className="dashboard-metrics-row">
           <div className="dashboard-metric-tile">
             <div className="card-kicker">Questions</div>
@@ -189,10 +189,10 @@ export function DailySharpeningSession({
           </div>
         </div>
         <p className="sharpen-preview-desc">
-          Each session includes one board question, one clinical term, and one case scenario — mirroring the structure of the
-          NPTE. Your timer starts when you begin and keeps running the whole session — the NPTE&rsquo;s recommended pace for 3
+          Each session includes one board question, one clinical term, and one case scenario, mirroring the structure of the
+          NPTE. Your timer starts when you begin and keeps running the whole session, the NPTE&rsquo;s recommended pace for 3
           questions is {formatElapsed(NPTE_THREE_QUESTION_BENCHMARK_SECONDS)}
-          {isPersonalTarget ? `, but today's target is ${formatElapsed(targetSeconds)} — your own time to beat from a slower day. Get under the real benchmark and it resets.` : "."}
+          {isPersonalTarget ? `, but today's target is ${formatElapsed(targetSeconds)}, your own time to beat from a slower day. Get under the real benchmark and it resets.` : "."}
         </p>
         <button type="button" className="btn btn-primary sharpen-begin-btn" onClick={beginSession}>
           Begin Session
@@ -212,7 +212,7 @@ export function DailySharpeningSession({
       <div>
         <div className="sharpen-active-header">
           <div className={`sharpen-timer${overTime ? " sharpen-timer--over" : ""}`}>{formatElapsed(elapsedSeconds)}</div>
-          {overTime && <div className="sharpen-timer-over-label">Over time — target was {formatElapsed(targetSeconds)}</div>}
+          {overTime && <div className="sharpen-timer-over-label">Over time: target was {formatElapsed(targetSeconds)}</div>}
           <div className="sharpen-progress-row">
             <div className="sharpen-progress-label">
               Question {stepIndex + 1} of {STEP_COUNT}
@@ -286,7 +286,7 @@ export function DailySharpeningSession({
                 {dayCase.specialty} · Case of the Day
               </div>
               <p style={{ fontWeight: 600, fontSize: 15, margin: "6px 0 12px" }}>
-                {dayCase.patientAge}-year-old {dayCase.patientSex} — {dayCase.chiefComplaint}
+                {dayCase.patientAge}-year-old {dayCase.patientSex}, {dayCase.chiefComplaint}
               </p>
               <div className="case-section">
                 <div className="case-section-title">History</div>
@@ -357,7 +357,7 @@ export function DailySharpeningSession({
       <p className={`sharpen-summary-target${beatBenchmark ? " sharpen-summary-target--beat" : ""}`}>
         {beatBenchmark
           ? `You beat the NPTE benchmark of ${formatElapsed(NPTE_THREE_QUESTION_BENCHMARK_SECONDS)}. Tomorrow's target resets to the benchmark.`
-          : `Tomorrow's target to beat: ${formatElapsed(elapsedSeconds)} — get under the NPTE benchmark of ${formatElapsed(NPTE_THREE_QUESTION_BENCHMARK_SECONDS)} to reset it.`}
+          : `Tomorrow's target to beat: ${formatElapsed(elapsedSeconds)}; get under the NPTE benchmark of ${formatElapsed(NPTE_THREE_QUESTION_BENCHMARK_SECONDS)} to reset it.`}
       </p>
       <div className="sharpen-breakdown-list">
         {results.map((r, i) => (
@@ -375,7 +375,7 @@ export function DailySharpeningSession({
       <div className="sharpen-summary-actions">
         <ShareCompletionButton
           nexusOptIn={nexusOptIn}
-          body={`Completed today's Limbic Boards Daily Sharpening — ${correctCount}/${STEP_COUNT} correct in ${formatElapsed(elapsedSeconds)}.`}
+          body={`Completed today's Limbic Boards Daily Sharpening, ${correctCount}/${STEP_COUNT} correct in ${formatElapsed(elapsedSeconds)}.`}
         />
         <button type="button" className="btn btn-primary" disabled={doneClicked} onClick={handleDone}>
           {doneClicked ? "Saved" : "Done"}

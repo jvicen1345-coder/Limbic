@@ -52,7 +52,7 @@ function AiPubmedSearch({ onResult }: { onResult: (result: AiSearchResult | null
     <div className="card elev-sm" style={{ marginBottom: 18 }}>
       <div className="card-kicker">Ask AI to search PubMed</div>
       <p className="card-body" style={{ marginTop: 2 }}>
-        Describe what you&rsquo;re looking for in plain language — it&rsquo;ll be turned into a PubMed
+        Describe what you&rsquo;re looking for in plain language, it&rsquo;ll be turned into a PubMed
         search for you.
       </p>
       <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
@@ -71,7 +71,7 @@ function AiPubmedSearch({ onResult }: { onResult: (result: AiSearchResult | null
       </div>
       {error && (
         <p style={{ fontSize: 12, color: "var(--color-neutral-700)", marginTop: 8 }}>
-          Couldn&rsquo;t reach the search assistant just now — try again in a moment.
+          Couldn&rsquo;t reach the search assistant just now, try again in a moment.
         </p>
       )}
     </div>
@@ -151,7 +151,7 @@ export function SearchScreen({
             </div>
           ) : (
             <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
-              No PubMed results for that description — try rephrasing it.
+              No PubMed results for that description, try rephrasing it.
             </p>
           )}
         </>
@@ -172,7 +172,7 @@ export function SearchScreen({
               }}
             >
               <span style={{ fontSize: 13, color: "var(--color-accent-800)" }}>
-                Showing only what&rsquo;s new today — {results.length} {results.length === 1 ? "item" : "items"}
+                Showing only what&rsquo;s new today, {results.length} {results.length === 1 ? "item" : "items"}
               </span>
               <button type="button" className="btn btn-ghost" onClick={() => setNewOnly(false)}>
                 Show all
@@ -236,7 +236,7 @@ export function SearchScreen({
             <div style={{ textAlign: "center", padding: "48px 16px", color: "var(--color-neutral-700)" }}>
               <SearchIcon size={26} style={{ color: "var(--color-neutral-400)", marginBottom: 10 }} />
               <div style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text)" }}>
-                No articles found — try a different filter
+                No articles found, try a different filter
               </div>
               <div
                 style={{

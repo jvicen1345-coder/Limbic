@@ -64,10 +64,10 @@ export function VisitRequestsAdminList({ rows }: { rows: VisitRequestRow[] }) {
               <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
                 {r.preferredDate
                   ? new Date(r.preferredDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-                  : "—"}
+                  : "N/A"}
                 {r.preferredTime ? ` · ${r.preferredTime}` : ""}
               </td>
-              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)", maxWidth: 220 }}>{r.message ?? "—"}</td>
+              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)", maxWidth: 220 }}>{r.message ?? "N/A"}</td>
               <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
                 {new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </td>

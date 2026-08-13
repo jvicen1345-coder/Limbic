@@ -31,13 +31,13 @@ export default async function OnboardingPage() {
       }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size brand lockup, not a responsive content image */}
-      <img src="/logo-lockup.svg" alt="Limbic — Curated Research" width={194} height={70} />
+      <img src="/logo-lockup.svg" alt="Limbic, Curated Research" width={194} height={70} />
 
       <div className="card elev-md onboarding-card" style={{ maxWidth: 460, width: "100%" }}>
         <div className="card-kicker">Welcome to Limbic</div>
         <div className="card-title">What are you interested in?</div>
         <p className="card-body" style={{ marginTop: 2 }}>
-          Pick a few topics to curate your home feed — you can change these anytime from
+          Pick a few topics to curate your home feed; you can change these anytime from
           Profile.
         </p>
 

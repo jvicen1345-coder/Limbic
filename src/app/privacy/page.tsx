@@ -6,18 +6,18 @@ export default function PrivacyPage() {
       <h2 className="legal-section-title">1. Information We Collect</h2>
       <p className="legal-body">When you create an account on Limbic we collect:</p>
       <ul className="legal-list">
-        <li>Account information — name, email address, license number for PT accounts, specialty, and practice state.</li>
+        <li>Account information: name, email address, license number for PT accounts, specialty, and practice state.</li>
         <li>
-          Usage data — articles read, searches performed, content saved, streak activity, game completions, and
+          Usage data: articles read, searches performed, content saved, streak activity, game completions, and
           feature interactions. This data is used to personalize your experience.
         </li>
-        <li>Profile information — headline, bio, and any information you choose to add to your Nexus profile.</li>
+        <li>Profile information: headline, bio, and any information you choose to add to your Nexus profile.</li>
         <li>
-          Payment information — payment processing is handled by Stripe. Limbic does not store credit card numbers
+          Payment information: payment processing is handled by Stripe. Limbic does not store credit card numbers
           or payment details directly.
         </li>
         <li>
-          Wellness data — height, weight, age, activity level, and exercise logs entered into Limbic Vitals are
+          Wellness data: height, weight, age, activity level, and exercise logs entered into Limbic Vitals are
           used solely to personalize your wellness experience. This information is not shared with third parties
           and is not used for medical purposes.
         </li>
@@ -26,7 +26,7 @@ export default function PrivacyPage() {
       <h2 className="legal-section-title">2. What We Never Collect</h2>
       <p className="legal-body">
         Limbic is designed to never collect patient data or Protected Health Information as defined by HIPAA. Home
-        Exercise Programs created on Limbic use reference codes only — no patient names, dates of birth, or
+        Exercise Programs created on Limbic use reference codes only; no patient names, dates of birth, or
         identifying information are stored on the platform.
       </p>
 
@@ -45,12 +45,12 @@ export default function PrivacyPage() {
       <p className="legal-body">Limbic uses the following third party services:</p>
       <ul className="legal-list">
         <li>
-          Anthropic — powers Limbic Agent. Queries sent to Limbic Agent are processed by Anthropic&rsquo;s API. See
+          Anthropic: powers Limbic Agent. Queries sent to Limbic Agent are processed by Anthropic&rsquo;s API. See
           Anthropic&rsquo;s privacy policy at anthropic.com.
         </li>
-        <li>Stripe — processes subscription payments. See Stripe&rsquo;s privacy policy at stripe.com.</li>
-        <li>Vercel — hosts the Limbic platform. See Vercel&rsquo;s privacy policy at vercel.com.</li>
-        <li>PubMed — research articles are sourced from PubMed&rsquo;s public API. No user data is sent to PubMed.</li>
+        <li>Stripe: processes subscription payments. See Stripe&rsquo;s privacy policy at stripe.com.</li>
+        <li>Vercel: hosts the Limbic platform. See Vercel&rsquo;s privacy policy at vercel.com.</li>
+        <li>PubMed: research articles are sourced from PubMed&rsquo;s public API. No user data is sent to PubMed.</li>
       </ul>
 
       <h2 className="legal-section-title">5. Data Retention</h2>

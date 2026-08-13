@@ -47,10 +47,10 @@ export function WipeAllUsersPanel({ userCount }: { userCount: number }) {
   return (
     <div className="ff-admin" style={{ borderColor: "color-mix(in srgb, var(--color-danger) 40%, transparent)" }}>
       <p className="ff-admin-title" style={{ color: "var(--color-danger)" }}>
-        Admin — wipe all users
+        Admin, wipe all users
       </p>
       <p style={{ fontSize: 12.5, color: "var(--color-neutral-700)", margin: "0 0 12px" }}>
-        Permanently deletes every account currently in the database ({userCount} total) —
+        Permanently deletes every account currently in the database ({userCount} total),
         every saved article, reading history, Nexus connection, Founding Funder listing,
         and the waitlist. Your own account goes too. This can&rsquo;t be undone.
       </p>
@@ -71,7 +71,7 @@ export function WipeAllUsersPanel({ userCount }: { userCount: number }) {
         >
           <div style={{ fontFamily: "monospace", fontSize: 18, letterSpacing: "0.08em" }}>{generatedCode}</div>
           <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", margin: "6px 0 0" }}>
-            Shown once — save it now. It stops working the moment it&rsquo;s used (or a new
+            Shown once, save it now. It stops working the moment it&rsquo;s used (or a new
             code is generated).
           </p>
         </div>

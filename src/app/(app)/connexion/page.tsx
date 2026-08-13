@@ -28,11 +28,11 @@ export default async function ConnexionOverviewPage() {
       <div className="connexion-hero">
         <h1 className="connexion-hero-title">The Connexion Method</h1>
         <p className="connexion-hero-subtitle">
-          A standardized, evidence-based system for senior home safety, mobility optimization, and fall prevention
-          — designed to identify risk before an event occurs and support recovery after one does.
+          A standardized, evidence-based system for senior home safety, mobility optimization, and fall prevention,
+          designed to identify risk before an event occurs and support recovery after one does.
         </p>
         <p className="connexion-hero-partner">
-          A Limbic partner program — developed by{" "}
+          A Limbic partner program, developed by{" "}
           <Link href="/connexion/delia" style={{ color: "var(--color-migration-gold)" }}>
             Delia Vicencio, PT, DPT
           </Link>
@@ -43,7 +43,7 @@ export default async function ConnexionOverviewPage() {
         <div className="connexion-mission-kicker">Mission</div>
         <p className="connexion-mission-text">
           To improve the safety, independence, and quality of life of older adults by delivering a standardized,
-          evidence-based home mobility and safety system — one that identifies the likelihood of a fall or injury
+          evidence-based home mobility and safety system, one that identifies the likelihood of a fall or injury
           before it happens, and guides recovery when it does.
         </p>
       </div>
@@ -53,7 +53,7 @@ export default async function ConnexionOverviewPage() {
           <HeartIcon size={22} style={{ color: "var(--color-migration-gold)", marginBottom: 12 }} />
           <div className="connexion-feature-title">Caregiver Education</div>
           <p className="connexion-feature-body">
-            Practical guidance for families and caregivers — safe transfers, fall prevention, daily mobility, and
+            Practical guidance for families and caregivers, safe transfers, fall prevention, daily mobility, and
             emergency preparedness.
           </p>
           <Link href="/connexion/caregiver" className="btn btn-secondary">
@@ -88,7 +88,7 @@ export default async function ConnexionOverviewPage() {
           <div className="connexion-feature-title">Connexion Safety Score</div>
           <p className="connexion-feature-body">
             A proprietary scoring system that combines functional assessment findings, environmental factors, and
-            medical history to predict the likelihood of a fall or injury — giving clinicians and families a clear,
+            medical history to predict the likelihood of a fall or injury, giving clinicians and families a clear,
             actionable risk picture.
           </p>
           <Link href="/connexion/safety-score" className="btn btn-secondary">

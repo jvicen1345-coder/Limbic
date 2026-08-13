@@ -37,7 +37,7 @@ const REAL_PEOPLE: SeedPerson[] = [
     specialty: "ortho",
     practiceState: "New Hampshire",
     post: {
-      body: "New essay up on A Peripatetic Physical Therapist digging into how clinicians separate correlation from causation in diagnosis — worth a read if you teach differential reasoning or just want to sharpen your own.",
+      body: "New essay up on A Peripatetic Physical Therapist digging into how clinicians separate correlation from causation in diagnosis, worth a read if you teach differential reasoning or just want to sharpen your own.",
       sourceUrl: "https://peripateticpt.substack.com/p/exploring-causation-and-diagnostic",
       sourceLabel: "A Peripatetic Physical Therapist",
     },
@@ -50,7 +50,7 @@ const REAL_PEOPLE: SeedPerson[] = [
     specialty: "ortho",
     practiceState: "Kentucky",
     post: {
-      body: "Been writing about the 'mill effect' in high-volume ortho clinics — what happens to outcomes and clinician retention when visit counts become the whole strategy. More on the Substack.",
+      body: "Been writing about the 'mill effect' in high-volume ortho clinics, what happens to outcomes and clinician retention when visit counts become the whole strategy. More on the Substack.",
       sourceUrl: "https://physicaltherapy.substack.com",
       sourceLabel: "All Things #Physicaltherapy",
     },
@@ -63,7 +63,7 @@ const REAL_PEOPLE: SeedPerson[] = [
     specialty: "pediatric",
     practiceState: "United Kingdom",
     post: {
-      body: "Wrote up some of the everyday prejudices private-practice pediatric OTs run into in the UK system — and a few creative therapy-putty activities for sensory work, for anyone who wants something lighter after that one.",
+      body: "Wrote up some of the everyday prejudices private-practice pediatric OTs run into in the UK system, and a few creative therapy-putty activities for sensory work, for anyone who wants something lighter after that one.",
       sourceUrl: "https://kidsot.substack.com/t/occupational-therapy",
       sourceLabel: "Kids OT",
     },
@@ -76,7 +76,7 @@ const REAL_PEOPLE: SeedPerson[] = [
     specialty: "sports",
     practiceState: "California",
     post: {
-      body: "Put together a criteria-based checklist for clearing athletes to return to sport after ACL reconstruction — objective hop testing and strength symmetry, not just a date on the calendar.",
+      body: "Put together a criteria-based checklist for clearing athletes to return to sport after ACL reconstruction, objective hop testing and strength symmetry, not just a date on the calendar.",
       sourceUrl: "https://osophysicaltherapy.com/blog/criteria-based-checklist-for-returning-to-sport-after-acl-reconstruction-in-alameda",
       sourceLabel: "OSO Physical Therapy",
     },
@@ -89,7 +89,7 @@ const REAL_PEOPLE: SeedPerson[] = [
     specialty: "geriatric",
     practiceState: "Florida",
     post: {
-      body: "Our team's evidence-based clinical practice guideline on managing fall risk in community-dwelling older adults is out in the Journal of Geriatric Physical Therapy — multicomponent, progressive balance training remains the strongest lever we have.",
+      body: "Our team's evidence-based clinical practice guideline on managing fall risk in community-dwelling older adults is out in the Journal of Geriatric Physical Therapy; multicomponent, progressive balance training remains the strongest lever we have.",
       sourceUrl: "https://journals.lww.com/jgpt/fulltext/2025/04000/physical_therapy_management_of_fall_risk_in.3.aspx",
       sourceLabel: "Journal of Geriatric Physical Therapy",
     },
@@ -102,7 +102,7 @@ const REAL_PEOPLE: SeedPerson[] = [
     specialty: "neuro",
     practiceState: "Massachusetts",
     post: {
-      body: "New Know Stroke piece on how remote therapeutic monitoring is starting to close the gap between clinic visits for stroke survivors — more data between appointments, faster adjustments to the plan of care.",
+      body: "New Know Stroke piece on how remote therapeutic monitoring is starting to close the gap between clinic visits for stroke survivors, more data between appointments, faster adjustments to the plan of care.",
       sourceUrl: "https://knowstroke.substack.com/p/revolutionizing-neuro-rehab-with",
       sourceLabel: "Know Stroke",
     },
@@ -118,7 +118,7 @@ const DEMO_PEOPLE: SeedPerson[] = [
     specialty: "ortho",
     practiceState: "Texas",
     post: {
-      body: "Hot take: manual therapy is a bridge to loaded exercise, not the destination. If a plan of care hasn't progressed past soft-tissue work by week three, it's not a plan — it's a routine.",
+      body: "Hot take: manual therapy is a bridge to loaded exercise, not the destination. If a plan of care hasn't progressed past soft-tissue work by week three, it's not a plan; it's a routine.",
     },
   },
   {
@@ -140,7 +140,7 @@ const DEMO_PEOPLE: SeedPerson[] = [
     specialty: "pediatric",
     practiceState: "New Jersey",
     post: {
-      body: "Reminder for anyone writing school-based OT goals this month: 'improve fine motor skills' isn't a goal a teacher can act on. Tie it to the classroom task — pencil grasp for writing legibly across a full worksheet, not in isolation.",
+      body: "Reminder for anyone writing school-based OT goals this month: 'improve fine motor skills' isn't a goal a teacher can act on. Tie it to the classroom task: pencil grasp for writing legibly across a full worksheet, not in isolation.",
     },
   },
   {
@@ -162,7 +162,7 @@ const DEMO_PEOPLE: SeedPerson[] = [
     specialty: "sports",
     practiceState: "North Carolina",
     post: {
-      body: "Return-to-play is a conversation, not a form. The hop-test numbers matter, but so does asking the athlete directly whether the knee 'feels like theirs' again — that answer changes the timeline more than people admit.",
+      body: "Return-to-play is a conversation, not a form. The hop-test numbers matter, but so does asking the athlete directly whether the knee 'feels like theirs' again; that answer changes the timeline more than people admit.",
     },
   },
 ];

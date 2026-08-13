@@ -43,7 +43,7 @@ const PATHS = [
   },
   {
     title: "Review Boards Content",
-    description: "Go to your daily sharpening — one question, one term, one case. Five minutes a day builds board readiness.",
+    description: "Go to your daily sharpening, one question, one term, one case. Five minutes a day builds board readiness.",
     href: "/boards/sharpening",
     icon: GraduationCapIcon,
     accent: "purple",
@@ -185,7 +185,7 @@ export default async function StudentAtriumPage() {
   // Greeting card, line 3 — one actionable nudge, never a guilt trip about a missed day.
   const momentumLine = boardsToday
     ? "You are on track today. Keep the momentum."
-    : "Your daily sharpening is waiting — 5 minutes keeps your streak alive.";
+    : "Your daily sharpening is waiting, 5 minutes keeps your streak alive.";
 
   return (
     <div className="screen-pad atrium-page" style={{ maxWidth: 960 }}>
@@ -200,7 +200,7 @@ export default async function StudentAtriumPage() {
           </div>
         ) : npteDays !== null ? (
           <p className="atrium-countdown-prompt">
-            Your NPTE date has passed — <Link href="/profile#professional-dates">update it in Profile Settings →</Link>
+            Your NPTE date has passed, <Link href="/profile#professional-dates">update it in Profile Settings →</Link>
           </p>
         ) : (
           <p className="atrium-countdown-prompt">
@@ -295,7 +295,7 @@ export default async function StudentAtriumPage() {
           {upcoming ? (
             <p className="atrium-dashboard-body">
               <strong>{upcoming.label}</strong>
-              {" — "}
+              {", "}
               {upcoming.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
             </p>
           ) : (

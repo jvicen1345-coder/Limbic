@@ -12,7 +12,7 @@ export interface SwapArticleError {
   message: string;
 }
 
-const NOT_SIGNED_IN_ERROR: SwapArticleError = { ok: false, message: "You've been signed out — sign back in to continue." };
+const NOT_SIGNED_IN_ERROR: SwapArticleError = { ok: false, message: "You've been signed out, sign back in to continue." };
 const NOT_FOUND_ERROR: SwapArticleError = { ok: false, message: "Couldn't find that article." };
 
 /** Powers Limbic Threads' in-place article swap (see components/ArticleThreadsSplitView.tsx)

@@ -4,7 +4,7 @@ import { ConnexionScheduleSection } from "@/components/connexion/ConnexionSchedu
 import { ArrowLeftIcon } from "@/components/icons";
 
 const CREDENTIALS = [
-  "Licensed Physical Therapist — California",
+  "Licensed Physical Therapist, California",
   "Doctor of Physical Therapy",
   "30+ years of home health and outpatient experience",
   "Founder of The Connexion Method",
@@ -41,7 +41,7 @@ export default async function ConnexionDeliaPage() {
         <div>
           <h1 className="connexion-delia-name">Delia Vicencio, PT, DPT</h1>
           <p className="connexion-delia-subtitle">
-            Licensed Physical Therapist, Doctor of Physical Therapy — 30 Years of Home Health Experience
+            Licensed Physical Therapist, Doctor of Physical Therapy, 30 Years of Home Health Experience
           </p>
           <p className="connexion-delia-location">Orange County, California</p>
         </div>
@@ -59,11 +59,11 @@ export default async function ConnexionDeliaPage() {
       </div>
 
       <div className="card elev-sm" style={{ marginBottom: 20 }}>
-        <div className="card-title">The AFIT — Part of Every Connexion Method Visit</div>
+        <div className="card-title">The AFIT, Part of Every Connexion Method Visit</div>
         <p className="card-body" style={{ marginTop: 8, marginBottom: 14 }}>
           The Adult Functional Independence Test is a performance-based functional assessment that Delia
           incorporates into every Connexion Method visit, applying more than 30 years of direct patient care to how
-          it&rsquo;s administered. It evaluates posture, flexibility, strength, balance, and endurance — and forms
+          it&rsquo;s administered. It evaluates posture, flexibility, strength, balance, and endurance, and forms
           the functional foundation of every Connexion Method assessment.
         </p>
         <Link href="/connexion/afit" className="btn btn-secondary" style={{ alignSelf: "flex-start" }}>
@@ -91,7 +91,7 @@ export default async function ConnexionDeliaPage() {
         <div className="connexion-mission-kicker">Founder of The Connexion Method</div>
         <p className="connexion-mission-text" style={{ marginBottom: 14 }}>
           The Connexion Method is a standardized, evidence-based system for senior home safety, mobility
-          optimization, and fall prevention — developed from 30 years of direct patient care.
+          optimization, and fall prevention, developed from 30 years of direct patient care.
         </p>
         <Link href="/connexion" className="btn btn-primary">
           Learn About The Connexion Method

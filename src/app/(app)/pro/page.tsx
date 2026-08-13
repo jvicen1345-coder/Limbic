@@ -19,12 +19,12 @@ const TIER_COMPARISON: { feature: string; student: string; pro: string }[] = [
   {
     feature: "Limbic Boards",
     student: "Daily pre-boards sharpening, case-based practice.",
-    pro: "Not included — Boards is a student-only product.",
+    pro: "Not included; Boards is a student-only product.",
   },
   {
     feature: "Limbic Agent",
-    student: "Demo mode live now — full clinical decision support launching in a future phase.",
-    pro: "Demo mode live now — full clinical decision support launching in a future phase.",
+    student: "Demo mode live now, full clinical decision support launching in a future phase.",
+    pro: "Demo mode live now, full clinical decision support launching in a future phase.",
   },
   {
     feature: "HEP Builder",
@@ -82,12 +82,12 @@ export default async function ProOverviewPage() {
       </div>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         {user.isPro
-          ? "You're a Pro member — thanks for supporting Limbic."
+          ? "You're a Pro member, thanks for supporting Limbic."
           : studentTierLabel
-            ? `You're a ${studentTierLabel} member — thanks for supporting Limbic.`
+            ? `You're a ${studentTierLabel} member, thanks for supporting Limbic.`
             : student
               ? "PT student? LimbicStudent is available for your .edu account below."
-              : "Clinician tools built for how you actually practice — all in the app, nothing emailed out."}
+              : "Clinician tools built for how you actually practice, all in the app, nothing emailed out."}
       </p>
       <SubTabs tabs={PRO_TABS} />
 
@@ -132,7 +132,7 @@ export default async function ProOverviewPage() {
           ))}
         </div>
         <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: "10px 0 0" }}>
-          LimbicPro and LimbicStudent are available to purchase today — LimbicStudent
+          LimbicPro and LimbicStudent are available to purchase today; LimbicStudent
           requires a .edu sign-in. New Grad PRO and Clinic PRO are priced but not yet built.
         </p>
       </div>
@@ -198,7 +198,7 @@ export default async function ProOverviewPage() {
           <>
             <div className="card-kicker">$25/month</div>
             <p className="card-body" style={{ marginTop: 6 }}>
-              Cancel any time — takes effect at the end of your current billing period.
+              Cancel any time; takes effect at the end of your current billing period.
             </p>
             <Link href="/profile/membership" className="btn btn-primary" style={{ marginTop: 10 }}>
               Upgrade to LimbicPro
@@ -223,7 +223,7 @@ export default async function ProOverviewPage() {
             <>
               <div className="card-kicker">LimbicStudent · $5/month</div>
               <p className="card-body" style={{ marginTop: 6 }}>
-                Cancel any time — takes effect at the end of your current billing period.
+                Cancel any time; takes effect at the end of your current billing period.
               </p>
               <Link href="/profile/membership" className="btn btn-primary" style={{ marginTop: 10 }}>
                 See LimbicStudent

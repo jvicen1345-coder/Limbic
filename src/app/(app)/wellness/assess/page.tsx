@@ -30,7 +30,7 @@ export default async function AssessYourselfPage() {
     <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Assess Yourself</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 14px" }}>
-        Simple movement screens you can do at home — based on physical therapy assessment principles.
+        Simple movement screens you can do at home, based on physical therapy assessment principles.
       </p>
       <div className="vitals-disclaimer">
         These assessments are for general wellness awareness only. They are not diagnostic tools. If you have pain or concern about your
@@ -59,7 +59,7 @@ export default async function AssessYourselfPage() {
               {a.interpretationNote && <p className="wellness-assess-note">{a.interpretationNote}</p>}
 
               {/* Norms/scoring tables and the movement checklist are what make these cards vary
-                 so wildly in height (a 6-row norms table vs. a single short note) — tucked
+                 so wildly in height (a 6-row norms table vs. a single short note), tucked
                  behind a toggle, closed by default, so every card in the grid starts at a
                  similar, symmetrical height and a reader who wants the detail opens it. */}
               {a.norms && (

@@ -6,43 +6,43 @@ const PROTOCOL_STEPS = [
   {
     name: "Intake",
     description:
-      "Your PT starts by reviewing your medical history and any referral information. Together you'll talk through your goals — whether that's staying safe at home, recovering from surgery, or supporting a family member.",
+      "Your PT starts by reviewing your medical history and any referral information. Together you'll talk through your goals, whether that's staying safe at home, recovering from surgery, or supporting a family member.",
     afit: false,
   },
   {
     name: "Standardized Assessment",
     description:
-      "Your PT conducts the Adult Functional Independence Test — a structured, performance-based evaluation of five key domains: posture, flexibility, strength, balance, and endurance. This is not a questionnaire. It is a hands-on functional assessment that produces objective, measurable results. Your AFIT findings feed directly into your Connexion Safety Score.",
+      "Your PT conducts the Adult Functional Independence Test, a structured, performance-based evaluation of five key domains: posture, flexibility, strength, balance, and endurance. This is not a questionnaire. It is a hands-on functional assessment that produces objective, measurable results. Your AFIT findings feed directly into your Connexion Safety Score.",
     afit: true,
   },
   {
     name: "Home Walkthrough",
     description:
-      "Your PT walks through every room with you — entryways, bathrooms, bedroom, kitchen, stairs. They're looking at the environment through the eyes of someone who knows exactly where falls happen and why.",
+      "Your PT walks through every room with you: entryways, bathrooms, bedroom, kitchen, stairs. They're looking at the environment through the eyes of someone who knows exactly where falls happen and why.",
     afit: false,
   },
   {
     name: "Risk Scoring",
     description:
-      "Everything observed gets translated into your Connexion Safety Score — a clear, objective summary of your risk level across three domains: your environment, your mobility, and your fall risk factors.",
+      "Everything observed gets translated into your Connexion Safety Score, a clear, objective summary of your risk level across three domains: your environment, your mobility, and your fall risk factors.",
     afit: false,
   },
   {
     name: "Written Report",
     description:
-      "You receive a professional written report after your visit. It summarizes what was found, prioritizes what matters most, and gives you a clear action plan — not just a list of problems.",
+      "You receive a professional written report after your visit. It summarizes what was found, prioritizes what matters most, and gives you a clear action plan, not just a list of problems.",
     afit: false,
   },
   {
     name: "Equipment Recommendations",
     description:
-      "If equipment would help — grab bars, a shower bench, a walker, a ramp — your PT tells you exactly what, where, and how to get it. No guessing, no upselling.",
+      "If equipment would help (grab bars, a shower bench, a walker, a ramp), your PT tells you exactly what, where, and how to get it. No guessing, no upselling.",
     afit: false,
   },
   {
     name: "Caregiver Training",
     description:
-      "If a family member or caregiver is present, your PT works with them directly — safe transfer techniques, fall response, daily mobility support. The people around you are part of the plan.",
+      "If a family member or caregiver is present, your PT works with them directly: safe transfer techniques, fall response, daily mobility support. The people around you are part of the plan.",
     afit: false,
   },
   {
@@ -72,15 +72,15 @@ export default async function ConnexionProtocolPage() {
       <div className="screen-pad" style={{ maxWidth: 560, margin: "0 auto" }}>
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>What to Expect During Your Visit</h1>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
-          Every Connexion Method assessment follows the same eight-step process — so you always know what&rsquo;s
+          Every Connexion Method assessment follows the same eight-step process, so you always know what&rsquo;s
           happening and why.
         </p>
         <div className="wellness-agent-paywall">
           <LockIcon size={22} style={{ color: "var(--color-migration-gold)" }} />
           <div style={{ fontFamily: "var(--font-heading)", fontSize: 18, marginTop: 10 }}>Available with LimbicPRO</div>
           <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "8px 0 18px", maxWidth: 380 }}>
-            The Connexion Protocol — Delia Vicencio, PT, DPT&rsquo;s eight-step process for a home safety and
-            mobility visit — is included with LimbicPRO.
+            The Connexion Protocol (Delia Vicencio, PT, DPT&rsquo;s eight-step process for a home safety and
+            mobility visit) is included with LimbicPRO.
           </p>
           <Link href="/pro" className="btn btn-primary">
             Upgrade to LimbicPRO
@@ -94,7 +94,7 @@ export default async function ConnexionProtocolPage() {
     <div className="screen-pad" style={{ maxWidth: 760, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>What to Expect During Your Visit</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
-        Every Connexion Method assessment follows the same eight-step process — so you always know what&rsquo;s
+        Every Connexion Method assessment follows the same eight-step process, so you always know what&rsquo;s
         happening and why.
       </p>
 
@@ -107,7 +107,7 @@ export default async function ConnexionProtocolPage() {
               <p className="connexion-step-desc">{step.description}</p>
               {step.afit && (
                 <div className="connexion-step-afit-block">
-                  <span className="connexion-step-afit-tag">Includes AFIT — Adult Functional Independence Test</span>
+                  <span className="connexion-step-afit-tag">Includes AFIT (Adult Functional Independence Test)</span>
                   <Link href="/connexion/afit" className="connexion-step-link">
                     Learn about the AFIT →
                   </Link>
