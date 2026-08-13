@@ -80,7 +80,7 @@ export default async function GamesPage() {
   const todayLabel = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 
   return (
-    <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>
+    <div className="screen-pad page-enter" style={{ maxWidth: 900, margin: "0 auto" }}>
       <div className="games-header">
         <p className="games-header-date">{todayLabel}</p>
         <h1 className="games-header-title">Limbic Games</h1>

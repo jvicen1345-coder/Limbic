@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Caprasimo, Figtree } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { TopLoadingBar } from "@/components/TopLoadingBar";
 import "./globals.css";
 
 // Self-hosted via next/font instead of the globals.css `@import` this replaced: that
@@ -66,6 +67,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body>
+        <TopLoadingBar />
         {children}
         <Analytics />
         <SpeedInsights />

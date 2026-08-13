@@ -262,7 +262,7 @@ export function HomeFeed({
 
   return (
     <PullToRefresh refreshing={pending} onRefresh={handlePullRefresh}>
-    <div className="home-pad">
+    <div className="home-pad page-enter">
       <div className="home-row">
         <div className="home-main-col">
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>

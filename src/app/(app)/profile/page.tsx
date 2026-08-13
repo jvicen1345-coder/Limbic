@@ -56,7 +56,7 @@ export default async function ProfilePage() {
   const isAdminUser = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
 
   return (
-    <div className="screen-pad">
+    <div className="screen-pad page-enter">
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Profile</h1>
       <div style={{ marginBottom: 14 }}>
         <SubTabs tabs={PROFILE_TABS} />

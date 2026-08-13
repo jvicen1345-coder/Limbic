@@ -24,7 +24,7 @@ export default async function ConnexionOverviewPage() {
   if (!user) return null;
 
   return (
-    <div className="screen-pad" style={{ maxWidth: 960, margin: "0 auto" }}>
+    <div className="screen-pad page-enter" style={{ maxWidth: 960, margin: "0 auto" }}>
       <div className="connexion-hero">
         <h1 className="connexion-hero-title">The Connexion Method</h1>
         <p className="connexion-hero-subtitle">
