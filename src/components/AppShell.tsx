@@ -215,7 +215,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
           <div className="nav-section-label">Limbic Student</div>
           <NavLink href="/student" icon={<GraduationCapIcon />} label="Atrium" bold={false} onNavigate={onNavigate} />
           <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/student/resources" icon={<FileTextIcon />} label="NPTE Resources" bold={false} onNavigate={onNavigate} />
         </>
       )}
 

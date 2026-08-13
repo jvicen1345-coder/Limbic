@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DailySharpeningSession } from "@/components/DailySharpeningSession";
+import { ExternalLinkIcon } from "@/components/icons";
 import type { BoardQuestion, BoardTerm } from "@/lib/board-content";
 import type { DailyCase } from "@/lib/cases-static";
 
@@ -65,6 +66,35 @@ const FSBPT_LINKS = [
   { title: "FSBPT Content Outline", href: "https://www.fsbpt.org/Free-Resources/NPTE-Content-Outline" },
   { title: "FSBPT Candidate Handbook", href: "https://www.fsbpt.org/Free-Resources/Candidate-Handbooks" },
   { title: "FSBPT Practice Exam", href: "https://www.fsbpt.org/Free-Resources/Practice-Examinations" },
+] as const;
+
+// Moved here from its own page (app/(app)/student/resources — since removed) and the
+// Atrium's sidebar link alongside it (see components/AppShell.tsx) — free, official FSBPT
+// resources belong with the rest of Limbic Boards' Resources tab rather than a separate
+// destination. Distinct URLs from FSBPT_LINKS above (an older FSBPT URL structure the site
+// still serves) and different content (registration/licensure rather than the exam content
+// outline/practice exam), so kept as its own card rather than merged into that list.
+const NPTE_RESOURCES = [
+  {
+    title: "NPTE Candidate Handbook",
+    description: "Everything about registering for and taking the NPTE, straight from FSBPT.",
+    href: "https://www.fsbpt.org/FreeResources/NPTECandidateHandbook.aspx",
+  },
+  {
+    title: "Free NPTE Demo Exam",
+    description: "Try real-format sample questions before your actual exam.",
+    href: "https://www.fsbpt.org/Secondary-Pages/Exam-Candidates/National-Exam-NPTE/Prepare-for-Exam/NPTE-Demo-Exam",
+  },
+  {
+    title: "State Licensure Requirements",
+    description: "Compare licensing requirements across every state and jurisdiction.",
+    href: "https://www.fsbpt.org/FreeResources/RegulatoryResources/LicensureReferenceGuide.aspx",
+  },
+  {
+    title: "PT Licensure Compact",
+    description: "See which states let you practice across state lines on one license.",
+    href: "https://www.fsbpt.org/FreeResources/PhysicalTherapyLicensureCompact.aspx",
+  },
 ] as const;
 
 const STRATEGY_STEPS = [
@@ -289,6 +319,25 @@ export function BoardsTabs({
               {FSBPT_LINKS.map((l) => (
                 <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer" className="boards-resource-link">
                   {l.title}
+                </a>
+              ))}
+            </div>
+            <p className="boards-resource-disclaimer">External links — opens FSBPT website</p>
+          </div>
+
+          <div className="card elev-sm">
+            <div className="card-title">Official NPTE Resources</div>
+            <p className="boards-resource-disclaimer" style={{ margin: "4px 0 12px" }}>
+              Free official resources from FSBPT — the national board that runs the NPTE and coordinates PT licensure.
+            </p>
+            <div className="boards-npte-resource-grid">
+              {NPTE_RESOURCES.map((r) => (
+                <a key={r.href} href={r.href} target="_blank" rel="noopener noreferrer" className="boards-npte-resource-card">
+                  <div className="boards-npte-resource-title">
+                    {r.title}
+                    <ExternalLinkIcon size={12} />
+                  </div>
+                  <p className="boards-npte-resource-desc">{r.description}</p>
                 </a>
               ))}
             </div>

@@ -5,6 +5,8 @@ import { prisma } from "@/lib/db";
 import { firstName, timeOfDayGreeting } from "@/lib/meta";
 import { questionForDate, todayDateKey } from "@/lib/board-content";
 import { getAcceptedConnectionIds } from "@/lib/nexus";
+import { last7DateKeys } from "@/lib/games";
+import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumProgressChart";
 import {
   FileTextIcon,
   UsersIcon,
@@ -12,7 +14,6 @@ import {
   GraduationCapIcon,
   HeartIcon,
   ChevronRightIcon,
-  ZapIcon,
   LockIcon,
   NetworkIcon,
   CalendarIcon,
@@ -56,17 +57,20 @@ const PATHS = [
   },
 ] as const;
 
-// Last 7 calendar days (UTC date keys, same unit board-content.ts rotates its daily
-// question/term on) — used to look back over the week's Boards answers below.
-function lastSevenDateKeys(): string[] {
-  const keys: string[] = [];
-  for (let i = 0; i < 7; i++) {
-    const d = new Date();
-    d.setUTCDate(d.getUTCDate() - i);
-    keys.push(d.toISOString().slice(0, 10));
-  }
-  return keys;
-}
+// The 5 real NPTE domains board-content.ts's questions are tagged with (see its own
+// `domain` field) — fixed order/colors so the progress chart's legend below never
+// reshuffles as different domains get touched week to week. Same 5-color palette
+// components/BoardsTabs.tsx's NPTE_SYSTEMS cards use, kept visually consistent between the
+// two even though the domain labels here are the real per-question tags, not that other
+// component's higher-level system names ("Nonsystem / Safety" here vs. "Non-Systems"
+// there — different granularity, not a typo).
+const DOMAIN_COLORS: Record<string, string> = {
+  Musculoskeletal: "var(--color-accent)",
+  Neuromuscular: "var(--color-vitals-mindfulness)",
+  Cardiopulmonary: "var(--color-danger)",
+  Integumentary: "var(--color-success)",
+  "Nonsystem / Safety": "var(--color-warn)",
+};
 
 // Where a reader is in the term shapes the tone of the encouragement more than any single
 // day's activity does — early weeks need a "you're building something" framing, later ones
@@ -103,9 +107,9 @@ export default async function StudentAtriumPage() {
     : null;
 
   const todayKey = todayDateKey();
-  const weekDateKeys = lastSevenDateKeys();
+  const weekDateKeys = last7DateKeys(todayKey);
 
-  const [boardsToday, connectionIds, weekCompletions, nextCalendarEvent] = await Promise.all([
+  const [boardsToday, connectionIds, weekCompletions, boardActivityRows, nextCalendarEvent] = await Promise.all([
     prisma.dailyCompletion.findFirst({
       where: { userId: user.id, dateKey: todayKey, kind: { in: ["boardQuestion", "boardTerm"] } },
     }),
@@ -113,31 +117,49 @@ export default async function StudentAtriumPage() {
     prisma.dailyCompletion.findMany({
       where: { userId: user.id, kind: "boardQuestion", dateKey: { in: weekDateKeys } },
     }),
+    // Any Boards activity (question, term, or case — see lib/board-activity.ts) on each of
+    // the last 7 days, for the progress chart's completion ring below. Broader than
+    // weekCompletions above (boardQuestion answers only), matching what the streak itself
+    // actually counts a day as "done" for.
+    prisma.boardActivity.findMany({ where: { userId: user.id, dateKey: { in: weekDateKeys } }, select: { dateKey: true } }),
     prisma.userCalendarEvent.findFirst({
       where: { userId: user.id, date: { gte: now } },
       orderBy: { date: "asc" },
     }),
   ]);
 
-  // Weakest NPTE domain this week — tallies wrong answers per domain from this week's
-  // boardQuestion completions (each dateKey deterministically maps back to the question
-  // that was shown that day via questionForDate, same as Daily Sharpening itself).
-  const wrongByDomain = new Map<string, number>();
+  const daysCompletedThisWeek = new Set(boardActivityRows.map((r) => r.dateKey)).size;
+
+  // Per-domain accuracy this week — every domain always present (0/0 for one never touched
+  // yet) so the chart's legend has a constant shape rather than reflowing as domains get
+  // answered. weakestDomain (most wrong answers, not lowest accuracy — same definition the
+  // greeting card's focusLine below already used before this chart existed) still drives
+  // that one line of copy, just computed from the same pass instead of a separate map.
+  const domainStats = new Map<string, { correct: number; total: number }>();
+  for (const domain of Object.keys(DOMAIN_COLORS)) domainStats.set(domain, { correct: 0, total: 0 });
   for (const c of weekCompletions) {
     if (c.selectedIndex == null) continue;
     const q = questionForDate(c.dateKey);
-    if (c.selectedIndex !== q.correctIndex) {
-      wrongByDomain.set(q.domain, (wrongByDomain.get(q.domain) ?? 0) + 1);
-    }
+    const stat = domainStats.get(q.domain) ?? { correct: 0, total: 0 };
+    stat.total += 1;
+    if (c.selectedIndex === q.correctIndex) stat.correct += 1;
+    domainStats.set(q.domain, stat);
   }
   let weakestDomain: string | null = null;
-  let weakestCount = 0;
-  for (const [domain, count] of wrongByDomain) {
-    if (count > weakestCount) {
+  let weakestWrongCount = 0;
+  for (const [domain, stat] of domainStats) {
+    const wrong = stat.total - stat.correct;
+    if (wrong > weakestWrongCount) {
       weakestDomain = domain;
-      weakestCount = count;
+      weakestWrongCount = wrong;
     }
   }
+  const domainAccuracy: DomainAccuracy[] = Object.keys(DOMAIN_COLORS).map((domain) => ({
+    domain,
+    correct: domainStats.get(domain)?.correct ?? 0,
+    total: domainStats.get(domain)?.total ?? 0,
+    color: DOMAIN_COLORS[domain],
+  }));
 
   // Next rotation date or exam, whichever comes first — professional dates and Limbic
   // Calendar events compete on equal footing here, sorted together by date.
@@ -187,6 +209,12 @@ export default async function StudentAtriumPage() {
         )}
       </div>
 
+      <AtriumProgressChart
+        daysCompletedThisWeek={daysCompletedThisWeek}
+        currentStreak={user.boardsStreakDays}
+        domains={domainAccuracy}
+      />
+
       <div className="atrium-greeting-card">
         <p>{weekEncouragement(weekNumber)}</p>
         <p>{focusLine}</p>
@@ -213,47 +241,8 @@ export default async function StudentAtriumPage() {
         })}
       </div>
 
-      <div className="atrium-section-label">Your Progress</div>
+      <div className="atrium-section-label">Quick Links</div>
       <div className="atrium-dashboard-grid">
-        <div className="atrium-dashboard-card">
-          <div className="atrium-dashboard-title">
-            <ZapIcon size={15} />
-            Daily Sharpening
-          </div>
-          {boardsToday ? (
-            <p className="atrium-dashboard-body">
-              Done for today. {user.boardsStreakDays} day{user.boardsStreakDays === 1 ? "" : "s"} streak and counting.
-            </p>
-          ) : (
-            <p className="atrium-dashboard-body">Day 1 is always the hardest. Start your streak today.</p>
-          )}
-          <Link href="/boards/sharpening" className="atrium-dashboard-link">
-            {boardsToday ? "View your progress →" : "Go to Daily Sharpening →"}
-          </Link>
-        </div>
-
-        <div className="atrium-dashboard-card">
-          <div className="atrium-dashboard-title">
-            <GraduationCapIcon size={15} />
-            Boards Progress
-          </div>
-          {weekCompletions.length === 0 ? (
-            <p className="atrium-dashboard-empty">
-              Your readiness builds one day at a time. Start your daily sharpening to see your domain strengths and
-              weaknesses.
-            </p>
-          ) : weakestDomain ? (
-            <p className="atrium-dashboard-body">
-              Focus area this week — <strong>{weakestDomain}</strong>. Keep practicing to improve your readiness score.
-            </p>
-          ) : (
-            <p className="atrium-dashboard-body">Strong across all domains this week. Keep up the great work.</p>
-          )}
-          <Link href={weekCompletions.length === 0 ? "/boards/sharpening" : "/boards"} className="atrium-dashboard-link">
-            {weekCompletions.length === 0 ? "Start today →" : "View full progress →"}
-          </Link>
-        </div>
-
         <div className="atrium-dashboard-card">
           <div className="atrium-dashboard-title">
             <UsersIcon size={15} />
@@ -318,16 +307,6 @@ export default async function StudentAtriumPage() {
             Limbic Calendar →
           </Link>
         </div>
-      </div>
-
-      <div className="atrium-resources" style={{ marginTop: 36 }}>
-        <div className="atrium-resources-heading">Official NPTE Resources</div>
-        <p className="atrium-resources-subtitle">
-          Free official resources from FSBPT — the national board that runs the NPTE and coordinates PT licensure.
-        </p>
-        <Link href="/student/resources" className="atrium-dashboard-link" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-          View NPTE resources <ChevronRightIcon size={13} />
-        </Link>
       </div>
     </div>
   );
