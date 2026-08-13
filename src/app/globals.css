@@ -1184,14 +1184,19 @@ html[data-theme="dark"] .nav-founding-link-active {
   position: sticky;
   top: 20px;
 }
-/* The column's own widgets (streak, calendar, saved-unread, Nexus suggestions, stock
-   ticker, latest news) can add up to taller than the viewport — without a height cap,
-   sticky still pins .home-aside-col's top edge in place, but whatever falls past the
-   bottom of the viewport is just unreachable. This inner wrapper (rather than putting the
-   scroll on .home-aside-col itself) caps the height and scrolls internally instead, so
-   every widget stays reachable while the outer column stays pinned as the main feed
-   scrolls past it — position: sticky combined with overflow-y: auto on the very same
-   element doesn't reliably stay pinned. */
+/* This used to cap .home-aside-scroll's height and give it its own overflow-y: auto
+   scrollbar, on the theory that a tall column of widgets (streak, calendar, saved-unread,
+   Nexus, stock) would otherwise leave whatever fell past the viewport bottom unreachable
+   under position: sticky. That premise was wrong — a sticky element is always reachable,
+   it just stops being stuck and scrolls with the page once you pass its sticky range — and
+   the nested scroll region it added caused a real, reproducible bug: any scroll-and-stitch
+   capture (a phone's own "scrolling screenshot" feature, automated screenshot tools) got
+   confused about which of the two nested scrollers to scroll, stitching together frames
+   from different scroll positions of .home-aside-scroll and rendering cards as if their
+   content had escaped past their own rounded edges into the next card, even though the
+   live DOM layout (verified directly, not by screenshot) was always correct. Letting this
+   column scroll as plain part of the page's own flow removes the second scroller and the
+   bug with it. */
 .home-aside-scroll {
   display: flex;
   flex-direction: column;
@@ -1199,8 +1204,6 @@ html[data-theme="dark"] .nav-founding-link-active {
      link and the Nexus card right below it, the two read as crowded together rather than
      as two distinct cards. */
   gap: 22px;
-  max-height: calc(100vh - 40px);
-  overflow-y: auto;
 }
 /* A conservative floor under each widget so the aside column's overall height doesn't
    depend entirely on which widgets happen to have content this render (see HomeFeed.tsx's
@@ -1211,7 +1214,6 @@ html[data-theme="dark"] .nav-founding-link-active {
   .home-row { flex-direction: column; gap: 24px; }
   .home-main-col { width: 100%; }
   .home-aside-col { width: 100%; position: static; }
-  .home-aside-scroll { max-height: none; overflow-y: visible; }
 }
 
 /* — article reading pane + persistent Limbic Threads panel (see
