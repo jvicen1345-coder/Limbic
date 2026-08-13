@@ -1201,6 +1201,17 @@ html[data-theme="dark"] .nav-founding-link-active {
   gap: 22px;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
+  /* Safari-only: a scrollable ancestor (overflow-y here) containing a border-radius'd
+     child that also declares `transition: transform` (every .card, for its hover lift)
+     can fail to clip that child's paint on scroll, letting its content visually spill
+     past this container's edge and over whatever sits below it, even though layout
+     (and every other browser) positions everything correctly. Forcing this element onto
+     its own compositing layer is the standard fix for that WebKit clipping bug.
+     transform: translateZ(0) is redundant with -webkit-transform below in evergreen
+     Safari, kept for older WebKit that only honors the prefixed form. */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 /* A conservative floor under each widget so the aside column's overall height doesn't
    depend entirely on which widgets happen to have content this render (see HomeFeed.tsx's
