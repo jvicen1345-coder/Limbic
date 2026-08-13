@@ -28,7 +28,7 @@ export function MessageThread({
       <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8, padding: "4px 2px" }}>
         {messages.length === 0 && (
           <p style={{ fontSize: 13, color: "var(--color-neutral-700)", textAlign: "center", marginTop: 20 }}>
-            You&rsquo;re connected — say hello.
+            You&rsquo;re connected, say hello.
           </p>
         )}
         {messages.map((m) => (

@@ -41,7 +41,7 @@ export default async function GeneralNewsPage({
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>News</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
-        Clinical guidelines, industry & policy coverage, and new equipment — everything
+        Clinical guidelines, industry & policy coverage, and new equipment, everything
         outside of APTA&rsquo;s own newsroom.
       </p>
       <SubTabs tabs={NEWS_TABS} />

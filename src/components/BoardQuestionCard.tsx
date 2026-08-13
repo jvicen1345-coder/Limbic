@@ -85,7 +85,7 @@ export function BoardQuestionCard({
               body={
                 isCorrectAnswer
                   ? `Answered today's Limbic Boards question correctly${elapsedSeconds != null ? ` in ${formatElapsed(elapsedSeconds)}` : ""} ⚡`
-                  : `Took a swing at today's Limbic Boards question${elapsedSeconds != null ? ` (${formatElapsed(elapsedSeconds)})` : ""} — locking in the right answer for next time.`
+                  : `Took a swing at today's Limbic Boards question${elapsedSeconds != null ? ` (${formatElapsed(elapsedSeconds)})` : ""}, locking in the right answer for next time.`
               }
             />
           </div>

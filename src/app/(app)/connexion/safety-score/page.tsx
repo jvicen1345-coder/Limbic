@@ -21,13 +21,13 @@ const SCORE_DOMAINS = [
   {
     name: "Functional Mobility",
     description:
-      "Based on AFIT results — posture, flexibility, strength, balance, and endurance findings from your in-home assessment.",
+      "Based on AFIT results, posture, flexibility, strength, balance, and endurance findings from your in-home assessment.",
     items: FUNCTIONAL_MOBILITY_ITEMS,
   },
   {
     name: "Home Environment",
     description:
-      "Based on the room-by-room home walkthrough — hazard identification across entryways, bathrooms, bedroom, kitchen, stairs, lighting, and mobility pathways.",
+      "Based on the room-by-room home walkthrough, hazard identification across entryways, bathrooms, bedroom, kitchen, stairs, lighting, and mobility pathways.",
     items: HOME_ENVIRONMENT_ITEMS,
   },
   {
@@ -60,8 +60,8 @@ export default async function ConnexionSafetyScorePage() {
           <LockIcon size={22} style={{ color: "var(--color-migration-gold)" }} />
           <div style={{ fontFamily: "var(--font-heading)", fontSize: 18, marginTop: 10 }}>Available with LimbicPRO</div>
           <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "8px 0 18px", maxWidth: 380 }}>
-            The Connexion Safety Score — a proprietary risk assessment developed by a licensed PT with 30 years of
-            home health experience — is included with LimbicPRO.
+            The Connexion Safety Score, a proprietary risk assessment developed by a licensed PT with 30 years of
+            home health experience, is included with LimbicPRO.
           </p>
           <Link href="/pro" className="btn btn-primary">
             Upgrade to LimbicPRO
@@ -95,10 +95,10 @@ export default async function ConnexionSafetyScorePage() {
                   <span className="connexion-score-row-label">{item}</span>
                   <input
                     className="connexion-score-row-input"
-                    value="—"
+                    value="N/A"
                     disabled
                     readOnly
-                    aria-label={`${item} score — available after your visit`}
+                    aria-label={`${item} score, available after your visit`}
                   />
                 </div>
               ))}
@@ -114,7 +114,7 @@ export default async function ConnexionSafetyScorePage() {
       <div className="connexion-score-output-card">
         <div className="connexion-score-output-title">Connexion Safety Score</div>
         <div className="connexion-score-circle" aria-hidden="true">
-          —
+          N/A
         </div>
         <div className="connexion-score-risk-row">
           {RISK_LEVELS.map((r) => (

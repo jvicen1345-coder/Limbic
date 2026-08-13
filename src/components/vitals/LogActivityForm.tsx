@@ -40,7 +40,7 @@ export function LogActivityForm({ recentLogs }: { recentLogs: VitalsLogEntry[] }
     <div className="card elev-sm" style={{ marginBottom: 18 }}>
       <div className="card-kicker">Log activity</div>
       <p className="card-body" style={{ marginTop: 2 }}>
-        Add anything you did today — a few minutes still counts.
+        Add anything you did today, a few minutes still counts.
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 12 }}>

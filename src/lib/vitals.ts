@@ -118,7 +118,7 @@ export function summarizeWeek(logs: VitalsLogEntry[], weekStartIso: string): Wee
  *  spec, with a couple of graceful fallbacks (empty week / no notable pattern). */
 export function generateInsights(thisWeek: WeekSummary, lastWeek: WeekSummary): string[] {
   if (thisWeek.totalMinutes === 0) {
-    return ["No activity logged yet this week — every minute counts."];
+    return ["No activity logged yet this week, every minute counts."];
   }
 
   const insights: string[] = [];
@@ -128,12 +128,12 @@ export function generateInsights(thisWeek: WeekSummary, lastWeek: WeekSummary): 
 
   if (thisWeek.totals[top] >= thisWeek.totalMinutes * 0.5 && thisWeek.totals[lowest] === 0 && top !== lowest) {
     insights.push(
-      `You logged mostly ${VITALS_CATEGORY_LABEL[top]} this week — consider adding some ${VITALS_CATEGORY_LABEL[lowest]} work.`
+      `You logged mostly ${VITALS_CATEGORY_LABEL[top]} this week, consider adding some ${VITALS_CATEGORY_LABEL[lowest]} work.`
     );
   }
 
   if (thisWeek.activeDayCount >= 4) {
-    insights.push(`Great consistency — you logged activity ${thisWeek.activeDayCount} out of 7 days this week.`);
+    insights.push(`Great consistency, you logged activity ${thisWeek.activeDayCount} out of 7 days this week.`);
   }
 
   let bestIncrease: { category: VitalsCategory; delta: number } | null = null;
@@ -144,7 +144,7 @@ export function generateInsights(thisWeek: WeekSummary, lastWeek: WeekSummary): 
     }
   }
   if (bestIncrease) {
-    insights.push(`Your ${VITALS_CATEGORY_LABEL[bestIncrease.category]} minutes are up from last week — keep it up.`);
+    insights.push(`Your ${VITALS_CATEGORY_LABEL[bestIncrease.category]} minutes are up from last week, keep it up.`);
   }
 
   if (insights.length === 0) {

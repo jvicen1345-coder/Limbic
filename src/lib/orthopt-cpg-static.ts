@@ -53,12 +53,12 @@ export const ORTHOPT_CPG_SEED: Article[] = [
     "ortho",
     "2021-11-01",
     "https://www.orthopt.org/uploads/content_files/files/jospt.2021.0304.pdf",
-    "AOPT's 2021 update to its low back pain guideline, adding recommendations on interventions not covered in the 2012 version — including dry needling, cognitive functional therapy, and pain neuroscience education.",
+    "AOPT's 2021 update to its low back pain guideline, adding recommendations on interventions not covered in the 2012 version, including dry needling, cognitive functional therapy, and pain neuroscience education.",
     ["Low back pain"]
   ),
   cpg(
     "hip-oa-2025",
-    "Hip Pain and Mobility Deficits—Hip Osteoarthritis: Revision 2025",
+    "Hip Pain and Mobility Deficits, Hip Osteoarthritis: Revision 2025",
     "ortho",
     "2025-11-01",
     "https://www.orthopt.org/uploads/content_files/files/koc_et_al_2025_hip_pain_and_mobility_deficits_hip_osteoarthritis_revision_2025(1).pdf",

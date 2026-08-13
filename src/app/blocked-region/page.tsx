@@ -18,7 +18,7 @@ export default function BlockedRegionPage() {
       }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size brand lockup, not a responsive content image */}
-      <img src="/logo-lockup.svg" alt="Limbic — Curated Research" width={194} height={70} />
+      <img src="/logo-lockup.svg" alt="Limbic, Curated Research" width={194} height={70} />
       <div
         style={{
           background: "var(--color-surface)",

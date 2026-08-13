@@ -310,7 +310,7 @@ export function CrosswordGame({
   const shareDateLabel = useMemo(() => dateObj.toLocaleDateString("en-US", { month: "long", day: "numeric" }), [dateObj]);
 
   const displaySeconds = status === "won" ? (elapsedSeconds ?? 0) : liveElapsed;
-  const shareText = `Limbic Mini Crossword — ${shareDateLabel}\nCompleted in ${formatElapsed(elapsedSeconds ?? 0)}\nlimbic.center/crossword`;
+  const shareText = `Limbic Mini Crossword, ${shareDateLabel}\nCompleted in ${formatElapsed(elapsedSeconds ?? 0)}\nlimbic.center/crossword`;
 
   return (
     <div className="crossword-page-pad">
@@ -320,7 +320,7 @@ export function CrosswordGame({
       </Link>
 
       <h1 className="crossword-title">Mini Crossword</h1>
-      <p className="crossword-subtitle">Today&rsquo;s mini crossword — tap a square and type</p>
+      <p className="crossword-subtitle">Today&rsquo;s mini crossword, tap a square and type</p>
       <div className="crossword-date">{headerDateLabel}</div>
 
       <div className="crossword-layout">

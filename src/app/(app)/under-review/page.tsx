@@ -19,7 +19,7 @@ export default async function UnderReviewPage({
       <div className="screen-pad">
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Under Review</h1>
         <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
-          Available to signed-in clinicians only — add your license from your profile to unlock this.
+          Available to signed-in clinicians only, add your license from your profile to unlock this.
         </p>
       </div>
     );

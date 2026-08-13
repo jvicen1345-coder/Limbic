@@ -46,7 +46,7 @@ export interface ThreadsNodeData {
 export const THREADS_INSIGHT_META: Record<ThreadsInsightKind, { label: string; ask: string }> = {
   implications: {
     label: "Clinical Implications",
-    ask: "what this specific finding means for day-to-day clinical practice — how it should change or confirm what a treating clinician actually does",
+    ask: "what this specific finding means for day-to-day clinical practice, how it should change or confirm what a treating clinician actually does",
   },
   "patient-education": {
     label: "Patient Education",

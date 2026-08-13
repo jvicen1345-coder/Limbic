@@ -44,7 +44,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
       "Lower motor neuron",
     ],
     correctIndex: 2,
-    explanation: "Upper motor neuron lesions present with hyperreflexia, spasticity, clonus, and pathological reflexes like Babinski — the opposite of the flaccidity/hyporeflexia seen with lower motor neuron lesions.",
+    explanation: "Upper motor neuron lesions present with hyperreflexia, spasticity, clonus, and pathological reflexes like Babinski, the opposite of the flaccidity/hyporeflexia seen with lower motor neuron lesions.",
   },
   {
     id: "q4",
@@ -73,12 +73,12 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     question: "A patient's SpO2 reads 88% on room air. What is the appropriate PT response?",
     choices: [
       "Continue the session as planned",
-      "Stop and notify the medical team — this is below safe parameters",
+      "Stop and notify the medical team; this is below safe parameters",
       "Have the patient hold their breath and recheck",
       "Document and reassess only at the end of the session",
     ],
     correctIndex: 1,
-    explanation: "SpO2 below ~90% is generally an unsafe parameter to continue exertional therapy — the session should stop and the finding should be escalated to the medical team.",
+    explanation: "SpO2 below ~90% is generally an unsafe parameter to continue exertional therapy; the session should stop and the finding should be escalated to the medical team.",
   },
   {
     id: "q7",
@@ -107,7 +107,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     question: "Which gait deviation is classically associated with weak hip abductors on the stance limb?",
     choices: ["Trendelenburg gait", "Steppage gait", "Antalgic gait", "Scissoring gait"],
     correctIndex: 0,
-    explanation: "A Trendelenburg gait — contralateral pelvic drop during stance — results from weak hip abductors (gluteus medius/minimus) on the stance side.",
+    explanation: "A Trendelenburg gait, contralateral pelvic drop during stance, results from weak hip abductors (gluteus medius/minimus) on the stance side.",
   },
   {
     id: "q10",
@@ -149,7 +149,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
       "Given a rest break, then treatment resumed as tolerated",
     ],
     correctIndex: 1,
-    explanation: "New-onset tachycardia with confusion is an acute change in status outside safe parameters — therapy should be held and the change escalated, not worked through.",
+    explanation: "New-onset tachycardia with confusion is an acute change in status outside safe parameters; therapy should be held and the change escalated, not worked through.",
   },
   {
     id: "q14",
@@ -196,7 +196,7 @@ export const BOARD_TERMS: BoardTerm[] = [
   {
     id: "t4",
     term: "Nystagmus",
-    definition: "Involuntary, rhythmic oscillation of the eyes — often assessed in vestibular and neurologic exams.",
+    definition: "Involuntary, rhythmic oscillation of the eyes, often assessed in vestibular and neurologic exams.",
   },
   {
     id: "t5",
@@ -211,7 +211,7 @@ export const BOARD_TERMS: BoardTerm[] = [
   {
     id: "t7",
     term: "Clonus",
-    definition: "Rhythmic, involuntary muscle contractions triggered by a sudden stretch — a sign of upper motor neuron involvement.",
+    definition: "Rhythmic, involuntary muscle contractions triggered by a sudden stretch, a sign of upper motor neuron involvement.",
   },
   {
     id: "t8",
@@ -226,12 +226,12 @@ export const BOARD_TERMS: BoardTerm[] = [
   {
     id: "t10",
     term: "Fasciculation",
-    definition: "Visible, spontaneous, brief muscle twitching under the skin — associated with lower motor neuron pathology.",
+    definition: "Visible, spontaneous, brief muscle twitching under the skin, associated with lower motor neuron pathology.",
   },
   {
     id: "t11",
     term: "Dysdiadochokinesia",
-    definition: "Impaired ability to perform rapid alternating movements — a classic sign of cerebellar dysfunction.",
+    definition: "Impaired ability to perform rapid alternating movements, a classic sign of cerebellar dysfunction.",
   },
   {
     id: "t12",
@@ -241,12 +241,12 @@ export const BOARD_TERMS: BoardTerm[] = [
   {
     id: "t13",
     term: "Paresthesia",
-    definition: "An abnormal sensation — tingling, prickling, or \"pins and needles\" — often from nerve compression or irritation.",
+    definition: "An abnormal sensation (tingling, prickling, or \"pins and needles\") often from nerve compression or irritation.",
   },
   {
     id: "t14",
     term: "Diaphoresis",
-    definition: "Excessive, often sudden sweating — an important vital-sign-adjacent red flag during exertion.",
+    definition: "Excessive, often sudden sweating, an important vital-sign-adjacent red flag during exertion.",
   },
   {
     id: "t15",

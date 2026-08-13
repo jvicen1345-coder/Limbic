@@ -27,7 +27,7 @@ export default async function AdminLicensesPage() {
     <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>License Verification Queue</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
-        Pending license submissions from the Profile page&rsquo;s Add License flow — {rows.length} awaiting review.
+        Pending license submissions from the Profile page&rsquo;s Add License flow, {rows.length} awaiting review.
       </p>
 
       <div className="card elev-sm">

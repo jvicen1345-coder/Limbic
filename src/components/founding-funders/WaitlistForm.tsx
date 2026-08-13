@@ -22,7 +22,7 @@ export function WaitlistForm({ initialCount }: { initialCount: number }) {
       if (result.ok) {
         setSubmitted(true);
       } else {
-        setError(result.error ?? "Something went wrong — try again.");
+        setError(result.error ?? "Something went wrong, try again.");
       }
     });
   };

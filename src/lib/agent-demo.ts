@@ -32,7 +32,7 @@ export const AGENT_DEMO_NODES: AgentNode[] = [
     parentId: "demo-r1-subjective",
     ring: 2,
     label: "Pain with stairs/squatting",
-    detail: "Anterior knee pain aggravated by loaded knee flexion — stairs, squatting, prolonged sitting (\"theater sign\") — is a classic pattern for patellofemoral pain, since these positions increase patellofemoral joint reaction force.",
+    detail: "Anterior knee pain aggravated by loaded knee flexion (stairs, squatting, prolonged sitting, aka \"theater sign\") is a classic pattern for patellofemoral pain, since these positions increase patellofemoral joint reaction force.",
     expandable: false,
   },
   {
@@ -58,7 +58,7 @@ export const AGENT_DEMO_NODES: AgentNode[] = [
     parentId: "demo-r1-objective",
     ring: 2,
     label: "Patellar Tilt/Glide Test",
-    detail: "Assesses lateral retinacular tightness and patellar tracking — excessive lateral glide or a positive tilt suggests lateral tracking is contributing to the pain.",
+    detail: "Assesses lateral retinacular tightness and patellar tracking; excessive lateral glide or a positive tilt suggests lateral tracking is contributing to the pain.",
     expandable: true,
   },
   {
@@ -66,7 +66,7 @@ export const AGENT_DEMO_NODES: AgentNode[] = [
     parentId: "demo-r1-objective",
     ring: 2,
     label: "Single-Leg Squat / Step-Down",
-    detail: "A loaded, functional test that reveals dynamic knee valgus and hip control deficits — both consistently associated with patellofemoral pain in runners.",
+    detail: "A loaded, functional test that reveals dynamic knee valgus and hip control deficits, both consistently associated with patellofemoral pain in runners.",
     expandable: true,
   },
   {
@@ -74,7 +74,7 @@ export const AGENT_DEMO_NODES: AgentNode[] = [
     parentId: "demo-r1-objective",
     ring: 2,
     label: "McMurray Test",
-    detail: "Performed to help rule out a meniscal component when the history doesn't clearly localize to the joint line — a negative result supports an extensor-mechanism source over a meniscal one.",
+    detail: "Performed to help rule out a meniscal component when the history doesn't clearly localize to the joint line; a negative result supports an extensor-mechanism source over a meniscal one.",
     expandable: false,
   },
 
@@ -84,7 +84,7 @@ export const AGENT_DEMO_NODES: AgentNode[] = [
     parentId: "demo-r1-differentials",
     ring: 2,
     label: "Patellofemoral Pain Syndrome",
-    detail: "The most common cause of anterior knee pain in runners — driven by patellofemoral joint overload, often from hip/quad strength deficits or a training error like this one.",
+    detail: "The most common cause of anterior knee pain in runners, driven by patellofemoral joint overload, often from hip/quad strength deficits or a training error like this one.",
     expandable: true,
   },
   {
@@ -92,7 +92,7 @@ export const AGENT_DEMO_NODES: AgentNode[] = [
     parentId: "demo-r1-differentials",
     ring: 2,
     label: "Patellar Tendinopathy",
-    detail: "Pain more focally at the inferior pole of the patella, worse with jumping or eccentric loading — distinguished by focal tendon tenderness rather than diffuse peripatellar pain.",
+    detail: "Pain more focally at the inferior pole of the patella, worse with jumping or eccentric loading, distinguished by focal tendon tenderness rather than diffuse peripatellar pain.",
     expandable: false,
   },
   {
@@ -100,7 +100,7 @@ export const AGENT_DEMO_NODES: AgentNode[] = [
     parentId: "demo-r1-differentials",
     ring: 2,
     label: "Iliotibial Band Syndrome",
-    detail: "Typically lateral rather than anterior knee pain, but worth screening given the training-load spike — distinguished by lateral epicondyle tenderness and a positive Ober's test.",
+    detail: "Typically lateral rather than anterior knee pain, but worth screening given the training-load spike, distinguished by lateral epicondyle tenderness and a positive Ober's test.",
     expandable: false,
   },
 
@@ -144,7 +144,7 @@ export const AGENT_DEMO_NODES: AgentNode[] = [
     parentId: "demo-r2-stepdown",
     ring: 3,
     label: "Movement Quality Over Pain Alone",
-    detail: "Current evidence emphasizes assessing movement quality (hip drop, knee valgus) during these tests, not just pain reproduction — altered mechanics often persist after pain itself resolves.",
+    detail: "Current evidence emphasizes assessing movement quality (hip drop, knee valgus) during these tests, not just pain reproduction; altered mechanics often persist after pain itself resolves.",
     expandable: false,
   },
   {
@@ -152,7 +152,7 @@ export const AGENT_DEMO_NODES: AgentNode[] = [
     parentId: "demo-r2-tilt",
     ring: 3,
     label: "Guides Manual Therapy, Not Diagnosis Alone",
-    detail: "A positive tilt/glide finding helps target manual therapy and taping decisions, but isn't diagnostic in isolation — it's interpreted alongside the full subjective and objective picture.",
+    detail: "A positive tilt/glide finding helps target manual therapy and taping decisions, but isn't diagnostic in isolation; it's interpreted alongside the full subjective and objective picture.",
     expandable: false,
   },
 ];

@@ -51,7 +51,7 @@ export const GAMES: GameMeta[] = [
     kind: "healthTrivia",
     href: "/games/trivia",
     title: "Health Trivia",
-    description: "5 questions about health and wellness — no clinical knowledge needed",
+    description: "5 questions about health and wellness, no clinical knowledge needed",
     difficulty: "Easy",
     timeEstimate: "3 min",
   },

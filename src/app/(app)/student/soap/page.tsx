@@ -10,7 +10,7 @@ export default async function SoapNotePracticePage() {
   return (
     <StudentPlaceholderPage
       title="SOAP Note Practice"
-      subtitle="Coming soon — build and get AI feedback on your SOAP notes."
+      subtitle="Coming soon, build and get AI feedback on your SOAP notes."
     />
   );
 }

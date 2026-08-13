@@ -244,7 +244,7 @@ function countDetail(article: Article, pool: Article[], type: ArticleType): stri
   const matches = matchesOfType(article, pool, type);
   const noun = COUNT_NOUNS[type] ?? { singular: "article", plural: "articles" };
   if (matches.length === 0) {
-    return `No related ${noun.plural} found yet — tap to browse ${SPECIALTY_META[article.specialty]}.`;
+    return `No related ${noun.plural} found yet, tap to browse ${SPECIALTY_META[article.specialty]}.`;
   }
   return `${matches.length} related ${matches.length === 1 ? noun.singular : noun.plural} found, most recently "${truncate(matches[0].title, 60)}".`;
 }
@@ -304,7 +304,7 @@ export async function buildThreadsWeb(article: Article, articlePool: Article[], 
           label: spec.label,
           detail: nexusMatch
             ? `${nexusMatch.authorName} in Nexus: "${nexusMatch.snippet}"`
-            : "No Nexus discussions on this topic yet — be the first to start one.",
+            : "No Nexus discussions on this topic yet, be the first to start one.",
           action: {
             kind: "navigate",
             label: nexusMatch ? "View in Nexus" : "Start a discussion",

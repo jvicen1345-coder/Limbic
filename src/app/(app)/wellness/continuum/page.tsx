@@ -29,7 +29,7 @@ export default async function RepContinuumPage() {
             <div className="wellness-calc-title">Which zone is right for me?</div>
             {guidance ? (
               <p className="wellness-calc-desc">
-                Your wellness goal is <strong>{goal}</strong> — {guidance.note} <strong>{guidance.zones}</strong>
+                Your wellness goal is <strong>{goal}</strong>, {guidance.note} <strong>{guidance.zones}</strong>
               </p>
             ) : (
               <div>
@@ -65,7 +65,7 @@ export default async function RepContinuumPage() {
             {REP_CONTINUUM_ZONES.map((z) => (
               <div key={z.zone} className="wellness-assess-card">
                 <div className="wellness-calc-title">
-                  Zone {z.zone} — {z.name}
+                  Zone {z.zone}, {z.name}
                 </div>
                 <div className="wellness-continuum-stats">
                   <div>

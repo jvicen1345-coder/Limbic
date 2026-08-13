@@ -104,11 +104,11 @@ export function ClaimSpotButton() {
                   {credential.trim() && <div className="ff-modal-summary-credential">{credential.trim()}</div>}
                 </div>
 
-                <div className="ff-modal-amount">$40 — Lifetime Access</div>
+                <div className="ff-modal-amount">$40, Lifetime Access</div>
 
                 <ul className="ff-modal-bullets">
-                  <li>Lifetime access to Limbic — all current and future features</li>
-                  <li>Founding Funder status — permanent recognition on the platform</li>
+                  <li>Lifetime access to Limbic, all current and future features</li>
+                  <li>Founding Funder status, permanent recognition on the platform</li>
                   <li>Your name on the Founding Funders wall from day one</li>
                 </ul>
 

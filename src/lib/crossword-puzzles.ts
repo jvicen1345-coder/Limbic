@@ -90,16 +90,16 @@ const PUZZLES: CrosswordPuzzle[] = [
     "rest-alpha",
     [
       ["REST", "The \"R\" in R.I.C.E. treatment"],
-      ["ALPHA", "First Greek letter — also a calm brain-wave frequency"],
-      ["IVIES", "Climbing vines — the poison kind causes an itchy rash"],
+      ["ALPHA", "First Greek letter, also a calm brain-wave frequency"],
+      ["IVIES", "Climbing vines, the poison kind causes an itchy rash"],
       ["DENTS", "What a fender bender leaves behind"],
-      ["SEAT", "Chair — or a spot on the city council"],
+      ["SEAT", "Chair, or a spot on the city council"],
     ],
     [
       ["RAID", "Surprise attack, or a bug-spray brand"],
       ["ELVES", "Santa's workshop crew"],
-      ["SPINE", "The body's central support — or a book's bound edge"],
-      ["THETA", "Letter after Eta — a brain-wave rhythm slower than Alpha"],
+      ["SPINE", "The body's central support, or a book's bound edge"],
+      ["THETA", "Letter after Eta, a brain-wave rhythm slower than Alpha"],
       ["ASST", "Right-hand person, for short"],
     ]
   ),
@@ -108,16 +108,16 @@ const PUZZLES: CrosswordPuzzle[] = [
     [
       ["SCAN", "MRI or CT, e.g."],
       ["AIDED", "Lent a hand to"],
-      ["STORE", "Where to shop — or what a squirrel does with acorns"],
-      ["SERVE", "Tennis shot that starts a point — or what a waiter does"],
+      ["STORE", "Where to shop, or what a squirrel does with acorns"],
+      ["SERVE", "Tennis shot that starts a point, or what a waiter does"],
       ["SEEP", "Ooze out slowly, as water through a crack"],
     ],
     [
       ["SASS", "Cheeky backtalk"],
       ["CITES", "Gives credit to, as a source"],
       ["ADORE", "Love to pieces"],
-      ["NERVE", "Signal-carrying body structure — or plain audacity"],
-      ["DEEP", "Not shallow — knee-___ in work"],
+      ["NERVE", "Signal-carrying body structure, or plain audacity"],
+      ["DEEP", "Not shallow, knee-___ in work"],
     ]
   ),
   buildPuzzle(
@@ -126,7 +126,7 @@ const PUZZLES: CrosswordPuzzle[] = [
       ["DISC", "Spinal ___, a cushion between vertebrae"],
       ["ACHES", "Dull, persistent pains"],
       ["DIODE", "One-way gate for electric current"],
-      ["SEVEN", "Lucky number — or days in a week"],
+      ["SEVEN", "Lucky number, or days in a week"],
       ["REST", "The \"R\" in R.I.C.E. treatment"],
     ],
     [
@@ -157,7 +157,7 @@ const PUZZLES: CrosswordPuzzle[] = [
   buildPuzzle(
     "cast-altar",
     [
-      ["CAST", "Rigid support for a broken bone — or a movie's ensemble"],
+      ["CAST", "Rigid support for a broken bone, or a movie's ensemble"],
       ["ALTAR", "Where \"I do\" is said"],
       ["SLOPE", "Incline, like a wheelchair ramp"],
       ["HONES", "Sharpens a skill"],
@@ -198,10 +198,10 @@ const PUZZLES: CrosswordPuzzle[] = [
       ["NEST", "A bird's cozy home"],
     ],
     [
-      ["WIND", "Moving air — or to twist, like a clock"],
+      ["WIND", "Moving air, or to twist, like a clock"],
       ["ALIEN", "E.T., for one"],
       ["RINSE", "Wash off with water"],
-      ["TANKS", "Storage containers — or armored vehicles"],
+      ["TANKS", "Storage containers, or armored vehicles"],
       ["CYST", "Fluid-filled sac beneath the skin"],
     ]
   ),
@@ -209,15 +209,15 @@ const PUZZLES: CrosswordPuzzle[] = [
     "tone-stump",
     [
       ["TONE", "Muscle firmness"],
-      ["STUMP", "Tree remnant — or to baffle with a tricky question"],
+      ["STUMP", "Tree remnant, or to baffle with a tricky question"],
       ["ATRIA", "The heart's upper chambers"],
-      ["RESTS", "Recovers — or takes a breather"],
+      ["RESTS", "Recovers, or takes a breather"],
       ["REST", "The \"R\" in R.I.C.E. treatment"],
     ],
     [
-      ["TSAR", "Russian emperor — also spelled \"czar\""],
+      ["TSAR", "Russian emperor, also spelled \"czar\""],
       ["OTTER", "Playful, web-footed swimmer"],
-      ["NURSE", "Bedside clinician — or to feed an infant"],
+      ["NURSE", "Bedside clinician, or to feed an infant"],
       ["EMITS", "Gives off, as light or sound"],
       ["PAST", "Bygone days"],
     ]
@@ -229,11 +229,11 @@ const PUZZLES: CrosswordPuzzle[] = [
       ["VALET", "One who parks your car"],
       ["INANE", "Silly and pointless"],
       ["DETOX", "Cleanse the body of harmful substances"],
-      ["LENT", "Loaned — or the weeks before Easter"],
+      ["LENT", "Loaned, or the weeks before Easter"],
     ],
     [
       ["AVID", "Enthusiastic"],
-      ["PANEL", "Group of experts — or a section of a door"],
+      ["PANEL", "Group of experts, or a section of a door"],
       ["ELATE", "Fill with joy"],
       ["XENON", "Noble gas used in some car headlights"],
       ["TEXT", "Written message"],
@@ -245,14 +245,14 @@ const PUZZLES: CrosswordPuzzle[] = [
       ["AUNT", "Your parent's sister"],
       ["SNARK", "Sarcastic wit"],
       ["PITON", "Metal spike hammered into rock for climbing"],
-      ["STATE", "Condition — or a U.S. region"],
+      ["STATE", "Condition, or a U.S. region"],
       ["ELSE", "Otherwise"],
     ],
     [
       ["ASPS", "Venomous snakes, in old Egypt"],
       ["UNITE", "Join forces"],
       ["NATAL", "Related to birth, as in pre-___ vitamins"],
-      ["TROTS", "Brisk, steady-paced runs — a horse's gait"],
+      ["TROTS", "Brisk, steady-paced runs, a horse's gait"],
       ["KNEE", "Joint between thigh and shin"],
     ]
   ),
@@ -262,7 +262,7 @@ const PUZZLES: CrosswordPuzzle[] = [
       ["FEES", "Charges for a service"],
       ["ELVES", "Santa's little helpers"],
       ["ABOVE", "Higher than"],
-      ["TOKEN", "Small symbolic item — or a subway fare of old"],
+      ["TOKEN", "Small symbolic item, or a subway fare of old"],
       ["WENT", "Traveled, in the past tense"],
     ],
     [
@@ -276,15 +276,15 @@ const PUZZLES: CrosswordPuzzle[] = [
   buildPuzzle(
     "burn-osier",
     [
-      ["BURN", "Skin injury from heat — first, second, or third degree"],
+      ["BURN", "Skin injury from heat, first, second, or third degree"],
       ["OSIER", "Flexible willow twig used in basket-weaving"],
-      ["OUNCE", "Small unit of weight — 16 to a pound"],
+      ["OUNCE", "Small unit of weight, 16 to a pound"],
       ["MASKS", "Face coverings, like PPE"],
       ["LEST", "For fear that"],
     ],
     [
       ["BOOM", "Loud, explosive sound"],
-      ["USUAL", "Normal — \"the ___ suspects\""],
+      ["USUAL", "Normal, \"the ___ suspects\""],
       ["RINSE", "Wash off with water"],
       ["NECKS", "Body parts between head and shoulders"],
       ["REST", "The \"R\" in R.I.C.E. treatment"],

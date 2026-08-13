@@ -118,7 +118,7 @@ export default async function ProfilePage() {
           user.nexusOptIn ? (
             <>
               <p className="card-body" style={{ marginTop: 6 }}>
-                You&rsquo;re part of Nexus — visible in the directory and reachable for connection
+                You&rsquo;re part of Nexus, visible in the directory and reachable for connection
                 requests and messages.
               </p>
               <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
@@ -148,7 +148,7 @@ export default async function ProfilePage() {
         ) : user.nexusOptIn ? (
           <>
             <p className="card-body" style={{ marginTop: 6 }}>
-              Nexus is coming soon — you&rsquo;re on the list and we&rsquo;ll let you know the
+              Nexus is coming soon, you&rsquo;re on the list and we&rsquo;ll let you know the
               moment it launches.
             </p>
             <form action={leaveNexusAction}>
@@ -160,8 +160,8 @@ export default async function ProfilePage() {
         ) : (
           <>
             <p className="card-body" style={{ marginTop: 6 }}>
-              Nexus — a networking space for PTs, OTs, and the wider healthcare & wellness
-              community — is coming soon.
+              Nexus, a networking space for PTs, OTs, and the wider healthcare & wellness
+              community, is coming soon.
             </p>
             <form action={optInToNexusAction}>
               <button type="submit" className="btn btn-primary" style={{ marginTop: 8 }}>

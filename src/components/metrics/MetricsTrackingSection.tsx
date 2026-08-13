@@ -75,7 +75,7 @@ export function MetricsTrackingSection({ logs }: { logs: MetricsLogEntry[] }) {
 
       <div className="wellness-trend-chart-card">
         {!hasAny ? (
-          <p className="wellness-tracking-empty">Not logged yet — use the calculators above to start tracking your trends.</p>
+          <p className="wellness-tracking-empty">Not logged yet, use the calculators above to start tracking your trends.</p>
         ) : (
           <>
             <svg width="100%" height={CHART_HEIGHT} viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`} preserveAspectRatio="none" style={{ display: "block" }}>

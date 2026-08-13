@@ -131,36 +131,36 @@ export function interpretRpe(value: number): RpeInterpretation {
   if (value <= 8) {
     return {
       label: "Very low intensity",
-      recommendation: "This is recovery-zone effort — appropriate for active recovery days or warm-ups, not for building fitness on its own.",
+      recommendation: "This is recovery-zone effort, appropriate for active recovery days or warm-ups, not for building fitness on its own.",
     };
   }
   if (value <= 11) {
     return {
       label: "Light intensity",
-      recommendation: "A sustainable, conversational pace — good for base-building aerobic work like Zone 2 cardio.",
+      recommendation: "A sustainable, conversational pace, good for base-building aerobic work like Zone 2 cardio.",
     };
   }
   if (value <= 14) {
     return {
       label: "Moderate intensity",
-      recommendation: "Breathing is noticeably harder but you could still speak in short sentences — a solid general-fitness training intensity.",
+      recommendation: "Breathing is noticeably harder but you could still speak in short sentences, a solid general-fitness training intensity.",
     };
   }
   if (value <= 16) {
     return {
       label: "Hard intensity",
-      recommendation: "This is a genuinely challenging effort — appropriate for tempo work or strength training, but not sustainable for long durations.",
+      recommendation: "This is a genuinely challenging effort, appropriate for tempo work or strength training, but not sustainable for long durations.",
     };
   }
   if (value <= 19) {
     return {
       label: "Very hard intensity",
-      recommendation: "Near-maximal effort — reserve this for short intervals with adequate recovery between bouts.",
+      recommendation: "Near-maximal effort, reserve this for short intervals with adequate recovery between bouts.",
     };
   }
   return {
     label: "Maximal effort",
-    recommendation: "All-out effort — only appropriate briefly, and generally not something to sustain or repeat without full recovery.",
+    recommendation: "All-out effort, only appropriate briefly, and generally not something to sustain or repeat without full recovery.",
   };
 }
 

@@ -54,7 +54,7 @@ export default async function SavedGuidelinesPage({
         </>
       ) : (
         <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
-          No saved clinical guidelines yet — bookmark a guideline update to see it here.
+          No saved clinical guidelines yet, bookmark a guideline update to see it here.
         </p>
       )}
     </div>

@@ -56,7 +56,7 @@ export function Vo2MaxCalculatorCard({ profile }: { profile: WellnessProfile }) 
   return (
     <div className="wellness-calc-card">
       <div className="wellness-calc-title">Sub-VO2 Max Estimate</div>
-      <p className="wellness-calc-desc">The Rockport Walking Test — a one-mile walk estimate of your aerobic capacity, no running required.</p>
+      <p className="wellness-calc-desc">The Rockport Walking Test, a one-mile walk estimate of your aerobic capacity, no running required.</p>
 
       {!hasProfile ? (
         <div className="wellness-calc-missing-profile">
@@ -65,7 +65,7 @@ export function Vo2MaxCalculatorCard({ profile }: { profile: WellnessProfile }) 
       ) : (
         <>
           <p className="wellness-calc-desc" style={{ marginTop: -6 }}>
-            Using your saved age ({profile.age}), weight ({profile.weightLbs} lbs), and sex ({sex}) — <Link href="/wellness/activity">update</Link>.
+            Using your saved age ({profile.age}), weight ({profile.weightLbs} lbs), and sex ({sex}), <Link href="/wellness/activity">update</Link>.
           </p>
           <div className="wellness-calc-inputs">
             <div className="field" style={{ flex: 1, minWidth: 80 }}>
@@ -115,9 +115,9 @@ export function Vo2MaxCalculatorCard({ profile }: { profile: WellnessProfile }) 
       <details className="wellness-calc-education">
         <summary>What does this mean?</summary>
         <p>
-          VO2 max measures how efficiently your body uses oxygen during intense exercise — it&rsquo;s one of the most studied markers of
+          VO2 max measures how efficiently your body uses oxygen during intense exercise, it&rsquo;s one of the most studied markers of
           aerobic fitness, and higher values are consistently linked to lower risk of cardiovascular disease and all-cause mortality.
-          Unlike a lab treadmill test, this is a general estimate from a submaximal field test — useful for tracking your own trend over
+          Unlike a lab treadmill test, this is a general estimate from a submaximal field test, useful for tracking your own trend over
           time rather than a precise lab measurement.
         </p>
       </details>

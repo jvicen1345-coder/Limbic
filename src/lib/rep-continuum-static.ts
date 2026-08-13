@@ -33,7 +33,7 @@ export const REP_CONTINUUM_ZONES: RepContinuumZone[] = [
     // maximal-strength work, not power work. Named clearly here rather than left implicit,
     // since "explosive intent" is the one thing that actually separates this zone's real
     // training effect from Zone 2 (Strength) below it at a similar %1RM.
-    whatItDevelops: "Maximal force production and neuromuscular efficiency — achieved through explosive, high-velocity bar speed, not just the heavy load alone",
+    whatItDevelops: "Maximal force production and neuromuscular efficiency, achieved through explosive, high-velocity bar speed, not just the heavy load alone",
     exampleExercises: "Olympic lifts, heavy squats, heavy deadlifts",
     source: "NSCA Essentials of Strength Training and Conditioning",
     barPosition: 10,
@@ -96,9 +96,9 @@ export const REP_CONTINUUM_ZONES: RepContinuumZone[] = [
  *  (see lib/vitals.ts WELLNESS_GOAL_OPTIONS). Each entry names the recommended zone(s) in
  *  plain language plus which zone numbers that maps to, for a "→ Zone X-Y" style display. */
 export const GOAL_ZONE_GUIDANCE: Record<WellnessGoal, { zones: string; note: string }> = {
-  "Build Strength": { zones: "Zone 2-3", note: "Strength through Hypertrophy — heavier loads, lower reps." },
-  "General Health": { zones: "Zone 3-4", note: "Hypertrophy through Maintenance — a balanced, sustainable range." },
+  "Build Strength": { zones: "Zone 2-3", note: "Strength through Hypertrophy, heavier loads, lower reps." },
+  "General Health": { zones: "Zone 3-4", note: "Hypertrophy through Maintenance, a balanced, sustainable range." },
   "Weight Management": { zones: "Zone 3-4", note: "Hypertrophy through Maintenance, paired with cardio." },
   "Improve Flexibility": { zones: "Zone 4-5", note: "Maintenance through Endurance, paired with mobility work." },
-  "Stress Reduction": { zones: "Zone 4-5", note: "Maintenance through Endurance — lighter, more sustainable effort." },
+  "Stress Reduction": { zones: "Zone 4-5", note: "Maintenance through Endurance, lighter, more sustainable effort." },
 };

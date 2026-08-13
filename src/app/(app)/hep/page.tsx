@@ -12,7 +12,7 @@ export default async function HepPage() {
       <div className="screen-pad">
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Home Exercise Programs</h1>
         <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
-          Available to signed-in clinicians only — add your license from your profile to unlock this.
+          Available to signed-in clinicians only, add your license from your profile to unlock this.
         </p>
       </div>
     );
@@ -61,7 +61,7 @@ export default async function HepPage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   {p.exercises.map((ex) => (
                     <div key={ex.id} style={{ fontSize: 12.5, color: "var(--color-text)" }}>
-                      {ex.name} — {ex.sets}x{ex.reps} <span style={{ color: "var(--color-neutral-700)" }}>{ex.notes}</span>
+                      {ex.name}, {ex.sets}x{ex.reps} <span style={{ color: "var(--color-neutral-700)" }}>{ex.notes}</span>
                     </div>
                   ))}
                 </div>

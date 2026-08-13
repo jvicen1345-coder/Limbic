@@ -37,7 +37,7 @@ export default async function BoardsHubPage() {
       <div className="screen-pad boards-question-pad page-enter" style={{ maxWidth: 760, margin: "0 auto" }}>
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Question of the Day</h1>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
-          A board-style question for clinicians to keep sharp on — the rest of Limbic Boards is a student product.
+          A board-style question for clinicians to keep sharp on, the rest of Limbic Boards is a student product.
         </p>
         <BoardQuestionCard
           dateKey={dateKey}
@@ -85,7 +85,7 @@ export default async function BoardsHubPage() {
         </div>
       </div>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
-        Your NPTE prep hub — a board-style question and a term to lock in every day, building toward exam day.
+        Your NPTE prep hub, a board-style question and a term to lock in every day, building toward exam day.
       </p>
 
       <BoardsTabs

@@ -27,7 +27,7 @@ export default async function WellnessMembershipPage({
       </div>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         {user.isWellnessPlus
-          ? "You're a LimbicWellness+ member — thanks for supporting Limbic."
+          ? "You're a LimbicWellness+ member, thanks for supporting Limbic."
           : "Unlock Limbic Agent Wellness and support Limbic's Health & Wellness content."}
       </p>
 
@@ -43,7 +43,7 @@ export default async function WellnessMembershipPage({
             margin: "0 0 16px",
           }}
         >
-          Payment confirmed — thanks for subscribing.
+          Payment confirmed, thanks for subscribing.
         </p>
       )}
       {checkout === "canceled" && (
@@ -57,7 +57,7 @@ export default async function WellnessMembershipPage({
             margin: "0 0 16px",
           }}
         >
-          Checkout was canceled — you weren&rsquo;t charged.
+          Checkout was canceled; you weren&rsquo;t charged.
         </p>
       )}
       {!billingEnabled && (
@@ -72,7 +72,7 @@ export default async function WellnessMembershipPage({
             margin: "0 0 16px",
           }}
         >
-          Payments aren&rsquo;t set up yet — check back soon.
+          Payments aren&rsquo;t set up yet, check back soon.
         </p>
       )}
 
@@ -86,7 +86,7 @@ export default async function WellnessMembershipPage({
               ) : (
                 <>
                   You&rsquo;re on the {user.wellnessPlusInterval === "year" ? "yearly" : "monthly"} plan. Manage your
-                  payment method or cancel below — cancellation takes effect at the end of your current billing
+                  payment method or cancel below; cancellation takes effect at the end of your current billing
                   period.
                 </>
               )}
@@ -103,7 +103,7 @@ export default async function WellnessMembershipPage({
           <>
             <div className="card-kicker">What you get</div>
             <p className="card-body" style={{ marginTop: 6 }}>
-              LimbicWellness+ unlocks Limbic Agent Wellness — evidence based exercise and nutrition guidance in a warm,
+              LimbicWellness+ unlocks Limbic Agent Wellness, evidence based exercise and nutrition guidance in a warm,
               conversational chat. It&rsquo;s also a way to support Limbic&rsquo;s Health &amp; Wellness content, with early
               access to whatever we build here next. Cancel any time.
             </p>

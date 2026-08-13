@@ -141,7 +141,7 @@ export default async function GamesPage() {
           </div>
           <div className="games-stat-tile">
             <div className="games-stat-value" style={{ fontSize: 15 }}>
-              {favoriteGame ?? "—"}
+              {favoriteGame ?? "N/A"}
             </div>
             <div className="games-stat-label">Favorite Game</div>
           </div>

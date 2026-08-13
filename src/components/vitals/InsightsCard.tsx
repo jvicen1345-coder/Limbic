@@ -6,7 +6,7 @@ export function InsightsCard({ insights }: { insights: string[] }) {
     <div className="card elev-sm">
       <div className="card-kicker">General wellness insights</div>
       <p className="card-body" style={{ marginTop: 2 }}>
-        Simple patterns from your own logs — not medical advice.
+        Simple patterns from your own logs, not medical advice.
       </p>
       <div style={{ marginTop: 8 }}>
         {insights.map((text, i) => (

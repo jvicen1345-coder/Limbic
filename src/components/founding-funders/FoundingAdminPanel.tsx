@@ -20,7 +20,7 @@ export function FoundingAdminPanel() {
     startTransition(async () => {
       const result = await claimFoundingSpotAction({ identifier, displayName, credential });
       if (result.ok) {
-        setMessage({ ok: true, text: `Claimed — ${result.claimedCount} of 25 spots filled.` });
+        setMessage({ ok: true, text: `Claimed, ${result.claimedCount} of 25 spots filled.` });
         setIdentifier("");
         setDisplayName("");
         setCredential("");
@@ -32,7 +32,7 @@ export function FoundingAdminPanel() {
 
   return (
     <div className="ff-admin">
-      <p className="ff-admin-title">Admin — claim a founding spot</p>
+      <p className="ff-admin-title">Admin, claim a founding spot</p>
       <form className="ff-admin-form" onSubmit={onSubmit}>
         <input
           className="input"
@@ -52,7 +52,7 @@ export function FoundingAdminPanel() {
         />
         <input
           className="input"
-          placeholder="Credential (e.g. DPT Student, PT) — optional"
+          placeholder="Credential (e.g. DPT Student, PT), optional"
           value={credential}
           onChange={(e) => setCredential(e.target.value)}
           disabled={pending}

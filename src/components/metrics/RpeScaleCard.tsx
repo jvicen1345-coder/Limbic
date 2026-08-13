@@ -16,9 +16,9 @@ export function RpeScaleCard() {
 
   return (
     <div className="wellness-calc-card">
-      <div className="wellness-calc-title">RPE Scale — Rate of Perceived Exertion</div>
+      <div className="wellness-calc-title">RPE Scale, Rate of Perceived Exertion</div>
       <p className="wellness-calc-desc">
-        Not a calculator — an interactive reference. The Borg RPE scale runs from 6 (no exertion) to 20 (maximal effort). Tap a number
+        Not a calculator, an interactive reference. The Borg RPE scale runs from 6 (no exertion) to 20 (maximal effort). Tap a number
         below to see what it means.
       </p>
 
@@ -50,13 +50,13 @@ export function RpeScaleCard() {
       <details className="wellness-calc-education">
         <summary>What does this mean?</summary>
         <p>
-          RPE lets you gauge training intensity using your own perceived effort instead of — or alongside — a heart rate monitor. It&rsquo;s
+          RPE lets you gauge training intensity using your own perceived effort instead of, or alongside, a heart rate monitor. It&rsquo;s
           especially useful when heart rate data isn&rsquo;t available, is affected by heat, stress, or medication, or when you simply
           want a quick gut-check on how a set or session actually felt. Matching your RPE to your intended training zone helps make sure
           your effort matches your goal for that day.
         </p>
       </details>
-      <div className="wellness-calc-source">Source: Borg, 1982 — Journal of Physical Education</div>
+      <div className="wellness-calc-source">Source: Borg, 1982, Journal of Physical Education</div>
     </div>
   );
 }

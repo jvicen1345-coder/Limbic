@@ -35,7 +35,7 @@ const InterestProfileSchema = z.object({
           .string()
           .describe(
             "A specific clinical topic, condition, patient population, or technique this reader's activity " +
-              "shows real interest in — as concrete as the evidence supports (e.g. 'ACL rehabilitation', " +
+              "shows real interest in, as concrete as the evidence supports (e.g. 'ACL rehabilitation', " +
               "'pediatric torticollis', 'blood flow restriction training'), not a vague restatement of a " +
               "specialty they already declared."
           ),
@@ -43,15 +43,15 @@ const InterestProfileSchema = z.object({
           .number()
           .min(0)
           .max(1)
-          .describe("0-1 strength of this interest relative to the others in this list — 1 is their strongest signal."),
+          .describe("0-1 strength of this interest relative to the others in this list, 1 is their strongest signal."),
       })
     )
     .min(1)
     .max(8)
-    .describe("The reader's inferred interests, strongest first, drawn only from patterns actually present in their activity below — never invented."),
+    .describe("The reader's inferred interests, strongest first, drawn only from patterns actually present in their activity below, never invented."),
   summary: z
     .string()
-    .describe("One sentence describing what this reader seems to actually care about right now, for internal/debugging use — not shown to the reader."),
+    .describe("One sentence describing what this reader seems to actually care about right now, for internal/debugging use, not shown to the reader."),
 });
 
 export interface InterestProfileTopic {
@@ -91,7 +91,7 @@ export function isInterestProfileStale(updatedAt: Date | null, now: number = Dat
 
 function historyLine(article: Article, kind: "read" | "saved", completion?: number): string {
   const pct = completion != null ? ` (${Math.round(completion * 100)}% read)` : "";
-  return `- [${kind}${pct}] ${SPECIALTY_META[article.specialty]} · ${article.title} — tags: ${article.tags.join(", ") || "none"}`;
+  return `- [${kind}${pct}] ${SPECIALTY_META[article.specialty]} · ${article.title}, tags: ${article.tags.join(", ") || "none"}`;
 }
 
 /**
@@ -147,7 +147,7 @@ export async function generateInterestProfile(userId: string): Promise<{ ok: tru
       output_config: { effort: "low", format: zodOutputFormat(InterestProfileSchema) },
       system:
         "You infer a physical therapy professional's real clinical interests from their reading activity on Limbic, " +
-        "a PT platform. Be specific and evidence-based — only name interests the activity below actually supports, " +
+        "a PT platform. Be specific and evidence-based, only name interests the activity below actually supports, " +
         "never generic restatements of a whole specialty, and never anything invented.",
       messages: [
         {

@@ -159,7 +159,7 @@ export async function createFoundingFunderCheckout(input: {
   }
 
   if (!stripeEnabled()) {
-    return { ok: false, error: "Payments aren't set up yet — check back soon." };
+    return { ok: false, error: "Payments aren't set up yet, check back soon." };
   }
 
   // TODO: Create one-time $40 Founding Funder product in Stripe dashboard
@@ -168,7 +168,7 @@ export async function createFoundingFunderCheckout(input: {
   // Add price ID to STRIPE_FOUNDING_FUNDER_PRICE_ID in .env and Vercel
   const priceId = process.env.STRIPE_FOUNDING_FUNDER_PRICE_ID;
   if (!priceId) {
-    return { ok: false, error: "Payments aren't set up yet — check back soon." };
+    return { ok: false, error: "Payments aren't set up yet, check back soon." };
   }
 
   const [confirmedCount, pendingCount] = await Promise.all([

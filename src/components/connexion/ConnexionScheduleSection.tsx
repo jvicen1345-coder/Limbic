@@ -32,7 +32,7 @@ export function ConnexionScheduleSection() {
       if (result.ok) {
         setSubmitted(true);
       } else {
-        setError(result.error ?? "Something went wrong — try again.");
+        setError(result.error ?? "Something went wrong, try again.");
       }
     });
   };
@@ -41,7 +41,7 @@ export function ConnexionScheduleSection() {
     <div className="connexion-cta-card" id="schedule">
       <div className="connexion-cta-title">Schedule Your Visit</div>
       <p className="connexion-cta-body">
-        Book a home safety assessment with Delia Vicencio, PT, DPT — serving Orange County, California. A licensed
+        Book a home safety assessment with Delia Vicencio, PT, DPT, serving Orange County, California. A licensed
         physical therapist with 30 years of home health experience comes to you.
       </p>
 

@@ -11,7 +11,7 @@ const NPTE_SYSTEMS = [
     name: "Musculoskeletal",
     weight: 24,
     color: "var(--color-accent)",
-    description: "Bones, joints, muscles, and connective tissue — the highest-weighted system.",
+    description: "Bones, joints, muscles, and connective tissue, the highest-weighted system.",
   },
   {
     name: "Neuromuscular and Nervous System",
@@ -50,7 +50,7 @@ const NPTE_DEEP_DIVES = [
   },
   {
     title: "Cardiopulmonary (~16%)",
-    body: "Covers cardiovascular and pulmonary conditions, lab values, vital sign interpretation, aerobic exercise prescription, and ICU-level interventions. Cardiopulmonary is frequently underestimated — don't let it cost you.",
+    body: "Covers cardiovascular and pulmonary conditions, lab values, vital sign interpretation, aerobic exercise prescription, and ICU-level interventions. Cardiopulmonary is frequently underestimated; don't let it cost you.",
   },
   {
     title: "Other Body Systems (~20%)",
@@ -98,9 +98,9 @@ const NPTE_RESOURCES = [
 ] as const;
 
 const STRATEGY_STEPS = [
-  "Complete your Daily Sharpening every day — consistency beats cramming.",
+  "Complete your Daily Sharpening every day; consistency beats cramming.",
   "Use the NPTE Breakdown tab to understand what to prioritize.",
-  "Track your time on each session — aim to beat your previous best.",
+  "Track your time on each session; aim to beat your previous best.",
   "Review any missed questions before starting the next day.",
 ] as const;
 
@@ -211,13 +211,13 @@ export function BoardsTabs({
           <div className="card elev-sm" style={{ marginBottom: 14 }}>
             <div className="card-kicker">How the NPTE Is Structured</div>
             <p style={{ fontSize: 13, color: "var(--color-neutral-700)", lineHeight: 1.6, margin: "8px 0 0" }}>
-              The NPTE is a computer-based exam administered by FSBPT. It contains approximately 250 questions — 200
+              The NPTE is a computer-based exam administered by FSBPT. It contains approximately 250 questions, 200
               scored and 50 unscored pilot questions. You won&rsquo;t know which questions are pilot items, so treat
               every question as if it counts.
             </p>
             <p style={{ fontSize: 13, color: "var(--color-neutral-700)", lineHeight: 1.6, margin: "10px 0 0" }}>
               The exam is designed around 5 content systems that reflect the full scope of physical therapy practice.
-              Each system tests your ability to apply clinical reasoning — not just recall facts. Questions are
+              Each system tests your ability to apply clinical reasoning, not just recall facts. Questions are
               scenario-based, presenting patient cases where you must choose the best course of action.
             </p>
           </div>
@@ -266,7 +266,7 @@ export function BoardsTabs({
             <div className="card-title">All Questions Are Scenario-Based</div>
             <p style={{ fontSize: 13, color: "var(--color-neutral-700)", lineHeight: 1.6, margin: "8px 0 0" }}>
               There are no definition questions on the NPTE. Every question presents a patient case and requires you
-              to select the best intervention, diagnosis, or outcome measure. You must think like a clinician — not
+              to select the best intervention, diagnosis, or outcome measure. You must think like a clinician, not
               recall like a student.
             </p>
             <ul className="npte-bullet-list">
@@ -288,7 +288,7 @@ export function BoardsTabs({
           <div className="card elev-sm" style={{ marginBottom: 14 }}>
             <div className="card-title">Scoring</div>
             <p style={{ fontSize: 13, color: "var(--color-neutral-700)", lineHeight: 1.6, margin: "8px 0 0" }}>
-              The NPTE uses item response theory (IRT) — not a simple percentage. A scaled score of 600 or higher is
+              The NPTE uses item response theory (IRT), not a simple percentage. A scaled score of 600 or higher is
               required to pass, which generally corresponds to answering approximately 60-65% of scored questions
               correctly. Score scale runs from 200 to 800. Results released to your state board within 2-4 weeks. A
               diagnostic report is available if you do not pass.
@@ -322,13 +322,13 @@ export function BoardsTabs({
                 </a>
               ))}
             </div>
-            <p className="boards-resource-disclaimer">External links — opens FSBPT website</p>
+            <p className="boards-resource-disclaimer">External links: opens FSBPT website</p>
           </div>
 
           <div className="card elev-sm">
             <div className="card-title">Official NPTE Resources</div>
             <p className="boards-resource-disclaimer" style={{ margin: "4px 0 12px" }}>
-              Free official resources from FSBPT — the national board that runs the NPTE and coordinates PT licensure.
+              Free official resources from FSBPT, the national board that runs the NPTE and coordinates PT licensure.
             </p>
             <div className="boards-npte-resource-grid">
               {NPTE_RESOURCES.map((r) => (
@@ -341,7 +341,7 @@ export function BoardsTabs({
                 </a>
               ))}
             </div>
-            <p className="boards-resource-disclaimer">External links — opens FSBPT website</p>
+            <p className="boards-resource-disclaimer">External links: opens FSBPT website</p>
           </div>
 
           <div className="card elev-sm">

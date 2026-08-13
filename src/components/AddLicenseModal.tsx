@@ -60,7 +60,7 @@ export function AddLicenseModal({ open, accountName, onClose }: { open: boolean;
         attestationConfirmed: attestationChecked,
       });
       if (!result.ok) {
-        setError(result.error ?? "Something went wrong — try again.");
+        setError(result.error ?? "Something went wrong, try again.");
         return;
       }
       router.refresh();
@@ -86,7 +86,7 @@ export function AddLicenseModal({ open, accountName, onClose }: { open: boolean;
 
         {step === 1 && (
           <div className="field" style={{ marginTop: 14 }}>
-            <label htmlFor="license-state">Step 1 of 4 — Select your state</label>
+            <label htmlFor="license-state">Step 1 of 4, Select your state</label>
             <select className="input" id="license-state" value={state} onChange={(e) => setState(e.target.value)}>
               <option value="">Select a state…</option>
               {US_STATES.map((s) => (
@@ -100,7 +100,7 @@ export function AddLicenseModal({ open, accountName, onClose }: { open: boolean;
 
         {step === 2 && (
           <div className="field" style={{ marginTop: 14 }}>
-            <label htmlFor="license-number">Step 2 of 4 — Enter your license number exactly as it appears on your license</label>
+            <label htmlFor="license-number">Step 2 of 4, Enter your license number exactly as it appears on your license</label>
             <input
               className="input"
               id="license-number"
@@ -114,7 +114,7 @@ export function AddLicenseModal({ open, accountName, onClose }: { open: boolean;
 
         {step === 3 && (
           <div className="field" style={{ marginTop: 14 }}>
-            <label htmlFor="license-name">Step 3 of 4 — Enter your full name exactly as it appears on your license</label>
+            <label htmlFor="license-name">Step 3 of 4, Enter your full name exactly as it appears on your license</label>
             <input
               className="input"
               id="license-name"
@@ -134,7 +134,7 @@ export function AddLicenseModal({ open, accountName, onClose }: { open: boolean;
         {step === 4 && (
           <div style={{ marginTop: 14 }}>
             <div style={{ fontSize: 13, color: "var(--color-neutral-700)", marginBottom: 10 }}>
-              Step 4 of 4 — Confirm your credentials
+              Step 4 of 4, Confirm your credentials
             </div>
             <div className="license-modal-summary">
               <div className="license-modal-summary-row">

@@ -18,12 +18,12 @@ export const NUTRITION_SECTIONS: NutritionSection[] = [
   {
     title: "Macronutrients",
     body:
-      "Protein supports muscle repair and recovery — many active adults aim for a source of protein at most meals. Carbohydrates are the body's primary fuel for exercise, especially higher-intensity training. Fats support hormone production and longer-duration energy. A general balance of all three, rather than cutting out any one, tends to serve active people well.",
+      "Protein supports muscle repair and recovery; many active adults aim for a source of protein at most meals. Carbohydrates are the body's primary fuel for exercise, especially higher-intensity training. Fats support hormone production and longer-duration energy. A general balance of all three, rather than cutting out any one, tends to serve active people well.",
   },
   {
     title: "Pre- and post-workout nutrition",
     body:
-      "A light meal or snack pairing carbohydrates with a little protein roughly 1–3 hours before activity can help provide steady energy. Afterward, eating within a couple of hours — again pairing protein with carbohydrates — supports recovery. Staying hydrated before and after matters as much as what's eaten.",
+      "A light meal or snack pairing carbohydrates with a little protein roughly 1–3 hours before activity can help provide steady energy. Afterward, eating within a couple of hours, again pairing protein with carbohydrates, supports recovery. Staying hydrated before and after matters as much as what's eaten.",
   },
   {
     title: "Anti-inflammatory foods",
@@ -33,7 +33,7 @@ export const NUTRITION_SECTIONS: NutritionSection[] = [
   {
     title: "Recovery nutrition",
     body:
-      "On rest days, eating patterns don't need to change dramatically — continuing to eat regularly, with enough protein and micronutrient-rich foods, supports the same recovery processes as active days. Sleep plays a major role too, and a heavy meal too close to bedtime can interfere with sleep quality for some people.",
+      "On rest days, eating patterns don't need to change dramatically; continuing to eat regularly, with enough protein and micronutrient-rich foods, supports the same recovery processes as active days. Sleep plays a major role too, and a heavy meal too close to bedtime can interfere with sleep quality for some people.",
   },
 ];
 
@@ -48,7 +48,7 @@ export const NUTRITION_GOAL_TIPS: Record<WellnessGoal, string[]> = {
   "Build Strength": ["Protein at every meal", "Post-workout nutrition within 2 hours", "Consistent meal timing"],
   "Improve Flexibility": ["Anti-inflammatory food patterns", "Adequate hydration", "Omega-3 rich foods"],
   "Stress Reduction": [
-    "Magnesium-rich foods — leafy greens, nuts",
+    "Magnesium-rich foods: leafy greens, nuts",
     "Limiting caffeine after noon",
     "Regular meal timing for stable energy",
   ],
@@ -59,10 +59,10 @@ export const NUTRITION_GOAL_TIPS: Record<WellnessGoal, string[]> = {
  *  idea as lib/wordle-words.ts's word-of-the-day (one tip per day, not random on every
  *  load, same tip for every reader that day). */
 export const NUTRITION_DAILY_TIPS: string[] = [
-  "Pairing protein with carbs after a workout supports recovery — even a simple snack works.",
+  "Pairing protein with carbs after a workout supports recovery; even a simple snack works.",
   "A good rule of thumb: drink water before you feel thirsty, especially on active days.",
   "Colorful produce at most meals is a simple way to cover a wide range of nutrients.",
-  "Rest days still deserve regular meals — recovery is still active work for your body.",
+  "Rest days still deserve regular meals; recovery is still active work for your body.",
   "A light pre-workout snack with some carbohydrate can help provide steadier energy.",
   "Whole grains, nuts, and fatty fish are commonly grouped as anti-inflammatory choices.",
   "Spreading protein across meals, rather than one big serving, is a common general approach.",
@@ -72,8 +72,8 @@ export const NUTRITION_DAILY_TIPS: string[] = [
   "A palm-sized portion of protein at each meal is a simple general guideline for active adults.",
   "Whole grains provide sustained energy compared to refined carbohydrates for longer activities.",
   "Healthy fats from sources like nuts, olive oil, and fatty fish support hormone production.",
-  "Sleep quality affects appetite regulation — consistent sleep supports healthy eating patterns.",
-  "Meal timing matters — eating regularly throughout the day helps maintain steady energy levels.",
+  "Sleep quality affects appetite regulation; consistent sleep supports healthy eating patterns.",
+  "Meal timing matters; eating regularly throughout the day helps maintain steady energy levels.",
 ];
 
 export function nutritionTipForDate(dateKey: string): string {

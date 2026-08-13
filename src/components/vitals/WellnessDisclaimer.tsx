@@ -3,7 +3,7 @@
 export function WellnessDisclaimer() {
   return (
     <div className="vitals-disclaimer">
-      Limbic Vitals provides general wellness information only — not medical advice. Always consult your healthcare provider before
+      Limbic Vitals provides general wellness information only, not medical advice. Always consult your healthcare provider before
       starting any new exercise or nutrition program.
     </div>
   );

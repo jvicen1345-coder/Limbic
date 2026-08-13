@@ -79,7 +79,7 @@ export function TopicBrowser({ topics, followedTopics }: { topics: string[]; fol
           )}
           {matches.length > visible.length && (
             <p style={{ fontSize: 11, color: "var(--color-neutral-700)", margin: "8px 0 0" }}>
-              Showing {visible.length} of {matches.length} — keep typing to narrow it down.
+              Showing {visible.length} of {matches.length}, keep typing to narrow it down.
             </p>
           )}
         </div>

@@ -55,7 +55,7 @@ export function HealthTriviaGame({
   if (phase === "results") {
     const score = answers.reduce((sum, a, i) => sum + (a === questions[i].correctIndex ? 1 : 0), 0);
     const dateLabel = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-    const shareText = `Limbic Health Trivia — ${dateLabel}\nScore: ${score}/${TOTAL}\nlimbic.center/games/trivia`;
+    const shareText = `Limbic Health Trivia, ${dateLabel}\nScore: ${score}/${TOTAL}\nlimbic.center/games/trivia`;
 
     return (
       <div className="screen-pad trivia-page">

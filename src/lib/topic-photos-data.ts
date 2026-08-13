@@ -19,7 +19,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "general",
       "gait"
     ],
-    "credit": "Photo by: Petty Officer 2nd Class William Pittman — Public domain, via Wikimedia Commons",
+    "credit": "Photo by: Petty Officer 2nd Class William Pittman, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Physical_Therapy_Session_Aboard_the_USS_George_Washington_DVIDS387343.jpg"
   },
   {
@@ -31,7 +31,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "back pain",
       "low back"
     ],
-    "credit": "Shixart1985 — CC BY 2.0, via Wikimedia Commons",
+    "credit": "Shixart1985, CC BY 2.0, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Child_receiving_physical_therapy_treatment_for_back_pain_in_a_comfortable_clinic_setting_during_the_day.jpg"
   },
   {
@@ -42,7 +42,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "wrist",
       "geriatric"
     ],
-    "credit": "U.S. Air Force photo by Airman 1st Class Danielle Grannan — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Air Force photo by Airman 1st Class Danielle Grannan, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:US_Navy_090508-F-7885G-021_Staff_Sgt._Hugo_Reiner,_a_physical_therapy_craftsman_aboard_the_Military_Sealift_Command_hospital_ship_USNS_Comfort_(T-AH_20),_makes_a_wrist_brace_for_Teresa_De_la_Pena_during_a_Continuing_Promise_200.jpg"
   },
   {
@@ -54,7 +54,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "sports injury",
       "general"
     ],
-    "credit": "U.S. Air Force photo by Airman 1st Class Alystria Maurer — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Air Force photo by Airman 1st Class Alystria Maurer, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kinesio_taping.jpg"
   },
   {
@@ -65,7 +65,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "gait",
       "post-surgical"
     ],
-    "credit": "The U.S. Army — Public domain, via Wikimedia Commons",
+    "credit": "The U.S. Army, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Flickr_-_The_U.S._Army_-_Patient_at_Walter_Reed_test_next-generation_prosthesis.jpg"
   },
   {
@@ -76,7 +76,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "equipment",
       "gait"
     ],
-    "credit": "Staff Sgt. Stephenie Wade — Public domain, via Wikimedia Commons",
+    "credit": "Staff Sgt. Stephenie Wade, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Physical_therapy_clinic_receives_new_equipment_130103-F-ES880-430.jpg"
   },
   {
@@ -86,7 +86,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
     "tags": [
       "general"
     ],
-    "credit": "U.S. Army RHCE by Russell Toof — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Army RHCE by Russell Toof, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:On_the_frontlines_against_COVID-_Physical_Therapy_Assistant_(6559676).jpg"
   },
   {
@@ -97,7 +97,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "general",
       "knee"
     ],
-    "credit": "U.S. Navy photo by Seaman Apprentice Gavin Arnoldhendershot — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Navy photo by Seaman Apprentice Gavin Arnoldhendershot, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pacific_Partnership_2024-1-_Physical_Therapy_at_BNH_(8187681).jpg"
   },
   {
@@ -109,7 +109,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "gait",
       "sports"
     ],
-    "credit": "U.S. Navy photo by Mass Communication Specialist 2nd Class Brian P. Biller — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Navy photo by Mass Communication Specialist 2nd Class Brian P. Biller, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:US_Navy_070509-N-4772B-008_Robert_J._Jadgchew,_Naval_Special_Warfare_Group_One_athletic_trainer,_adjusts_the_underwater_treadmill_for_a_patient.jpg"
   },
   {
@@ -121,7 +121,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "sports",
       "balance"
     ],
-    "credit": "www.localfitness.com.au — CC BY-SA 3.0, via Wikimedia Commons",
+    "credit": "www.localfitness.com.au, CC BY-SA 3.0, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Personal_trainer_monitoring_a_client%27s_movement_during_a_fitball_exercise.JPG"
   },
   {
@@ -132,7 +132,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "gait",
       "geriatric"
     ],
-    "credit": "U.S. Air Force photo by Staff Sgt. Sadie Colbert — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Air Force photo by Staff Sgt. Sadie Colbert, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Meaning_beyond_movement-_JTF-Bravo_physical_therapist_provides_hope_to_Honduran_communities_(9352736).jpg"
   },
   {
@@ -143,7 +143,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "equipment",
       "general"
     ],
-    "credit": "U.S. Air Force photo by Airman Tabatha Chapman — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Air Force photo by Airman Tabatha Chapman, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Strength_in_numbers-_group_physical_therapy_(7652217).jpg"
   },
   {
@@ -155,7 +155,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "knee",
       "sports injury"
     ],
-    "credit": "Riccardo Pisi — CC BY-SA 4.0, via Wikimedia Commons",
+    "credit": "Riccardo Pisi, CC BY-SA 4.0, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dr._Jesus_Olmo_Isokinetic_ACL_Injury.jpg"
   },
   {
@@ -167,7 +167,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "vestibular",
       "equipment"
     ],
-    "credit": "Ashashyou — CC BY-SA 3.0, via Wikimedia Commons",
+    "credit": "Ashashyou, CC BY-SA 3.0, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Balance_training_board_2.jpg"
   },
   {
@@ -178,7 +178,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "pediatric",
       "balance"
     ],
-    "credit": "Biswarup Ganguly — CC BY 3.0, via Wikimedia Commons",
+    "credit": "Biswarup Ganguly, CC BY 3.0, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Yoga_Class_-_Nisana_Foundation_-_Chamrail_-_Howrah_2013-08-24_1989.JPG"
   },
   {
@@ -190,7 +190,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "sports injury",
       "post-surgical"
     ],
-    "credit": "U.S. Army photo by Michel Sauret — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Army photo by Michel Sauret, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Team_U_S_competes_in_wheelchair_basketball_during_2025_Invictus_Games_(8863262).jpg"
   },
   {
@@ -203,7 +203,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "gait",
       "post-surgical"
     ],
-    "credit": "U.S. Navy photo by Mass Communication Specialist 2nd Class Greg Mitchell — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Navy photo by Mass Communication Specialist 2nd Class Greg Mitchell, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:US_Navy_071015-N-5086M-002_U.S._Army_Spc._Saul_Martinez_trains_with_the_medicine_ball_while_standing_on_a_balancing_tool_and_using_the_hands-free_harness_walking_gait-training_device_during_a_therapy_session.jpg"
   },
   {
@@ -215,7 +215,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "gait",
       "post-surgical"
     ],
-    "credit": "U.S. Navy photo by Mass Communication Specialist 2nd Class Greg Mitchell — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Navy photo by Mass Communication Specialist 2nd Class Greg Mitchell, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:US_Navy_071015-N-5086M-202_Retired_Marine_Corps_Cpl._Timothy_Jeffers_walks_on_his_prosthetic_legs_while_using_the_hands-free_harness_walking_gait_training_device_during_a_therapy_session_in_the_new_Comprehensive_Combat_and_Com.jpg"
   },
   {
@@ -226,7 +226,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "gait",
       "sports"
     ],
-    "credit": "Staff Sgt. Anthony Hyatt — Public domain, via Wikimedia Commons",
+    "credit": "Staff Sgt. Anthony Hyatt, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gait_Analysis_Clinic_helps_improve_running,_prevent_injuries_130108-F-GE255-011.jpg"
   },
   {
@@ -237,7 +237,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "equipment",
       "balance"
     ],
-    "credit": "U.S. Air Force photo by Airman Tabatha Chapman — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Air Force photo by Airman Tabatha Chapman, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Strength_in_numbers-_group_physical_therapy_(7652210).jpg"
   },
   {
@@ -248,7 +248,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "shoulder",
       "rotator cuff"
     ],
-    "credit": "U.S. Navy photo by Mass Communication Specialist Seaman Apprentice Robert Winn — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Navy photo by Mass Communication Specialist Seaman Apprentice Robert Winn, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:US_Navy_091003-N-8960W-011_Gunner%27s_Mate_2nd_Class_Patrick_Cornwell_undergoes_an_exam_by_Lt._Cristi_Zohlen_to_document_his_shoulder_pain_in_the_physical_therapy_clinic_aboard_the_aircraft_carrier_USS_Nimitz_(CVN_68).jpg"
   },
   {
@@ -259,7 +259,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "neck",
       "spine"
     ],
-    "credit": "Kristopher Radder — Public domain, via Wikimedia Commons",
+    "credit": "Kristopher Radder, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Canadian_Army_Capt._Natalie_Royer,_top,_helps_relieve_a_pinched_nerve_in_the_neck_of_U.S._Navy_Cmdr._Ingrid_Byles_during_a_physical_therapy_treatment_aboard_Military_Sealift_Command_hospital_ship_USNS_Mercy_120602-O-ZZ999-001.jpg"
   },
   {
@@ -269,7 +269,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
     "tags": [
       "general"
     ],
-    "credit": "Staff Sgt. Michael Carrigan — Public domain, via Wikimedia Commons",
+    "credit": "Staff Sgt. Michael Carrigan, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Physical_therapists_make_every_visit_count_130309-A-RB400-024.jpg"
   },
   {
@@ -281,7 +281,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "spine",
       "general"
     ],
-    "credit": "Spc. Anthony Zane — Public domain, via Wikimedia Commons",
+    "credit": "Spc. Anthony Zane, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Physical_therapy_taking_away_soldiers%E2%80%99_pain_111008-A-IX584-002.jpg"
   },
   {
@@ -293,7 +293,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "equipment",
       "vestibular"
     ],
-    "credit": "U.S. Navy photo by Machinist's Mate 3rd Class Juan Pinalez — Public domain, via Wikimedia Commons",
+    "credit": "U.S. Navy photo by Machinist's Mate 3rd Class Juan Pinalez, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:US_Navy_090702-N-1783P-003_Hospital_Corpsman_1st_Class_Guy_Duke,_left,_and_Electronics_Technician_3rd_Class_Joshua_Benedict_demonstrate_how_the_Physical_therapy_Department_at_Naval_Health_Clinic,_Charleston_use_the_Wii_Fit%27s_yoga.jpg"
   },
   {
@@ -304,7 +304,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "equipment",
       "knee"
     ],
-    "credit": "Airman 1st Class Christine Halan — Public domain, via Wikimedia Commons",
+    "credit": "Airman 1st Class Christine Halan, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:355th_MDOS_130626-F-WZ808-005.jpg"
   },
   {
@@ -315,7 +315,7 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
       "knee",
       "post-surgical"
     ],
-    "credit": "Marcy Sanchez — Public domain, via Wikimedia Commons",
+    "credit": "Marcy Sanchez, Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:LRMC_staff_targets_to_improve_relationships,_patient_care_with_Ukrainian_counterparts_(5931161).jpg"
   }
 ];

@@ -6,7 +6,7 @@ import { SignInForm } from "@/components/SignInForm";
 const GOOGLE_ERROR_MESSAGES: Record<string, string> = {
   google_not_configured: "Google sign-in isn't set up yet.",
   google_denied: "Sign-in with Google was canceled.",
-  google_state_mismatch: "That Google sign-in link expired — please try again.",
+  google_state_mismatch: "That Google sign-in link expired, please try again.",
   google_failed: "Something went wrong signing in with Google. Please try again.",
 };
 
@@ -41,7 +41,7 @@ export default async function SignInPage({
       }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size brand lockup, not a responsive content image */}
-      <img src="/logo-lockup.svg" alt="Limbic — Curated Research" width={194} height={70} />
+      <img src="/logo-lockup.svg" alt="Limbic, Curated Research" width={194} height={70} />
       <p
         style={{
           fontSize: 13,

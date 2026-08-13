@@ -317,7 +317,7 @@ export function HomeFeed({
             <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
               {filtered.length === 0
                 ? "No stories in this category yet."
-                : "Nothing with a picture in this category yet — try refreshing."}
+                : "Nothing with a picture in this category yet, try refreshing."}
             </p>
           )}
 

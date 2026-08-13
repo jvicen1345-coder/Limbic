@@ -25,7 +25,7 @@ export function HeroFeed({ articles }: { articles: DecoratedArticle[] }) {
 
   return (
     <div>
-      {/* Keyed by article id so rotating swaps remount the card — otherwise SaveButton's
+      {/* Keyed by article id so rotating swaps remount the card, otherwise SaveButton's
        *  own optimistic-saved state (see SaveButton.tsx) would carry over from whichever
        *  article previously occupied this slot. */}
       <HeroArticleCard key={article.id} article={article} />
