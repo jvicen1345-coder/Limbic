@@ -89,7 +89,7 @@ export function AtriumProgressChart({
                     }}
                   />
                 </div>
-                <span className="atrium-progress-domain-frac">{d.total > 0 ? `${d.correct}/${d.total}` : "—"}</span>
+                <span className="atrium-progress-domain-frac">{d.total > 0 ? `${d.correct}/${d.total}` : "Not yet"}</span>
               </div>
             ))}
           </div>
