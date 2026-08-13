@@ -207,7 +207,7 @@ export function LimbicCalendarWidgetClient({
         </div>
       )}
 
-      <div style={{ borderTop: "1px solid var(--color-neutral-200)", marginTop: 10, paddingTop: 8, textAlign: "right" }}>
+      <div style={{ borderTop: "1px solid var(--color-neutral-200)", marginTop: 12, paddingTop: 10, textAlign: "right" }}>
         <Link href="/calendar" style={{ fontSize: 10.5, color: "var(--color-accent-700)" }}>
           → View full calendar
         </Link>
