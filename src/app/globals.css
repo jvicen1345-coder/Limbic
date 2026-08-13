@@ -1195,7 +1195,10 @@ html[data-theme="dark"] .nav-founding-link-active {
 .home-aside-scroll {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  /* Was 14px — too tight between the Calendar card's own "View full calendar" footer
+     link and the Nexus card right below it, the two read as crowded together rather than
+     as two distinct cards. */
+  gap: 22px;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
 }
