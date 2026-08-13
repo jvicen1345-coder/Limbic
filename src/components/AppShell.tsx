@@ -350,6 +350,11 @@ export function AppShell({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLElement>(null);
   const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount };
+  // Extends the Atrium's warm palette out to the surrounding chrome (sidebar/topbar/
+  // drawer/bottomnav) whenever any Atrium route is active — see .app-root--atrium in
+  // globals.css for why that chrome can't just read the page's own --atrium-* tokens.
+  const pathname = usePathname();
+  const isAtrium = pathname.startsWith("/student");
 
   // Restores scroll position on reopen by re-centering the active link instead — the drawer
   // is unmounted on close (see the drawerOpen && (...) below), which resets its scrollTop to
@@ -366,7 +371,7 @@ export function AppShell({
   }, [drawerOpen]);
 
   return (
-    <div className="app-root">
+    <div className={`app-root${isAtrium ? " app-root--atrium" : ""}`}>
       <nav className="app-sidebar">
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
           <LogoIcon size={22} />
