@@ -4424,6 +4424,137 @@ html[data-theme="dark"] .app-root--atrium {
   .atrium-dashboard-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
+/* — Limbic Student Specialty Tracks (/student/specialties/*) — six specialty hubs living
+   inside .atrium-page's existing warm palette (see --atrium-* above), not a new palette of
+   its own. Each specialty gets one fixed accent color via a --specialty-accent-{slug}
+   modifier class (same pattern as .atrium-path-card--{accent} above) applied once on the
+   page root, so every child rule below just reads var(--specialty-accent) rather than
+   threading a color prop through every component. Musculoskeletal reuses the app's own
+   brand blue (var(--color-accent)); the other five are literal hexes given by spec.
+   Tab bar and "Coming soon" badge reuse .boards-tabs/.boards-tab/.boards-badge-soon
+   directly from Limbic Boards rather than inventing new ones, per "match existing student
+   section styling exactly." */
+.specialty-accent-musculoskeletal { --specialty-accent: var(--color-accent); }
+.specialty-accent-neurological { --specialty-accent: #7c3aed; }
+.specialty-accent-cardiopulmonary { --specialty-accent: #dc2626; }
+.specialty-accent-pediatrics { --specialty-accent: #16a34a; }
+.specialty-accent-geriatrics { --specialty-accent: #c9853a; }
+.specialty-accent-sports { --specialty-accent: #ea580c; }
+
+.specialty-breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 12.5px; color: var(--color-neutral-700); margin-bottom: 14px; }
+.specialty-breadcrumb-item { display: inline-flex; align-items: center; gap: 4px; }
+.specialty-breadcrumb a { color: var(--color-neutral-700); text-decoration: none; }
+.specialty-breadcrumb a:hover { color: var(--atrium-tint); text-decoration: underline; }
+.specialty-breadcrumb-current { color: var(--color-text); font-weight: 600; }
+.specialty-breadcrumb-sep { color: var(--color-neutral-500); }
+
+.specialty-header {
+  border-left: 4px solid var(--specialty-accent, var(--atrium-tint));
+  padding-left: 16px;
+  margin-bottom: 20px;
+}
+.specialty-header-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; margin: 0 0 6px; }
+.specialty-header-desc { font-size: 14px; color: var(--color-neutral-700); max-width: 640px; line-height: 1.5; margin: 0; }
+
+.specialty-overview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; align-items: start; }
+.specialty-overview-item { margin-top: 10px; }
+.specialty-overview-item:first-child { margin-top: 10px; }
+.specialty-overview-item-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--specialty-accent, var(--color-accent)); margin-bottom: 4px; }
+.specialty-overview-item-text { font-size: 13px; line-height: 1.55; color: var(--color-text); margin: 0; }
+
+.specialty-pearl-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.specialty-pearl-item {
+  border-left: 3px solid var(--color-warn);
+  padding: 8px 14px;
+  background: color-mix(in srgb, var(--color-warn) 8%, transparent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+.specialty-pearl-item strong { display: block; font-size: 13.5px; margin-bottom: 3px; }
+.specialty-pearl-item p { margin: 0; font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; }
+
+/* Geriatrics-only bridge card into /connexion — gold rather than the specialty's own amber
+   accent, matching The Connexion Method's own brand color (var(--color-migration-gold)),
+   since this card represents that program, not the Geriatrics track itself. */
+.specialty-connexion-card {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-migration-gold) 10%, var(--color-card-surface));
+  border: 1px solid color-mix(in srgb, var(--color-migration-gold) 30%, transparent);
+}
+.specialty-connexion-card h3 { margin: 0 0 6px; font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; color: var(--color-migration-gold); }
+.specialty-connexion-card p { margin: 0 0 12px; font-size: 13px; line-height: 1.55; color: var(--color-text); }
+
+.specialty-conditions-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.specialty-condition-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.specialty-accordion-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.specialty-accordion { background: var(--color-neutral-100); border-radius: var(--radius-md); padding: 10px 14px; }
+.specialty-accordion summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 13px; }
+.specialty-accordion summary::-webkit-details-marker { display: none; }
+.specialty-accordion summary::after { content: "+"; font-size: 16px; font-weight: 400; color: var(--color-neutral-700); flex-shrink: 0; margin-left: 10px; }
+.specialty-accordion[open] summary::after { content: "\2212"; }
+.specialty-accordion p { margin: 8px 0 0; font-size: 12.5px; line-height: 1.55; color: var(--color-neutral-700); }
+
+.specialty-table-wrap { overflow-x: auto; margin-top: 10px; }
+.specialty-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.specialty-table th { text-align: left; padding: 8px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); border-bottom: 1px solid var(--color-divider); white-space: nowrap; }
+.specialty-table td { padding: 10px; border-bottom: 1px solid var(--color-divider); color: var(--color-text); }
+.specialty-table tr:last-child td { border-bottom: none; }
+.specialty-table-note { font-size: 11.5px; color: var(--color-neutral-700); margin: 8px 0 0; font-style: italic; }
+
+.specialty-question-card { padding: 14px; border-radius: var(--radius-md); background: var(--color-neutral-100); border: 1px solid var(--color-neutral-200); opacity: 0.65; pointer-events: none; margin-bottom: 10px; }
+.specialty-question-card:last-child { margin-bottom: 0; }
+.specialty-question-text { font-size: 13.5px; font-weight: 600; margin: 0 0 10px; color: var(--color-neutral-700); }
+.specialty-question-options { display: flex; flex-direction: column; gap: 6px; }
+.specialty-question-option { padding: 8px 10px; border-radius: var(--radius-sm); background: var(--color-neutral-200); font-size: 12.5px; color: var(--color-neutral-600); }
+
+.specialty-explore-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--specialty-accent, var(--atrium-tint)) 14%, transparent);
+  color: var(--specialty-accent, var(--atrium-tint));
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+.specialty-explore-btn:hover { background: color-mix(in srgb, var(--specialty-accent, var(--atrium-tint)) 24%, transparent); text-decoration: none; }
+
+.specialty-sport-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 10px; }
+.specialty-sport-injuries { margin: 8px 0 10px; padding-left: 18px; font-size: 12.5px; line-height: 1.6; color: var(--color-text); }
+.specialty-sport-focus { font-size: 12px; color: var(--color-neutral-700); margin: 0 0 10px; line-height: 1.5; }
+
+/* Hub page (/student/specialties) — the six-card grid pointing into each track. Same
+   surface/border tokens as .atrium-path-card, but a left-border accent (not a top one) and
+   its own explicit "Explore" button rather than a whole-card link, since that button is
+   spec'd as its own element rather than the entire card being clickable. */
+.specialty-hub-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+.specialty-hub-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-left: 4px solid var(--specialty-accent, var(--atrium-tint));
+}
+.specialty-hub-card-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; margin: 0; }
+.specialty-hub-card-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; flex: 1; }
+.specialty-hub-card-meta { font-size: 11.5px; color: var(--color-neutral-600); text-transform: uppercase; letter-spacing: 0.03em; }
+
+@media (max-width: 799px) {
+  .specialty-overview-grid { grid-template-columns: minmax(0, 1fr); }
+  .specialty-conditions-grid { grid-template-columns: minmax(0, 1fr); }
+  .specialty-sport-grid { grid-template-columns: minmax(0, 1fr); }
+  .specialty-hub-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
 /* — /founding-funders: a deliberately different visual language from the rest of the
    (dashboard-shaped) app — a letter, not a product screen. Same "owns its own colors"
    approach as .agent-page above, except this one still has to answer the light/dark
