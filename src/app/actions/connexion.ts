@@ -10,7 +10,7 @@ export interface SubmitVisitRequestInput {
   email: string;
   preferredDate?: string;
   preferredTime?: string;
-  message?: string;
+  visitReason?: string;
 }
 
 export interface SubmitVisitRequestResult {
@@ -21,7 +21,7 @@ export interface SubmitVisitRequestResult {
 /** ConnexionScheduleSection's "Request Your Visit" submit — the scheduling form embedded on
  *  /connexion and /connexion/delia (/connexion/afit and /connexion/safety-score only link
  *  out to /connexion's copy of the form, neither embeds its own). Only name/phone/email are
- *  required; preferredDate/preferredTime/message are all optional, matching the form itself. */
+ *  required; preferredDate/preferredTime/visitReason are all optional, matching the form itself. */
 export async function submitVisitRequest(input: SubmitVisitRequestInput): Promise<SubmitVisitRequestResult> {
   const name = input.name.trim();
   const phone = input.phone.trim();
@@ -38,7 +38,7 @@ export async function submitVisitRequest(input: SubmitVisitRequestInput): Promis
       email,
       preferredDate: input.preferredDate ? new Date(`${input.preferredDate}T00:00:00`) : null,
       preferredTime: input.preferredTime || null,
-      message: input.message?.trim() || null,
+      visitReason: input.visitReason || null,
     },
   });
 

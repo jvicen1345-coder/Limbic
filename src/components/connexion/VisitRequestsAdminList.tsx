@@ -11,7 +11,7 @@ export interface VisitRequestRow {
   email: string;
   preferredDate: string | null;
   preferredTime: string | null;
-  message: string | null;
+  visitReason: string | null;
   status: string;
   createdAt: string;
 }
@@ -50,7 +50,7 @@ export function VisitRequestsAdminList({ rows }: { rows: VisitRequestRow[] }) {
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Phone</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Email</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Preferred</th>
-            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Message</th>
+            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Reason for Visit</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Submitted</th>
             <th style={{ padding: "4px 0 4px 10px", fontWeight: 600 }}>Status</th>
           </tr>
@@ -67,7 +67,7 @@ export function VisitRequestsAdminList({ rows }: { rows: VisitRequestRow[] }) {
                   : "N/A"}
                 {r.preferredTime ? ` · ${r.preferredTime}` : ""}
               </td>
-              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)", maxWidth: 220 }}>{r.message ?? "N/A"}</td>
+              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)", maxWidth: 220 }}>{r.visitReason ?? "N/A"}</td>
               <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
                 {new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </td>
