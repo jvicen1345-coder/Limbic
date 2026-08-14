@@ -7,6 +7,10 @@
  * placeholders for any specialty or condition where these fields are still undefined.
  * Special test sensitivity/specificity figures are approximate, commonly-cited teaching
  * values that vary across studies — flag for clinician review before treating as exact.
+ * Outcome-measure cutoffs/MCIDs (Berg, TUG, DGI, Tinetti, SPPB, ABC Scale, LEFS, DASH, FIM)
+ * are cross-checked against Shirley Ryan AbilityLab's Rehabilitation Measures Database
+ * (sralab.org/rehabilitation-measures) — still teaching-level approximations, not a
+ * substitute for the primary literature cited on each measure's own RMD page.
  */
 
 export type SpecialtySlug = "musculoskeletal" | "neurological" | "cardiopulmonary" | "pediatrics" | "geriatrics" | "sports";
@@ -191,8 +195,8 @@ export const SPECIALTIES: Specialty[] = [
       { test: "Slump Test", assesses: "Neural tension / lumbar radiculopathy", sensitivity: "~84%", specificity: "~83%" },
     ],
     outcomeMeasures: [
-      { measure: "Lower Extremity Functional Scale (LEFS)", assesses: "Functional limitation from lower-extremity conditions", population: "General adult LE population" },
-      { measure: "DASH", assesses: "Upper-extremity function and disability", population: "Adult UE conditions" },
+      { measure: "Lower Extremity Functional Scale (LEFS)", assesses: "Functional limitation from lower-extremity conditions (MCID ≈9 points)", population: "General adult LE population" },
+      { measure: "DASH", assesses: "Upper-extremity function and disability (MCID commonly cited in the 8–16 point range, varies by population)", population: "Adult UE conditions" },
       { measure: "Oswestry Disability Index (ODI)", assesses: "Low back pain-related disability", population: "Adult lumbar spine population" },
       { measure: "Knee Injury and Osteoarthritis Outcome Score (KOOS)", assesses: "Knee-specific symptoms and function", population: "Post-ACL reconstruction and knee OA" },
       { measure: "Patient-Specific Functional Scale (PSFS)", assesses: "Individualized functional limitation, patient-defined", population: "General MSK population" },
@@ -325,11 +329,11 @@ export const SPECIALTIES: Specialty[] = [
       { test: "Trunk Control Test", assesses: "Trunk control and motor recovery after stroke; correlates with functional prognosis" },
     ],
     outcomeMeasures: [
-      { measure: "Berg Balance Scale", assesses: "Static and dynamic balance", population: "General neuro and older adult population" },
+      { measure: "Berg Balance Scale", assesses: "Static and dynamic balance (≤45/56 is a commonly cited fall-risk cutoff; MCID ≈3 points)", population: "General neuro and older adult population" },
       { measure: "NIH Stroke Scale (NIHSS)", assesses: "Stroke severity", population: "Acute stroke" },
-      { measure: "Functional Independence Measure (FIM)", assesses: "Functional independence in ADLs and mobility", population: "Inpatient rehabilitation population" },
-      { measure: "Modified Ashworth Scale", assesses: "Spasticity grading", population: "Upper motor neuron conditions (stroke, SCI, MS, CP)" },
-      { measure: "Dynamic Gait Index (DGI)", assesses: "Gait-related balance and fall risk", population: "Neuro and older adult populations" },
+      { measure: "Functional Independence Measure (FIM)", assesses: "Functional independence across 18 items (13 motor, 5 cognitive), each scored 1–7 (total range 18–126)", population: "Inpatient rehabilitation population" },
+      { measure: "Modified Ashworth Scale", assesses: "Spasticity grading via resistance to a quick passive stretch (0–4 ordinal scale)", population: "Upper motor neuron conditions (stroke, SCI, MS, CP)" },
+      { measure: "Dynamic Gait Index (DGI)", assesses: "Gait-related balance and fall risk (≤22 of 24 is a commonly cited fall-risk cutoff)", population: "Neuro and older adult populations" },
     ],
     documentationPearls: [
       "Report tone with the Modified Ashworth Scale grade, not just 'increased tone,' so progress is measurable across visits.",
@@ -707,8 +711,8 @@ export const SPECIALTIES: Specialty[] = [
     },
     pearls: [
       {
-        title: "A TUG over 12 seconds flags fall risk",
-        body: "The Timed Up and Go test taking more than about 12 seconds is a widely used cutoff associated with increased fall risk in community-dwelling older adults, though it should be interpreted alongside other findings, not in isolation.",
+        title: "A TUG over 12–13.5 seconds flags fall risk — but isn't precise alone",
+        body: "The Timed Up and Go taking more than roughly 12–13.5 seconds is a widely used fall-risk cutoff, but a pooled meta-analysis in community-dwelling older adults found it's more specific than sensitive (~74% specificity vs. ~31% sensitivity at the 13.5-second cutoff) — a normal TUG doesn't rule out fall risk, so pair it with other findings rather than using it in isolation.",
       },
       {
         title: "Falls are rarely one cause",
@@ -728,18 +732,18 @@ export const SPECIALTIES: Specialty[] = [
       },
     ],
     specialTests: [
-      { test: "Timed Up and Go (TUG)", assesses: "Functional mobility and fall risk", sensitivity: "~87%", specificity: "~87%" },
+      { test: "Timed Up and Go (TUG)", assesses: "Functional mobility and fall risk (≥13.5 sec is a widely used cutoff)", sensitivity: "~31%", specificity: "~74%" },
       { test: "30-Second Chair Stand Test", assesses: "Lower-extremity strength and fall risk" },
       { test: "Functional Reach Test", assesses: "Dynamic standing balance / fall risk" },
       { test: "5-Times Sit-to-Stand Test", assesses: "Lower-extremity power and fall risk" },
       { test: "Mini-Mental State Exam (MMSE)", assesses: "Cognitive screening relevant to safety awareness and exercise carryover" },
     ],
     outcomeMeasures: [
-      { measure: "Berg Balance Scale", assesses: "Static and dynamic balance", population: "General older adult population" },
-      { measure: "Timed Up and Go", assesses: "Functional mobility and fall risk", population: "General older adult population" },
-      { measure: "Tinetti Performance-Oriented Mobility Assessment (POMA)", assesses: "Gait and balance-related fall risk", population: "General older adult population" },
-      { measure: "Short Physical Performance Battery (SPPB)", assesses: "Lower-extremity function", population: "Community-dwelling older adults" },
-      { measure: "Activities-specific Balance Confidence (ABC) Scale", assesses: "Fear of falling / balance confidence", population: "General older adult population" },
+      { measure: "Berg Balance Scale", assesses: "Static and dynamic balance (≤45/56 is a commonly cited fall-risk cutoff; MCID ≈3 points)", population: "General older adult population" },
+      { measure: "Timed Up and Go", assesses: "Functional mobility and fall risk (≥12–13.5 sec cutoff; specificity consistently outperforms sensitivity)", population: "General older adult population" },
+      { measure: "Tinetti Performance-Oriented Mobility Assessment (POMA)", assesses: "Gait and balance-related fall risk (of 28 total points: ≤18 high risk, 19–23 moderate, ≥24 low risk)", population: "General older adult population" },
+      { measure: "Short Physical Performance Battery (SPPB)", assesses: "Lower-extremity function (≤8/12 is a commonly cited cutoff for reduced physical performance)", population: "Community-dwelling older adults" },
+      { measure: "Activities-specific Balance Confidence (ABC) Scale", assesses: "Fear of falling / balance confidence (<67% is a commonly cited fall-risk cutoff)", population: "General older adult population" },
     ],
     documentationPearls: [
       "Document fall history (number, circumstances, injuries) at every eval — it's one of the strongest predictors of future falls and directly shapes the plan of care.",
