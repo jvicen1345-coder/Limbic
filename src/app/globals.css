@@ -6364,3 +6364,249 @@ select.connexion-visit-input { color-scheme: dark; }
      the full profile content column. */
   .license-verification-card { max-width: 560px; }
 }
+
+/* ============================================================================
+   LimbicPRO Clinical Toolbox — shared across /pro/calculators, /pro/decision-
+   rules, /pro/red-flags, /pro/special-tests, /pro/lab-values, /pro/medications,
+   /pro/documentation, /pro/ce-tracker, /pro/guidelines, and the /pro overview
+   tools grid. One shared vocabulary (.pro-*) so all nine new tool pages read as
+   one coherent product surface rather than nine one-off layouts, following the
+   same .card/.card-kicker/.tag/--color-accent tokens the rest of the app uses.
+   ============================================================================ */
+
+/* — Overview hub tools grid — */
+.pro-tools-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin: 18px 0; }
+@media (min-width: 860px) {
+  .pro-tools-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.pro-tool-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border-left: 3px solid var(--color-accent);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.pro-tool-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); text-decoration: none; }
+.pro-tool-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15.5px; }
+.pro-tool-card-desc { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }
+.pro-tool-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; font-size: 11.5px; color: var(--color-neutral-700); }
+.pro-tool-card-arrow { display: inline-flex; align-items: center; gap: 3px; color: var(--color-accent); font-weight: 600; }
+
+/* — PRO gate / locked state — shared by every /pro/* tool page (see
+   components/pro/ProGate.tsx). Same shell as .wellness-agent-paywall
+   (Limbic Agent's own paywall) so a locked clinical tool reads consistently
+   with every other paid-feature gate in the app rather than inventing a new
+   pattern. */
+.pro-locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  max-width: 480px;
+  margin: 24px auto 0;
+}
+.pro-locked-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  width: 100%;
+}
+.pro-locked-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text);
+}
+.pro-locked-list li svg { flex-shrink: 0; margin-top: 2px; color: var(--color-accent); }
+
+/* — Disclaimer card — amber left border/tint, reused by /pro/decision-rules,
+   /pro/red-flags, /pro/lab-values, /pro/medications. Theme-adaptive amber
+   token (unlike the Connexion HIPAA disclaimer's fixed-dark-card literal
+   hex) since these PRO pages sit on the normal themed surface. */
+.pro-disclaimer {
+  border-left: 3px solid var(--color-migration-amber);
+  background: color-mix(in srgb, var(--color-migration-amber) 10%, var(--color-surface));
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-text);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  margin: 0 0 16px;
+}
+
+/* — Generic 2-column responsive card grid — calculators, decision rules,
+   special tests, medications, documentation, guidelines all reuse this same
+   grid shape, single column under 860px. */
+.pro-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+@media (min-width: 860px) {
+  .pro-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* — Calculator cards (/pro/calculators) — */
+.pro-calc-card { display: flex; flex-direction: column; gap: 2px; }
+.pro-calc-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; }
+.pro-calc-fullname { font-size: 11.5px; color: var(--color-neutral-700); margin: 0 0 6px; }
+.pro-calc-desc { font-size: 13px; color: var(--color-text); margin: 0; line-height: 1.5; }
+.pro-calc-meta { font-size: 11.5px; color: var(--color-neutral-700); margin: 6px 0 10px; }
+.pro-calc-result {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+}
+.pro-calc-result-value { font-family: var(--font-heading); font-size: 22px; font-weight: var(--font-heading-weight); }
+.pro-calc-result-label { font-size: 12.5px; margin-top: 2px; }
+.pro-calc-toggle-btn {
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-accent);
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 10px;
+}
+.pro-calc-toggle-btn:hover { background: var(--color-accent-100); }
+.pro-calc-body { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-divider); }
+
+/* Scoring item row — Berg/LEFS/DASH/Oswestry/FGA item lists, one row per
+   scale item: description on the left, a 0-4/0-5/etc select on the right. */
+.pro-item-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-divider); }
+.pro-item-row:last-child { border-bottom: none; }
+.pro-item-row-label { font-size: 13px; color: var(--color-text); flex: 1; }
+.pro-item-row-select { flex-shrink: 0; width: auto; min-width: 128px; }
+
+/* NPRS-style slider */
+.pro-slider-row { display: flex; flex-direction: column; gap: 8px; }
+.pro-slider { width: 100%; accent-color: var(--color-accent); cursor: pointer; }
+.pro-slider-scale { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--color-neutral-700); }
+
+/* — Accordions — decision rules, red flags, medications, guidelines all use
+   native <details>/<summary>, styled to match .card. */
+.pro-accordion { display: flex; flex-direction: column; gap: 12px; }
+.pro-accordion-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15.5px;
+}
+.pro-accordion-summary::-webkit-details-marker { display: none; }
+.pro-accordion-summary-sub { font-size: 12.5px; color: var(--color-neutral-700); font-family: var(--font-body); font-weight: 400; margin-top: 3px; }
+.pro-accordion-chevron { flex-shrink: 0; transition: transform 150ms ease; color: var(--color-accent); }
+details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotate(90deg); }
+.pro-accordion-content { padding-top: 14px; margin-top: 14px; border-top: 1px solid var(--color-divider); display: flex; flex-direction: column; gap: 12px; }
+
+/* Checkbox criterion row — Ottawa/Canadian C-Spine/NEXUS/red-flag checklists */
+.pro-check-row { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--color-text); padding: 6px 0; cursor: pointer; }
+.pro-check-row input { margin-top: 2px; flex-shrink: 0; }
+.pro-check-row.pro-check-row--flagged { color: #dc2626; font-weight: 600; }
+
+.pro-result-banner {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.pro-result-banner--positive { background: color-mix(in srgb, #dc2626 14%, var(--color-surface)); color: #dc2626; }
+.pro-result-banner--negative { background: color-mix(in srgb, var(--color-success) 14%, var(--color-surface)); color: var(--color-success); }
+.pro-result-banner--neutral { background: var(--color-accent-100); color: var(--color-accent-800); }
+
+/* Large emergency-referral banner — Cauda Equina red flags */
+.pro-alert-critical {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #dc2626 16%, var(--color-surface));
+  border: 1px solid #dc2626;
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* — Filter bars — special tests / guidelines / lab values category tabs */
+.pro-filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; }
+.pro-filter-chip {
+  flex-shrink: 0;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  border-radius: 999px;
+  padding: 7px 15px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pro-filter-chip.active { background: var(--color-accent); color: var(--color-bg); border-color: var(--color-accent); }
+
+/* — Reference tables — lab values, mostly */
+.pro-table-wrap { overflow-x: auto; margin-bottom: 8px; }
+.pro-table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 640px; }
+.pro-table th { text-align: left; padding: 8px 10px; font-weight: 600; color: var(--color-neutral-700); border-bottom: 1px solid var(--color-divider); white-space: nowrap; }
+.pro-table td { padding: 10px; border-bottom: 1px solid var(--color-divider); vertical-align: top; }
+.pro-table tr:last-child td { border-bottom: none; }
+.pro-table td.pro-table-hold { color: #dc2626; font-weight: 600; }
+
+/* — Category count badge (red-flag positive counters) — */
+.pro-flag-count { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--color-neutral-700); }
+.pro-flag-count.pro-flag-count--active { color: #dc2626; }
+
+/* — Documentation template cards — */
+.pro-template-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.pro-template-body {
+  white-space: pre-wrap;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  line-height: 1.6;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-top: 10px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+/* — CE Tracker — */
+.pro-ce-progress-wrap { display: flex; flex-direction: column; gap: 8px; }
+.pro-ce-progress-bar { height: 12px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
+.pro-ce-progress-fill { height: 100%; border-radius: 999px; background: var(--color-accent); transition: width 300ms ease; }
+.pro-ce-stats-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 14px 0; }
+.pro-ce-stat { display: flex; flex-direction: column; gap: 2px; }
+.pro-ce-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; }
+.pro-ce-stat-label { font-size: 11.5px; color: var(--color-neutral-700); }
+@media (max-width: 560px) {
+  .pro-ce-stats-row { grid-template-columns: minmax(0, 1fr); }
+}
+.pro-ce-log-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 70px 110px 32px; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--color-divider); font-size: 12.5px; }
+.pro-ce-log-row:last-child { border-bottom: none; }
+@media (max-width: 700px) {
+  .pro-table-wrap .pro-ce-log-row { min-width: 620px; }
+}
+.pro-calc-modal { width: 620px; max-height: 85vh; }

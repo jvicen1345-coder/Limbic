@@ -212,6 +212,15 @@ model User {
   calendarEventIds    Json @default("[]")
   reminderPreferences Json @default("[]")
 
+  // LimbicPRO CE Hours Tracker (/pro/ce-tracker) — separate from ceuDeadline/ceCategories
+  // above, which only drive the read-only renewal summary on Profile. These back the
+  // tracker's own license-info card (state/expiry/cycle/required hours), with the actual
+  // per-course log entries in the CELog relation below.
+  ceState         String?
+  ceLicenseExpiry DateTime?
+  ceRenewalCycle  Int? // years
+  ceTotalRequired Float?
+
   savedArticles       SavedArticle[]
   savedWellness       SavedWellness[]
   savedClips          SavedClip[]
@@ -224,6 +233,7 @@ model User {
   vitalsProfile       VitalsProfile?
   vitalsLogs          VitalsLog[]
   metricsLogs         MetricsLog[]
+  ceLogs              CELog[]
   foundingFunder      FoundingFunder?
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
@@ -408,6 +418,24 @@ model MetricsLog {
   value    Float
   notes    String?
   loggedAt DateTime @default(now())
+}
+
+// A single logged CE course entry for LimbicPRO's CE Hours Tracker (/pro/ce-tracker) —
+// one row per course, added via addCELog/deleted via deleteCELog (see
+// app/actions/pro-toolbox.ts). Hours logged toward renewal is the sum of these rows;
+// license/cycle/required-hours preferences live on User (ceState/ceLicenseExpiry/
+// ceRenewalCycle/ceTotalRequired above), not here, since they're one value per user rather
+// than one per entry.
+model CELog {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseName  String
+  provider    String?
+  completedAt DateTime
+  hours       Float
+  category    String
+  createdAt   DateTime @default(now())
 }
 
 // A bookmark on a Health & Wellness article or video, snapshot at save time — same
