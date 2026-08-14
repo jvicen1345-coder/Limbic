@@ -22,6 +22,12 @@ export default async function SportsSpecialtyPage() {
       ]}
       conditions={specialty.conditions}
       npte={specialty.npte}
+      overview={specialty.overview}
+      pearls={specialty.pearls}
+      specialTests={specialty.specialTests}
+      outcomeMeasures={specialty.outcomeMeasures}
+      documentationPearls={specialty.documentationPearls}
+      questionTypes={specialty.questionTypes}
       sports={SPORTS}
     />
   );

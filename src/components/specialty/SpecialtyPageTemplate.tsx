@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Breadcrumb, type BreadcrumbItem } from "@/components/Breadcrumb";
 import { ChevronRightIcon } from "@/components/icons";
-import type { NpteConnection, SpecialtyCondition, Sport } from "@/lib/specialty-content";
+import type { NpteConnection, SpecialtyCondition, SpecialtyOverview, ClinicalPearl, SpecialTest, OutcomeMeasureRef, Sport } from "@/lib/specialty-content";
 
 type TabId = "overview" | "conditions" | "tools" | "boards" | "bysport";
 
@@ -50,7 +50,20 @@ export interface SpecialtyPageTemplateProps {
   showConnexionCard?: boolean;
   /** Presence adds the 5th "By Sport" tab — the Sports hub page only. */
   sports?: Sport[];
+  overview?: SpecialtyOverview;
+  pearls?: ClinicalPearl[];
+  specialTests?: SpecialTest[];
+  outcomeMeasures?: OutcomeMeasureRef[];
+  documentationPearls?: string[];
+  questionTypes?: string;
 }
+
+const CONDITION_SECTIONS: { label: string; key: "presentation" | "evaluation" | "intervention" | "outcomeMeasures" }[] = [
+  { label: "Clinical Presentation", key: "presentation" },
+  { label: "Evaluation", key: "evaluation" },
+  { label: "Intervention", key: "intervention" },
+  { label: "Outcome Measures", key: "outcomeMeasures" },
+];
 
 export function SpecialtyPageTemplate({
   slug,
@@ -61,6 +74,12 @@ export function SpecialtyPageTemplate({
   npte,
   showConnexionCard = false,
   sports,
+  overview,
+  pearls,
+  specialTests,
+  outcomeMeasures,
+  documentationPearls,
+  questionTypes,
 }: SpecialtyPageTemplateProps) {
   const tabs = sports ? [...BASE_TABS, { id: "bysport" as TabId, label: "By Sport" }] : BASE_TABS;
   const [activeTab, setActiveTab] = useState<TabId>("overview");
@@ -96,24 +115,25 @@ export function SpecialtyPageTemplate({
             <div className="card elev-sm">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                 <span className="card-title">About This Specialty</span>
-                <span className="boards-badge-soon">Coming soon</span>
+                {!overview && <span className="boards-badge-soon">Coming soon</span>}
               </div>
               <div className="specialty-overview-item" style={{ marginTop: 10 }}>
                 <div className="specialty-overview-item-label">What PTs Do</div>
-                {/* TODO: Describe what physical therapists actually do day-to-day in this specialty. */}
                 <p className="specialty-overview-item-text">
-                  A description of the clinical work physical therapists do within {name} goes here.
+                  {overview?.whatTheyDo ?? `A description of the clinical work physical therapists do within ${name} goes here.`}
                 </p>
               </div>
               <div className="specialty-overview-item">
                 <div className="specialty-overview-item-label">Where They Work</div>
-                {/* TODO: List realistic practice settings for this specialty (outpatient, inpatient, home health, etc.). */}
-                <p className="specialty-overview-item-text">Example practice settings for {name} go here.</p>
+                <p className="specialty-overview-item-text">
+                  {overview?.whereTheyWork ?? `Example practice settings for ${name} go here.`}
+                </p>
               </div>
               <div className="specialty-overview-item">
                 <div className="specialty-overview-item-label">Patient Population</div>
-                {/* TODO: Describe the typical patient population seen in this specialty. */}
-                <p className="specialty-overview-item-text">A description of the typical patient population goes here.</p>
+                <p className="specialty-overview-item-text">
+                  {overview?.patientPopulation ?? "A description of the typical patient population goes here."}
+                </p>
               </div>
             </div>
 
@@ -129,10 +149,17 @@ export function SpecialtyPageTemplate({
               <div className="specialty-overview-item">
                 <div className="specialty-overview-item-label" style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   High Yield Focus Areas
-                  <span className="boards-badge-soon">Coming soon</span>
+                  {!overview && <span className="boards-badge-soon">Coming soon</span>}
                 </div>
-                {/* TODO: List the specific high-yield topics within this specialty for NPTE prep. */}
-                <p className="specialty-overview-item-text">High-yield focus areas for {name} go here.</p>
+                {overview ? (
+                  <ul className="specialty-overview-item-text" style={{ margin: "4px 0 0", paddingLeft: 18 }}>
+                    {overview.highYieldFocusAreas.map((area) => (
+                      <li key={area}>{area}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="specialty-overview-item-text">High-yield focus areas for {name} go here.</p>
+                )}
               </div>
             </div>
           </div>
@@ -140,11 +167,10 @@ export function SpecialtyPageTemplate({
           <div className="card elev-sm" style={{ marginBottom: 16 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
               <span className="card-title">High Yield Clinical Pearls</span>
-              <span className="boards-badge-soon">Coming soon</span>
+              {!pearls && <span className="boards-badge-soon">Coming soon</span>}
             </div>
-            {/* TODO: Add specialty-specific clinical pearls */}
             <div className="specialty-pearl-list">
-              {PLACEHOLDER_PEARLS.map((pearl) => (
+              {(pearls ?? PLACEHOLDER_PEARLS).map((pearl) => (
                 <div className="specialty-pearl-item" key={pearl.title}>
                   <strong>{pearl.title}</strong>
                   <p>{pearl.body}</p>
@@ -178,12 +204,11 @@ export function SpecialtyPageTemplate({
                 <span className="card-title">{condition.name}</span>
                 <span className="tag tag-neutral">{condition.category}</span>
               </div>
-              {/* TODO: Fill in Clinical Presentation, Evaluation, Intervention, and Outcome Measures content for this condition. */}
               <div className="specialty-accordion-list">
-                {["Clinical Presentation", "Evaluation", "Intervention", "Outcome Measures"].map((section) => (
-                  <details className="specialty-accordion" key={section}>
-                    <summary>{section}</summary>
-                    <p>Content coming soon</p>
+                {CONDITION_SECTIONS.map((section) => (
+                  <details className="specialty-accordion" key={section.label}>
+                    <summary>{section.label}</summary>
+                    <p>{condition[section.key] ?? "Content coming soon"}</p>
                   </details>
                 ))}
               </div>
@@ -197,36 +222,51 @@ export function SpecialtyPageTemplate({
           <div className="card elev-sm" style={{ marginBottom: 16 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
               <span className="card-title">Common Special Tests</span>
-              <span className="boards-badge-soon">Coming soon</span>
+              {!specialTests && <span className="boards-badge-soon">Coming soon</span>}
             </div>
-            {/* TODO: Add the real special tests for this specialty, with sensitivity/specificity values. */}
             <div className="specialty-table-wrap">
               <table className="specialty-table">
                 <thead>
                   <tr>
                     <th>Test Name</th>
                     <th>What It Assesses</th>
+                    {specialTests && (
+                      <>
+                        <th>Sens.</th>
+                        <th>Spec.</th>
+                      </>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
-                  {PLACEHOLDER_SPECIAL_TESTS.map((row) => (
-                    <tr key={row.test}>
-                      <td>{row.test}</td>
-                      <td>{row.assesses}</td>
-                    </tr>
-                  ))}
+                  {specialTests
+                    ? specialTests.map((row) => (
+                        <tr key={row.test}>
+                          <td>{row.test}</td>
+                          <td>{row.assesses}</td>
+                          <td>{row.sensitivity ?? "—"}</td>
+                          <td>{row.specificity ?? "—"}</td>
+                        </tr>
+                      ))
+                    : PLACEHOLDER_SPECIAL_TESTS.map((row) => (
+                        <tr key={row.test}>
+                          <td>{row.test}</td>
+                          <td>{row.assesses}</td>
+                        </tr>
+                      ))}
                 </tbody>
               </table>
             </div>
-            <p className="specialty-table-note">Sensitivity and specificity values coming soon</p>
+            <p className="specialty-table-note">
+              {specialTests ? "Approximate, commonly-cited teaching values — vary by study." : "Sensitivity and specificity values coming soon"}
+            </p>
           </div>
 
           <div className="card elev-sm" style={{ marginBottom: 16 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
               <span className="card-title">Outcome Measures</span>
-              <span className="boards-badge-soon">Coming soon</span>
+              {!outcomeMeasures && <span className="boards-badge-soon">Coming soon</span>}
             </div>
-            {/* TODO: Add the real outcome measures for this specialty. */}
             <div className="specialty-table-wrap">
               <table className="specialty-table">
                 <thead>
@@ -237,7 +277,7 @@ export function SpecialtyPageTemplate({
                   </tr>
                 </thead>
                 <tbody>
-                  {PLACEHOLDER_OUTCOME_MEASURES.map((row) => (
+                  {(outcomeMeasures ?? PLACEHOLDER_OUTCOME_MEASURES).map((row) => (
                     <tr key={row.measure}>
                       <td>{row.measure}</td>
                       <td>{row.assesses}</td>
@@ -252,12 +292,19 @@ export function SpecialtyPageTemplate({
           <div className="card elev-sm">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
               <span className="card-title">Documentation Pearls</span>
-              <span className="boards-badge-soon">Coming soon</span>
+              {!documentationPearls && <span className="boards-badge-soon">Coming soon</span>}
             </div>
-            {/* TODO: Add specialty-specific documentation templates. */}
-            <p className="specialty-overview-item-text" style={{ marginTop: 10 }}>
-              Specialty-specific documentation templates coming soon
-            </p>
+            {documentationPearls ? (
+              <ul className="specialty-overview-item-text" style={{ marginTop: 10, paddingLeft: 18 }}>
+                {documentationPearls.map((tip) => (
+                  <li key={tip}>{tip}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="specialty-overview-item-text" style={{ marginTop: 10 }}>
+                Specialty-specific documentation templates coming soon
+              </p>
+            )}
           </div>
         </>
       )}
@@ -276,8 +323,9 @@ export function SpecialtyPageTemplate({
             </div>
             <div className="specialty-overview-item">
               <div className="specialty-overview-item-label">What Question Types to Expect</div>
-              {/* TODO: Describe the typical NPTE question formats/scenarios for this specialty. */}
-              <p className="specialty-overview-item-text">Typical NPTE question types for {name} go here.</p>
+              <p className="specialty-overview-item-text">
+                {questionTypes ?? `Typical NPTE question types for ${name} go here.`}
+              </p>
             </div>
             <Link href="/boards?tab=breakdown" className="specialty-explore-btn" style={{ marginTop: 4 }}>
               View NPTE Breakdown
