@@ -89,11 +89,11 @@ function appendLogoIcon(container: d3.Selection<SVGGElement, unknown, null, unde
     .attr("stroke-linejoin", "round")
     .attr("fill", "none");
   const linkPaths = [
-    "M50 18 L78 34 L78 68 L50 82 L22 68 L22 34 Z",
+    "M22 34 L50 18 L78 34 L78 68",
+    "M22 34 L22 68",
     "M50 52 L50 18",
     "M50 52 L78 34",
     "M50 52 L78 68",
-    "M50 52 L50 82",
     "M50 52 L22 68",
     "M50 52 L22 34",
   ];
@@ -105,7 +105,6 @@ function appendLogoIcon(container: d3.Selection<SVGGElement, unknown, null, unde
     [50, 18, 7],
     [78, 34, 7],
     [78, 68, 7],
-    [50, 82, 7],
     [22, 68, 7],
     [22, 34, 7],
     [50, 52, 10],

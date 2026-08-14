@@ -51,11 +51,11 @@ export function LogoIcon({ size = 24, className, style }: IconProps) {
       </defs>
       <circle cx="50" cy="50" r="50" fill={`url(#${gradientId})`} />
       <g stroke="#F5F5F3" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none">
-        <path d="M50 18 L78 34 L78 68 L50 82 L22 68 L22 34 Z" />
+        <path d="M22 34 L50 18 L78 34 L78 68" />
+        <path d="M22 34 L22 68" />
         <path d="M50 52 L50 18" />
         <path d="M50 52 L78 34" />
         <path d="M50 52 L78 68" />
-        <path d="M50 52 L50 82" />
         <path d="M50 52 L22 68" />
         <path d="M50 52 L22 34" />
       </g>
@@ -63,7 +63,6 @@ export function LogoIcon({ size = 24, className, style }: IconProps) {
         <circle cx="50" cy="18" r="7" />
         <circle cx="78" cy="34" r="7" />
         <circle cx="78" cy="68" r="7" />
-        <circle cx="50" cy="82" r="7" />
         <circle cx="22" cy="68" r="7" />
         <circle cx="22" cy="34" r="7" />
         <circle cx="50" cy="52" r="10" />
