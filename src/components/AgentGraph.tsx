@@ -81,7 +81,7 @@ function appendLogoIcon(container: d3.Selection<SVGGElement, unknown, null, unde
   defs.append("stop").attr("offset", "75%").attr("stop-color", "#12385D");
   defs.append("stop").attr("offset", "100%").attr("stop-color", "#092744");
   icon.append("circle").attr("cx", 150).attr("cy", 150).attr("r", 148).attr("fill", `url(#${gradientId})`);
-  const network = icon.append("svg").attr("x", 54).attr("y", 86).attr("width", 192).attr("height", 128).attr("viewBox", "0 0 600 400");
+  const network = icon.append("svg").attr("x", 39).attr("y", 76).attr("width", 222).attr("height", 148).attr("viewBox", "0 0 600 400");
   const lines = network
     .append("g")
     .attr("stroke", "#F5F5F3")

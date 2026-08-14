@@ -54,7 +54,7 @@ export function LogoIcon({ size = 24, className, style }: IconProps) {
         </radialGradient>
       </defs>
       <circle cx="150" cy="150" r="148" fill={`url(#${gradientId})`} />
-      <svg x="54" y="86" width="192" height="128" viewBox="0 0 600 400">
+      <svg x="39" y="76" width="222" height="148" viewBox="0 0 600 400">
         <g stroke="#F5F5F3" strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" fill="none">
           <path d="M300 70 L120 190 L300 300 L480 190 Z" />
           <path d="M300 70 L300 300" />
