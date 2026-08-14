@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { googleSignInEnabled } from "@/lib/google-oauth";
 import { SignInForm } from "@/components/SignInForm";
+
+// Was falling back to the root layout's generic metadata (see app/layout.tsx) — see
+// /founding-funders' own metadata export for why every publicly indexable route
+// (sitemap.ts/robots.ts list all five) gets one instead.
+export const metadata: Metadata = {
+  title: "Limbic, Sign In",
+  description: "Sign in to Limbic to access current physical therapy research, clinical tools, and your professional community.",
+};
 
 const GOOGLE_ERROR_MESSAGES: Record<string, string> = {
   google_not_configured: "Google sign-in isn't set up yet.",

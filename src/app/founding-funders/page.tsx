@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { isSiteAdmin } from "@/lib/admin";
@@ -14,6 +15,22 @@ import { FoundingAdminPanel } from "@/components/founding-funders/FoundingAdminP
 import { FoundingFundersRoster } from "@/components/founding-funders/FoundingFundersRoster";
 import { WipeAllUsersPanel } from "@/components/founding-funders/WipeAllUsersPanel";
 import { RegisteredUsersPanel } from "@/components/founding-funders/RegisteredUsersPanel";
+
+// Was falling back to the root layout's generic metadata (see app/layout.tsx) — a page
+// with no metadata of its own, so Google was improvising both the title and description
+// from whatever text on the page it judged most representative (Jonathan's letter, in this
+// case), the same problem "/" avoided by already having its own metadata export.
+export const metadata: Metadata = {
+  title: "Limbic, Founding Funders",
+  description:
+    "Become one of the first 25 Founding Funders and help build Limbic: lifetime access, a permanent founding badge, and a direct hand in shaping every feature that comes next.",
+  openGraph: {
+    title: "Limbic, Founding Funders",
+    description: "The first 25 people who believe in what Limbic could become.",
+    url: "https://limbic.center/founding-funders",
+    siteName: "Limbic",
+  },
+};
 
 const BENEFITS = [
   {

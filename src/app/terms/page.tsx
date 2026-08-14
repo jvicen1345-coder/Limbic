@@ -1,4 +1,13 @@
+import type { Metadata } from "next";
 import { LegalPageLayout } from "@/components/LegalPageLayout";
+
+// Was falling back to the root layout's generic metadata (see app/layout.tsx) — see
+// /founding-funders' own metadata export for why every publicly indexable route
+// (sitemap.ts/robots.ts list all five) gets one instead.
+export const metadata: Metadata = {
+  title: "Limbic, Terms of Service",
+  description: "Limbic's Terms of Service: the rules and agreements that govern use of the Limbic platform.",
+};
 
 export default function TermsPage() {
   return (
