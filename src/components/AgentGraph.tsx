@@ -73,36 +73,40 @@ function appendLogoIcon(container: d3.Selection<SVGGElement, unknown, null, unde
     .attr("y", -size / 2)
     .attr("width", size)
     .attr("height", size)
-    .attr("viewBox", "0 0 160 160")
+    .attr("viewBox", "0 0 300 300")
     .style("pointer-events", "none");
-  const defs = icon.append("defs").append("radialGradient").attr("id", gradientId).attr("cx", "50%").attr("cy", "50%").attr("r", "50%");
-  defs.append("stop").attr("offset", "0%").attr("stop-color", "#1D6EB7");
-  defs.append("stop").attr("offset", "100%").attr("stop-color", "#092B52");
-  icon.append("circle").attr("cx", 80).attr("cy", 80).attr("r", 78).attr("fill", `url(#${gradientId})`);
-  const lines = icon.append("g").attr("stroke", "#FFFFFF").attr("stroke-width", 3.2).attr("stroke-linecap", "round");
-  const linkPoints: [number, number, number, number][] = [
-    [80, 49.6, 54.4, 68],
-    [54.4, 68, 64, 102.4],
-    [64, 102.4, 96, 102.4],
-    [96, 102.4, 105.6, 68],
-    [105.6, 68, 80, 49.6],
-    [80, 80, 80, 49.6],
-    [80, 80, 54.4, 68],
-    [80, 80, 64, 102.4],
-    [80, 80, 96, 102.4],
-    [80, 80, 105.6, 68],
+  const defs = icon.append("defs").append("radialGradient").attr("id", gradientId).attr("cx", "50%").attr("cy", "30%").attr("r", "75%");
+  defs.append("stop").attr("offset", "0%").attr("stop-color", "#2F6692");
+  defs.append("stop").attr("offset", "45%").attr("stop-color", "#1D4D75");
+  defs.append("stop").attr("offset", "75%").attr("stop-color", "#12385D");
+  defs.append("stop").attr("offset", "100%").attr("stop-color", "#092744");
+  icon.append("circle").attr("cx", 150).attr("cy", 150).attr("r", 148).attr("fill", `url(#${gradientId})`);
+  const network = icon.append("svg").attr("x", 54).attr("y", 86).attr("width", 192).attr("height", 128).attr("viewBox", "0 0 600 400");
+  const lines = network
+    .append("g")
+    .attr("stroke", "#F5F5F3")
+    .attr("stroke-width", 20)
+    .attr("stroke-linecap", "round")
+    .attr("stroke-linejoin", "round")
+    .attr("fill", "none");
+  const linkPaths = [
+    "M300 70 L120 190 L300 300 L480 190 Z",
+    "M300 70 L300 300",
+    "M120 190 L120 330",
+    "M480 190 L480 330",
+    "M120 330 L300 230 L480 330",
   ];
-  for (const [x1, y1, x2, y2] of linkPoints) {
-    lines.append("line").attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2);
+  for (const d of linkPaths) {
+    lines.append("path").attr("d", d);
   }
-  const dots = icon.append("g").attr("fill", "#FFFFFF");
+  const dots = network.append("g").attr("fill", "#F5F5F3");
   const dotPoints: [number, number, number][] = [
-    [80, 49.6, 4.5],
-    [54.4, 68, 4.5],
-    [105.6, 68, 4.5],
-    [64, 102.4, 4.5],
-    [96, 102.4, 4.5],
-    [80, 80, 6],
+    [300, 70, 45],
+    [120, 190, 45],
+    [480, 190, 45],
+    [300, 230, 65],
+    [120, 330, 45],
+    [480, 330, 45],
   ];
   for (const [cx, cy, r] of dotPoints) {
     dots.append("circle").attr("cx", cx).attr("cy", cy).attr("r", r);

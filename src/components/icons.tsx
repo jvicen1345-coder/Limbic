@@ -26,8 +26,11 @@ function Svg({ size = 18, className, style, children }: IconProps & { children: 
 }
 
 /** The compact icon mark from the Limbic logo — a gradient node network standing in for
- *  the limbic system's neural connections: a pentagon ring of five outer nodes, each also
- *  spoked to the center node. Cropped tight to the icon's own bounds (see
+ *  the limbic system's neural connections. The inner <svg> (viewBox 0 0 600 400) embeds
+ *  the network graph's own path/circle markup verbatim, unscaled, exactly as specified —
+ *  nested and positioned via x/y/width/height rather than hand-transformed into this
+ *  icon's own 0-300 coordinate space, so there's no coordinate-conversion arithmetic that
+ *  could drift from the source. Cropped tight to the icon's own bounds (see
  *  public/logo-lockup.svg for the full lockup with wordmark + tagline, used where there's
  *  room to show it in full — and components/AgentGraph.tsx's appendLogoIcon, a
  *  hand-replicated D3 copy of this same markup for its center node). Fixed brand colors,
@@ -41,34 +44,33 @@ export function LogoIcon({ size = 24, className, style }: IconProps) {
   // ancestor, silently rendering as an unfilled (invisible) circle everywhere else.
   const gradientId = useId();
   return (
-    <svg width={size} height={size} viewBox="0 0 160 160" className={className} style={style} role="img" aria-label="Limbic">
+    <svg width={size} height={size} viewBox="0 0 300 300" className={className} style={style} role="img" aria-label="Limbic">
       <defs>
-        <radialGradient id={gradientId} cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#1D6EB7" />
-          <stop offset="100%" stopColor="#092B52" />
+        <radialGradient id={gradientId} cx="50%" cy="30%" r="75%">
+          <stop offset="0%" stopColor="#2F6692" />
+          <stop offset="45%" stopColor="#1D4D75" />
+          <stop offset="75%" stopColor="#12385D" />
+          <stop offset="100%" stopColor="#092744" />
         </radialGradient>
       </defs>
-      <circle cx="80" cy="80" r="78" fill={`url(#${gradientId})`} />
-      <g stroke="#FFFFFF" strokeWidth="3.2" strokeLinecap="round">
-        <line x1="80" y1="49.6" x2="54.4" y2="68" />
-        <line x1="54.4" y1="68" x2="64" y2="102.4" />
-        <line x1="64" y1="102.4" x2="96" y2="102.4" />
-        <line x1="96" y1="102.4" x2="105.6" y2="68" />
-        <line x1="105.6" y1="68" x2="80" y2="49.6" />
-        <line x1="80" y1="80" x2="80" y2="49.6" />
-        <line x1="80" y1="80" x2="54.4" y2="68" />
-        <line x1="80" y1="80" x2="64" y2="102.4" />
-        <line x1="80" y1="80" x2="96" y2="102.4" />
-        <line x1="80" y1="80" x2="105.6" y2="68" />
-      </g>
-      <g fill="#FFFFFF">
-        <circle cx="80" cy="49.6" r="4.5" />
-        <circle cx="54.4" cy="68" r="4.5" />
-        <circle cx="105.6" cy="68" r="4.5" />
-        <circle cx="64" cy="102.4" r="4.5" />
-        <circle cx="96" cy="102.4" r="4.5" />
-        <circle cx="80" cy="80" r="6" />
-      </g>
+      <circle cx="150" cy="150" r="148" fill={`url(#${gradientId})`} />
+      <svg x="54" y="86" width="192" height="128" viewBox="0 0 600 400">
+        <g stroke="#F5F5F3" strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" fill="none">
+          <path d="M300 70 L120 190 L300 300 L480 190 Z" />
+          <path d="M300 70 L300 300" />
+          <path d="M120 190 L120 330" />
+          <path d="M480 190 L480 330" />
+          <path d="M120 330 L300 230 L480 330" />
+        </g>
+        <g fill="#F5F5F3">
+          <circle cx="300" cy="70" r="45" />
+          <circle cx="120" cy="190" r="45" />
+          <circle cx="480" cy="190" r="45" />
+          <circle cx="300" cy="230" r="65" />
+          <circle cx="120" cy="330" r="45" />
+          <circle cx="480" cy="330" r="45" />
+        </g>
+      </svg>
     </svg>
   );
 }
