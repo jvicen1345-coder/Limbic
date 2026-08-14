@@ -27,6 +27,15 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
+  // Resolves every relative URL in every page's metadata (openGraph.images, etc.) to an
+  // absolute https://limbic.center/... one — required for those to work correctly once a
+  // page is actually crawled or shared, rather than a same-origin-only relative path.
+  metadataBase: new URL("https://limbic.center"),
+  // Fallback only — every real, publicly indexable route (see sitemap.ts/robots.ts for the
+  // full list: "/", /founding-funders, /sign-in, /terms, /privacy) sets its own metadata
+  // below so Google never has to fall back to this generic one and improvise a snippet
+  // from page content instead, which is what was happening on /founding-funders before it
+  // got its own metadata export.
   title: "Limbic, PT News",
   description: "Up-to-date news, guidelines, and clinical tools for physical therapists.",
   // Google Search Console's HTML-tag ownership verification — additional to the domain's
