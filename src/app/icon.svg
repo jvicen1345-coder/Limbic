@@ -1,28 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 300 300" role="img" aria-label="Limbic">
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 100 100" role="img" aria-label="Limbic">
   <defs>
-    <radialGradient id="limbicIconGradient" cx="50%" cy="30%" r="75%">
+    <radialGradient id="limbicIconGradient" cx="50%" cy="30%" r="70%">
       <stop offset="0%" stop-color="#2F6692" />
       <stop offset="45%" stop-color="#1D4D75" />
       <stop offset="75%" stop-color="#12385D" />
       <stop offset="100%" stop-color="#092744" />
     </radialGradient>
   </defs>
-  <circle cx="150" cy="150" r="148" fill="url(#limbicIconGradient)" />
-  <svg x="39" y="76" width="222" height="148" viewBox="0 0 600 400">
-    <g stroke="#F5F5F3" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none">
-      <path d="M300 70 L120 190 L300 300 L480 190 Z" />
-      <path d="M300 70 L300 300" />
-      <path d="M120 190 L120 330" />
-      <path d="M480 190 L480 330" />
-      <path d="M120 330 L300 230 L480 330" />
-    </g>
-    <g fill="#F5F5F3">
-      <circle cx="300" cy="70" r="45" />
-      <circle cx="120" cy="190" r="45" />
-      <circle cx="480" cy="190" r="45" />
-      <circle cx="300" cy="230" r="65" />
-      <circle cx="120" cy="330" r="45" />
-      <circle cx="480" cy="330" r="45" />
-    </g>
-  </svg>
+  <circle cx="50" cy="50" r="50" fill="url(#limbicIconGradient)" />
+  <g stroke="#F5F5F3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M50 18 L78 34 L78 68 L50 82 L22 68 L22 34 Z" />
+    <path d="M50 52 L50 18" />
+    <path d="M50 52 L78 34" />
+    <path d="M50 52 L78 68" />
+    <path d="M50 52 L50 82" />
+    <path d="M50 52 L22 68" />
+    <path d="M50 52 L22 34" />
+  </g>
+  <g fill="#F5F5F3">
+    <circle cx="50" cy="18" r="7" />
+    <circle cx="78" cy="34" r="7" />
+    <circle cx="78" cy="68" r="7" />
+    <circle cx="50" cy="82" r="7" />
+    <circle cx="22" cy="68" r="7" />
+    <circle cx="22" cy="34" r="7" />
+    <circle cx="50" cy="52" r="10" />
+  </g>
 </svg>

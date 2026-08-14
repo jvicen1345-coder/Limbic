@@ -1,7 +1,7 @@
 <!-- Limbic Logo — full lockup (icon + wordmark + tagline) -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 388 140" width="388" height="140" role="img" aria-label="Limbic — Curated Research">
   <defs>
-    <radialGradient id="g" cx="50%" cy="30%" r="75%">
+    <radialGradient id="g" cx="50%" cy="30%" r="70%">
       <stop offset="0%" stop-color="#2F6692"/>
       <stop offset="45%" stop-color="#1D4D75"/>
       <stop offset="75%" stop-color="#12385D"/>
@@ -25,28 +25,28 @@
        backdrop rather than a solid card competing with the sign-in card below it. -->
   <rect x="0" y="0" width="388" height="140" rx="18" fill="#DBE7FB" fill-opacity="0.55"/>
 
-  <!-- Icon — same markup as components/icons.tsx's LogoIcon (0-300 viewBox, a nested
-       0-600x400 svg embedding the network graph verbatim), scaled 0.2333 (70/300) into
-       this lockup's own 70x70 icon slot rather than hand-converted coordinates. -->
-  <g transform="translate(22 22) scale(0.233333)">
-    <circle cx="150" cy="150" r="148" fill="url(#g)"/>
-    <svg x="39" y="76" width="222" height="148" viewBox="0 0 600 400">
-      <g stroke="#F5F5F3" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none">
-        <path d="M300 70 L120 190 L300 300 L480 190 Z"/>
-        <path d="M300 70 L300 300"/>
-        <path d="M120 190 L120 330"/>
-        <path d="M480 190 L480 330"/>
-        <path d="M120 330 L300 230 L480 330"/>
-      </g>
-      <g fill="#F5F5F3">
-        <circle cx="300" cy="70" r="45"/>
-        <circle cx="120" cy="190" r="45"/>
-        <circle cx="480" cy="190" r="45"/>
-        <circle cx="300" cy="230" r="65"/>
-        <circle cx="120" cy="330" r="45"/>
-        <circle cx="480" cy="330" r="45"/>
-      </g>
-    </svg>
+  <!-- Icon — same markup as components/icons.tsx's LogoIcon (flat 0-100 viewBox), scaled
+       0.7 (70/100) into this lockup's own 70x70 icon slot. -->
+  <g transform="translate(22 22) scale(0.7)">
+    <circle cx="50" cy="50" r="50" fill="url(#g)"/>
+    <g stroke="#F5F5F3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M50 18 L78 34 L78 68 L50 82 L22 68 L22 34 Z"/>
+      <path d="M50 52 L50 18"/>
+      <path d="M50 52 L78 34"/>
+      <path d="M50 52 L78 68"/>
+      <path d="M50 52 L50 82"/>
+      <path d="M50 52 L22 68"/>
+      <path d="M50 52 L22 34"/>
+    </g>
+    <g fill="#F5F5F3">
+      <circle cx="50" cy="18" r="7"/>
+      <circle cx="78" cy="34" r="7"/>
+      <circle cx="78" cy="68" r="7"/>
+      <circle cx="50" cy="82" r="7"/>
+      <circle cx="22" cy="68" r="7"/>
+      <circle cx="22" cy="34" r="7"/>
+      <circle cx="50" cy="52" r="10"/>
+    </g>
   </g>
 
   <!-- Wordmark -->

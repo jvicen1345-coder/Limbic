@@ -26,16 +26,12 @@ function Svg({ size = 18, className, style, children }: IconProps & { children: 
 }
 
 /** The compact icon mark from the Limbic logo — a gradient node network standing in for
- *  the limbic system's neural connections. The inner <svg> (viewBox 0 0 600 400) embeds
- *  the network graph's own path/circle markup verbatim, unscaled, exactly as specified —
- *  nested and positioned via x/y/width/height rather than hand-transformed into this
- *  icon's own 0-300 coordinate space, so there's no coordinate-conversion arithmetic that
- *  could drift from the source. Cropped tight to the icon's own bounds (see
- *  public/logo-lockup.svg for the full lockup with wordmark + tagline, used where there's
- *  room to show it in full — and components/AgentGraph.tsx's appendLogoIcon, a
- *  hand-replicated D3 copy of this same markup for its center node). Fixed brand colors,
- *  not currentColor — unlike the rest of this file's outline icons, the logo isn't meant
- *  to be recolored. */
+ *  the limbic system's neural connections, on a flat 0-100 viewBox matching the brand
+ *  source exactly (see public/logo-lockup.svg for the full lockup with wordmark + tagline,
+ *  used where there's room to show it in full — and components/AgentGraph.tsx's
+ *  appendLogoIcon, a hand-replicated D3 copy of this same markup for its center node).
+ *  Fixed brand colors, not currentColor — unlike the rest of this file's outline icons,
+ *  the logo isn't meant to be recolored. */
 export function LogoIcon({ size = 24, className, style }: IconProps) {
   // AppShell keeps the desktop sidebar and mobile topbar/drawer all mounted at once
   // (CSS just hides whichever doesn't apply), so a hardcoded gradient id here would
@@ -44,33 +40,34 @@ export function LogoIcon({ size = 24, className, style }: IconProps) {
   // ancestor, silently rendering as an unfilled (invisible) circle everywhere else.
   const gradientId = useId();
   return (
-    <svg width={size} height={size} viewBox="0 0 300 300" className={className} style={style} role="img" aria-label="Limbic">
+    <svg width={size} height={size} viewBox="0 0 100 100" className={className} style={style} role="img" aria-label="Limbic">
       <defs>
-        <radialGradient id={gradientId} cx="50%" cy="30%" r="75%">
+        <radialGradient id={gradientId} cx="50%" cy="30%" r="70%">
           <stop offset="0%" stopColor="#2F6692" />
           <stop offset="45%" stopColor="#1D4D75" />
           <stop offset="75%" stopColor="#12385D" />
           <stop offset="100%" stopColor="#092744" />
         </radialGradient>
       </defs>
-      <circle cx="150" cy="150" r="148" fill={`url(#${gradientId})`} />
-      <svg x="39" y="76" width="222" height="148" viewBox="0 0 600 400">
-        <g stroke="#F5F5F3" strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" fill="none">
-          <path d="M300 70 L120 190 L300 300 L480 190 Z" />
-          <path d="M300 70 L300 300" />
-          <path d="M120 190 L120 330" />
-          <path d="M480 190 L480 330" />
-          <path d="M120 330 L300 230 L480 330" />
-        </g>
-        <g fill="#F5F5F3">
-          <circle cx="300" cy="70" r="45" />
-          <circle cx="120" cy="190" r="45" />
-          <circle cx="480" cy="190" r="45" />
-          <circle cx="300" cy="230" r="65" />
-          <circle cx="120" cy="330" r="45" />
-          <circle cx="480" cy="330" r="45" />
-        </g>
-      </svg>
+      <circle cx="50" cy="50" r="50" fill={`url(#${gradientId})`} />
+      <g stroke="#F5F5F3" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none">
+        <path d="M50 18 L78 34 L78 68 L50 82 L22 68 L22 34 Z" />
+        <path d="M50 52 L50 18" />
+        <path d="M50 52 L78 34" />
+        <path d="M50 52 L78 68" />
+        <path d="M50 52 L50 82" />
+        <path d="M50 52 L22 68" />
+        <path d="M50 52 L22 34" />
+      </g>
+      <g fill="#F5F5F3">
+        <circle cx="50" cy="18" r="7" />
+        <circle cx="78" cy="34" r="7" />
+        <circle cx="78" cy="68" r="7" />
+        <circle cx="50" cy="82" r="7" />
+        <circle cx="22" cy="68" r="7" />
+        <circle cx="22" cy="34" r="7" />
+        <circle cx="50" cy="52" r="10" />
+      </g>
     </svg>
   );
 }

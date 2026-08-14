@@ -73,40 +73,42 @@ function appendLogoIcon(container: d3.Selection<SVGGElement, unknown, null, unde
     .attr("y", -size / 2)
     .attr("width", size)
     .attr("height", size)
-    .attr("viewBox", "0 0 300 300")
+    .attr("viewBox", "0 0 100 100")
     .style("pointer-events", "none");
-  const defs = icon.append("defs").append("radialGradient").attr("id", gradientId).attr("cx", "50%").attr("cy", "30%").attr("r", "75%");
+  const defs = icon.append("defs").append("radialGradient").attr("id", gradientId).attr("cx", "50%").attr("cy", "30%").attr("r", "70%");
   defs.append("stop").attr("offset", "0%").attr("stop-color", "#2F6692");
   defs.append("stop").attr("offset", "45%").attr("stop-color", "#1D4D75");
   defs.append("stop").attr("offset", "75%").attr("stop-color", "#12385D");
   defs.append("stop").attr("offset", "100%").attr("stop-color", "#092744");
-  icon.append("circle").attr("cx", 150).attr("cy", 150).attr("r", 148).attr("fill", `url(#${gradientId})`);
-  const network = icon.append("svg").attr("x", 39).attr("y", 76).attr("width", 222).attr("height", 148).attr("viewBox", "0 0 600 400");
-  const lines = network
+  icon.append("circle").attr("cx", 50).attr("cy", 50).attr("r", 50).attr("fill", `url(#${gradientId})`);
+  const lines = icon
     .append("g")
     .attr("stroke", "#F5F5F3")
-    .attr("stroke-width", 20)
+    .attr("stroke-width", 4)
     .attr("stroke-linecap", "round")
     .attr("stroke-linejoin", "round")
     .attr("fill", "none");
   const linkPaths = [
-    "M300 70 L120 190 L300 300 L480 190 Z",
-    "M300 70 L300 300",
-    "M120 190 L120 330",
-    "M480 190 L480 330",
-    "M120 330 L300 230 L480 330",
+    "M50 18 L78 34 L78 68 L50 82 L22 68 L22 34 Z",
+    "M50 52 L50 18",
+    "M50 52 L78 34",
+    "M50 52 L78 68",
+    "M50 52 L50 82",
+    "M50 52 L22 68",
+    "M50 52 L22 34",
   ];
   for (const d of linkPaths) {
     lines.append("path").attr("d", d);
   }
-  const dots = network.append("g").attr("fill", "#F5F5F3");
+  const dots = icon.append("g").attr("fill", "#F5F5F3");
   const dotPoints: [number, number, number][] = [
-    [300, 70, 45],
-    [120, 190, 45],
-    [480, 190, 45],
-    [300, 230, 65],
-    [120, 330, 45],
-    [480, 330, 45],
+    [50, 18, 7],
+    [78, 34, 7],
+    [78, 68, 7],
+    [50, 82, 7],
+    [22, 68, 7],
+    [22, 34, 7],
+    [50, 52, 10],
   ];
   for (const [cx, cy, r] of dotPoints) {
     dots.append("circle").attr("cx", cx).attr("cy", cy).attr("r", r);
