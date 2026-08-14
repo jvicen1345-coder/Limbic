@@ -73,44 +73,39 @@ function appendLogoIcon(container: d3.Selection<SVGGElement, unknown, null, unde
     .attr("y", -size / 2)
     .attr("width", size)
     .attr("height", size)
-    .attr("viewBox", "32 22 96 96")
+    .attr("viewBox", "0 0 160 160")
     .style("pointer-events", "none");
-  const defs = icon.append("defs").append("linearGradient").attr("id", gradientId).attr("x1", 0).attr("y1", 0).attr("x2", 1).attr("y2", 1);
-  defs.append("stop").attr("offset", "0%").attr("stop-color", "#41B3D3");
-  defs.append("stop").attr("offset", "100%").attr("stop-color", "#1A5276");
-  icon.append("circle").attr("cx", 80).attr("cy", 70).attr("r", 48).attr("fill", `url(#${gradientId})`);
-  const lines = icon.append("g").attr("stroke", "#FFFFFF").attr("stroke-width", 2).attr("opacity", 0.65).attr("stroke-linecap", "round");
+  const defs = icon.append("defs").append("radialGradient").attr("id", gradientId).attr("cx", "50%").attr("cy", "50%").attr("r", "50%");
+  defs.append("stop").attr("offset", "0%").attr("stop-color", "#1D6EB7");
+  defs.append("stop").attr("offset", "100%").attr("stop-color", "#092B52");
+  icon.append("circle").attr("cx", 80).attr("cy", 80).attr("r", 78).attr("fill", `url(#${gradientId})`);
+  const lines = icon.append("g").attr("stroke", "#FFFFFF").attr("stroke-width", 3.2).attr("stroke-linecap", "round");
   const linkPoints: [number, number, number, number][] = [
-    [60, 54, 80, 40],
-    [80, 40, 100, 54],
-    [60, 54, 54, 76],
-    [60, 54, 80, 70],
-    [80, 40, 80, 70],
-    [100, 54, 80, 70],
-    [100, 54, 106, 76],
-    [54, 76, 80, 70],
-    [80, 70, 106, 76],
-    [54, 76, 64, 96],
-    [80, 70, 64, 96],
-    [80, 70, 96, 96],
-    [106, 76, 96, 96],
+    [80, 49.6, 54.4, 68],
+    [54.4, 68, 64, 102.4],
+    [64, 102.4, 96, 102.4],
+    [96, 102.4, 105.6, 68],
+    [105.6, 68, 80, 49.6],
+    [80, 80, 80, 49.6],
+    [80, 80, 54.4, 68],
+    [80, 80, 64, 102.4],
+    [80, 80, 96, 102.4],
+    [80, 80, 105.6, 68],
   ];
   for (const [x1, y1, x2, y2] of linkPoints) {
     lines.append("line").attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2);
   }
   const dots = icon.append("g").attr("fill", "#FFFFFF");
-  const dotPoints: [number, number, number, number][] = [
-    [60, 54, 4.6, 0.95],
-    [80, 40, 4.6, 0.95],
-    [100, 54, 4.6, 0.95],
-    [54, 76, 4.6, 0.95],
-    [80, 70, 7.2, 1],
-    [106, 76, 4.6, 0.95],
-    [64, 96, 4.6, 0.95],
-    [96, 96, 4.6, 0.95],
+  const dotPoints: [number, number, number][] = [
+    [80, 49.6, 4.5],
+    [54.4, 68, 4.5],
+    [105.6, 68, 4.5],
+    [64, 102.4, 4.5],
+    [96, 102.4, 4.5],
+    [80, 80, 6],
   ];
-  for (const [cx, cy, r, opacity] of dotPoints) {
-    dots.append("circle").attr("cx", cx).attr("cy", cy).attr("r", r).attr("opacity", opacity);
+  for (const [cx, cy, r] of dotPoints) {
+    dots.append("circle").attr("cx", cx).attr("cy", cy).attr("r", r);
   }
 }
 

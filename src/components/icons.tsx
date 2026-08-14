@@ -26,10 +26,13 @@ function Svg({ size = 18, className, style, children }: IconProps & { children: 
 }
 
 /** The compact icon mark from the Limbic logo — a gradient node network standing in for
- *  the limbic system's neural connections. Cropped tight to the icon's own bounds (see
+ *  the limbic system's neural connections: a pentagon ring of five outer nodes, each also
+ *  spoked to the center node. Cropped tight to the icon's own bounds (see
  *  public/logo-lockup.svg for the full lockup with wordmark + tagline, used where there's
- *  room to show it in full). Fixed brand colors, not currentColor — unlike the rest of
- *  this file's outline icons, the logo isn't meant to be recolored. */
+ *  room to show it in full — and components/AgentGraph.tsx's appendLogoIcon, a
+ *  hand-replicated D3 copy of this same markup for its center node). Fixed brand colors,
+ *  not currentColor — unlike the rest of this file's outline icons, the logo isn't meant
+ *  to be recolored. */
 export function LogoIcon({ size = 24, className, style }: IconProps) {
   // AppShell keeps the desktop sidebar and mobile topbar/drawer all mounted at once
   // (CSS just hides whichever doesn't apply), so a hardcoded gradient id here would
@@ -38,38 +41,33 @@ export function LogoIcon({ size = 24, className, style }: IconProps) {
   // ancestor, silently rendering as an unfilled (invisible) circle everywhere else.
   const gradientId = useId();
   return (
-    <svg width={size} height={size} viewBox="32 22 96 96" className={className} style={style} role="img" aria-label="Limbic">
+    <svg width={size} height={size} viewBox="0 0 160 160" className={className} style={style} role="img" aria-label="Limbic">
       <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#41B3D3" />
-          <stop offset="100%" stopColor="#1A5276" />
-        </linearGradient>
+        <radialGradient id={gradientId} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#1D6EB7" />
+          <stop offset="100%" stopColor="#092B52" />
+        </radialGradient>
       </defs>
-      <circle cx="80" cy="70" r="48" fill={`url(#${gradientId})`} />
-      <g stroke="#FFFFFF" strokeWidth="2" opacity="0.65" strokeLinecap="round">
-        <line x1="60" y1="54" x2="80" y2="40" />
-        <line x1="80" y1="40" x2="100" y2="54" />
-        <line x1="60" y1="54" x2="54" y2="76" />
-        <line x1="60" y1="54" x2="80" y2="70" />
-        <line x1="80" y1="40" x2="80" y2="70" />
-        <line x1="100" y1="54" x2="80" y2="70" />
-        <line x1="100" y1="54" x2="106" y2="76" />
-        <line x1="54" y1="76" x2="80" y2="70" />
-        <line x1="80" y1="70" x2="106" y2="76" />
-        <line x1="54" y1="76" x2="64" y2="96" />
-        <line x1="80" y1="70" x2="64" y2="96" />
-        <line x1="80" y1="70" x2="96" y2="96" />
-        <line x1="106" y1="76" x2="96" y2="96" />
+      <circle cx="80" cy="80" r="78" fill={`url(#${gradientId})`} />
+      <g stroke="#FFFFFF" strokeWidth="3.2" strokeLinecap="round">
+        <line x1="80" y1="49.6" x2="54.4" y2="68" />
+        <line x1="54.4" y1="68" x2="64" y2="102.4" />
+        <line x1="64" y1="102.4" x2="96" y2="102.4" />
+        <line x1="96" y1="102.4" x2="105.6" y2="68" />
+        <line x1="105.6" y1="68" x2="80" y2="49.6" />
+        <line x1="80" y1="80" x2="80" y2="49.6" />
+        <line x1="80" y1="80" x2="54.4" y2="68" />
+        <line x1="80" y1="80" x2="64" y2="102.4" />
+        <line x1="80" y1="80" x2="96" y2="102.4" />
+        <line x1="80" y1="80" x2="105.6" y2="68" />
       </g>
       <g fill="#FFFFFF">
-        <circle cx="60" cy="54" r="4.6" opacity="0.95" />
-        <circle cx="80" cy="40" r="4.6" opacity="0.95" />
-        <circle cx="100" cy="54" r="4.6" opacity="0.95" />
-        <circle cx="54" cy="76" r="4.6" opacity="0.95" />
-        <circle cx="80" cy="70" r="7.2" />
-        <circle cx="106" cy="76" r="4.6" opacity="0.95" />
-        <circle cx="64" cy="96" r="4.6" opacity="0.95" />
-        <circle cx="96" cy="96" r="4.6" opacity="0.95" />
+        <circle cx="80" cy="49.6" r="4.5" />
+        <circle cx="54.4" cy="68" r="4.5" />
+        <circle cx="105.6" cy="68" r="4.5" />
+        <circle cx="64" cy="102.4" r="4.5" />
+        <circle cx="96" cy="102.4" r="4.5" />
+        <circle cx="80" cy="80" r="6" />
       </g>
     </svg>
   );

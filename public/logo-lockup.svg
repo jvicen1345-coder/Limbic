@@ -1,42 +1,41 @@
 <!-- Limbic Logo — full lockup (icon + wordmark + tagline) -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 388 140" width="388" height="140" role="img" aria-label="Limbic — Curated Research">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#41B3D3"/>
-      <stop offset="100%" stop-color="#1A5276"/>
-    </linearGradient>
+    <radialGradient id="g" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1D6EB7"/>
+      <stop offset="100%" stop-color="#092B52"/>
+    </radialGradient>
   </defs>
 
   <!-- Background — matches the app's card surface color, faded so it reads as a soft
        backdrop rather than a solid card competing with the sign-in card below it. -->
   <rect x="0" y="0" width="388" height="140" rx="18" fill="#DBE7FB" fill-opacity="0.55"/>
 
-  <!-- Icon -->
-  <circle cx="80" cy="70" r="48" fill="url(#g)"/>
-  <g stroke="#FFFFFF" stroke-width="2" opacity="0.65" stroke-linecap="round">
-    <line x1="60" y1="54" x2="80" y2="40"/>
-    <line x1="80" y1="40" x2="100" y2="54"/>
-    <line x1="60" y1="54" x2="54" y2="76"/>
-    <line x1="60" y1="54" x2="80" y2="70"/>
-    <line x1="80" y1="40" x2="80" y2="70"/>
-    <line x1="100" y1="54" x2="80" y2="70"/>
-    <line x1="100" y1="54" x2="106" y2="76"/>
-    <line x1="54" y1="76" x2="80" y2="70"/>
-    <line x1="80" y1="70" x2="106" y2="76"/>
-    <line x1="54" y1="76" x2="64" y2="96"/>
-    <line x1="80" y1="70" x2="64" y2="96"/>
-    <line x1="80" y1="70" x2="96" y2="96"/>
-    <line x1="106" y1="76" x2="96" y2="96"/>
-  </g>
-  <g fill="#FFFFFF">
-    <circle cx="60" cy="54" r="4.6" opacity="0.95"/>
-    <circle cx="80" cy="40" r="4.6" opacity="0.95"/>
-    <circle cx="100" cy="54" r="4.6" opacity="0.95"/>
-    <circle cx="54" cy="76" r="4.6" opacity="0.95"/>
-    <circle cx="80" cy="70" r="7.2"/>
-    <circle cx="106" cy="76" r="4.6" opacity="0.95"/>
-    <circle cx="64" cy="96" r="4.6" opacity="0.95"/>
-    <circle cx="96" cy="96" r="4.6" opacity="0.95"/>
+  <!-- Icon — same pentagon-ring-plus-spokes network as components/icons.tsx's LogoIcon,
+       translated and scaled from that icon's own 0-160 viewBox into this lockup's 0-70
+       icon slot (scale 0.4375, offset x+22/y+22). -->
+  <g transform="translate(22 22) scale(0.4375)">
+    <circle cx="80" cy="80" r="78" fill="url(#g)"/>
+    <g stroke="#FFFFFF" stroke-width="7.3" stroke-linecap="round">
+      <line x1="80" y1="49.6" x2="54.4" y2="68"/>
+      <line x1="54.4" y1="68" x2="64" y2="102.4"/>
+      <line x1="64" y1="102.4" x2="96" y2="102.4"/>
+      <line x1="96" y1="102.4" x2="105.6" y2="68"/>
+      <line x1="105.6" y1="68" x2="80" y2="49.6"/>
+      <line x1="80" y1="80" x2="80" y2="49.6"/>
+      <line x1="80" y1="80" x2="54.4" y2="68"/>
+      <line x1="80" y1="80" x2="64" y2="102.4"/>
+      <line x1="80" y1="80" x2="96" y2="102.4"/>
+      <line x1="80" y1="80" x2="105.6" y2="68"/>
+    </g>
+    <g fill="#FFFFFF">
+      <circle cx="80" cy="49.6" r="10.3"/>
+      <circle cx="54.4" cy="68" r="10.3"/>
+      <circle cx="105.6" cy="68" r="10.3"/>
+      <circle cx="64" cy="102.4" r="10.3"/>
+      <circle cx="96" cy="102.4" r="10.3"/>
+      <circle cx="80" cy="80" r="13.7"/>
+    </g>
   </g>
 
   <!-- Wordmark -->
