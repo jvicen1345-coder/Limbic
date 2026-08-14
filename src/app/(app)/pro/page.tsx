@@ -1,8 +1,25 @@
 import Link from "next/link";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
-import { CrownIcon } from "@/components/icons";
+import { CrownIcon, ChevronRightIcon } from "@/components/icons";
 import { PRO_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
+
+/** The LimbicPRO clinical toolbox — ten tool sections, each its own page under /pro/*
+ *  (see app/(app)/pro/calculators, /decision-rules, etc.), all gated on isPro past the
+ *  overview itself (see components/pro/ProGate.tsx). Rendered as a 2x5 card grid on
+ *  desktop, single column on mobile (see .pro-tools-grid in globals.css). */
+const PRO_TOOLS: { name: string; description: string; count: string; href: string }[] = [
+  { name: "Clinical Calculators", description: "12 validated outcome measures and functional assessments", count: "12 tools", href: "/pro/calculators" },
+  { name: "Decision Rules", description: "8 evidence-based clinical decision rules with scoring", count: "8 rules", href: "/pro/decision-rules" },
+  { name: "Red Flag Screening", description: "6 category screening checklists for urgent referral", count: "6 categories", href: "/pro/red-flags" },
+  { name: "Special Tests", description: "Organized by body region with sensitivity and specificity", count: "7 regions", href: "/pro/special-tests" },
+  { name: "Lab Values", description: "Complete reference with PT-specific clinical implications", count: "6 categories", href: "/pro/lab-values" },
+  { name: "Medications", description: "Common drug classes with exercise and treatment precautions", count: "8 drug classes", href: "/pro/medications" },
+  { name: "Documentation", description: "Templates for evaluations, progress notes, and discharge", count: "7 templates", href: "/pro/documentation" },
+  { name: "CE Tracker", description: "Track continuing education hours toward license renewal", count: "Track hours", href: "/pro/ce-tracker" },
+  { name: "Guidelines", description: "APTA and evidence-based clinical practice guidelines", count: "12 guidelines", href: "/pro/guidelines" },
+  { name: "Home Exercise Programs", description: "Build and export patient HEP programs", count: "Build & save", href: "/hep" },
+];
 
 /**
  * The Pro roadmap: two tiers sharing the same six feature areas, each scoped to what
@@ -232,6 +249,25 @@ export default async function ProOverviewPage() {
           )}
         </div>
       )}
+
+      <h2 style={{ fontSize: 18, margin: "24px 0 4px" }}>The Clinical Toolbox</h2>
+      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 4px" }}>
+        Ten tool sections built for how you actually practice, all in the app, nothing emailed out.
+      </p>
+      <div className="pro-tools-grid">
+        {PRO_TOOLS.map((tool) => (
+          <Link key={tool.href} href={tool.href} className="pro-tool-card">
+            <div className="pro-tool-card-title">{tool.name}</div>
+            <p className="pro-tool-card-desc">{tool.description}</p>
+            <div className="pro-tool-card-footer">
+              <span>{tool.count}</span>
+              <span className="pro-tool-card-arrow">
+                Open <ChevronRightIcon size={13} />
+              </span>
+            </div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

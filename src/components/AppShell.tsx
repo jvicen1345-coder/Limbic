@@ -37,6 +37,7 @@ import {
   ChevronRightIcon,
   ShieldIcon,
   HeartIcon,
+  CreditCardIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -228,7 +229,18 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
 
       <div className="nav-section-label nav-section-label--brand">LimbicPRO</div>
       <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Clinical Calculators" locked={!isPro} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Decision Rules" locked={!isPro} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/pro/red-flags" icon={<AlertCircleIcon />} label="Red Flag Screening" locked={!isPro} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" locked={!isPro} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Lab Values" locked={!isPro} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/pro/medications" icon={<HeartIcon />} label="Medications" locked={!isPro} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/pro/documentation" icon={<FileTextIcon />} label="Documentation" locked={!isPro} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/pro/guidelines" icon={<BookmarkIcon />} label="Guidelines" locked={!isPro} bold={false} onNavigate={onNavigate} />
+      <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
       <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
+      <NavLink href="/profile/membership" icon={<CreditCardIcon />} label="Membership" bold={false} onNavigate={onNavigate} />
 
       <div className="nav-section-label">Health & Wellness</div>
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
@@ -283,13 +295,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <div className="nav-section-label">Articles</div>
       <NavLink href="/news" icon={<ZapIcon />} label="News" badge={aptaCount} bold={false} onNavigate={onNavigate} />
       {hasLicense && <NavLink href="/under-review" icon={<AlertCircleIcon />} label="Retracted Articles" bold={false} onNavigate={onNavigate} />}
-
-      {hasLicense && (
-        <>
-          <div className="nav-section-label">Clinician tools</div>
-          <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" bold={false} onNavigate={onNavigate} />
-        </>
-      )}
 
       {isAdmin && (
         <>
