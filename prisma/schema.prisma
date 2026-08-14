@@ -628,7 +628,7 @@ model ConnexionVisitRequest {
   email         String
   preferredDate DateTime?
   preferredTime String?
-  message       String?
+  visitReason    String?  // dropdown value instead of free text
   status        String    @default("new") // "new" | "contacted" | "scheduled" | "completed"
   createdAt     DateTime  @default(now())
 }

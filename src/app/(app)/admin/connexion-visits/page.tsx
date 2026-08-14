@@ -19,7 +19,7 @@ export default async function AdminConnexionVisitsPage() {
     email: r.email,
     preferredDate: r.preferredDate?.toISOString() ?? null,
     preferredTime: r.preferredTime,
-    message: r.message,
+    visitReason: r.visitReason,
     status: r.status,
     createdAt: r.createdAt.toISOString(),
   }));

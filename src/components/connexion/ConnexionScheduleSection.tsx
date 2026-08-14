@@ -16,7 +16,7 @@ export function ConnexionScheduleSection() {
   const [email, setEmail] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
   const [preferredTime, setPreferredTime] = useState("");
-  const [message, setMessage] = useState("");
+  const [visitReason, setVisitReason] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -28,7 +28,7 @@ export function ConnexionScheduleSection() {
     if (!canSubmit) return;
     setError(null);
     startTransition(async () => {
-      const result = await submitVisitRequest({ name, phone, email, preferredDate, preferredTime, message });
+      const result = await submitVisitRequest({ name, phone, email, preferredDate, preferredTime, visitReason });
       if (result.ok) {
         setSubmitted(true);
       } else {
@@ -127,22 +127,39 @@ export function ConnexionScheduleSection() {
             </div>
           </div>
           <div className="connexion-visit-field">
-            <label htmlFor="connexion-visit-message">Brief message</label>
-            <textarea
-              id="connexion-visit-message"
+            <label htmlFor="connexion-visit-reason">Reason for Visit</label>
+            <select
+              id="connexion-visit-reason"
               className="connexion-visit-input"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Tell us a little about what you're looking for..."
+              value={visitReason}
+              onChange={(e) => setVisitReason(e.target.value)}
               disabled={pending}
-            />
+            >
+              <option value="">Select a reason...</option>
+              <option value="Fall prevention assessment">Fall prevention assessment</option>
+              <option value="Post-hospital recovery">Post-hospital recovery</option>
+              <option value="Aging-in-place planning">Aging-in-place planning</option>
+              <option value="General mobility assessment">General mobility assessment</option>
+              <option value="Caregiver support and training">Caregiver support and training</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
 
           {error && <p className="connexion-visit-error">{error}</p>}
 
+          <p className="connexion-visit-disclaimer">
+            Do not include medical or health information in this form. A Connexion Method representative will
+            contact you to discuss your specific needs privately.
+          </p>
+
           <button type="submit" className="connexion-visit-button" disabled={pending || !canSubmit}>
             {pending ? "Sending…" : "Request Your Visit"}
           </button>
+
+          <p className="connexion-visit-privacy">
+            Your contact information is used only to schedule your visit. See our{" "}
+            <a href="/privacy">Privacy Policy</a> for details.
+          </p>
         </form>
       )}
 

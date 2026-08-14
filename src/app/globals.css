@@ -5941,7 +5941,6 @@ html[data-theme="dark"] .app-root--atrium {
   min-height: 41px;
   box-sizing: border-box;
 }
-textarea.connexion-visit-input { min-height: 76px; resize: vertical; }
 .connexion-visit-input::placeholder { color: #6d7ea3; }
 .connexion-visit-input:focus { outline: 2px solid var(--color-migration-gold); outline-offset: 1px; }
 /* The date/time <input>/<select> render their own native chrome in the browser's default
@@ -5984,6 +5983,18 @@ select.connexion-visit-input { color-scheme: dark; }
 .connexion-visit-button:disabled { opacity: 0.55; cursor: default; }
 .connexion-visit-error { color: #ff8a8a; font-size: 13px; margin: 0; }
 .connexion-visit-confirmation { font-size: 15px; line-height: 1.6; font-weight: 600; color: var(--color-migration-gold); max-width: 420px; margin: 0 auto; }
+.connexion-visit-disclaimer {
+  border-left: 3px solid #c9853a;
+  background: rgba(201, 133, 58, 0.08);
+  font-size: 12px;
+  line-height: 1.5;
+  color: #9fb0d0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin: 0 0 12px;
+}
+.connexion-visit-privacy { font-size: 11px; color: #9fb0d0; text-align: center; margin: 0; }
+.connexion-visit-privacy a { color: var(--color-migration-gold); }
 @media (max-width: 480px) {
   .connexion-visit-field-row { flex-direction: column; }
 }
