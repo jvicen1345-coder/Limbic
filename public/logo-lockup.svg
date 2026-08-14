@@ -7,6 +7,18 @@
       <stop offset="75%" stop-color="#12385D"/>
       <stop offset="100%" stop-color="#092744"/>
     </radialGradient>
+    <!-- Baloo 2 ExtraBold, subset to just the glyphs "Limbic CURATED RESEARCH" actually
+         uses (pyftsubset, ~2KB) and embedded as a data: URI rather than linked, since this
+         file is loaded via a plain <img src>, a context that generally won't fetch external
+         @font-face resources (no network font request, no flash of fallback text, works the
+         same everywhere this file is used). -->
+    <style>
+      @font-face {
+        font-family: "Limbic Wordmark";
+        font-weight: 800;
+        src: url(data:font/woff2;base64,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) format("woff2");
+      }
+    </style>
   </defs>
 
   <!-- Background — matches the app's card surface color, faded so it reads as a soft
@@ -38,12 +50,12 @@
   </g>
 
   <!-- Wordmark -->
-  <text x="150" y="86"
-        font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial"
-        font-size="56" font-weight="750" fill="#1A5276">Limbic</text>
+  <text x="150" y="88"
+        font-family="Limbic Wordmark, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial"
+        font-size="52" font-weight="800" letter-spacing="-1" fill="#1A5276">Limbic</text>
 
   <!-- Tagline -->
   <text x="152" y="112"
-        font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial"
-        font-size="12" letter-spacing="3.2" fill="#4B6B80" opacity="0.9">CURATED RESEARCH</text>
+        font-family="Limbic Wordmark, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial"
+        font-size="12" font-weight="800" letter-spacing="3.2" fill="#4B6B80" opacity="0.9">CURATED RESEARCH</text>
 </svg>
