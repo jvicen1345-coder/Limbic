@@ -131,7 +131,11 @@
 
   --font-heading: var(--font-caprasimo), system-ui, sans-serif;
   --font-heading-weight: 400;
-  --font-body: var(--font-figtree), system-ui, sans-serif;
+  /* Same native system-UI font stack Facebook's web app renders body text with — no
+     webfont download, just each OS's own UI font (San Francisco on macOS/iOS, Segoe UI on
+     Windows, Roboto on Android/Chrome OS, sans-serif as the final fallback). Replaces the
+     self-hosted Figtree google font this pointed to before. */
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
   --space-1: 4.4px;
   --space-2: 8.8px;
