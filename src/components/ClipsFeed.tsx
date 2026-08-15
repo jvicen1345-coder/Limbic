@@ -18,6 +18,18 @@ import type { Clip } from "@/lib/types";
 // same fixed loop every time either.
 const APPEND_WHEN_WITHIN = 2;
 
+// How many slides on either side of the active one keep a real, live YouTube iframe/player
+// mounted — everything further away renders just a thumbnail image instead (see the
+// `mounted` prop below). Without this cap, ClipSlide's old "mount once, never unmount"
+// design meant a long scroll session accumulated one live YouTube player per clip ever
+// scrolled past, forever — on an intentionally infinite-looping feed, that's unbounded
+// growth, and a real report of it crashing the tab entirely ("a problem repeatedly
+// occurred") on mobile Safari after enough scrolling. A window of 2 keeps at most 5
+// simultaneously-live players (active plus 2 each direction) regardless of how many laps
+// have been scrolled through, while still preloading enough neighbors that scrolling one
+// slide in either direction never has to wait for a fresh iframe/player to spin up.
+const MOUNT_WINDOW = 2;
+
 interface ClipSlot {
   clip: Clip;
   /** Unique per physical slide (clip id + lap number) — the clip can repeat across laps,
@@ -30,6 +42,7 @@ function ClipSlide({
   clip,
   slotId,
   active,
+  mounted,
   muted,
   onToggleMute,
   onEnded,
@@ -38,6 +51,11 @@ function ClipSlide({
   clip: Clip;
   slotId: string;
   active: boolean;
+  /** False once this slide scrolls more than MOUNT_WINDOW away from the active one — tears
+   *  down the live iframe/player and falls back to a static thumbnail (see the mount effect
+   *  and render branch below) so a long scroll session doesn't accumulate one live YouTube
+   *  player per clip ever visited. */
+  mounted: boolean;
   muted: boolean;
   onToggleMute: () => void;
   onEnded: () => void;
@@ -53,9 +71,9 @@ function ClipSlide({
   const [apiFailed, setApiFailed] = useState(false);
 
   // Read inside the API callbacks below instead of closed over — those callbacks are
-  // registered once (see the mount effect) and would otherwise only ever see the `active`
-  // value from that first render. Synced via an effect (not during render) since mutating
-  // a ref while rendering is itself unsafe.
+  // registered once per mount (see the effect below, keyed on `mounted`) and would
+  // otherwise only ever see the `active` value from that registration. Synced via an effect
+  // (not during render) since mutating a ref while rendering is itself unsafe.
   const activeRef = useRef(active);
   const onEndedRef = useRef(onEnded);
   useEffect(() => {
@@ -69,11 +87,23 @@ function ClipSlide({
   // (and therefore never reloads the iframe) as the slide activates/deactivates.
   const embedUrl = useMemo(() => youtubeEmbedUrl(clip.url, { muted: true }), [clip.url]);
 
-  // Every clip's iframe mounts once and stays mounted for the component's whole lifetime —
-  // switching the active clip pauses/plays via the API (see below) instead of unmounting,
-  // which is what was leaving previously-active clips frozen (a fresh iframe with no
-  // player state starts from scratch every time it remounts).
+  // Mounts a fresh iframe/player whenever this slide enters the MOUNT_WINDOW (including on
+  // first render, if it's already within it) and tears it back down the moment it leaves —
+  // switching the *active* clip within that window still just pauses/plays via the API
+  // (see the effect below) rather than remounting, which is what was leaving previously-
+  // active-but-still-nearby clips frozen. Only slides actually leaving the window pay the
+  // teardown/rebuild cost, not every scroll.
   useEffect(() => {
+    if (!mounted) {
+      // No setState here — this branch runs synchronously within the effect, and stale
+      // playerReady/apiFailed values are harmless while torn down (playerRef is null, so
+      // the active/muted sync effects below no-op via optional chaining regardless). Both
+      // get corrected for real the moment this slide re-enters the window and the API
+      // promise below settles again.
+      playerRef.current?.destroy();
+      playerRef.current = null;
+      return;
+    }
     if (!iframeRef.current) return;
     let cancelled = false;
     let player: YouTubePlayer | null = null;
@@ -86,6 +116,7 @@ function ClipSlide({
             onReady: () => {
               if (cancelled) return;
               setPlayerReady(true);
+              setApiFailed(false);
               if (activeRef.current) player?.playVideo();
             },
             onStateChange: (event) => {
@@ -108,7 +139,7 @@ function ClipSlide({
       playerRef.current?.destroy();
       playerRef.current = null;
     };
-  }, []);
+  }, [mounted]);
 
   // Plays/pauses the already-mounted player as the active slide changes, rather than
   // mounting/unmounting the iframe itself.
@@ -137,7 +168,7 @@ function ClipSlide({
   return (
     <section className="clip-slide" data-slot-id={slotId}>
       <div className="clip-media" onClick={onToggleMute}>
-        {embedUrl ? (
+        {mounted && embedUrl ? (
           <iframe
             ref={iframeRef}
             src={embedUrl}
@@ -213,9 +244,31 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
     return out;
   }, [lapOrders]);
 
+  const activeIndex = useMemo(() => slots.findIndex((s) => s.slotId === activeSlotId), [slots, activeSlotId]);
+
+  // Read inside the observer callback below instead of closed over, so the observer itself
+  // (created once — see the next effect) always sees the latest lap without needing to be
+  // recreated every time one is appended.
+  const slotsRef = useRef(slots);
+  const clipsRef = useRef(clips);
+  useEffect(() => {
+    slotsRef.current = slots;
+    clipsRef.current = clips;
+  });
+
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // Creates the IntersectionObserver exactly once for the page's lifetime, not once per lap
+  // appended. Recreating it on every `slots` change (the previous approach) re-observed
+  // every slide from scratch each time — IntersectionObserver fires an immediate callback
+  // for any element that already satisfies the threshold the moment observe() is called on
+  // it, so the still-active slide re-fired on every single recreation. Wasteful at best;
+  // avoiding it also rules out any risk of the still-active slide's repeated re-fire
+  // nudging the append check (below) into triggering more laps than the reader actually
+  // scrolled to.
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || slots.length === 0) return;
+    if (!container) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -227,18 +280,38 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
         if (!slotId) return;
         setActiveSlotId(slotId);
 
-        const index = slots.findIndex((s) => s.slotId === slotId);
-        if (index !== -1 && index >= slots.length - APPEND_WHEN_WITHIN && clips.length > 0) {
-          setLapOrders((prev) => [...prev, shuffle(clips)]);
+        const currentSlots = slotsRef.current;
+        const currentClips = clipsRef.current;
+        const index = currentSlots.findIndex((s) => s.slotId === slotId);
+        if (index !== -1 && index >= currentSlots.length - APPEND_WHEN_WITHIN && currentClips.length > 0) {
+          setLapOrders((prev) => [...prev, shuffle(currentClips)]);
         }
       },
       { root: container, threshold: [0.6] }
     );
+    observerRef.current = observer;
 
+    return () => {
+      observer.disconnect();
+      observerRef.current = null;
+    };
+  }, []);
+
+  // Observes only newly-appended slides as new laps arrive, instead of re-observing
+  // everything (which is what caused the cascade described above) — `slots` only ever
+  // grows and never reorders, so a simple "how many have been observed so far" count is
+  // enough to find just the delta each time.
+  const observedCountRef = useRef(0);
+  useEffect(() => {
+    const container = containerRef.current;
+    const observer = observerRef.current;
+    if (!container || !observer) return;
     const slides = container.querySelectorAll("[data-slot-id]");
-    slides.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, [slots, clips]);
+    for (let i = observedCountRef.current; i < slides.length; i++) {
+      observer.observe(slides[i]);
+    }
+    observedCountRef.current = slides.length;
+  }, [slots]);
 
   // Marks the active clip "seen" (fire-and-forget) so the ordering on the next visit puts
   // it after whatever's still unseen — only fires on an actual change of active clip, not
@@ -263,12 +336,13 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
   return (
     <div className="clips-feed-wrap">
       <div className="clips-feed" ref={containerRef}>
-        {slots.map((slot) => (
+        {slots.map((slot, i) => (
           <ClipSlide
             key={slot.slotId}
             clip={slot.clip}
             slotId={slot.slotId}
             active={slot.slotId === activeSlotId}
+            mounted={activeIndex === -1 || Math.abs(i - activeIndex) <= MOUNT_WINDOW}
             muted={muted}
             onToggleMute={() => setMuted((m) => !m)}
             onEnded={() => advanceToNext(slot.slotId)}
