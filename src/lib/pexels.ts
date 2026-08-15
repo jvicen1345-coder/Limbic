@@ -6,8 +6,13 @@ const FETCH_TIMEOUT_MS = 6000;
 // same query (e.g. every orthopedic article with no more specific title match all search
 // "Orthopedic physical therapy rehabilitation"), and requesting just 1 result would mean
 // every one of them shows the literal same photo. Picking from a pool per-article instead
-// (see fetchTopicPhoto's seed param) spreads them out.
-const CANDIDATES_PER_QUERY = 15;
+// (see fetchTopicPhoto's seed param) spreads them out. 80 is Pexels' own per_page max — a
+// generic specialty-only query (the highest-volume case, since it's shared by every article
+// whose title doesn't match a more specific TOPIC_KEYWORDS term — see lib/topic-image.ts)
+// can easily see several dozen articles in a week, and the previous pool of 15 made repeats
+// within that same week likely; 80 pushes that back out to a size a week's worth of articles
+// on one topic isn't likely to exhaust.
+const CANDIDATES_PER_QUERY = 80;
 
 interface PexelsPhoto {
   src: { large: string };
