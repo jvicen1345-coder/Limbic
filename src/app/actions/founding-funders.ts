@@ -159,6 +159,7 @@ export async function createFoundingFunderCheckout(input: {
   }
 
   if (!stripeEnabled()) {
+    console.error("[founding-funders] checkout blocked: STRIPE_SECRET_KEY is not set in this environment.");
     return { ok: false, error: "Payments aren't set up yet, check back soon." };
   }
 
@@ -168,6 +169,7 @@ export async function createFoundingFunderCheckout(input: {
   // Add price ID to STRIPE_FOUNDING_FUNDER_PRICE_ID in .env and Vercel
   const priceId = process.env.STRIPE_FOUNDING_FUNDER_PRICE_ID;
   if (!priceId) {
+    console.error("[founding-funders] checkout blocked: STRIPE_FOUNDING_FUNDER_PRICE_ID is not set in this environment.");
     return { ok: false, error: "Payments aren't set up yet, check back soon." };
   }
 
