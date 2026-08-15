@@ -68,36 +68,44 @@ const VIDEOS_STATUS_BATCH_SIZE = 50;
  * searchYouTube does, since a broken status check should degrade to "trust nothing new"
  * rather than crash the whole live pool.
  */
-async function embeddableVideoIds(videoIds: string[]): Promise<Set<string>> {
-  const verified = new Set<string>();
-  for (let i = 0; i < videoIds.length; i += VIDEOS_STATUS_BATCH_SIZE) {
-    const batch = videoIds.slice(i, i + VIDEOS_STATUS_BATCH_SIZE);
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-    try {
-      const params = new URLSearchParams({ part: "status", id: batch.join(","), key: YOUTUBE_API_KEY! });
-      const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?${params}`, {
-        signal: controller.signal,
-        next: { revalidate: 21600 },
-      });
-      if (!res.ok) {
-        const body = await res.text().catch(() => "");
-        console.error(`[clips-live] YouTube videos.list status check failed (${res.status}): ${body.slice(0, 500)}`);
-        continue;
-      }
-      const json = (await res.json()) as { items?: YouTubeVideoStatusItem[] };
-      for (const item of json.items ?? []) {
-        if (item.id && item.status?.embeddable && item.status.privacyStatus === "public") {
-          verified.add(item.id);
-        }
-      }
-    } catch (err) {
-      console.error("[clips-live] YouTube videos.list status check threw:", err);
-    } finally {
-      clearTimeout(timer);
+async function fetchEmbeddableBatch(batch: string[]): Promise<string[]> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const params = new URLSearchParams({ part: "status", id: batch.join(","), key: YOUTUBE_API_KEY! });
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?${params}`, {
+      signal: controller.signal,
+      next: { revalidate: 21600 },
+    });
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      console.error(`[clips-live] YouTube videos.list status check failed (${res.status}): ${body.slice(0, 500)}`);
+      return [];
     }
+    const json = (await res.json()) as { items?: YouTubeVideoStatusItem[] };
+    return (json.items ?? [])
+      .filter((item) => item.id && item.status?.embeddable && item.status.privacyStatus === "public")
+      .map((item) => item.id!);
+  } catch (err) {
+    console.error("[clips-live] YouTube videos.list status check threw:", err);
+    return [];
+  } finally {
+    clearTimeout(timer);
   }
-  return verified;
+}
+
+// One videos.list call per 50 ids (the API's own per-call max) — run in parallel rather
+// than awaited one at a time in sequence, since with a few hundred candidates that was
+// several full network round trips stacked back-to-back (each up to FETCH_TIMEOUT_MS) on
+// top of searchYouTube's own already-parallel queries above, which is what was making a
+// cold-cache /clips load feel like it hung.
+async function embeddableVideoIds(videoIds: string[]): Promise<Set<string>> {
+  const batches: string[][] = [];
+  for (let i = 0; i < videoIds.length; i += VIDEOS_STATUS_BATCH_SIZE) {
+    batches.push(videoIds.slice(i, i + VIDEOS_STATUS_BATCH_SIZE));
+  }
+  const results = await Promise.all(batches.map(fetchEmbeddableBatch));
+  return new Set(results.flat());
 }
 
 async function searchYouTube(query: string): Promise<YouTubeSearchItem[]> {
