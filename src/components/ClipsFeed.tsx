@@ -46,6 +46,11 @@ function ClipSlide({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerRef = useRef<YouTubePlayer | null>(null);
   const [playerReady, setPlayerReady] = useState(false);
+  // Set when loadYouTubeIframeApi() rejects (blocked script, network failure, timeout —
+  // see lib/youtube-iframe-api.ts) — without the API, playback can never be driven
+  // programmatically, so the iframe falls back to native YouTube controls (see the
+  // pointerEvents toggle below) instead of sitting there frozen and unclickable forever.
+  const [apiFailed, setApiFailed] = useState(false);
 
   // Read inside the API callbacks below instead of closed over — those callbacks are
   // registered once (see the mount effect) and would otherwise only ever see the `active`
@@ -73,24 +78,30 @@ function ClipSlide({
     let cancelled = false;
     let player: YouTubePlayer | null = null;
 
-    loadYouTubeIframeApi().then((YT) => {
-      if (cancelled || !iframeRef.current) return;
-      player = new YT.Player(iframeRef.current, {
-        events: {
-          onReady: () => {
-            if (cancelled) return;
-            setPlayerReady(true);
-            if (activeRef.current) player?.playVideo();
+    loadYouTubeIframeApi()
+      .then((YT) => {
+        if (cancelled || !iframeRef.current) return;
+        player = new YT.Player(iframeRef.current, {
+          events: {
+            onReady: () => {
+              if (cancelled) return;
+              setPlayerReady(true);
+              if (activeRef.current) player?.playVideo();
+            },
+            onStateChange: (event) => {
+              if (!cancelled && event.data === YT.PlayerState.ENDED && activeRef.current) {
+                onEndedRef.current();
+              }
+            },
           },
-          onStateChange: (event) => {
-            if (!cancelled && event.data === YT.PlayerState.ENDED && activeRef.current) {
-              onEndedRef.current();
-            }
-          },
-        },
+        });
+        playerRef.current = player;
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("[clips] YouTube IFrame API failed to load, falling back to native controls:", err);
+        setApiFailed(true);
       });
-      playerRef.current = player;
-    });
 
     return () => {
       cancelled = true;
@@ -136,7 +147,10 @@ function ClipSlide({
             // onClick (our mute toggle) instead of landing inside the iframe's own
             // browsing context, which would otherwise silently swallow the click (never
             // reaching our handler at all) and show YouTube's own big play/pause icon.
-            style={{ width: "100%", height: "100%", border: "none", pointerEvents: "none" }}
+            // Re-enabled when the IFrame API failed to load (see the mount effect above):
+            // with no API, nothing ever calls playVideo() for this clip, so native taps
+            // reaching YouTube's own play button are the only way it plays at all.
+            style={{ width: "100%", height: "100%", border: "none", pointerEvents: apiFailed ? "auto" : "none" }}
           />
         ) : thumbUrl ? (
           // eslint-disable-next-line @next/next/no-img-element -- external, unconfigured domain
