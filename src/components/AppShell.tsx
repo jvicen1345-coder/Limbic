@@ -209,6 +209,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/home" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
+      <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
 
       <div className="nav-section-label nav-section-label--connexion">The Connexion Method</div>
       <NavLink href="/connexion" icon={<ShieldIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
@@ -269,7 +270,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/wellness/exercises" icon={<DumbbellIcon />} label="Top 10 Exercises" bold={false} onNavigate={onNavigate} />
       <NavLink href="/wellness/continuum" icon={<RefreshIcon />} label="Rep Continuum" bold={false} onNavigate={onNavigate} />
 
-      <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
       <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" onNavigate={onNavigate} />
 
       <button
