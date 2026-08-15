@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Caprasimo, Figtree } from "next/font/google";
+import { Caprasimo } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { TopLoadingBar } from "@/components/TopLoadingBar";
@@ -18,13 +18,10 @@ const caprasimo = Caprasimo({
   display: "swap",
 });
 
-// The base body font — see globals.css's --font-body, which points here.
-const figtree = Figtree({
-  weight: ["400", "500", "600", "700", "800", "900"],
-  subsets: ["latin"],
-  variable: "--font-figtree",
-  display: "swap",
-});
+// The base body font used to be self-hosted Figtree — now the same native system-UI stack
+// Facebook's web app renders with (no webfont download at all: San Francisco on macOS/iOS,
+// Segoe UI on Windows, Roboto on Android/Chrome OS), set directly on --font-body in
+// globals.css rather than loaded here.
 
 export const metadata: Metadata = {
   // Resolves every relative URL in every page's metadata (openGraph.images, etc.) to an
@@ -69,7 +66,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${caprasimo.variable} ${figtree.variable}`}
+      className={caprasimo.variable}
       suppressHydrationWarning
     >
       <head>
