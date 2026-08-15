@@ -69,6 +69,14 @@ function ClipSlide({
   // programmatically, so the iframe falls back to native YouTube controls (see the
   // pointerEvents toggle below) instead of sitting there frozen and unclickable forever.
   const [apiFailed, setApiFailed] = useState(false);
+  // Set on the player's own onError event — distinct from apiFailed: the IFrame API loaded
+  // and this player initialized fine, but this specific video can't actually be played
+  // embedded (owner disabled embedding, video is private/removed, etc — YouTube error codes
+  // 101/150/100/... see the onError handler below). That plays fine at youtube.com directly
+  // (nothing wrong with the video itself or the reader's browser) but renders as a blank/
+  // black box forever inside our iframe with no visible error, since native controls are
+  // hidden here (pointer-events: none) — falls back to the thumbnail image instead once set.
+  const [playbackError, setPlaybackError] = useState(false);
 
   // Read inside the API callbacks below instead of closed over — those callbacks are
   // registered once per mount (see the effect below, keyed on `mounted`) and would
@@ -76,9 +84,11 @@ function ClipSlide({
   // (not during render) since mutating a ref while rendering is itself unsafe.
   const activeRef = useRef(active);
   const onEndedRef = useRef(onEnded);
+  const clipUrlRef = useRef(clip.url);
   useEffect(() => {
     activeRef.current = active;
     onEndedRef.current = onEnded;
+    clipUrlRef.current = clip.url;
   });
 
   const thumbUrl = youtubeThumbnailUrl(clip.url);
@@ -117,12 +127,23 @@ function ClipSlide({
               if (cancelled) return;
               setPlayerReady(true);
               setApiFailed(false);
+              setPlaybackError(false);
               if (activeRef.current) player?.playVideo();
             },
             onStateChange: (event) => {
               if (!cancelled && event.data === YT.PlayerState.ENDED && activeRef.current) {
                 onEndedRef.current();
               }
+            },
+            // Fires for e.g. error 101/150 (embedding disabled by the video's owner), 100
+            // (video removed/private), 2 (bad video id) — all cases where the video plays
+            // fine at youtube.com directly but can never play inside this iframe, so no
+            // amount of retrying helps. Falls back to the thumbnail (see the render branch
+            // below) instead of leaving a dead black box with no visible explanation.
+            onError: (event) => {
+              if (cancelled) return;
+              console.error("[clips] YouTube playback error for", clipUrlRef.current, "code:", event.data);
+              setPlaybackError(true);
             },
           },
         });
@@ -168,7 +189,7 @@ function ClipSlide({
   return (
     <section className="clip-slide" data-slot-id={slotId}>
       <div className="clip-media" onClick={onToggleMute}>
-        {mounted && embedUrl ? (
+        {mounted && embedUrl && !playbackError ? (
           <iframe
             ref={iframeRef}
             src={embedUrl}

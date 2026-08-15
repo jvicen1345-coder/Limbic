@@ -23,6 +23,7 @@ interface YouTubeNamespace {
       events?: {
         onReady?: (event: YouTubePlayerEvent) => void;
         onStateChange?: (event: YouTubePlayerEvent) => void;
+        onError?: (event: YouTubePlayerEvent) => void;
       };
     }
   ) => YouTubePlayer;
