@@ -869,9 +869,9 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
    since dark's sidebar background didn't change. */
 html:not([data-theme="dark"]) .nav-section-label { color: #5c554a; }
 html[data-theme="dark"] .nav-section-label { color: #8a8075; }
-/* Renders its literal text as-typed ("LimbicPRO") instead of the uppercase transform
-   every other section label gets, so "PRO" reads as a distinct, deliberate suffix rather
-   than being flattened into the same all-caps treatment as "Limbic". */
+/* Renders its literal text as-typed ("LIMBIC Pro") instead of the uppercase transform
+   every other section label gets, so "Pro" reads as a distinct, deliberate suffix rather
+   than being flattened into the same all-caps treatment as "LIMBIC". */
 .nav-section-label--brand { text-transform: none; }
 
 /* A collapsible section label (currently just Nexus — see AppShell.tsx) is the same

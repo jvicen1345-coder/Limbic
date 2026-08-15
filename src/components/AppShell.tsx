@@ -241,7 +241,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
         aria-expanded={proExpanded}
         onClick={() => setProExpanded((v) => !v)}
       >
-        LimbicPRO
+        LIMBIC Pro
         <ChevronRightIcon size={13} className={proExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
       </button>
       {proExpanded && (
