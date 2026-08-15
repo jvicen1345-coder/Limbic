@@ -203,6 +203,19 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
   const [proExpanded, setProExpanded] = useState(
     pathname.startsWith("/pro") || pathname.startsWith("/hep") || pathname.startsWith("/agent")
   );
+  // Every remaining section below follows the exact same collapsed-unless-already-there
+  // pattern as Nexus/LimbicPRO above, so the whole sidebar stays short by default regardless
+  // of how many sections/links get added to any one of them over time.
+  const [connexionExpanded, setConnexionExpanded] = useState(pathname.startsWith("/connexion"));
+  const [studentExpanded, setStudentExpanded] = useState(
+    pathname.startsWith("/student") || pathname.startsWith("/boards")
+  );
+  const [wellnessExpanded, setWellnessExpanded] = useState(pathname.startsWith("/wellness"));
+  const [savedExpanded, setSavedExpanded] = useState(pathname.startsWith("/saved"));
+  const [articlesExpanded, setArticlesExpanded] = useState(
+    pathname.startsWith("/news") || pathname.startsWith("/under-review")
+  );
+  const [adminExpanded, setAdminExpanded] = useState(pathname.startsWith("/admin"));
 
   return (
     <>
@@ -211,27 +224,51 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
 
-      <div className="nav-section-label nav-section-label--connexion">The Connexion Method</div>
-      <NavLink href="/connexion" icon={<ShieldIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/connexion/afit" icon={<DumbbellIcon />} label="AFIT Assessment" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/connexion/protocol" icon={<FileTextIcon />} label="What to Expect" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/connexion/safety-score" icon={<ActivityIcon />} label="Safety Score" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/connexion/caregiver" icon={<HeartIcon />} label="Caregiver Education" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/connexion/delia" icon={<ProfileIcon />} label="About Delia Vicencio, PT, DPT" bold={false} onNavigate={onNavigate} />
+      <button
+        type="button"
+        className="nav-section-label nav-section-label--connexion nav-section-label--toggle"
+        aria-expanded={connexionExpanded}
+        onClick={() => setConnexionExpanded((v) => !v)}
+      >
+        The Connexion Method
+        <ChevronRightIcon size={13} className={connexionExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
+      </button>
+      {connexionExpanded && (
+        <>
+          <NavLink href="/connexion" icon={<ShieldIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/connexion/afit" icon={<DumbbellIcon />} label="AFIT Assessment" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/connexion/protocol" icon={<FileTextIcon />} label="What to Expect" locked={!isPro} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/connexion/safety-score" icon={<ActivityIcon />} label="Safety Score" locked={!isPro} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/connexion/caregiver" icon={<HeartIcon />} label="Caregiver Education" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/connexion/delia" icon={<ProfileIcon />} label="About Delia Vicencio, PT, DPT" bold={false} onNavigate={onNavigate} />
+        </>
+      )}
 
       {isStudent && (
         <>
-          <div className="nav-section-label">Limbic Student</div>
-          <NavLink href="/student" icon={<GraduationCapIcon />} label="Atrium" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" bold={false} onNavigate={onNavigate} />
-          <NavLink
-            href="/student/specialties"
-            icon={<BandageIcon />}
-            label="Specialties"
-            exact={false}
-            bold={false}
-            onNavigate={onNavigate}
-          />
+          <button
+            type="button"
+            className="nav-section-label nav-section-label--toggle"
+            aria-expanded={studentExpanded}
+            onClick={() => setStudentExpanded((v) => !v)}
+          >
+            Limbic Student
+            <ChevronRightIcon size={13} className={studentExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
+          </button>
+          {studentExpanded && (
+            <>
+              <NavLink href="/student" icon={<GraduationCapIcon />} label="Atrium" bold={false} onNavigate={onNavigate} />
+              <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" bold={false} onNavigate={onNavigate} />
+              <NavLink
+                href="/student/specialties"
+                icon={<BandageIcon />}
+                label="Specialties"
+                exact={false}
+                bold={false}
+                onNavigate={onNavigate}
+              />
+            </>
+          )}
         </>
       )}
 
@@ -261,14 +298,26 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
         </>
       )}
 
-      <div className="nav-section-label">Health & Wellness</div>
-      <NavLink href="/wellness" icon={<WellnessIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/wellness/metrics" icon={<ActivityIcon />} label="Metrics" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/wellness/activity" icon={<ZapIcon />} label="Activity Log" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/wellness/nutrition" icon={<AppleIcon />} label="Nutrition" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/wellness/assess" icon={<CheckCircleIcon />} label="Assess Yourself" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/wellness/exercises" icon={<DumbbellIcon />} label="Top 10 Exercises" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/wellness/continuum" icon={<RefreshIcon />} label="Rep Continuum" bold={false} onNavigate={onNavigate} />
+      <button
+        type="button"
+        className="nav-section-label nav-section-label--toggle"
+        aria-expanded={wellnessExpanded}
+        onClick={() => setWellnessExpanded((v) => !v)}
+      >
+        Health & Wellness
+        <ChevronRightIcon size={13} className={wellnessExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
+      </button>
+      {wellnessExpanded && (
+        <>
+          <NavLink href="/wellness" icon={<WellnessIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/wellness/metrics" icon={<ActivityIcon />} label="Metrics" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/wellness/activity" icon={<ZapIcon />} label="Activity Log" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/wellness/nutrition" icon={<AppleIcon />} label="Nutrition" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/wellness/assess" icon={<CheckCircleIcon />} label="Assess Yourself" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/wellness/exercises" icon={<DumbbellIcon />} label="Top 10 Exercises" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/wellness/continuum" icon={<RefreshIcon />} label="Rep Continuum" bold={false} onNavigate={onNavigate} />
+        </>
+      )}
 
       <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" onNavigate={onNavigate} />
 
@@ -304,22 +353,58 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
         </>
       )}
 
-      <div className="nav-section-label">Saved</div>
-      <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/saved/guidelines" icon={<CheckCircleIcon />} label="Saved Guidelines" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/saved/wellness" icon={<WellnessIcon />} label="Saved Wellness" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/saved/clips" icon={<FilmIcon />} label="Saved Clips" bold={false} onNavigate={onNavigate} />
+      <button
+        type="button"
+        className="nav-section-label nav-section-label--toggle"
+        aria-expanded={savedExpanded}
+        onClick={() => setSavedExpanded((v) => !v)}
+      >
+        Saved
+        <ChevronRightIcon size={13} className={savedExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
+      </button>
+      {savedExpanded && (
+        <>
+          <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/saved/guidelines" icon={<CheckCircleIcon />} label="Saved Guidelines" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/saved/wellness" icon={<WellnessIcon />} label="Saved Wellness" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/saved/clips" icon={<FilmIcon />} label="Saved Clips" bold={false} onNavigate={onNavigate} />
+        </>
+      )}
 
-      <div className="nav-section-label">Articles</div>
-      <NavLink href="/news" icon={<ZapIcon />} label="News" badge={aptaCount} bold={false} onNavigate={onNavigate} />
-      {hasLicense && <NavLink href="/under-review" icon={<AlertCircleIcon />} label="Retracted Articles" bold={false} onNavigate={onNavigate} />}
+      <button
+        type="button"
+        className="nav-section-label nav-section-label--toggle"
+        aria-expanded={articlesExpanded}
+        onClick={() => setArticlesExpanded((v) => !v)}
+      >
+        Articles
+        <ChevronRightIcon size={13} className={articlesExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
+      </button>
+      {articlesExpanded && (
+        <>
+          <NavLink href="/news" icon={<ZapIcon />} label="News" badge={aptaCount} bold={false} onNavigate={onNavigate} />
+          {hasLicense && <NavLink href="/under-review" icon={<AlertCircleIcon />} label="Retracted Articles" bold={false} onNavigate={onNavigate} />}
+        </>
+      )}
 
       {isAdmin && (
         <>
-          <div className="nav-section-label">Admin</div>
-          <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/admin/licenses" icon={<CheckCircleIcon />} label="License Queue" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/admin/connexion-visits" icon={<ShieldIcon />} label="Connexion Visits" bold={false} onNavigate={onNavigate} />
+          <button
+            type="button"
+            className="nav-section-label nav-section-label--toggle"
+            aria-expanded={adminExpanded}
+            onClick={() => setAdminExpanded((v) => !v)}
+          >
+            Admin
+            <ChevronRightIcon size={13} className={adminExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
+          </button>
+          {adminExpanded && (
+            <>
+              <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
+              <NavLink href="/admin/licenses" icon={<CheckCircleIcon />} label="License Queue" bold={false} onNavigate={onNavigate} />
+              <NavLink href="/admin/connexion-visits" icon={<ShieldIcon />} label="Connexion Visits" bold={false} onNavigate={onNavigate} />
+            </>
+          )}
         </>
       )}
 
