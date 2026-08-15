@@ -37,7 +37,6 @@ import {
   ChevronRightIcon,
   ShieldIcon,
   HeartIcon,
-  CreditCardIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -196,6 +195,14 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
   // preference from here on, not tied to route changes, so a manual toggle isn't fought by
   // navigating between the four Nexus sub-pages themselves.
   const [nexusExpanded, setNexusExpanded] = useState(pathname.startsWith("/nexus"));
+  // Same collapsed-unless-already-there reasoning as Nexus above — this section grew to 12
+  // links once the LimbicPRO clinical toolbox shipped (see app/(app)/pro/*), which is too
+  // long to sit permanently expanded in a sidebar that still has six more sections below
+  // it. /agent and /hep aren't nested under /pro but only ever show up as links from this
+  // section, so they count as "already there" too.
+  const [proExpanded, setProExpanded] = useState(
+    pathname.startsWith("/pro") || pathname.startsWith("/hep") || pathname.startsWith("/agent")
+  );
 
   return (
     <>
@@ -227,20 +234,31 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
         </>
       )}
 
-      <div className="nav-section-label nav-section-label--brand">LimbicPRO</div>
-      <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Clinical Calculators" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Decision Rules" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/pro/red-flags" icon={<AlertCircleIcon />} label="Red Flag Screening" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Lab Values" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/pro/medications" icon={<HeartIcon />} label="Medications" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/pro/documentation" icon={<FileTextIcon />} label="Documentation" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/pro/guidelines" icon={<BookmarkIcon />} label="Guidelines" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
-      <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
-      <NavLink href="/profile/membership" icon={<CreditCardIcon />} label="Membership" bold={false} onNavigate={onNavigate} />
+      <button
+        type="button"
+        className="nav-section-label nav-section-label--brand nav-section-label--toggle"
+        aria-expanded={proExpanded}
+        onClick={() => setProExpanded((v) => !v)}
+      >
+        LimbicPRO
+        <ChevronRightIcon size={13} className={proExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
+      </button>
+      {proExpanded && (
+        <>
+          <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Clinical Calculators" locked={!isPro} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Decision Rules" locked={!isPro} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/pro/red-flags" icon={<AlertCircleIcon />} label="Red Flag Screening" locked={!isPro} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" locked={!isPro} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Lab Values" locked={!isPro} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/pro/medications" icon={<HeartIcon />} label="Medications" locked={!isPro} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/pro/documentation" icon={<FileTextIcon />} label="Documentation" locked={!isPro} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/pro/guidelines" icon={<BookmarkIcon />} label="Guidelines" locked={!isPro} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
+          <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
+        </>
+      )}
 
       <div className="nav-section-label">Health & Wellness</div>
       <NavLink href="/wellness" icon={<WellnessIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
