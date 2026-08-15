@@ -3,10 +3,10 @@
 
 /** Section 5 shows the "coming soon" waitlist form while this is false, and the "Claim a
  *  Spot" button (self-serve $40 Stripe Checkout — see ClaimSpotButton.tsx,
- *  createFoundingFunderCheckout) once it's true. Flip to true on launch day, after
+ *  createFoundingFunderCheckout) once it's true. Flipped true on launch day, after
  *  completing the "Founding Funders payments" setup steps in README.md (creating the $40
  *  Stripe product/price and setting STRIPE_FOUNDING_FUNDER_PRICE_ID). */
-export const FOUNDING_FUNDERS_OPEN = false;
+export const FOUNDING_FUNDERS_OPEN = true;
 
 /** The Founding 25 — fixed, not configurable per round (see FoundingFunder.round in
  *  schema.prisma for how a hypothetical future second cohort would be modeled instead). */
