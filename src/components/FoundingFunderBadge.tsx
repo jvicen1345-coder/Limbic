@@ -2,8 +2,11 @@
  *  light/dark theme (a deliberate one-off "special" look, not themed via the usual
  *  --color-* tokens). Pass `number` for the full "Founding Funder No. {n}" version (Profile);
  *  omit it for the short "Founding Funder" version used everywhere else a name appears
- *  (Nexus feed, comments). */
-export function FoundingFunderBadge({ number }: { number?: number | null }) {
+ *  (Nexus feed, comments). `numberOnly` renders just the bare number — the Home page
+ *  greeting's compact version, meant to be wrapped in a Link out to /founding-funders. */
+export function FoundingFunderBadge({ number, numberOnly }: { number?: number | null; numberOnly?: boolean }) {
+  const content =
+    numberOnly && number != null ? String(number) : number != null ? `Founding Funder No. ${number}` : "Founding Funder";
   return (
     <span
       style={{
@@ -20,7 +23,7 @@ export function FoundingFunderBadge({ number }: { number?: number | null }) {
         whiteSpace: "nowrap",
       }}
     >
-      {number != null ? `Founding Funder No. ${number}` : "Founding Funder"}
+      {content}
     </span>
   );
 }

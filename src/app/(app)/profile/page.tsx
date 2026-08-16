@@ -24,6 +24,7 @@ import { PROFILE_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
 import { getFoundingFunderStatus } from "@/lib/founding-funders";
 import { FoundingFunderBadge } from "@/components/FoundingFunderBadge";
+import { FoundingFunderBadgeCard } from "@/components/FoundingFunderBadgeCard";
 
 // The long tail of keyword topics not already covered by SUGGESTED_TOPICS — comes from a
 // fixed vocabulary rather than whatever's currently loaded (see allKnownKeywordTopics).
@@ -65,7 +66,7 @@ export default async function ProfilePage() {
   return (
     <div className="screen-pad page-enter">
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Profile</h1>
-      {foundingFunderStatus.isFunder && (
+      {foundingFunderStatus.isFunder && !user.foundingFunderBadgeHidden && (
         <div style={{ marginBottom: 8 }}>
           <FoundingFunderBadge number={foundingFunderStatus.number} />
         </div>
@@ -78,6 +79,10 @@ export default async function ProfilePage() {
         <ReadingStreakCard streakDays={user.streakDays} />
         <GamesStreakCard streakDays={user.gamesStreakDays} />
       </div>
+
+      {foundingFunderStatus.isFunder && (
+        <FoundingFunderBadgeCard hidden={user.foundingFunderBadgeHidden} number={foundingFunderStatus.number} />
+      )}
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">About you</div>

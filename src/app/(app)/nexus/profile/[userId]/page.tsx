@@ -17,7 +17,16 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
 
   const person = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, name: true, headline: true, bio: true, specialty: true, practiceState: true, nexusOptIn: true },
+    select: {
+      id: true,
+      name: true,
+      headline: true,
+      bio: true,
+      specialty: true,
+      practiceState: true,
+      nexusOptIn: true,
+      foundingFunderBadgeHidden: true,
+    },
   });
   const isSelf = person?.id === user.id;
   // A profile only exists in Nexus terms while its owner is opted in — someone who left
@@ -29,11 +38,15 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
       where: { authorId: person.id },
       orderBy: { createdAt: "desc" },
       include: {
-        author: { select: { id: true, name: true, headline: true, foundingFunder: { select: { paymentStatus: true } } } },
+        author: {
+          select: { id: true, name: true, headline: true, foundingFunderBadgeHidden: true, foundingFunder: { select: { paymentStatus: true } } },
+        },
         likes: { select: { userId: true } },
         comments: {
           orderBy: { createdAt: "asc" },
-          include: { author: { select: { id: true, name: true, foundingFunder: { select: { paymentStatus: true } } } } },
+          include: {
+            author: { select: { id: true, name: true, foundingFunderBadgeHidden: true, foundingFunder: { select: { paymentStatus: true } } } },
+          },
         },
       },
     }),
@@ -55,7 +68,7 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
       id: p.author.id,
       name: p.author.name,
       headline: p.author.headline,
-      isFoundingFunder: p.author.foundingFunder?.paymentStatus === "confirmed",
+      isFoundingFunder: p.author.foundingFunder?.paymentStatus === "confirmed" && !p.author.foundingFunderBadgeHidden,
     },
     likeCount: p.likes.length,
     likedByMe: p.likes.some((l) => l.userId === user.id),
@@ -66,7 +79,7 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
       author: {
         id: c.author.id,
         name: c.author.name,
-        isFoundingFunder: c.author.foundingFunder?.paymentStatus === "confirmed",
+        isFoundingFunder: c.author.foundingFunder?.paymentStatus === "confirmed" && !c.author.foundingFunderBadgeHidden,
       },
     })),
   }));
@@ -81,7 +94,7 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <div style={{ fontFamily: "var(--font-heading)", fontSize: 19 }}>{person.name}</div>
-              {personFoundingFunder.isFunder && <FoundingFunderBadge />}
+              {personFoundingFunder.isFunder && !person.foundingFunderBadgeHidden && <FoundingFunderBadge />}
             </div>
             {person.headline && <div style={{ fontSize: 13, color: "var(--color-neutral-700)" }}>{person.headline}</div>}
             <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
@@ -112,7 +125,7 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
               key={post.id}
               post={post}
               currentUserName={user.name}
-              currentUserIsFoundingFunder={currentUserFoundingFunder.isFunder}
+              currentUserIsFoundingFunder={currentUserFoundingFunder.isFunder && !user.foundingFunderBadgeHidden}
             />
           ))}
         </div>
