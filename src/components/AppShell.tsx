@@ -135,7 +135,10 @@ function NavLink({
  *  NavLink (icon left, label, right-aligned element) rather than a distinct all-caps
  *  section-header style, so every top-level sidebar item reads as one consistent list. The
  *  chevron in NavLink's usual right-aligned slot is what a badge/lock pill would otherwise
- *  occupy, rotating 90° when expanded. */
+ *  occupy, rotating 90° when expanded. A faint permanent background wash (rather than
+ *  nothing until active/hovered, like a plain NavLink) is the one deliberate difference from
+ *  a regular link — enough to read "this opens a list" at a glance without bringing back the
+ *  old blocky all-caps section-header look. */
 function NavToggle({
   icon,
   label,
@@ -148,7 +151,12 @@ function NavToggle({
   onClick: () => void;
 }) {
   return (
-    <button type="button" style={sidebarNavStyle(false, true)} aria-expanded={expanded} onClick={onClick}>
+    <button
+      type="button"
+      style={{ ...sidebarNavStyle(false, true), background: "color-mix(in srgb, var(--color-text) 6%, transparent)" }}
+      aria-expanded={expanded}
+      onClick={onClick}
+    >
       {icon}
       {label}
       <ChevronRightIcon
