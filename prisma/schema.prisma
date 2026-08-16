@@ -53,6 +53,12 @@ model User {
   name              String   @default("Dr. Amara Chen, PT")
   specialty         String   @default("ortho")
   practiceState     String   @default("California")
+  // Student's school (e.g. "Chapman University") — shown in the sidebar "signed in as"
+  // subtitle instead of specialty/practiceState for a hasStudentAccess account (see
+  // AppShell.tsx), since specialty/state describe a practicing clinician, not a DPT
+  // student. Null for every account until set via the Profile "About you" form (see
+  // ProfileForm.tsx) — most non-student accounts will never set it.
+  school            String?
 
   // JSON-encoded string[] of followed topics
   followedTopics    Json     @default("[]")

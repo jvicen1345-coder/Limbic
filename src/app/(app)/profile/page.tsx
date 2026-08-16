@@ -73,6 +73,8 @@ export default async function ProfilePage() {
           name={user.name}
           specialty={user.specialty}
           practiceState={user.practiceState}
+          school={user.school ?? ""}
+          isStudent={isStudentForCredentials}
           headline={user.headline ?? ""}
           bio={user.bio ?? ""}
         />

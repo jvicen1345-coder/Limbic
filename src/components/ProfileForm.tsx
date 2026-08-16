@@ -8,12 +8,19 @@ export function ProfileForm({
   name,
   specialty,
   practiceState,
+  school,
+  isStudent,
   headline,
   bio,
 }: {
   name: string;
   specialty: string;
   practiceState: string;
+  /** Shown in the sidebar "signed in as" subtitle instead of specialty/practiceState for a
+   *  student account (see AppShell.tsx) — only editable here when isStudent, since it has
+   *  no meaning for a practicing clinician account. */
+  school: string;
+  isStudent: boolean;
   headline: string;
   bio: string;
 }) {
@@ -60,6 +67,18 @@ export function ProfileForm({
           ))}
         </select>
       </div>
+      {isStudent && (
+        <div className="field">
+          <label htmlFor="pf-school">School</label>
+          <input
+            className="input"
+            id="pf-school"
+            placeholder="e.g. Chapman University"
+            defaultValue={school}
+            onChange={(e) => startTransition(() => updateProfileFieldAction("school", e.target.value))}
+          />
+        </div>
+      )}
       <div className="field">
         <label htmlFor="pf-headline">Nexus headline</label>
         <input

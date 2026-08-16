@@ -849,49 +849,6 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   box-sizing: border-box;
 }
 
-.nav-section-label {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  /* A literal warm medium grey rather than the (navy-hued, per-theme-flipped)
-     --color-neutral-600 token — section labels are structural chrome, not content, so
-     they read better a step quieter than the nav links below them. #8a8075 is the shared
-     base value; light mode darkens it below (see .nav-section-label dark-mode override)
-     since the sidebar background is now --color-surface-secondary (#ebe9e2), and #8a8075
-     alone no longer clears comfortable contrast against that darker warm background. */
-  color: #8a8075;
-  margin: 14px 0 2px;
-  padding: 0 12px;
-}
-/* Light-mode-only darkening for adequate contrast against the #ebe9e2 sidebar background
-   (see .app-sidebar) — dark mode keeps the original #8a8075 exactly via the override below,
-   since dark's sidebar background didn't change. */
-html:not([data-theme="dark"]) .nav-section-label { color: #5c554a; }
-html[data-theme="dark"] .nav-section-label { color: #8a8075; }
-/* Renders its literal text as-typed ("LIMBIC Pro") instead of the uppercase transform
-   every other section label gets, so "Pro" reads as a distinct, deliberate suffix rather
-   than being flattened into the same all-caps treatment as "LIMBIC". */
-.nav-section-label--brand { text-transform: none; }
-
-/* A collapsible section label (currently just Nexus — see AppShell.tsx) is the same
-   .nav-section-label text treatment rendered as a <button> instead of a <div>, so it needs
-   its own reset: a bare <button> would otherwise show the browser's default button chrome
-   (background/border) since .nav-section-label itself never had any to override — same
-   bug shape as .filter-chip's button reset above, fixed the same way. */
-.nav-section-label--toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-}
-.nav-section-label--toggle:hover { color: var(--color-neutral-700); }
-.nav-section-label--toggle-chevron { transition: transform 150ms ease; flex-shrink: 0; }
-.nav-section-label--toggle-chevron.expanded { transform: rotate(90deg); }
 
 .nav-footer {
   margin-top: auto;
@@ -5797,11 +5754,11 @@ html[data-theme="dark"] .app-root--atrium {
    /connexion/safety-score) — a partner program section, so it gets a warm amber/gold
    identity (var(--color-migration-gold), the same token /founding-funders' gold and
    Limbic Agent Wellness already use elsewhere) instead of the standard blue accent —
-   sidebar section label, mission card, step numbers, badges, tags. Content classes reuse
-   .card/.card-title/.card-body/.btn/.tag/.dashboard-metric-tile/.wellness-agent-paywall
-   like every other section in the app; only what has no existing precedent gets its own
-   connexion- rules below. */
-.nav-section-label--connexion { color: var(--color-migration-gold); }
+   mission card, step numbers, badges, tags. Content classes reuse .card/.card-title/
+   .card-body/.btn/.tag/.dashboard-metric-tile/.wellness-agent-paywall like every other
+   section in the app; only what has no existing precedent gets its own connexion- rules
+   below. (The sidebar nav item itself no longer gets this gold treatment — see AppShell.tsx
+   NavToggle, which renders every top-level sidebar item with the same consistent style.) */
 
 .connexion-hero { margin-bottom: 22px; }
 .connexion-hero-title { font-size: 30px; margin: 0 0 10px; }
