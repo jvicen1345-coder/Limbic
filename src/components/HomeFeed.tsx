@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { SearchIcon, XIcon } from "@/components/icons";
+import { SearchIcon, XIcon, DownloadIcon } from "@/components/icons";
 import { slugifyTopic } from "@/lib/topic-slug";
 import { SlidingTabs } from "@/components/SlidingTabs";
 import { ArticleCard } from "@/components/ArticleCard";
@@ -78,6 +78,7 @@ export function HomeFeed({
   showBackupSigninBanner,
   showMigrationReminderBanner,
   showGraduationTransitionCard,
+  getTheAppDismissed,
 }: {
   articles: DecoratedArticle[];
   /** Server-rendered — see components/LimbicCalendarWidget.tsx, app/(app)/page.tsx. */
@@ -114,6 +115,10 @@ export function HomeFeed({
   /** Student tier, graduationDate passed, not shown (or snoozed 7+ days ago) — see
    *  app/(app)/page.tsx. */
   showGraduationTransitionCard: boolean;
+  /** Hides the "Get the app" shortcut icon next to Refresh once the reader's dismissed that
+   *  card on Profile (see components/GetTheAppCard.tsx) — no point linking to instructions
+   *  they've already said they don't need. */
+  getTheAppDismissed: boolean;
 }) {
   const showWidget = (id: string) => !hiddenWidgets.includes(id);
   const [filter, setFilter] = useState<ArticleType | "all">("all");
@@ -281,6 +286,16 @@ export function HomeFeed({
             </div>
             <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
               <RefreshHomeFeedButton gridArticleFingerprints={gridArticles.map((a) => titleFingerprint(a.title))} />
+              {!getTheAppDismissed && (
+                <Link
+                  href="/profile#get-the-app"
+                  className="btn btn-secondary btn-icon"
+                  aria-label="Get the app"
+                  title="Add Limbic to your home screen"
+                >
+                  <DownloadIcon size={16} />
+                </Link>
+              )}
               <Link href="/search" className="btn btn-secondary btn-icon" aria-label="Search">
                 <SearchIcon size={17} />
               </Link>

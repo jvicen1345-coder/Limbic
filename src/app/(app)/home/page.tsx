@@ -304,6 +304,7 @@ export default async function HomePage() {
       showBackupSigninBanner={showBackupSigninBanner}
       showMigrationReminderBanner={showMigrationReminderBanner}
       showGraduationTransitionCard={showGraduationTransitionCard}
+      getTheAppDismissed={user.getTheAppDismissed}
     />
   );
 }

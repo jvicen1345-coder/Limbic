@@ -41,6 +41,16 @@ export async function toggleHomeWidgetAction(widgetId: string) {
   revalidatePath("/", "layout");
 }
 
+/** The Get the App card's own dismiss switch (see components/GetTheAppCard.tsx) — collapses
+ *  it to a compact done state and hides the shortcut icon next to Refresh on Home (see
+ *  components/HomeFeed.tsx). */
+export async function setGetTheAppDismissedAction(dismissed: boolean) {
+  const user = await getCurrentUser();
+  if (!user) return;
+  await prisma.user.update({ where: { id: user.id }, data: { getTheAppDismissed: dismissed } });
+  revalidatePath("/", "layout");
+}
+
 // Same runtime-whitelist reasoning as EDITABLE_FIELDS above — see components/
 // ProfessionalDatesForm.tsx (the Profile "Professional Dates" section) and
 // components/LimbicCalendarWidget.tsx (reads these back out for the orange dots).

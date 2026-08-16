@@ -81,7 +81,7 @@ export default async function ProfilePage() {
         />
       </div>
 
-      <GetTheAppCard />
+      <GetTheAppCard dismissed={user.getTheAppDismissed} />
 
       <AccountSecuritySection
         backupEmail={user.backupEmail}
