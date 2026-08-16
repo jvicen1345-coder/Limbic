@@ -23,6 +23,7 @@ import { StockCard } from "@/components/StockCard";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
 import { NexusSuggestionsCard, type NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import { NexusJoinPromptCard } from "@/components/NexusJoinPromptCard";
+import { FoundingFunderBadge } from "@/components/FoundingFunderBadge";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { ArticleType } from "@/lib/types";
 import type { StockView } from "@/lib/stock";
@@ -71,6 +72,7 @@ export function HomeFeed({
   continueReading,
   homeQuestion,
   dashboard,
+  foundingFunderNumber,
   hiddenWidgets,
   limbicAgentInsights,
   isPro,
@@ -98,6 +100,10 @@ export function HomeFeed({
   continueReading: ContinueReadingData | null;
   homeQuestion: HomeQuestionData;
   dashboard: DailyDashboardData;
+  /** null when the reader isn't a confirmed Founding Funder, or has turned their badge off
+   *  (see components/FoundingFunderBadgeCard.tsx on Profile) — otherwise the number shown
+   *  next to the greeting, linking out to /founding-funders. */
+  foundingFunderNumber: number | null;
   /** Sidebar widget ids the reader has hidden — see lib/home-widgets.ts and the "Home page
    *  widgets" section on Profile. */
   hiddenWidgets: string[];
@@ -272,7 +278,14 @@ export function HomeFeed({
         <div className="home-main-col">
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
             <div>
-              <h1 style={{ fontSize: 26, margin: 0 }}>{dashboard.greeting}</h1>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <h1 style={{ fontSize: 26, margin: 0 }}>{dashboard.greeting}</h1>
+                {foundingFunderNumber != null && (
+                  <Link href="/founding-funders" style={{ textDecoration: "none" }}>
+                    <FoundingFunderBadge number={foundingFunderNumber} numberOnly />
+                  </Link>
+                )}
+              </div>
               <div style={{ fontSize: 13, color: "var(--color-neutral-700)", marginTop: 2 }}>{dashboard.dateLabel}</div>
               {license && license.cePercent < 100 && (
                 <Link

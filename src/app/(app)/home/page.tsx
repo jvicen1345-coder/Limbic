@@ -18,6 +18,7 @@ import { todayDateKey } from "@/lib/wordle-words";
 import { homeQuestionForDate } from "@/lib/home-questions-static";
 import { HomeFeed } from "@/components/HomeFeed";
 import { LimbicCalendarWidget } from "@/components/LimbicCalendarWidget";
+import { getFoundingFunderStatus } from "@/lib/founding-funders";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import type { Article, CeCategory, Specialty } from "@/lib/types";
 
@@ -220,11 +221,16 @@ export default async function HomePage() {
       })()
     : Promise.resolve(null);
 
-  const [homeImagedPrefix, nexusSuggestions, homeQuestionCompletion] = await Promise.all([
+  const [homeImagedPrefix, nexusSuggestions, homeQuestionCompletion, foundingFunderStatus] = await Promise.all([
     resolveHomeImages(ranked),
     nexusSuggestionsPromise,
     homeQuestionCompletionPromise,
+    getFoundingFunderStatus(user.id),
   ]);
+  // null hides the number next to the greeting entirely — either not a confirmed funder, or
+  // the reader's turned their badge off (see components/FoundingFunderBadgeCard.tsx).
+  const foundingFunderNumber =
+    foundingFunderStatus.isFunder && !user.foundingFunderBadgeHidden ? foundingFunderStatus.number : null;
   // resolveHomeImages stops once it's found enough images for the *default* "All" view —
   // everything ranked after that point is still real content (a reader can reach it via a
   // type/specialty tab or a Limbic Agent topic filter — see HomeFeed.tsx), just never
@@ -297,6 +303,7 @@ export default async function HomePage() {
         initialSelectedIndex: homeQuestionCompletion?.selectedIndex ?? null,
       }}
       dashboard={dashboard}
+      foundingFunderNumber={foundingFunderNumber}
       hiddenWidgets={user.hiddenHomeWidgets as unknown as string[]}
       limbicAgentInsights={limbicAgentInsights}
       isPro={user.isPro}

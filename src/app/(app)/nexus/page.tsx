@@ -25,11 +25,15 @@ export default async function NexusFeedPage({ searchParams }: { searchParams: Pr
       orderBy: { createdAt: "desc" },
       take: 40,
       include: {
-        author: { select: { id: true, name: true, headline: true, foundingFunder: { select: { paymentStatus: true } } } },
+        author: {
+          select: { id: true, name: true, headline: true, foundingFunderBadgeHidden: true, foundingFunder: { select: { paymentStatus: true } } },
+        },
         likes: { select: { userId: true } },
         comments: {
           orderBy: { createdAt: "asc" },
-          include: { author: { select: { id: true, name: true, foundingFunder: { select: { paymentStatus: true } } } } },
+          include: {
+            author: { select: { id: true, name: true, foundingFunderBadgeHidden: true, foundingFunder: { select: { paymentStatus: true } } } },
+          },
         },
       },
     }),
@@ -50,7 +54,7 @@ export default async function NexusFeedPage({ searchParams }: { searchParams: Pr
       id: p.author.id,
       name: p.author.name,
       headline: p.author.headline,
-      isFoundingFunder: p.author.foundingFunder?.paymentStatus === "confirmed",
+      isFoundingFunder: p.author.foundingFunder?.paymentStatus === "confirmed" && !p.author.foundingFunderBadgeHidden,
     },
     likeCount: p.likes.length,
     likedByMe: p.likes.some((l) => l.userId === user.id),
@@ -61,7 +65,7 @@ export default async function NexusFeedPage({ searchParams }: { searchParams: Pr
       author: {
         id: c.author.id,
         name: c.author.name,
-        isFoundingFunder: c.author.foundingFunder?.paymentStatus === "confirmed",
+        isFoundingFunder: c.author.foundingFunder?.paymentStatus === "confirmed" && !c.author.foundingFunderBadgeHidden,
       },
     })),
   }));
@@ -123,7 +127,7 @@ export default async function NexusFeedPage({ searchParams }: { searchParams: Pr
               key={post.id}
               post={post}
               currentUserName={user.name}
-              currentUserIsFoundingFunder={currentUserFoundingFunder.isFunder}
+              currentUserIsFoundingFunder={currentUserFoundingFunder.isFunder && !user.foundingFunderBadgeHidden}
             />
           ))}
         </div>

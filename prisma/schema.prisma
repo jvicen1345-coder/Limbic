@@ -73,6 +73,13 @@ model User {
   // so the card/shortcut show for every existing account until they say otherwise.
   getTheAppDismissed Boolean @default(false)
 
+  // Set from the "Founding Funder badge" toggle on Profile (see
+  // components/FoundingFunderBadgeToggle.tsx) — hides the badge everywhere it would
+  // otherwise show (Profile, Nexus feed/comments/profile, the number next to the name on
+  // Home) without touching the underlying FoundingFunder row itself. Default false so the
+  // badge is visible by default for every funder until they say otherwise.
+  foundingFunderBadgeHidden Boolean @default(false)
+
   // JSON-encoded string[] of followed topics
   followedTopics    Json     @default("[]")
   // JSON-encoded { name, required, completed }[] of CE categories

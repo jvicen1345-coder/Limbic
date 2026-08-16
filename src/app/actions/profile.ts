@@ -51,6 +51,16 @@ export async function setGetTheAppDismissedAction(dismissed: boolean) {
   revalidatePath("/", "layout");
 }
 
+/** The Founding Funder badge toggle (see components/FoundingFunderBadgeToggle.tsx) — hides
+ *  the badge everywhere it would otherwise show (Profile, Nexus, the number next to the
+ *  name on Home) without touching the underlying FoundingFunder row. */
+export async function setFoundingFunderBadgeHiddenAction(hidden: boolean) {
+  const user = await getCurrentUser();
+  if (!user) return;
+  await prisma.user.update({ where: { id: user.id }, data: { foundingFunderBadgeHidden: hidden } });
+  revalidatePath("/", "layout");
+}
+
 // Same runtime-whitelist reasoning as EDITABLE_FIELDS above — see components/
 // ProfessionalDatesForm.tsx (the Profile "Professional Dates" section) and
 // components/LimbicCalendarWidget.tsx (reads these back out for the orange dots).
