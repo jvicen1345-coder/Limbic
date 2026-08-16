@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 // imported it — the parameter's union type only constrains callers going through the
 // compiled client wrapper, not a request built directly against the deployed action. This
 // runtime whitelist is what actually stops `field` from being an arbitrary User column.
-const EDITABLE_FIELDS = ["name", "specialty", "practiceState", "headline", "bio"] as const;
+const EDITABLE_FIELDS = ["name", "specialty", "practiceState", "school", "headline", "bio"] as const;
 type EditableField = (typeof EDITABLE_FIELDS)[number];
 
 export async function updateProfileFieldAction(field: EditableField, value: string) {

@@ -32,6 +32,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       profileName={user.name}
       specialtyLabel={SPECIALTY_META[user.specialty as keyof typeof SPECIALTY_META]}
       practiceState={user.practiceState}
+      school={user.school}
       hasLicense={hasLicense}
       isPro={user.isPro}
       isStudent={hasStudentAccess(user)}

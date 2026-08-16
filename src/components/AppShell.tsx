@@ -131,6 +131,39 @@ function NavLink({
   );
 }
 
+/** A section toggle (Connexion Method, LimbicPRO, Nexus, etc.) — same row treatment as
+ *  NavLink (icon left, label, right-aligned element) rather than a distinct all-caps
+ *  section-header style, so every top-level sidebar item reads as one consistent list. The
+ *  chevron in NavLink's usual right-aligned slot is what a badge/lock pill would otherwise
+ *  occupy, rotating 90° when expanded. */
+function NavToggle({
+  icon,
+  label,
+  expanded,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  expanded: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button type="button" style={sidebarNavStyle(false, true)} aria-expanded={expanded} onClick={onClick}>
+      {icon}
+      {label}
+      <ChevronRightIcon
+        size={14}
+        style={{
+          marginLeft: "auto",
+          flexShrink: 0,
+          transition: "transform 150ms ease",
+          transform: expanded ? "rotate(90deg)" : "none",
+        }}
+      />
+    </button>
+  );
+}
+
 /** Gold rather than the standard blue accent (see NavLink/sidebarNavStyle above) — a
  *  deliberately different treatment so it reads as its own thing, not another item in
  *  whatever section happens to sit above it. Stands alone with no section label, set off
@@ -169,6 +202,10 @@ interface NavContentProps {
   profileName: string;
   specialtyLabel: string;
   practiceState: string;
+  /** Shown in the footer nameplate instead of specialty/practiceState for a
+   *  hasStudentAccess account (see the footer below) — null until set via the Profile
+   *  "About you" form, in which case the subtitle falls back to "DPT Student" alone. */
+  school: string | null;
   hasLicense: boolean;
   isPro: boolean;
   /** True for a .edu sign-in email or a site admin account (see lib/session.ts
@@ -187,7 +224,7 @@ interface NavContentProps {
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
+function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
   const pathname = usePathname();
   // Collapsed by default unless already somewhere under /nexus (so landing on, say,
   // /nexus/messages via a direct link or a widget elsewhere in the app doesn't hide the
@@ -224,15 +261,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
 
-      <button
-        type="button"
-        className="nav-section-label nav-section-label--connexion nav-section-label--toggle"
-        aria-expanded={connexionExpanded}
+      <NavToggle
+        icon={<ShieldIcon />}
+        label="The Connexion Method"
+        expanded={connexionExpanded}
         onClick={() => setConnexionExpanded((v) => !v)}
-      >
-        The Connexion Method
-        <ChevronRightIcon size={13} className={connexionExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
-      </button>
+      />
       {connexionExpanded && (
         <>
           <NavLink href="/connexion" icon={<ShieldIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
@@ -246,15 +280,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
 
       {isStudent && (
         <>
-          <button
-            type="button"
-            className="nav-section-label nav-section-label--toggle"
-            aria-expanded={studentExpanded}
+          <NavToggle
+            icon={<GraduationCapIcon />}
+            label="Limbic Student"
+            expanded={studentExpanded}
             onClick={() => setStudentExpanded((v) => !v)}
-          >
-            Limbic Student
-            <ChevronRightIcon size={13} className={studentExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
-          </button>
+          />
           {studentExpanded && (
             <>
               <NavLink href="/student" icon={<GraduationCapIcon />} label="Atrium" bold={false} onNavigate={onNavigate} />
@@ -272,15 +303,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
         </>
       )}
 
-      <button
-        type="button"
-        className="nav-section-label nav-section-label--brand nav-section-label--toggle"
-        aria-expanded={proExpanded}
+      <NavToggle
+        icon={<CrownIcon />}
+        label="LimbicPRO"
+        expanded={proExpanded}
         onClick={() => setProExpanded((v) => !v)}
-      >
-        LIMBIC Pro
-        <ChevronRightIcon size={13} className={proExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
-      </button>
+      />
       {proExpanded && (
         <>
           <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
@@ -298,15 +326,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
         </>
       )}
 
-      <button
-        type="button"
-        className="nav-section-label nav-section-label--toggle"
-        aria-expanded={wellnessExpanded}
+      <NavToggle
+        icon={<WellnessIcon />}
+        label="Health & Wellness"
+        expanded={wellnessExpanded}
         onClick={() => setWellnessExpanded((v) => !v)}
-      >
-        Health & Wellness
-        <ChevronRightIcon size={13} className={wellnessExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
-      </button>
+      />
       {wellnessExpanded && (
         <>
           <NavLink href="/wellness" icon={<WellnessIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
@@ -321,15 +346,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
 
       <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" onNavigate={onNavigate} />
 
-      <button
-        type="button"
-        className="nav-section-label nav-section-label--toggle"
-        aria-expanded={nexusExpanded}
+      <NavToggle
+        icon={<UsersIcon />}
+        label="Nexus"
+        expanded={nexusExpanded}
         onClick={() => setNexusExpanded((v) => !v)}
-      >
-        Nexus
-        <ChevronRightIcon size={13} className={nexusExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
-      </button>
+      />
       {nexusExpanded && (
         <>
           <NavLink href="/nexus" icon={<UsersIcon />} label="Feed" bold={false} onNavigate={onNavigate} />
@@ -353,15 +375,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
         </>
       )}
 
-      <button
-        type="button"
-        className="nav-section-label nav-section-label--toggle"
-        aria-expanded={savedExpanded}
+      <NavToggle
+        icon={<BookmarkIcon />}
+        label="Saved"
+        expanded={savedExpanded}
         onClick={() => setSavedExpanded((v) => !v)}
-      >
-        Saved
-        <ChevronRightIcon size={13} className={savedExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
-      </button>
+      />
       {savedExpanded && (
         <>
           <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" bold={false} onNavigate={onNavigate} />
@@ -371,15 +390,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
         </>
       )}
 
-      <button
-        type="button"
-        className="nav-section-label nav-section-label--toggle"
-        aria-expanded={articlesExpanded}
+      <NavToggle
+        icon={<FileTextIcon />}
+        label="Articles"
+        expanded={articlesExpanded}
         onClick={() => setArticlesExpanded((v) => !v)}
-      >
-        Articles
-        <ChevronRightIcon size={13} className={articlesExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
-      </button>
+      />
       {articlesExpanded && (
         <>
           <NavLink href="/news" icon={<ZapIcon />} label="News" badge={aptaCount} bold={false} onNavigate={onNavigate} />
@@ -389,15 +405,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
 
       {isAdmin && (
         <>
-          <button
-            type="button"
-            className="nav-section-label nav-section-label--toggle"
-            aria-expanded={adminExpanded}
+          <NavToggle
+            icon={<LockIcon />}
+            label="Admin"
+            expanded={adminExpanded}
             onClick={() => setAdminExpanded((v) => !v)}
-          >
-            Admin
-            <ChevronRightIcon size={13} className={adminExpanded ? "nav-section-label--toggle-chevron expanded" : "nav-section-label--toggle-chevron"} />
-          </button>
+          />
           {adminExpanded && (
             <>
               <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
@@ -418,7 +431,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
           <div style={{ fontSize: 12, color: "var(--color-neutral-700)", marginBottom: 4 }}>Signed in as</div>
           <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)" }}>{profileName}</div>
           <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
-            {specialtyLabel} · {practiceState}
+            {isStudent ? (school ? `DPT Student · ${school}` : "DPT Student") : `${specialtyLabel} · ${practiceState}`}
           </div>
         </Link>
         <ThemeToggle />
@@ -426,7 +439,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, hasLicense, is
           <button
             type="submit"
             className="btn btn-ghost"
-            style={{ padding: "4px 0", fontSize: 12, color: "var(--color-danger)" }}
+            style={{ padding: "4px 0", fontSize: 12, color: "var(--color-neutral-700)" }}
           >
             Sign out
           </button>
@@ -440,6 +453,7 @@ export interface AppShellProps {
   profileName: string;
   specialtyLabel: string;
   practiceState: string;
+  school: string | null;
   hasLicense: boolean;
   isPro: boolean;
   isStudent: boolean;
@@ -454,6 +468,7 @@ export function AppShell({
   profileName,
   specialtyLabel,
   practiceState,
+  school,
   hasLicense,
   isPro,
   isStudent,
@@ -465,7 +480,7 @@ export function AppShell({
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLElement>(null);
-  const navProps = { profileName, specialtyLabel, practiceState, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount };
+  const navProps = { profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount };
   // Extends the Atrium's warm palette out to the surrounding chrome (sidebar/topbar/
   // drawer/bottomnav) whenever any Atrium route is active — see .app-root--atrium in
   // globals.css for why that chrome can't just read the page's own --atrium-* tokens.
