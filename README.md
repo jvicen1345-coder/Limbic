@@ -192,6 +192,37 @@ consent screen is correctly formed, but completing an actual sign-in requires a 
 browser and a real Google account, which isn't something this sandbox could exercise
 end-to-end either.
 
+## Password auth & reset emails
+
+Sign-in used to accept any typed email with no password at all — the sign-in screen's own
+copy said so outright ("Demo sign-in, any email works"). It's real password auth now:
+`signUpWithPassword`/`signInWithPassword` in `src/lib/session.ts` hash with Node's built-in
+`scrypt` (`src/lib/password.ts` — deliberately slow/memory-hard, unlike a fast general-
+purpose hash, which is the whole point for password storage; no new dependency needed for
+this half). Nothing ever stores or logs a plaintext password.
+
+Every account created before this shipped has `User.passwordHash = null`. There's no
+separate bulk migration — a legacy account's first sign-in attempt is met with "This
+account hasn't set a password yet," pointing at the same "Forgot password?" flow an
+ordinary reset uses. That flow is Resend-backed (`src/lib/email.ts`,
+`requestPasswordResetAction`/`resetPasswordAction` in `src/app/actions/auth.ts`): a
+single-use, SHA-256-hashed token (`PasswordResetToken`, `src/lib/password-reset.ts`)
+expiring after an hour. Get a free key at resend.com, verify a sending domain there (Domains
+→ Add Domain, then add the DNS records at your registrar — an unverified domain can only
+send to your own Resend account email), and set `RESEND_API_KEY`/`EMAIL_FROM`. Without
+`RESEND_API_KEY`, nothing fails — the reset link is logged to the server console instead of
+emailed, which is also how this flow gets tested end-to-end in a sandbox with no real Resend
+account.
+
+The sign-in/forgot-password/reset-password flows are deliberately vague on failure
+("Incorrect email or password" covers both a wrong password and no account at all; "forgot
+password" always redirects to the same "check your email" state) so a failed attempt can't
+be used to test which emails have accounts — the one exception is sign*up*, which does say
+"an account with that email already exists," the ~universal convention for that specific
+screen. There's no rate limiting on sign-in attempts or reset requests (no Redis/Upstash or
+similar in this stack yet) beyond "don't send a second reset email while an unexpired one is
+still live" — a real production hardening pass would want actual throttling here.
+
 ## Stripe subscriptions
 
 LimbicPro ($25/mo) and LimbicStudent ($5/mo — see

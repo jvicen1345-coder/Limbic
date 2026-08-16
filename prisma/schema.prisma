@@ -15,6 +15,13 @@ model User {
   createdAt         DateTime @default(now())
   isGuest           Boolean  @default(false)
 
+  // Real password auth (see lib/password.ts — scrypt, never stored or logged in plaintext)
+  // — replaces the old "type any email, you're in" demo sign-in. Null for every account
+  // created before this shipped; those accounts go through the same password-reset flow
+  // (PasswordResetToken below) as an ordinary "forgot password" to set one, rather than a
+  // separate migration path — see lib/session.ts signInWithPassword.
+  passwordHash      String?
+
   licenseNumber     String?  @unique
   licenseState      String?
   licenseEmail      String?
@@ -233,6 +240,7 @@ model User {
   ceRenewalCycle  Int? // years
   ceTotalRequired Float?
 
+  passwordResetTokens PasswordResetToken[]
   savedArticles       SavedArticle[]
   savedWellness       SavedWellness[]
   savedClips          SavedClip[]
@@ -683,6 +691,24 @@ model WipeCode {
   id        String   @id @default(cuid())
   code      String   @unique
   createdAt DateTime @default(now())
+}
+
+// A password-reset link's server-side half (see lib/password.ts, app/actions/auth.ts
+// requestPasswordResetAction/resetPasswordAction) — one row per emailed link. Only
+// `tokenHash` (a SHA-256 hash of the random token that's actually emailed) is ever stored,
+// same reasoning as never storing a plaintext password: a database leak alone can't be
+// used to reset anyone's account. Doubles as the migration path for every account that
+// predates passwordHash existing (see User.passwordHash) — there's no separate "claim your
+// legacy account" flow, a legacy sign-in attempt just routes to the same request-a-reset
+// UI a normal "forgot password" would.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 }
 
 // The Profile page's anonymous Suggestion Box (see submitSuggestionAction in

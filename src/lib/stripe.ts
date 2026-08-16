@@ -1,20 +1,8 @@
 import "server-only";
 import Stripe from "stripe";
-import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import type { User } from "@/generated/prisma/client";
 
-/** Derived from the incoming request rather than hardcoded (unlike
- *  lib/google-oauth.ts's GOOGLE_REDIRECT_URI) — Stripe Checkout's success_url/cancel_url
- *  aren't pre-registered anywhere in the Stripe Dashboard the way an OAuth redirect URI
- *  is, so there's no exact-match requirement forcing a fixed production domain here. This
- *  keeps local dev and preview deploys working too. */
-export async function appOrigin(): Promise<string> {
-  const h = await headers();
-  const host = h.get("host") ?? "limbic.center";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
-}
 
 /** Whether real Stripe billing is configured at all — gates the LimbicPro/student-tier
  *  purchase and cancel buttons on /pro/membership (see app/(app)/pro/membership/page.tsx)

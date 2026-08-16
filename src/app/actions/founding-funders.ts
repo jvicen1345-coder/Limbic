@@ -102,7 +102,7 @@ export async function claimFoundingSpotAction(input: {
 
   // SQLite's Prisma provider has no `mode: "insensitive"` filter (Postgres/Mongo-only), so
   // this lowercases the email side itself — sign-in already stores email lowercased (see
-  // lib/session.ts signInWithEmail), licenseEmail doesn't, hence the OR against both cases.
+  // lib/session.ts signInWithPassword), licenseEmail doesn't, hence the OR against both cases.
   const lower = identifier.toLowerCase();
   const target = await prisma.user.findFirst({
     where: {

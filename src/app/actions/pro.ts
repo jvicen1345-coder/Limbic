@@ -2,7 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
-import { getStripe, stripeEnabled, priceIdForPlan, getOrCreateStripeCustomerId, appOrigin, type BillablePlan } from "@/lib/stripe";
+import { getStripe, stripeEnabled, priceIdForPlan, getOrCreateStripeCustomerId, type BillablePlan } from "@/lib/stripe";
+import { appOrigin } from "@/lib/url";
 
 /** Starts a real Stripe Checkout session for `plan` and redirects the reader there — isPro/
  *  studentTier/isWellnessPlus itself is only ever set afterward, by the webhook confirming

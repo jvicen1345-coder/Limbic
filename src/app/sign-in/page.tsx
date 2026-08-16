@@ -12,23 +12,31 @@ export const metadata: Metadata = {
   description: "Sign in to Limbic to access current physical therapy research, clinical tools, and your professional community.",
 };
 
-const GOOGLE_ERROR_MESSAGES: Record<string, string> = {
+const ERROR_MESSAGES: Record<string, string> = {
   google_not_configured: "Google sign-in isn't set up yet.",
   google_denied: "Sign-in with Google was canceled.",
   google_state_mismatch: "That Google sign-in link expired, please try again.",
   google_failed: "Something went wrong signing in with Google. Please try again.",
+  invalid_credentials: "Incorrect email or password.",
+  // Every account created before real passwords existed (see User.passwordHash) hits this
+  // on its first sign-in attempt post-launch — routed to the same "Forgot password?" link
+  // below rather than a separate migration flow.
+  needs_password: "This account hasn't set a password yet — use “Forgot password?” below to set one.",
+  signup_exists: "An account with that email already exists — sign in instead.",
+  weak_password: "Password must be at least 8 characters.",
+  password_mismatch: "Those passwords don't match.",
 };
 
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; deleted?: string; wiped?: string }>;
+  searchParams: Promise<{ error?: string; deleted?: string; wiped?: string; email?: string; mode?: string }>;
 }) {
   const user = await getCurrentUser();
   if (user) redirect("/home");
 
-  const { error, deleted, wiped } = await searchParams;
-  const errorMessage = error ? GOOGLE_ERROR_MESSAGES[error] : null;
+  const { error, deleted, wiped, email, mode } = await searchParams;
+  const errorMessage = error ? (ERROR_MESSAGES[error] ?? null) : null;
   const successMessage = deleted === "1"
     ? "Your account and all its data have been permanently deleted."
     : wiped === "1"
@@ -100,7 +108,11 @@ export default async function SignInPage({
           {successMessage}
         </p>
       )}
-      <SignInForm googleEnabled={googleSignInEnabled()} />
+      <SignInForm
+        googleEnabled={googleSignInEnabled()}
+        initialEmail={email ?? ""}
+        initialAuthMode={mode === "signup" ? "signup" : "signin"}
+      />
     </div>
   );
 }
