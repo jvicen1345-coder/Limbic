@@ -6,6 +6,7 @@ import { SUGGESTED_TOPICS } from "@/lib/meta";
 import { allKnownKeywordTopics } from "@/lib/news-live";
 import type { CeCategory } from "@/lib/types";
 import { ProfileForm } from "@/components/ProfileForm";
+import { GetTheAppCard } from "@/components/GetTheAppCard";
 import { ProfessionalDatesForm } from "@/components/ProfessionalDatesForm";
 import { ProfessionalCredentialsCard } from "@/components/ProfessionalCredentialsCard";
 import { TopicChip } from "@/components/TopicChip";
@@ -79,6 +80,8 @@ export default async function ProfilePage() {
           bio={user.bio ?? ""}
         />
       </div>
+
+      <GetTheAppCard />
 
       <AccountSecuritySection
         backupEmail={user.backupEmail}
