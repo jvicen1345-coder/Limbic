@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Caprasimo } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -41,6 +41,21 @@ export const metadata: Metadata = {
   verification: {
     google: "3j5CTxNE7wiihYyR_Bdd1ior2PdZ60XenEqYqyaH19k",
   },
+  // Without this, iOS Safari's "Add to Home Screen" still creates a working icon (see
+  // apple-icon.png) but opens it inside ordinary Safari chrome (address bar, tab strip)
+  // rather than as a standalone, chromeless window — capable: true is what makes it launch
+  // like a real app. Paired with app/manifest.ts, which does the equivalent for Android/
+  // desktop Chrome's own install prompt. See components/GetTheAppCard.tsx for the
+  // reader-facing instructions.
+  appleWebApp: {
+    capable: true,
+    title: "Limbic",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#092744",
 };
 
 // Sets html[data-theme] before the first paint, so the page never flashes light and then
