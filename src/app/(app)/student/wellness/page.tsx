@@ -1,11 +1,21 @@
-import { redirect } from "next/navigation";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { StudentPlaceholderPage } from "@/components/StudentPlaceholderPage";
+import { StudentGate } from "@/components/student/StudentGate";
 
 export default async function StudentWellnessPage() {
   const user = await getCurrentUser();
   if (!user) return null;
-  if (!hasStudentAccess(user)) redirect("/home");
+
+  if (!hasStudentAccess(user)) {
+    return (
+      <StudentPlaceholderPage
+        title="Mental Wellness"
+        subtitle="PT school is demanding. You don't have to navigate it alone."
+      >
+        <StudentGate toolName="Mental Wellness" />
+      </StudentPlaceholderPage>
+    );
+  }
 
   return (
     <StudentPlaceholderPage
