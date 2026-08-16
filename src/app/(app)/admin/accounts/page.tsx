@@ -5,10 +5,7 @@ import { AccountsAdminTable } from "@/components/AccountsAdminTable";
 
 /** Admin-only — every account, with a delete button per row (see AccountsAdminTable.tsx,
  *  deleteUserAction in app/actions/admin.ts). Same "must be admin" redirect idiom as
- *  /admin/suggestions, /admin/licenses, /admin/connexion-visits. For wiping *every* account
- *  at once instead, see the Founding Funders admin panel's "wipe all users" tool
- *  (components/founding-funders/WipeAllUsersPanel.tsx) — a separate, more ceremonious flow
- *  since it's a full reset rather than reviewing individual rows. */
+ *  /admin/suggestions, /admin/licenses, /admin/connexion-visits. */
 export default async function AdminAccountsPage() {
   if (!(await isSiteAdmin())) redirect("/home");
 
