@@ -247,7 +247,9 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
   const [studentExpanded, setStudentExpanded] = useState(
     pathname.startsWith("/student") || pathname.startsWith("/boards")
   );
-  const [wellnessExpanded, setWellnessExpanded] = useState(pathname.startsWith("/wellness"));
+  const [wellnessExpanded, setWellnessExpanded] = useState(
+    pathname.startsWith("/wellness") || pathname.startsWith("/games")
+  );
   const [savedExpanded, setSavedExpanded] = useState(pathname.startsWith("/saved"));
   const [articlesExpanded, setArticlesExpanded] = useState(
     pathname.startsWith("/news") || pathname.startsWith("/under-review")
@@ -341,10 +343,9 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           <NavLink href="/wellness/assess" icon={<CheckCircleIcon />} label="Assess Yourself" bold={false} onNavigate={onNavigate} />
           <NavLink href="/wellness/exercises" icon={<DumbbellIcon />} label="Top 10 Exercises" bold={false} onNavigate={onNavigate} />
           <NavLink href="/wellness/continuum" icon={<RefreshIcon />} label="Rep Continuum" bold={false} onNavigate={onNavigate} />
+          <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" bold={false} onNavigate={onNavigate} />
         </>
       )}
-
-      <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" onNavigate={onNavigate} />
 
       <NavToggle
         icon={<UsersIcon />}
