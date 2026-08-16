@@ -58,20 +58,24 @@ export const viewport: Viewport = {
   themeColor: "#092744",
 };
 
-// Sets html[data-theme] before the first paint, so the page never flashes light and then
-// swaps to dark a beat later. Deliberately not something React renders (a useEffect that
-// set the attribute would run after that first paint, too late to prevent the flash) —
-// see components/ThemeToggle.tsx, which reads/writes this same localStorage key and
-// attribute for the actual toggle. suppressHydrationWarning on <html> below is required
-// because of this: the server has no way to know the visitor's stored preference, so its
-// markup never has data-theme at all, and React would otherwise warn about this script
-// changing an attribute it didn't render.
+// Sets html[data-theme] before the first paint, so the page never flashes one theme and
+// then swaps to another a beat later. Deliberately not something React renders (a
+// useEffect that set the attribute would run after that first paint, too late to prevent
+// the flash) — see components/ThemeToggle.tsx and components/ThemeSection.tsx, which
+// read/write this same localStorage key for the actual controls. suppressHydrationWarning
+// on <html> below is required because of this: the server has no way to know the
+// visitor's stored preference, so its markup never has data-theme at all, and React would
+// otherwise warn about this script changing an attribute it didn't render.
 //
-// Every new visitor starts on light regardless of OS/browser color-scheme — deliberately
-// not following prefers-color-scheme here, so light is the one guaranteed first
-// impression for anyone who hasn't chosen otherwise. Dark is fully opt-in via the toggle,
-// which is what actually writes "dark" into localStorage for this same read to pick up.
-const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");document.documentElement.dataset.theme=t==="dark"?"dark":"light"}catch(e){}})();`;
+// localStorage holds the raw preference itself — "light", "dark", or "system" — not a
+// pre-resolved value, so "system" can still be told apart from "never chosen" if that ever
+// matters later. A stored "light"/"dark" is applied directly; "system" (or nothing stored
+// yet, matching every visitor before this preference existed) resolves off the OS/browser's
+// prefers-color-scheme instead of always defaulting to light. Persisted to the database too
+// (User.themePreference) for cross-device sync, but that round trip is exactly what this
+// script exists to avoid waiting on — see lib/theme-client.ts applyThemePreferenceLocally,
+// which every control that changes this value calls to keep this device in sync immediately.
+const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");if(t==="dark"){document.documentElement.setAttribute("data-theme","dark")}else if(t==="light"){document.documentElement.setAttribute("data-theme","light")}else{var d=window.matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.setAttribute("data-theme",d?"dark":"light")}}catch(e){}})();`;
 
 export default function RootLayout({
   children,

@@ -61,6 +61,20 @@ export async function setFoundingFunderBadgeHiddenAction(hidden: boolean) {
   revalidatePath("/", "layout");
 }
 
+const THEME_PREFERENCES = ["light", "dark", "system"] as const;
+
+/** The sidebar's ThemeToggle and Profile's Appearance section (see components/
+ *  ThemeToggle.tsx, ThemeSection.tsx) both call this — the database half of a theme
+ *  change; the caller is responsible for the localStorage/data-theme half via
+ *  lib/theme-client.ts applyThemePreferenceLocally, which is what makes the current tab
+ *  update instantly instead of waiting on this round trip. */
+export async function setThemePreferenceAction(theme: string) {
+  const user = await getCurrentUser();
+  if (!user || !THEME_PREFERENCES.includes(theme as (typeof THEME_PREFERENCES)[number])) return;
+  await prisma.user.update({ where: { id: user.id }, data: { themePreference: theme } });
+  revalidatePath("/", "layout");
+}
+
 // Same runtime-whitelist reasoning as EDITABLE_FIELDS above — see components/
 // ProfessionalDatesForm.tsx (the Profile "Professional Dates" section) and
 // components/LimbicCalendarWidget.tsx (reads these back out for the orange dots).

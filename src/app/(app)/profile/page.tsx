@@ -27,6 +27,7 @@ import { FoundingFunderBadge } from "@/components/FoundingFunderBadge";
 import { FoundingFunderBadgeCard } from "@/components/FoundingFunderBadgeCard";
 import { UserRoleSection } from "@/components/UserRoleSection";
 import { isUserRole, type UserRole } from "@/lib/user-role";
+import { ThemeSection } from "@/components/ThemeSection";
 
 // The long tail of keyword topics not already covered by SUGGESTED_TOPICS — comes from a
 // fixed vocabulary rather than whatever's currently loaded (see allKnownKeywordTopics).
@@ -87,6 +88,12 @@ export default async function ProfilePage() {
       )}
 
       <UserRoleSection role={isUserRole(user.userRole ?? "") ? (user.userRole as UserRole) : null} />
+
+      <ThemeSection
+        initialTheme={
+          user.themePreference === "light" || user.themePreference === "dark" ? user.themePreference : "system"
+        }
+      />
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">About you</div>

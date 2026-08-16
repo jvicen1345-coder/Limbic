@@ -6653,3 +6653,99 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .onboarding-role-card { max-width: 560px; width: 100%; }
 .pro-calc-modal { width: 620px; max-height: 85vh; }
+
+/* — Appearance section (Profile — components/ThemeSection.tsx) — the three Light/Dark/
+   System cards, reusing the exact same look as .role-card above (see RoleCards.tsx) rather
+   than inventing a second "selectable card" style. */
+.theme-cards { display: flex; gap: 12px; margin-top: 16px; }
+@media (max-width: 640px) {
+  .theme-cards { flex-direction: column; }
+}
+.theme-card {
+  flex: 1;
+  text-align: center;
+  background: var(--color-surface);
+  border: 2px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  cursor: pointer;
+  font: 600 14px var(--font-body);
+  color: var(--color-text);
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.theme-card:hover { border-color: var(--color-accent-300); }
+.theme-card--selected { border-color: var(--color-accent); background: var(--color-accent-100); }
+
+/* Explicit light/dark token values (not the live html[data-theme] cascade, which is scoped
+   to the <html> element itself and can't be re-triggered on a nested div — see the comment
+   on ThemeSection.tsx) so the preview can show either theme's real colors regardless of
+   which one the page itself is currently rendered in. Kept in sync by hand with :root/
+   html[data-theme="dark"] above if either palette changes — only the handful of tokens the
+   preview markup actually uses are duplicated here, not the full palette. */
+.theme-preview--light {
+  --color-bg: #f4f4f0;
+  --color-surface: #ffffff;
+  --color-surface-secondary: #ebe9e2;
+  --color-text: #1a1a1a;
+  --color-accent: #3b6fe0;
+  --color-accent-200: #dbe7fb;
+  --color-neutral-700: #6b6860;
+  --color-divider: #e2e0d8;
+}
+.theme-preview--dark {
+  --color-bg: #0d1220;
+  --color-surface: #1a2338;
+  --color-surface-secondary: #1a2338;
+  --color-text: #e7ecf7;
+  --color-accent: #6d9bf5;
+  --color-accent-200: #1c2b4c;
+  --color-neutral-700: #9aa8c9;
+  --color-divider: color-mix(in srgb, #e7ecf7 14%, transparent);
+}
+
+/* A static, non-interactive mockup — plain HTML/CSS, not a live iframe — scaled down into a
+   clipped frame so it reads as a thumbnail. 1000x400 is the "real" size the layout below is
+   built at; scale(0.4) + the frame's fixed height crop it down to a preview strip. */
+.theme-preview-frame {
+  width: 100%;
+  height: 168px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  margin-top: 16px;
+}
+.theme-preview {
+  width: 1000px;
+  height: 420px;
+  transform: scale(0.4);
+  transform-origin: top left;
+  display: flex;
+  background: var(--color-bg);
+}
+.theme-preview-sidebar {
+  width: 200px;
+  flex-shrink: 0;
+  background: var(--color-surface-secondary);
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.theme-preview-sidebar-item { height: 20px; border-radius: 6px; background: var(--color-divider); }
+.theme-preview-sidebar-item--active { background: var(--color-accent-200); }
+.theme-preview-main { flex: 1; padding: 28px 24px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.theme-preview-card {
+  height: 92px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+}
+.theme-preview-card-line { height: 12px; border-radius: 4px; background: var(--color-divider); }
+.theme-preview-card-line--short { width: 55%; }
+.theme-preview-right { width: 180px; flex-shrink: 0; background: var(--color-surface); border-left: 1px solid var(--color-divider); padding: 24px 16px; }
+.theme-preview-right-item { height: 60px; border-radius: var(--radius-md); background: var(--color-accent-200); margin-bottom: 14px; }
