@@ -60,6 +60,12 @@ model User {
   // ProfileForm.tsx) — most non-student accounts will never set it.
   school            String?
 
+  // Set once the reader flips the "I've added Limbic" switch on the Get the App card (see
+  // components/GetTheAppCard.tsx) — collapses that card to a compact done state and hides
+  // the shortcut icon next to Refresh on Home (see components/HomeFeed.tsx). Default false
+  // so the card/shortcut show for every existing account until they say otherwise.
+  getTheAppDismissed Boolean @default(false)
+
   // JSON-encoded string[] of followed topics
   followedTopics    Json     @default("[]")
   // JSON-encoded { name, required, completed }[] of CE categories

@@ -3196,6 +3196,34 @@ html[data-theme="dark"] .nav-founding-link-active {
 .howto-steps { margin: 6px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.65; color: var(--color-text); }
 .howto-steps li + li { margin-top: 2px; }
 
+/* Generic on/off pill switch (see components/Switch.tsx) — a real <button role="switch">,
+   not a styled checkbox. */
+.switch {
+  position: relative;
+  width: 36px;
+  height: 21px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 999px;
+  padding: 0;
+  cursor: pointer;
+  background: var(--color-neutral-300);
+  transition: background 150ms ease;
+}
+.switch[aria-checked="true"] { background: var(--color-accent); }
+.switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 150ms ease;
+}
+.switch[aria-checked="true"] .switch-thumb { transform: translateX(15px); }
+
 .wellness-assess-steps-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-700); margin: 14px 0 6px; }
 .wellness-assess-steps { margin: 0 0 14px; padding-left: 20px; font-size: 13px; line-height: 1.65; color: var(--color-text); }
 .wellness-assess-steps--bullet { list-style-type: disc; }
