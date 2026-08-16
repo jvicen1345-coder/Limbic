@@ -195,7 +195,7 @@ export async function signInWithPassword(input: { email: string; password: strin
  *  guestSignInAction in app/actions/auth.ts, lib/guest-rate-limit.ts), not here, so this
  *  stays a plain "mint one and sign in" helper. */
 export async function signInAsGuest() {
-  const user = await prisma.user.create({ data: { isGuest: true, hasOnboarded: false } });
+  const user = await prisma.user.create({ data: { isGuest: true, hasOnboarded: false, hasCompletedOnboarding: false } });
   await issueSessionCookie(user.id);
 }
 
@@ -215,7 +215,7 @@ export async function signUpWithPassword(input: { email: string; password: strin
 
   const passwordHash = await hashPassword(input.password);
   const user = await prisma.user.create({
-    data: { email, name: nameFromEmail(email), hasOnboarded: false, passwordHash },
+    data: { email, name: nameFromEmail(email), hasOnboarded: false, hasCompletedOnboarding: false, passwordHash },
   });
   await signInToUserRecord(user, false);
   return { ok: true };
@@ -239,7 +239,7 @@ export async function signInWithGoogle(input: { email: string; name?: string | n
     return;
   }
   const user = await prisma.user.create({
-    data: { email, name: input.name?.trim() || nameFromEmail(email), hasOnboarded: false },
+    data: { email, name: input.name?.trim() || nameFromEmail(email), hasOnboarded: false, hasCompletedOnboarding: false },
   });
   await signInToUserRecord(user, false);
 }

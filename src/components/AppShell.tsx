@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOutAction } from "@/app/actions/auth";
+import type { ZoneTwoKey } from "@/lib/user-role";
 import {
   LogoIcon,
   HomeIcon,
@@ -219,20 +220,27 @@ interface NavContentProps {
   /** True for a .edu sign-in email or a site admin account (see lib/session.ts
    *  hasStudentAccess) — gates the whole Limbic Student section below: hidden entirely (no
    *  locked state) for anyone who doesn't qualify. Limbic Games (/wordle) is open to
-   *  everyone regardless of this flag. */
+   *  everyone regardless of this flag. This is a separate concern from zoneTwoOrder below —
+   *  isStudent decides *whether* the section can appear at all; a non-qualifying account
+   *  never sees it regardless of role. zoneTwoOrder only ever reorders sections that do. */
   isStudent: boolean;
   /** True for a site admin account (see lib/admin.ts isSiteAdmin) — gates the Admin section
    *  below, hidden entirely for everyone else. */
   isAdmin: boolean;
   aptaCount: number;
   nexusRequestCount: number;
+  /** The seven-section order from lib/user-role.ts zoneTwoOrder(), computed in
+   *  app/(app)/layout.tsx off the account's userRole — every section still renders
+   *  (isStudent/isAdmin above are the only actual visibility gates), this just changes
+   *  which order they render in. */
+  zoneTwoOrder: ZoneTwoKey[];
   /** Called after any nav link is clicked — used to close the mobile drawer on navigation. */
   onNavigate?: () => void;
 }
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount, onNavigate }: NavContentProps) {
+function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount, zoneTwoOrder, onNavigate }: NavContentProps) {
   const pathname = usePathname();
   // Collapsed by default unless already somewhere under /nexus (so landing on, say,
   // /nexus/messages via a direct link or a widget elsewhere in the app doesn't hide the
@@ -264,6 +272,171 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
   );
   const [adminExpanded, setAdminExpanded] = useState(pathname.startsWith("/admin"));
 
+  // One ReactNode per zoneTwoOrder key (see lib/user-role.ts) — each is the exact same
+  // section markup this sidebar always had, just named so zoneTwoOrder.map() below can
+  // render them in whichever order the account's role calls for instead of this fixed
+  // declaration order.
+  const zoneTwoSections: Record<ZoneTwoKey, React.ReactNode> = {
+    connexion: (
+      <>
+        <NavToggle
+          icon={<ShieldIcon />}
+          label="The Connexion Method"
+          expanded={connexionExpanded}
+          onClick={() => setConnexionExpanded((v) => !v)}
+        />
+        {connexionExpanded && (
+          <>
+            <NavLink href="/connexion" icon={<ShieldIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/connexion/afit" icon={<DumbbellIcon />} label="AFIT Assessment" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/connexion/protocol" icon={<FileTextIcon />} label="What to Expect" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/connexion/safety-score" icon={<ActivityIcon />} label="Safety Score" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/connexion/caregiver" icon={<HeartIcon />} label="Caregiver Education" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/connexion/delia" icon={<ProfileIcon />} label="About Delia Vicencio, PT, DPT" bold={false} onNavigate={onNavigate} />
+          </>
+        )}
+      </>
+    ),
+    student: isStudent ? (
+      <>
+        <NavToggle
+          icon={<GraduationCapIcon />}
+          label="Limbic Student"
+          expanded={studentExpanded}
+          onClick={() => setStudentExpanded((v) => !v)}
+        />
+        {studentExpanded && (
+          <>
+            <NavLink href="/student" icon={<GraduationCapIcon />} label="Atrium" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" bold={false} onNavigate={onNavigate} />
+            <NavLink
+              href="/student/specialties"
+              icon={<BandageIcon />}
+              label="Specialties"
+              exact={false}
+              bold={false}
+              onNavigate={onNavigate}
+            />
+          </>
+        )}
+      </>
+    ) : null,
+    pro: (
+      <>
+        <NavToggle
+          icon={<CrownIcon />}
+          label="LimbicPRO"
+          expanded={proExpanded}
+          onClick={() => setProExpanded((v) => !v)}
+        />
+        {proExpanded && (
+          <>
+            <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Clinical Calculators" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Decision Rules" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/red-flags" icon={<AlertCircleIcon />} label="Red Flag Screening" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Lab Values" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/medications" icon={<HeartIcon />} label="Medications" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/documentation" icon={<FileTextIcon />} label="Documentation" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/guidelines" icon={<BookmarkIcon />} label="Guidelines" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
+          </>
+        )}
+      </>
+    ),
+    wellness: (
+      <>
+        <NavToggle
+          icon={<WellnessIcon />}
+          label="Health & Wellness"
+          expanded={wellnessExpanded}
+          onClick={() => setWellnessExpanded((v) => !v)}
+        />
+        {wellnessExpanded && (
+          <>
+            <NavLink href="/wellness" icon={<WellnessIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/wellness/metrics" icon={<ActivityIcon />} label="Metrics" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/wellness/activity" icon={<ZapIcon />} label="Activity Log" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/wellness/nutrition" icon={<AppleIcon />} label="Nutrition" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/wellness/assess" icon={<CheckCircleIcon />} label="Assess Yourself" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/wellness/exercises" icon={<DumbbellIcon />} label="Top 10 Exercises" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/wellness/continuum" icon={<RefreshIcon />} label="Rep Continuum" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" bold={false} onNavigate={onNavigate} />
+          </>
+        )}
+      </>
+    ),
+    nexus: (
+      <>
+        <NavToggle
+          icon={<UsersIcon />}
+          label="Nexus"
+          expanded={nexusExpanded}
+          onClick={() => setNexusExpanded((v) => !v)}
+        />
+        {nexusExpanded && (
+          <>
+            <NavLink href="/nexus" icon={<UsersIcon />} label="Feed" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/nexus/directory" icon={<ListIcon />} label="Directory" bold={false} onNavigate={onNavigate} />
+            <NavLink
+              href="/nexus/connections"
+              icon={<UserPlusIcon />}
+              label="Connections"
+              badge={nexusRequestCount}
+              bold={false}
+              onNavigate={onNavigate}
+            />
+            <NavLink
+              href="/nexus/messages"
+              icon={<MessageCircleIcon />}
+              label="Messages"
+              exact={false}
+              bold={false}
+              onNavigate={onNavigate}
+            />
+          </>
+        )}
+      </>
+    ),
+    saved: (
+      <>
+        <NavToggle
+          icon={<BookmarkIcon />}
+          label="Saved"
+          expanded={savedExpanded}
+          onClick={() => setSavedExpanded((v) => !v)}
+        />
+        {savedExpanded && (
+          <>
+            <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/saved/guidelines" icon={<CheckCircleIcon />} label="Saved Guidelines" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/saved/wellness" icon={<WellnessIcon />} label="Saved Wellness" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/saved/clips" icon={<FilmIcon />} label="Saved Clips" bold={false} onNavigate={onNavigate} />
+          </>
+        )}
+      </>
+    ),
+    articles: (
+      <>
+        <NavToggle
+          icon={<FileTextIcon />}
+          label="Articles"
+          expanded={articlesExpanded}
+          onClick={() => setArticlesExpanded((v) => !v)}
+        />
+        {articlesExpanded && (
+          <>
+            <NavLink href="/news" icon={<ZapIcon />} label="News" badge={aptaCount} bold={false} onNavigate={onNavigate} />
+            {hasLicense && <NavLink href="/under-review" icon={<AlertCircleIcon />} label="Retracted Articles" bold={false} onNavigate={onNavigate} />}
+          </>
+        )}
+      </>
+    ),
+  };
+
   return (
     <>
       <NavLink href="/home" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
@@ -271,146 +444,9 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
 
-      <NavToggle
-        icon={<ShieldIcon />}
-        label="The Connexion Method"
-        expanded={connexionExpanded}
-        onClick={() => setConnexionExpanded((v) => !v)}
-      />
-      {connexionExpanded && (
-        <>
-          <NavLink href="/connexion" icon={<ShieldIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/connexion/afit" icon={<DumbbellIcon />} label="AFIT Assessment" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/connexion/protocol" icon={<FileTextIcon />} label="What to Expect" locked={!isPro} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/connexion/safety-score" icon={<ActivityIcon />} label="Safety Score" locked={!isPro} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/connexion/caregiver" icon={<HeartIcon />} label="Caregiver Education" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/connexion/delia" icon={<ProfileIcon />} label="About Delia Vicencio, PT, DPT" bold={false} onNavigate={onNavigate} />
-        </>
-      )}
-
-      {isStudent && (
-        <>
-          <NavToggle
-            icon={<GraduationCapIcon />}
-            label="Limbic Student"
-            expanded={studentExpanded}
-            onClick={() => setStudentExpanded((v) => !v)}
-          />
-          {studentExpanded && (
-            <>
-              <NavLink href="/student" icon={<GraduationCapIcon />} label="Atrium" bold={false} onNavigate={onNavigate} />
-              <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" bold={false} onNavigate={onNavigate} />
-              <NavLink
-                href="/student/specialties"
-                icon={<BandageIcon />}
-                label="Specialties"
-                exact={false}
-                bold={false}
-                onNavigate={onNavigate}
-              />
-            </>
-          )}
-        </>
-      )}
-
-      <NavToggle
-        icon={<CrownIcon />}
-        label="LimbicPRO"
-        expanded={proExpanded}
-        onClick={() => setProExpanded((v) => !v)}
-      />
-      {proExpanded && (
-        <>
-          <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Clinical Calculators" locked={!isPro} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Decision Rules" locked={!isPro} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/pro/red-flags" icon={<AlertCircleIcon />} label="Red Flag Screening" locked={!isPro} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" locked={!isPro} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Lab Values" locked={!isPro} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/pro/medications" icon={<HeartIcon />} label="Medications" locked={!isPro} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/pro/documentation" icon={<FileTextIcon />} label="Documentation" locked={!isPro} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/pro/guidelines" icon={<BookmarkIcon />} label="Guidelines" locked={!isPro} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
-          <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
-        </>
-      )}
-
-      <NavToggle
-        icon={<WellnessIcon />}
-        label="Health & Wellness"
-        expanded={wellnessExpanded}
-        onClick={() => setWellnessExpanded((v) => !v)}
-      />
-      {wellnessExpanded && (
-        <>
-          <NavLink href="/wellness" icon={<WellnessIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/wellness/metrics" icon={<ActivityIcon />} label="Metrics" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/wellness/activity" icon={<ZapIcon />} label="Activity Log" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/wellness/nutrition" icon={<AppleIcon />} label="Nutrition" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/wellness/assess" icon={<CheckCircleIcon />} label="Assess Yourself" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/wellness/exercises" icon={<DumbbellIcon />} label="Top 10 Exercises" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/wellness/continuum" icon={<RefreshIcon />} label="Rep Continuum" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" bold={false} onNavigate={onNavigate} />
-        </>
-      )}
-
-      <NavToggle
-        icon={<UsersIcon />}
-        label="Nexus"
-        expanded={nexusExpanded}
-        onClick={() => setNexusExpanded((v) => !v)}
-      />
-      {nexusExpanded && (
-        <>
-          <NavLink href="/nexus" icon={<UsersIcon />} label="Feed" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/nexus/directory" icon={<ListIcon />} label="Directory" bold={false} onNavigate={onNavigate} />
-          <NavLink
-            href="/nexus/connections"
-            icon={<UserPlusIcon />}
-            label="Connections"
-            badge={nexusRequestCount}
-            bold={false}
-            onNavigate={onNavigate}
-          />
-          <NavLink
-            href="/nexus/messages"
-            icon={<MessageCircleIcon />}
-            label="Messages"
-            exact={false}
-            bold={false}
-            onNavigate={onNavigate}
-          />
-        </>
-      )}
-
-      <NavToggle
-        icon={<BookmarkIcon />}
-        label="Saved"
-        expanded={savedExpanded}
-        onClick={() => setSavedExpanded((v) => !v)}
-      />
-      {savedExpanded && (
-        <>
-          <NavLink href="/saved/articles" icon={<BookmarkIcon />} label="Saved Articles" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/saved/guidelines" icon={<CheckCircleIcon />} label="Saved Guidelines" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/saved/wellness" icon={<WellnessIcon />} label="Saved Wellness" bold={false} onNavigate={onNavigate} />
-          <NavLink href="/saved/clips" icon={<FilmIcon />} label="Saved Clips" bold={false} onNavigate={onNavigate} />
-        </>
-      )}
-
-      <NavToggle
-        icon={<FileTextIcon />}
-        label="Articles"
-        expanded={articlesExpanded}
-        onClick={() => setArticlesExpanded((v) => !v)}
-      />
-      {articlesExpanded && (
-        <>
-          <NavLink href="/news" icon={<ZapIcon />} label="News" badge={aptaCount} bold={false} onNavigate={onNavigate} />
-          {hasLicense && <NavLink href="/under-review" icon={<AlertCircleIcon />} label="Retracted Articles" bold={false} onNavigate={onNavigate} />}
-        </>
-      )}
+      {zoneTwoOrder.map((key) => (
+        <Fragment key={key}>{zoneTwoSections[key]}</Fragment>
+      ))}
 
       {isAdmin && (
         <>
@@ -471,6 +507,9 @@ export interface AppShellProps {
   aptaCount: number;
   nexusRequestCount: number;
   savedCount: number;
+  /** See lib/user-role.ts zoneTwoOrder() — computed in app/(app)/layout.tsx off the
+   *  account's userRole. */
+  zoneTwoOrder: ZoneTwoKey[];
   children: React.ReactNode;
 }
 
@@ -486,11 +525,12 @@ export function AppShell({
   aptaCount,
   nexusRequestCount,
   savedCount,
+  zoneTwoOrder,
   children,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLElement>(null);
-  const navProps = { profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount };
+  const navProps = { profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount, zoneTwoOrder };
   // Extends the Atrium's warm palette out to the surrounding chrome (sidebar/topbar/
   // drawer/bottomnav) whenever any Atrium route is active — see .app-root--atrium in
   // globals.css for why that chrome can't just read the page's own --atrium-* tokens.

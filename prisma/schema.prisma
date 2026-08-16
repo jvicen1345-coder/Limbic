@@ -80,6 +80,13 @@ model User {
   // badge is visible by default for every funder until they say otherwise.
   foundingFunderBadgeHidden Boolean @default(false)
 
+  // "light" | "dark" | "system" — set from the sidebar's ThemeToggle and Profile's
+  // Appearance section (see components/ThemeToggle.tsx, ThemeSection.tsx). Persisted here
+  // for multi-device sync; also mirrored into this browser's localStorage on every change
+  // so the blocking init script in app/layout.tsx can set html[data-theme] before first
+  // paint without waiting on a database round trip.
+  themePreference String @default("system")
+
   // JSON-encoded string[] of followed topics
   followedTopics    Json     @default("[]")
   // JSON-encoded { name, required, completed }[] of CE categories
@@ -150,6 +157,20 @@ model User {
   // signInWithEmail/signInAsGuest) explicitly sets this false only in its own `create`
   // branch, never in an `update` branch, so a returning user is never affected.
   hasOnboarded      Boolean  @default(true)
+
+  // "pt" | "pts" | "general" — set from the one-time "How are you using Limbic?" modal
+  // (see components/OnboardingRoleModal.tsx, app/(app)/layout.tsx) and editable anytime
+  // from Profile's Role section. Drives the reorder-only-never-hide logic in
+  // lib/user-role.ts zoneTwoOrder(), which the sidebar (components/AppShell.tsx) uses.
+  // Null until the modal (or a Profile edit) sets it.
+  userRole          String?
+
+  // Gates the "How are you using Limbic?" role modal — same @default(true)-not-false
+  // reasoning as hasOnboarded right above, so this field's own rollout doesn't
+  // retroactively send every existing account through it. Every real account-creation
+  // path (lib/session.ts signUpWithPassword/signInWithGoogle/signInAsGuest) explicitly
+  // sets this false only in its own `create` branch, same as hasOnboarded.
+  hasCompletedOnboarding Boolean @default(true)
 
   // Limbic Boards (student daily-habit tools) streak — same nextStreak() logic as the
   // reading streak above, driven off BoardActivity rows instead of ReadArticle ones.
