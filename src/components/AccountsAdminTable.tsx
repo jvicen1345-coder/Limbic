@@ -13,6 +13,7 @@ export interface AccountRow {
   isGuest: boolean;
   hasPassword: boolean;
   isPro: boolean;
+  isFoundingFunder: boolean;
   createdAt: string;
 }
 
@@ -96,6 +97,7 @@ export function AccountsAdminTable({ rows: initialRows }: { rows: AccountRow[] }
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Guest</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Password</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Pro</th>
+            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Founding Funder</th>
             <th style={{ padding: "4px 0 4px 10px", fontWeight: 600 }} />
           </tr>
         </thead>
@@ -112,6 +114,7 @@ export function AccountsAdminTable({ rows: initialRows }: { rows: AccountRow[] }
               <td style={{ padding: "6px 10px" }}>{u.isGuest ? "Yes" : ""}</td>
               <td style={{ padding: "6px 10px" }}>{u.hasPassword ? "Set" : "None"}</td>
               <td style={{ padding: "6px 10px" }}>{u.isPro ? "Yes" : ""}</td>
+              <td style={{ padding: "6px 10px" }}>{u.isFoundingFunder ? "Yes" : ""}</td>
               <td style={{ padding: "6px 0 6px 10px" }}>
                 <DeleteButton
                   userId={u.id}

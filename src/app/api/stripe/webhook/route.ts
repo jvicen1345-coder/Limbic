@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getStripe, stripeEnabled, planForPriceId, paymentIntentIdFromSession, type BillablePlan } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
+import { nextFoundingFunderNumber } from "@/lib/founding-funders";
 
 /**
  * The single source of truth for isPro/studentTier/isWellnessPlus — app/actions/pro.ts
@@ -175,6 +176,9 @@ async function confirmFoundingFunderCheckoutSession(session: Stripe.Checkout.Ses
     console.error("[stripe webhook] no FoundingFunder record for id", foundingFunderId);
     return;
   }
+  // Stripe can redeliver the same event — a no-op here (rather than re-confirming) is what
+  // keeps nextFoundingFunderNumber() below from handing out a second number for one funder.
+  if (record.paymentStatus === "confirmed") return;
 
   await prisma.foundingFunder.update({
     where: { id: foundingFunderId },
@@ -184,6 +188,7 @@ async function confirmFoundingFunderCheckoutSession(session: Stripe.Checkout.Ses
       stripeSessionId: session.id,
       stripePaymentId: paymentIntentIdFromSession(session),
       confirmedAt: new Date(),
+      foundingFunderNumber: await nextFoundingFunderNumber(),
     },
   });
 }

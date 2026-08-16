@@ -21,6 +21,7 @@ export default async function AdminAccountsPage() {
       passwordHash: true,
       isPro: true,
       createdAt: true,
+      foundingFunder: { select: { paymentStatus: true } },
     },
   });
 
@@ -33,6 +34,7 @@ export default async function AdminAccountsPage() {
     isGuest: u.isGuest,
     hasPassword: u.passwordHash != null,
     isPro: u.isPro,
+    isFoundingFunder: u.foundingFunder?.paymentStatus === "confirmed",
     createdAt: u.createdAt.toISOString(),
   }));
 

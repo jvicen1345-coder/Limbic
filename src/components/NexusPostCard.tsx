@@ -7,12 +7,13 @@ import { Avatar } from "@/components/Avatar";
 import { HeartIcon, MessageCircleIcon, ExternalLinkIcon } from "@/components/icons";
 import { TimeAgo } from "@/components/TimeAgo";
 import { youtubeEmbedUrl } from "@/lib/meta";
+import { FoundingFunderBadge } from "@/components/FoundingFunderBadge";
 
 export interface NexusPostComment {
   id: string;
   body: string;
   createdAt: string;
-  author: { id: string; name: string };
+  author: { id: string; name: string; isFoundingFunder: boolean };
 }
 
 export interface NexusPostData {
@@ -25,7 +26,7 @@ export interface NexusPostData {
   sourceUrl: string | null;
   sourceLabel: string | null;
   createdAt: string;
-  author: { id: string; name: string; headline: string | null };
+  author: { id: string; name: string; headline: string | null; isFoundingFunder: boolean };
   likeCount: number;
   likedByMe: boolean;
   comments: NexusPostComment[];
@@ -33,7 +34,15 @@ export interface NexusPostData {
 
 const ARTICLE_PREVIEW_LENGTH = 260;
 
-export function NexusPostCard({ post, currentUserName }: { post: NexusPostData; currentUserName: string }) {
+export function NexusPostCard({
+  post,
+  currentUserName,
+  currentUserIsFoundingFunder,
+}: {
+  post: NexusPostData;
+  currentUserName: string;
+  currentUserIsFoundingFunder: boolean;
+}) {
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [liked, setLiked] = useState(post.likedByMe);
   const [showComments, setShowComments] = useState(false);
@@ -53,12 +62,15 @@ export function NexusPostCard({ post, currentUserName }: { post: NexusPostData; 
           <Avatar name={post.author.name} size={38} />
         </Link>
         <div style={{ minWidth: 0 }}>
-          <Link
-            href={`/nexus/profile/${post.author.id}`}
-            style={{ fontFamily: "var(--font-heading)", fontSize: 14.5, color: "var(--color-text)", textDecoration: "none" }}
-          >
-            {post.author.name}
-          </Link>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <Link
+              href={`/nexus/profile/${post.author.id}`}
+              style={{ fontFamily: "var(--font-heading)", fontSize: 14.5, color: "var(--color-text)", textDecoration: "none" }}
+            >
+              {post.author.name}
+            </Link>
+            {post.author.isFoundingFunder && <FoundingFunderBadge />}
+          </div>
           {post.author.headline && (
             <div style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>{post.author.headline}</div>
           )}
@@ -158,7 +170,13 @@ export function NexusPostCard({ post, currentUserName }: { post: NexusPostData; 
             <div key={c.id} style={{ display: "flex", gap: 8 }}>
               <Avatar name={c.author.name} size={26} />
               <div style={{ background: "var(--color-neutral-100)", borderRadius: "var(--radius-md)", padding: "6px 10px", fontSize: 12.5 }}>
-                <span style={{ fontWeight: 600 }}>{c.author.name}</span> {c.body}
+                <span style={{ fontWeight: 600 }}>{c.author.name}</span>{" "}
+                {c.author.isFoundingFunder && (
+                  <span style={{ display: "inline-block", marginRight: 4 }}>
+                    <FoundingFunderBadge />
+                  </span>
+                )}
+                {c.body}
               </div>
             </div>
           ))}
@@ -170,7 +188,7 @@ export function NexusPostCard({ post, currentUserName }: { post: NexusPostData; 
                 id: `optimistic-${Date.now()}`,
                 body: commentDraft,
                 createdAt: new Date().toISOString(),
-                author: { id: "me", name: currentUserName },
+                author: { id: "me", name: currentUserName, isFoundingFunder: currentUserIsFoundingFunder },
               };
               setComments((prev) => [...prev, optimistic]);
               const formData = new FormData();

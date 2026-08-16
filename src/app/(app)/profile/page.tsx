@@ -22,6 +22,8 @@ import { HOME_WIDGETS } from "@/lib/home-widgets";
 import { isRecentGraduate } from "@/lib/professional-dates";
 import { PROFILE_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
+import { getFoundingFunderStatus } from "@/lib/founding-funders";
+import { FoundingFunderBadge } from "@/components/FoundingFunderBadge";
 
 // The long tail of keyword topics not already covered by SUGGESTED_TOPICS — comes from a
 // fixed vocabulary rather than whatever's currently loaded (see allKnownKeywordTopics).
@@ -50,6 +52,10 @@ export default async function ProfilePage() {
   const isStudentForCredentials = isStudentEmail(user.email) || isStudent;
   const showPracticeStartDate = user.isPro || isRecentGraduate(user.graduationDate);
   const hasFoundingSpot = (await prisma.foundingFunder.count({ where: { userId: user.id } })) > 0;
+  // Confirmed-only (unlike hasFoundingSpot above, which also counts a still-pending Stripe
+  // Checkout) — the badge under the user's name should only claim membership once it's
+  // actually paid for, not the moment someone starts a claim.
+  const foundingFunderStatus = await getFoundingFunderStatus(user.id);
   // Nexus isn't launched yet for anyone but site admins (see app/(app)/nexus/layout.tsx,
   // which gates every /nexus route the same way) — this card's copy needs to match that
   // "coming soon" state for everyone else, or "Go to Nexus"/"you're part of Nexus" would
@@ -59,6 +65,11 @@ export default async function ProfilePage() {
   return (
     <div className="screen-pad page-enter">
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Profile</h1>
+      {foundingFunderStatus.isFunder && (
+        <div style={{ marginBottom: 8 }}>
+          <FoundingFunderBadge number={foundingFunderStatus.number} />
+        </div>
+      )}
       <div style={{ marginBottom: 14 }}>
         <SubTabs tabs={PROFILE_TABS} />
       </div>
