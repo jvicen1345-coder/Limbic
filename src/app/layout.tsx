@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   // below so Google never has to fall back to this generic one and improvise a snippet
   // from page content instead, which is what was happening on /founding-funders before it
   // got its own metadata export.
-  title: "Limbic, PT News",
+  title: "Limbic Center, PT News",
   description: "Up-to-date news, guidelines, and clinical tools for physical therapists.",
   // Google Search Console's HTML-tag ownership verification — additional to the domain's
   // existing DNS-based verification, not a replacement for it. Search Console's own

@@ -3,17 +3,21 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { LandingPage } from "@/components/LandingPage";
 
+// "Limbic Center" throughout this file (title, openGraph, structured data), not just
+// "Limbic" — the trailing "Center" is what actually shows up in Google's search result
+// title/site-name chip once re-crawled, which is the whole point: a plain "Limbic" search
+// result was indistinguishable from any other product/company using that name.
 const DESCRIPTION =
-  "Limbic brings evidence-based physical therapy research, clinical tools, and a professional community into one place, built for PT students, clinicians, and the patients they serve.";
+  "The research, the profession, and the public. Finally in one place. Limbic Center is built for PT students, clinicians, and the people they serve.";
 
 export const metadata: Metadata = {
-  title: "Limbic, The Physical Therapy Platform",
+  title: "Limbic Center — The Physical Therapy Platform",
   description: DESCRIPTION,
   openGraph: {
-    title: "Limbic, The Physical Therapy Platform",
+    title: "Limbic Center — The Physical Therapy Platform",
     description: "One platform. Every PT professional. Their entire career.",
     url: "https://limbic.center",
-    siteName: "Limbic",
+    siteName: "Limbic Center",
   },
 };
 
@@ -31,7 +35,7 @@ const STRUCTURED_DATA = {
     {
       "@type": "Organization",
       "@id": "https://limbic.center/#organization",
-      name: "Limbic",
+      name: "Limbic Center",
       url: "https://limbic.center",
       logo: "https://limbic.center/logo-icon.png",
       description: DESCRIPTION,
@@ -39,7 +43,7 @@ const STRUCTURED_DATA = {
     {
       "@type": "WebSite",
       "@id": "https://limbic.center/#website",
-      name: "Limbic",
+      name: "Limbic Center",
       url: "https://limbic.center",
       publisher: { "@id": "https://limbic.center/#organization" },
       description: DESCRIPTION,
