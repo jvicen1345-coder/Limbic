@@ -19,6 +19,7 @@ import { homeQuestionForDate } from "@/lib/home-questions-static";
 import { HomeFeed } from "@/components/HomeFeed";
 import { LimbicCalendarWidget } from "@/components/LimbicCalendarWidget";
 import { getFoundingFunderStatus } from "@/lib/founding-funders";
+import { visitorHourOfDay } from "@/lib/timezone";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import type { Article, CeCategory, Specialty } from "@/lib/types";
 
@@ -134,14 +135,14 @@ export default async function HomePage() {
     user.createdAt
   );
 
-  // Daily PT Dashboard (see components/DailyDashboard.tsx) — greeting/date are computed
-  // off the server's local clock, same as every other "today" concept in this app (see
+  // Daily PT Dashboard (see components/DailyDashboard.tsx) — dateLabel/todayStr stay on the
+  // server's local clock, same as every other "today" concept in this app (see
   // lib/reading-calendar.ts, components/CalendarCard.tsx — none of them track a per-user
-  // timezone either).
+  // timezone either). The greeting is the one exception — see lib/timezone.ts for why.
   const todayStr = todayLocalDateStr(now);
   const credential = credentialFromName(user.name);
   const greetingName = firstNameOf(user.name);
-  const greeting = `${timeOfDayGreeting(now.getHours())}, ${greetingName}${credential ? `, ${credential}` : ""}`;
+  const greeting = `${timeOfDayGreeting(await visitorHourOfDay())}, ${greetingName}${credential ? `, ${credential}` : ""}`;
   const dateLabel = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
   const newStudiesToday = articles.filter((a) => a.type === "research" && a.date === todayStr).length;
   const newGuidelinesToday = articles.filter((a) => a.type === "guideline" && a.date === todayStr).length;

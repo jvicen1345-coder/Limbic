@@ -139,6 +139,25 @@ export function HomeFeed({
   const topicParam = searchParams.get("topic");
   const clearTopicFilter = () => router.replace(pathname);
 
+  // Keeps the "tz" cookie lib/timezone.ts reads (server-side, for the greeting's time-of-day
+  // copy above) in sync with the browser's actual IANA zone — a cookie rather than
+  // localStorage specifically because this needs to be readable during SSR, which
+  // localStorage never is. A no-op once it's already correct, so this only ever
+  // router.refresh()es on a brand-new browser (no cookie yet) or an actual zone change
+  // (e.g. travel, DST edge cases) — not on every ordinary Home visit. Mounted here rather
+  // than somewhere shared across every page since the greeting is the only thing that reads
+  // it, and /home is reliably the first page any signed-in session lands on.
+  useEffect(() => {
+    const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const stored = document.cookie.match(/(?:^|;\s*)tz=([^;]*)/)?.[1];
+    if (stored === encodeURIComponent(zone)) return;
+    document.cookie = `tz=${encodeURIComponent(zone)}; path=/; max-age=${60 * 60 * 24 * 365}`;
+    router.refresh();
+    // Deliberately mount-only — router's identity is stable across renders anyway, and this
+    // isn't meant to re-run on route changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // The URL only carries the slug (e.g. "back-pain") — this recovers the real-cased label
   // ("Back Pain") to show in the pill by finding whichever tag/specialty among the current
   // articles actually slugifies to it, falling back to a best-effort de-slugify (title
