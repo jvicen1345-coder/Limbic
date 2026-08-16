@@ -649,6 +649,13 @@ model FoundingFunder {
   stripeSessionId String?
   stripePaymentId String?
   confirmedAt     DateTime?
+
+  // Assigned once, at the moment paymentStatus first becomes "confirmed" (see
+  // lib/founding-funders.ts nextFoundingFunderNumber) — the count of already-confirmed
+  // funders at that moment, plus one. Null for a pending/failed row. Powers "Founding
+  // Funder No. {number}" on Profile (see components/FoundingFunderBadge.tsx) — the short
+  // pill shown elsewhere in the app (feed, comments) omits the number.
+  foundingFunderNumber Int?
 }
 
 // A pre-launch email signup for /founding-funders, collected while

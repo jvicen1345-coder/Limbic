@@ -7,6 +7,8 @@ import { SPECIALTY_META } from "@/lib/meta";
 import { Avatar } from "@/components/Avatar";
 import { ConnectButton } from "@/components/ConnectButton";
 import { NexusPostCard, type NexusPostData } from "@/components/NexusPostCard";
+import { getFoundingFunderStatus } from "@/lib/founding-funders";
+import { FoundingFunderBadge } from "@/components/FoundingFunderBadge";
 
 export default async function NexusProfilePage({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params;
@@ -22,15 +24,22 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
   // isn't viewable via a stale link, same as if the account didn't exist.
   if (!person || (!person.nexusOptIn && !isSelf)) notFound();
 
-  const posts = await prisma.nexusPost.findMany({
-    where: { authorId: person.id },
-    orderBy: { createdAt: "desc" },
-    include: {
-      author: { select: { id: true, name: true, headline: true } },
-      likes: { select: { userId: true } },
-      comments: { orderBy: { createdAt: "asc" }, include: { author: { select: { id: true, name: true } } } },
-    },
-  });
+  const [posts, personFoundingFunder, currentUserFoundingFunder] = await Promise.all([
+    prisma.nexusPost.findMany({
+      where: { authorId: person.id },
+      orderBy: { createdAt: "desc" },
+      include: {
+        author: { select: { id: true, name: true, headline: true, foundingFunder: { select: { paymentStatus: true } } } },
+        likes: { select: { userId: true } },
+        comments: {
+          orderBy: { createdAt: "asc" },
+          include: { author: { select: { id: true, name: true, foundingFunder: { select: { paymentStatus: true } } } } },
+        },
+      },
+    }),
+    getFoundingFunderStatus(person.id),
+    getFoundingFunderStatus(user.id),
+  ]);
 
   const decorated: NexusPostData[] = posts.map((p) => ({
     id: p.id,
@@ -42,10 +51,24 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
     sourceUrl: p.sourceUrl,
     sourceLabel: p.sourceLabel,
     createdAt: p.createdAt.toISOString(),
-    author: p.author,
+    author: {
+      id: p.author.id,
+      name: p.author.name,
+      headline: p.author.headline,
+      isFoundingFunder: p.author.foundingFunder?.paymentStatus === "confirmed",
+    },
     likeCount: p.likes.length,
     likedByMe: p.likes.some((l) => l.userId === user.id),
-    comments: p.comments.map((c) => ({ id: c.id, body: c.body, createdAt: c.createdAt.toISOString(), author: c.author })),
+    comments: p.comments.map((c) => ({
+      id: c.id,
+      body: c.body,
+      createdAt: c.createdAt.toISOString(),
+      author: {
+        id: c.author.id,
+        name: c.author.name,
+        isFoundingFunder: c.author.foundingFunder?.paymentStatus === "confirmed",
+      },
+    })),
   }));
 
   const connectionState = isSelf ? null : (await getConnectionStates(user.id)).get(person.id) ?? { status: "none" as const };
@@ -56,7 +79,10 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
         <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
           <Avatar name={person.name} size={64} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: "var(--font-heading)", fontSize: 19 }}>{person.name}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: 19 }}>{person.name}</div>
+              {personFoundingFunder.isFunder && <FoundingFunderBadge />}
+            </div>
             {person.headline && <div style={{ fontSize: 13, color: "var(--color-neutral-700)" }}>{person.headline}</div>}
             <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
               <span className="tag tag-neutral">{SPECIALTY_META[person.specialty as keyof typeof SPECIALTY_META]}</span>
@@ -82,7 +108,12 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {decorated.map((post) => (
-            <NexusPostCard key={post.id} post={post} currentUserName={user.name} />
+            <NexusPostCard
+              key={post.id}
+              post={post}
+              currentUserName={user.name}
+              currentUserIsFoundingFunder={currentUserFoundingFunder.isFunder}
+            />
           ))}
         </div>
       )}

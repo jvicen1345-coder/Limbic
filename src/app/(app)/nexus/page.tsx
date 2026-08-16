@@ -6,6 +6,7 @@ import { NEXUS_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
 import { NexusPostCard, type NexusPostData } from "@/components/NexusPostCard";
 import { NexusComposer } from "@/components/NexusComposer";
+import { getFoundingFunderStatus } from "@/lib/founding-funders";
 
 export default async function NexusFeedPage({ searchParams }: { searchParams: Promise<{ tags?: string }> }) {
   const user = await getCurrentUser();
@@ -19,18 +20,21 @@ export default async function NexusFeedPage({ searchParams }: { searchParams: Pr
         .filter(Boolean)
     : [];
 
-  const posts = await prisma.nexusPost.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 40,
-    include: {
-      author: { select: { id: true, name: true, headline: true } },
-      likes: { select: { userId: true } },
-      comments: {
-        orderBy: { createdAt: "asc" },
-        include: { author: { select: { id: true, name: true } } },
+  const [posts, currentUserFoundingFunder] = await Promise.all([
+    prisma.nexusPost.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 40,
+      include: {
+        author: { select: { id: true, name: true, headline: true, foundingFunder: { select: { paymentStatus: true } } } },
+        likes: { select: { userId: true } },
+        comments: {
+          orderBy: { createdAt: "asc" },
+          include: { author: { select: { id: true, name: true, foundingFunder: { select: { paymentStatus: true } } } } },
+        },
       },
-    },
-  });
+    }),
+    getFoundingFunderStatus(user.id),
+  ]);
 
   let decorated: NexusPostData[] = posts.map((p) => ({
     id: p.id,
@@ -42,14 +46,23 @@ export default async function NexusFeedPage({ searchParams }: { searchParams: Pr
     sourceUrl: p.sourceUrl,
     sourceLabel: p.sourceLabel,
     createdAt: p.createdAt.toISOString(),
-    author: p.author,
+    author: {
+      id: p.author.id,
+      name: p.author.name,
+      headline: p.author.headline,
+      isFoundingFunder: p.author.foundingFunder?.paymentStatus === "confirmed",
+    },
     likeCount: p.likes.length,
     likedByMe: p.likes.some((l) => l.userId === user.id),
     comments: p.comments.map((c) => ({
       id: c.id,
       body: c.body,
       createdAt: c.createdAt.toISOString(),
-      author: c.author,
+      author: {
+        id: c.author.id,
+        name: c.author.name,
+        isFoundingFunder: c.author.foundingFunder?.paymentStatus === "confirmed",
+      },
     })),
   }));
 
@@ -106,7 +119,12 @@ export default async function NexusFeedPage({ searchParams }: { searchParams: Pr
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 14 }}>
           {decorated.map((post) => (
-            <NexusPostCard key={post.id} post={post} currentUserName={user.name} />
+            <NexusPostCard
+              key={post.id}
+              post={post}
+              currentUserName={user.name}
+              currentUserIsFoundingFunder={currentUserFoundingFunder.isFunder}
+            />
           ))}
         </div>
       )}

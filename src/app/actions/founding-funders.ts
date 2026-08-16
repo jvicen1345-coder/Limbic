@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { isSiteAdmin } from "@/lib/admin";
 import { getStripe, stripeEnabled, paymentIntentIdFromSession } from "@/lib/stripe";
 import { FOUNDING_FUNDERS_TOTAL_SLOTS } from "@/lib/founding-funders-config";
+import { nextFoundingFunderNumber } from "@/lib/founding-funders";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -127,6 +128,7 @@ export async function claimFoundingSpotAction(input: {
         confirmed: true,
         paymentStatus: "confirmed",
         confirmedAt: new Date(),
+        foundingFunderNumber: await nextFoundingFunderNumber(),
       },
     }),
     prisma.user.update({ where: { id: target.id }, data: { isPro: true } }),
@@ -239,6 +241,7 @@ export async function confirmFoundingFunderPaymentIfNeeded(sessionId: string): P
         stripeSessionId: session.id,
         stripePaymentId: paymentIntentIdFromSession(session),
         confirmedAt: new Date(),
+        foundingFunderNumber: await nextFoundingFunderNumber(),
       },
     });
   } catch (err) {
@@ -272,9 +275,20 @@ export async function cleanupCanceledFoundingFunderCheckout(sessionId: string): 
 export async function confirmFoundingFunderPaymentAction(id: string): Promise<{ ok: boolean; error?: string }> {
   if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
 
+  const record = await prisma.foundingFunder.findUnique({ where: { id } });
+  if (!record) return { ok: false, error: "That claim no longer exists." };
+  // Already confirmed — a no-op (rather than re-confirming) is what keeps a repeated click
+  // from handing out a second foundingFunderNumber for the same row.
+  if (record.paymentStatus === "confirmed") return { ok: true };
+
   await prisma.foundingFunder.update({
     where: { id },
-    data: { paymentStatus: "confirmed", confirmed: true, confirmedAt: new Date() },
+    data: {
+      paymentStatus: "confirmed",
+      confirmed: true,
+      confirmedAt: new Date(),
+      foundingFunderNumber: await nextFoundingFunderNumber(),
+    },
   });
   revalidatePath("/founding-funders");
   return { ok: true };
