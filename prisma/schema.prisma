@@ -151,6 +151,20 @@ model User {
   // branch, never in an `update` branch, so a returning user is never affected.
   hasOnboarded      Boolean  @default(true)
 
+  // "pt" | "pts" | "general" — set from the one-time "How are you using Limbic?" modal
+  // (see components/OnboardingRoleModal.tsx, app/(app)/layout.tsx) and editable anytime
+  // from Profile's Role section. Drives the reorder-only-never-hide logic in
+  // lib/user-role.ts zoneTwoOrder(), which the sidebar (components/AppShell.tsx) uses.
+  // Null until the modal (or a Profile edit) sets it.
+  userRole          String?
+
+  // Gates the "How are you using Limbic?" role modal — same @default(true)-not-false
+  // reasoning as hasOnboarded right above, so this field's own rollout doesn't
+  // retroactively send every existing account through it. Every real account-creation
+  // path (lib/session.ts signUpWithPassword/signInWithGoogle/signInAsGuest) explicitly
+  // sets this false only in its own `create` branch, same as hasOnboarded.
+  hasCompletedOnboarding Boolean @default(true)
+
   // Limbic Boards (student daily-habit tools) streak — same nextStreak() logic as the
   // reading streak above, driven off BoardActivity rows instead of ReadArticle ones.
   lastBoardsActivityAt DateTime?

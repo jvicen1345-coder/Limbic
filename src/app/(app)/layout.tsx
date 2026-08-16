@@ -5,11 +5,17 @@ import { prisma } from "@/lib/db";
 import { getAptaNewsArticles } from "@/lib/articles";
 import { SPECIALTY_META } from "@/lib/meta";
 import { AppShell } from "@/components/AppShell";
+import { OnboardingRoleModal } from "@/components/OnboardingRoleModal";
+import { zoneTwoOrder } from "@/lib/user-role";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
   if (!user.hasOnboarded) redirect("/onboarding");
+  // "Before they reach /home" — blocks every route in the app, not just Home, since Home is
+  // simply the first one a new account would otherwise land on. No sidebar, no AppShell at
+  // all until this resolves (see components/OnboardingRoleModal.tsx).
+  if (!user.hasCompletedOnboarding) return <OnboardingRoleModal />;
 
   const [aptaArticles, savedCount, nexusRequestCount, isAdmin] = await Promise.all([
     getAptaNewsArticles(),
@@ -40,6 +46,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       aptaCount={newAptaCount}
       nexusRequestCount={nexusRequestCount}
       savedCount={savedCount}
+      zoneTwoOrder={zoneTwoOrder(user.userRole)}
     >
       {children}
     </AppShell>

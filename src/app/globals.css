@@ -6607,4 +6607,49 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 @media (max-width: 700px) {
   .pro-table-wrap .pro-ce-log-row { min-width: 620px; }
 }
+
+/* — Role cards (components/RoleCards.tsx) — shared by the onboarding gate
+   (OnboardingRoleModal.tsx) and Profile's Role section (UserRoleSection.tsx). Stack
+   vertically below 640px, same breakpoint the rest of this file already uses for
+   sidebar/single-column collapses. */
+.role-cards { display: flex; gap: 12px; margin-top: 16px; }
+@media (max-width: 640px) {
+  .role-cards { flex-direction: column; }
+}
+.role-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  background: var(--color-surface);
+  border: 2px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  cursor: pointer;
+  font: inherit;
+  color: var(--color-text);
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.role-card:hover { border-color: var(--color-accent-300); }
+.role-card--selected { border-color: var(--color-accent); background: var(--color-accent-100); }
+.role-card-label { font-family: var(--font-heading); font-size: 15px; }
+.role-card-description { font-size: 12.5px; color: var(--color-neutral-700); }
+
+/* — Onboarding role gate (app/(app)/layout.tsx, components/OnboardingRoleModal.tsx) — a
+   full-screen overlay in place of the whole app (sidebar included) until a new account
+   picks a role, so there's nothing to dismiss "outside" of. */
+.onboarding-role-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background: color-mix(in srgb, #000 55%, var(--color-bg));
+  overflow-y: auto;
+}
+.onboarding-role-card { max-width: 560px; width: 100%; }
 .pro-calc-modal { width: 620px; max-height: 85vh; }
