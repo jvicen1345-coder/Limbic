@@ -3,11 +3,13 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { signInWithPassword, signUpWithPassword, signInAsUserId, signOutSession } from "@/lib/session";
+import { signInWithPassword, signUpWithPassword, signInAsUserId, signInAsGuest, signOutSession, getCurrentUser } from "@/lib/session";
 import { hashPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";
 import { createPasswordResetToken, consumePasswordResetToken } from "@/lib/password-reset";
 import { emailEnabled, sendPasswordResetEmail } from "@/lib/email";
 import { appOrigin } from "@/lib/url";
+import { clientIp } from "@/lib/request-ip";
+import { consumeGuestSignupAllowance } from "@/lib/guest-rate-limit";
 
 // One shared action for both the "Physical Therapist" and "General" sign-in tabs (see
 // components/SignInForm.tsx) — they only ever differed in on-page copy, never in backend
@@ -104,6 +106,28 @@ export async function resetPasswordAction(formData: FormData) {
   const passwordHash = await hashPassword(password);
   await prisma.user.update({ where: { id: userId }, data: { passwordHash } });
   await signInAsUserId(userId);
+  revalidatePath("/", "layout");
+  redirect("/home");
+}
+
+/** "Continue as guest" on the sign-in screen — mints a fresh isGuest account with no
+ *  verification step at all, so it's IP-rate-limited (see lib/guest-rate-limit.ts) to keep
+ *  it from being scripted into unlimited account creation. A no-op redirect straight to
+ *  /home if the caller already has a live session — clicking it twice (or hitting back into
+ *  a still-signed-in tab) shouldn't mint a second throwaway account. */
+export async function guestSignInAction() {
+  const existing = await getCurrentUser();
+  if (existing) {
+    redirect("/home");
+  }
+
+  const ip = await clientIp();
+  const allowed = await consumeGuestSignupAllowance(ip);
+  if (!allowed) {
+    redirect("/sign-in?error=guest_rate_limited");
+  }
+
+  await signInAsGuest();
   revalidatePath("/", "layout");
   redirect("/home");
 }

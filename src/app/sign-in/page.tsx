@@ -25,6 +25,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   signup_exists: "An account with that email already exists — sign in instead.",
   weak_password: "Password must be at least 8 characters.",
   password_mismatch: "Those passwords don't match.",
+  guest_rate_limited: "Too many guest sign-ins from this network recently — please try again later, or create a real account.",
 };
 
 export default async function SignInPage({
