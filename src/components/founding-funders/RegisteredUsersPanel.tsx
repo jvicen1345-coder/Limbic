@@ -1,8 +1,8 @@
 /** Read-only, so this stays a server component — no client-side state needed. Same admin
  *  gate as FoundingAdminPanel/WipeAllUsersPanel (see app/founding-funders/page.tsx). Shows
  *  whichever sign-in identifier the account actually has — a General sign-in sets `email`,
- *  a PT license sign-in sets `licenseNumber`/`licenseEmail`, never both at once for the
- *  demo sign-in flows (see lib/session.ts). */
+ *  a PT license sign-in sets `licenseNumber`/`licenseEmail`, never both at once (see
+ *  lib/session.ts). */
 export function RegisteredUsersPanel({
   users,
 }: {

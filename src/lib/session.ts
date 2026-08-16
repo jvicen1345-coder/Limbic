@@ -3,6 +3,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 import { nameFromEmail } from "@/lib/meta";
+import { hashPassword, verifyPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";
 import type { User } from "@/generated/prisma/client";
 
 const COOKIE_NAME = "pt_news_session";
@@ -126,14 +127,16 @@ export function hasLicenseAccess(user: {
   return user.licenseNumber != null || isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
 }
 
-export async function signInAsGuest() {
-  const user = await prisma.user.create({ data: { isGuest: true, hasOnboarded: false } });
-  await issueSessionCookie(user.id);
+/** Signs the caller directly into `userId` with no credential check — used only right after
+ *  a password reset actually succeeds (see resetPasswordAction in app/actions/auth.ts),
+ *  where possessing the emailed single-use token already proved ownership of the account. */
+export async function signInAsUserId(userId: string) {
+  await issueSessionCookie(userId);
 }
 
-/** Shared by signInWithEmail/signInWithGoogle below: issues the session cookie, and — when
- *  the match was via backupEmail rather than the primary email — sets the one-time
- *  "signed in with backup email" flag the Home banner reads. */
+/** Shared by signInWithPassword/signUpWithPassword/signInWithGoogle below: issues the
+ *  session cookie, and — when the match was via backupEmail rather than the primary email —
+ *  sets the one-time "signed in with backup email" flag the Home banner reads. */
 async function signInToUserRecord(user: User, viaBackupEmail: boolean) {
   await issueSessionCookie(user.id);
   const store = await cookies();
@@ -150,33 +153,63 @@ async function signInToUserRecord(user: User, viaBackupEmail: boolean) {
   }
 }
 
+export type SignInResult =
+  | { ok: true }
+  | {
+      ok: false;
+      /** "needsPassword": a real account exists but predates User.passwordHash (every
+       *  account created under the old "type any email, you're in" flow) — the sign-in
+       *  form routes this to the same password-reset request as "Forgot password?" rather
+       *  than a separate migration flow. "invalid": wrong password, OR no account at all —
+       *  folded into one reason (not "no account found") so a failed attempt can't be used
+       *  to enumerate which emails are registered. */
+      reason: "needsPassword" | "invalid";
+    };
+
 /**
- * Sign-in: just an email, no license required — the only sign-in path now that license
- * number has moved to a post-signup verification flow (see app/actions/license.ts,
- * components/AddLicenseModal.tsx). Signing in again with the same email returns to the same
- * persisted profile/saved data, which is what makes this distinct from the anonymous,
- * one-off "Continue as guest" flow. Matches against backupEmail (see the "Account Security"
- * section on Profile — lets a graduated student whose .edu address stopped working sign
- * back in with the personal email they added ahead of time) and licenseEmail (a pre-
- * existing account created back when sign-in collected a license number/email — its `email`
- * column was never set, only `licenseEmail`, so without this an old PT account would get a
- * duplicate created instead of signing back into its real one).
+ * Real password sign-in — replaces the old signInWithEmail, which signed into (or silently
+ * created) an account for *any* typed email with no password at all; "Demo sign-in, any
+ * email works" was the literal sign-in page copy. Matches against email, backupEmail (see
+ * the "Account Security" section on Profile — lets a graduated student whose .edu address
+ * stopped working sign back in with the personal email they added ahead of time), and
+ * licenseEmail (a pre-existing account created back when sign-in collected a license
+ * number/email — its `email` column was never set, only `licenseEmail`).
  */
-export async function signInWithEmail(input: { email: string }) {
+export async function signInWithPassword(input: { email: string; password: string }): Promise<SignInResult> {
   const email = input.email.trim().toLowerCase();
-  if (!email) {
-    await signInAsGuest();
-    return;
-  }
+  const existing = email
+    ? await prisma.user.findFirst({ where: { OR: [{ email }, { backupEmail: email }, { licenseEmail: email }] } })
+    : null;
+  if (!existing) return { ok: false, reason: "invalid" };
+  if (!existing.passwordHash) return { ok: false, reason: "needsPassword" };
+
+  const valid = await verifyPassword(input.password, existing.passwordHash);
+  if (!valid) return { ok: false, reason: "invalid" };
+
+  await signInToUserRecord(existing, existing.email !== email && existing.backupEmail === email);
+  return { ok: true };
+}
+
+export type SignUpResult = { ok: true } | { ok: false; reason: "exists" | "weakPassword" };
+
+/** Creates a brand-new account with a real password — the only way to get a new Limbic
+ *  account now that the old passwordless flow is gone. Rejects a duplicate against the same
+ *  email/backupEmail/licenseEmail set signInWithPassword matches, so this can't create a
+ *  second account for an address that already has one. */
+export async function signUpWithPassword(input: { email: string; password: string }): Promise<SignUpResult> {
+  const email = input.email.trim().toLowerCase();
+  if (!email) return { ok: false, reason: "weakPassword" };
+  if (input.password.length < MIN_PASSWORD_LENGTH) return { ok: false, reason: "weakPassword" };
+
   const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { backupEmail: email }, { licenseEmail: email }] } });
-  if (existing) {
-    await signInToUserRecord(existing, existing.email !== email && existing.backupEmail === email);
-    return;
-  }
+  if (existing) return { ok: false, reason: "exists" };
+
+  const passwordHash = await hashPassword(input.password);
   const user = await prisma.user.create({
-    data: { email, name: nameFromEmail(email), hasOnboarded: false },
+    data: { email, name: nameFromEmail(email), hasOnboarded: false, passwordHash },
   });
   await signInToUserRecord(user, false);
+  return { ok: true };
 }
 
 /**

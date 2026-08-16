@@ -5,7 +5,7 @@ import { updateBackupEmail } from "@/app/actions/account-migration";
 
 /** The Profile "Account Security" section — a backup email a student can add so they keep
  *  access after their .edu email stops working post-graduation (see app/actions/
- *  account-migration.ts, lib/session.ts signInWithEmail/signInWithGoogle, and the
+ *  account-migration.ts, lib/session.ts signInWithPassword/signInWithGoogle, and the
  *  migration-reminder/graduation-transition surfaces on Home). Unlike ProfileForm.tsx's
  *  autosave pattern, this uses an explicit Save button with its own validation/confirmation
  *  messaging — closer to DeleteAccountSection.tsx's style — since a wrong backup email is
