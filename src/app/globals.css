@@ -1535,9 +1535,9 @@ html[data-theme="dark"] .nav-founding-link-active {
   transition: transform 250ms ease, width 250ms ease;
 }
 
-/* Pill-style segmented tabs — same look as the sign-in screen's Physical Therapist/General
-   switch, for anywhere else that wants a mode toggle rather than a section-navigation bar
-   (see .sub-tabs above for that). */
+/* Pill-style segmented tabs — same look as the sign-in screen's Email/Guest switch, for
+   anywhere else that wants a mode toggle rather than a section-navigation bar (see .sub-tabs
+   above for that). */
 .pill-tabs {
   display: flex; gap: 4px; background: var(--color-neutral-100);
   border-radius: var(--radius-md); padding: 3px; margin-bottom: 18px;

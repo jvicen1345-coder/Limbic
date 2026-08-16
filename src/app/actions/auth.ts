@@ -11,10 +11,7 @@ import { appOrigin } from "@/lib/url";
 import { clientIp } from "@/lib/request-ip";
 import { consumeGuestSignupAllowance } from "@/lib/guest-rate-limit";
 
-// One shared action for both the "Physical Therapist" and "General" sign-in tabs (see
-// components/SignInForm.tsx) — they only ever differed in on-page copy, never in backend
-// behavior, and now that both collect the same email+password fields there's no reason for
-// two near-identical actions.
+// Backs the Email tab's sign-in form (see components/SignInForm.tsx).
 export async function signInAction(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");

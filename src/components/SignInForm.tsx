@@ -6,32 +6,25 @@ import { signInAction, signUpAction, guestSignInAction } from "@/app/actions/aut
 import { GoogleIcon } from "@/components/icons";
 
 const TABS = [
-  { id: "pt" as const, label: "Physical Therapist" },
-  { id: "general" as const, label: "General" },
+  { id: "email" as const, label: "Email" },
+  { id: "guest" as const, label: "Guest" },
 ];
 
-/** localStorage keys for remembering what a returning visitor last typed, so they don't
- *  have to retype it. Device-local convenience only, email address only — never the
- *  password — not part of the auth flow itself. */
-const STORAGE_KEYS = {
-  ptEmail: "limbic:signIn:ptEmail",
-  generalEmail: "limbic:signIn:generalEmail",
-};
+/** localStorage key for remembering what a returning visitor last typed, so they don't have
+ *  to retype it. Device-local convenience only, email address only — never the password —
+ *  not part of the auth flow itself. */
+const EMAIL_STORAGE_KEY = "limbic:signIn:email";
 
-/** One tab's actual form — email + password (+ confirm, in signup mode) — shared by both
- *  the "Physical Therapist" and "General" tabs below, which only ever differed in copy, not
- *  in what they collect or which action they submit to. */
-function TabForm({
+/** The Email tab's form — email + password (+ confirm, in signup mode). PTs and everyone
+ *  else use the same form (see AddLicenseModal on Profile for license verification), so
+ *  there's no separate clinician-specific copy or fields here anymore. */
+function EmailForm({
   authMode,
-  copy,
-  emailId,
   emailRef,
   initialEmail,
   onSubmit,
 }: {
   authMode: "signin" | "signup";
-  copy: string;
-  emailId: string;
   emailRef: React.RefObject<HTMLInputElement | null>;
   initialEmail: string;
   onSubmit: () => void;
@@ -42,14 +35,18 @@ function TabForm({
       onSubmit={onSubmit}
       style={{ display: "flex", flexDirection: "column", gap: 16 }}
     >
-      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>{copy}</p>
+      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
+        {authMode === "signup"
+          ? "Create an account with your email to read, search, and save articles, personalize your profile, and verify your PT license anytime from Profile to unlock clinician features."
+          : "Sign in with your email to read, search, and save articles, personalize your profile, and access clinician features if you've verified your PT license."}
+      </p>
 
       <div className="field">
-        <label htmlFor={emailId}>Email</label>
+        <label htmlFor="si-email">Email</label>
         <input
           ref={emailRef}
           className="input"
-          id={emailId}
+          id="si-email"
           name="email"
           type="email"
           placeholder="you@example.com"
@@ -60,10 +57,10 @@ function TabForm({
       </div>
 
       <div className="field">
-        <label htmlFor={`${emailId}-password`}>Password</label>
+        <label htmlFor="si-password">Password</label>
         <input
           className="input"
-          id={`${emailId}-password`}
+          id="si-password"
           name="password"
           type="password"
           autoComplete={authMode === "signup" ? "new-password" : "current-password"}
@@ -74,10 +71,10 @@ function TabForm({
 
       {authMode === "signup" && (
         <div className="field">
-          <label htmlFor={`${emailId}-confirm`}>Confirm password</label>
+          <label htmlFor="si-confirm">Confirm password</label>
           <input
             className="input"
-            id={`${emailId}-confirm`}
+            id="si-confirm"
             name="confirmPassword"
             type="password"
             autoComplete="new-password"
@@ -109,33 +106,22 @@ export function SignInForm({
   initialEmail?: string;
   initialAuthMode?: "signin" | "signup";
 }) {
-  const [mode, setMode] = useState<"pt" | "general">("pt");
+  const [mode, setMode] = useState<"email" | "guest">("email");
   const [authMode, setAuthMode] = useState<"signin" | "signup">(initialAuthMode);
-  const ptEmailRef = useRef<HTMLInputElement>(null);
-  const generalEmailRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
 
-  // Fills in whatever this tab's input is mounted (imperatively, via ref — not React
-  // state, so there's no server/client markup to reconcile and nothing to hydrate around).
-  // Re-runs on every tab switch so each tab's own remembered value is restored. Skipped
-  // when the server already handed back a specific email (e.g. after a failed sign-in) —
-  // that value takes priority over whatever was last remembered.
+  // Fills in the remembered email once the Email tab's input is mounted (imperatively, via
+  // ref — not React state, so there's no server/client markup to reconcile and nothing to
+  // hydrate around). Skipped when the server already handed back a specific email (e.g.
+  // after a failed sign-in) — that value takes priority over whatever was last remembered.
   useEffect(() => {
-    if (initialEmail) return;
-    if (mode === "pt") {
-      const savedEmail = localStorage.getItem(STORAGE_KEYS.ptEmail);
-      if (savedEmail && ptEmailRef.current) ptEmailRef.current.value = savedEmail;
-    } else {
-      const savedEmail = localStorage.getItem(STORAGE_KEYS.generalEmail);
-      if (savedEmail && generalEmailRef.current) generalEmailRef.current.value = savedEmail;
-    }
+    if (initialEmail || mode !== "email") return;
+    const savedEmail = localStorage.getItem(EMAIL_STORAGE_KEY);
+    if (savedEmail && emailRef.current) emailRef.current.value = savedEmail;
   }, [mode, initialEmail]);
 
-  const rememberPtEmail = () => {
-    if (ptEmailRef.current?.value) localStorage.setItem(STORAGE_KEYS.ptEmail, ptEmailRef.current.value);
-  };
-
-  const rememberGeneralEmail = () => {
-    if (generalEmailRef.current?.value) localStorage.setItem(STORAGE_KEYS.generalEmail, generalEmailRef.current.value);
+  const rememberEmail = () => {
+    if (emailRef.current?.value) localStorage.setItem(EMAIL_STORAGE_KEY, emailRef.current.value);
   };
 
   return (
@@ -153,7 +139,7 @@ export function SignInForm({
         boxShadow: "var(--shadow-md)",
       }}
     >
-      {googleEnabled && (
+      {googleEnabled && mode === "email" && (
         <>
           <a href="/auth/google" className="btn btn-secondary btn-block" style={{ marginTop: 0 }}>
             <GoogleIcon size={18} />
@@ -184,48 +170,32 @@ export function SignInForm({
         })}
       </div>
 
-      {mode === "pt" ? (
-        <TabForm
-          authMode={authMode}
-          copy={
-            authMode === "signup"
-              ? "Create an account as a physical therapist; you can verify your license anytime from your profile to unlock clinician features."
-              : "Sign in as a physical therapist; you can verify your license anytime from your profile to unlock clinician features."
-          }
-          emailId="li-email"
-          emailRef={ptEmailRef}
-          initialEmail={initialEmail}
-          onSubmit={rememberPtEmail}
-        />
+      {mode === "email" ? (
+        <>
+          <EmailForm authMode={authMode} emailRef={emailRef} initialEmail={initialEmail} onSubmit={rememberEmail} />
+
+          <button
+            type="button"
+            className="btn btn-ghost btn-block"
+            onClick={() => setAuthMode((m) => (m === "signup" ? "signin" : "signup"))}
+            style={{ marginTop: -4 }}
+          >
+            {authMode === "signup" ? "Already have an account? Sign in" : "New here? Create an account"}
+          </button>
+        </>
       ) : (
-        <TabForm
-          authMode={authMode}
-          copy={
-            authMode === "signup"
-              ? "Not a licensed PT? Create an account with your email to read, search, and save articles and personalize your profile."
-              : "Not a licensed PT? Sign in with your email to read, search, and save articles and personalize your profile."
-          }
-          emailId="general-email"
-          emailRef={generalEmailRef}
-          initialEmail={initialEmail}
-          onSubmit={rememberGeneralEmail}
-        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
+            Browse Limbic without creating an account. You can still read, search, and save
+            content — switch to the Email tab anytime to keep it under a real account.
+          </p>
+          <form action={guestSignInAction}>
+            <button type="submit" className="btn btn-primary btn-block">
+              Continue as guest
+            </button>
+          </form>
+        </div>
       )}
-
-      <button
-        type="button"
-        className="btn btn-ghost btn-block"
-        onClick={() => setAuthMode((m) => (m === "signup" ? "signin" : "signup"))}
-        style={{ marginTop: -4 }}
-      >
-        {authMode === "signup" ? "Already have an account? Sign in" : "New here? Create an account"}
-      </button>
-
-      <form action={guestSignInAction}>
-        <button type="submit" className="btn btn-ghost btn-block">
-          Continue as guest
-        </button>
-      </form>
 
       <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: 0, textAlign: "center" }}>
         By signing in you agree to our{" "}
