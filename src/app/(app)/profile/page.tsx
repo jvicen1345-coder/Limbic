@@ -50,6 +50,10 @@ export default async function ProfilePage() {
   const isStudentForCredentials = isStudentEmail(user.email) || isStudent;
   const showPracticeStartDate = user.isPro || isRecentGraduate(user.graduationDate);
   const hasFoundingSpot = (await prisma.foundingFunder.count({ where: { userId: user.id } })) > 0;
+  // Confirmed-only (unlike hasFoundingSpot above, which also counts a still-pending Stripe
+  // Checkout) — the badge next to the page title should only claim membership once it's
+  // actually paid for, not the moment someone starts a claim.
+  const isFoundingFunder = (await prisma.foundingFunder.count({ where: { userId: user.id, paymentStatus: "confirmed" } })) > 0;
   // Nexus isn't launched yet for anyone but site admins (see app/(app)/nexus/layout.tsx,
   // which gates every /nexus route the same way) — this card's copy needs to match that
   // "coming soon" state for everyone else, or "Go to Nexus"/"you're part of Nexus" would
@@ -58,7 +62,10 @@ export default async function ProfilePage() {
 
   return (
     <div className="screen-pad page-enter">
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Profile</h1>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 4px" }}>
+        <h1 style={{ fontSize: 24, margin: 0 }}>Profile</h1>
+        {isFoundingFunder && <span className="tag tag-accent-2">Founding Funder</span>}
+      </div>
       <div style={{ marginBottom: 14 }}>
         <SubTabs tabs={PROFILE_TABS} />
       </div>
