@@ -681,6 +681,17 @@ model ConnexionVisitRequest {
   createdAt     DateTime  @default(now())
 }
 
+// A fixed-window request counter for "Continue as guest" (see lib/guest-rate-limit.ts,
+// guestSignInAction in app/actions/auth.ts) — one row per IP, capping how many throwaway
+// guest accounts a single address can mint per window. Not meant to be precise (reads then
+// writes count, not atomically incremented under a DB-level lock) — good enough to blunt a
+// script hammering the button, which is all this needs to do.
+model GuestSignupThrottle {
+  ip          String   @id
+  windowStart DateTime
+  count       Int      @default(1)
+}
+
 // A password-reset link's server-side half (see lib/password.ts, app/actions/auth.ts
 // requestPasswordResetAction/resetPasswordAction) — one row per emailed link. Only
 // `tokenHash` (a SHA-256 hash of the random token that's actually emailed) is ever stored,

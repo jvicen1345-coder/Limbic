@@ -190,6 +190,15 @@ export async function signInWithPassword(input: { email: string; password: strin
   return { ok: true };
 }
 
+/** "Continue as guest" — creates a fresh, empty account (isGuest: true, no email or
+ *  password) and signs straight into it. Rate-limited by IP at the call site (see
+ *  guestSignInAction in app/actions/auth.ts, lib/guest-rate-limit.ts), not here, so this
+ *  stays a plain "mint one and sign in" helper. */
+export async function signInAsGuest() {
+  const user = await prisma.user.create({ data: { isGuest: true, hasOnboarded: false } });
+  await issueSessionCookie(user.id);
+}
+
 export type SignUpResult = { ok: true } | { ok: false; reason: "exists" | "weakPassword" };
 
 /** Creates a brand-new account with a real password — the only way to get a new Limbic

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { signInAction, signUpAction } from "@/app/actions/auth";
+import { signInAction, signUpAction, guestSignInAction } from "@/app/actions/auth";
 import { GoogleIcon } from "@/components/icons";
 
 const TABS = [
@@ -220,6 +220,12 @@ export function SignInForm({
       >
         {authMode === "signup" ? "Already have an account? Sign in" : "New here? Create an account"}
       </button>
+
+      <form action={guestSignInAction}>
+        <button type="submit" className="btn btn-ghost btn-block">
+          Continue as guest
+        </button>
+      </form>
 
       <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: 0, textAlign: "center" }}>
         By signing in you agree to our{" "}
