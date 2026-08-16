@@ -17,9 +17,8 @@ export interface AccountRow {
 }
 
 /** One row's Delete button — a two-click confirm ("Delete" then "Confirm?" for a few
- *  seconds) rather than a native confirm() popup or the full code-phrase ceremony
- *  WipeAllUsersPanel.tsx uses for wiping *everyone* — this is one account at a time, so a
- *  lighter but still-deliberate confirm is the right amount of friction. */
+ *  seconds) rather than a native confirm() popup, since this deletes one account at a
+ *  time and a lighter but still-deliberate confirm is the right amount of friction. */
 function DeleteButton({ userId, onDeleted }: { userId: string; onDeleted: () => void }) {
   const [confirming, setConfirming] = useState(false);
   const [pending, startTransition] = useTransition();

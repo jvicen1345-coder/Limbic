@@ -13,7 +13,6 @@ import { WaitlistForm } from "@/components/founding-funders/WaitlistForm";
 import { ClaimSpotButton } from "@/components/founding-funders/ClaimSpotButton";
 import { FoundingAdminPanel } from "@/components/founding-funders/FoundingAdminPanel";
 import { FoundingFundersRoster } from "@/components/founding-funders/FoundingFundersRoster";
-import { WipeAllUsersPanel } from "@/components/founding-funders/WipeAllUsersPanel";
 import { RegisteredUsersPanel } from "@/components/founding-funders/RegisteredUsersPanel";
 
 // Was falling back to the root layout's generic metadata (see app/layout.tsx) — a page
@@ -272,7 +271,6 @@ export default async function FoundingFundersPage({
           <FoundingFundersRoster entries={rosterEntries} confirmedCount={data.confirmedCount} pendingCount={data.pendingCount} />
           <FoundingAdminPanel />
           <RegisteredUsersPanel users={registeredUsers} />
-          <WipeAllUsersPanel userCount={registeredUsers.length} />
         </>
       )}
     </div>

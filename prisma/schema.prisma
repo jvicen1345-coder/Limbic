@@ -681,18 +681,6 @@ model ConnexionVisitRequest {
   createdAt     DateTime  @default(now())
 }
 
-// A single-use authorization code for wipeAllUsersAction (see app/actions/admin.ts) — an
-// admin generates one (generateWipeCodeAction), sees it exactly once, and it's deleted the
-// moment it's either spent on a successful wipe or superseded by generating a fresh one.
-// At most one row exists at a time; typing the admin allowlist + the "WIPE ALL USERS"
-// confirm phrase alone is deliberately not enough to wipe anything without also holding
-// whatever code currently exists here.
-model WipeCode {
-  id        String   @id @default(cuid())
-  code      String   @unique
-  createdAt DateTime @default(now())
-}
-
 // A password-reset link's server-side half (see lib/password.ts, app/actions/auth.ts
 // requestPasswordResetAction/resetPasswordAction) — one row per emailed link. Only
 // `tokenHash` (a SHA-256 hash of the random token that's actually emailed) is ever stored,
@@ -716,7 +704,7 @@ model PasswordResetToken {
 // deliberately has no userId/user relation at all, unlike every other per-account model in
 // this schema, so a submission can never be traced back to the account that sent it, even
 // by an admin reading the raw table. Only visible to a site admin (see lib/admin.ts
-// isSiteAdmin), same access pattern as WipeCode/FoundingFunderWaitlist above.
+// isSiteAdmin), same access pattern as FoundingFunderWaitlist above.
 model Suggestion {
   id        String   @id @default(cuid())
   body      String
