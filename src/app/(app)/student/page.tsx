@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
@@ -7,6 +6,7 @@ import { questionForDate, todayDateKey } from "@/lib/board-content";
 import { getAcceptedConnectionIds } from "@/lib/nexus";
 import { last7DateKeys } from "@/lib/games";
 import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumProgressChart";
+import { StudentGate } from "@/components/student/StudentGate";
 import {
   FileTextIcon,
   UsersIcon,
@@ -89,8 +89,47 @@ export default async function StudentAtriumPage() {
 
   // Limbic Student is gated purely on a .edu email — not studentTier, which only affects
   // what's purchasable inside Boards, not who can reach the Atrium (see lib/session.ts).
-  // A site admin gets through too (see hasStudentAccess).
-  if (!hasStudentAccess(user)) redirect("/home");
+  // A site admin gets through too (see hasStudentAccess). A non-qualifying account sees an
+  // overview instead of the real personalized dashboard below — every card still links out
+  // (the five sub-pages, plus /boards/sharpening) since each of those independently shows
+  // the same gate rather than bouncing to /home, so nothing here is a dead click.
+  if (!hasStudentAccess(user)) {
+    return (
+      <div className="screen-pad atrium-page" style={{ maxWidth: 960 }}>
+        <h1 className="atrium-greeting">Limbic Student</h1>
+        <p className="atrium-header-meta" style={{ marginBottom: 16 }}>
+          A daily study hub built for DPT students — Boards sharpening, slide breakdowns,
+          SOAP note practice, a study-buddy match, and mental wellness support, all in one
+          place.
+        </p>
+
+        <StudentGate toolName="The Atrium" />
+
+        <div className="atrium-section-label" style={{ marginTop: 20 }}>
+          What&rsquo;s inside
+        </div>
+        <div className="atrium-paths-grid">
+          {PATHS.map((path) => {
+            const Icon = path.icon;
+            return (
+              <Link key={path.href} href={path.href} className={`atrium-path-card atrium-path-card--${path.accent}`}>
+                <span className="atrium-path-icon">
+                  <Icon size={20} />
+                </span>
+                <span className="atrium-path-body">
+                  <span className="atrium-path-title" style={{ display: "block" }}>
+                    {path.title}
+                  </span>
+                  <span className="atrium-path-desc">{path.description}</span>
+                </span>
+                <ChevronRightIcon size={18} className="atrium-path-arrow" />
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   const now = new Date();
   const greeting = `${timeOfDayGreeting(now.getHours())}, ${firstName(user.name)}`;
