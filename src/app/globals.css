@@ -1564,7 +1564,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wordle-tile-filled { border-color: var(--color-neutral-500); }
 .wordle-tile-correct { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
 .wordle-tile-present { background: var(--color-accent-2); border-color: var(--color-accent-2); color: #fff; }
-.wordle-tile-absent { background: var(--color-neutral-400); border-color: var(--color-neutral-400); color: #fff; }
+.wordle-tile-absent { background: var(--color-danger); border-color: var(--color-danger); color: #fff; }
 @media (max-width: 420px) {
   .wordle-tile { width: 44px; height: 44px; font-size: 19px; }
 }
@@ -1575,7 +1575,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wordle-legend-swatch { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
 .wordle-legend-swatch-correct { background: var(--color-accent); }
 .wordle-legend-swatch-present { background: var(--color-accent-2); }
-.wordle-legend-swatch-absent { background: var(--color-neutral-400); }
+.wordle-legend-swatch-absent { background: var(--color-danger); }
 
 .wordle-keyboard { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
 .wordle-keyboard-row { display: flex; gap: 6px; justify-content: center; }
@@ -1588,7 +1588,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wordle-key-wide { max-width: 60px; font-size: 11px; flex: 1.5; }
 .wordle-key-correct { background: var(--color-accent); color: #fff; }
 .wordle-key-present { background: var(--color-accent-2); color: #fff; }
-.wordle-key-absent { background: var(--color-neutral-500); color: #fff; }
+.wordle-key-absent { background: var(--color-danger); color: #fff; }
 
 /* — Mini Crossword page (see components/CrosswordGame.tsx, app/(app)/crossword/page.tsx,
    lib/crossword-puzzles.ts) — a full page (header + two-column grid/clue-list split) rather
