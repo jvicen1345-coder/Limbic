@@ -50,6 +50,13 @@
   /* Muted, not alarm-red — for Sign out and other clearly-destructive-but-not-scary
      actions (see .nav-footer's Sign out button). */
   --color-danger: #b0413e;
+  /* A step lighter/softer than --color-danger — for Daily Term's absent-letter tiles (see
+     .wordle-tile-absent below), where the full alarm-red reads too harsh for a plain "not
+     in the word" indicator sitting next to the blue/teal correct/present tiles. Same value
+     in both themes (see dark override below) since it's a solid tile fill behind white
+     text, not text sitting on the page background, so it doesn't need a dark-mode brighten
+     the way --color-accent/-accent-2 do. */
+  --color-danger-soft: #c96e69;
   /* A literal warm gray rather than the previous navy-tinted color-mix — visibly more
      present now that --color-bg/--color-surface sit closer together in lightness (see
      both above), so every card/input/tile that borders on var(--color-divider) actually
@@ -174,6 +181,10 @@ html[data-theme="dark"] {
   --color-accent: #6d9bf5;
   --color-accent-2: #4dd1ee;
   --color-danger: #e08883;
+  /* Same literal as light mode's --color-danger-soft (see :root above) — kept identical
+     rather than brightened for dark, since dark's own --color-danger is already too pale
+     to hold contrast against the tile's white text once softened further. */
+  --color-danger-soft: #c96e69;
   --color-divider: color-mix(in srgb, #e7ecf7 14%, transparent);
   --color-warn: #f7ab6c;
   --color-success: #7fe8b2;
@@ -1564,7 +1575,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wordle-tile-filled { border-color: var(--color-neutral-500); }
 .wordle-tile-correct { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
 .wordle-tile-present { background: var(--color-accent-2); border-color: var(--color-accent-2); color: #fff; }
-.wordle-tile-absent { background: var(--color-neutral-400); border-color: var(--color-neutral-400); color: #fff; }
+.wordle-tile-absent { background: var(--color-danger-soft); border-color: var(--color-danger-soft); color: #fff; }
 @media (max-width: 420px) {
   .wordle-tile { width: 44px; height: 44px; font-size: 19px; }
 }
@@ -1575,7 +1586,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wordle-legend-swatch { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
 .wordle-legend-swatch-correct { background: var(--color-accent); }
 .wordle-legend-swatch-present { background: var(--color-accent-2); }
-.wordle-legend-swatch-absent { background: var(--color-neutral-400); }
+.wordle-legend-swatch-absent { background: var(--color-danger-soft); }
 
 .wordle-keyboard { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
 .wordle-keyboard-row { display: flex; gap: 6px; justify-content: center; }
@@ -1588,7 +1599,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wordle-key-wide { max-width: 60px; font-size: 11px; flex: 1.5; }
 .wordle-key-correct { background: var(--color-accent); color: #fff; }
 .wordle-key-present { background: var(--color-accent-2); color: #fff; }
-.wordle-key-absent { background: var(--color-neutral-500); color: #fff; }
+.wordle-key-absent { background: var(--color-danger-soft); color: #fff; }
 
 /* — Mini Crossword page (see components/CrosswordGame.tsx, app/(app)/crossword/page.tsx,
    lib/crossword-puzzles.ts) — a full page (header + two-column grid/clue-list split) rather
