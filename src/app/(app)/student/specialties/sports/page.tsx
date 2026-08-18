@@ -12,16 +12,12 @@ export default async function SportsSpecialtyPage() {
 
   return (
     <SpecialtyPageTemplate
-      slug={specialty.slug}
-      name={specialty.name}
-      description={specialty.description}
+      {...specialty}
       breadcrumb={[
         { label: "Student", href: "/student" },
         { label: "Specialties", href: "/student/specialties" },
         { label: specialty.name },
       ]}
-      conditions={specialty.conditions}
-      npte={specialty.npte}
       sports={SPORTS}
     />
   );
