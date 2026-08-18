@@ -21,6 +21,7 @@ export const PRO_TABS: SubTab[] = [
 
 export const PROFILE_TABS: SubTab[] = [
   { href: "/profile", label: "Profile" },
+  { href: "/profile/credentials", label: "Credentials" },
   { href: "/profile/membership", label: "Membership" },
 ];
 

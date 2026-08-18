@@ -95,7 +95,7 @@ export function DailyDashboard({ data }: { data: DailyDashboardData }) {
         zeroMessage="Start your streak today"
         zeroIcon={<ZapIcon size={12} />}
       />
-      <MetricTile label="CE hours" title="CE hours completed" value={data.ceHoursCompleted} href="/profile" />
+      <MetricTile label="CE hours" title="CE hours completed" value={data.ceHoursCompleted} href="/profile/credentials" />
       <MetricTile
         label="Unfinished"
         title="Saved articles still unread"

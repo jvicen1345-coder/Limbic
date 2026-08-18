@@ -162,7 +162,7 @@ export function LimbicCalendarWidgetClient({
 
       {!hasPersonalDates && (
         <div style={{ fontSize: 10, color: "var(--color-neutral-700)", marginTop: 8 }}>
-          <Link href="/profile" style={{ color: "var(--color-accent-700)" }}>
+          <Link href="/profile/credentials#professional-dates" style={{ color: "var(--color-accent-700)" }}>
             Add your professional dates in Profile Settings
           </Link>
         </div>
