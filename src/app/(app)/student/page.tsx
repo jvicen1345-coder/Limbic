@@ -239,11 +239,11 @@ export default async function StudentAtriumPage() {
           </div>
         ) : npteDays !== null ? (
           <p className="atrium-countdown-prompt">
-            Your NPTE date has passed, <Link href="/profile#professional-dates">update it in Profile Settings →</Link>
+            Your NPTE date has passed, <Link href="/profile/credentials#professional-dates">update it in Profile Settings →</Link>
           </p>
         ) : (
           <p className="atrium-countdown-prompt">
-            Add your NPTE date to unlock your countdown <Link href="/profile#professional-dates">→ Profile Settings</Link>
+            Add your NPTE date to unlock your countdown <Link href="/profile/credentials#professional-dates">→ Profile Settings</Link>
           </p>
         )}
       </div>
