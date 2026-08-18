@@ -241,16 +241,29 @@ export async function signUpWithPassword(input: { email: string; password: strin
  * as a backup email) lands back on that exact account via Google instead of getting a
  * duplicate one. `name` comes from Google's own `name` claim when present; falls back to
  * deriving one from the email address the same way signInWithEmail does when it's missing.
+ * `sub` is Google's stable per-account ID — stamped onto User.googleId every time (not just
+ * on first sign-in), so an account created another way that later links Google, or an
+ * already-linked account signing in again, both end up with it recorded (see
+ * app/(app)/admin/accounts, which reads it to show how an account actually authenticates).
  */
-export async function signInWithGoogle(input: { email: string; name?: string | null }) {
+export async function signInWithGoogle(input: { email: string; name?: string | null; sub: string }) {
   const email = input.email.trim().toLowerCase();
   const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { backupEmail: email }, { licenseEmail: email }] } });
   if (existing) {
+    if (existing.googleId !== input.sub) {
+      await prisma.user.update({ where: { id: existing.id }, data: { googleId: input.sub } });
+    }
     await signInToUserRecord(existing, existing.email !== email && existing.backupEmail === email);
     return;
   }
   const user = await prisma.user.create({
-    data: { email, name: input.name?.trim() || nameFromEmail(email), hasOnboarded: false, hasCompletedOnboarding: false },
+    data: {
+      email,
+      name: input.name?.trim() || nameFromEmail(email),
+      hasOnboarded: false,
+      hasCompletedOnboarding: false,
+      googleId: input.sub,
+    },
   });
   await signInToUserRecord(user, false);
 }

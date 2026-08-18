@@ -22,6 +22,16 @@ model User {
   // separate migration path — see lib/session.ts signInWithPassword.
   passwordHash      String?
 
+  // Google's stable per-account "sub" claim from its verified ID token (see
+  // lib/google-oauth.ts exchangeGoogleCode, lib/session.ts signInWithGoogle) — set the
+  // first time an account signs in with Google, whether that's account creation or an
+  // existing password/license account linking Google for the first time. The only real
+  // signal for "this account has signed in with Google" — passwordHash being null isn't
+  // enough on its own, since that's equally true of a pre-password-auth legacy account
+  // that has never used Google either. An account can have both set (Google first, a
+  // password added later via forgot-password, or vice versa).
+  googleId          String?  @unique
+
   licenseNumber     String?  @unique
   licenseState      String?
   licenseEmail      String?
