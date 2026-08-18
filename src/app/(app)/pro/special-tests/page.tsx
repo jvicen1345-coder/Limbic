@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { SpecialTestsLibrary } from "@/components/pro/SpecialTestsLibrary";
 
@@ -13,7 +13,7 @@ export default async function ProSpecialTestsPage() {
         Organized by body region, with performance technique, positive finding, and diagnostic accuracy.
       </p>
 
-      {!user.isPro ? <ProGate toolName="Special Tests Library" /> : <SpecialTestsLibrary />}
+      {!hasClinicalReferenceAccess(user) ? <ProGate toolName="Special Tests Library" /> : <SpecialTestsLibrary />}
     </div>
   );
 }

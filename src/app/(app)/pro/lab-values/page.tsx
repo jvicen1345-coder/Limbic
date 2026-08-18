@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { LabValuesReference } from "@/components/pro/LabValuesReference";
 
@@ -13,7 +13,7 @@ export default async function ProLabValuesPage() {
         Common laboratory values with normal ranges and PT-specific clinical implications.
       </p>
 
-      {!user.isPro ? <ProGate toolName="Lab Values Reference" /> : <LabValuesReference />}
+      {!hasClinicalReferenceAccess(user) ? <ProGate toolName="Lab Values Reference" /> : <LabValuesReference />}
     </div>
   );
 }

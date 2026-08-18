@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { GuidelinesLibrary } from "@/components/pro/GuidelinesLibrary";
 
@@ -13,7 +13,7 @@ export default async function ProGuidelinesPage() {
         APTA and evidence-based clinical practice guidelines, key recommendations at a glance.
       </p>
 
-      {!user.isPro ? <ProGate toolName="Clinical Practice Guidelines" /> : <GuidelinesLibrary />}
+      {!hasClinicalReferenceAccess(user) ? <ProGate toolName="Clinical Practice Guidelines" /> : <GuidelinesLibrary />}
     </div>
   );
 }

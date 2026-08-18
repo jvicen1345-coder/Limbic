@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { OttawaAnkleRule } from "@/components/pro/decision-rules/OttawaAnkleRule";
 import { OttawaKneeRule } from "@/components/pro/decision-rules/OttawaKneeRule";
@@ -21,7 +21,7 @@ export default async function ProDecisionRulesPage() {
         stratification.
       </p>
 
-      {!user.isPro ? (
+      {!hasClinicalReferenceAccess(user) ? (
         <ProGate toolName="Clinical Decision Rules" />
       ) : (
         <>
