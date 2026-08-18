@@ -40,10 +40,6 @@ const FEATURES = [
     name: "Limbic Games",
     body: "Daily habit-building games that make staying current feel less like studying.",
   },
-  {
-    name: "Limbic Wellness+",
-    body: "Calculators, trackers, and evidence-based health tools for everyone.",
-  },
 ];
 
 const FOOTER_LINKS = [
@@ -119,7 +115,7 @@ export function LandingPage() {
       <section className="landing-founding">
         <h2 className="landing-founding-heading">The people who believed first</h2>
         <p className="landing-founding-body">
-          Limbic is launching August 14th, 2026. Twenty-five founding spots are available, lifetime access for the
+          Limbic is launching August 17th, 2026. Twenty-five founding spots are available, lifetime access for the
           people who back Limbic from day one. This is not equity. This is recognition.
         </p>
         <Link href="/founding-funders" className="landing-btn landing-btn-gold landing-btn-lg">

@@ -5431,7 +5431,10 @@ html[data-theme="dark"] .app-root--atrium {
   .landing-hero { min-height: 80vh; padding: 48px 20px; }
 }
 .landing-hero-headline {
-  font-family: var(--font-heading);
+  /* Overrides the sitewide h1,h2,h3... base rule (font-family: var(--font-heading), i.e.
+     Caprasimo) — this is the one heading on the site meant to read as body copy, not a
+     display headline, so it points at --font-body instead. */
+  font-family: var(--font-body);
   font-weight: 800;
   font-size: clamp(30px, 5.4vw, 54px);
   line-height: 1.15;
