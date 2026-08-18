@@ -38,6 +38,7 @@ import {
   ChevronRightIcon,
   ShieldIcon,
   HeartIcon,
+  PencilIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -84,6 +85,7 @@ function NavLink({
   label,
   badge,
   locked = false,
+  lockLabel = "PRO",
   exact = true,
   bold = true,
   onNavigate,
@@ -93,10 +95,14 @@ function NavLink({
   label: string;
   /** A number renders as a count badge (hidden at 0); a string renders as-is (e.g. "Pro"). */
   badge?: number | string;
-  /** Same lock-badge treatment as LimbicAgentCard's "Ask Limbic Agent" button (icon + "PRO"
-   *  pill) — for a nav item that's shown to everyone but only fully usable by
-   *  PRO/studentTier accounts. Takes precedence over `badge` when both are set. */
+  /** Same lock-badge treatment as LimbicAgentCard's "Ask Limbic Agent" button (icon + a
+   *  short pill label) — for a nav item that's shown to everyone but only fully usable by
+   *  a gated account (PRO, a .edu Limbic Student sign-in, etc). Takes precedence over
+   *  `badge` when both are set. */
   locked?: boolean;
+  /** Pill text shown next to the lock icon when `locked` is true — "PRO" for LimbicPRO
+   *  items, "STUDENT" for Limbic Student ones (see lockLabel="STUDENT" below). */
+  lockLabel?: string;
   /** False for sub-links whose section also covers nested/dynamic routes (e.g. a message
    *  thread at /nexus/messages/[userId] should still highlight "Messages"). */
   exact?: boolean;
@@ -119,7 +125,7 @@ function NavLink({
           style={{ marginLeft: "auto", background: "var(--color-bg)", display: "inline-flex", alignItems: "center", gap: 3 }}
         >
           <LockIcon size={10} />
-          PRO
+          {lockLabel}
         </span>
       ) : (
         showBadge && (
@@ -297,7 +303,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         )}
       </>
     ),
-    student: isStudent ? (
+    student: (
       <>
         <NavToggle
           icon={<GraduationCapIcon />}
@@ -308,11 +314,16 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         {studentExpanded && (
           <>
             <NavLink href="/student" icon={<GraduationCapIcon />} label="Atrium" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/student/slides" icon={<FileTextIcon />} label="Break Down Slides" locked={!isStudent} lockLabel="STUDENT" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/student/soap" icon={<PencilIcon />} label="Practice a SOAP Note" locked={!isStudent} lockLabel="STUDENT" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/student/wellness" icon={<HeartIcon />} label="Mental Wellness" locked={!isStudent} lockLabel="STUDENT" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" locked={!isStudent} lockLabel="STUDENT" bold={false} onNavigate={onNavigate} />
             <NavLink
               href="/student/specialties"
               icon={<BandageIcon />}
               label="Specialties"
+              locked={!isStudent}
+              lockLabel="STUDENT"
               exact={false}
               bold={false}
               onNavigate={onNavigate}
@@ -320,7 +331,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           </>
         )}
       </>
-    ) : null,
+    ),
     pro: (
       <>
         <NavToggle

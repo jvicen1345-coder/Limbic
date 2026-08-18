@@ -1,13 +1,12 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { SPECIALTIES } from "@/lib/specialty-content";
 import { ChevronRightIcon } from "@/components/icons";
+import { StudentGate } from "@/components/student/StudentGate";
 
 export default async function SpecialtyTracksHubPage() {
   const user = await getCurrentUser();
   if (!user) return null;
-  if (!hasStudentAccess(user)) redirect("/home");
 
   return (
     <div className="screen-pad atrium-page" style={{ maxWidth: 960 }}>
@@ -17,22 +16,26 @@ export default async function SpecialtyTracksHubPage() {
         focus.
       </p>
 
-      <div className="specialty-hub-grid">
-        {SPECIALTIES.map((specialty) => {
-          const href = specialty.slug === "sports" ? "/student/specialties/sports" : `/student/specialties/${specialty.slug}`;
-          return (
-            <div className={`specialty-hub-card specialty-accent-${specialty.slug}`} key={specialty.slug}>
-              <h2 className="specialty-hub-card-name">{specialty.name}</h2>
-              <p className="specialty-hub-card-desc">{specialty.description}</p>
-              <span className="specialty-hub-card-meta">{specialty.conditions.length} sections</span>
-              <Link href={href} className="specialty-explore-btn">
-                Explore
-                <ChevronRightIcon size={14} />
-              </Link>
-            </div>
-          );
-        })}
-      </div>
+      {!hasStudentAccess(user) ? (
+        <StudentGate toolName="Specialty Tracks" />
+      ) : (
+        <div className="specialty-hub-grid">
+          {SPECIALTIES.map((specialty) => {
+            const href = specialty.slug === "sports" ? "/student/specialties/sports" : `/student/specialties/${specialty.slug}`;
+            return (
+              <div className={`specialty-hub-card specialty-accent-${specialty.slug}`} key={specialty.slug}>
+                <h2 className="specialty-hub-card-name">{specialty.name}</h2>
+                <p className="specialty-hub-card-desc">{specialty.description}</p>
+                <span className="specialty-hub-card-meta">{specialty.conditions.length} sections</span>
+                <Link href={href} className="specialty-explore-btn">
+                  Explore
+                  <ChevronRightIcon size={14} />
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
