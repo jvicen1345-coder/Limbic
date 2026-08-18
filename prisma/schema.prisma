@@ -633,6 +633,12 @@ model HepExercise {
   reps      String
   notes     String
   order     Int        @default(0)
+  // LimbicPRO-only (see createHepAction, which only ever persists these for user.isPro —
+  // a non-pro clinician can still build a text-only HEP, just without attaching media).
+  // Links, not uploaded files — this app has no file/blob storage anywhere, so both are
+  // just a URL the clinician pastes in (an image URL, and a YouTube/Vimeo/etc. video URL).
+  imageUrl String?
+  videoUrl String?
 }
 
 // One of the 25 "Founding 25" spots on /founding-funders. Created two ways: self-serve via
