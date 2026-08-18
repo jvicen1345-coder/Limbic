@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useImperativeHandle, forwardRef } from "react";
 import { createHepAction } from "@/app/actions/hep";
 import { XIcon } from "@/components/icons";
 import { THERAPEUTIC_EXERCISES, parseDosage } from "@/lib/therapeutic-exercises-static";
+import type { HepTemplateExercise } from "@/lib/hep-templates";
 
 interface DraftExercise {
   id: number;
@@ -19,10 +20,42 @@ let idSeq = 1;
 
 const EMPTY_DRAFT: Omit<DraftExercise, "id"> = { name: "", sets: "", reps: "", notes: "", imageUrl: "", videoUrl: "" };
 
-export function HepBuilder({ isPro }: { isPro: boolean }) {
+/** Imperative handle so the template library panel (a sibling, not a parent/child of the
+ *  builder) can populate the builder from a saved template and read its current draft to
+ *  save as a new one — see components/HepTemplateLibrary.tsx and app/(app)/hep/page.tsx.
+ *  Deliberately not a controlled component (programName/exercises lifted to a parent) —
+ *  that would mean touching every setState call below; this bolts on external read/write
+ *  access without changing any of the builder's own state management or behavior. */
+export interface HepBuilderHandle {
+  loadTemplate(name: string, exercises: HepTemplateExercise[]): void;
+  getDraft(): { programName: string; exercises: HepTemplateExercise[] } | null;
+}
+
+export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean }>(function HepBuilder({ isPro }, ref) {
   const [programName, setProgramName] = useState("");
   const [exercises, setExercises] = useState<DraftExercise[]>([]);
   const [isPending, startTransition] = useTransition();
+
+  useImperativeHandle(ref, () => ({
+    loadTemplate(name, templateExercises) {
+      setProgramName(name);
+      setExercises(templateExercises.map((ex) => ({ id: idSeq++, ...ex })));
+    },
+    getDraft() {
+      if (!programName.trim() || exercises.length === 0) return null;
+      return {
+        programName: programName.trim(),
+        exercises: exercises.map((ex) => ({
+          name: ex.name,
+          sets: ex.sets,
+          reps: ex.reps,
+          notes: ex.notes,
+          imageUrl: ex.imageUrl,
+          videoUrl: ex.videoUrl,
+        })),
+      };
+    },
+  }));
 
   const canSave = programName.trim().length > 0 && exercises.length > 0;
 
@@ -210,4 +243,4 @@ export function HepBuilder({ isPro }: { isPro: boolean }) {
       </div>
     </div>
   );
-}
+});

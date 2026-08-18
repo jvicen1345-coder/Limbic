@@ -6763,3 +6763,94 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .theme-preview-card-line--short { width: 55%; }
 .theme-preview-right { width: 180px; flex-shrink: 0; background: var(--color-surface); border-left: 1px solid var(--color-divider); padding: 24px 16px; }
 .theme-preview-right-item { height: 60px; border-radius: var(--radius-md); background: var(--color-accent-200); margin-bottom: 14px; }
+
+/* ---------- HEP Builder three-column workspace: middle builder + right template library
+   (see components/HepWorkspace.tsx, HepTemplateLibrary.tsx, app/(app)/hep/page.tsx) ---------- */
+.hep-page-pad { max-width: 1180px; }
+
+.hep-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 24px; align-items: start; }
+.hep-builder-col { min-width: 0; }
+
+.hep-template-panel {
+  background: var(--color-neutral-100);
+  border-left: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+/* Desktop: the panel is always visible, not actually collapsible — the <details> element
+   is reused (rather than a plain <div>) purely so the exact same markup also works as the
+   real collapsible "My Templates" section on mobile, see the max-width: 860px block below. */
+.hep-template-panel-header { cursor: default; pointer-events: none; list-style: none; display: block; margin-bottom: 14px; }
+.hep-template-panel-header::-webkit-details-marker { display: none; }
+.hep-template-panel-header-text { display: flex; flex-direction: column; gap: 2px; }
+.hep-template-panel-subtitle { font-size: 11.5px; color: var(--color-neutral-700); }
+.hep-template-panel-body { display: flex; flex-direction: column; gap: 16px; }
+
+.hep-template-category-list { display: flex; flex-direction: column; gap: 2px; }
+.hep-template-category { border-bottom: 1px solid var(--color-neutral-200); padding-bottom: 6px; }
+.hep-template-category:last-child { border-bottom: none; padding-bottom: 0; }
+.hep-template-category summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 2px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-neutral-700);
+}
+.hep-template-category summary::-webkit-details-marker { display: none; }
+.hep-template-category summary::before {
+  content: "+";
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-neutral-600);
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+.hep-template-category[open] summary::before { content: "\2212"; }
+.hep-template-category-note { text-transform: none; font-weight: 400; letter-spacing: normal; color: var(--color-neutral-600); }
+.hep-template-category-count { font-weight: 400; color: var(--color-neutral-600); flex-shrink: 0; }
+.hep-template-category-empty { font-size: 12px; color: var(--color-neutral-700); margin: 4px 2px 8px; font-style: italic; }
+
+.hep-template-card-list { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 8px; }
+.hep-template-card {
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  background: var(--color-surface);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.hep-template-card:hover { border-color: var(--color-neutral-400); box-shadow: var(--shadow-sm); }
+.hep-template-card-name { font-size: 13px; font-weight: 600; color: var(--color-text); }
+.hep-template-card-meta { font-size: 11px; color: var(--color-neutral-700); margin: 2px 0 8px; }
+.hep-template-card-actions { display: flex; gap: 8px; }
+
+.hep-template-save-row { border-top: 1px solid var(--color-neutral-200); padding-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.hep-template-save-prompt { display: flex; flex-direction: column; gap: 8px; }
+.hep-template-save-error { font-size: 11.5px; color: var(--color-danger); margin: 0; }
+.hep-template-save-success { font-size: 11.5px; color: var(--color-success); margin: 0; }
+
+@media (max-width: 860px) {
+  .hep-layout { grid-template-columns: 1fr; }
+  .hep-template-panel { border-left: none; border-top: 1px solid var(--color-divider); }
+  .hep-template-panel-header { cursor: pointer; pointer-events: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .hep-template-panel-header::after {
+    content: "+";
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--color-neutral-600);
+    flex-shrink: 0;
+  }
+  .hep-template-panel[open] .hep-template-panel-header::after { content: "\2212"; }
+}
+/* Belt-and-suspenders for desktop: pointer-events: none above already stops a click from
+   toggling the panel closed, this keeps the body visibly open even if it were toggled some
+   other way (e.g. keyboard) since the <details> element itself still exists in the DOM. */
+@media (min-width: 861px) {
+  .hep-template-panel:not([open]) .hep-template-panel-body { display: flex !important; }
+}
