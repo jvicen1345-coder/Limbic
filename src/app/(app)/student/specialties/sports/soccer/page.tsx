@@ -8,11 +8,12 @@ export default async function SoccerPage() {
   if (!user) return null;
   if (!hasStudentAccess(user)) redirect("/home");
 
+  const sportsSpecialty = getSpecialty("sports")!;
   const sport = getSport("soccer")!;
 
   return (
     <SpecialtyPageTemplate
-      slug="sports"
+      {...sportsSpecialty}
       name={sport.name}
       description={sport.focus}
       breadcrumb={[
@@ -22,7 +23,8 @@ export default async function SoccerPage() {
         { label: sport.name },
       ]}
       conditions={sport.conditions}
-      npte={getSpecialty("sports")!.npte}
+      patientPopulation={sport.patientPopulation}
+      clinicalPearls={sport.clinicalPearls}
     />
   );
 }

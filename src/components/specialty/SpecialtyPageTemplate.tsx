@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Breadcrumb, type BreadcrumbItem } from "@/components/Breadcrumb";
 import { ChevronRightIcon } from "@/components/icons";
-import type { NpteConnection, SpecialtyCondition, Sport } from "@/lib/specialty-content";
+import type { ClinicalPearl, NpteConnection, OutcomeMeasureRow, SpecialTestRow, SpecialtyCondition, Sport } from "@/lib/specialty-content";
 
 type TabId = "overview" | "conditions" | "tools" | "boards" | "bysport";
 
@@ -15,26 +15,6 @@ const BASE_TABS: { id: TabId; label: string }[] = [
   { id: "boards", label: "Board Connections" },
 ];
 
-/** Generic, specialty-agnostic placeholders — the same five slots render for every
- *  specialty until real content is written in per the TODO below (see the closing
- *  TODO summary produced at the end of this feature's build for every file/line that
- *  needs specialty-specific copy dropped in). */
-const PLACEHOLDER_PEARLS = [1, 2, 3, 4, 5].map((n) => ({
-  title: `Placeholder clinical pearl #${n}`,
-  body: "A one-line, high-yield clinical insight goes here, followed by a brief explanation of why it matters in practice.",
-}));
-
-const PLACEHOLDER_SPECIAL_TESTS = [1, 2, 3, 4, 5].map((n) => ({
-  test: `Special test placeholder #${n}`,
-  assesses: "What this test assesses goes here.",
-}));
-
-const PLACEHOLDER_OUTCOME_MEASURES = [1, 2, 3, 4, 5].map((n) => ({
-  measure: `Outcome measure placeholder #${n}`,
-  assesses: "What this measure assesses goes here.",
-  population: "Population",
-}));
-
 const PLACEHOLDER_QUESTIONS = [1, 2, 3];
 const PLACEHOLDER_OPTIONS = ["Answer option A", "Answer option B", "Answer option C", "Answer option D"];
 
@@ -44,7 +24,17 @@ export interface SpecialtyPageTemplateProps {
   name: string;
   description: string;
   breadcrumb: BreadcrumbItem[];
+  whatPTsDo: string;
+  whereTheyWork: string;
+  patientPopulation: string;
+  rotationTip: string;
+  highYieldFocusAreas: string;
+  clinicalPearls: ClinicalPearl[];
   conditions: SpecialtyCondition[];
+  specialTests: SpecialTestRow[];
+  outcomeMeasuresTable: OutcomeMeasureRow[];
+  documentationPearls: string[];
+  boardQuestionTypes: string;
   npte: NpteConnection;
   /** Geriatrics only — bridges the student section into The Connexion Method. */
   showConnexionCard?: boolean;
@@ -57,7 +47,17 @@ export function SpecialtyPageTemplate({
   name,
   description,
   breadcrumb,
+  whatPTsDo,
+  whereTheyWork,
+  patientPopulation,
+  rotationTip,
+  highYieldFocusAreas,
+  clinicalPearls,
   conditions,
+  specialTests,
+  outcomeMeasuresTable,
+  documentationPearls,
+  boardQuestionTypes,
   npte,
   showConnexionCard = false,
   sports,
@@ -94,26 +94,22 @@ export function SpecialtyPageTemplate({
         <>
           <div className="specialty-overview-grid">
             <div className="card elev-sm">
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                <span className="card-title">About This Specialty</span>
-                <span className="boards-badge-soon">Coming soon</span>
-              </div>
+              <span className="card-title">About This Specialty</span>
               <div className="specialty-overview-item" style={{ marginTop: 10 }}>
                 <div className="specialty-overview-item-label">What PTs Do</div>
-                {/* TODO: Describe what physical therapists actually do day-to-day in this specialty. */}
-                <p className="specialty-overview-item-text">
-                  A description of the clinical work physical therapists do within {name} goes here.
-                </p>
+                <p className="specialty-overview-item-text">{whatPTsDo}</p>
               </div>
               <div className="specialty-overview-item">
                 <div className="specialty-overview-item-label">Where They Work</div>
-                {/* TODO: List realistic practice settings for this specialty (outpatient, inpatient, home health, etc.). */}
-                <p className="specialty-overview-item-text">Example practice settings for {name} go here.</p>
+                <p className="specialty-overview-item-text">{whereTheyWork}</p>
               </div>
               <div className="specialty-overview-item">
                 <div className="specialty-overview-item-label">Patient Population</div>
-                {/* TODO: Describe the typical patient population seen in this specialty. */}
-                <p className="specialty-overview-item-text">A description of the typical patient population goes here.</p>
+                <p className="specialty-overview-item-text">{patientPopulation}</p>
+              </div>
+              <div className="specialty-overview-item">
+                <div className="specialty-overview-item-label">Rotation Tip</div>
+                <p className="specialty-overview-item-text">{rotationTip}</p>
               </div>
             </div>
 
@@ -127,24 +123,16 @@ export function SpecialtyPageTemplate({
                 </p>
               </div>
               <div className="specialty-overview-item">
-                <div className="specialty-overview-item-label" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  High Yield Focus Areas
-                  <span className="boards-badge-soon">Coming soon</span>
-                </div>
-                {/* TODO: List the specific high-yield topics within this specialty for NPTE prep. */}
-                <p className="specialty-overview-item-text">High-yield focus areas for {name} go here.</p>
+                <div className="specialty-overview-item-label">High Yield Focus Areas</div>
+                <p className="specialty-overview-item-text">{highYieldFocusAreas}</p>
               </div>
             </div>
           </div>
 
           <div className="card elev-sm" style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-              <span className="card-title">High Yield Clinical Pearls</span>
-              <span className="boards-badge-soon">Coming soon</span>
-            </div>
-            {/* TODO: Add specialty-specific clinical pearls */}
+            <span className="card-title">High Yield Clinical Pearls</span>
             <div className="specialty-pearl-list">
-              {PLACEHOLDER_PEARLS.map((pearl) => (
+              {clinicalPearls.map((pearl) => (
                 <div className="specialty-pearl-item" key={pearl.title}>
                   <strong>{pearl.title}</strong>
                   <p>{pearl.body}</p>
@@ -172,34 +160,41 @@ export function SpecialtyPageTemplate({
 
       {activeTab === "conditions" && (
         <div className="specialty-conditions-grid">
-          {conditions.map((condition) => (
-            <div className="card elev-sm specialty-condition-card" key={condition.name}>
-              <div className="specialty-condition-card-head">
-                <span className="card-title">{condition.name}</span>
-                <span className="tag tag-neutral">{condition.category}</span>
+          {conditions.map((condition) => {
+            const sections: { label: string; paragraphs?: string[] }[] = [
+              { label: "Clinical Presentation", paragraphs: condition.clinicalPresentation },
+              { label: "Evaluation", paragraphs: condition.evaluation },
+              { label: "Intervention", paragraphs: condition.intervention },
+              { label: "Outcome Measures", paragraphs: condition.outcomeMeasures },
+            ];
+            return (
+              <div className="card elev-sm specialty-condition-card" key={condition.name}>
+                <div className="specialty-condition-card-head">
+                  <span className="card-title">{condition.name}</span>
+                  <span className="tag tag-neutral">{condition.category}</span>
+                </div>
+                <div className="specialty-accordion-list">
+                  {sections.map((section) => (
+                    <details className="specialty-accordion" key={section.label}>
+                      <summary>{section.label}</summary>
+                      {section.paragraphs && section.paragraphs.length > 0 ? (
+                        section.paragraphs.map((p) => <p key={p}>{p}</p>)
+                      ) : (
+                        <p>Content coming soon</p>
+                      )}
+                    </details>
+                  ))}
+                </div>
               </div>
-              {/* TODO: Fill in Clinical Presentation, Evaluation, Intervention, and Outcome Measures content for this condition. */}
-              <div className="specialty-accordion-list">
-                {["Clinical Presentation", "Evaluation", "Intervention", "Outcome Measures"].map((section) => (
-                  <details className="specialty-accordion" key={section}>
-                    <summary>{section}</summary>
-                    <p>Content coming soon</p>
-                  </details>
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
       {activeTab === "tools" && (
         <>
           <div className="card elev-sm" style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-              <span className="card-title">Common Special Tests</span>
-              <span className="boards-badge-soon">Coming soon</span>
-            </div>
-            {/* TODO: Add the real special tests for this specialty, with sensitivity/specificity values. */}
+            <span className="card-title">Common Special Tests</span>
             <div className="specialty-table-wrap">
               <table className="specialty-table">
                 <thead>
@@ -209,7 +204,7 @@ export function SpecialtyPageTemplate({
                   </tr>
                 </thead>
                 <tbody>
-                  {PLACEHOLDER_SPECIAL_TESTS.map((row) => (
+                  {specialTests.map((row) => (
                     <tr key={row.test}>
                       <td>{row.test}</td>
                       <td>{row.assesses}</td>
@@ -218,15 +213,10 @@ export function SpecialtyPageTemplate({
                 </tbody>
               </table>
             </div>
-            <p className="specialty-table-note">Sensitivity and specificity values coming soon</p>
           </div>
 
           <div className="card elev-sm" style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-              <span className="card-title">Outcome Measures</span>
-              <span className="boards-badge-soon">Coming soon</span>
-            </div>
-            {/* TODO: Add the real outcome measures for this specialty. */}
+            <span className="card-title">Outcome Measures</span>
             <div className="specialty-table-wrap">
               <table className="specialty-table">
                 <thead>
@@ -237,7 +227,7 @@ export function SpecialtyPageTemplate({
                   </tr>
                 </thead>
                 <tbody>
-                  {PLACEHOLDER_OUTCOME_MEASURES.map((row) => (
+                  {outcomeMeasuresTable.map((row) => (
                     <tr key={row.measure}>
                       <td>{row.measure}</td>
                       <td>{row.assesses}</td>
@@ -250,14 +240,14 @@ export function SpecialtyPageTemplate({
           </div>
 
           <div className="card elev-sm">
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-              <span className="card-title">Documentation Pearls</span>
-              <span className="boards-badge-soon">Coming soon</span>
+            <span className="card-title">Documentation Pearls</span>
+            <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
+              {documentationPearls.map((pearl) => (
+                <p className="specialty-overview-item-text" key={pearl}>
+                  {pearl}
+                </p>
+              ))}
             </div>
-            {/* TODO: Add specialty-specific documentation templates. */}
-            <p className="specialty-overview-item-text" style={{ marginTop: 10 }}>
-              Specialty-specific documentation templates coming soon
-            </p>
           </div>
         </>
       )}
@@ -276,8 +266,7 @@ export function SpecialtyPageTemplate({
             </div>
             <div className="specialty-overview-item">
               <div className="specialty-overview-item-label">What Question Types to Expect</div>
-              {/* TODO: Describe the typical NPTE question formats/scenarios for this specialty. */}
-              <p className="specialty-overview-item-text">Typical NPTE question types for {name} go here.</p>
+              <p className="specialty-overview-item-text">{boardQuestionTypes}</p>
             </div>
             <Link href="/boards?tab=breakdown" className="specialty-explore-btn" style={{ marginTop: 4 }}>
               View NPTE Breakdown
