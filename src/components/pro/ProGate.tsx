@@ -4,7 +4,7 @@ import { LockIcon, CheckIcon } from "@/components/icons";
 const PRO_INCLUDES = [
   "Clinical calculators and outcome measures, scored in real time",
   "Evidence-based clinical decision rules and red flag screening",
-  "A special tests library and lab values and medication reference",
+  "A special tests library, lab values and medication reference, and a therapeutic exercise library",
   "Documentation templates and a CE hours tracker",
   "APTA and evidence-based clinical practice guidelines",
 ];

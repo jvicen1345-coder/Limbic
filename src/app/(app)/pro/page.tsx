@@ -4,7 +4,7 @@ import { CrownIcon, ChevronRightIcon } from "@/components/icons";
 import { PRO_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
 
-/** The LimbicPRO clinical toolbox — ten tool sections, each its own page under /pro/*
+/** The LimbicPRO clinical toolbox — eleven tool sections, each its own page under /pro/*
  *  (see app/(app)/pro/calculators, /decision-rules, etc.), all gated on isPro past the
  *  overview itself (see components/pro/ProGate.tsx). Rendered as a 2x5 card grid on
  *  desktop, single column on mobile (see .pro-tools-grid in globals.css). */
@@ -15,6 +15,7 @@ const PRO_TOOLS: { name: string; description: string; count: string; href: strin
   { name: "Special Tests", description: "Organized by body region with sensitivity and specificity", count: "7 regions", href: "/pro/special-tests" },
   { name: "Lab Values", description: "Complete reference with PT-specific clinical implications", count: "6 categories", href: "/pro/lab-values" },
   { name: "Medications", description: "Common drug classes with exercise and treatment precautions", count: "8 drug classes", href: "/pro/medications" },
+  { name: "Therapeutic Exercises", description: "Condition-specific exercises with setup, technique, dosage, and cueing", count: "Growing library", href: "/pro/exercises" },
   { name: "Documentation", description: "Templates for evaluations, progress notes, and discharge", count: "7 templates", href: "/pro/documentation" },
   { name: "CE Tracker", description: "Track continuing education hours toward license renewal", count: "Track hours", href: "/pro/ce-tracker" },
   { name: "Guidelines", description: "APTA and evidence-based clinical practice guidelines", count: "12 guidelines", href: "/pro/guidelines" },
@@ -252,7 +253,7 @@ export default async function ProOverviewPage() {
 
       <h2 style={{ fontSize: 18, margin: "24px 0 4px" }}>The Clinical Toolbox</h2>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 4px" }}>
-        Ten tool sections built for how you actually practice, all in the app, nothing emailed out.
+        Eleven tool sections built for how you actually practice, all in the app, nothing emailed out.
       </p>
       <div className="pro-tools-grid">
         {PRO_TOOLS.map((tool) => (
