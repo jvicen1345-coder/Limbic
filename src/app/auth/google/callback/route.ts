@@ -27,8 +27,8 @@ export async function GET(request: NextRequest) {
   if (!expectedState || !returnedState || expectedState !== returnedState) return failure("google_state_mismatch");
 
   try {
-    const { email, name } = await exchangeGoogleCode(code);
-    await signInWithGoogle({ email, name });
+    const { email, name, sub } = await exchangeGoogleCode(code);
+    await signInWithGoogle({ email, name, sub });
   } catch (err) {
     console.error("[auth/google/callback]", err);
     return failure("google_failed");

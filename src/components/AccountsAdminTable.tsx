@@ -12,6 +12,7 @@ export interface AccountRow {
   licenseNumber: string | null;
   isGuest: boolean;
   hasPassword: boolean;
+  hasGoogle: boolean;
   isPro: boolean;
   isFoundingFunder: boolean;
   createdAt: string;
@@ -75,6 +76,14 @@ function DeleteButton({ userId, onDeleted }: { userId: string; onDeleted: () => 
   );
 }
 
+/** An account can have both (Google first, a password set later via forgot-password, or the
+ *  reverse) — shows every method actually on file rather than picking one, since that's the
+ *  real answer to "how does this person sign in." */
+function signInMethodLabel(row: Pick<AccountRow, "hasGoogle" | "hasPassword">): string {
+  const methods = [row.hasGoogle && "Google", row.hasPassword && "Password"].filter(Boolean);
+  return methods.length > 0 ? methods.join(", ") : "None";
+}
+
 /** /admin/accounts (gated by isSiteAdmin() in that page) — every account, with a delete
  *  button per row. Client component only for that delete interaction; the row data itself
  *  is fetched server-side and passed in once. */
@@ -95,7 +104,7 @@ export function AccountsAdminTable({ rows: initialRows }: { rows: AccountRow[] }
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Sign-in</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Joined</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Guest</th>
-            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Password</th>
+            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Sign-in Method</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Pro</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Founding Funder</th>
             <th style={{ padding: "4px 0 4px 10px", fontWeight: 600 }} />
@@ -112,7 +121,7 @@ export function AccountsAdminTable({ rows: initialRows }: { rows: AccountRow[] }
                 {new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </td>
               <td style={{ padding: "6px 10px" }}>{u.isGuest ? "Yes" : ""}</td>
-              <td style={{ padding: "6px 10px" }}>{u.hasPassword ? "Set" : "None"}</td>
+              <td style={{ padding: "6px 10px" }}>{signInMethodLabel(u)}</td>
               <td style={{ padding: "6px 10px" }}>{u.isPro ? "Yes" : ""}</td>
               <td style={{ padding: "6px 10px" }}>{u.isFoundingFunder ? "Yes" : ""}</td>
               <td style={{ padding: "6px 0 6px 10px" }}>

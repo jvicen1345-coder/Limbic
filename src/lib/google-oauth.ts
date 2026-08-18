@@ -39,6 +39,7 @@ export function buildGoogleAuthUrl(state: string): string {
 }
 
 interface GoogleIdTokenClaims {
+  sub?: string;
   email?: string;
   email_verified?: boolean;
   name?: string;
@@ -55,7 +56,7 @@ const GOOGLE_JWKS = createRemoteJWKSet(new URL("https://www.googleapis.com/oauth
  * attacker-controlled JSON. Throws on any failure; the caller (app/auth/google/callback/
  * route.ts) turns that into a redirect back to /sign-in with an error rather than a 500.
  */
-export async function exchangeGoogleCode(code: string): Promise<{ email: string; name: string | null }> {
+export async function exchangeGoogleCode(code: string): Promise<{ email: string; name: string | null; sub: string }> {
   if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) throw new Error("Google sign-in is not configured");
 
   const res = await fetch("https://oauth2.googleapis.com/token", {
@@ -83,6 +84,7 @@ export async function exchangeGoogleCode(code: string): Promise<{ email: string;
   });
   const claims = payload as GoogleIdTokenClaims;
   if (!claims.email || !claims.email_verified) throw new Error("Google account has no verified email");
+  if (!claims.sub) throw new Error("Google ID token had no sub claim");
 
-  return { email: claims.email, name: claims.name ?? null };
+  return { email: claims.email, name: claims.name ?? null, sub: claims.sub };
 }
