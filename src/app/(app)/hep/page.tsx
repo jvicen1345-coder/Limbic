@@ -2,6 +2,8 @@ import { getCurrentUser, hasLicenseAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { HepBuilder } from "@/components/HepBuilder";
 import { DeleteHepButton } from "@/components/DeleteHepButton";
+import { sanitizeMediaUrl } from "@/lib/media-url";
+import { ExternalLinkIcon } from "@/components/icons";
 
 export default async function HepPage() {
   const user = await getCurrentUser();
@@ -31,7 +33,7 @@ export default async function HepPage() {
         Build a home exercise program for a patient. Available to signed-in clinicians only.
       </p>
 
-      <HepBuilder />
+      <HepBuilder isPro={user.isPro} />
 
       {programs.length > 0 && (
         <>
@@ -58,12 +60,40 @@ export default async function HepPage() {
                 <div className="card-body" style={{ marginBottom: 8 }}>
                   {p.exercises.length} {p.exercises.length === 1 ? "exercise" : "exercises"}
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  {p.exercises.map((ex) => (
-                    <div key={ex.id} style={{ fontSize: 12.5, color: "var(--color-text)" }}>
-                      {ex.name}, {ex.sets}x{ex.reps} <span style={{ color: "var(--color-neutral-700)" }}>{ex.notes}</span>
-                    </div>
-                  ))}
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {p.exercises.map((ex) => {
+                    const imageUrl = sanitizeMediaUrl(ex.imageUrl);
+                    const videoUrl = sanitizeMediaUrl(ex.videoUrl);
+                    return (
+                      <div key={ex.id} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                        {imageUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element -- clinician-pasted external URL, not a local/optimizable asset
+                          <img
+                            src={imageUrl}
+                            alt={ex.name}
+                            style={{ width: 48, height: 48, borderRadius: "var(--radius-sm)", objectFit: "cover", flexShrink: 0 }}
+                          />
+                        )}
+                        <div style={{ fontSize: 12.5, color: "var(--color-text)" }}>
+                          {ex.name}, {ex.sets}x{ex.reps} <span style={{ color: "var(--color-neutral-700)" }}>{ex.notes}</span>
+                          {videoUrl && (
+                            <>
+                              {" "}
+                              <a
+                                href={videoUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ display: "inline-flex", alignItems: "center", gap: 3 }}
+                              >
+                                Watch video
+                                <ExternalLinkIcon size={11} />
+                              </a>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ))}
