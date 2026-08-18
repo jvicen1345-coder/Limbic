@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { MedicationReference } from "@/components/pro/MedicationReference";
 
@@ -13,7 +13,7 @@ export default async function ProMedicationsPage() {
         Common drug classes encountered in PT practice, with exercise precautions and treatment implications.
       </p>
 
-      {!user.isPro ? (
+      {!hasClinicalReferenceAccess(user) ? (
         <ProGate toolName="Medication Reference" />
       ) : (
         <>

@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { NprsCalculator } from "@/components/pro/calculators/NprsCalculator";
 import { TugCalculator } from "@/components/pro/calculators/TugCalculator";
@@ -24,7 +24,7 @@ export default async function ProCalculatorsPage() {
         Validated outcome measures and functional assessments, scored and interpreted in real time.
       </p>
 
-      {!user.isPro ? (
+      {!hasClinicalReferenceAccess(user) ? (
         <ProGate toolName="Clinical Calculators" />
       ) : (
         <div className="pro-grid-2">

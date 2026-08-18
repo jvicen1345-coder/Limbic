@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { RedFlagCategory } from "@/components/pro/red-flags/RedFlagCategory";
 import { ReferralTriggersCategory } from "@/components/pro/red-flags/ReferralTriggersCategory";
@@ -66,7 +66,7 @@ export default async function ProRedFlagsPage() {
         Systematic screening for conditions requiring urgent referral or medical evaluation.
       </p>
 
-      {!user.isPro ? (
+      {!hasClinicalReferenceAccess(user) ? (
         <ProGate toolName="Red Flag Screening" />
       ) : (
         <>

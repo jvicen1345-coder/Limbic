@@ -343,15 +343,15 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         {proExpanded && (
           <>
             <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Clinical Calculators" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Decision Rules" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/red-flags" icon={<AlertCircleIcon />} label="Red Flag Screening" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Lab Values" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/medications" icon={<HeartIcon />} label="Medications" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Clinical Calculators" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Decision Rules" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/red-flags" icon={<AlertCircleIcon />} label="Red Flag Screening" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Lab Values" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/medications" icon={<HeartIcon />} label="Medications" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/documentation" icon={<FileTextIcon />} label="Documentation" locked={!isPro} bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/guidelines" icon={<BookmarkIcon />} label="Guidelines" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/guidelines" icon={<BookmarkIcon />} label="Guidelines" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
             <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
             <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
           </>
