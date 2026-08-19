@@ -283,6 +283,7 @@ model User {
   savedWellness       SavedWellness[]
   savedClips          SavedClip[]
   hepPrograms         HepProgram[]
+  hepTemplates        HEPTemplate[]
   readArticles        ReadArticle[]
   boardActivity       BoardActivity[]
   gameActivity        GameActivity[]
@@ -649,6 +650,29 @@ model HepExercise {
   // just a URL the clinician pastes in (an image URL, and a YouTube/Vimeo/etc. video URL).
   imageUrl String?
   videoUrl String?
+}
+
+// A saved HEP Builder draft a clinician can reload into the builder later, organized by
+// body part in the /hep template library panel (see components/HepTemplateLibrary.tsx).
+// Distinct from HepProgram/HepExercise above — a HepProgram is a finished program that's
+// been saved for a patient, while a HEPTemplate is a reusable starting point (its
+// exercises are never linked to a real HepExercise row, just a JSON snapshot of the
+// builder's draft state at save time).
+model HEPTemplate {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  // One of the fixed body part categories the template panel groups by — see
+  // HEP_TEMPLATE_BODY_PARTS in lib/hep-templates.ts. Plain String (not an enum) to match
+  // this schema's existing convention for fixed-but-app-enforced value sets (see
+  // FoundingFunder.paymentStatus, ConnexionVisitRequest.status).
+  bodyPart  String
+  // JSON snapshot of the builder's draft exercises at save time — same shape as
+  // HepBuilder's DraftExercise minus the client-only `id` field.
+  exercises Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // One of the 25 "Founding 25" spots on /founding-funders. Created two ways: self-serve via
