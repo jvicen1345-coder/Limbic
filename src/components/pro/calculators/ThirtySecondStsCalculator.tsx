@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CalcModal, CalcCardShell } from "./CalcModal";
+import { CalcTimer } from "./CalcTimer";
 
 // TODO: Replace with the real published Rikli & Jones age/sex-normative table before
 // launch — these are placeholder round numbers, not verified reference values.
@@ -15,9 +16,9 @@ const NORMS_PLACEHOLDER: Record<string, string> = {
   "90-94": "male: 7-12, female: 4-11",
 };
 
-/** Functional with placeholder norms — reps and age/sex inputs are live; the comparison
- *  table is a TODO placeholder (see NORMS_PLACEHOLDER above) pending the real published
- *  reference values. */
+/** Functional with placeholder norms — reps and age/sex inputs, plus the built-in 30-second
+ *  countdown (see CalcTimer), are live; the comparison table is a TODO placeholder (see
+ *  NORMS_PLACEHOLDER above) pending the real published reference values. */
 export function ThirtySecondStsCalculator() {
   const [open, setOpen] = useState(false);
   const [reps, setReps] = useState("");
@@ -35,6 +36,7 @@ export function ThirtySecondStsCalculator() {
         onOpen={() => setOpen(true)}
       />
       <CalcModal open={open} title="30 Second Sit to Stand" onClose={() => setOpen(false)}>
+        <CalcTimer mode="countdown" durationSeconds={30} />
         <div className="field">
           <label htmlFor="sts-reps">Repetitions completed</label>
           <input id="sts-reps" className="input" type="number" min={0} value={reps} onChange={(e) => setReps(e.target.value)} />

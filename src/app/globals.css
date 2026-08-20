@@ -6505,6 +6505,22 @@ select.connexion-visit-input { color-scheme: dark; }
 .pro-item-row-label { font-size: 13px; color: var(--color-text); flex: 1; }
 .pro-item-row-select { flex-shrink: 0; width: auto; min-width: 128px; }
 
+/* CalcTimer — the stopwatch/countdown widget on TUG, TUG Cognitive, 6MWT, 30-Second Sit
+   to Stand, and mBESS (see components/pro/calculators/CalcTimer.tsx). */
+.calc-timer { padding: 12px 14px; border-radius: var(--radius-md); background: var(--color-neutral-100); border: 1px solid var(--color-neutral-200); margin-bottom: 12px; }
+.calc-timer-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); margin-bottom: 8px; }
+.calc-timer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.calc-timer-display { font-family: var(--font-heading); font-size: 26px; font-weight: var(--font-heading-weight); font-variant-numeric: tabular-nums; min-width: 72px; }
+.calc-timer-controls { display: flex; gap: 6px; flex-wrap: wrap; }
+.calc-timer-btn { font-size: 12px; padding: 5px 12px; }
+.calc-timer-complete { background: color-mix(in srgb, var(--color-danger) 12%, var(--color-neutral-100)); border-color: var(--color-danger); animation: calc-timer-pulse 1.1s ease-in-out 2; }
+.calc-timer-complete .calc-timer-display { color: var(--color-danger); }
+.calc-timer-complete-label { font-size: 12px; font-weight: 700; color: var(--color-danger); margin-top: 6px; }
+@keyframes calc-timer-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-danger) 35%, transparent); }
+  50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-danger) 0%, transparent); }
+}
+
 /* NPRS-style slider */
 .pro-slider-row { display: flex; flex-direction: column; gap: 8px; }
 .pro-slider { width: 100%; accent-color: var(--color-accent); cursor: pointer; }
