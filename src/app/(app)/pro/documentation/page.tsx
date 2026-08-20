@@ -47,19 +47,19 @@ PAST MEDICAL HISTORY
 [Relevant medical history]. [Current medications].
 
 COGNITIVE STATUS
-[Orientation]. [Attention/memory]. [Safety awareness]. TODO: expand cognitive screening detail.
+[Orientation to person/place/time/situation]. [Attention span, e.g. digit span or serial 7s]. [Short- and long-term memory]. [Safety awareness and judgment]. [Standardized screen used, e.g. MoCA or SLUMS, and score if administered].
 
 COMMUNICATION
-[Expressive/receptive status]. [Augmentative communication needs]. TODO: expand detail.
+[Expressive and receptive language status]. [Dysarthria or apraxia of speech, if present]. [Augmentative and alternative communication needs]. [Ability to follow single- vs multi-step commands].
 
 TONE AND REFLEXES
-[Tone findings by region]. [Deep tendon reflexes]. [Pathological reflexes]. TODO: expand detail.
+[Tone findings by region, e.g. Modified Ashworth Scale grade]. [Deep tendon reflexes, graded 0-4+]. [Pathological reflexes, e.g. Babinski, clonus]. [Symmetry of findings side to side].
 
 COORDINATION
-[Finger to nose, heel to shin, rapid alternating movements]. TODO: expand detail.
+[Finger to nose, heel to shin, rapid alternating movements]. [Dysmetria or dysdiadochokinesia, if present]. [Standardized measure if used, e.g. SARA].
 
 FUNCTIONAL MOBILITY
-[Bed mobility]. [Transfers]. [Gait, with device if applicable]. [Balance]. TODO: expand detail.
+[Bed mobility, e.g. rolling, supine-to-sit, with assist level]. [Transfers, e.g. sit-to-stand, bed-to-chair, with assist level]. [Gait, with device and assist level if applicable, including distance and quality]. [Static and dynamic balance]. [Stair negotiation, if assessed].
 
 ASSESSMENT
 [Clinical impression]. Rehab potential: [good/fair/poor].
@@ -79,34 +79,34 @@ A: [Progress toward goals] [Barriers].
 P: [Next session plan].`;
 
 const PROGRESS_NOTE = `FUNCTIONAL PROGRESS
-[Progress toward each active goal since last progress note]. TODO: expand template.
+[Progress toward each active short- and long-term goal since the last progress note, with objective comparison where possible].
 
 OBJECTIVE MEASUREMENTS
-[Current measurements] compared to [prior measurements/baseline]. TODO: expand template.
+[Current measurements, e.g. ROM, strength, or outcome measure scores] compared to [prior measurements or evaluation baseline].
 
 GOAL ACHIEVEMENT
-[X]% of short-term goals met. [X]% of long-term goals met. TODO: expand template.
+[X]% of short-term goals met, [list which]. [X]% of long-term goals met, [list which]. [Any goals requiring revision, with rationale].
 
 PLAN
-[Continue current plan of care] or [Recommend discharge]. [Rationale]. TODO: expand template.`;
+[Continue current plan of care] or [modify frequency/duration] or [recommend discharge]. [Rationale based on progress and remaining barriers]. [Planned interventions for the next certification period].`;
 
 const DISCHARGE_SUMMARY = `REASON FOR DISCHARGE
-[Goals met / Plateau reached / Patient request / Insurance exhausted]. TODO: expand template.
+[Goals met] / [Plateau reached, maximum functional benefit achieved] / [Patient request] / [Insurance authorization exhausted] / [Non-adherence]. [Supporting rationale].
 
 GOALS ACHIEVED
-[List goals met and not met]. TODO: expand template.
+[List each short- and long-term goal with met/not met status; for goals not met, include the reason].
 
 FUNCTIONAL STATUS AT DISCHARGE
-[Current functional level compared to initial evaluation]. TODO: expand template.
+[Current functional level, with objective measures] compared to [initial evaluation baseline]. [Any remaining limitations].
 
 HOME EXERCISE PROGRAM PROVIDED
-[Summary of HEP provided, see attached]. TODO: expand template.
+[Summary of HEP provided, see attached]. [Instructions for progression]. [Equipment issued, if any].
 
 REFERRALS MADE
-[Referrals made, if any]. TODO: expand template.
+[Referrals made, if any, e.g. to another discipline, physician follow-up, or community program]. [Reason for referral].
 
 PATIENT EDUCATION PROVIDED
-[Education topics covered]. TODO: expand template.`;
+[Education topics covered, e.g. home safety, activity modification, self-management strategies]. [Patient/caregiver understanding verified].`;
 
 const PRIOR_AUTH_LETTER = `[Date]
 
@@ -116,22 +116,22 @@ const PRIOR_AUTH_LETTER = `[Date]
 RE: Prior Authorization Request for [Patient name], DOB [date of birth], Member ID [ID]
 
 PATIENT INFORMATION
-[Patient name], [DOB], [diagnosis code(s)]. TODO: expand template.
+[Patient name], [DOB], [diagnosis code(s), ICD-10].
 
 DIAGNOSIS
-[Primary diagnosis and relevant secondary diagnoses]. TODO: expand template.
+[Primary diagnosis and relevant secondary diagnoses, with ICD-10 codes].
 
 FUNCTIONAL LIMITATIONS
-[Specific functional limitations impacting daily life]. TODO: expand template.
+[Specific functional limitations impacting daily life, tied to objective measures from the evaluation].
 
 TREATMENT PLAN
-[Proposed frequency, duration, and interventions]. TODO: expand template.
+[Proposed frequency, duration, and interventions, with clinical rationale for each].
 
 MEDICAL NECESSITY STATEMENT
-[Why continued/additional physical therapy is medically necessary]. TODO: expand template.
+[Why continued/additional physical therapy is medically necessary, including why a less-intensive alternative is not appropriate and the expected functional gains].
 
 SUPPORTING EVIDENCE
-[Reference to relevant clinical practice guidelines or outcome measure scores]. TODO: expand template.
+[Reference to relevant clinical practice guidelines, e.g. APTA CPGs, or objective outcome measure scores demonstrating progress and potential for further improvement].
 
 Sincerely,
 [Clinician name, credentials]`;
