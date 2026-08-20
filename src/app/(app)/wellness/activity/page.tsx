@@ -3,16 +3,15 @@ import { prisma } from "@/lib/db";
 import { dateToLocalIso } from "@/lib/limbic-calendar";
 import { generateInsights, startOfWeekLocal, summarizeWeek, type VitalsLogEntry } from "@/lib/vitals";
 import { WellnessDisclaimer } from "@/components/vitals/WellnessDisclaimer";
-import { BodyMetricsCard } from "@/components/vitals/BodyMetricsCard";
 import { WeeklyActivityChart } from "@/components/vitals/WeeklyActivityChart";
 import { LogActivityForm } from "@/components/vitals/LogActivityForm";
 import { InsightsCard } from "@/components/vitals/InsightsCard";
 
-/** The exercise-input page — body profile + weekly cardio/strength/mobility/mindfulness
- *  logging, split out from Metrics (which is now pure calculators, see
- *  app/(app)/wellness/metrics/page.tsx) so each Explore card is either an input surface or
- *  a reference/calculator surface, not both. Same VitalsProfile/VitalsLog data as before —
- *  this is a move, not a rebuild. */
+/** The exercise-input page — weekly cardio/strength/mobility/mindfulness logging, split
+ *  out from Metrics (which is now pure calculators, see app/(app)/wellness/metrics/page.tsx)
+ *  so each Explore card is either an input surface or a reference/calculator surface, not
+ *  both. Body Metrics (age/height/weight/sex/activity/goal) lives on Metrics instead, the
+ *  calculators there are what actually read it, so entering it happens right next to them. */
 export default async function ActivityLogPage() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -24,10 +23,7 @@ export default async function ActivityLogPage() {
   const thisWeekStartIso = dateToLocalIso(thisWeekStart);
   const lastWeekStartIso = dateToLocalIso(lastWeekStart);
 
-  const [profile, logRows] = await Promise.all([
-    prisma.vitalsProfile.findUnique({ where: { userId: user.id } }),
-    prisma.vitalsLog.findMany({ where: { userId: user.id, date: { gte: lastWeekStart } }, orderBy: { createdAt: "desc" } }),
-  ]);
+  const logRows = await prisma.vitalsLog.findMany({ where: { userId: user.id, date: { gte: lastWeekStart } }, orderBy: { createdAt: "desc" } });
 
   const logs: VitalsLogEntry[] = logRows.map((r) => ({
     id: r.id,
@@ -51,18 +47,6 @@ export default async function ActivityLogPage() {
         Track your own general wellness activity, week to week.
       </p>
       <WellnessDisclaimer />
-
-      <BodyMetricsCard
-        initial={{
-          age: profile?.age ?? null,
-          heightFeet: profile?.heightFeet ?? null,
-          heightInches: profile?.heightInches ?? null,
-          weightLbs: profile?.weightLbs ?? null,
-          biologicalSex: profile?.biologicalSex ?? null,
-          activityLevel: profile?.activityLevel ?? null,
-          wellnessGoal: profile?.wellnessGoal ?? null,
-        }}
-      />
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">This week&rsquo;s activity</div>

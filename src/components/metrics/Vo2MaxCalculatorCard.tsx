@@ -60,12 +60,12 @@ export function Vo2MaxCalculatorCard({ profile }: { profile: WellnessProfile }) 
 
       {!hasProfile ? (
         <div className="wellness-calc-missing-profile">
-          Add your age and weight on the <Link href="/wellness/activity">Activity Log</Link> to estimate your VO2 max.
+          Add your age and weight <Link href="#body-metrics">above</Link> to estimate your VO2 max.
         </div>
       ) : (
         <>
           <p className="wellness-calc-desc" style={{ marginTop: -6 }}>
-            Using your saved age ({profile.age}), weight ({profile.weightLbs} lbs), and sex ({sex}), <Link href="/wellness/activity">update</Link>.
+            Using your saved age ({profile.age}), weight ({profile.weightLbs} lbs), and sex ({sex}), <Link href="#body-metrics">update</Link>.
           </p>
           <div className="wellness-calc-inputs">
             <div className="field" style={{ flex: 1, minWidth: 80 }}>

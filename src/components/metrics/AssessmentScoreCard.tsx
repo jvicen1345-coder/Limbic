@@ -45,7 +45,7 @@ export function AssessmentScoreCard({ profile }: { profile: WellnessProfile }) {
 
       {!hasProfile ? (
         <div className="wellness-calc-missing-profile">
-          Add your age and biological sex on the <Link href="/wellness/activity">Activity Log</Link> to score your results, these tests
+          Add your age and biological sex on the <Link href="/wellness/metrics#body-metrics">Metrics page</Link> to score your results, these tests
           are judged against age- (and for Wall Sit, sex-) adjusted norms.
         </div>
       ) : (

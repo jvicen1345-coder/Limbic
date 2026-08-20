@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
+import { BodyMetricsCard } from "@/components/vitals/BodyMetricsCard";
 import { BmiCalculatorCard } from "@/components/metrics/BmiCalculatorCard";
 import { MaxHeartRateCalculatorCard } from "@/components/metrics/MaxHeartRateCalculatorCard";
 import { HrvCalculatorCard } from "@/components/metrics/HrvCalculatorCard";
@@ -9,9 +10,9 @@ import type { WellnessProfile } from "@/lib/vitals";
 /** Pure calculator inputs — tracking/trends now live on the Overview page's "Trends" tab
  *  (see app/(app)/wellness/page.tsx), RPE moved to the Rep Continuum page (it's about
  *  training intensity, not a body metric), and the weekly activity log moved to its own
- *  page at /wellness/activity. This page's job is just: fill in numbers, get a result —
- *  the identity fields each calculator needs (age, weight, height, sex...) come from the
- *  single profile entered on /wellness/activity, not from inputs on this page. */
+ *  page at /wellness/activity. The identity fields each calculator needs (age, weight,
+ *  height, sex...) are entered right here via BodyMetricsCard, not on a separate page,
+ *  it's the one place this profile is entered; every calculator below just reads it back. */
 export default async function MetricsPage() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -36,6 +37,8 @@ export default async function MetricsPage() {
       <div className="vitals-disclaimer">
         All metrics are for general wellness education only. Not medical advice. Consult your physician for medical interpretation.
       </div>
+
+      <BodyMetricsCard initial={profile} />
 
       <div id="calculators" className="wellness-section-label" style={{ marginTop: 8 }}>
         Your Health Calculators

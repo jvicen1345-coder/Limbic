@@ -31,7 +31,7 @@ export function MaxHeartRateCalculatorCard({ profile }: { profile: WellnessProfi
 
       {!hasAge ? (
         <div className="wellness-calc-missing-profile">
-          Add your age on the <Link href="/wellness/activity">Activity Log</Link> to see your training zones.
+          Add your age <Link href="#body-metrics">above</Link> to see your training zones.
         </div>
       ) : (
         <div className="wellness-calc-inputs">
