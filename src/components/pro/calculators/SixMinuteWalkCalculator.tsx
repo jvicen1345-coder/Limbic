@@ -6,17 +6,21 @@ import { CalcTimer } from "./CalcTimer";
 
 const M_PER_FT = 0.3048;
 
-// TODO: Replace with the real Enright & Sherrill predicted-distance regression equation
-// before launch — this is a rough placeholder formula, not a validated one.
-function predictedDistancePlaceholderMeters(ageYears: number, sex: "male" | "female", heightCm: number, weightKg: number): number {
+// The real published Enright & Sherrill (1998) reference equation for predicted 6MWT
+// distance, plus its companion lower limit of normal (predicted minus a fixed offset per
+// sex), from the same paper.
+function predictedSixMinuteWalkDistanceMeters(ageYears: number, sex: "male" | "female", heightCm: number, weightKg: number): number {
   const base = sex === "male" ? 7.57 * heightCm - 5.02 * ageYears - 1.76 * weightKg - 309 : 2.11 * heightCm - 2.29 * weightKg - 5.78 * ageYears + 667;
   return Math.max(0, Math.round(base));
 }
 
-/** Partially functional — unit conversion (m/ft) and the built-in 6-minute countdown (see
- *  CalcTimer) are fully live; the predicted-distance formula is a placeholder (see
- *  predictedDistancePlaceholderMeters above) pending the real validated regression
- *  equation. */
+function lowerLimitOfNormalMeters(predicted: number, sex: "male" | "female"): number {
+  return Math.max(0, Math.round(predicted - (sex === "male" ? 153 : 139)));
+}
+
+/** Fully functional — unit conversion (m/ft), the built-in 6-minute countdown (see
+ *  CalcTimer), and the real validated Enright & Sherrill predicted-distance regression
+ *  equation with its lower limit of normal are all live. */
 export function SixMinuteWalkCalculator() {
   const [open, setOpen] = useState(false);
   const [unit, setUnit] = useState<"m" | "ft">("m");
@@ -33,7 +37,8 @@ export function SixMinuteWalkCalculator() {
   const heightNum = Number(heightCm);
   const weightNum = Number(weightKg);
   const canPredict = [ageNum, heightNum, weightNum].every((n) => Number.isFinite(n) && n > 0);
-  const predicted = canPredict ? predictedDistancePlaceholderMeters(ageNum, sex, heightNum, weightNum) : null;
+  const predicted = canPredict ? predictedSixMinuteWalkDistanceMeters(ageNum, sex, heightNum, weightNum) : null;
+  const lln = predicted != null ? lowerLimitOfNormalMeters(predicted, sex) : null;
   const percentPredicted = predicted && distanceMeters != null && predicted > 0 ? Math.round((distanceMeters / predicted) * 100) : null;
 
   return (
@@ -100,13 +105,14 @@ export function SixMinuteWalkCalculator() {
           <div className="pro-calc-result" style={{ marginTop: 14 }}>
             <div className="pro-calc-result-value">{predicted} m predicted</div>
             <div className="pro-calc-result-label">
-              {percentPredicted != null ? `${percentPredicted}% of predicted distance` : "Enter distance walked for percent predicted"}
+              {percentPredicted != null ? `${percentPredicted}% of predicted distance, ` : ""}
+              Lower limit of normal: {lln} m
             </div>
           </div>
         )}
         <p style={{ fontSize: 11, color: "var(--color-neutral-700)", marginTop: 10 }}>
-          TODO: predicted-distance formula above is a placeholder, replace with the validated Enright &amp; Sherrill
-          regression equation before launch.
+          Source: Enright PL, Sherrill DL. Reference equations for the six-minute walk in healthy adults. Am J Respir
+          Crit Care Med. 1998.
         </p>
       </CalcModal>
     </>

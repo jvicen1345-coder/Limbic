@@ -6,9 +6,11 @@ import { CalcTimer } from "./CalcTimer";
 
 const SECONDARY_TASKS = ["Serial subtraction (counting backward by 3s)", "Naming animals", "Reciting months backward", "Carrying a full cup of water"];
 
-/** Functional timing/comparison math, timed either by hand or with the two built-in
- *  stopwatches (see CalcTimer); the clinical interpretation of the cost of dual-tasking is
- *  a TODO placeholder (see note below) pending validated cutoffs. */
+/** Fully functional — timing/comparison math (by hand or the two built-in stopwatches, see
+ *  CalcTimer) and the clinical interpretation guidance below are both live. Unlike the
+ *  standard TUG, the dual-task-cost literature hasn't converged on one universally
+ *  validated cutoff, so the guidance is framed as a general trend rather than a single
+ *  hard number, see the note below. */
 export function TugCognitiveCalculator() {
   const [open, setOpen] = useState(false);
   const [standardSeconds, setStandardSeconds] = useState("");
@@ -79,8 +81,11 @@ export function TugCognitiveCalculator() {
           </div>
         )}
         <p style={{ fontSize: 11, color: "var(--color-neutral-700)", marginTop: 10 }}>
-          TODO: clinical interpretation of dual-task cost (validated cutoffs for elevated fall risk) is a placeholder,
-          replace before launch.
+          Unlike the standard TUG, the dual-task-cost literature hasn&rsquo;t converged on a single universally validated
+          cutoff. As a general trend, a dual-task cost above roughly 20% is often considered clinically meaningful,
+          and an absolute dual-task TUG time above ~15 seconds is more consistently associated with elevated fall
+          risk across studies than the percentage cost alone. Use alongside the standard TUG norms and the rest of
+          the fall risk picture, not as a standalone cutoff.
         </p>
       </CalcModal>
     </>
