@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import { CalcModal, CalcCardShell } from "./CalcModal";
+import { CalcTimer } from "./CalcTimer";
 
 // TODO: Add the full official mBESS error-counting criteria (what qualifies as an error
 // per stance) before launch — condition list and error totals below are functional, the
 // scoring rubric text is a placeholder.
 const CONDITIONS = ["Double leg stance, firm surface", "Single leg stance, firm surface", "Tandem stance, firm surface", "Double leg stance, foam surface", "Single leg stance, foam surface", "Tandem stance, foam surface"] as const;
 
-/** Placeholder with TODO — error-count inputs and the running total are functional; the
- *  per-condition error-counting criteria text is a TODO placeholder. */
+/** Placeholder with TODO — error-count inputs, the running total, and the built-in
+ *  20-second-per-stance countdown (see CalcTimer) are functional; the per-condition
+ *  error-counting criteria text is a TODO placeholder. */
 export function MbessCalculator() {
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState<number[]>(Array(CONDITIONS.length).fill(0));
@@ -27,6 +29,7 @@ export function MbessCalculator() {
         onOpen={() => setOpen(true)}
       />
       <CalcModal open={open} title="mBESS, Modified Balance Error Scoring System" onClose={() => setOpen(false)}>
+        <CalcTimer mode="countdown" durationSeconds={20} label="20s per stance — reset before timing the next condition" />
         <div style={{ display: "flex", flexDirection: "column" }}>
           {CONDITIONS.map((condition, i) => (
             <div className="pro-item-row" key={condition}>

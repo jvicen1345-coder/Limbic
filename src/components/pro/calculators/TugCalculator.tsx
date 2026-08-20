@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CalcModal, CalcCardShell } from "./CalcModal";
+import { CalcTimer } from "./CalcTimer";
 
 const NORMS = [
   { max: 10, label: "Normal", color: "var(--color-success)" },
@@ -15,7 +16,8 @@ function interpretTug(seconds: number) {
 }
 
 /** Fully functional — a single timed-seconds input compared against the standard TUG
- *  norms bands. */
+ *  norms bands, either typed in directly or filled from the built-in stopwatch (see
+ *  CalcTimer). */
 export function TugCalculator() {
   const [open, setOpen] = useState(false);
   const [seconds, setSeconds] = useState("");
@@ -34,6 +36,7 @@ export function TugCalculator() {
         onOpen={() => setOpen(true)}
       />
       <CalcModal open={open} title="Timed Up and Go" onClose={() => setOpen(false)}>
+        <CalcTimer mode="stopwatch" onUseTime={(s) => setSeconds(String(s))} />
         <div className="field">
           <label htmlFor="tug-seconds">Time, seconds</label>
           <input

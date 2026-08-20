@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CalcModal, CalcCardShell } from "./CalcModal";
+import { CalcTimer } from "./CalcTimer";
 
 const M_PER_FT = 0.3048;
 
@@ -12,9 +13,10 @@ function predictedDistancePlaceholderMeters(ageYears: number, sex: "male" | "fem
   return Math.max(0, Math.round(base));
 }
 
-/** Partially functional — unit conversion (m/ft) is fully live; the predicted-distance
- *  formula is a placeholder (see predictedDistancePlaceholderMeters above) pending the
- *  real validated regression equation. */
+/** Partially functional — unit conversion (m/ft) and the built-in 6-minute countdown (see
+ *  CalcTimer) are fully live; the predicted-distance formula is a placeholder (see
+ *  predictedDistancePlaceholderMeters above) pending the real validated regression
+ *  equation. */
 export function SixMinuteWalkCalculator() {
   const [open, setOpen] = useState(false);
   const [unit, setUnit] = useState<"m" | "ft">("m");
@@ -45,6 +47,7 @@ export function SixMinuteWalkCalculator() {
         onOpen={() => setOpen(true)}
       />
       <CalcModal open={open} title="6 Minute Walk Test" onClose={() => setOpen(false)}>
+        <CalcTimer mode="countdown" durationSeconds={360} />
         <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
           <div className="field" style={{ flex: 1 }}>
             <label htmlFor="six-mwt-distance">Distance walked</label>

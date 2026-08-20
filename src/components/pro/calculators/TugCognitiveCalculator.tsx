@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { CalcModal, CalcCardShell } from "./CalcModal";
+import { CalcTimer } from "./CalcTimer";
 
 const SECONDARY_TASKS = ["Serial subtraction (counting backward by 3s)", "Naming animals", "Reciting months backward", "Carrying a full cup of water"];
 
-/** Functional timing/comparison math; the clinical interpretation of the cost of dual-
- *  tasking is a TODO placeholder (see note below) pending validated cutoffs. */
+/** Functional timing/comparison math, timed either by hand or with the two built-in
+ *  stopwatches (see CalcTimer); the clinical interpretation of the cost of dual-tasking is
+ *  a TODO placeholder (see note below) pending validated cutoffs. */
 export function TugCognitiveCalculator() {
   const [open, setOpen] = useState(false);
   const [standardSeconds, setStandardSeconds] = useState("");
@@ -43,6 +45,7 @@ export function TugCognitiveCalculator() {
         <div className="pro-grid-2" style={{ marginTop: 12 }}>
           <div className="field">
             <label htmlFor="tugc-standard">Standard TUG, seconds</label>
+            <CalcTimer mode="stopwatch" label="Standard trial" onUseTime={(s) => setStandardSeconds(String(s))} />
             <input
               id="tugc-standard"
               className="input"
@@ -55,6 +58,7 @@ export function TugCognitiveCalculator() {
           </div>
           <div className="field">
             <label htmlFor="tugc-cognitive">Dual-task TUG, seconds</label>
+            <CalcTimer mode="stopwatch" label="Dual-task trial" onUseTime={(s) => setCognitiveSeconds(String(s))} />
             <input
               id="tugc-cognitive"
               className="input"
