@@ -41,14 +41,14 @@ export function MacroCalculatorCard({ profile }: { profile: WellnessProfile }) {
 
       {!hasProfile ? (
         <div className="wellness-calc-missing-profile">
-          Add your age, weight, height, sex, activity level, and goal on the <Link href="/wellness/activity">Activity Log</Link> to
+          Add your age, weight, height, sex, activity level, and goal on the <Link href="/wellness/metrics#body-metrics">Metrics page</Link> to
           calculate your macros.
         </div>
       ) : (
         <>
           <p className="wellness-calc-desc" style={{ marginTop: -6 }}>
             Using your saved profile, {profile.age}yo, {profile.weightLbs} lbs, {profile.heightFeet}&rsquo;{profile.heightInches ?? 0}
-            &rdquo;, {activityLevel}, goal: {goal}. <Link href="/wellness/activity">Update</Link>
+            &rdquo;, {activityLevel}, goal: {goal}. <Link href="/wellness/metrics#body-metrics">Update</Link>
           </p>
 
           {isWeightManagement && (

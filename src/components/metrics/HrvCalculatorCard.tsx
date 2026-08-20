@@ -47,7 +47,7 @@ export function HrvCalculatorCard({ profile }: { profile: WellnessProfile }) {
 
       {!hasAge ? (
         <div className="wellness-calc-missing-profile">
-          Add your age on the <Link href="/wellness/activity">Activity Log</Link> to interpret your HRV.
+          Add your age <Link href="#body-metrics">above</Link> to interpret your HRV.
         </div>
       ) : (
         <>

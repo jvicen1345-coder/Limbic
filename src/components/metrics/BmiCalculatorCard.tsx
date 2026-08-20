@@ -39,12 +39,12 @@ export function BmiCalculatorCard({ profile }: { profile: WellnessProfile }) {
 
       {!hasData ? (
         <div className="wellness-calc-missing-profile">
-          Add your height and weight on the <Link href="/wellness/activity">Activity Log</Link> to see your BMI.
+          Add your height and weight <Link href="#body-metrics">above</Link> to see your BMI.
         </div>
       ) : (
         <p className="wellness-calc-desc" style={{ marginTop: -6 }}>
           Using your saved height ({profile.heightFeet}&rsquo;{profile.heightInches ?? 0}&rdquo;) and weight ({profile.weightLbs} lbs),{" "}
-          <Link href="/wellness/activity">update</Link>.
+          <Link href="#body-metrics">update</Link>.
         </p>
       )}
 

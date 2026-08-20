@@ -46,7 +46,7 @@ export function BodyMetricsCard({ initial }: { initial: WellnessProfile }) {
   };
 
   return (
-    <div className="card elev-sm" style={{ marginBottom: 18 }}>
+    <div id="body-metrics" className="card elev-sm" style={{ marginBottom: 18 }}>
       <div className="card-kicker">Your body metrics</div>
       <p className="card-body" style={{ marginTop: 2 }}>
         A few details to personalize your wellness tracking, all optional, all private to you.
