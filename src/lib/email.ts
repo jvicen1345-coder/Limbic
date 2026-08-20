@@ -52,3 +52,35 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
     `,
   });
 }
+
+/** Sends the "your credentials have been verified" confirmation once an admin approves a
+ *  pending submission (see verifyLicenseAction in app/actions/license.ts, the only caller,
+ *  which already treats "email not configured" as expected-and-logged the same way
+ *  requestPasswordResetAction does above). maskedLicenseNumber should already be run through
+ *  maskLicenseNumber (see lib/license-verification.ts) before being passed in here — this
+ *  function doesn't mask it itself, so a caller that forgets would leak the full number. */
+export async function sendLicenseVerifiedEmail(to: string, name: string, licenseState: string, maskedLicenseNumber: string): Promise<void> {
+  await client().emails.send({
+    from: FROM,
+    to,
+    subject: "Your Limbic credentials have been verified",
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; color: #12203a;">
+        <h1 style="font-size: 20px; margin: 0 0 16px;">Your credentials have been verified</h1>
+        <p style="font-size: 14px; line-height: 1.6;">
+          Hi ${name}, your ${licenseState} physical therapy license (${maskedLicenseNumber}) has
+          been reviewed and verified.
+        </p>
+        <p style="font-size: 14px; line-height: 1.6;">
+          Clinician-only features are now available on your account, including the HEP
+          Builder, Retracted Articles, and the rest of the Clinician tools section in your
+          sidebar.
+        </p>
+        <p style="font-size: 12.5px; color: #62707c; line-height: 1.6;">
+          If you weren't expecting this, or believe your license was verified in error, reply
+          to this email and let us know.
+        </p>
+      </div>
+    `,
+  });
+}
