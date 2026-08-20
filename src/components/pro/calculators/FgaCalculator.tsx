@@ -3,18 +3,105 @@
 import { useState } from "react";
 import { CalcModal, CalcCardShell } from "./CalcModal";
 
-// TODO: Replace generic "Item N" placeholders with the real 10 published FGA item names
-// and their 0-3 scoring criteria (gait level surface, change in gait speed, gait with
-// horizontal/vertical head turns, gait and pivot turn, step over obstacle, gait with
-// narrow base of support, gait with eyes closed, ambulating backward, steps, walking with
-// stairs) before launch.
-const FGA_ITEMS = Array.from({ length: 10 }, (_, i) => `Item ${i + 1}`);
+// The real published Functional Gait Assessment (Wrisley et al.) 10 items and their 0-3
+// scoring criteria, in score order 0 (severe impairment) to 3 (normal) to match the
+// select's value order below.
+const FGA_ITEMS: { name: string; criteria: string[] }[] = [
+  {
+    name: "Gait on level surface",
+    criteria: [
+      "Cannot walk 20ft without assistance, severe gait deviations or imbalance",
+      "Walks 20ft, slow speed, abnormal gait pattern, evidence of imbalance",
+      "Walks 20ft, uses an assistive device, slower speed, mild gait deviations",
+      "Walks 20ft without an assistive device, good speed, no evidence of imbalance, normal gait pattern",
+    ],
+  },
+  {
+    name: "Change in gait speed",
+    criteria: [
+      "Cannot change speeds, or loses balance and has to reach for the wall or be caught",
+      "Makes only minor adjustments to walking speed, or accomplishes a change in speed with significant gait deviations, or changes speed but has to reach for support",
+      "Able to change speed but demonstrates mild gait deviations, or no deviations but unable to achieve a significant change in velocity, or uses an assistive device",
+      "Able to smoothly change walking speed without loss of balance or gait deviation, shows a significant difference between normal, fast, and slow speeds",
+    ],
+  },
+  {
+    name: "Gait with horizontal head turns",
+    criteria: [
+      "Performs the task with severe disruption of gait, staggers outside the 15in path, loses balance, stops, or reaches for the wall",
+      "Performs head turns with moderate change in gait speed, slows down, staggers but recovers and continues walking",
+      "Performs head turns with slight change in gait speed, minor disruption to smooth gait path, or uses an assistive device",
+      "Performs head turns smoothly with no change in gait speed, good balance",
+    ],
+  },
+  {
+    name: "Gait with vertical head turns",
+    criteria: [
+      "Performs the task with severe disruption of gait, staggers outside the 15in path, loses balance, stops, or reaches for the wall",
+      "Performs head turns with moderate change in gait speed, slows down, staggers but recovers and continues walking",
+      "Performs head turns with slight change in gait speed, minor disruption to smooth gait path, or uses an assistive device",
+      "Performs head turns smoothly with no change in gait speed, good balance",
+    ],
+  },
+  {
+    name: "Gait and pivot turn",
+    criteria: [
+      "Cannot turn safely, requires assistance to turn and stop",
+      "Turns slowly, requires verbal cueing, requires several small steps to catch balance following the turn and stop",
+      "Pivot turns safely but in >3 seconds and stops with no loss of balance",
+      "Pivot turns safely within 3 seconds and stops quickly with no loss of balance",
+    ],
+  },
+  {
+    name: "Step over obstacle",
+    criteria: [
+      "Cannot perform without assistance",
+      "Able to step over the box but must stop, then step over, may require verbal cueing",
+      "Able to step over the box but must slow down and adjust steps to clear it safely",
+      "Able to step over the box without changing gait speed, no evidence of imbalance",
+    ],
+  },
+  {
+    name: "Gait with narrow base of support",
+    criteria: [
+      "Unable to attempt 4 heel-to-toe steps without assistance",
+      "Completes 4 steps heel-to-toe before stepping off the line, may grab for support",
+      "Completes 7 steps heel-to-toe with minimal staggering",
+      "Able to walk 10 heel-to-toe steps with no staggering",
+    ],
+  },
+  {
+    name: "Gait with eyes closed",
+    criteria: [
+      "Cannot walk 20ft without assistance, severe gait deviations, or imbalance",
+      "Walks 20ft, slow speed, abnormal gait pattern, evidence of imbalance",
+      "Walks 20ft, uses an assistive device, slower speed, mild gait deviations",
+      "Walks 20ft, good speed, no evidence of imbalance",
+    ],
+  },
+  {
+    name: "Ambulating backward",
+    criteria: [
+      "Cannot walk 10ft without assistance, severe gait deviation or imbalance, or falls",
+      "Walks 10ft, slow speed, abnormal gait pattern, evidence of imbalance",
+      "Walks 10ft, slow speed, mild gait deviations",
+      "Walks 10ft, good speed, no gait deviation or imbalance",
+    ],
+  },
+  {
+    name: "Steps",
+    criteria: [
+      "Cannot do safely",
+      "Two feet to a stair, must use rail",
+      "Alternating feet, must use rail",
+      "Alternating feet, no rail, safely",
+    ],
+  },
+];
 
-/** Placeholder with TODO — the 0-3 scoring, sum, and cutoff comparison are functional; the
- *  10 item names/criteria are a TODO placeholder. */
 export function FgaCalculator() {
   const [open, setOpen] = useState(false);
-  const [scores, setScores] = useState<number[]>(Array(10).fill(3));
+  const [scores, setScores] = useState<number[]>(Array(FGA_ITEMS.length).fill(3));
 
   const total = scores.reduce((sum, s) => sum + s, 0);
   const fallRisk = total < 22;
@@ -32,8 +119,10 @@ export function FgaCalculator() {
       <CalcModal open={open} title="Functional Gait Assessment" onClose={() => setOpen(false)}>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {FGA_ITEMS.map((item, i) => (
-            <div className="pro-item-row" key={item}>
-              <span className="pro-item-row-label">{item}</span>
+            <div className="pro-item-row" key={item.name}>
+              <span className="pro-item-row-label">
+                {i + 1}. {item.name}
+              </span>
               <select
                 className="input pro-item-row-select"
                 value={scores[i]}
@@ -43,9 +132,9 @@ export function FgaCalculator() {
                   setScores(next);
                 }}
               >
-                {[0, 1, 2, 3].map((s) => (
-                  <option key={s} value={s}>
-                    {s}
+                {item.criteria.map((criterion, score) => (
+                  <option key={score} value={score}>
+                    {score} — {criterion}
                   </option>
                 ))}
               </select>

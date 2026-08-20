@@ -4,14 +4,22 @@ import { useState } from "react";
 import { CalcModal, CalcCardShell } from "./CalcModal";
 import { CalcTimer } from "./CalcTimer";
 
-// TODO: Add the full official mBESS error-counting criteria (what qualifies as an error
-// per stance) before launch — condition list and error totals below are functional, the
-// scoring rubric text is a placeholder.
 const CONDITIONS = ["Double leg stance, firm surface", "Single leg stance, firm surface", "Tandem stance, firm surface", "Double leg stance, foam surface", "Single leg stance, foam surface", "Tandem stance, foam surface"] as const;
 
-/** Placeholder with TODO — error-count inputs, the running total, and the built-in
- *  20-second-per-stance countdown (see CalcTimer) are functional; the per-condition
- *  error-counting criteria text is a TODO placeholder. */
+// The official BESS/mBESS error types, counted once per occurrence (max 1 per category
+// per stance) across the 20-second trial. Applies identically to all six conditions above.
+const ERROR_CRITERIA = [
+  "Lifting hands off the iliac crests",
+  "Opening the eyes",
+  "Step, stumble, or fall",
+  "Moving the hip into more than 30° of flexion or abduction",
+  "Lifting the forefoot or heel off the testing surface",
+  "Remaining out of the testing position for more than 5 seconds",
+];
+
+/** Fully functional — error-count inputs, the running total, the built-in 20-second-per-
+ *  stance countdown (see CalcTimer), and the real official BESS error-counting criteria
+ *  are all live. */
 export function MbessCalculator() {
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState<number[]>(Array(CONDITIONS.length).fill(0));
@@ -30,6 +38,14 @@ export function MbessCalculator() {
       />
       <CalcModal open={open} title="mBESS, Modified Balance Error Scoring System" onClose={() => setOpen(false)}>
         <CalcTimer mode="countdown" durationSeconds={20} label="20s per stance — reset before timing the next condition" />
+        <div className="pro-calc-result" style={{ marginBottom: 14 }}>
+          <div className="pro-calc-result-label" style={{ fontWeight: 600, marginBottom: 4 }}>Count one error per occurrence, per stance (max 10 per stance):</div>
+          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5 }}>
+            {ERROR_CRITERIA.map((c) => (
+              <li key={c}>{c}</li>
+            ))}
+          </ul>
+        </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {CONDITIONS.map((condition, i) => (
             <div className="pro-item-row" key={condition}>
@@ -54,7 +70,7 @@ export function MbessCalculator() {
           <div className="pro-calc-result-label">Higher error count indicates worse balance</div>
         </div>
         <p style={{ fontSize: 11, color: "var(--color-neutral-700)", marginTop: 8 }}>
-          TODO: full official error-counting criteria per condition, replace this placeholder note before launch.
+          If a stance cannot be held for at least 5 seconds, score it the maximum of 10 errors for that condition.
         </p>
       </CalcModal>
     </>
