@@ -5,6 +5,8 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { isSiteAdmin } from "@/lib/admin";
 import { US_STATES } from "@/lib/us-states";
+import { maskLicenseNumber } from "@/lib/license-verification";
+import { emailEnabled, sendLicenseVerifiedEmail } from "@/lib/email";
 
 export interface SubmitLicenseVerificationResult {
   ok: boolean;
@@ -68,17 +70,21 @@ interface AdminActionResult {
 export async function verifyLicenseAction(userId: string): Promise<AdminActionResult> {
   if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
 
-  await prisma.user.update({
+  const updated = await prisma.user.update({
     where: { id: userId },
     data: { licenseStatus: "verified", licenseVerifiedAt: new Date() },
   });
 
-  // TODO: send a "Your Limbic credentials have been verified" email once an email-sending
-  // utility exists in this codebase — grepped for nodemailer/resend/sendgrid/postmark/SES/
-  // etc. and found none, so this is a no-op for now per the spec's own fallback. Subject:
-  // "Your Limbic credentials have been verified." Body: the reader's name, license state,
-  // masked license number (see lib/license-verification.ts maskLicenseNumber), and a note
-  // that PRO features are now available.
+  const sendTo = updated.email ?? updated.backupEmail;
+  if (sendTo && updated.licenseState && updated.licenseNumber) {
+    if (emailEnabled()) {
+      await sendLicenseVerifiedEmail(sendTo, updated.name, updated.licenseState, maskLicenseNumber(updated.licenseNumber));
+    } else {
+      // No RESEND_API_KEY configured — logged instead of silently dropped, same
+      // graceful-degradation pattern as requestPasswordResetAction in app/actions/auth.ts.
+      console.error(`[license] Verified email not sent (RESEND_API_KEY unset?) — recipient would have been ${sendTo}`);
+    }
+  }
 
   revalidatePath("/admin/licenses");
   revalidatePath("/profile");
