@@ -2551,10 +2551,22 @@ html[data-theme="dark"] .nav-founding-link-active {
 /* — Professional Credentials card's status badges (components/ProfessionalCredentialsCard.tsx)
    — same pill shape as .wellness-badge, kept as its own small class rather than reusing that
    one directly since this card isn't a Wellness feature. */
-.license-badge { display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+.license-badge { display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; flex-shrink: 0; }
 .license-badge--student { color: var(--color-accent-700); background: color-mix(in srgb, var(--color-accent) 16%, transparent); }
 .license-badge--pending { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
 .license-badge--verified { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 16%, transparent); }
+.license-badge--rejected { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 16%, transparent); }
+
+.license-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-200);
+}
 
 /* — Limbic Vitals (see app/(app)/wellness/metrics/*, components/vitals/*) — general
    wellness tracking, not medical advice. Reuses .card/.field/.input/.btn for the two form

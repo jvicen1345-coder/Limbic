@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { verifyLicenseAction, rejectLicenseAction } from "@/app/actions/license";
 
 export interface PendingLicenseRow {
+  /** License row id — the target of verify/reject, not the user id, since one reader can
+   *  have more than one pending row (a different state each) to review individually. */
   id: string;
-  name: string;
-  licenseState: string | null;
-  licenseNumber: string | null;
-  licenseFullName: string | null;
+  accountName: string;
+  state: string;
+  licenseNumber: string;
+  fullName: string;
   /** ISO string, not a Date — this is a client component. */
   submittedAt: string | null;
 }
@@ -21,16 +23,16 @@ export function LicenseVerificationQueue({ rows }: { rows: PendingLicenseRow[] }
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
-  const handleVerify = (userId: string) => {
+  const handleVerify = (licenseId: string) => {
     startTransition(async () => {
-      await verifyLicenseAction(userId);
+      await verifyLicenseAction(licenseId);
       router.refresh();
     });
   };
 
-  const handleReject = (userId: string) => {
+  const handleReject = (licenseId: string) => {
     startTransition(async () => {
-      await rejectLicenseAction(userId);
+      await rejectLicenseAction(licenseId);
       router.refresh();
     });
   };
@@ -55,10 +57,10 @@ export function LicenseVerificationQueue({ rows }: { rows: PendingLicenseRow[] }
         <tbody>
           {rows.map((r) => (
             <tr key={r.id} style={{ borderTop: "1px solid var(--color-neutral-200)" }}>
-              <td style={{ padding: "8px 10px 8px 0" }}>{r.name}</td>
-              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)" }}>{r.licenseState ?? "N/A"}</td>
-              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)" }}>{r.licenseNumber ?? "N/A"}</td>
-              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)" }}>{r.licenseFullName ?? "N/A"}</td>
+              <td style={{ padding: "8px 10px 8px 0" }}>{r.accountName}</td>
+              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)" }}>{r.state}</td>
+              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)" }}>{r.licenseNumber}</td>
+              <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)" }}>{r.fullName}</td>
               <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
                 {r.submittedAt
                   ? new Date(r.submittedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })

@@ -32,21 +32,17 @@ model User {
   // password added later via forgot-password, or vice versa).
   googleId          String?  @unique
 
+  // Legacy single "primary license" (sign-in-with-license flow predating password auth, plus
+  // whatever CE tracking/admin lookup/hasLicenseAccess still read directly off User instead
+  // of the License relation below). Kept in sync with the reader's best License row — most
+  // recently verified, else most recently pending, else null — by syncPrimaryLicenseFields
+  // in app/actions/license.ts, so none of those other features needed to change when License
+  // went from one-per-user to many-per-user (one per state, see License below).
   licenseNumber     String?  @unique
   licenseState      String?
   licenseEmail      String?
   licenseExpiration DateTime?
-
-  // Post-signup license verification (see app/actions/license.ts, components/
-  // AddLicenseModal.tsx, app/(app)/admin/licenses/page.tsx) — separate from the fields
-  // above, which a legacy account may already have from the old sign-in-with-license flow
-  // without ever having gone through this verification queue. licenseStatus is null until
-  // the reader submits the Add License flow, then "pending" | "verified" | "rejected".
-  licenseFullName    String?
-  licenseStatus      String?
-  licenseSubmittedAt DateTime?
-  licenseVerifiedAt  DateTime?
-  licenseAttestation Boolean   @default(false)
+  licenses          License[]
 
   // General (non-PT) sign-in — separate from licenseEmail, which belongs to the PT flow
   // and isn't unique. Signing in again with the same email returns to this same account,
@@ -302,6 +298,30 @@ model User {
   nexusPostComments   NexusPostComment[]
   messagesSent        NexusMessage[]     @relation("MessageSender")
   messagesReceived    NexusMessage[]     @relation("MessageRecipient")
+}
+
+// A PT license submitted through the post-signup verification flow (see
+// app/actions/license.ts, components/AddLicenseModal.tsx, app/(app)/admin/licenses/page.tsx)
+// — one row per state a reader is licensed in, since a PT can hold licenses in more than one
+// state but never two active licenses in the same state. @@unique([userId, state]) is what
+// actually enforces that; a "rejected" row for a state doesn't block resubmitting that same
+// state (see submitLicenseVerification), it's updated in place rather than blocked.
+// licenseNumber stays globally unique (not just per user) for the same reason it was unique
+// on User before this: a real license number belongs to exactly one person.
+model License {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  state         String
+  licenseNumber String    @unique
+  fullName      String
+  // "pending" | "verified" | "rejected" (see lib/license-verification.ts LICENSE_STATUSES)
+  status        String    @default("pending")
+  attestation   Boolean   @default(false)
+  submittedAt   DateTime  @default(now())
+  verifiedAt    DateTime?
+
+  @@unique([userId, state])
 }
 
 // A connection request between two users, PT-network-style — "pending" until the

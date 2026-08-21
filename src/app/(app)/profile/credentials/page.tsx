@@ -1,4 +1,5 @@
 import { getCurrentUser, isStudentEmail } from "@/lib/session";
+import { prisma } from "@/lib/db";
 import { buildLicenseView } from "@/lib/license";
 import type { CeCategory } from "@/lib/types";
 import { ProfessionalDatesForm } from "@/components/ProfessionalDatesForm";
@@ -15,6 +16,13 @@ import { SubTabs } from "@/components/SubTabs";
 export default async function ProfileCredentialsPage() {
   const user = await getCurrentUser();
   if (!user) return null;
+
+  // A reader can hold verified/pending/rejected License rows in more than one state now
+  // (see schema.prisma License) — Professional Credentials below lists all of them. License
+  // & CE further down still tracks renewal/CE hours off the single "primary" license
+  // (user.licenseNumber/licenseState, kept in sync by syncPrimaryLicenseFields in
+  // app/actions/license.ts), unchanged from before multi-state support.
+  const licenseRows = await prisma.license.findMany({ where: { userId: user.id }, orderBy: { submittedAt: "asc" } });
 
   const license = user.licenseNumber
     ? buildLicenseView(
@@ -60,10 +68,13 @@ export default async function ProfileCredentialsPage() {
       </div>
 
       <ProfessionalCredentialsCard
-        licenseStatus={user.licenseStatus}
-        licenseNumber={user.licenseNumber}
-        licenseState={user.licenseState}
-        licenseVerifiedAt={user.licenseVerifiedAt?.toISOString() ?? null}
+        licenses={licenseRows.map((l) => ({
+          id: l.id,
+          state: l.state,
+          licenseNumber: l.licenseNumber,
+          status: l.status,
+          verifiedAt: l.verifiedAt?.toISOString() ?? null,
+        }))}
         isStudent={isStudentForCredentials}
         accountName={user.name}
       />
