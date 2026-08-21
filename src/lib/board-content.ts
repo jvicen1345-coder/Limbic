@@ -14,6 +14,12 @@ export interface BoardQuestion {
   choices: string[];
   correctIndex: number;
   explanation: string;
+  /** Which /student/specialties hub(s) this question is relevant to (see
+   *  lib/specialty-content.ts SpecialtySlug) — a question can belong to more than one, e.g.
+   *  an ACL question is both Musculoskeletal and Sports. Undefined/empty for a question
+   *  that isn't specialty-specific (general safety, integumentary staging, etc.) — it still
+   *  appears in the main Daily Sharpening rotation, just not on any specialty page. */
+  specialtySlugs?: string[];
 }
 
 export const BOARD_QUESTIONS: BoardQuestion[] = [
@@ -24,6 +30,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     choices: ["3", "4", "4+", "5"],
     correctIndex: 3,
     explanation: "A grade of 5 (Normal) requires full ROM against gravity with maximal resistance and no break in the muscle's ability to hold the position.",
+    specialtySlugs: ["musculoskeletal"],
   },
   {
     id: "q2",
@@ -32,6 +39,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     choices: ["Lachman test", "McMurray test", "Thessaly test", "Valgus stress test"],
     correctIndex: 0,
     explanation: "The Lachman test (20-30° of knee flexion, anterior tibial translation) is the most sensitive clinical test for ACL integrity.",
+    specialtySlugs: ["musculoskeletal", "sports"],
   },
   {
     id: "q3",
@@ -45,6 +53,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     ],
     correctIndex: 2,
     explanation: "Upper motor neuron lesions present with hyperreflexia, spasticity, clonus, and pathological reflexes like Babinski, the opposite of the flaccidity/hyporeflexia seen with lower motor neuron lesions.",
+    specialtySlugs: ["neurological"],
   },
   {
     id: "q4",
@@ -58,6 +67,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     ],
     correctIndex: 0,
     explanation: "Motor pathways cross (decussate), so a right-hemisphere lesion produces left-sided motor deficits. Expressive (Broca's) aphasia is classically left-hemisphere.",
+    specialtySlugs: ["neurological"],
   },
   {
     id: "q5",
@@ -66,6 +76,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     choices: ["4-8 breaths/min", "12-20 breaths/min", "24-32 breaths/min", "36-44 breaths/min"],
     correctIndex: 1,
     explanation: "Normal adult resting respiratory rate is 12-20 breaths per minute; outside that range is considered bradypnea or tachypnea.",
+    specialtySlugs: ["cardiopulmonary"],
   },
   {
     id: "q6",
@@ -79,6 +90,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     ],
     correctIndex: 1,
     explanation: "SpO2 below ~90% is generally an unsafe parameter to continue exertional therapy; the session should stop and the finding should be escalated to the medical team.",
+    specialtySlugs: ["cardiopulmonary"],
   },
   {
     id: "q7",
@@ -87,6 +99,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     choices: ["Stage 1", "Stage 2", "Stage 3", "Stage 4"],
     correctIndex: 2,
     explanation: "Stage 3 pressure injuries show full-thickness skin loss with visible fat; Stage 4 additionally exposes bone, tendon, or muscle.",
+    specialtySlugs: ["geriatrics"],
   },
   {
     id: "q8",
@@ -100,6 +113,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     ],
     correctIndex: 2,
     explanation: "Assistive device height is typically set so the top aligns with the ulnar styloid/wrist crease, giving roughly 20-30° of elbow flexion when gripping.",
+    specialtySlugs: ["geriatrics"],
   },
   {
     id: "q9",
@@ -108,6 +122,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     choices: ["Trendelenburg gait", "Steppage gait", "Antalgic gait", "Scissoring gait"],
     correctIndex: 0,
     explanation: "A Trendelenburg gait, contralateral pelvic drop during stance, results from weak hip abductors (gluteus medius/minimus) on the stance side.",
+    specialtySlugs: ["musculoskeletal"],
   },
   {
     id: "q10",
@@ -116,6 +131,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     choices: ["CN V (Trigeminal)", "CN VII (Facial)", "CN IX (Glossopharyngeal)", "CN XII (Hypoglossal)"],
     correctIndex: 1,
     explanation: "CN VII (Facial) innervates the muscles of facial expression; CN V handles facial sensation and mastication.",
+    specialtySlugs: ["neurological"],
   },
   {
     id: "q11",
@@ -124,6 +140,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     choices: ["6-8", "9-11", "12-14", "18-20"],
     correctIndex: 2,
     explanation: "A Borg RPE of roughly 12-14 ('somewhat hard') is the commonly targeted range for moderate-intensity aerobic exercise.",
+    specialtySlugs: ["cardiopulmonary"],
   },
   {
     id: "q12",
@@ -137,6 +154,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     ],
     correctIndex: 0,
     explanation: "Neer and Hawkins-Kennedy are both impingement provocation tests; a positive cluster raises suspicion for subacromial impingement syndrome.",
+    specialtySlugs: ["musculoskeletal"],
   },
   {
     id: "q13",
@@ -158,6 +176,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     choices: ["Balance", "Spasticity", "Coordination", "Sensation"],
     correctIndex: 1,
     explanation: "The Modified Ashworth Scale grades resistance to passive stretch (0 to 4) as a measure of spasticity.",
+    specialtySlugs: ["neurological"],
   },
   {
     id: "q15",
@@ -166,8 +185,86 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     choices: ["ACL", "PCL", "MCL", "LCL"],
     correctIndex: 2,
     explanation: "A valgus (inward) force at the knee most commonly stresses and injures the MCL on the medial side.",
+    specialtySlugs: ["musculoskeletal", "sports"],
+  },
+  {
+    id: "q16",
+    domain: "Pediatrics",
+    question: "By approximately what age should a typically developing infant sit independently without support?",
+    choices: ["4 months", "6 months", "9 months", "12 months"],
+    correctIndex: 1,
+    explanation: "Independent, unsupported sitting is a gross motor milestone typically achieved around 6 months of age.",
+    specialtySlugs: ["pediatrics"],
+  },
+  {
+    id: "q17",
+    domain: "Pediatrics",
+    question: "The Gross Motor Function Classification System (GMFCS) is most commonly used to classify functional mobility in children with which diagnosis?",
+    choices: ["Down syndrome", "Cerebral palsy", "Duchenne muscular dystrophy", "Spina bifida"],
+    correctIndex: 1,
+    explanation: "The GMFCS was developed specifically for cerebral palsy and classifies self-initiated movement across five levels based on functional mobility.",
+    specialtySlugs: ["pediatrics"],
+  },
+  {
+    id: "q18",
+    domain: "Pediatrics",
+    question: "Persistence of the Asymmetric Tonic Neck Reflex (ATNR) beyond approximately 6 months of age is considered:",
+    choices: [
+      "A normal variant with no clinical significance",
+      "A possible sign of CNS pathology",
+      "A sign of hearing impairment",
+      "Unrelated to motor development",
+    ],
+    correctIndex: 1,
+    explanation: "Primitive reflexes like the ATNR should integrate in the first several months of life; persistence beyond roughly 4-6 months is a red flag for CNS involvement.",
+    specialtySlugs: ["pediatrics"],
+  },
+  {
+    id: "q19",
+    domain: "Geriatrics",
+    question: "A Timed Up and Go (TUG) time greater than approximately 12-13.5 seconds in a community-dwelling older adult is associated with:",
+    choices: ["Normal fall risk", "Increased fall risk", "Improved balance confidence", "No clinical significance"],
+    correctIndex: 1,
+    explanation: "A TUG time above roughly 12-13.5 seconds is a widely used cutoff associated with increased fall risk in community-dwelling older adults.",
+    specialtySlugs: ["geriatrics"],
+  },
+  {
+    id: "q20",
+    domain: "Geriatrics",
+    question: "Which type of exercise provides the greatest benefit for maintaining bone mineral density in postmenopausal women?",
+    choices: ["Weight-bearing/resistance exercise", "Static stretching", "Aquatic exercise", "Passive range of motion"],
+    correctIndex: 0,
+    explanation: "Weight-bearing and resistance exercise provide the mechanical loading stimulus most associated with maintaining or improving bone mineral density.",
+    specialtySlugs: ["geriatrics"],
+  },
+  {
+    id: "q21",
+    domain: "Sports",
+    question: "Current concussion return-to-sport guidelines recommend each stage of the graduated return-to-play protocol last a minimum of:",
+    choices: ["1 hour", "24 hours", "1 week", "No minimum, based on symptoms alone"],
+    correctIndex: 1,
+    explanation: "Graduated return-to-play protocols (e.g. the Berlin Consensus statement) recommend at least 24 hours between stages, with the athlete remaining symptom-free before progressing.",
+    specialtySlugs: ["sports"],
+  },
+  {
+    id: "q22",
+    domain: "Sports",
+    question: "Following ACL reconstruction, return-to-sport testing typically requires quadriceps strength to reach what percentage of the contralateral limb before clearance?",
+    choices: ["50%", "70%", "90%", "100%+"],
+    correctIndex: 2,
+    explanation: "A limb symmetry index of at least 90% on quadriceps strength testing is a commonly used return-to-sport criterion after ACL reconstruction.",
+    specialtySlugs: ["sports"],
   },
 ];
+
+/** Every question tagged for `slug` (see BoardQuestion.specialtySlugs) — powers the "Board-
+ *  Level Questions for This Specialty" preview on each /student/specialties page (see
+ *  components/specialty/SpecialtyPageTemplate.tsx). A fixed, non-rotating set (unlike
+ *  questionForDate below) since this is a specialty page's sample of the kind of questions
+ *  covered, not part of the daily-streak Sharpening flow. */
+export function questionsForSpecialty(slug: string): BoardQuestion[] {
+  return BOARD_QUESTIONS.filter((q) => q.specialtySlugs?.includes(slug));
+}
 
 export interface BoardTerm {
   id: string;

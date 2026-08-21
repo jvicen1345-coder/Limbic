@@ -5,6 +5,8 @@
  * so the two never disagree — don't edit those without checking that file too.
  */
 
+import { questionsForSpecialty, type BoardQuestion } from "@/lib/board-content";
+
 export type SpecialtySlug = "musculoskeletal" | "neurological" | "cardiopulmonary" | "pediatrics" | "geriatrics" | "sports";
 
 export interface SpecialtyCondition {
@@ -700,8 +702,10 @@ export const SPECIALTIES: Specialty[] = [
   },
 ];
 
-export function getSpecialty(slug: string): Specialty | undefined {
-  return SPECIALTIES.find((s) => s.slug === slug);
+export function getSpecialty(slug: string): (Specialty & { specialtyQuestions: BoardQuestion[] }) | undefined {
+  const specialty = SPECIALTIES.find((s) => s.slug === slug);
+  if (!specialty) return undefined;
+  return { ...specialty, specialtyQuestions: questionsForSpecialty(slug) };
 }
 
 export interface Sport {

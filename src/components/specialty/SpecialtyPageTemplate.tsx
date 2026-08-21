@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Breadcrumb, type BreadcrumbItem } from "@/components/Breadcrumb";
 import { ChevronRightIcon } from "@/components/icons";
 import type { ClinicalPearl, NpteConnection, OutcomeMeasureRow, SpecialTestRow, SpecialtyCondition, Sport } from "@/lib/specialty-content";
+import type { BoardQuestion } from "@/lib/board-content";
 
 type TabId = "overview" | "conditions" | "tools" | "boards" | "bysport";
 
@@ -15,8 +16,43 @@ const BASE_TABS: { id: TabId; label: string }[] = [
   { id: "boards", label: "Board Connections" },
 ];
 
-const PLACEHOLDER_QUESTIONS = [1, 2, 3];
-const PLACEHOLDER_OPTIONS = ["Answer option A", "Answer option B", "Answer option C", "Answer option D"];
+/** One question in the "Board-Level Questions for This Specialty" preview — click-to-reveal,
+ *  same correct/incorrect styling convention as components/BoardQuestionCard.tsx, just
+ *  without that card's timing/streak/share machinery, since this is a specialty page's
+ *  static sample rather than a tracked daily attempt. */
+function SpecialtyQuestionPreview({ question }: { question: BoardQuestion }) {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const answered = selectedIndex !== null;
+
+  return (
+    <div className="specialty-question-card">
+      <p className="specialty-question-text">{question.question}</p>
+      <div className="specialty-question-options">
+        {question.choices.map((choice, i) => {
+          const isCorrect = i === question.correctIndex;
+          const isSelected = i === selectedIndex;
+          let stateClass = "";
+          if (answered && isCorrect) stateClass = "specialty-question-option--correct";
+          else if (answered && isSelected) stateClass = "specialty-question-option--incorrect";
+          return (
+            <button
+              key={choice}
+              type="button"
+              className={`specialty-question-option ${stateClass}`}
+              disabled={answered}
+              onClick={() => !answered && setSelectedIndex(i)}
+            >
+              {choice}
+              {answered && isCorrect && " ✓"}
+              {answered && isSelected && !isCorrect && " ✕"}
+            </button>
+          );
+        })}
+      </div>
+      {answered && <p className="specialty-question-explanation">{question.explanation}</p>}
+    </div>
+  );
+}
 
 export interface SpecialtyPageTemplateProps {
   /** Drives the --specialty-accent-{slug} CSS modifier class, see globals.css. */
@@ -36,6 +72,9 @@ export interface SpecialtyPageTemplateProps {
   documentationPearls: string[];
   boardQuestionTypes: string;
   npte: NpteConnection;
+  /** Real questions tagged for this specialty (see questionsForSpecialty in
+   *  lib/board-content.ts) — rendered in the Board Connections tab below. */
+  specialtyQuestions: BoardQuestion[];
   /** Geriatrics only — bridges the student section into The Connexion Method. */
   showConnexionCard?: boolean;
   /** Presence adds the 5th "By Sport" tab — the Sports hub page only. */
@@ -59,6 +98,7 @@ export function SpecialtyPageTemplate({
   documentationPearls,
   boardQuestionTypes,
   npte,
+  specialtyQuestions,
   showConnexionCard = false,
   sports,
 }: SpecialtyPageTemplateProps) {
@@ -275,26 +315,15 @@ export function SpecialtyPageTemplate({
           </div>
 
           <div className="card elev-sm">
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-              <span className="card-title">Board-Level Questions for This Specialty</span>
-              <span className="boards-badge-soon">Coming soon</span>
-            </div>
-            {/* TODO: Wire to BoardsQuestion model filtered by specialty tag */}
+            <span className="card-title">Board-Level Questions for This Specialty</span>
             <div style={{ marginTop: 10 }}>
-              {PLACEHOLDER_QUESTIONS.map((n) => (
-                <div className="specialty-question-card" key={n}>
-                  <p className="specialty-question-text">Board question coming soon</p>
-                  <div className="specialty-question-options">
-                    {PLACEHOLDER_OPTIONS.map((opt) => (
-                      <div className="specialty-question-option" key={opt}>
-                        {opt}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+              {specialtyQuestions.length > 0 ? (
+                specialtyQuestions.map((q) => <SpecialtyQuestionPreview question={q} key={q.id} />)
+              ) : (
+                <p className="specialty-table-note">No specialty-tagged questions yet — check Daily Sharpening for today&rsquo;s question.</p>
+              )}
             </div>
-            <p className="specialty-table-note">Complete your Daily Sharpening for real board questions</p>
+            <p className="specialty-table-note">Complete your Daily Sharpening for a new board question every day</p>
           </div>
         </>
       )}
