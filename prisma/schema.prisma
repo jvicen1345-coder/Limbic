@@ -495,6 +495,14 @@ model CELog {
   hours       Float
   category    String
   createdAt   DateTime @default(now())
+
+  // The completion certificate, if the reader attached one — a data URL (image or PDF),
+  // same "no file storage configured for this app" pattern as NexusPost.imageUrls (see
+  // lib/media-upload.ts), capped client- and server-side (see MAX_CERTIFICATE_DATA_URL_LENGTH
+  // in app/actions/pro-toolbox.ts) so a full-resolution scan doesn't blow past
+  // next.config.ts's server-action body size limit. Optional — a log entry is still useful
+  // for hour-tracking on its own, e.g. for a course whose certificate arrives later by mail.
+  certificateDataUrl String?
 }
 
 // A bookmark on a Health & Wellness article or video, snapshot at save time — same

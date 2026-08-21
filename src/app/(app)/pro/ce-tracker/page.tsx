@@ -41,6 +41,7 @@ export default async function ProCeTrackerPage() {
     completedAt: dateToLocalIso(l.completedAt),
     hours: l.hours,
     category: l.category,
+    certificateDataUrl: l.certificateDataUrl,
   }));
 
   return (

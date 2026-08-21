@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { deleteCELog } from "@/app/actions/pro-toolbox";
-import { TrashIcon } from "@/components/icons";
+import { TrashIcon, FileTextIcon } from "@/components/icons";
 
 export interface CELogRow {
   id: string;
@@ -12,6 +12,7 @@ export interface CELogRow {
   completedAt: string;
   hours: number;
   category: string;
+  certificateDataUrl: string | null;
 }
 
 export function CELogTable({ rows }: { rows: CELogRow[] }) {
@@ -39,6 +40,7 @@ export function CELogTable({ rows }: { rows: CELogRow[] }) {
             <th>Provider</th>
             <th>Hours</th>
             <th>Category</th>
+            <th>Certificate</th>
             <th></th>
           </tr>
         </thead>
@@ -52,6 +54,21 @@ export function CELogTable({ rows }: { rows: CELogRow[] }) {
               <td>{r.provider ?? "—"}</td>
               <td>{r.hours}</td>
               <td>{r.category}</td>
+              <td>
+                {r.certificateDataUrl ? (
+                  <a
+                    href={r.certificateDataUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12.5 }}
+                  >
+                    <FileTextIcon size={13} />
+                    View
+                  </a>
+                ) : (
+                  "—"
+                )}
+              </td>
               <td>
                 <button
                   type="button"
