@@ -18,6 +18,7 @@ import {
   NetworkIcon,
   ChevronRightIcon,
   ZapIcon,
+  BandageIcon,
 } from "@/components/icons";
 
 const EXPLORE_CARDS = [
@@ -27,6 +28,7 @@ const EXPLORE_CARDS = [
   { title: "Assess Yourself", href: "/wellness/assess", icon: CheckCircleIcon, accent: "amber", description: "Simple movement screens you can do at home." },
   { title: "Top 10 Exercises", href: "/wellness/exercises", icon: DumbbellIcon, accent: "purple", description: "Impactful, functional exercises for general health." },
   { title: "Rep Continuum", href: "/wellness/continuum", icon: RefreshIcon, accent: "teal", description: "How reps and load relate to your training goal." },
+  { title: "Common Pathologies", href: "/wellness/pathologies", icon: BandageIcon, accent: "red", description: "Plain-language condition explanations, each with a video." },
 ] as const;
 
 export default async function WellnessOverviewPage() {
