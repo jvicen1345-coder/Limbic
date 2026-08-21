@@ -12,11 +12,25 @@ const TOTAL_STEPS = 4;
 
 /** The 4-step "Add License" wizard, triggered from ProfessionalCredentialsCard's "Add
  *  License" button — collects everything submitLicenseVerification needs (state, license
- *  number, full name, attestation) and sets licenseStatus to "pending" for an admin to
- *  review (see app/(app)/admin/licenses/page.tsx). Same modal shell (.cal-modal-*) the
- *  calendar's Add Event modal already established, so this doesn't invent a second modal
+ *  number, full name, attestation) and creates a new License row with status "pending" for
+ *  an admin to review (see app/(app)/admin/licenses/page.tsx). Same modal shell (.cal-modal-*)
+ *  the calendar's Add Event modal already established, so this doesn't invent a second modal
  *  visual language. */
-export function AddLicenseModal({ open, accountName, onClose }: { open: boolean; accountName: string; onClose: () => void }) {
+export function AddLicenseModal({
+  open,
+  accountName,
+  claimedStates,
+  onClose,
+}: {
+  open: boolean;
+  accountName: string;
+  /** States this reader already has a pending or verified License row for — excluded from
+   *  the Step 1 dropdown, since only one active license per state is allowed. A state whose
+   *  only row was rejected is NOT included here, so it stays selectable for resubmission
+   *  (see submitLicenseVerification). */
+  claimedStates: string[];
+  onClose: () => void;
+}) {
   const { shouldRender, closing } = useExitAnimation(open, 200);
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -29,6 +43,8 @@ export function AddLicenseModal({ open, accountName, onClose }: { open: boolean;
   const [error, setError] = useState<string | null>(null);
 
   if (!shouldRender) return null;
+
+  const availableStates = US_STATES.filter((s) => !claimedStates.includes(s));
 
   const nameMismatch = licenseFullName.trim().length > 0 && !namesLooselyMatch(licenseFullName, accountName);
 
@@ -87,14 +103,20 @@ export function AddLicenseModal({ open, accountName, onClose }: { open: boolean;
         {step === 1 && (
           <div className="field" style={{ marginTop: 14 }}>
             <label htmlFor="license-state">Step 1 of 4, Select your state</label>
-            <select className="input" id="license-state" value={state} onChange={(e) => setState(e.target.value)}>
-              <option value="">Select a state…</option>
-              {US_STATES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
+            {availableStates.length > 0 ? (
+              <select className="input" id="license-state" value={state} onChange={(e) => setState(e.target.value)}>
+                <option value="">Select a state…</option>
+                {availableStates.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <p className="license-modal-helper">
+                You already have a license on file for every state — nothing left to add.
+              </p>
+            )}
           </div>
         )}
 

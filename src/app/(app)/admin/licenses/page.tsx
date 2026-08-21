@@ -4,23 +4,24 @@ import { prisma } from "@/lib/db";
 import { LicenseVerificationQueue } from "@/components/LicenseVerificationQueue";
 
 /** Admin-only — read-only queue of every pending license verification submission (see
- *  components/AddLicenseModal.tsx, app/actions/license.ts). Same "must be admin" redirect
- *  idiom as /admin/suggestions. */
+ *  components/AddLicenseModal.tsx, app/actions/license.ts). One row per pending License,
+ *  not per reader — a reader with licenses in two states pending at once shows up twice,
+ *  each independently reviewable. Same "must be admin" redirect idiom as /admin/suggestions. */
 export default async function AdminLicensesPage() {
   if (!(await isSiteAdmin())) redirect("/home");
 
-  const users = await prisma.user.findMany({
-    where: { licenseStatus: "pending" },
-    orderBy: { licenseSubmittedAt: "asc" },
-    select: { id: true, name: true, licenseState: true, licenseNumber: true, licenseFullName: true, licenseSubmittedAt: true },
+  const pending = await prisma.license.findMany({
+    where: { status: "pending" },
+    orderBy: { submittedAt: "asc" },
+    select: { id: true, state: true, licenseNumber: true, fullName: true, submittedAt: true, user: { select: { name: true } } },
   });
-  const rows = users.map((u) => ({
-    id: u.id,
-    name: u.name,
-    licenseState: u.licenseState,
-    licenseNumber: u.licenseNumber,
-    licenseFullName: u.licenseFullName,
-    submittedAt: u.licenseSubmittedAt?.toISOString() ?? null,
+  const rows = pending.map((l) => ({
+    id: l.id,
+    accountName: l.user.name,
+    state: l.state,
+    licenseNumber: l.licenseNumber,
+    fullName: l.fullName,
+    submittedAt: l.submittedAt.toISOString(),
   }));
 
   return (
