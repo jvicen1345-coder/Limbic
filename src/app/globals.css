@@ -4516,11 +4516,26 @@ html[data-theme="dark"] .app-root--atrium {
 .specialty-table tr:last-child td { border-bottom: none; }
 .specialty-table-note { font-size: 11.5px; color: var(--color-neutral-700); margin: 8px 0 0; font-style: italic; }
 
-.specialty-question-card { padding: 14px; border-radius: var(--radius-md); background: var(--color-neutral-100); border: 1px solid var(--color-neutral-200); opacity: 0.65; pointer-events: none; margin-bottom: 10px; }
+.specialty-question-card { padding: 14px; border-radius: var(--radius-md); background: var(--color-neutral-100); border: 1px solid var(--color-neutral-200); margin-bottom: 10px; }
 .specialty-question-card:last-child { margin-bottom: 0; }
-.specialty-question-text { font-size: 13.5px; font-weight: 600; margin: 0 0 10px; color: var(--color-neutral-700); }
+.specialty-question-text { font-size: 13.5px; font-weight: 600; margin: 0 0 10px; color: var(--color-neutral-900); }
 .specialty-question-options { display: flex; flex-direction: column; gap: 6px; }
-.specialty-question-option { padding: 8px 10px; border-radius: var(--radius-sm); background: var(--color-neutral-200); font-size: 12.5px; color: var(--color-neutral-600); }
+.specialty-question-option {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-200);
+  border: 1px solid transparent;
+  font-size: 12.5px;
+  color: var(--color-neutral-900);
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+.specialty-question-option:hover:not(:disabled) { background: var(--color-neutral-300); }
+.specialty-question-option:disabled { cursor: default; }
+.specialty-question-option--correct { background: color-mix(in srgb, var(--color-success) 18%, var(--color-neutral-100)); border-color: var(--color-success); color: var(--color-success); font-weight: 600; }
+.specialty-question-option--incorrect { border-color: var(--color-danger); color: var(--color-danger); }
+.specialty-question-explanation { font-size: 12.5px; color: var(--color-neutral-700); margin: 10px 0 0; }
 
 .specialty-explore-btn {
   display: inline-flex;
