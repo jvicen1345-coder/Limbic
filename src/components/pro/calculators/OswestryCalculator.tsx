@@ -147,7 +147,14 @@ export function OswestryCalculator() {
         itemCount="10 sections"
         onOpen={() => setOpen(true)}
       />
-      <CalcModal open={open} title="Oswestry Low Back Pain Disability Index" onClose={() => setOpen(false)}>
+      <CalcModal
+        open={open}
+        title="Oswestry Low Back Pain Disability Index"
+        onClose={() => setOpen(false)}
+        testKey="oswestry"
+        testName="Oswestry"
+        result={{ value: `${percent}%`, label: result.label }}
+      >
         <div style={{ display: "flex", flexDirection: "column" }}>
           {OSWESTRY_SECTIONS.map((section, i) => (
             <div className="pro-item-row" key={section.name}>

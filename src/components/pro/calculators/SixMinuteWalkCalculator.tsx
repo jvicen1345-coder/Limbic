@@ -51,7 +51,21 @@ export function SixMinuteWalkCalculator() {
         itemCount="1 item"
         onOpen={() => setOpen(true)}
       />
-      <CalcModal open={open} title="6 Minute Walk Test" onClose={() => setOpen(false)}>
+      <CalcModal
+        open={open}
+        title="6 Minute Walk Test"
+        onClose={() => setOpen(false)}
+        testKey="sixmwt"
+        testName="6 Minute Walk Test"
+        result={
+          predicted != null
+            ? {
+                value: `${predicted} m predicted`,
+                label: `${percentPredicted != null ? `${percentPredicted}% of predicted distance, ` : ""}Lower limit of normal: ${lln} m`,
+              }
+            : null
+        }
+      >
         <CalcTimer mode="countdown" durationSeconds={360} />
         <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
           <div className="field" style={{ flex: 1 }}>

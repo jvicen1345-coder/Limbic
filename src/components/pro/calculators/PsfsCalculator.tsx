@@ -26,7 +26,21 @@ export function PsfsCalculator() {
         itemCount="3 activities"
         onOpen={() => setOpen(true)}
       />
-      <CalcModal open={open} title="PSFS, Patient Specific Functional Scale" onClose={() => setOpen(false)}>
+      <CalcModal
+        open={open}
+        title="PSFS, Patient Specific Functional Scale"
+        onClose={() => setOpen(false)}
+        testKey="psfs"
+        testName="PSFS"
+        result={
+          average != null
+            ? {
+                value: `${average.toFixed(1)} / 10`,
+                label: `Average across ${answered.length} named ${answered.length === 1 ? "activity" : "activities"}. MCID: 2 points per activity.`,
+              }
+            : null
+        }
+      >
         <p style={{ fontSize: 12.5, color: "var(--color-neutral-700)", marginTop: 0, marginBottom: 12 }}>
           Ask the patient to identify up to 3 important activities they are unable to do or are having difficulty
           with. Rate each 0 (unable to perform) to 10 (able to perform at prior level).

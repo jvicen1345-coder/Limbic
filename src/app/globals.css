@@ -6496,6 +6496,36 @@ select.connexion-visit-input { color-scheme: dark; }
   .pro-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+/* — Calculator Profiles workspace (/pro/calculators) — the calculator grid plus the
+   right-side save/retrieve panel (see CalculatorWorkspace.tsx). Panel stacks below the
+   grid on narrow screens, same breakpoint as .pro-grid-2 collapsing to one column. */
+.pro-calc-layout { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
+.pro-calc-main { flex: 1; min-width: 0; width: 100%; }
+@media (min-width: 1080px) {
+  .pro-calc-layout { flex-direction: row; }
+  .calc-profile-panel { width: 320px; flex-shrink: 0; position: sticky; top: 18px; max-height: calc(100vh - 36px); overflow-y: auto; }
+}
+
+.calc-profile-create { padding: 12px; border-radius: var(--radius-md); background: var(--color-neutral-100); margin-bottom: 14px; }
+.calc-profile-test-list { display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; padding-right: 4px; }
+.calc-profile-test-checkbox { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+.calc-profile-test-checkbox input { flex-shrink: 0; }
+
+.calc-profile-row {
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+  padding: 10px 12px; border-radius: var(--radius-md); border: 1px solid var(--color-divider);
+  background: var(--color-surface); cursor: pointer;
+}
+.calc-profile-row--active { border-color: var(--color-accent); background: var(--color-accent-100); }
+
+.calc-profile-detail { border-top: 1px solid var(--color-divider); padding-top: 14px; margin-top: 4px; }
+.calc-profile-checklist-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 4px 0; }
+.calc-profile-checklist-dot { width: 13px; height: 13px; border-radius: 999px; border: 1.5px solid var(--color-neutral-400); flex-shrink: 0; }
+.calc-profile-result-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 10px 12px; border-radius: var(--radius-md); background: var(--color-neutral-100);
+}
+
 /* — Calculator cards (/pro/calculators) — */
 .pro-calc-card { display: flex; flex-direction: column; gap: 2px; }
 .pro-calc-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; }

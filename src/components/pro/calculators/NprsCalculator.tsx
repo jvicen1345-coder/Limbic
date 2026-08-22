@@ -25,7 +25,14 @@ export function NprsCalculator() {
         itemCount="1 item"
         onOpen={() => setOpen(true)}
       />
-      <CalcModal open={open} title="NPRS, Numeric Pain Rating Scale" onClose={() => setOpen(false)}>
+      <CalcModal
+        open={open}
+        title="NPRS, Numeric Pain Rating Scale"
+        onClose={() => setOpen(false)}
+        testKey="nprs"
+        testName="NPRS"
+        result={{ value: `${value} / 10`, label: `${result.label} pain, 0-3 Mild, 4-6 Moderate, 7-10 Severe` }}
+      >
         <div className="pro-slider-row">
           <label htmlFor="nprs-slider" style={{ fontSize: 13 }}>
             Rate current pain, 0 (no pain) to 10 (worst pain imaginable)

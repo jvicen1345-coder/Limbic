@@ -36,7 +36,14 @@ export function MbessCalculator() {
         itemCount="6 conditions"
         onOpen={() => setOpen(true)}
       />
-      <CalcModal open={open} title="mBESS, Modified Balance Error Scoring System" onClose={() => setOpen(false)}>
+      <CalcModal
+        open={open}
+        title="mBESS, Modified Balance Error Scoring System"
+        onClose={() => setOpen(false)}
+        testKey="mbess"
+        testName="mBESS"
+        result={{ value: `${total} errors`, label: "Higher error count indicates worse balance" }}
+      >
         <CalcTimer mode="countdown" durationSeconds={20} label="20s per stance — reset before timing the next condition" />
         <div className="pro-calc-result" style={{ marginBottom: 14 }}>
           <div className="pro-calc-result-label" style={{ fontWeight: 600, marginBottom: 4 }}>Count one error per occurrence, per stance (max 10 per stance):</div>

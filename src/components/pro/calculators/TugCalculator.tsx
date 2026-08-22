@@ -35,7 +35,14 @@ export function TugCalculator() {
         itemCount="1 item"
         onOpen={() => setOpen(true)}
       />
-      <CalcModal open={open} title="Timed Up and Go" onClose={() => setOpen(false)}>
+      <CalcModal
+        open={open}
+        title="Timed Up and Go"
+        onClose={() => setOpen(false)}
+        testKey="tug"
+        testName="Timed Up and Go"
+        result={result ? { value: `${parsed}s`, label: result.label } : null}
+      >
         <CalcTimer mode="stopwatch" onUseTime={(s) => setSeconds(String(s))} />
         <div className="field">
           <label htmlFor="tug-seconds">Time, seconds</label>

@@ -75,7 +75,14 @@ export function DashCalculator() {
         itemCount="30 items"
         onOpen={() => setOpen(true)}
       />
-      <CalcModal open={open} title="DASH, Disabilities of Arm, Shoulder, and Hand" onClose={() => setOpen(false)}>
+      <CalcModal
+        open={open}
+        title="DASH, Disabilities of Arm, Shoulder, and Hand"
+        onClose={() => setOpen(false)}
+        testKey="dash"
+        testName="DASH"
+        result={{ value: `${dashScore} / 100`, label: "Formula: ((sum of items / 30) - 1) x 25, higher indicates more disability" }}
+      >
         <div style={{ display: "flex", flexDirection: "column" }}>
           {DASH_ITEMS.map((item, i) => (
             <div className="pro-item-row" key={item.text}>

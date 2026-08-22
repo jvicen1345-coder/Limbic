@@ -46,7 +46,14 @@ export function LefsCalculator() {
         itemCount="20 items"
         onOpen={() => setOpen(true)}
       />
-      <CalcModal open={open} title="LEFS, Lower Extremity Functional Scale" onClose={() => setOpen(false)}>
+      <CalcModal
+        open={open}
+        title="LEFS, Lower Extremity Functional Scale"
+        onClose={() => setOpen(false)}
+        testKey="lefs"
+        testName="LEFS"
+        result={{ value: `${total} / 80`, label: "Higher is better function, 80 is full function" }}
+      >
         <div style={{ display: "flex", flexDirection: "column" }}>
           {LEFS_ITEMS.map((item, i) => (
             <div className="pro-item-row" key={item}>
