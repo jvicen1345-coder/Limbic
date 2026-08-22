@@ -116,7 +116,14 @@ export function FgaCalculator() {
         itemCount="10 items"
         onOpen={() => setOpen(true)}
       />
-      <CalcModal open={open} title="Functional Gait Assessment" onClose={() => setOpen(false)}>
+      <CalcModal
+        open={open}
+        title="Functional Gait Assessment"
+        onClose={() => setOpen(false)}
+        testKey="fga"
+        testName="Functional Gait Assessment"
+        result={{ value: `${total} / 30`, label: fallRisk ? "Below 22, indicates fall risk" : "22 or above, cut score not met" }}
+      >
         <div style={{ display: "flex", flexDirection: "column" }}>
           {FGA_ITEMS.map((item, i) => (
             <div className="pro-item-row" key={item.name}>

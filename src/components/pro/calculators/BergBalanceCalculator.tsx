@@ -174,7 +174,14 @@ export function BergBalanceCalculator() {
         itemCount="14 items"
         onOpen={() => setOpen(true)}
       />
-      <CalcModal open={open} title="Berg Balance Scale" onClose={() => setOpen(false)}>
+      <CalcModal
+        open={open}
+        title="Berg Balance Scale"
+        onClose={() => setOpen(false)}
+        testKey="berg"
+        testName="Berg Balance Scale"
+        result={{ value: `${total} / 56`, label: `${result.label}, 41-56 low, 21-40 medium, 0-20 high fall risk` }}
+      >
         <div style={{ display: "flex", flexDirection: "column" }}>
           {BERG_ITEMS.map((item, i) => (
             <div className="pro-item-row" key={item.name}>

@@ -43,6 +43,7 @@ model User {
   licenseEmail      String?
   licenseExpiration DateTime?
   licenses          License[]
+  calculatorProfiles CalculatorProfile[]
 
   // General (non-PT) sign-in — separate from licenseEmail, which belongs to the PT flow
   // and isn't unique. Signing in again with the same email returns to this same account,
@@ -670,6 +671,45 @@ model GameActivity {
   createdAt DateTime @default(now())
 
   @@unique([userId, dateKey])
+}
+
+// A clinician-created grouping of Clinical Calculators results for one visit/patient (see
+// /pro/calculators' right-side panel, components/pro/calculators/CalculatorProfilesPanel.tsx)
+// — deliberately just a free-text `label`, never a real patient name/DOB/MRN field, so
+// nothing here is itself PHI: the clinician is expected to use a non-identifying label
+// (initials, room number, session code), same "we don't collect what we don't need"
+// reasoning as the rest of this app never asking for identifying patient details anywhere
+// else either.
+model CalculatorProfile {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label  String
+  // JSON-encoded string[] of calculator testKeys (see lib/calculator-tests.ts) the
+  // clinician planned to run for this profile — a checklist, not an access-control list;
+  // a result can still be saved for a test that isn't on it (see saveCalculatorResultAction
+  // in app/actions/calculator-profiles.ts).
+  selectedTests Json     @default("[]")
+  createdAt     DateTime @default(now())
+  results       CalculatorResult[]
+}
+
+// One saved score for one CalculatorProfile — testKey/testName identify which of the 12
+// /pro/calculators tools produced it (see lib/calculator-tests.ts for the canonical list);
+// value/interpretation are the exact display strings the calculator itself showed at save
+// time (e.g. value "41 / 56", interpretation "Low fall risk, 41-56 low, 21-40 medium,
+// 0-20 high fall risk") rather than a bare number, so retrieving this later reads the same
+// way the clinician saw it live, without this table needing to know each test's own
+// scoring scale/units.
+model CalculatorResult {
+  id             String            @id @default(cuid())
+  profileId      String
+  profile        CalculatorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  testKey        String
+  testName       String
+  value          String
+  interpretation String
+  completedAt    DateTime          @default(now())
 }
 
 model HepExercise {

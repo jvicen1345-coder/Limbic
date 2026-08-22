@@ -35,7 +35,21 @@ export function ThirtySecondStsCalculator() {
         itemCount="1 item"
         onOpen={() => setOpen(true)}
       />
-      <CalcModal open={open} title="30 Second Sit to Stand" onClose={() => setOpen(false)}>
+      <CalcModal
+        open={open}
+        title="30 Second Sit to Stand"
+        onClose={() => setOpen(false)}
+        testKey="sts30"
+        testName="30 Second Sit to Stand"
+        result={
+          reps !== ""
+            ? {
+                value: `${reps} reps`,
+                label: `Normal range for ${sex}, ${ageGroup}: ${STS_NORMS[ageGroup]?.split(", ").find((s) => s.startsWith(sex))?.split(": ")[1]}`,
+              }
+            : null
+        }
+      >
         <CalcTimer mode="countdown" durationSeconds={30} />
         <div className="field">
           <label htmlFor="sts-reps">Repetitions completed</label>

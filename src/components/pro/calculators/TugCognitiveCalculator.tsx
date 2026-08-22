@@ -33,7 +33,18 @@ export function TugCognitiveCalculator() {
         itemCount="2 items"
         onOpen={() => setOpen(true)}
       />
-      <CalcModal open={open} title="TUG, Cognitive Dual Task" onClose={() => setOpen(false)}>
+      <CalcModal
+        open={open}
+        title="TUG, Cognitive Dual Task"
+        onClose={() => setOpen(false)}
+        testKey="tug-cognitive"
+        testName="TUG Cognitive"
+        result={
+          diff != null
+            ? { value: `+${diff}s${percentCost != null ? ` (${percentCost}%)` : ""}`, label: "Dual-task cost vs standard TUG" }
+            : null
+        }
+      >
         <div className="field">
           <label htmlFor="tugc-task">Secondary task</label>
           <select id="tugc-task" className="input" value={task} onChange={(e) => setTask(e.target.value)}>
