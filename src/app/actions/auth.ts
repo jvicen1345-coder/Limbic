@@ -10,16 +10,29 @@ import { emailEnabled, sendPasswordResetEmail } from "@/lib/email";
 import { appOrigin } from "@/lib/url";
 import { clientIp } from "@/lib/request-ip";
 import { consumeGuestSignupAllowance } from "@/lib/guest-rate-limit";
+import { isSignInRateLimited, recordFailedSignIn, clearSignInAttempts } from "@/lib/sign-in-rate-limit";
+import { isPasswordResetRateLimited, recordPasswordResetRequest } from "@/lib/password-reset-rate-limit";
 
-// Backs the Email tab's sign-in form (see components/SignInForm.tsx).
+// Backs the Email tab's sign-in form (see components/SignInForm.tsx). Rate-limited per
+// email (see lib/sign-in-rate-limit.ts) — checked before signInWithPassword runs at all, so
+// a maxed-out email doesn't even reach the password comparison. Every failure (wrong
+// password or no account) counts the same way and shows the same generic message, so the
+// rate limit itself can't be used to tell the two apart either.
 export async function signInAction(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
+
+  if (await isSignInRateLimited(email)) {
+    redirect(`/sign-in?error=rate_limited&email=${encodeURIComponent(email)}`);
+  }
+
   const result = await signInWithPassword({ email, password });
   if (!result.ok) {
+    await recordFailedSignIn(email);
     const code = result.reason === "needsPassword" ? "needs_password" : "invalid_credentials";
     redirect(`/sign-in?error=${code}&email=${encodeURIComponent(email)}`);
   }
+  await clearSignInAttempts(email);
   revalidatePath("/", "layout");
   redirect("/home");
 }
@@ -54,6 +67,15 @@ export async function requestPasswordResetAction(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
 
   if (email) {
+    // Rate-limited before anything else below (see lib/password-reset-rate-limit.ts) — this
+    // counts every request for an email, whether or not it turns out to belong to a real
+    // account, since an attacker probing for valid addresses shouldn't get a different
+    // limiting behavior than one who already knows a real one.
+    if (await isPasswordResetRateLimited(email)) {
+      redirect("/forgot-password?rate_limited=1");
+    }
+    await recordPasswordResetRequest(email);
+
     const user = await prisma.user.findFirst({
       where: { OR: [{ email }, { backupEmail: email }, { licenseEmail: email }] },
     });

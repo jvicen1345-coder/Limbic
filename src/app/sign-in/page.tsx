@@ -26,6 +26,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   weak_password: "Password must be at least 8 characters.",
   password_mismatch: "Those passwords don't match.",
   guest_rate_limited: "Too many guest sign-ins from this network recently — please try again later, or create a real account.",
+  rate_limited: "Too many attempts. Please try again later.",
 };
 
 export default async function SignInPage({

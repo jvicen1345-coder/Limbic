@@ -24,7 +24,7 @@ function TemplateCard({ template, onLoad }: { template: HepTemplateSummary; onLo
             className="btn"
             disabled={pending}
             style={{ fontSize: 12, padding: "4px 10px", background: "var(--color-danger)", color: "#fff", border: "none" }}
-            onClick={() => startTransition(() => deleteHepTemplateAction(template.id))}
+            onClick={() => startTransition(async () => void (await deleteHepTemplateAction(template.id)))}
           >
             Confirm?
           </button>

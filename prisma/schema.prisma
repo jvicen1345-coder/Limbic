@@ -844,6 +844,28 @@ model GuestSignupThrottle {
   count       Int      @default(1)
 }
 
+// Fixed-window failed-sign-in-attempt counter, keyed by the lowercased/trimmed email that
+// was attempted (see lib/sign-in-rate-limit.ts, signInAction in app/actions/auth.ts) — same
+// shape as GuestSignupThrottle above, just per-email instead of per-IP, and reset on a
+// successful sign-in rather than only ever aging out.
+model SignInThrottle {
+  email       String   @id
+  windowStart DateTime
+  count       Int      @default(1)
+}
+
+// Fixed-window password-reset-request counter, keyed the same way as SignInThrottle above
+// (see lib/password-reset-rate-limit.ts, requestPasswordResetAction in
+// app/actions/auth.ts) — caps how many reset emails one address can trigger per window,
+// independent of whether the address actually has an account (an attacker can't tell the
+// difference from the outside, so this counts every request attempt, not just ones that
+// found a real user).
+model PasswordResetThrottle {
+  email       String   @id
+  windowStart DateTime
+  count       Int      @default(1)
+}
+
 // A password-reset link's server-side half (see lib/password.ts, app/actions/auth.ts
 // requestPasswordResetAction/resetPasswordAction) — one row per emailed link. Only
 // `tokenHash` (a SHA-256 hash of the random token that's actually emailed) is ever stored,
