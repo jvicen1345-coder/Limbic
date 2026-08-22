@@ -17,6 +17,7 @@ import {
   LockIcon,
   NetworkIcon,
   CalendarIcon,
+  DumbbellIcon,
 } from "@/components/icons";
 
 const PATHS = [
@@ -315,10 +316,60 @@ export default async function StudentAtriumPage() {
             </>
           ) : (
             <>
-              <p className="atrium-dashboard-body">Quick access to Limbic Agent is included with PRO or Boards+.</p>
+              <p className="atrium-dashboard-body">Quick access to Limbic Agent is included with PRO or LimbicStudent.</p>
               <span className="atrium-dashboard-locked">
                 <LockIcon size={11} />
                 <Link href="/pro" className="atrium-dashboard-link atrium-dashboard-link--amber" style={{ margin: 0 }}>
+                  Upgrade →
+                </Link>
+              </span>
+            </>
+          )}
+        </div>
+
+        <div className="atrium-dashboard-card">
+          <div className="atrium-dashboard-title">
+            <FileTextIcon size={15} />
+            Weekly Roundup
+          </div>
+          {user.studentTier === "limbicStudent" ? (
+            <>
+              <p className="atrium-dashboard-body">Five real research, guideline, and CE items curated for coursework, refreshed weekly.</p>
+              <Link href="/student/roundup" className="atrium-dashboard-link atrium-dashboard-link--amber">
+                Open this week&rsquo;s roundup →
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="atrium-dashboard-body">A weekly study roundup is included with LimbicStudent.</p>
+              <span className="atrium-dashboard-locked">
+                <LockIcon size={11} />
+                <Link href="/profile/membership" className="atrium-dashboard-link atrium-dashboard-link--amber" style={{ margin: 0 }}>
+                  Upgrade →
+                </Link>
+              </span>
+            </>
+          )}
+        </div>
+
+        <div className="atrium-dashboard-card">
+          <div className="atrium-dashboard-title">
+            <DumbbellIcon size={15} />
+            HEP Templates
+          </div>
+          {user.studentTier === "limbicStudent" ? (
+            <>
+              <p className="atrium-dashboard-body">Example home exercise programs, organized by body region, for coursework study.</p>
+              <Link href="/student/hep-templates" className="atrium-dashboard-link atrium-dashboard-link--amber">
+                Browse templates →
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="atrium-dashboard-body">HEP templates for coursework are included with LimbicStudent.</p>
+              <span className="atrium-dashboard-locked">
+                <LockIcon size={11} />
+                <Link href="/profile/membership" className="atrium-dashboard-link atrium-dashboard-link--amber" style={{ margin: 0 }}>
                   Upgrade →
                 </Link>
               </span>

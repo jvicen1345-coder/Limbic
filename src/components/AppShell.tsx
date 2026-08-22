@@ -41,6 +41,7 @@ import {
   PencilIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { StudentVerifiedBadge } from "@/components/StudentVerifiedBadge";
 
 function sidebarNavStyle(active: boolean, bold: boolean): React.CSSProperties {
   return {
@@ -230,6 +231,12 @@ interface NavContentProps {
    *  isStudent decides *whether* the section can appear at all; a non-qualifying account
    *  never sees it regardless of role. zoneTwoOrder only ever reorders sections that do. */
   isStudent: boolean;
+  /** True only for a real, paid LimbicStudent subscription (studentTier === "limbicStudent",
+   *  see lib/session.ts) — narrower than isStudent above, which also includes any .edu
+   *  account that hasn't paid. Shows the "Verified Student" badge in the footer nameplate
+   *  (see components/StudentVerifiedBadge.tsx), same "paid tier gets a small trust signal"
+   *  idea as the Founding Funder badge elsewhere in the app. */
+  isVerifiedStudent: boolean;
   /** True for a site admin account (see lib/admin.ts isSiteAdmin) — gates the Admin section
    *  below, hidden entirely for everyone else. */
   isAdmin: boolean;
@@ -246,7 +253,7 @@ interface NavContentProps {
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount, zoneTwoOrder, onNavigate }: NavContentProps) {
+function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, isAdmin, aptaCount, nexusRequestCount, zoneTwoOrder, onNavigate }: NavContentProps) {
   const pathname = usePathname();
   // Collapsed by default unless already somewhere under /nexus (so landing on, say,
   // /nexus/messages via a direct link or a widget elsewhere in the app doesn't hide the
@@ -487,7 +494,10 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
       <div className="nav-footer">
         <Link href="/profile" className="nav-footer-nameplate" onClick={onNavigate}>
           <div style={{ fontSize: 12, color: "var(--color-neutral-700)", marginBottom: 4 }}>Signed in as</div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)" }}>{profileName}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)" }}>{profileName}</div>
+            {isVerifiedStudent && <StudentVerifiedBadge compact />}
+          </div>
           <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
             {isStudent ? (school ? `DPT Student · ${school}` : "DPT Student") : `${specialtyLabel} · ${practiceState}`}
           </div>
@@ -515,6 +525,7 @@ export interface AppShellProps {
   hasLicense: boolean;
   isPro: boolean;
   isStudent: boolean;
+  isVerifiedStudent: boolean;
   isAdmin: boolean;
   aptaCount: number;
   nexusRequestCount: number;
@@ -533,6 +544,7 @@ export function AppShell({
   hasLicense,
   isPro,
   isStudent,
+  isVerifiedStudent,
   isAdmin,
   aptaCount,
   nexusRequestCount,
@@ -542,7 +554,20 @@ export function AppShell({
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLElement>(null);
-  const navProps = { profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isAdmin, aptaCount, nexusRequestCount, zoneTwoOrder };
+  const navProps = {
+    profileName,
+    specialtyLabel,
+    practiceState,
+    school,
+    hasLicense,
+    isPro,
+    isStudent,
+    isVerifiedStudent,
+    isAdmin,
+    aptaCount,
+    nexusRequestCount,
+    zoneTwoOrder,
+  };
   // Extends the Atrium's warm palette out to the surrounding chrome (sidebar/topbar/
   // drawer/bottomnav) whenever any Atrium route is active — see .app-root--atrium in
   // globals.css for why that chrome can't just read the page's own --atrium-* tokens.

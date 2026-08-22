@@ -19,6 +19,7 @@ import { PROFILE_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
 import { getFoundingFunderStatus } from "@/lib/founding-funders";
 import { FoundingFunderBadge } from "@/components/FoundingFunderBadge";
+import { StudentVerifiedBadge } from "@/components/StudentVerifiedBadge";
 import { FoundingFunderBadgeCard } from "@/components/FoundingFunderBadgeCard";
 import { UserRoleSection } from "@/components/UserRoleSection";
 import { isUserRole, type UserRole } from "@/lib/user-role";
@@ -54,6 +55,11 @@ export default async function ProfilePage() {
   return (
     <div className="screen-pad page-enter">
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Profile</h1>
+      {isStudent && (
+        <div style={{ marginBottom: 8 }}>
+          <StudentVerifiedBadge />
+        </div>
+      )}
       {foundingFunderStatus.isFunder && !user.foundingFunderBadgeHidden && (
         <div style={{ marginBottom: 8 }}>
           <FoundingFunderBadge number={foundingFunderStatus.number} />

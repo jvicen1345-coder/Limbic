@@ -42,6 +42,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       hasLicense={hasLicense}
       isPro={user.isPro}
       isStudent={hasStudentAccess(user)}
+      isVerifiedStudent={user.studentTier === "limbicStudent"}
       isAdmin={isAdmin}
       aptaCount={newAptaCount}
       nexusRequestCount={nexusRequestCount}
