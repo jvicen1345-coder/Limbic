@@ -15,11 +15,16 @@ export interface HepExerciseInput {
   videoUrl?: string;
 }
 
-export async function createHepAction(input: { programName: string; exercises: HepExerciseInput[] }) {
+export interface HepActionResult {
+  ok: boolean;
+  error?: string;
+}
+
+export async function createHepAction(input: { programName: string; exercises: HepExerciseInput[] }): Promise<HepActionResult> {
   const user = await getCurrentUser();
-  if (!user || !hasLicenseAccess(user)) return;
+  if (!user || !hasLicenseAccess(user)) return { ok: false, error: "Not authorized." };
   const programName = input.programName.trim();
-  if (!programName || input.exercises.length === 0) return;
+  if (!programName || input.exercises.length === 0) return { ok: false, error: "A program name and at least one exercise are required." };
 
   // imageUrl/videoUrl are a LimbicPRO perk (see HepBuilder, which only renders those fields
   // for isPro) — stripped here too so a non-pro account can't sneak them in via a crafted
@@ -42,13 +47,23 @@ export async function createHepAction(input: { programName: string; exercises: H
     },
   });
   revalidatePath("/", "layout");
+  return { ok: true };
 }
 
-export async function deleteHepAction(programId: string) {
+/** Confirms the program belongs to the signed-in user before deleting it, rather than
+ *  relying solely on the deleteMany's own userId-scoped where clause — an explicit check
+ *  that returns a real error result (never throws) for a program that doesn't exist or
+ *  belongs to someone else, so a caller can't mistake a no-op for a success. */
+export async function deleteHepAction(programId: string): Promise<HepActionResult> {
   const user = await getCurrentUser();
-  if (!user) return;
-  await prisma.hepProgram.deleteMany({ where: { id: programId, userId: user.id } });
+  if (!user) return { ok: false, error: "Not authorized." };
+
+  const program = await prisma.hepProgram.findUnique({ where: { id: programId }, select: { userId: true } });
+  if (!program || program.userId !== user.id) return { ok: false, error: "Not authorized." };
+
+  await prisma.hepProgram.delete({ where: { id: programId } });
   revalidatePath("/", "layout");
+  return { ok: true };
 }
 
 export interface HepTemplateSummary {
@@ -83,12 +98,16 @@ export async function getHepTemplatesAction(): Promise<Record<HepTemplateBodyPar
 }
 
 /** Saves the builder's current draft as a reusable template. imageUrl/videoUrl are stripped
- *  for non-pro accounts, same LimbicPRO-gating reasoning as createHepAction above. */
-export async function saveHepTemplateAction(name: string, bodyPart: string, exercises: HepTemplateExercise[]) {
+ *  for non-pro accounts, same LimbicPRO-gating reasoning as createHepAction above. Confirms
+ *  the caller is a signed-in, license-holding clinician before writing anything — a Server
+ *  Action is its own callable endpoint regardless of which page's UI happens to call it. */
+export async function saveHepTemplateAction(name: string, bodyPart: string, exercises: HepTemplateExercise[]): Promise<HepActionResult> {
   const user = await getCurrentUser();
-  if (!user || !hasLicenseAccess(user)) return;
+  if (!user || !hasLicenseAccess(user)) return { ok: false, error: "Not authorized." };
   const trimmedName = name.trim();
-  if (!trimmedName || exercises.length === 0 || !isHepTemplateBodyPart(bodyPart)) return;
+  if (!trimmedName || exercises.length === 0 || !isHepTemplateBodyPart(bodyPart)) {
+    return { ok: false, error: "A template name, body part, and at least one exercise are required." };
+  }
 
   await prisma.hEPTemplate.create({
     data: {
@@ -106,13 +125,23 @@ export async function saveHepTemplateAction(name: string, bodyPart: string, exer
     },
   });
   revalidatePath("/hep");
+  return { ok: true };
 }
 
-export async function deleteHepTemplateAction(templateId: string) {
+/** Confirms the template belongs to the signed-in user before deleting it — same explicit
+ *  fetch-then-compare pattern as deleteHepAction above, rather than relying solely on the
+ *  delete's own userId-scoped where clause, so a template that doesn't exist or belongs to
+ *  someone else returns a real error result instead of a silent no-op. */
+export async function deleteHepTemplateAction(templateId: string): Promise<HepActionResult> {
   const user = await getCurrentUser();
-  if (!user) return;
-  await prisma.hEPTemplate.deleteMany({ where: { id: templateId, userId: user.id } });
+  if (!user) return { ok: false, error: "Not authorized." };
+
+  const template = await prisma.hEPTemplate.findUnique({ where: { id: templateId }, select: { userId: true } });
+  if (!template || template.userId !== user.id) return { ok: false, error: "Not authorized." };
+
+  await prisma.hEPTemplate.delete({ where: { id: templateId } });
   revalidatePath("/hep");
+  return { ok: true };
 }
 
 /** Returns the full draft (name + exercises) for populating the builder, or null if the

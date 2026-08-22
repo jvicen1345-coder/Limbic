@@ -51,7 +51,15 @@ export async function submitLicenseVerification(input: {
   const licenseNumber = input.licenseNumber.trim();
   const licenseFullName = input.licenseFullName.trim();
 
-  if (!(US_STATES as readonly string[]).includes(state) || !licenseNumber || !licenseFullName || !input.attestationConfirmed) {
+  // Checked as its own case, ahead of the combined check below, so a blank/too-short
+  // license number gets a specific, actionable message rather than the generic
+  // "complete every step" one — server-side, never trusting AddLicenseModal.tsx's own
+  // client-side check alone, since this action is its own callable endpoint.
+  if (licenseNumber.length < 5) {
+    return { ok: false, error: "A valid license number is required." };
+  }
+
+  if (!(US_STATES as readonly string[]).includes(state) || !licenseFullName || !input.attestationConfirmed) {
     return { ok: false, error: "Please complete every step and confirm the attestation before submitting." };
   }
 

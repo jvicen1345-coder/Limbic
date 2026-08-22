@@ -12,7 +12,7 @@ export function DeleteHepButton({ programId }: { programId: string }) {
       className="btn btn-ghost btn-icon"
       aria-label="Delete program"
       style={{ width: 28, height: 28, flexShrink: 0 }}
-      onClick={() => startTransition(() => deleteHepAction(programId))}
+      onClick={() => startTransition(async () => void (await deleteHepAction(programId)))}
     >
       <TrashIcon size={14} />
     </button>

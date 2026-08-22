@@ -16,12 +16,12 @@ export const metadata: Metadata = {
 export default async function ForgotPasswordPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sent?: string }>;
+  searchParams: Promise<{ sent?: string; rate_limited?: string }>;
 }) {
   const user = await getCurrentUser();
   if (user) redirect("/home");
 
-  const { sent } = await searchParams;
+  const { sent, rate_limited } = await searchParams;
 
   return (
     <div
@@ -60,6 +60,22 @@ export default async function ForgotPasswordPage({
             Enter your account email and we&rsquo;ll send a link to set a new password.
           </p>
         </div>
+
+        {rate_limited === "1" && (
+          <p
+            style={{
+              fontSize: 12.5,
+              color: "var(--color-danger)",
+              background: "color-mix(in srgb, var(--color-danger) 12%, var(--color-surface))",
+              border: "1px solid color-mix(in srgb, var(--color-danger) 35%, transparent)",
+              borderRadius: "var(--radius-md)",
+              padding: "8px 14px",
+              margin: 0,
+            }}
+          >
+            Too many reset attempts. Please try again later.
+          </p>
+        )}
 
         {sent === "1" ? (
           <p

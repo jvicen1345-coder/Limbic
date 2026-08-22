@@ -20,13 +20,22 @@ export interface AddCELogInput {
   certificateDataUrl?: string;
 }
 
+export interface ProToolboxActionResult {
+  ok: boolean;
+  error?: string;
+}
+
 /** LimbicPRO CE Hours Tracker (/pro/ce-tracker) — same "raw rows, derive totals on read"
- *  shape as app/actions/metrics.ts saveMetricLog. */
-export async function addCELog(input: AddCELogInput) {
+ *  shape as app/actions/metrics.ts saveMetricLog. Re-checks isPro itself rather than
+ *  trusting the page that rendered the form, since a Server Action is its own callable
+ *  endpoint. */
+export async function addCELog(input: AddCELogInput): Promise<ProToolboxActionResult> {
   const user = await getCurrentUser();
-  if (!user || !user.isPro) return;
+  if (!user || !user.isPro) return { ok: false, error: "Not authorized." };
   const courseName = input.courseName.trim();
-  if (!courseName || !Number.isFinite(input.hours) || input.hours <= 0 || !input.completedAt) return;
+  if (!courseName || !Number.isFinite(input.hours) || input.hours <= 0 || !input.completedAt) {
+    return { ok: false, error: "A course name, valid hours, and completion date are required." };
+  }
 
   const certificate = input.certificateDataUrl;
   const validCertificate =
@@ -46,13 +55,24 @@ export async function addCELog(input: AddCELogInput) {
     },
   });
   revalidatePath("/pro/ce-tracker");
+  return { ok: true };
 }
 
-export async function deleteCELog(id: string) {
+/** Confirms the log entry belongs to the signed-in user before deleting it — explicit
+ *  fetch-then-compare, same pattern as deleteHepAction/deleteHepTemplateAction in
+ *  app/actions/hep.ts, rather than relying solely on the delete's own userId-scoped where
+ *  clause, so an entry that doesn't exist or belongs to someone else returns a real error
+ *  result instead of a silent no-op. */
+export async function deleteCELog(id: string): Promise<ProToolboxActionResult> {
   const user = await getCurrentUser();
-  if (!user) return;
-  await prisma.cELog.deleteMany({ where: { id, userId: user.id } });
+  if (!user) return { ok: false, error: "Not authorized." };
+
+  const log = await prisma.cELog.findUnique({ where: { id }, select: { userId: true } });
+  if (!log || log.userId !== user.id) return { ok: false, error: "Not authorized." };
+
+  await prisma.cELog.delete({ where: { id } });
   revalidatePath("/pro/ce-tracker");
+  return { ok: true };
 }
 
 export interface CEPreferencesInput {
@@ -62,9 +82,9 @@ export interface CEPreferencesInput {
   ceTotalRequired: number;
 }
 
-export async function updateCEPreferences(input: CEPreferencesInput) {
+export async function updateCEPreferences(input: CEPreferencesInput): Promise<ProToolboxActionResult> {
   const user = await getCurrentUser();
-  if (!user || !user.isPro) return;
+  if (!user || !user.isPro) return { ok: false, error: "Not authorized." };
 
   await prisma.user.update({
     where: { id: user.id },
@@ -76,4 +96,5 @@ export async function updateCEPreferences(input: CEPreferencesInput) {
     },
   });
   revalidatePath("/pro/ce-tracker");
+  return { ok: true };
 }
