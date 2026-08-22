@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getArticles } from "@/lib/articles";
+
+export const metadata: Metadata = {
+  title: "Roundup",
+};
 import { decorateArticle } from "@/lib/feed";
 import { currentWeekKey, pickWeeklyRoundup } from "@/lib/student-roundup";
 import { NewsRow } from "@/components/RowCards";

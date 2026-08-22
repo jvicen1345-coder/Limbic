@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { LabValuesReference } from "@/components/pro/LabValuesReference";
+
+export const metadata: Metadata = {
+  title: "Lab Values",
+};
 
 export default async function ProLabValuesPage() {
   const user = await getCurrentUser();

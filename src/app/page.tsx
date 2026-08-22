@@ -11,7 +11,11 @@ const DESCRIPTION =
   "The research, the profession, and the public. Finally in one place. Limbic Center is built for PT students, clinicians, and the people they serve.";
 
 export const metadata: Metadata = {
-  title: "Limbic Center — The Physical Therapy Platform",
+  // No `title` of its own — falls back to the root layout's `title.default` ("Limbic
+  // Center | The Physical Therapy Platform" — see app/layout.tsx), which says the same
+  // thing this used to say directly (kept "Limbic Center," not just "Limbic," for the same
+  // Google-branding reason described above). openGraph.title below is untouched — that's a
+  // separate metadata channel `title.template` never applies to.
   description: DESCRIPTION,
   openGraph: {
     title: "Limbic Center — The Physical Therapy Platform",

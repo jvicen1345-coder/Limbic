@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { NEXUS_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
+
+export const metadata: Metadata = {
+  title: "Connections",
+};
 import { Avatar } from "@/components/Avatar";
 import { ConnectButton } from "@/components/ConnectButton";
 import Link from "next/link";

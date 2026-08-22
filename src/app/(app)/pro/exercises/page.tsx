@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { TherapeuticExerciseLibrary } from "@/components/pro/TherapeuticExerciseLibrary";
+
+export const metadata: Metadata = {
+  title: "Exercises",
+};
 
 export default async function ProExercisesPage() {
   const user = await getCurrentUser();

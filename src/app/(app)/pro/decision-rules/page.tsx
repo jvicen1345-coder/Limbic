@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { OttawaAnkleRule } from "@/components/pro/decision-rules/OttawaAnkleRule";
+
+export const metadata: Metadata = {
+  title: "Decision Rules",
+};
 import { OttawaKneeRule } from "@/components/pro/decision-rules/OttawaKneeRule";
 import { CanadianCSpineRule } from "@/components/pro/decision-rules/CanadianCSpineRule";
 import { PittsburghKneeRule } from "@/components/pro/decision-rules/PittsburghKneeRule";

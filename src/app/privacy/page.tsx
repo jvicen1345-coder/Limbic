@@ -5,7 +5,7 @@ import { LegalPageLayout } from "@/components/LegalPageLayout";
 // /founding-funders' own metadata export for why every publicly indexable route
 // (sitemap.ts/robots.ts list all five) gets one instead.
 export const metadata: Metadata = {
-  title: "Limbic, Privacy Policy",
+  title: "Privacy Policy",
   description: "Limbic's Privacy Policy: how we collect, use, and protect your information on the Limbic platform.",
 };
 

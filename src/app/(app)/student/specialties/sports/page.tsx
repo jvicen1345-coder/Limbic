@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { getSpecialty, SPORTS } from "@/lib/specialty-content";
 import { SpecialtyPageTemplate } from "@/components/specialty/SpecialtyPageTemplate";
+
+export const metadata: Metadata = {
+  title: "Sports",
+};
 
 export default async function SportsSpecialtyPage() {
   const user = await getCurrentUser();

@@ -28,13 +28,18 @@ export const metadata: Metadata = {
   // absolute https://limbic.center/... one — required for those to work correctly once a
   // page is actually crawled or shared, rather than a same-origin-only relative path.
   metadataBase: new URL("https://limbic.center"),
-  // Fallback only — every real, publicly indexable route (see sitemap.ts/robots.ts for the
-  // full list: "/", /founding-funders, /sign-in, /terms, /privacy) sets its own metadata
-  // below so Google never has to fall back to this generic one and improvise a snippet
-  // from page content instead, which is what was happening on /founding-funders before it
-  // got its own metadata export.
-  title: "Limbic Center, PT News",
-  description: "Up-to-date news, guidelines, and clinical tools for physical therapists.",
+  // `template` composes every page's own `title` (see the authenticated app's page.tsx
+  // files, each a short one/two-word `metadata.title` like "Home" or "Calculators") into
+  // "<page> | Limbic Center" for the browser tab — `default` is the fallback only, for any
+  // route that doesn't set its own (see sitemap.ts/robots.ts for the full list of
+  // publicly indexable routes that already do: "/", /founding-funders, /sign-in, /terms,
+  // /privacy).
+  title: {
+    default: "Limbic Center | The Physical Therapy Platform",
+    template: "%s | Limbic Center",
+  },
+  description:
+    "The research, the profession, and the public. Finally in one place. Limbic Center is built for PT students, clinicians, and the people they serve.",
   // Google Search Console's HTML-tag ownership verification — additional to the domain's
   // existing DNS-based verification, not a replacement for it. Search Console's own
   // instructions warn not to remove this once added, even after verification succeeds.

@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { getCalculatorProfilesForCurrentUser } from "@/app/actions/calculator-profiles";
+
+export const metadata: Metadata = {
+  title: "Calculators",
+};
 import { CalculatorWorkspace } from "@/components/pro/calculators/CalculatorWorkspace";
 import { NprsCalculator } from "@/components/pro/calculators/NprsCalculator";
 import { TugCalculator } from "@/components/pro/calculators/TugCalculator";

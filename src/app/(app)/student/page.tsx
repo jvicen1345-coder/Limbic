@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
+
+export const metadata: Metadata = {
+  title: "Atrium",
+};
 import { firstName, timeOfDayGreeting } from "@/lib/meta";
 import { questionForDate, todayDateKey } from "@/lib/board-content";
 import { getAcceptedConnectionIds } from "@/lib/nexus";

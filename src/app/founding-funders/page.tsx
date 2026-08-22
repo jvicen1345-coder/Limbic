@@ -20,7 +20,7 @@ import { RegisteredUsersPanel } from "@/components/founding-funders/RegisteredUs
 // from whatever text on the page it judged most representative (Jonathan's letter, in this
 // case), the same problem "/" avoided by already having its own metadata export.
 export const metadata: Metadata = {
-  title: "Limbic, Founding Funders",
+  title: "Founding Funders",
   description:
     "Become one of the first 25 Founding Funders and help build Limbic: lifetime access, a permanent founding badge, and a direct hand in shaping every feature that comes next.",
   openGraph: {

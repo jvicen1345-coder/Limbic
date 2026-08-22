@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { RedFlagCategory } from "@/components/pro/red-flags/RedFlagCategory";
+
+export const metadata: Metadata = {
+  title: "Red Flags",
+};
 import { ReferralTriggersCategory } from "@/components/pro/red-flags/ReferralTriggersCategory";
 
 const ONCOLOGY = [

@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
+
+export const metadata: Metadata = {
+  title: "Overview",
+};
 import { CrownIcon, ChevronRightIcon } from "@/components/icons";
 import { PRO_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
