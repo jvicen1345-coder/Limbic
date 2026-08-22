@@ -2948,6 +2948,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wellness-explore-card--teal { --explore-accent: var(--color-accent-2); }
 .wellness-explore-card--gold { --explore-accent: var(--color-migration-gold); }
 .wellness-explore-card--orange { --explore-accent: var(--color-vitals-strength); }
+.wellness-explore-card--red { --explore-accent: var(--color-danger); }
 .wellness-explore-card--agent {
   padding: 22px 20px;
   box-shadow: 0 4px 20px color-mix(in srgb, var(--color-migration-gold) 18%, transparent);
