@@ -73,6 +73,32 @@ export function isAdminEmail(email: string | null | undefined): boolean {
   return allowed.length > 0 && allowed.includes(email.trim().toLowerCase());
 }
 
+/** The three paid tiers a site admin can comp for a specific account without that account
+ *  paying — see User.compedAccess in schema.prisma, the "Granted Access" controls on
+ *  /admin/accounts (grantAccessAction/revokeAccessAction in app/actions/admin.ts), and the
+ *  overlay in getCurrentUser() below. */
+export type GrantArea = "pro" | "limbicStudent" | "wellnessPlus";
+const GRANT_AREAS: GrantArea[] = ["pro", "limbicStudent", "wellnessPlus"];
+
+/** Parses User.compedAccess (a JSON column, so untyped at the DB layer) back into a clean
+ *  GrantArea[], silently dropping anything that isn't one of the three known areas — same
+ *  defensive parsing as this app's other JSON columns (e.g. followedTopics). */
+export function compedAreas(user: { compedAccess: unknown }): GrantArea[] {
+  const raw = user.compedAccess;
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((a): a is GrantArea => GRANT_AREAS.includes(a as GrantArea));
+}
+
+/** Whether `user` has this specific area for free — as a site admin (every area, always) or
+ *  because another admin comped just this one area for their account (see compedAreas
+ *  above) — rather than through real billing. Membership pages (see /profile/membership,
+ *  /wellness/membership) use this to swap the normal "manage/cancel" card for a plain
+ *  "granted, nothing to cancel" message, since there's no real Stripe subscription behind
+ *  either kind of free access for openBillingPortal (app/actions/pro.ts) to manage. */
+export function hasFreeAccess(user: { email: string | null; licenseEmail: string | null; compedAccess: unknown }, area: GrantArea): boolean {
+  return isAdminEmail(user.email) || isAdminEmail(user.licenseEmail) || compedAreas(user).includes(area);
+}
+
 /** Reads the signed-in user (guest or licensed) from the session cookie, or null if signed
  *  out. Admin accounts (see isAdminEmail above) get every paid tier's access overlaid onto
  *  the object this returns — isPro/studentTier/isWellnessPlus — WITHOUT writing any of that
@@ -82,17 +108,28 @@ export function isAdminEmail(email: string | null | undefined): boolean {
  *  is why it lives here rather than as a scattered `|| isSiteAdmin` check at each of the
  *  dozen or so call sites that read these three fields — one overlay, applied once, that
  *  every existing and future isPro/studentTier/isWellnessPlus check benefits from for free.
- *  The parallel identity-based gates (Boards, the Student Atrium, etc. — see
- *  hasStudentAccess below) aren't fields on this object, so they're handled separately. */
+ *  An admin's own per-user grant (see User.compedAccess, compedAreas above) gets the same
+ *  overlay treatment for the same reason: a comped reader's real isPro/studentTier/
+ *  isWellnessPlus columns, and anything the Stripe webhook does with them, should stay
+ *  exactly what they'd be without the grant. The parallel identity-based gates (Boards, the
+ *  Student Atrium, etc. — see hasStudentAccess below) aren't fields on this object, so
+ *  they're handled separately. */
 export async function getCurrentUser(): Promise<User | null> {
   const userId = await readUserIdFromCookie();
   if (!userId) return null;
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) return null;
-  if (isAdminEmail(user.email) || isAdminEmail(user.licenseEmail)) {
-    return { ...user, isPro: true, studentTier: "limbicStudent", isWellnessPlus: true };
-  }
-  return user;
+
+  const admin = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
+  const comped = compedAreas(user);
+  if (!admin && comped.length === 0) return user;
+
+  return {
+    ...user,
+    isPro: user.isPro || admin || comped.includes("pro"),
+    studentTier: admin || comped.includes("limbicStudent") ? "limbicStudent" : user.studentTier,
+    isWellnessPlus: user.isWellnessPlus || admin || comped.includes("wellnessPlus"),
+  };
 }
 
 /**
@@ -106,13 +143,19 @@ export function isStudentEmail(email: string | null | undefined): boolean {
 }
 
 /** Everywhere Limbic Boards/Daily Sharpening/the Student Atrium gate on "is this a student
- *  account" (see isStudentEmail above), an admin account should get through too — same
- *  "admin logins get every feature" reasoning as the isPro/studentTier/isWellnessPlus
- *  overlay in getCurrentUser() above, just handled explicitly here since email-suffix
- *  identity isn't a field getCurrentUser() can quietly override without corrupting the
- *  account's real sign-in email. */
-export function hasStudentAccess(user: { email: string | null; licenseEmail: string | null }): boolean {
-  return isStudentEmail(user.email) || isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
+ *  account" (see isStudentEmail above), an admin account — or an account an admin comped
+ *  "limbicStudent" for (see compedAreas above) — should get through too — same "gets every
+ *  feature" reasoning as the isPro/studentTier/isWellnessPlus overlay in getCurrentUser()
+ *  above, just handled explicitly here since email-suffix identity isn't a field
+ *  getCurrentUser() can quietly override without corrupting the account's real sign-in
+ *  email. */
+export function hasStudentAccess(user: { email: string | null; licenseEmail: string | null; compedAccess: unknown }): boolean {
+  return (
+    isStudentEmail(user.email) ||
+    isAdminEmail(user.email) ||
+    isAdminEmail(user.licenseEmail) ||
+    compedAreas(user).includes("limbicStudent")
+  );
 }
 
 /** Everywhere clinician-only surfaces (HEP Builder, Retracted Articles, the sidebar's
@@ -134,7 +177,7 @@ export function hasLicenseAccess(user: {
  *  about running a real practice rather than learning the material) also open up to any
  *  hasStudentAccess() account. Real LimbicPRO members are unaffected — this only widens who
  *  else gets through, never narrows the existing isPro check. */
-export function hasClinicalReferenceAccess(user: { isPro: boolean; email: string | null; licenseEmail: string | null }): boolean {
+export function hasClinicalReferenceAccess(user: { isPro: boolean; email: string | null; licenseEmail: string | null; compedAccess: unknown }): boolean {
   return user.isPro || hasStudentAccess(user);
 }
 

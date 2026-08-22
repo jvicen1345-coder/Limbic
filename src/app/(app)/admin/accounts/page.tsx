@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { isSiteAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/db";
+import { compedAreas } from "@/lib/session";
 import { AccountsAdminTable } from "@/components/AccountsAdminTable";
 
 /** Admin-only — every account, with a delete button per row (see AccountsAdminTable.tsx,
@@ -21,6 +22,7 @@ export default async function AdminAccountsPage() {
       passwordHash: true,
       googleId: true,
       isPro: true,
+      compedAccess: true,
       createdAt: true,
       foundingFunder: { select: { paymentStatus: true } },
     },
@@ -36,6 +38,7 @@ export default async function AdminAccountsPage() {
     hasPassword: u.passwordHash != null,
     hasGoogle: u.googleId != null,
     isPro: u.isPro,
+    grantedAccess: compedAreas(u),
     isFoundingFunder: u.foundingFunder?.paymentStatus === "confirmed",
     createdAt: u.createdAt.toISOString(),
   }));
