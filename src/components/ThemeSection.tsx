@@ -76,7 +76,16 @@ export function ThemeSection({ initialTheme }: { initialTheme: ThemePreference }
             type="button"
             className={selected === opt.value ? "theme-card theme-card--selected" : "theme-card"}
             aria-pressed={selected === opt.value}
-            onClick={() => setSelected(opt.value)}
+            onClick={() => {
+              // Applied to the real page (and this device's localStorage) the moment you
+              // pick a card — same "changes instantly" behavior as the sidebar's
+              // ThemeToggle — not just the isolated mockup below. Save (below) only then
+              // needs to push it to the database for other devices to pick up; without
+              // this, refreshing before clicking Save silently discarded the choice, since
+              // nothing had actually applied it yet (see lib/theme-client.ts).
+              applyThemePreferenceLocally(opt.value);
+              setSelected(opt.value);
+            }}
           >
             {opt.label}
           </button>
