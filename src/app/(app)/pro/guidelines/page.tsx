@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { GuidelinesLibrary } from "@/components/pro/GuidelinesLibrary";
+
+export const metadata: Metadata = {
+  title: "Guidelines",
+};
 
 export default async function ProGuidelinesPage() {
   const user = await getCurrentUser();

@@ -5,7 +5,7 @@ import { LegalPageLayout } from "@/components/LegalPageLayout";
 // /founding-funders' own metadata export for why every publicly indexable route
 // (sitemap.ts/robots.ts list all five) gets one instead.
 export const metadata: Metadata = {
-  title: "Limbic, Terms of Service",
+  title: "Terms of Service",
   description: "Limbic's Terms of Service: the rules and agreements that govern use of the Limbic platform.",
 };
 

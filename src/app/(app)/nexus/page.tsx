@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { ensureNexusSeedData } from "@/lib/nexus-seed";
+
+export const metadata: Metadata = {
+  title: "Feed",
+};
 import { NEXUS_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
 import { NexusPostCard, type NexusPostData } from "@/components/NexusPostCard";

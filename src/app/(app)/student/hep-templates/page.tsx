@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { templatesByBodyPart, HEP_TEMPLATE_BODY_PARTS } from "@/lib/coursework-hep-templates";
 import { StudentPlaceholderPage } from "@/components/StudentPlaceholderPage";
+
+export const metadata: Metadata = {
+  title: "HEP Templates",
+};
 import { StudentGate } from "@/components/student/StudentGate";
 import { LimbicStudentGate } from "@/components/student/LimbicStudentGate";
 

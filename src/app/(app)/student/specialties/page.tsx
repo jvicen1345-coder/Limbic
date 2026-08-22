@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { SPECIALTIES } from "@/lib/specialty-content";
+
+export const metadata: Metadata = {
+  title: "Specialties",
+};
 import { ChevronRightIcon } from "@/components/icons";
 import { StudentGate } from "@/components/student/StudentGate";
 

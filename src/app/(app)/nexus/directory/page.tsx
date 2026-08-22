@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { ensureNexusSeedData } from "@/lib/nexus-seed";
 import { getConnectionStates } from "@/lib/nexus";
+
+export const metadata: Metadata = {
+  title: "Directory",
+};
 import { NEXUS_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
 import { DirectoryList, type DirectoryPerson } from "@/components/DirectoryList";

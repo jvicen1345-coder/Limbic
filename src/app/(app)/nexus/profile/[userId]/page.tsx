@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
+
+export const metadata: Metadata = {
+  title: "Profile",
+};
 import { getConnectionStates } from "@/lib/nexus";
 import { SPECIALTY_META } from "@/lib/meta";
 import { Avatar } from "@/components/Avatar";

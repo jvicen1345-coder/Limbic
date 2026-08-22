@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/session";
 import { resetPasswordAction } from "@/app/actions/auth";
 
 export const metadata: Metadata = {
-  title: "Limbic, Reset Password",
+  title: "Reset Password",
   description: "Set a new Limbic password.",
 };
 

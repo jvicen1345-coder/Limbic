@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { ProGate } from "@/components/pro/ProGate";
+
+export const metadata: Metadata = {
+  title: "CE Tracker",
+};
 import { CELicenseCard } from "@/components/pro/ce-tracker/CELicenseCard";
 import { CELogForm } from "@/components/pro/ce-tracker/CELogForm";
 import { CELogTable } from "@/components/pro/ce-tracker/CELogTable";

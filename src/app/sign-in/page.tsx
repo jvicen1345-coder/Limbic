@@ -8,7 +8,7 @@ import { SignInForm } from "@/components/SignInForm";
 // /founding-funders' own metadata export for why every publicly indexable route
 // (sitemap.ts/robots.ts list all five) gets one instead.
 export const metadata: Metadata = {
-  title: "Limbic, Sign In",
+  title: "Sign In",
   description: "Sign in to Limbic to access current physical therapy research, clinical tools, and your professional community.",
 };
 

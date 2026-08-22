@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getCurrentUser, recordHomeVisit, hasBackupSigninFlag, isAdminEmail } from "@/lib/session";
 import { hasMigrationBannerDismissed } from "@/app/actions/account-migration";
 import { GRADUATION_TRANSITION_SNOOZE_DAYS } from "@/lib/migration-reminder";
@@ -22,6 +23,10 @@ import { getFoundingFunderStatus } from "@/lib/founding-funders";
 import { visitorHourOfDay } from "@/lib/timezone";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import type { Article, CeCategory, Specialty } from "@/lib/types";
+
+export const metadata: Metadata = {
+  title: "Home",
+};
 
 // How many people to suggest connecting with in the Home aside — enough to fill the
 // card without turning it into a second directory.

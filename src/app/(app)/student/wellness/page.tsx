@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { StudentPlaceholderPage } from "@/components/StudentPlaceholderPage";
 import { StudentGate } from "@/components/student/StudentGate";
+
+export const metadata: Metadata = {
+  title: "Mental Wellness",
+};
 
 export default async function StudentWellnessPage() {
   const user = await getCurrentUser();

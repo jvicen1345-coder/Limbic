@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getClips } from "@/lib/clips";
 import { orderClipsForUser } from "@/lib/clip-rotation";
+
+export const metadata: Metadata = {
+  title: "Clips",
+};
 import { ClipsFeed } from "@/components/ClipsFeed";
 
 export default async function ClipsPage() {

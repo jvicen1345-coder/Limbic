@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser, hasStudentAccess, hasLicenseAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { GraduationCapIcon, ZapIcon } from "@/components/icons";
+
+export const metadata: Metadata = {
+  title: "Boards",
+};
 import { BoardQuestionCard } from "@/components/BoardQuestionCard";
 import { BoardsTabs } from "@/components/BoardsTabs";
 import { questionForDate, termForDate, todayDateKey, NPTE_THREE_QUESTION_BENCHMARK_SECONDS } from "@/lib/board-content";

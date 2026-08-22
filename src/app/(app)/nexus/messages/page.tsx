@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getAcceptedConnectionIds } from "@/lib/nexus";
+
+export const metadata: Metadata = {
+  title: "Messages",
+};
 import { timeAgo } from "@/lib/nexus-utils";
 import { NEXUS_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";

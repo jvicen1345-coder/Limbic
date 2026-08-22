@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { DocTemplateCard } from "@/components/pro/documentation/DocTemplateCard";
+
+export const metadata: Metadata = {
+  title: "Documentation",
+};
 import { FunctionalGoalsBank } from "@/components/pro/documentation/FunctionalGoalsBank";
 
 const INITIAL_EVAL_ORTHO = `CHIEF COMPLAINT

@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { StudentPlaceholderPage } from "@/components/StudentPlaceholderPage";
 import { StudentGate } from "@/components/student/StudentGate";
+
+export const metadata: Metadata = {
+  title: "Study Buddy",
+};
 
 export default async function StudyBuddyPage() {
   const user = await getCurrentUser();
