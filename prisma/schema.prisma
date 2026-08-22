@@ -132,6 +132,15 @@ model User {
   wellnessPlusInterval       String?
   wellnessPlusSubscriptionId String?   @unique
 
+  // Admin-granted complimentary access to a paid tier, for a specific account rather than
+  // every admin (see /admin/accounts, grantAccessAction/revokeAccessAction in
+  // app/actions/admin.ts). JSON-encoded GrantArea[] (see lib/session.ts) — a subset of
+  // ["pro", "limbicStudent", "wellnessPlus"]. Layered onto isPro/studentTier/isWellnessPlus
+  // by getCurrentUser()'s overlay, the same "never write fake billing state into the real
+  // columns" pattern the admin-email overlay already uses, so this account's real billing
+  // state (and the Stripe webhook that drives it) stays exactly what it really is.
+  compedAccess Json @default("[]")
+
   // Timestamp of the previous home-feed load, captured before it's overwritten with the
   // current one — this is what lets the feed tell "published since you were last here"
   // apart from everything else (see lib/session.ts recordVisitAndGetPrevious).

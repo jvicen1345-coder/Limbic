@@ -1,6 +1,5 @@
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasFreeAccess } from "@/lib/session";
 import { stripeEnabled } from "@/lib/stripe";
-import { isSiteAdmin } from "@/lib/admin";
 import { subscribeToWellnessPlusMonthlyAction, subscribeToWellnessPlusYearlyAction, cancelWellnessPlusAction } from "@/app/actions/pro";
 import { WellnessIcon } from "@/components/icons";
 
@@ -13,10 +12,11 @@ export default async function WellnessMembershipPage({
   if (!user) return null;
 
   const billingEnabled = stripeEnabled();
-  // Same reasoning as /pro/membership — a site admin's isWellnessPlus reads true (see
-  // lib/session.ts getCurrentUser()) without a real subscription behind it, so skip the
-  // dead "Manage membership" button and the (also fake, always-null) interval mention.
-  const adminAccess = await isSiteAdmin();
+  // Same reasoning as /pro/membership — a site admin's, or a comped account's,
+  // isWellnessPlus reads true (see lib/session.ts getCurrentUser()) without a real
+  // subscription behind it, so skip the dead "Manage membership" button and the (also fake,
+  // always-null) interval mention.
+  const wellnessPlusFree = hasFreeAccess(user, "wellnessPlus");
   const { checkout } = await searchParams;
 
   return (
@@ -81,8 +81,8 @@ export default async function WellnessMembershipPage({
           <>
             <div className="card-kicker">Membership</div>
             <p className="card-body" style={{ marginTop: 6 }}>
-              {adminAccess ? (
-                "You have full access to LimbicWellness+ as a site admin."
+              {wellnessPlusFree ? (
+                "You have full access to LimbicWellness+, granted at no cost — there's no subscription to manage or cancel."
               ) : (
                 <>
                   You&rsquo;re on the {user.wellnessPlusInterval === "year" ? "yearly" : "monthly"} plan. Manage your
@@ -91,7 +91,7 @@ export default async function WellnessMembershipPage({
                 </>
               )}
             </p>
-            {!adminAccess && (
+            {!wellnessPlusFree && (
               <form action={cancelWellnessPlusAction}>
                 <button type="submit" className="btn btn-secondary" style={{ marginTop: 10 }} disabled={!billingEnabled}>
                   Manage membership

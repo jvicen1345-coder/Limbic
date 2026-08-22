@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { deleteUserAction } from "@/app/actions/admin";
+import { deleteUserAction, grantAccessAction, revokeAccessAction } from "@/app/actions/admin";
+import type { GrantArea } from "@/lib/session";
 
 export interface AccountRow {
   id: string;
@@ -14,8 +15,70 @@ export interface AccountRow {
   hasPassword: boolean;
   hasGoogle: boolean;
   isPro: boolean;
+  grantedAccess: GrantArea[];
   isFoundingFunder: boolean;
   createdAt: string;
+}
+
+const GRANT_AREA_LABELS: Record<GrantArea, string> = {
+  pro: "Pro",
+  limbicStudent: "Student",
+  wellnessPlus: "Wellness+",
+};
+
+/** One row's "Granted Access" chips — lets an admin comp LimbicPro/LimbicStudent/
+ *  LimbicWellness+ for this specific account for free, without it ever touching a Stripe
+ *  subscription (see grantAccessAction/revokeAccessAction in app/actions/admin.ts and
+ *  User.compedAccess in schema.prisma). Each chip toggles independently: a reader can be
+ *  comped into just Wellness+, just Pro, or any combination. */
+function GrantedAccessChips({ userId, grantedAccess }: { userId: string; grantedAccess: GrantArea[] }) {
+  const [granted, setGranted] = useState(grantedAccess);
+  const [pending, setPending] = useState<GrantArea | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const toggle = (area: GrantArea) => {
+    setError(null);
+    setPending(area);
+    const isGranted = granted.includes(area);
+    const action = isGranted ? revokeAccessAction : grantAccessAction;
+    action(userId, area).then((result) => {
+      setPending(null);
+      if (result.ok) {
+        setGranted((prev) => (isGranted ? prev.filter((a) => a !== area) : [...prev, area]));
+      } else {
+        setError(result.error ?? "Something went wrong.");
+      }
+    });
+  };
+
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+      {(Object.keys(GRANT_AREA_LABELS) as GrantArea[]).map((area) => {
+        const active = granted.includes(area);
+        return (
+          <button
+            key={area}
+            type="button"
+            disabled={pending === area}
+            onClick={() => toggle(area)}
+            className="btn"
+            style={{
+              fontSize: 11,
+              padding: "2px 8px",
+              borderRadius: 999,
+              border: active ? "1px solid var(--color-accent)" : "1px solid var(--color-neutral-300)",
+              background: active ? "color-mix(in srgb, var(--color-accent) 16%, transparent)" : "transparent",
+              color: active ? "var(--color-accent)" : "var(--color-neutral-700)",
+            }}
+            title={active ? `Revoke ${GRANT_AREA_LABELS[area]}` : `Grant ${GRANT_AREA_LABELS[area]}`}
+          >
+            {pending === area ? "…" : GRANT_AREA_LABELS[area]}
+          </button>
+        );
+      })}
+      {error && <span style={{ fontSize: 11, color: "var(--color-danger)" }}>{error}</span>}
+    </span>
+  );
 }
 
 /** One row's Delete button — a two-click confirm ("Delete" then "Confirm?" for a few
@@ -107,6 +170,7 @@ export function AccountsAdminTable({ rows: initialRows }: { rows: AccountRow[] }
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Sign-in Method</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Pro</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Founding Funder</th>
+            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Granted Access</th>
             <th style={{ padding: "4px 0 4px 10px", fontWeight: 600 }} />
           </tr>
         </thead>
@@ -124,6 +188,9 @@ export function AccountsAdminTable({ rows: initialRows }: { rows: AccountRow[] }
               <td style={{ padding: "6px 10px" }}>{signInMethodLabel(u)}</td>
               <td style={{ padding: "6px 10px" }}>{u.isPro ? "Yes" : ""}</td>
               <td style={{ padding: "6px 10px" }}>{u.isFoundingFunder ? "Yes" : ""}</td>
+              <td style={{ padding: "6px 10px" }}>
+                <GrantedAccessChips userId={u.id} grantedAccess={u.grantedAccess} />
+              </td>
               <td style={{ padding: "6px 0 6px 10px" }}>
                 <DeleteButton
                   userId={u.id}
