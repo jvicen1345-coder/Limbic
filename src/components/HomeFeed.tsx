@@ -190,12 +190,25 @@ export function HomeFeed({
   // The hero picks first — top of rank, restricted to HERO_ELIGIBLE_TYPES — precisely so
   // it isn't starved by the grid below greedily claiming the same top-ranked research/
   // guideline articles first (rank order and "is a medical source" correlate heavily,
-  // since evidence quality feeds into ranking). Its picture is allowed to repeat one the
-  // grid ends up using too; the reader explicitly doesn't mind that repetition.
-  const rawHeroPool = useMemo(
-    () => withImage.filter((a) => HERO_ELIGIBLE_TYPES.includes(a.type)).slice(0, HERO_SIZE),
-    [withImage]
-  );
+  // since evidence quality feeds into ranking). Deduped by image as it's built (not just
+  // filtered/sliced) so the rotation itself never lands on two entries sharing a picture —
+  // a reader flipping from the first hero card to the second must never see the same photo
+  // twice in a row. Every picture in this pool is also off-limits to the grid below (see
+  // heroImages/gridArticles) — the hero rotates through all of them, not just whichever one
+  // happens to be showing right now, so a reader must never see a grid card repeat any
+  // picture the hero could be displaying at that moment either.
+  const rawHeroPool = useMemo(() => {
+    const seenImages = new Set<string>();
+    const pool: DecoratedArticle[] = [];
+    for (const a of withImage) {
+      if (!HERO_ELIGIBLE_TYPES.includes(a.type)) continue;
+      if (!a.image || seenImages.has(a.image)) continue;
+      seenImages.add(a.image);
+      pool.push(a);
+      if (pool.length >= HERO_SIZE) break;
+    }
+    return pool;
+  }, [withImage]);
 
   // RefreshHomeFeedButton is meant to only change the grid, never the hero — but switching
   // the type tab or arriving via a different Limbic Agent gap-topic link (LimbicAgentCard.tsx)
@@ -223,12 +236,18 @@ export function HomeFeed({
   // at 6 cards instead of the guaranteed minimum.
   const gridTarget = heroPool.length > 0 ? GRID_SIZE : MIN_HOME_CARDS;
 
-  // The grid's cards must have mutually distinct pictures; walking in rank order and
-  // keeping the first article to claim each image URL guarantees that without ever needing
-  // to drop an article for "no picture available" (see withImage above) — and skipping
-  // whatever the hero already claimed keeps the same story from appearing in both places
-  // at once.
+  // The grid's cards must have mutually distinct pictures — and distinct from every picture
+  // the hero could be showing (see heroImages below) — walking in rank order and keeping the
+  // first article to claim each image URL guarantees that without ever needing to drop an
+  // article for "no picture available" (see withImage above) — and skipping whatever the
+  // hero already claimed keeps the same story from appearing in both places at once.
   const heroIds = useMemo(() => new Set(heroPool.map((a) => a.id)), [heroPool]);
+  // Every picture any article in heroPool could show — not just whichever one the hero
+  // happens to be rotated to right now — so the grid never repeats a picture the hero might
+  // display a few seconds later either. A reader must never see the same photo twice on
+  // screen at once, full stop, so this is checked unconditionally below with no fallback
+  // that allows a repeat.
+  const heroImages = useMemo(() => new Set(heroPool.map((a) => a.image).filter((img): img is string => !!img)), [heroPool]);
   // Unseen-first, not a straight rank sort — so a normal visit still shows the actual
   // best-ranked set (nothing's been marked seen yet), but after a Refresh click (which
   // marks the previous grid seen — see app/actions/home.ts), the same rank-ordered walk
@@ -238,32 +257,21 @@ export function HomeFeed({
     [withImage, gridSeenFingerprints]
   );
   const gridArticles = useMemo(() => {
-    const seenImages = new Set<string>();
-    const pickedIds = new Set<string>();
+    const seenImages = new Set<string>(heroImages);
     const picked: DecoratedArticle[] = [];
     for (const a of orderedForGrid) {
       if (picked.length >= gridTarget) break;
       if (heroIds.has(a.id)) continue;
       if (!a.image || seenImages.has(a.image)) continue;
       seenImages.add(a.image);
-      pickedIds.add(a.id);
       picked.push(a);
     }
-    // gridTarget is a hard floor, not a best-effort target — distinct images are the ideal
-    // (the loop above), but a thin/unlucky batch that can't find gridTarget distinct ones
-    // must still hit the floor, so this backfills from whatever's left (still never the
-    // hero, never already-picked) allowing an image repeat rather than showing fewer cards
-    // than guaranteed.
-    if (picked.length < gridTarget) {
-      for (const a of orderedForGrid) {
-        if (picked.length >= gridTarget) break;
-        if (heroIds.has(a.id) || pickedIds.has(a.id) || !a.image) continue;
-        pickedIds.add(a.id);
-        picked.push(a);
-      }
-    }
+    // gridTarget is a floor this tries to hit, but never at the cost of a repeated picture —
+    // a reader seeing the same photo on two cards at once is worse than seeing one fewer
+    // card, so a thin/unlucky batch that can't find gridTarget distinct images just shows
+    // fewer instead of backfilling with a duplicate (the old behavior here).
     return picked;
-  }, [orderedForGrid, heroIds, gridTarget]);
+  }, [orderedForGrid, heroIds, heroImages, gridTarget]);
 
   // Arriving via a gap-topic link (see LimbicAgentCard.tsx) drops the reader at the top of
   // the page same as any other Home visit — this carries them the rest of the way down to
