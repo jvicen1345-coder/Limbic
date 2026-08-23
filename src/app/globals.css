@@ -4125,6 +4125,84 @@ html[data-theme="dark"] .nav-founding-link-active {
   .anatomy-connect-mobile-feedback { grid-column: 1 / -1; font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
 }
 
+/* — Rehab Sequence (app/games/rehab-sequence/page.tsx, components/RehabSequenceGame.tsx) — */
+.rehab-sequence-page { max-width: 640px; margin: 0 auto; }
+
+.rehab-case-card {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+.rehab-case-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.rehab-case-title { font-size: 16px; font-weight: 700; line-height: 1.35; }
+.rehab-case-pills { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+.rehab-case-pills .differential-category-pill { margin-bottom: 0; }
+.rehab-case-context { font-size: 13px; line-height: 1.55; color: var(--color-neutral-700); margin: 0; }
+
+.rehab-difficulty-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.rehab-difficulty-pill--beginner { color: var(--color-vitals-mobility); background: color-mix(in srgb, var(--color-vitals-mobility) 16%, transparent); }
+.rehab-difficulty-pill--intermediate { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
+.rehab-difficulty-pill--advanced { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 16%, transparent); }
+
+.rehab-sequence-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.rehab-sequence-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-card-surface);
+  cursor: grab;
+}
+.rehab-sequence-card-correct { border-color: var(--color-vitals-mobility); background: color-mix(in srgb, var(--color-vitals-mobility) 12%, var(--color-card-surface)); }
+.rehab-sequence-card-incorrect { border-color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 10%, var(--color-card-surface)); }
+.rehab-sequence-num {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.rehab-sequence-text { flex: 1; font-size: 13px; line-height: 1.4; }
+.rehab-sequence-arrows { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+.rehab-sequence-arrows button {
+  border: none;
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+  width: 22px;
+  height: 18px;
+  font-size: 9px;
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 1;
+}
+.rehab-sequence-arrows button:disabled { opacity: 0.35; cursor: default; }
+.rehab-sequence-arrows button:hover:not(:disabled) { background: var(--color-neutral-300); }
+
+.rehab-sequence-review { margin: 20px 0 16px; }
+.rehab-sequence-review-heading { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+.rehab-sequence-review-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.rehab-sequence-review-step { font-size: 13px; font-weight: 600; margin: 0 0 2px; }
+.rehab-sequence-review-rationale { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }
+
 /* — Body Connections (app/(app)/games/body/page.tsx, components/BodyConnectionsGame.tsx,
    components/BodySilhouette.tsx) — */
 .body-page { max-width: 900px; margin: 0 auto; }
