@@ -2,7 +2,28 @@
 
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
-import { getTodaysCase, getDateKey } from "@/lib/differential-cases";
+import { getTodaysCase, getDateKey, type DifferentialCaseEntry } from "@/lib/differential-cases";
+
+/** Lowercases and strips apostrophes/hyphens/periods so "Guillain-Barre", "Guillain
+ *  Barre", and "guillain barre's" all compare equal — punctuation a reader easily varies
+ *  shouldn't be the difference between a correct and incorrect guess. */
+function normalizeGuess(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/['''\-.—–]/g, "")
+    .replace(/\s+/g, " ");
+}
+
+/** A guess is correct if it matches the condition itself or any of its listed common
+ *  abbreviations/alternate names (see DifferentialCaseEntry.aliases) — a clinically
+ *  correct shorthand like "PFPS" shouldn't be marked wrong just for not spelling out
+ *  "Patellofemoral Pain Syndrome". */
+function matchesCase(guess: string, caseEntry: DifferentialCaseEntry): boolean {
+  const normalizedGuess = normalizeGuess(guess);
+  const acceptedAnswers = [caseEntry.condition, ...(caseEntry.aliases ?? [])];
+  return acceptedAnswers.some((answer) => normalizeGuess(answer) === normalizedGuess);
+}
 
 // Every action below derives the reader from the session (getCurrentUser), never from a
 // client-supplied id — same convention as app/actions/specialty-questions.ts and every
@@ -68,7 +89,7 @@ export async function submitDifferentialGuess(
 
   const dateKey = getDateKey();
   const todaysCase = getTodaysCase();
-  const correct = guess.trim().toLowerCase() === todaysCase.condition.toLowerCase();
+  const correct = matchesCase(guess, todaysCase);
   const clampedCluesUsed = Math.min(Math.max(cluesUsed, 1), 5);
   const isFinal = correct || clampedCluesUsed >= 5;
 
