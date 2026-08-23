@@ -14,10 +14,14 @@ interface TrackerStatus {
  *  both expose real OAuth2 APIs (unlike Apple Health, see AppleHealthSyncCard.tsx/
  *  AppleHealthUploadCard.tsx for that workaround), so connecting is a plain redirect to
  *  the provider's own consent screen (see app/auth/fitbit/route.ts, app/auth/strava/
- *  route.ts) rather than anything this component drives itself. A tracker whose env vars
- *  aren't configured (see lib/fitbit-oauth.ts fitbitEnabled, lib/strava-oauth.ts
- *  stravaEnabled) doesn't render a row at all, same convention as "Continue with Google"
- *  on the sign-in screen. */
+ *  route.ts) rather than anything this component drives itself. The row itself always
+ *  renders — even before the site owner has configured that provider's env vars (see
+ *  lib/fitbit-oauth.ts fitbitEnabled, lib/strava-oauth.ts stravaEnabled) — so readers see
+ *  the option and are prompted to link it the moment it's live, rather than the feature
+ *  appearing out of nowhere later with no lead-up. Unlike "Continue with Google" (which
+ *  hides outright when unconfigured, since that's the reader's *only* sign-in path and a
+ *  dead link there would be actively misleading), a not-yet-configured tracker instead
+ *  shows a "Coming soon" badge in place of the Connect button. */
 function TrackerRow({
   label,
   provider,
@@ -29,8 +33,6 @@ function TrackerRow({
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
-  if (!status.enabled) return null;
 
   const handleSync = () => {
     startTransition(async () => {
@@ -51,10 +53,18 @@ function TrackerRow({
       <div>
         <div style={{ fontWeight: 600, fontSize: 13.5 }}>{label}</div>
         <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
-          {status.connected ? (status.lastSynced ? `Connected — last synced ${status.lastSynced}` : "Connected — syncing soon") : "Not connected"}
+          {!status.enabled
+            ? "Not connected yet"
+            : status.connected
+              ? status.lastSynced
+                ? `Connected — last synced ${status.lastSynced}`
+                : "Connected — syncing soon"
+              : "Not connected"}
         </div>
       </div>
-      {status.connected ? (
+      {!status.enabled ? (
+        <span className="boards-badge-soon">Coming soon</span>
+      ) : status.connected ? (
         <div style={{ display: "flex", gap: 8 }}>
           <button type="button" className="btn btn-secondary" disabled={isPending} onClick={handleSync}>
             Sync now
@@ -79,8 +89,6 @@ export function TrackerConnectCard({
   fitbit: TrackerStatus;
   strava: TrackerStatus;
 }) {
-  if (!fitbit.enabled && !strava.enabled) return null;
-
   return (
     <div className="card elev-sm" style={{ marginBottom: 18 }}>
       <div className="card-kicker">Connect a tracker</div>
