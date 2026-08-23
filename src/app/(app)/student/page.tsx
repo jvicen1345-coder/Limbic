@@ -318,9 +318,11 @@ export default async function StudentAtriumPage() {
 
           <div className="atrium-section-label">Quick Links</div>
           <div className="atrium-dashboard-grid">
-            <div className="atrium-dashboard-card">
+            <div className="atrium-dashboard-card atrium-dashboard-card--green">
               <div className="atrium-dashboard-title">
-                <UsersIcon size={15} />
+                <span className="atrium-dashboard-icon">
+                  <UsersIcon size={14} />
+                </span>
                 Study Group
               </div>
               {connectionIds.length === 0 ? (
@@ -337,9 +339,11 @@ export default async function StudentAtriumPage() {
               </Link>
             </div>
 
-            <div className="atrium-dashboard-card">
+            <div className="atrium-dashboard-card atrium-dashboard-card--amber">
               <div className="atrium-dashboard-title">
-                <NetworkIcon size={15} />
+                <span className="atrium-dashboard-icon">
+                  <NetworkIcon size={14} />
+                </span>
                 Limbic Agent
               </div>
               {limbicAgentEligible ? (
@@ -362,9 +366,11 @@ export default async function StudentAtriumPage() {
               )}
             </div>
 
-            <div className="atrium-dashboard-card">
+            <div className="atrium-dashboard-card atrium-dashboard-card--blue">
               <div className="atrium-dashboard-title">
-                <DumbbellIcon size={15} />
+                <span className="atrium-dashboard-icon">
+                  <DumbbellIcon size={14} />
+                </span>
                 HEP Templates
               </div>
               {user.studentTier === "limbicStudent" ? (
@@ -387,9 +393,11 @@ export default async function StudentAtriumPage() {
               )}
             </div>
 
-            <div className="atrium-dashboard-card">
+            <div className="atrium-dashboard-card atrium-dashboard-card--purple">
               <div className="atrium-dashboard-title">
-                <CalendarIcon size={15} />
+                <span className="atrium-dashboard-icon">
+                  <CalendarIcon size={14} />
+                </span>
                 Upcoming
               </div>
               {upcoming ? (
