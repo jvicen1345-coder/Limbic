@@ -18,6 +18,7 @@ export interface AccountRow {
   grantedAccess: GrantArea[];
   isFoundingFunder: boolean;
   createdAt: string;
+  lastVisitedAt: string | null;
 }
 
 const GRANT_AREA_LABELS: Record<GrantArea, string> = {
@@ -152,58 +153,104 @@ function signInMethodLabel(row: Pick<AccountRow, "hasGoogle" | "hasPassword">): 
  *  is fetched server-side and passed in once. */
 export function AccountsAdminTable({ rows: initialRows }: { rows: AccountRow[] }) {
   const [rows, setRows] = useState(initialRows);
+  // Hidden by default — guest accounts are throwaway, unauthenticated sessions (see
+  // User.isGuest in schema.prisma) rather than real registrations, so they'd otherwise
+  // drown out the accounts an admin is actually here to manage. Still a toggle, not a
+  // server-side exclusion, so a guest-account question (e.g. investigating abuse) doesn't
+  // need a code change to answer.
+  const [showGuests, setShowGuests] = useState(false);
+  // Default sort (server order) is newest-created first — good for "who just signed up,"
+  // useless for "has anyone used this account recently" on an account that isn't new. This
+  // resorts client-side by lastVisitedAt instead, nulls (never visited Home) sinking to the
+  // bottom, so reused/shared/older accounts that suddenly saw activity actually surface.
+  const [sortByActivity, setSortByActivity] = useState(false);
   const router = useRouter();
+
+  const guestCount = rows.filter((r) => r.isGuest).length;
+  const filteredRows = showGuests ? rows : rows.filter((r) => !r.isGuest);
+  const visibleRows = sortByActivity
+    ? [...filteredRows].sort((a, b) => {
+        if (!a.lastVisitedAt && !b.lastVisitedAt) return 0;
+        if (!a.lastVisitedAt) return 1;
+        if (!b.lastVisitedAt) return -1;
+        return new Date(b.lastVisitedAt).getTime() - new Date(a.lastVisitedAt).getTime();
+      })
+    : filteredRows;
 
   if (rows.length === 0) {
     return <p style={{ fontSize: 12.5, color: "var(--color-neutral-700)", margin: 0 }}>No accounts.</p>;
   }
 
   return (
-    <div style={{ overflowX: "auto" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12.5 }}>
-        <thead>
-          <tr style={{ textAlign: "left", color: "var(--color-neutral-700)" }}>
-            <th style={{ padding: "4px 10px 4px 0", fontWeight: 600 }}>Name</th>
-            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Sign-in</th>
-            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Joined</th>
-            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Guest</th>
-            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Sign-in Method</th>
-            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Pro</th>
-            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Founding Funder</th>
-            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Granted Access</th>
-            <th style={{ padding: "4px 0 4px 10px", fontWeight: 600 }} />
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((u) => (
-            <tr key={u.id} style={{ borderTop: "1px solid var(--color-neutral-200)" }}>
-              <td style={{ padding: "6px 10px 6px 0" }}>{u.name}</td>
-              <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)" }}>
-                {u.email ?? u.licenseEmail ?? u.licenseNumber ?? "N/A"}
-              </td>
-              <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
-                {new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-              </td>
-              <td style={{ padding: "6px 10px" }}>{u.isGuest ? "Yes" : ""}</td>
-              <td style={{ padding: "6px 10px" }}>{signInMethodLabel(u)}</td>
-              <td style={{ padding: "6px 10px" }}>{u.isPro ? "Yes" : ""}</td>
-              <td style={{ padding: "6px 10px" }}>{u.isFoundingFunder ? "Yes" : ""}</td>
-              <td style={{ padding: "6px 10px" }}>
-                <GrantedAccessChips userId={u.id} grantedAccess={u.grantedAccess} />
-              </td>
-              <td style={{ padding: "6px 0 6px 10px" }}>
-                <DeleteButton
-                  userId={u.id}
-                  onDeleted={() => {
-                    setRows((prev) => prev.filter((r) => r.id !== u.id));
-                    router.refresh();
-                  }}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 16, marginBottom: 10 }}>
+        {guestCount > 0 && (
+          <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "var(--color-neutral-700)" }}>
+            <input type="checkbox" checked={showGuests} onChange={(e) => setShowGuests(e.target.checked)} />
+            Show {guestCount} guest {guestCount === 1 ? "account" : "accounts"}
+          </label>
+        )}
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "var(--color-neutral-700)" }}>
+          <input type="checkbox" checked={sortByActivity} onChange={(e) => setSortByActivity(e.target.checked)} />
+          Sort by most recently active
+        </label>
+      </div>
+      {visibleRows.length === 0 ? (
+        <p style={{ fontSize: 12.5, color: "var(--color-neutral-700)", margin: 0 }}>No accounts.</p>
+      ) : (
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12.5 }}>
+            <thead>
+              <tr style={{ textAlign: "left", color: "var(--color-neutral-700)" }}>
+                <th style={{ padding: "4px 10px 4px 0", fontWeight: 600 }}>Name</th>
+                <th style={{ padding: "4px 10px", fontWeight: 600 }}>Sign-in</th>
+                <th style={{ padding: "4px 10px", fontWeight: 600 }}>Joined</th>
+                <th style={{ padding: "4px 10px", fontWeight: 600 }}>Last Active</th>
+                <th style={{ padding: "4px 10px", fontWeight: 600 }}>Guest</th>
+                <th style={{ padding: "4px 10px", fontWeight: 600 }}>Sign-in Method</th>
+                <th style={{ padding: "4px 10px", fontWeight: 600 }}>Pro</th>
+                <th style={{ padding: "4px 10px", fontWeight: 600 }}>Founding Funder</th>
+                <th style={{ padding: "4px 10px", fontWeight: 600 }}>Granted Access</th>
+                <th style={{ padding: "4px 0 4px 10px", fontWeight: 600 }} />
+              </tr>
+            </thead>
+            <tbody>
+              {visibleRows.map((u) => (
+                <tr key={u.id} style={{ borderTop: "1px solid var(--color-neutral-200)" }}>
+                  <td style={{ padding: "6px 10px 6px 0" }}>{u.name}</td>
+                  <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)" }}>
+                    {u.email ?? u.licenseEmail ?? u.licenseNumber ?? "N/A"}
+                  </td>
+                  <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
+                    {new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  </td>
+                  <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
+                    {u.lastVisitedAt
+                      ? new Date(u.lastVisitedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                      : "Never"}
+                  </td>
+                  <td style={{ padding: "6px 10px" }}>{u.isGuest ? "Yes" : ""}</td>
+                  <td style={{ padding: "6px 10px" }}>{signInMethodLabel(u)}</td>
+                  <td style={{ padding: "6px 10px" }}>{u.isPro ? "Yes" : ""}</td>
+                  <td style={{ padding: "6px 10px" }}>{u.isFoundingFunder ? "Yes" : ""}</td>
+                  <td style={{ padding: "6px 10px" }}>
+                    <GrantedAccessChips userId={u.id} grantedAccess={u.grantedAccess} />
+                  </td>
+                  <td style={{ padding: "6px 0 6px 10px" }}>
+                    <DeleteButton
+                      userId={u.id}
+                      onDeleted={() => {
+                        setRows((prev) => prev.filter((r) => r.id !== u.id));
+                        router.refresh();
+                      }}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

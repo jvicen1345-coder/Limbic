@@ -134,7 +134,7 @@ export async function resetPasswordAction(formData: FormData) {
  *  it from being scripted into unlimited account creation. A no-op redirect straight to
  *  /home if the caller already has a live session — clicking it twice (or hitting back into
  *  a still-signed-in tab) shouldn't mint a second throwaway account. */
-export async function guestSignInAction() {
+export async function guestSignInAction(formData: FormData) {
   const existing = await getCurrentUser();
   if (existing) {
     redirect("/home");
@@ -146,7 +146,7 @@ export async function guestSignInAction() {
     redirect("/sign-in?error=guest_rate_limited");
   }
 
-  await signInAsGuest();
+  await signInAsGuest(String(formData.get("name") ?? ""));
   revalidatePath("/", "layout");
   redirect("/home");
 }

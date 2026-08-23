@@ -189,7 +189,11 @@ export function SignInForm({
             Browse Limbic without creating an account. You can still read, search, and save
             content — switch to the Email tab anytime to keep it under a real account.
           </p>
-          <form action={guestSignInAction}>
+          <form action={guestSignInAction} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="field">
+              <label htmlFor="si-guest-name">Your name (optional)</label>
+              <input className="input" id="si-guest-name" name="name" type="text" placeholder="Jamie" autoComplete="name" maxLength={80} />
+            </div>
             <button type="submit" className="btn btn-primary btn-block">
               Continue as guest
             </button>
