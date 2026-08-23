@@ -302,7 +302,7 @@ export default async function StudentAtriumPage() {
               return (
                 <Link key={path.href} href={path.href} className={`atrium-path-card atrium-path-card--${path.accent}`}>
                   <span className="atrium-path-icon">
-                    <Icon size={20} />
+                    <Icon size={16} />
                   </span>
                   <span className="atrium-path-body">
                     <span className="atrium-path-title" style={{ display: "block" }}>
@@ -310,7 +310,7 @@ export default async function StudentAtriumPage() {
                     </span>
                     <span className="atrium-path-desc">{path.description}</span>
                   </span>
-                  <ChevronRightIcon size={18} className="atrium-path-arrow" />
+                  <ChevronRightIcon size={16} className="atrium-path-arrow" />
                 </Link>
               );
             })}
