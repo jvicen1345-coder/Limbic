@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/refresh-interest-profiles",
       "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron/sync-fitness-trackers",
+      "schedule": "0 15 * * *"
     }
   ]
 }

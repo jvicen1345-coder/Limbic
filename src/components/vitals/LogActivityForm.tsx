@@ -99,7 +99,7 @@ export function LogActivityForm({ recentLogs }: { recentLogs: VitalsLogEntry[] }
               <span className={`vitals-chart-legend-dot vitals-color-${log.category}`} />
               <span className="vitals-log-activity">
                 {log.activity}
-                {log.source === "apple_health" && <span className="vitals-log-synced-badge">Synced</span>}
+                {log.source !== "manual" && <span className="vitals-log-synced-badge">Synced</span>}
               </span>
               <span className="vitals-log-minutes">{log.minutes} min</span>
               <button type="button" className="btn btn-ghost btn-icon" aria-label="Delete entry" onClick={() => handleDelete(log.id)}>

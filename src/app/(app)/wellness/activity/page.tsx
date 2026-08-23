@@ -7,6 +7,10 @@ import { WeeklyActivityChart } from "@/components/vitals/WeeklyActivityChart";
 import { LogActivityForm } from "@/components/vitals/LogActivityForm";
 import { InsightsCard } from "@/components/vitals/InsightsCard";
 import { AppleHealthSyncCard } from "@/components/vitals/AppleHealthSyncCard";
+import { AppleHealthUploadCard } from "@/components/vitals/AppleHealthUploadCard";
+import { TrackerConnectCard } from "@/components/vitals/TrackerConnectCard";
+import { fitbitEnabled } from "@/lib/fitbit-oauth";
+import { stravaEnabled } from "@/lib/strava-oauth";
 
 /** The exercise-input page — weekly cardio/strength/mobility/mindfulness logging, split
  *  out from Metrics (which is now pure calculators, see app/(app)/wellness/metrics/page.tsx)
@@ -26,6 +30,9 @@ export default async function ActivityLogPage() {
 
   const logRows = await prisma.vitalsLog.findMany({ where: { userId: user.id, date: { gte: lastWeekStart } }, orderBy: { createdAt: "desc" } });
   const healthSyncToken = await prisma.healthSyncToken.findUnique({ where: { userId: user.id } });
+  const fitnessConnections = await prisma.fitnessConnection.findMany({ where: { userId: user.id } });
+  const fitbitConnection = fitnessConnections.find((c) => c.provider === "fitbit") ?? null;
+  const stravaConnection = fitnessConnections.find((c) => c.provider === "strava") ?? null;
 
   const logs: VitalsLogEntry[] = logRows.map((r) => ({
     id: r.id,
@@ -51,6 +58,23 @@ export default async function ActivityLogPage() {
       </p>
       <WellnessDisclaimer />
 
+      <TrackerConnectCard
+        fitbit={{
+          enabled: fitbitEnabled(),
+          connected: !!fitbitConnection,
+          lastSynced: fitbitConnection?.lastSyncedAt
+            ? fitbitConnection.lastSyncedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+            : null,
+        }}
+        strava={{
+          enabled: stravaEnabled(),
+          connected: !!stravaConnection,
+          lastSynced: stravaConnection?.lastSyncedAt
+            ? stravaConnection.lastSyncedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+            : null,
+        }}
+      />
+
       <AppleHealthSyncCard
         connected={!!healthSyncToken}
         lastSynced={
@@ -59,6 +83,8 @@ export default async function ActivityLogPage() {
             : null
         }
       />
+
+      <AppleHealthUploadCard />
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">This week&rsquo;s activity</div>

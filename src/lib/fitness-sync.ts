@@ -1,0 +1,65 @@
+import "server-only";
+import { prisma } from "@/lib/db";
+import { VITALS_CATEGORIES, type VitalsCategory } from "@/lib/vitals";
+
+/** Best-effort keyword mapping from a tracker/Health activity name to one of Limbic's 4
+ *  Activity Log categories (see lib/vitals.ts) — every provider (Fitbit, Strava, an Apple
+ *  Health export) names exercises differently, so this is the one place that guesses which
+ *  bucket a given name belongs in, checked in order (most specific keyword wins). Falls
+ *  back to "cardio" since most tracker-logged exercise is aerobic and that's the least
+ *  wrong default for whatever doesn't match — a person can already see and correct the
+ *  underlying activity name in the recent-logs list if the bucket looks off. */
+export function mapActivityNameToCategory(rawName: string): VitalsCategory {
+  const name = rawName.toLowerCase();
+  if (/meditat|mindful|breath|relax/.test(name)) return "mindfulness";
+  if (/yoga|stretch|pilates|mobility|foam.?roll/.test(name)) return "mobility";
+  if (/weight|strength|resistance|crossfit|hiit|bootcamp|lifting/.test(name)) return "strength";
+  return "cardio";
+}
+
+/** Turns an Apple `HKWorkoutActivityType...` / Fitbit activity name / Strava `type` into a
+ *  short human-readable label for the Activity Log's "activity" column — strips the Apple
+ *  HealthKit type prefix if present, otherwise passes the name through unchanged. */
+export function humanizeActivityName(rawName: string): string {
+  const stripped = rawName.replace(/^HKWorkoutActivityType/, "");
+  // Splits "TraditionalStrengthTraining" into "Traditional Strength Training".
+  return stripped.replace(/([a-z])([A-Z])/g, "$1 $2").trim() || rawName;
+}
+
+export interface SyncedActivityEntry {
+  /** Local ISO "YYYY-MM-DD". */
+  date: string;
+  category: VitalsCategory;
+  minutes: number;
+  activity: string;
+}
+
+/** Writes one synced entry, replacing any existing row for the same userId/date/category/
+ *  source rather than accumulating — the same idempotent-upsert semantics documented on
+ *  VitalsLog.source in schema.prisma, shared now by the Apple Health Shortcut endpoint,
+ *  the Fitbit/Strava cron sync, and a manual Apple Health export upload, so re-running any
+ *  of them for a day already synced updates that day's numbers instead of double-counting. */
+export async function upsertSyncedVitalsLog(
+  userId: string,
+  source: string,
+  entry: SyncedActivityEntry
+): Promise<void> {
+  const dayDate = new Date(`${entry.date}T00:00:00`);
+  const existing = await prisma.vitalsLog.findFirst({
+    where: { userId, date: dayDate, category: entry.category, source },
+  });
+  if (existing) {
+    await prisma.vitalsLog.update({
+      where: { id: existing.id },
+      data: { minutes: entry.minutes, activity: entry.activity },
+    });
+  } else {
+    await prisma.vitalsLog.create({
+      data: { userId, date: dayDate, category: entry.category, minutes: entry.minutes, activity: entry.activity, source },
+    });
+  }
+}
+
+export function isVitalsCategory(value: unknown): value is VitalsCategory {
+  return typeof value === "string" && (VITALS_CATEGORIES as readonly string[]).includes(value);
+}
