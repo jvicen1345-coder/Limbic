@@ -44,6 +44,7 @@ model User {
   licenseExpiration DateTime?
   licenses          License[]
   calculatorProfiles CalculatorProfile[]
+  specialtyQuestionAnswers SpecialtyQuestionAnswer[]
 
   // General (non-PT) sign-in — separate from licenseEmail, which belongs to the PT flow
   // and isn't unique. Signing in again with the same email returns to this same account,
@@ -692,6 +693,32 @@ model CalculatorProfile {
   selectedTests Json     @default("[]")
   createdAt     DateTime @default(now())
   results       CalculatorResult[]
+}
+
+// One reader's answer to one Board Connections practice question (see
+// components/specialty/SpecialtyBoardConnections.tsx and app/actions/specialty-questions.ts)
+// on one of the /student/specialties pages — specialty is the route slug (e.g.
+// "musculoskeletal", "sports"; every /specialties/sports/<sport> sub-page shares "sports",
+// same as they share that hub's specialtyQuestions pool) and questionIndex is that
+// question's position within lib/board-content.ts questionsForSpecialty(specialty), which is
+// a fixed filter over a static array so the index is stable day to day. dateKey (YYYY-MM-DD)
+// is what makes the daily reset automatic — getSpecialtyAnswers only ever reads today's
+// dateKey, so a new (userId, specialty, questionIndex, dateKey) row just naturally starts
+// unanswered once the date rolls over; nothing deletes or resets the old rows, they just
+// stop being read, same pattern as DailyCompletion/BoardActivity elsewhere in this file.
+model SpecialtyQuestionAnswer {
+  id             String   @id @default(cuid())
+  userId         String
+  specialty      String
+  questionIndex  Int
+  selectedAnswer String
+  isCorrect      Boolean
+  answeredAt     DateTime @default(now())
+  dateKey        String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, specialty, questionIndex, dateKey])
 }
 
 // One saved score for one CalculatorProfile — testKey/testName identify which of the 12
