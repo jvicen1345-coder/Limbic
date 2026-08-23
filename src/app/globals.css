@@ -4675,20 +4675,17 @@ html[data-theme="dark"] .app-root--atrium {
 .atrium-dashboard-empty { font-size: 12.5px; color: var(--color-neutral-600); font-style: italic; }
 .atrium-dashboard-locked { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--color-neutral-600); }
 
-/* Weekly Roundup right-rail panel (see .atrium-layout above, app/(app)/student/page.tsx) —
-   a real preview of up to 3 of this week's picks for a paid LimbicStudent reader (see
+/* Weekly Roundup panel (see .atrium-v2-grid below, app/(app)/student/page.tsx) — a real
+   preview of up to 3 of this week's picks for a paid LimbicStudent reader (see
    lib/student-roundup.ts pickWeeklyRoundup), not just a static blurb, so there's something
-   concrete to glance at before committing to open the full 5-item roundup. */
+   concrete to glance at before committing to open the full 5-item roundup. Sits beside the
+   streak card (roughly equal height) rather than a tall scrolling column, so it no longer
+   needs the sticky positioning an earlier full-height two-column layout gave it. */
 .atrium-roundup-panel {
   background: var(--atrium-surface);
   border: 1px solid var(--atrium-border);
   border-radius: var(--radius-lg);
   padding: 18px;
-  position: sticky;
-  top: 24px;
-}
-@media (max-width: 799px) {
-  .atrium-roundup-panel { position: static; }
 }
 .atrium-roundup-panel-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 .atrium-roundup-panel-icon {
@@ -4738,6 +4735,134 @@ html[data-theme="dark"] .app-root--atrium {
 }
 .atrium-roundup-item-meta { font-size: 11px; color: var(--color-neutral-700); margin: 0; }
 .atrium-roundup-panel-cta { display: inline-block; margin-top: 12px; }
+
+/* Dashboard redesign — three zones below the (unchanged) greeting header: a streak+roundup
+   row, one unmissable primary action, then three plain supporting-resource cards. Named
+   grid areas (not DOM order) drive the different visual order mobile needs — the primary
+   action moves to the very top there — so the same 4 zone children work at both
+   breakpoints without duplicating any markup. */
+.atrium-v2-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  grid-template-areas:
+    "streak roundup"
+    "primary primary"
+    "cards cards";
+  gap: 20px;
+  align-items: start;
+  margin-top: 20px;
+}
+.atrium-zone-streak { grid-area: streak; min-width: 0; }
+.atrium-zone-roundup { grid-area: roundup; }
+.atrium-zone-primary { grid-area: primary; }
+.atrium-zone-cards { grid-area: cards; }
+
+@media (max-width: 799px) {
+  .atrium-v2-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "primary"
+      "streak"
+      "roundup"
+      "cards";
+  }
+}
+
+/* Single-line motivational nudge under the streak card — replaces the old bordered
+   3-line greeting card with plain muted text, no card/background of its own. */
+.atrium-motivation-line {
+  margin: 14px 2px 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--color-neutral-700);
+}
+
+/* Primary action — the one element on this page with a brand-blue accent; everything
+   else here is neutral. Deliberately much larger than the supporting cards below it. */
+.atrium-primary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 40px 32px;
+  border-radius: calc(var(--radius-lg) * 1.15);
+  background: var(--atrium-surface);
+  border: 2px solid var(--color-accent);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.atrium-primary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+.atrium-primary-card--done {
+  border-color: var(--color-success);
+  cursor: default;
+}
+.atrium-primary-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 22px;
+  margin: 0;
+}
+.atrium-primary-subtitle {
+  font-size: 14px;
+  color: var(--color-neutral-700);
+  max-width: 480px;
+  margin: 0;
+  line-height: 1.6;
+}
+.atrium-primary-cta {
+  margin-top: 12px;
+  font-size: 15px;
+  padding: 14px 34px;
+}
+.atrium-primary-done-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 22px;
+  color: var(--color-success);
+  margin: 0;
+}
+.atrium-primary-done-muted {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 2px 0 0;
+}
+
+/* Supporting resources — three plain, equal-weight cards (no accent colors, no icons)
+   below the primary action, one row on desktop, stacked on mobile. */
+.atrium-supporting-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+@media (max-width: 640px) {
+  .atrium-supporting-row { grid-template-columns: minmax(0, 1fr); }
+}
+.atrium-supporting-card {
+  display: block;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  text-decoration: none;
+  color: inherit;
+}
+.atrium-supporting-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 14.5px;
+  margin: 0 0 6px;
+}
+.atrium-supporting-desc {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  margin: 0;
+  line-height: 1.5;
+}
 
 /* Progress visual (components/AtriumProgressChart.tsx) — replaces the old "Daily
    Sharpening"/"Boards Progress" text cards, moved up near the top of the page instead of
