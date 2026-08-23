@@ -131,6 +131,12 @@ export default async function GamesPage() {
           <p className="game-card-desc">Five clues. One condition. How quickly can you identify it?</p>
           <span className="game-card-btn">Play Today</span>
         </Link>
+        <Link href="/games/anatomy-connect" className="game-card game-card-standalone">
+          <span className="game-card-daily-badge">Daily</span>
+          <div className="game-card-title">Anatomy Connect</div>
+          <p className="game-card-desc">Match muscles to their nerves, actions, and regions. One new puzzle every day.</p>
+          <span className="game-card-btn">Play Today</span>
+        </Link>
       </div>
 
       <div className="card elev-sm" style={{ padding: 20 }}>

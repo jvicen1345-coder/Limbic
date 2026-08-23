@@ -46,6 +46,7 @@ model User {
   calculatorProfiles CalculatorProfile[]
   specialtyQuestionAnswers SpecialtyQuestionAnswer[]
   differentialResults DifferentialResult[]
+  anatomyConnectResults AnatomyConnectResult[]
 
   // General (non-PT) sign-in — separate from licenseEmail, which belongs to the PT flow
   // and isn't unique. Signing in again with the same email returns to this same account,
@@ -749,6 +750,33 @@ model DifferentialResult {
   cluesUsed   Int
   correct     Boolean
   guesses     Json
+  completedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dateKey])
+}
+
+// One row per calendar day — the day's puzzle for Anatomy Connect (see
+// lib/anatomy-connect-logic.ts getTodaysPuzzle/getDateKey, app/games/anatomy-connect).
+// `puzzle` is a denormalized snapshot of that day's static-bank entry (title/size/items),
+// same reasoning as DifferentialCase above — a later edit to the static array can't
+// retroactively change what a past day's puzzle was.
+model AnatomyConnectPuzzle {
+  id        String   @id @default(cuid())
+  dateKey   String   @unique
+  puzzle    Json
+  createdAt DateTime @default(now())
+}
+
+// One row per (user, day) — same "first finish wins" pattern as DifferentialResult above.
+model AnatomyConnectResult {
+  id          String   @id @default(cuid())
+  userId      String
+  dateKey     String
+  solved      Boolean
+  attempts    Int
+  timeSeconds Int
   completedAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
