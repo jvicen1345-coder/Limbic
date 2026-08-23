@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 };
 import { BoardQuestionCard } from "@/components/BoardQuestionCard";
 import { BoardsTabs } from "@/components/BoardsTabs";
+import { LimbicStudentGate } from "@/components/student/LimbicStudentGate";
 import { questionForDate, termForDate, todayDateKey, NPTE_THREE_QUESTION_BENCHMARK_SECONDS } from "@/lib/board-content";
 import { dayIndexForDateKey, caseForDayIndex } from "@/lib/cases-static";
 import { computeBestStreak, last7DateKeys } from "@/lib/games";
@@ -22,7 +23,9 @@ import { computeBestStreak, last7DateKeys } from "@/lib/games";
  *  The NPTE Exam Breakdown content (NPTE_SYSTEMS/NPTE_DEEP_DIVES) now lives inside that
  *  component, unchanged from when it rendered directly on this page. A licensed PT/
  *  clinician account only ever gets today's question — not the rest of Limbic Boards,
- *  which stays a student-only product. */
+ *  which stays a student-only product, gated below on the paid LimbicStudent tier (see
+ *  components/student/LimbicStudentGate.tsx) rather than just a .edu sign-in — same
+ *  "purchasable inside Boards" line drawn in app/(app)/student/page.tsx's own comment. */
 export default async function BoardsHubPage() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -51,6 +54,21 @@ export default async function BoardsHubPage() {
           initialElapsedSeconds={questionCompletion?.elapsedSeconds ?? null}
           nexusOptIn={user.nexusOptIn}
         />
+      </div>
+    );
+  }
+
+  if (user.studentTier !== "limbicStudent") {
+    return (
+      <div className="screen-pad boards-question-pad page-enter" style={{ maxWidth: 760, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+          <GraduationCapIcon size={22} style={{ color: "var(--color-accent)" }} />
+          <h1 style={{ fontSize: 24, margin: 0 }}>Limbic Boards</h1>
+        </div>
+        <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
+          Your NPTE prep hub, a board-style question and a term to lock in every day, building toward exam day.
+        </p>
+        <LimbicStudentGate toolName="Limbic Boards" />
       </div>
     );
   }
