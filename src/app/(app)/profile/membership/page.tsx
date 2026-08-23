@@ -156,9 +156,8 @@ export default async function ProfileMembershipPage({
             <div style={{ fontFamily: "var(--font-heading)", fontSize: 14, marginTop: 6 }}>$5/month</div>
             <p className="card-body" style={{ marginTop: 4 }}>
               Quick access to Limbic Agent, HEP templates for coursework, the Verified Student
-              badge, and a coursework-curated weekly roundup. Limbic Boards (Daily Term and
-              Daily Sharpening) is already included free with any .edu sign-in. Cancel any
-              time.
+              badge, a coursework-curated weekly roundup, and Limbic Boards (Daily Term and
+              Daily Sharpening, NPTE Breakdown, and Resources). Cancel any time.
             </p>
             <form action={subscribeToStudentTierAction}>
               <button type="submit" className="btn btn-primary" style={{ marginTop: 10 }} disabled={!billingEnabled}>
