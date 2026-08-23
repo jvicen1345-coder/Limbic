@@ -45,6 +45,7 @@ model User {
   licenses          License[]
   calculatorProfiles CalculatorProfile[]
   specialtyQuestionAnswers SpecialtyQuestionAnswer[]
+  differentialResults DifferentialResult[]
 
   // General (non-PT) sign-in — separate from licenseEmail, which belongs to the PT flow
   // and isn't unique. Signing in again with the same email returns to this same account,
@@ -719,6 +720,40 @@ model SpecialtyQuestionAnswer {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, specialty, questionIndex, dateKey])
+}
+
+// One row per calendar day (dateKey, YYYY-MM-DD) — the day's case for the Differential
+// game (see lib/differential-cases.ts getTodaysCase/getDateKey, app/games/differential).
+// caseIndex/condition/clues/category/difficulty are a denormalized snapshot of that day's
+// entry from the static case bank at the moment it was first served, so a later edit to
+// the static array can't retroactively change what a past day's row says was asked.
+model DifferentialCase {
+  id         String   @id @default(cuid())
+  dateKey    String   @unique
+  caseIndex  Int
+  condition  String
+  clues      Json
+  category   String
+  difficulty String
+  createdAt  DateTime @default(now())
+}
+
+// One row per (user, day) — same "first finish wins, nothing resets until the date rolls
+// over" pattern as SpecialtyQuestionAnswer above. guesses stores every guess the reader
+// submitted that day (in order) so a wrong-then-right sequence is fully recoverable, not
+// just the final outcome.
+model DifferentialResult {
+  id          String   @id @default(cuid())
+  userId      String
+  dateKey     String
+  cluesUsed   Int
+  correct     Boolean
+  guesses     Json
+  completedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dateKey])
 }
 
 // One saved score for one CalculatorProfile — testKey/testName identify which of the 12

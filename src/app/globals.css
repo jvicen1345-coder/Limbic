@@ -3677,6 +3677,26 @@ html[data-theme="dark"] .nav-founding-link-active {
   box-shadow: var(--shadow-sm);
 }
 
+/* Newer daily games (Differential, Anatomy Connect, Rehab Sequence — each its own
+   dedicated Prisma model rather than a DailyCompletion `kind`, see their schema.prisma
+   models) get a plain card here rather than one driven by the GAMES/GameKind array above
+   — no per-kind completion-state wiring, just title/description/badge/link, same content
+   contract as the streak-tracked cards without any of their state machinery. */
+.game-card-standalone:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.game-card-standalone .game-card-btn { background: var(--color-accent); color: #fff; }
+.game-card-daily-badge {
+  align-self: flex-start;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  padding: 3px 9px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+
 .game-card-progress-dot {
   position: absolute;
   top: 20px;
@@ -3947,6 +3967,92 @@ html[data-theme="dark"] .nav-founding-link-active {
 @media (max-width: 620px) {
   .trivia-option { min-height: 52px; }
 }
+
+/* Differential's only category not already covered by the six specialty-accent-* classes
+   above (see the Limbic Student Specialty Tracks comment) — same var, same pattern, just
+   a seventh slug for the general-wellness cases in lib/differential-cases.ts. */
+.specialty-accent-wellness { --specialty-accent: var(--color-vitals-mindfulness); }
+
+/* — Differential (app/games/differential/page.tsx, components/DifferentialGame.tsx) — */
+.differential-page { max-width: 480px; margin: 0 auto; }
+.differential-header { text-align: center; margin-bottom: 18px; }
+.differential-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; margin: 0 0 4px; }
+.differential-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 0; }
+
+.differential-category-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--specialty-accent, var(--color-accent)) 14%, transparent);
+  color: var(--specialty-accent, var(--color-accent));
+  margin-bottom: 16px;
+}
+
+.differential-clue-card {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  padding: 32px 22px;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.differential-clue-text { font-size: 17px; line-height: 1.5; margin: 0; }
+.differential-clue-counter { text-align: center; font-size: 12.5px; color: var(--color-neutral-700); margin-bottom: 14px; }
+
+.differential-guess-row { display: flex; gap: 8px; margin-top: 16px; }
+.differential-guess-row .input { flex: 1; }
+.differential-feedback { font-size: 12.5px; color: var(--color-danger); margin: 8px 0 0; text-align: center; }
+.differential-difficulty-label { font-size: 12px; color: var(--color-neutral-700); margin: 18px 0 2px; text-align: center; }
+.differential-score-hint { font-size: 12px; color: var(--color-neutral-700); margin: 0 0 20px; text-align: center; }
+
+.differential-result-card {
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.differential-result-card--correct { background: color-mix(in srgb, var(--color-vitals-mobility) 14%, transparent); border: 1px solid color-mix(in srgb, var(--color-vitals-mobility) 30%, transparent); }
+.differential-result-card--incorrect { background: color-mix(in srgb, var(--color-danger) 12%, transparent); border: 1px solid color-mix(in srgb, var(--color-danger) 28%, transparent); }
+.differential-result-title { font-size: 18px; font-weight: 700; margin: 0 0 6px; }
+.differential-result-sub { font-size: 13.5px; color: var(--color-neutral-700); margin: 0; }
+
+.differential-clue-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.differential-clue-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 10px 12px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+}
+.differential-clue-list-num {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.differential-stats-card { margin-top: 20px; }
+.differential-back-link { text-align: center; margin-top: 14px; font-size: 13px; }
+.differential-back-link a { color: var(--color-accent); text-decoration: none; }
+.differential-back-link a:hover { text-decoration: underline; }
 
 /* — Body Connections (app/(app)/games/body/page.tsx, components/BodyConnectionsGame.tsx,
    components/BodySilhouette.tsx) — */
