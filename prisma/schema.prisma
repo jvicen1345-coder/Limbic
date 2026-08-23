@@ -11,16 +11,16 @@ datasource db {
 }
 
 model User {
-  id                String   @id @default(cuid())
-  createdAt         DateTime @default(now())
-  isGuest           Boolean  @default(false)
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  isGuest   Boolean  @default(false)
 
   // Real password auth (see lib/password.ts — scrypt, never stored or logged in plaintext)
   // — replaces the old "type any email, you're in" demo sign-in. Null for every account
   // created before this shipped; those accounts go through the same password-reset flow
   // (PasswordResetToken below) as an ordinary "forgot password" to set one, rather than a
   // separate migration path — see lib/session.ts signInWithPassword.
-  passwordHash      String?
+  passwordHash String?
 
   // Google's stable per-account "sub" claim from its verified ID token (see
   // lib/google-oauth.ts exchangeGoogleCode, lib/session.ts signInWithGoogle) — set the
@@ -30,7 +30,7 @@ model User {
   // enough on its own, since that's equally true of a pre-password-auth legacy account
   // that has never used Google either. An account can have both set (Google first, a
   // password added later via forgot-password, or vice versa).
-  googleId          String?  @unique
+  googleId String? @unique
 
   // Legacy single "primary license" (sign-in-with-license flow predating password auth, plus
   // whatever CE tracking/admin lookup/hasLicenseAccess still read directly off User instead
@@ -38,22 +38,22 @@ model User {
   // recently verified, else most recently pending, else null — by syncPrimaryLicenseFields
   // in app/actions/license.ts, so none of those other features needed to change when License
   // went from one-per-user to many-per-user (one per state, see License below).
-  licenseNumber     String?  @unique
-  licenseState      String?
-  licenseEmail      String?
-  licenseExpiration DateTime?
-  licenses          License[]
-  calculatorProfiles CalculatorProfile[]
+  licenseNumber            String?                   @unique
+  licenseState             String?
+  licenseEmail             String?
+  licenseExpiration        DateTime?
+  licenses                 License[]
+  calculatorProfiles       CalculatorProfile[]
   specialtyQuestionAnswers SpecialtyQuestionAnswer[]
-  domainQuestionAnswers DomainQuestionAnswer[]
-  differentialResults DifferentialResult[]
-  anatomyConnectResults AnatomyConnectResult[]
-  rehabSequenceResults RehabSequenceResult[]
+  domainQuestionAnswers    DomainQuestionAnswer[]
+  differentialResults      DifferentialResult[]
+  anatomyConnectResults    AnatomyConnectResult[]
+  rehabSequenceResults     RehabSequenceResult[]
 
   // General (non-PT) sign-in — separate from licenseEmail, which belongs to the PT flow
   // and isn't unique. Signing in again with the same email returns to this same account,
   // same persistence model as licenseNumber for PTs.
-  email             String?  @unique
+  email String? @unique
 
   // Personal backup email a student can add so they keep access after their .edu email
   // stops working post-graduation (see lib/migration-reminder.ts, app/actions/
@@ -69,15 +69,15 @@ model User {
   accountMigrated      Boolean   @default(false)
   migrationDate        DateTime?
 
-  name              String   @default("Dr. Amara Chen, PT")
-  specialty         String   @default("ortho")
-  practiceState     String   @default("California")
+  name          String  @default("Dr. Amara Chen, PT")
+  specialty     String  @default("ortho")
+  practiceState String  @default("California")
   // Student's school (e.g. "Chapman University") — shown in the sidebar "signed in as"
   // subtitle instead of specialty/practiceState for a hasStudentAccess account (see
   // AppShell.tsx), since specialty/state describe a practicing clinician, not a DPT
   // student. Null for every account until set via the Profile "About you" form (see
   // ProfileForm.tsx) — most non-student accounts will never set it.
-  school            String?
+  school        String?
 
   // Set once the reader flips the "I've added Limbic" switch on the Get the App card (see
   // components/GetTheAppCard.tsx) — collapses that card to a compact done state and hides
@@ -100,14 +100,14 @@ model User {
   themePreference String @default("system")
 
   // JSON-encoded string[] of followed topics
-  followedTopics    Json     @default("[]")
+  followedTopics Json @default("[]")
   // JSON-encoded { name, required, completed }[] of CE categories
-  ceCategories      Json     @default("[]")
+  ceCategories   Json @default("[]")
 
   // LimbicPro — real billing (see lib/stripe.ts, app/actions/pro.ts,
   // app/api/stripe/webhook/route.ts): set by the Stripe webhook on a confirmed
   // subscription, not by the account holder's own request directly.
-  isPro             Boolean  @default(false)
+  isPro Boolean @default(false)
 
   // The student tier — "none" | "limbicStudent" (a single $5/mo plan; there used to be a
   // second, higher "studentProBoards" tier, retired in favor of one plan covering
@@ -116,7 +116,7 @@ model User {
   // lib/session.ts isStudentEmail) — Limbic Boards and Daily Term are gated on that check,
   // not on this field, since the tier is about what's purchasable, not who can sign in.
   // Same real-billing pattern as isPro above.
-  studentTier       String   @default("none")
+  studentTier String @default("none")
 
   // Stripe billing identity — set the first time this account starts a Checkout session
   // (see app/actions/pro.ts), reused on every later checkout/portal session rather than
@@ -132,11 +132,11 @@ model User {
   // one of those at once) — a PT can be LimbicPro AND LimbicWellness+ simultaneously, so it
   // gets its own subscription id rather than sharing stripeSubscriptionId. Billing-only for
   // now (see app/(app)/pro/membership/page.tsx) — no feature gate wired to it yet.
-  isWellnessPlus             Boolean   @default(false)
+  isWellnessPlus             Boolean @default(false)
   // "month" | "year" — which of the two prices is active, purely for display on the
   // manage/cancel card; null when isWellnessPlus is false.
   wellnessPlusInterval       String?
-  wellnessPlusSubscriptionId String?   @unique
+  wellnessPlusSubscriptionId String? @unique
 
   // Admin-granted complimentary access to a paid tier, for a specific account rather than
   // every admin (see /admin/accounts, grantAccessAction/revokeAccessAction in
@@ -150,26 +150,26 @@ model User {
   // Timestamp of the previous home-feed load, captured before it's overwritten with the
   // current one — this is what lets the feed tell "published since you were last here"
   // apart from everything else (see lib/session.ts recordVisitAndGetPrevious).
-  lastVisitedAt     DateTime?
+  lastVisitedAt DateTime?
 
   // Daily reading-streak tracking, both driven by lib/streak.ts off ReadArticle rows.
-  lastReadAt        DateTime?
-  streakDays        Int      @default(0)
+  lastReadAt DateTime?
+  streakDays Int       @default(0)
 
   // Nexus (networking) profile fields — blank for accounts that haven't set them up.
-  headline          String?
-  bio               String?
+  headline   String?
+  bio        String?
   // Consent gate: false until the user explicitly joins Nexus (see app/actions/nexus.ts
   // optInToNexusAction/leaveNexusAction) — controls whether they show up in the directory
   // or suggestions, and whether they can view/use any /nexus page at all. Always true for
   // seeded demo/real profiles (see lib/nexus-seed.ts), which can't log in to opt in
   // themselves.
-  nexusOptIn        Boolean  @default(false)
+  nexusOptIn Boolean @default(false)
 
   // JSON-encoded string[] of Home sidebar widget ids the user has hidden (see
   // components/HomeFeed.tsx HOME_WIDGETS) — opt-out, not opt-in, so the default empty array
   // means "show everything", same as every existing account before this field existed.
-  hiddenHomeWidgets Json     @default("[]")
+  hiddenHomeWidgets Json @default("[]")
 
   // Gates the one-time "pick your interests" screen at app/onboarding (see
   // app/(app)/layout.tsx) for brand-new accounts. Defaults to true (not false) so this
@@ -177,14 +177,14 @@ model User {
   // onboarding — every account-creation path (lib/session.ts signInWithLicense/
   // signInWithEmail/signInAsGuest) explicitly sets this false only in its own `create`
   // branch, never in an `update` branch, so a returning user is never affected.
-  hasOnboarded      Boolean  @default(true)
+  hasOnboarded Boolean @default(true)
 
   // "pt" | "pts" | "general" — set from the one-time "How are you using Limbic?" modal
   // (see components/OnboardingRoleModal.tsx, app/(app)/layout.tsx) and editable anytime
   // from Profile's Role section. Drives the reorder-only-never-hide logic in
   // lib/user-role.ts zoneTwoOrder(), which the sidebar (components/AppShell.tsx) uses.
   // Null until the modal (or a Profile edit) sets it.
-  userRole          String?
+  userRole String?
 
   // Gates the "How are you using Limbic?" role modal — same @default(true)-not-false
   // reasoning as hasOnboarded right above, so this field's own rollout doesn't
@@ -196,7 +196,7 @@ model User {
   // Limbic Boards (student daily-habit tools) streak — same nextStreak() logic as the
   // reading streak above, driven off BoardActivity rows instead of ReadArticle ones.
   lastBoardsActivityAt DateTime?
-  boardsStreakDays     Int      @default(0)
+  boardsStreakDays     Int       @default(0)
 
   // Daily Sharpening's "beat your time" pacing target (see DailySharpeningSession.tsx,
   // recordSharpeningTargetAction in app/actions/daily-completion.ts). Null means "use the
@@ -213,7 +213,7 @@ model User {
   // BoardActivity ones. Advanced once per day the first time any of the three games is
   // finished that day (see lib/game-activity.ts), not once per game.
   lastGamesActivityAt DateTime?
-  gamesStreakDays     Int      @default(0)
+  gamesStreakDays     Int       @default(0)
 
   // The Health & Wellness page's current per-user rotation state (see
   // lib/wellness-rotation.ts). wellnessArticleIds/wellnessVideoIds are JSON-encoded
@@ -261,18 +261,18 @@ model User {
   // updateProfessionalDates) — self-reported deadlines a reader tracks on the Limbic
   // Calendar's orange dots, editable from the Profile "Professional Dates" section.
   // studentTier-only fields (see app/(app)/profile/page.tsx for the visibility gating):
-  npteExamDate      DateTime?
-  rotationStartDate DateTime?
-  rotationEndDate   DateTime?
-  graduationDate    DateTime?
+  npteExamDate                DateTime?
+  rotationStartDate           DateTime?
+  rotationEndDate             DateTime?
+  graduationDate              DateTime?
   // Set when the one-time graduation-transition card on Home is dismissed via "Maybe
   // later" (re-shown after 7 days — see components/HomeFeed.tsx) — null means never shown
   // or already past its 7-day snooze.
   graduationTransitionShownAt DateTime?
   // Visible to every account:
-  ceuDeadline         DateTime?
-  certificationExpiry DateTime?
-  practiceStartDate   DateTime?
+  ceuDeadline                 DateTime?
+  certificationExpiry         DateTime?
+  practiceStartDate           DateTime?
 
   // Reserved for a future "add to my calendar app" / reminder-notification feature — not
   // yet read or written by any code path, but part of this migration's schema per the
@@ -303,6 +303,7 @@ model User {
   vitalsProfile       VitalsProfile?
   vitalsLogs          VitalsLog[]
   healthSyncToken     HealthSyncToken?
+  fitnessConnections  FitnessConnection[]
   metricsLogs         MetricsLog[]
   ceLogs              CELog[]
   foundingFunder      FoundingFunder?
@@ -361,27 +362,27 @@ model Connection {
 // fabricated quote, same integrity standard as the rest of the app's content. User-authored
 // posts leave both null.
 model NexusPost {
-  id          String   @id @default(cuid())
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  authorId     String
+  author       User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   // "text" | "photo" | "video" | "article" — drives which extra fields below are used and
   // how NexusPostCard renders the post; a plain text post ignores all of them.
-  type        String   @default("text")
-  body        String
+  type         String   @default("text")
+  body         String
   // Article posts only.
   articleTitle String?
   // JSON-encoded string[] of data-URL images — photo posts (1-4 images) and an optional
   // single article cover image. Stored inline (not on disk/object storage) since this app
   // has no file storage configured; images are client-side compressed before upload to
   // keep rows reasonably sized (see lib/media-upload.ts).
-  imageUrls   Json     @default("[]")
+  imageUrls    Json     @default("[]")
   // Video posts only — a YouTube URL, embedded the same way as Clips (see lib/meta.ts
   // youtubeEmbedUrl). No raw video upload/storage, for the same reason images are data URLs
   // instead of files: nowhere to durably store large binaries in this deployment.
-  videoUrl    String?
-  sourceUrl   String?
-  sourceLabel String?
-  createdAt   DateTime @default(now())
+  videoUrl     String?
+  sourceUrl    String?
+  sourceLabel  String?
+  createdAt    DateTime @default(now())
 
   likes    NexusPostLike[]
   comments NexusPostComment[]
@@ -520,6 +521,30 @@ model HealthSyncToken {
   lastUsedAt DateTime?
 }
 
+// One row per connected fitness-tracker account (see lib/fitbit-oauth.ts, lib/strava-oauth.ts,
+// app/auth/fitbit/*, app/auth/strava/*) — a real OAuth2 "Connect" flow, unlike Apple Health's
+// Shortcut/upload workarounds above, since Fitbit and Strava both expose a public cloud API.
+// accessToken/refreshToken sit in plaintext columns, same trust boundary as every other
+// account secret in this schema (googleId, license keys) — protected by DB access alone,
+// not field-level encryption. `provider` has no DB-level enum, same reasoning as VitalsLog's
+// `category` — checked against a documented string union in the write path instead.
+model FitnessConnection {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider     String // "fitbit" | "strava"
+  externalId   String // the provider's own athlete/user id, for reference only
+  accessToken  String
+  refreshToken String
+  // Epoch ms the access token stops working — both providers issue short-lived access
+  // tokens (Strava: ~6h, Fitbit: ~8h) that must be refreshed well before every sync.
+  expiresAt    DateTime
+  lastSyncedAt DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@unique([userId, provider])
+}
+
 // Limbic Metrics (see app/(app)/wellness/metrics/page.tsx) — one row per calculator result
 // or self-assessment score a reader chooses to save, same "raw rows, derive views on read"
 // shape as VitalsLog above rather than one wide row per user. `metric` has no DB-level
@@ -654,11 +679,11 @@ model HepProgram {
 // "saved but still unread" resurfacing, distinct from SavedArticle (a bookmark, not a
 // read receipt).
 model ReadArticle {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  articleId String
-  createdAt DateTime @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  articleId      String
+  createdAt      DateTime @default(now())
   // 0-1 fraction of the article's scroll extent the reader last reached — drives the Home
   // page "Continue Reading" card (see components/ReadingProgressTracker.tsx, which reports
   // it, and components/ContinueReadingCard.tsx, which renders it).
@@ -707,16 +732,16 @@ model GameActivity {
 // reasoning as the rest of this app never asking for identifying patient details anywhere
 // else either.
 model CalculatorProfile {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  label  String
+  id            String             @id @default(cuid())
+  userId        String
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label         String
   // JSON-encoded string[] of calculator testKeys (see lib/calculator-tests.ts) the
   // clinician planned to run for this profile — a checklist, not an access-control list;
   // a result can still be saved for a test that isn't on it (see saveCalculatorResultAction
   // in app/actions/calculator-profiles.ts).
-  selectedTests Json     @default("[]")
-  createdAt     DateTime @default(now())
+  selectedTests Json               @default("[]")
+  createdAt     DateTime           @default(now())
   results       CalculatorResult[]
 }
 
@@ -890,8 +915,8 @@ model HepExercise {
   // a non-pro clinician can still build a text-only HEP, just without attaching media).
   // Links, not uploaded files — this app has no file/blob storage anywhere, so both are
   // just a URL the clinician pastes in (an image URL, and a YouTube/Vimeo/etc. video URL).
-  imageUrl String?
-  videoUrl String?
+  imageUrl  String?
+  videoUrl  String?
 }
 
 // A saved HEP Builder draft a clinician can reload into the builder later, organized by
@@ -993,7 +1018,7 @@ model ConnexionVisitRequest {
   email         String
   preferredDate DateTime?
   preferredTime String?
-  visitReason    String?  // dropdown value instead of free text
+  visitReason   String? // dropdown value instead of free text
   status        String    @default("new") // "new" | "contacted" | "scheduled" | "completed"
   createdAt     DateTime  @default(now())
 }
