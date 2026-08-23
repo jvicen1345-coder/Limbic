@@ -302,6 +302,7 @@ model User {
   calendarEvents      UserCalendarEvent[]
   vitalsProfile       VitalsProfile?
   vitalsLogs          VitalsLog[]
+  healthSyncToken     HealthSyncToken?
   metricsLogs         MetricsLog[]
   ceLogs              CELog[]
   foundingFunder      FoundingFunder?
@@ -496,7 +497,27 @@ model VitalsLog {
   minutes   Int
   activity  String
   notes     String?
+  // "manual" (typed in on this page) | "apple_health" (see app/api/health-sync/route.ts,
+  // lib/health-sync.ts) — an apple_health row for a given userId/date/category is replaced
+  // in place on every re-sync rather than accumulated, so re-running the same day's Shortcut
+  // doesn't double-count; a manual row for the same day/category is untouched and additive.
+  source    String   @default("manual")
   createdAt DateTime @default(now())
+}
+
+// One long-lived API key per user (see lib/health-sync.ts, app/api/health-sync/route.ts) —
+// authenticates an Apple Shortcuts automation posting Health app data in, not a browser
+// session. Only the SHA-256 hash is stored, same pattern as PasswordResetToken below; the
+// raw value is shown to the reader once, at generation time, and never again. Regenerating
+// overwrites the row in place (one active key per account, old one immediately stops
+// working) rather than keeping a history of retired keys.
+model HealthSyncToken {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
 }
 
 // Limbic Metrics (see app/(app)/wellness/metrics/page.tsx) — one row per calculator result

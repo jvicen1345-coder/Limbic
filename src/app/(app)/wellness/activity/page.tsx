@@ -6,6 +6,7 @@ import { WellnessDisclaimer } from "@/components/vitals/WellnessDisclaimer";
 import { WeeklyActivityChart } from "@/components/vitals/WeeklyActivityChart";
 import { LogActivityForm } from "@/components/vitals/LogActivityForm";
 import { InsightsCard } from "@/components/vitals/InsightsCard";
+import { AppleHealthSyncCard } from "@/components/vitals/AppleHealthSyncCard";
 
 /** The exercise-input page — weekly cardio/strength/mobility/mindfulness logging, split
  *  out from Metrics (which is now pure calculators, see app/(app)/wellness/metrics/page.tsx)
@@ -24,6 +25,7 @@ export default async function ActivityLogPage() {
   const lastWeekStartIso = dateToLocalIso(lastWeekStart);
 
   const logRows = await prisma.vitalsLog.findMany({ where: { userId: user.id, date: { gte: lastWeekStart } }, orderBy: { createdAt: "desc" } });
+  const healthSyncToken = await prisma.healthSyncToken.findUnique({ where: { userId: user.id } });
 
   const logs: VitalsLogEntry[] = logRows.map((r) => ({
     id: r.id,
@@ -32,6 +34,7 @@ export default async function ActivityLogPage() {
     minutes: r.minutes,
     activity: r.activity,
     notes: r.notes,
+    source: r.source,
     createdAtMs: r.createdAt.getTime(),
   }));
 
@@ -47,6 +50,15 @@ export default async function ActivityLogPage() {
         Track your own general wellness activity, week to week.
       </p>
       <WellnessDisclaimer />
+
+      <AppleHealthSyncCard
+        connected={!!healthSyncToken}
+        lastSynced={
+          healthSyncToken?.lastUsedAt
+            ? healthSyncToken.lastUsedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+            : null
+        }
+      />
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">This week&rsquo;s activity</div>

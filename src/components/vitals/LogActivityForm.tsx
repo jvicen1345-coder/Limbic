@@ -97,7 +97,10 @@ export function LogActivityForm({ recentLogs }: { recentLogs: VitalsLogEntry[] }
                 {new Date(log.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
               </span>
               <span className={`vitals-chart-legend-dot vitals-color-${log.category}`} />
-              <span className="vitals-log-activity">{log.activity}</span>
+              <span className="vitals-log-activity">
+                {log.activity}
+                {log.source === "apple_health" && <span className="vitals-log-synced-badge">Synced</span>}
+              </span>
               <span className="vitals-log-minutes">{log.minutes} min</span>
               <button type="button" className="btn btn-ghost btn-icon" aria-label="Delete entry" onClick={() => handleDelete(log.id)}>
                 <TrashIcon size={13} />

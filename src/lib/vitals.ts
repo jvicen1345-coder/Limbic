@@ -56,6 +56,9 @@ export interface VitalsLogEntry {
   minutes: number;
   activity: string;
   notes: string | null;
+  /** "manual" (typed in on this page) | "apple_health" (see app/api/health-sync/route.ts) —
+   *  purely a display distinction, both count the same toward the weekly totals below. */
+  source: string;
   /** Epoch ms the row was created — used to order the "last 5 logged" list by when the
    *  reader actually logged it, independent of which date they backdated it to. */
   createdAtMs: number;
