@@ -133,20 +133,28 @@ export async function resetPasswordAction(formData: FormData) {
  *  verification step at all, so it's IP-rate-limited (see lib/guest-rate-limit.ts) to keep
  *  it from being scripted into unlimited account creation. A no-op redirect straight to
  *  /home if the caller already has a live session — clicking it twice (or hitting back into
- *  a still-signed-in tab) shouldn't mint a second throwaway account. */
+ *  a still-signed-in tab) shouldn't mint a second throwaway account. A name is required (see
+ *  the Guest tab's input in SignInForm.tsx) so every new guest is identifiable on the admin
+ *  Accounts page rather than an anonymous blank — checked before the rate limit is consumed,
+ *  so a blank submission doesn't cost one of the 5-per-hour attempts. */
 export async function guestSignInAction(formData: FormData) {
   const existing = await getCurrentUser();
   if (existing) {
     redirect("/home");
   }
 
+  const name = String(formData.get("name") ?? "").trim();
+  if (!name) {
+    redirect("/sign-in?error=guest_name_required&tab=guest");
+  }
+
   const ip = await clientIp();
   const allowed = await consumeGuestSignupAllowance(ip);
   if (!allowed) {
-    redirect("/sign-in?error=guest_rate_limited");
+    redirect("/sign-in?error=guest_rate_limited&tab=guest");
   }
 
-  await signInAsGuest(String(formData.get("name") ?? ""));
+  await signInAsGuest(name);
   revalidatePath("/", "layout");
   redirect("/home");
 }

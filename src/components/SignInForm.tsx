@@ -101,12 +101,17 @@ export function SignInForm({
   googleEnabled,
   initialEmail = "",
   initialAuthMode = "signin",
+  initialTab = "email",
 }: {
   googleEnabled: boolean;
   initialEmail?: string;
   initialAuthMode?: "signin" | "signup";
+  /** Reopens the Guest tab after guestSignInAction redirects back with a validation error
+   *  (missing name) or a rate-limit error — otherwise that error would show up while the
+   *  form silently defaults back to the Email tab, looking unrelated to what was submitted. */
+  initialTab?: "email" | "guest";
 }) {
-  const [mode, setMode] = useState<"email" | "guest">("email");
+  const [mode, setMode] = useState<"email" | "guest">(initialTab);
   const [authMode, setAuthMode] = useState<"signin" | "signup">(initialAuthMode);
   const emailRef = useRef<HTMLInputElement>(null);
 
@@ -191,8 +196,8 @@ export function SignInForm({
           </p>
           <form action={guestSignInAction} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div className="field">
-              <label htmlFor="si-guest-name">Your name (optional)</label>
-              <input className="input" id="si-guest-name" name="name" type="text" placeholder="Jamie" autoComplete="name" maxLength={80} />
+              <label htmlFor="si-guest-name">Your name</label>
+              <input className="input" id="si-guest-name" name="name" type="text" placeholder="Jamie" autoComplete="name" maxLength={80} required />
             </div>
             <button type="submit" className="btn btn-primary btn-block">
               Continue as guest
