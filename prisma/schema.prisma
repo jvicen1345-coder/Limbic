@@ -47,6 +47,7 @@ model User {
   specialtyQuestionAnswers SpecialtyQuestionAnswer[]
   differentialResults DifferentialResult[]
   anatomyConnectResults AnatomyConnectResult[]
+  rehabSequenceResults RehabSequenceResult[]
 
   // General (non-PT) sign-in — separate from licenseEmail, which belongs to the PT flow
   // and isn't unique. Signing in again with the same email returns to this same account,
@@ -778,6 +779,37 @@ model AnatomyConnectResult {
   attempts    Int
   timeSeconds Int
   completedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dateKey])
+}
+
+// One row per calendar day — which of the static bank's 40 patient cases is today's Rehab
+// Sequence case (see lib/rehab-sequence-logic.ts getTodaysRehabCase/getDateKey,
+// app/games/rehab-sequence). Just the index, not a full snapshot like DifferentialCase/
+// AnatomyConnectPuzzle above — the case's own title/interventions/rationale live entirely
+// in the static bank and aren't meant to change, so there's nothing to protect against
+// retroactively differing here beyond which index today points at.
+model RehabSequenceCase {
+  id        String   @id @default(cuid())
+  dateKey   String   @unique
+  caseIndex Int
+  createdAt DateTime @default(now())
+}
+
+// One row per (user, day) — same "first finish wins" pattern as DifferentialResult/
+// AnatomyConnectResult above. sequenceGiven is the reader's submitted ordering (their
+// arrangement of the 8 interventions at submit time), kept for the same "full attempt
+// history" reasoning as DifferentialResult.guesses.
+model RehabSequenceResult {
+  id            String   @id @default(cuid())
+  userId        String
+  dateKey       String
+  correct       Boolean
+  attempts      Int
+  sequenceGiven Json
+  completedAt   DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
