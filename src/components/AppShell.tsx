@@ -42,6 +42,7 @@ import {
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { StudentVerifiedBadge } from "@/components/StudentVerifiedBadge";
+import { readStoredThemePreference, resolveTheme } from "@/lib/theme-client";
 
 function sidebarNavStyle(active: boolean, bold: boolean): React.CSSProperties {
   return {
@@ -573,6 +574,22 @@ export function AppShell({
   // globals.css for why that chrome can't just read the page's own --atrium-* tokens.
   const pathname = usePathname();
   const isAtrium = pathname.startsWith("/student");
+
+  // A defensive re-assertion, not the primary mechanism (see the blocking THEME_INIT_SCRIPT
+  // in app/layout.tsx, which is what actually prevents a flash on first paint) — AppShell is
+  // the one client boundary mounted fresh on every full page load across the whole
+  // authenticated app, so this is the last checkpoint to correct html[data-theme] back to
+  // the reader's real stored preference if anything else touched it first (a hydration
+  // quirk, a third-party script, a browser extension) without also touching localStorage —
+  // reported as a specific page's theme silently reverting to light on refresh, then
+  // correcting itself the moment the tab is closed and reopened (a fresh load re-running the
+  // init script from an untouched localStorage value), which is exactly the signature this
+  // guards against. Runs once per hard load; App Router's shared layout means AppShell
+  // doesn't remount on ordinary in-app navigation, matching how localStorage.getItem
+  // ("theme") itself is only ever read fresh on a real page load, not client-side routing.
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", resolveTheme(readStoredThemePreference()));
+  }, []);
 
   // Restores scroll position on reopen by re-centering the active link instead — the drawer
   // is unmounted on close (see the drawerOpen && (...) below), which resets its scrollTop to
