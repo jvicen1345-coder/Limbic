@@ -26,18 +26,19 @@ const ERROR_MESSAGES: Record<string, string> = {
   weak_password: "Password must be at least 8 characters.",
   password_mismatch: "Those passwords don't match.",
   guest_rate_limited: "Too many guest sign-ins from this network recently — please try again later, or create a real account.",
+  guest_name_required: "Please enter a name to continue as guest.",
   rate_limited: "Too many attempts. Please try again later.",
 };
 
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; deleted?: string; wiped?: string; email?: string; mode?: string }>;
+  searchParams: Promise<{ error?: string; deleted?: string; wiped?: string; email?: string; mode?: string; tab?: string }>;
 }) {
   const user = await getCurrentUser();
   if (user) redirect("/home");
 
-  const { error, deleted, wiped, email, mode } = await searchParams;
+  const { error, deleted, wiped, email, mode, tab } = await searchParams;
   const errorMessage = error ? (ERROR_MESSAGES[error] ?? null) : null;
   const successMessage = deleted === "1"
     ? "Your account and all its data have been permanently deleted."
@@ -114,6 +115,7 @@ export default async function SignInPage({
         googleEnabled={googleSignInEnabled()}
         initialEmail={email ?? ""}
         initialAuthMode={mode === "signup" ? "signup" : "signin"}
+        initialTab={tab === "guest" ? "guest" : "email"}
       />
     </div>
   );
