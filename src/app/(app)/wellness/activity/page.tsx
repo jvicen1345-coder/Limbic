@@ -6,7 +6,6 @@ import { WellnessDisclaimer } from "@/components/vitals/WellnessDisclaimer";
 import { WeeklyActivityChart } from "@/components/vitals/WeeklyActivityChart";
 import { LogActivityForm } from "@/components/vitals/LogActivityForm";
 import { InsightsCard } from "@/components/vitals/InsightsCard";
-import { AppleHealthSyncCard } from "@/components/vitals/AppleHealthSyncCard";
 import { AppleHealthUploadCard } from "@/components/vitals/AppleHealthUploadCard";
 import { TrackerConnectCard } from "@/components/vitals/TrackerConnectCard";
 import { fitbitEnabled } from "@/lib/fitbit-oauth";
@@ -29,7 +28,6 @@ export default async function ActivityLogPage() {
   const lastWeekStartIso = dateToLocalIso(lastWeekStart);
 
   const logRows = await prisma.vitalsLog.findMany({ where: { userId: user.id, date: { gte: lastWeekStart } }, orderBy: { createdAt: "desc" } });
-  const healthSyncToken = await prisma.healthSyncToken.findUnique({ where: { userId: user.id } });
   const fitnessConnections = await prisma.fitnessConnection.findMany({ where: { userId: user.id } });
   const fitbitConnection = fitnessConnections.find((c) => c.provider === "fitbit") ?? null;
   const stravaConnection = fitnessConnections.find((c) => c.provider === "strava") ?? null;
@@ -73,15 +71,6 @@ export default async function ActivityLogPage() {
             ? stravaConnection.lastSyncedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })
             : null,
         }}
-      />
-
-      <AppleHealthSyncCard
-        connected={!!healthSyncToken}
-        lastSynced={
-          healthSyncToken?.lastUsedAt
-            ? healthSyncToken.lastUsedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-            : null
-        }
       />
 
       <AppleHealthUploadCard />
