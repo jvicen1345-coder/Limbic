@@ -1913,6 +1913,31 @@ html[data-theme="dark"] .nav-founding-link-active {
   .cards-grid.home-cards-grid > *:last-child:nth-child(odd) { display: block; }
 }
 
+/* A second, low-key entry point into the exact same refresh RefreshHomeFeedButton (top of
+   the page) and pull-to-refresh already do — for a reader who's scrolled all the way
+   through the grid and wants another batch without scrolling back up. Small and quiet on
+   purpose, not another prominent button competing with the one at the top. */
+.home-refresh-pill-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.home-refresh-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-card-surface);
+  color: var(--color-neutral-700);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.home-refresh-pill:hover { background: var(--color-neutral-100); }
+.home-refresh-pill:disabled { cursor: default; opacity: 0.7; }
+
 /* — Limbic Agent: full-screen dark canvas + spiderweb (components/AgentClient.tsx,
    components/AgentGraph.tsx). A deliberately separate visual language from the rest of
    the (light-themed) app — this page owns its own colors rather than reusing --color-*. */

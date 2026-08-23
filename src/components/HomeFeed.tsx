@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { SearchIcon, XIcon, DownloadIcon } from "@/components/icons";
+import { SearchIcon, XIcon, DownloadIcon, RefreshIcon } from "@/components/icons";
 import { slugifyTopic } from "@/lib/topic-slug";
 import { SlidingTabs } from "@/components/SlidingTabs";
 import { ArticleCard } from "@/components/ArticleCard";
@@ -377,6 +377,13 @@ export function HomeFeed({
             {gridArticles.map((a) => (
               <ArticleCard key={a.id} article={a} />
             ))}
+          </div>
+
+          <div className="home-refresh-pill-wrap">
+            <button type="button" className="home-refresh-pill" disabled={pending} onClick={handlePullRefresh}>
+              <RefreshIcon size={13} style={pending ? { animation: "spin 0.8s linear infinite" } : undefined} />
+              {pending ? "Refreshing…" : "Refresh for more"}
+            </button>
           </div>
         </div>
 
