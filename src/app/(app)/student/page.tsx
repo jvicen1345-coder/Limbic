@@ -10,6 +10,8 @@ import { firstName, timeOfDayGreeting } from "@/lib/meta";
 import { questionForDate, todayDateKey } from "@/lib/board-content";
 import { getAcceptedConnectionIds } from "@/lib/nexus";
 import { last7DateKeys } from "@/lib/games";
+import { getArticles } from "@/lib/articles";
+import { currentWeekKey, pickWeeklyRoundup } from "@/lib/student-roundup";
 import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumProgressChart";
 import { StudentGate } from "@/components/student/StudentGate";
 import {
@@ -162,7 +164,7 @@ export default async function StudentAtriumPage() {
   const todayKey = todayDateKey();
   const weekDateKeys = last7DateKeys(todayKey);
 
-  const [boardsToday, connectionIds, weekCompletions, boardActivityRows, nextCalendarEvent] = await Promise.all([
+  const [boardsToday, connectionIds, weekCompletions, boardActivityRows, nextCalendarEvent, allArticles] = await Promise.all([
     prisma.dailyCompletion.findFirst({
       where: { userId: user.id, dateKey: todayKey, kind: { in: ["boardQuestion", "boardTerm"] } },
     }),
@@ -179,6 +181,10 @@ export default async function StudentAtriumPage() {
       where: { userId: user.id, date: { gte: now } },
       orderBy: { date: "asc" },
     }),
+    // Fetched unconditionally, alongside everything else, so the Weekly Roundup panel's
+    // preview (below) doesn't tack an extra sequential round trip onto page load — actually
+    // used only for a paid LimbicStudent reader, same gate as the panel itself.
+    getArticles(),
   ]);
 
   const daysCompletedThisWeek = new Set(boardActivityRows.map((r) => r.dateKey)).size;
@@ -229,6 +235,20 @@ export default async function StudentAtriumPage() {
 
   const limbicAgentEligible = user.isPro || user.studentTier === "limbicStudent";
 
+  // A real preview of this week's roundup (see app/(app)/student/roundup/page.tsx, which
+  // this mirrors) for the right-rail panel below — only computed for a paid LimbicStudent
+  // reader, since anyone else just sees the upgrade prompt and never needs the actual
+  // picks. No saved-state needed here (unlike the roundup page itself), so this skips
+  // decorateArticle/SavedArticle entirely and just reads the plain Article fields.
+  const roundupPreview =
+    user.studentTier === "limbicStudent"
+      ? pickWeeklyRoundup(
+          allArticles.filter((a) => a.type !== "industry" && a.type !== "product"),
+          currentWeekKey(),
+          3
+        )
+      : [];
+
   // Greeting card, line 2 — today's focus. Falls back to a general nudge when there isn't
   // enough of this week's Boards activity yet to point at a specific weak domain.
   const focusLine = weakestDomain
@@ -241,120 +261,188 @@ export default async function StudentAtriumPage() {
     : "Your daily sharpening is waiting, 5 minutes keeps your streak alive.";
 
   return (
-    <div className="screen-pad atrium-page" style={{ maxWidth: 960 }}>
-      <div className="atrium-header">
-        <h1 className="atrium-greeting">{greeting}</h1>
-        <p className="atrium-header-meta">Week {weekNumber} of your DPT journey</p>
+    <div className="screen-pad atrium-page" style={{ maxWidth: 1120 }}>
+      <div className="atrium-layout">
+        <div className="atrium-main-col">
+          <div className="atrium-header">
+            <h1 className="atrium-greeting">{greeting}</h1>
+            <p className="atrium-header-meta">Week {weekNumber} of your DPT journey</p>
 
-        {npteDays !== null && npteDays >= 0 ? (
-          <div className="atrium-countdown">
-            <span className="atrium-countdown-number">{npteDays}</span>
-            <span className="atrium-countdown-label">day{npteDays === 1 ? "" : "s"} until your NPTE</span>
+            {npteDays !== null && npteDays >= 0 ? (
+              <div className="atrium-countdown">
+                <span className="atrium-countdown-number">{npteDays}</span>
+                <span className="atrium-countdown-label">day{npteDays === 1 ? "" : "s"} until your NPTE</span>
+              </div>
+            ) : npteDays !== null ? (
+              <p className="atrium-countdown-prompt">
+                Your NPTE date has passed, <Link href="/profile/credentials#professional-dates">update it in Profile Settings →</Link>
+              </p>
+            ) : (
+              <p className="atrium-countdown-prompt">
+                Add your NPTE date to unlock your countdown <Link href="/profile/credentials#professional-dates">→ Profile Settings</Link>
+              </p>
+            )}
           </div>
-        ) : npteDays !== null ? (
-          <p className="atrium-countdown-prompt">
-            Your NPTE date has passed, <Link href="/profile/credentials#professional-dates">update it in Profile Settings →</Link>
-          </p>
-        ) : (
-          <p className="atrium-countdown-prompt">
-            Add your NPTE date to unlock your countdown <Link href="/profile/credentials#professional-dates">→ Profile Settings</Link>
-          </p>
-        )}
-      </div>
 
-      <AtriumProgressChart
-        daysCompletedThisWeek={daysCompletedThisWeek}
-        currentStreak={user.boardsStreakDays}
-        domains={domainAccuracy}
-      />
+          <AtriumProgressChart
+            daysCompletedThisWeek={daysCompletedThisWeek}
+            currentStreak={user.boardsStreakDays}
+            domains={domainAccuracy}
+          />
 
-      <div className="atrium-greeting-card">
-        <p>{weekEncouragement(weekNumber)}</p>
-        <p>{focusLine}</p>
-        <p>{momentumLine}</p>
-      </div>
-
-      <div className="atrium-paths-grid">
-        {PATHS.map((path) => {
-          const Icon = path.icon;
-          return (
-            <Link key={path.href} href={path.href} className={`atrium-path-card atrium-path-card--${path.accent}`}>
-              <span className="atrium-path-icon">
-                <Icon size={20} />
-              </span>
-              <span className="atrium-path-body">
-                <span className="atrium-path-title" style={{ display: "block" }}>
-                  {path.title}
-                </span>
-                <span className="atrium-path-desc">{path.description}</span>
-              </span>
-              <ChevronRightIcon size={18} className="atrium-path-arrow" />
-            </Link>
-          );
-        })}
-      </div>
-
-      <div className="atrium-section-label">Quick Links</div>
-      <div className="atrium-dashboard-grid">
-        <div className="atrium-dashboard-card">
-          <div className="atrium-dashboard-title">
-            <UsersIcon size={15} />
-            Study Group
+          <div className="atrium-greeting-card">
+            <p>{weekEncouragement(weekNumber)}</p>
+            <p>{focusLine}</p>
+            <p>{momentumLine}</p>
           </div>
-          {connectionIds.length === 0 ? (
-            <p className="atrium-dashboard-empty">
-              Your cohort is here. Find a study partner who matches your schedule and study style.
-            </p>
-          ) : (
-            <p className="atrium-dashboard-body">
-              {connectionIds.length} study partner{connectionIds.length === 1 ? "" : "s"} connected
-            </p>
-          )}
-          <Link href={connectionIds.length === 0 ? "/nexus/directory" : "/nexus/messages"} className="atrium-dashboard-link">
-            {connectionIds.length === 0 ? "Find classmates →" : "View your group →"}
-          </Link>
-        </div>
 
-        <div className="atrium-dashboard-card">
-          <div className="atrium-dashboard-title">
-            <NetworkIcon size={15} />
-            Limbic Agent
-          </div>
-          {limbicAgentEligible ? (
-            <>
-              <p className="atrium-dashboard-body">Ask Limbic Agent about anything from your coursework or Boards prep.</p>
-              <Link href="/agent" className="atrium-dashboard-link atrium-dashboard-link--amber">
-                Open Limbic Agent →
-              </Link>
-            </>
-          ) : (
-            <>
-              <p className="atrium-dashboard-body">Quick access to Limbic Agent is included with PRO or LimbicStudent.</p>
-              <span className="atrium-dashboard-locked">
-                <LockIcon size={11} />
-                <Link href="/pro" className="atrium-dashboard-link atrium-dashboard-link--amber" style={{ margin: 0 }}>
-                  Upgrade →
+          <div className="atrium-paths-grid">
+            {PATHS.map((path) => {
+              const Icon = path.icon;
+              return (
+                <Link key={path.href} href={path.href} className={`atrium-path-card atrium-path-card--${path.accent}`}>
+                  <span className="atrium-path-icon">
+                    <Icon size={20} />
+                  </span>
+                  <span className="atrium-path-body">
+                    <span className="atrium-path-title" style={{ display: "block" }}>
+                      {path.title}
+                    </span>
+                    <span className="atrium-path-desc">{path.description}</span>
+                  </span>
+                  <ChevronRightIcon size={18} className="atrium-path-arrow" />
                 </Link>
-              </span>
-            </>
-          )}
+              );
+            })}
+          </div>
+
+          <div className="atrium-section-label">Quick Links</div>
+          <div className="atrium-dashboard-grid">
+            <div className="atrium-dashboard-card">
+              <div className="atrium-dashboard-title">
+                <UsersIcon size={15} />
+                Study Group
+              </div>
+              {connectionIds.length === 0 ? (
+                <p className="atrium-dashboard-empty">
+                  Your cohort is here. Find a study partner who matches your schedule and study style.
+                </p>
+              ) : (
+                <p className="atrium-dashboard-body">
+                  {connectionIds.length} study partner{connectionIds.length === 1 ? "" : "s"} connected
+                </p>
+              )}
+              <Link href={connectionIds.length === 0 ? "/nexus/directory" : "/nexus/messages"} className="atrium-dashboard-link">
+                {connectionIds.length === 0 ? "Find classmates →" : "View your group →"}
+              </Link>
+            </div>
+
+            <div className="atrium-dashboard-card">
+              <div className="atrium-dashboard-title">
+                <NetworkIcon size={15} />
+                Limbic Agent
+              </div>
+              {limbicAgentEligible ? (
+                <>
+                  <p className="atrium-dashboard-body">Ask Limbic Agent about anything from your coursework or Boards prep.</p>
+                  <Link href="/agent" className="atrium-dashboard-link atrium-dashboard-link--amber">
+                    Open Limbic Agent →
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <p className="atrium-dashboard-body">Quick access to Limbic Agent is included with PRO or LimbicStudent.</p>
+                  <span className="atrium-dashboard-locked">
+                    <LockIcon size={11} />
+                    <Link href="/pro" className="atrium-dashboard-link atrium-dashboard-link--amber" style={{ margin: 0 }}>
+                      Upgrade →
+                    </Link>
+                  </span>
+                </>
+              )}
+            </div>
+
+            <div className="atrium-dashboard-card">
+              <div className="atrium-dashboard-title">
+                <DumbbellIcon size={15} />
+                HEP Templates
+              </div>
+              {user.studentTier === "limbicStudent" ? (
+                <>
+                  <p className="atrium-dashboard-body">Example home exercise programs, organized by body region, for coursework study.</p>
+                  <Link href="/student/hep-templates" className="atrium-dashboard-link atrium-dashboard-link--amber">
+                    Browse templates →
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <p className="atrium-dashboard-body">HEP templates for coursework are included with LimbicStudent.</p>
+                  <span className="atrium-dashboard-locked">
+                    <LockIcon size={11} />
+                    <Link href="/profile/membership" className="atrium-dashboard-link atrium-dashboard-link--amber" style={{ margin: 0 }}>
+                      Upgrade →
+                    </Link>
+                  </span>
+                </>
+              )}
+            </div>
+
+            <div className="atrium-dashboard-card">
+              <div className="atrium-dashboard-title">
+                <CalendarIcon size={15} />
+                Upcoming
+              </div>
+              {upcoming ? (
+                <p className="atrium-dashboard-body">
+                  <strong>{upcoming.label}</strong>
+                  {", "}
+                  {upcoming.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                </p>
+              ) : (
+                <p className="atrium-dashboard-empty">
+                  Add your rotation dates and NPTE exam date to see your timeline here.
+                </p>
+              )}
+              <Link href="/calendar" className="atrium-dashboard-link">
+                Limbic Calendar →
+              </Link>
+            </div>
+          </div>
         </div>
 
-        <div className="atrium-dashboard-card">
-          <div className="atrium-dashboard-title">
-            <FileTextIcon size={15} />
-            Weekly Roundup
+        <aside className="atrium-roundup-panel">
+          <div className="atrium-roundup-panel-header">
+            <span className="atrium-roundup-panel-icon">
+              <FileTextIcon size={16} />
+            </span>
+            <span className="atrium-roundup-panel-title">Weekly Roundup</span>
+            <span className="atrium-roundup-panel-badge">This week</span>
           </div>
+
           {user.studentTier === "limbicStudent" ? (
-            <>
-              <p className="atrium-dashboard-body">Five real research, guideline, and CE items curated for coursework, refreshed weekly.</p>
-              <Link href="/student/roundup" className="atrium-dashboard-link atrium-dashboard-link--amber">
-                Open this week&rsquo;s roundup →
-              </Link>
-            </>
+            roundupPreview.length > 0 ? (
+              <>
+                <div className="atrium-roundup-items">
+                  {roundupPreview.map((a) => (
+                    <Link key={a.id} href={`/article/${a.id}`} className="atrium-roundup-item">
+                      <p className="atrium-roundup-item-title">{a.title}</p>
+                      <p className="atrium-roundup-item-meta">{a.source}</p>
+                    </Link>
+                  ))}
+                </div>
+                <Link href="/student/roundup" className="atrium-dashboard-link atrium-dashboard-link--amber atrium-roundup-panel-cta">
+                  See all 5 for this week →
+                </Link>
+              </>
+            ) : (
+              <p className="atrium-dashboard-empty">Nothing to round up right now, check back soon.</p>
+            )
           ) : (
             <>
-              <p className="atrium-dashboard-body">A weekly study roundup is included with LimbicStudent.</p>
+              <p className="atrium-dashboard-body">
+                Five real research, guideline, and CE items curated for coursework, refreshed every week — included with
+                LimbicStudent.
+              </p>
               <span className="atrium-dashboard-locked">
                 <LockIcon size={11} />
                 <Link href="/profile/membership" className="atrium-dashboard-link atrium-dashboard-link--amber" style={{ margin: 0 }}>
@@ -363,53 +451,7 @@ export default async function StudentAtriumPage() {
               </span>
             </>
           )}
-        </div>
-
-        <div className="atrium-dashboard-card">
-          <div className="atrium-dashboard-title">
-            <DumbbellIcon size={15} />
-            HEP Templates
-          </div>
-          {user.studentTier === "limbicStudent" ? (
-            <>
-              <p className="atrium-dashboard-body">Example home exercise programs, organized by body region, for coursework study.</p>
-              <Link href="/student/hep-templates" className="atrium-dashboard-link atrium-dashboard-link--amber">
-                Browse templates →
-              </Link>
-            </>
-          ) : (
-            <>
-              <p className="atrium-dashboard-body">HEP templates for coursework are included with LimbicStudent.</p>
-              <span className="atrium-dashboard-locked">
-                <LockIcon size={11} />
-                <Link href="/profile/membership" className="atrium-dashboard-link atrium-dashboard-link--amber" style={{ margin: 0 }}>
-                  Upgrade →
-                </Link>
-              </span>
-            </>
-          )}
-        </div>
-
-        <div className="atrium-dashboard-card">
-          <div className="atrium-dashboard-title">
-            <CalendarIcon size={15} />
-            Upcoming
-          </div>
-          {upcoming ? (
-            <p className="atrium-dashboard-body">
-              <strong>{upcoming.label}</strong>
-              {", "}
-              {upcoming.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-            </p>
-          ) : (
-            <p className="atrium-dashboard-empty">
-              Add your rotation dates and NPTE exam date to see your timeline here.
-            </p>
-          )}
-          <Link href="/calendar" className="atrium-dashboard-link">
-            Limbic Calendar →
-          </Link>
-        </div>
+        </aside>
       </div>
     </div>
   );
