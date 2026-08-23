@@ -133,7 +133,6 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
     >
       <div className="hero-card-media">
         <ArticleImage key={article.id} src={article.image} fill />
-        <div className="hero-card-gradient" />
         <div className="hero-card-topleft">
           {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
         </div>
@@ -145,17 +144,17 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
             <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
           </span>
         </div>
-        <div className="hero-card-bottom">
-          <div className="hero-card-title">{article.title}</div>
-          <div className="hero-card-source">
-            {article.source}
-            {(article.isNew || article.isRead) && <span className="hero-card-source-sep">·</span>}
-            {article.isNew && <NewBadge onImage />}
-            {article.isRead && <ReadBadge onImage />}
-          </div>
+      </div>
+      <div style={{ padding: "16px 20px 0" }}>
+        <div className="hero-card-title">{article.title}</div>
+        <div className="hero-card-source">
+          {article.source}
+          {(article.isNew || article.isRead) && <span className="hero-card-source-sep">·</span>}
+          {article.isNew && <NewBadge />}
+          {article.isRead && <ReadBadge />}
         </div>
       </div>
-      <div style={{ padding: "16px 20px 18px" }}>
+      <div style={{ padding: "10px 20px 18px" }}>
         <p className="card-body" style={{ fontSize: 15, margin: 0 }}>
           {article.summary}
         </p>
