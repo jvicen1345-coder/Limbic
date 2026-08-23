@@ -23,22 +23,25 @@ export default async function CommonPathologiesPage() {
         <section key={category} style={{ marginTop: 22 }}>
           <h2 style={{ fontSize: 16, margin: "0 0 10px" }}>{category}</h2>
           <div className="wellness-card-columns">
-            {PATHOLOGIES.filter((p) => p.category === category).map((p) => (
+            {PATHOLOGIES.filter((p) => p.category === category).map((p, i) => (
               <div key={p.slug} className="wellness-assess-card">
-                <div className="wellness-calc-title" style={{ margin: 0 }}>
-                  {p.name}
+                <div className="wellness-exercise-header">
+                  <span className="wellness-exercise-number">{i + 1}</span>
+                  <div className="wellness-calc-title" style={{ margin: 0 }}>
+                    {p.name}
+                  </div>
                 </div>
-                <p className="wellness-calc-desc" style={{ marginTop: 6 }}>
-                  {p.summary}
-                </p>
+                <p className="wellness-calc-desc">{p.summary}</p>
 
-                {p.explanation.map((paragraph, i) => (
-                  <p key={i} className="wellness-calc-desc">
-                    {paragraph}
-                  </p>
-                ))}
+                <div className="wellness-assess-steps-label">What It Is</div>
+                <p className="wellness-calc-desc">{p.explanation[0]}</p>
 
                 <PathologyVideo slug={p.slug} name={p.name} />
+
+                <div className="wellness-assess-steps-label">Symptoms &amp; What Helps</div>
+                <p className="wellness-calc-desc">{p.explanation[1]}</p>
+
+                <p className="wellness-calc-caution">{p.explanation[2]}</p>
               </div>
             ))}
           </div>
