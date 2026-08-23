@@ -1,4 +1,6 @@
-import { ZapIcon } from "@/components/icons";
+import Link from "next/link";
+import { ZapIcon, ChevronRightIcon } from "@/components/icons";
+import { domainSlug } from "@/lib/board-content";
 
 export interface DomainAccuracy {
   domain: string;
@@ -77,7 +79,7 @@ export function AtriumProgressChart({
         {hasAnyData ? (
           <div className="atrium-progress-domains">
             {domains.map((d) => (
-              <div className="atrium-progress-domain-row" key={d.domain}>
+              <Link href={`/student/domains/${domainSlug(d.domain)}`} className="atrium-progress-domain-row" key={d.domain}>
                 <span className="atrium-progress-domain-swatch" style={{ background: d.color }} aria-hidden="true" />
                 <span className="atrium-progress-domain-name">{d.domain}</span>
                 <div className="progress-bar atrium-progress-domain-bar">
@@ -90,7 +92,8 @@ export function AtriumProgressChart({
                   />
                 </div>
                 <span className="atrium-progress-domain-frac">{d.total > 0 ? `${d.correct}/${d.total}` : "Not yet"}</span>
-              </div>
+                <ChevronRightIcon size={14} className="atrium-progress-domain-arrow" />
+              </Link>
             ))}
           </div>
         ) : (

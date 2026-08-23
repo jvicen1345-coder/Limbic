@@ -266,6 +266,37 @@ export function questionsForSpecialty(slug: string): BoardQuestion[] {
   return BOARD_QUESTIONS.filter((q) => q.specialtySlugs?.includes(slug));
 }
 
+/** The 5 NPTE domains AtriumProgressChart's per-domain accuracy breakdown tracks (see
+ *  app/(app)/student/page.tsx's DOMAIN_COLORS) — kept here, not just inline in that page, so
+ *  the domain-practice pages below (see questionsForDomain, domainSlug) share the exact same
+ *  canonical domain identity rather than each guessing at spelling/casing independently. */
+export const NPTE_DOMAINS = ["Musculoskeletal", "Neuromuscular", "Cardiopulmonary", "Integumentary", "Nonsystem / Safety"] as const;
+
+/** URL-safe slug for a domain name (e.g. "Nonsystem / Safety" -> "nonsystem-safety") — see
+ *  app/(app)/student/domains/[slug]/page.tsx, linked to from AtriumProgressChart's domain
+ *  rows. */
+export function domainSlug(domain: string): string {
+  return domain
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/** Reverses domainSlug() against the fixed NPTE_DOMAINS list — null for anything that
+ *  isn't one of the 5 real domains, so the domain-practice page can 404 rather than render
+ *  an empty page for a typo'd or made-up slug. */
+export function domainFromSlug(slug: string): (typeof NPTE_DOMAINS)[number] | null {
+  return NPTE_DOMAINS.find((d) => domainSlug(d) === slug) ?? null;
+}
+
+/** Every question tagged with `domain` — same "fixed, non-rotating preview set" reasoning
+ *  as questionsForSpecialty above, just filtered on BoardQuestion.domain instead of
+ *  specialtySlugs. Powers the "practice this domain" page a reader reaches by clicking a
+ *  row in AtriumProgressChart. */
+export function questionsForDomain(domain: string): BoardQuestion[] {
+  return BOARD_QUESTIONS.filter((q) => q.domain === domain);
+}
+
 export interface BoardTerm {
   id: string;
   term: string;
