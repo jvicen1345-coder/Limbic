@@ -2661,8 +2661,18 @@ html[data-theme="dark"] .nav-founding-link-active {
 .vitals-log-row { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid var(--color-divider); font-size: 13px; }
 .vitals-log-row:last-child { border-bottom: none; }
 .vitals-log-date { color: var(--color-neutral-700); font-size: 11.5px; min-width: 46px; }
-.vitals-log-activity { flex: 1; font-weight: 600; }
+.vitals-log-activity { flex: 1; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 .vitals-log-minutes { color: var(--color-neutral-700); font-size: 12px; }
+.vitals-log-synced-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  padding: 2px 6px;
+  border-radius: 999px;
+}
 
 .vitals-insight-item {
   display: flex;
