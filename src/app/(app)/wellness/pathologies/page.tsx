@@ -22,9 +22,9 @@ export default async function CommonPathologiesPage() {
       {categories.map((category) => (
         <section key={category} style={{ marginTop: 22 }}>
           <h2 style={{ fontSize: 16, margin: "0 0 10px" }}>{category}</h2>
-          <div className="wellness-card-columns">
-            {PATHOLOGIES.filter((p) => p.category === category).map((p, i) => (
-              <div key={p.slug} className="wellness-assess-card">
+          <div className="assess-page-layout">
+            {PATHOLOGIES.filter((p) => p.category === category).map((p, i) => [
+              <div key={p.slug} className="wellness-assess-card assess-test-card">
                 <div className="wellness-exercise-header">
                   <span className="wellness-exercise-number">{i + 1}</span>
                   <div className="wellness-calc-title" style={{ margin: 0 }}>
@@ -36,14 +36,20 @@ export default async function CommonPathologiesPage() {
                 <div className="wellness-assess-steps-label">What It Is</div>
                 <p className="wellness-calc-desc">{p.explanation[0]}</p>
 
-                <PathologyVideo slug={p.slug} name={p.name} />
-
                 <div className="wellness-assess-steps-label">Symptoms &amp; What Helps</div>
                 <p className="wellness-calc-desc">{p.explanation[1]}</p>
 
                 <p className="wellness-calc-caution">{p.explanation[2]}</p>
-              </div>
-            ))}
+              </div>,
+
+              <div key={`${p.slug}-video`} className="assess-video-cell">
+                {i === 0 && <div className="assess-right-panel-heading">Video References</div>}
+                <div className="assess-video-card">
+                  <div className="assess-video-title">{p.name}</div>
+                  <PathologyVideo slug={p.slug} name={p.name} />
+                </div>
+              </div>,
+            ])}
           </div>
         </section>
       ))}
