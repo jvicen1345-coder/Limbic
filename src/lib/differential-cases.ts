@@ -22,12 +22,19 @@ export interface DifferentialCaseEntry {
   category: DifferentialCategory;
   difficulty: DifferentialDifficulty;
   clues: string[];
+  /** Common abbreviations/alternate names a reader might reasonably type instead of the
+   *  full condition name (e.g. "PFPS" for Patellofemoral Pain Syndrome) — checked
+   *  alongside `condition` in app/actions/differential.ts's guess comparison so a
+   *  clinically correct shorthand answer isn't marked wrong just for not spelling out the
+   *  full term. Omitted entirely for conditions with no well-known shorthand. */
+  aliases?: string[];
 }
 
 export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 1,
     condition: "ACL Tear",
+    aliases: ["ACL", "ACL Rupture", "Anterior Cruciate Ligament Tear"],
     category: "Sports",
     difficulty: "intermediate",
     clues: [
@@ -54,6 +61,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 3,
     condition: "Lumbar Disc Herniation",
+    aliases: ["LDH", "Herniated Disc", "Slipped Disc"],
     category: "Musculoskeletal",
     difficulty: "beginner",
     clues: [
@@ -67,6 +75,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 4,
     condition: "Stroke",
+    aliases: ["CVA", "Cerebrovascular Accident", "Ischemic Stroke"],
     category: "Neurological",
     difficulty: "beginner",
     clues: [
@@ -80,6 +89,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 5,
     condition: "COPD",
+    aliases: ["Chronic Obstructive Pulmonary Disease"],
     category: "Cardiopulmonary",
     difficulty: "beginner",
     clues: [
@@ -93,6 +103,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 6,
     condition: "Patellofemoral Pain Syndrome",
+    aliases: ["PFPS", "Runner's Knee"],
     category: "Sports",
     difficulty: "beginner",
     clues: [
@@ -106,6 +117,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 7,
     condition: "Parkinson Disease",
+    aliases: ["PD", "Parkinson's", "Parkinson's Disease"],
     category: "Neurological",
     difficulty: "intermediate",
     clues: [
@@ -132,6 +144,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 9,
     condition: "Cerebral Palsy",
+    aliases: ["CP"],
     category: "Pediatrics",
     difficulty: "intermediate",
     clues: [
@@ -145,6 +158,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 10,
     condition: "Heart Failure",
+    aliases: ["HF", "CHF", "Congestive Heart Failure"],
     category: "Cardiopulmonary",
     difficulty: "intermediate",
     clues: [
@@ -158,6 +172,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 11,
     condition: "Multiple Sclerosis",
+    aliases: ["MS"],
     category: "Neurological",
     difficulty: "intermediate",
     clues: [
@@ -184,6 +199,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 13,
     condition: "Carpal Tunnel Syndrome",
+    aliases: ["CTS"],
     category: "Musculoskeletal",
     difficulty: "beginner",
     clues: [
@@ -197,6 +213,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 14,
     condition: "Traumatic Brain Injury",
+    aliases: ["TBI"],
     category: "Neurological",
     difficulty: "intermediate",
     clues: [
@@ -223,6 +240,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 16,
     condition: "Spinal Cord Injury — C6 Complete",
+    aliases: ["SCI", "Spinal Cord Injury", "C6 Spinal Cord Injury", "C6 Tetraplegia", "C6 Quadriplegia"],
     category: "Neurological",
     difficulty: "advanced",
     clues: [
@@ -262,6 +280,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 19,
     condition: "Knee Osteoarthritis",
+    aliases: ["Knee OA", "OA Knee"],
     category: "Geriatrics",
     difficulty: "beginner",
     clues: [
@@ -288,6 +307,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 21,
     condition: "Duchenne Muscular Dystrophy",
+    aliases: ["DMD", "Duchenne's"],
     category: "Pediatrics",
     difficulty: "advanced",
     clues: [
@@ -301,6 +321,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 22,
     condition: "Frozen Shoulder",
+    aliases: ["Adhesive Capsulitis"],
     category: "Musculoskeletal",
     difficulty: "intermediate",
     clues: [
@@ -314,6 +335,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 23,
     condition: "Lateral Epicondylitis",
+    aliases: ["Tennis Elbow", "Lateral Epicondylalgia"],
     category: "Musculoskeletal",
     difficulty: "beginner",
     clues: [
@@ -327,6 +349,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 24,
     condition: "Orthostatic Hypotension",
+    aliases: ["OH", "Postural Hypotension"],
     category: "Geriatrics",
     difficulty: "intermediate",
     clues: [
@@ -340,6 +363,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 25,
     condition: "Patellar Tendinopathy",
+    aliases: ["Jumper's Knee", "Patellar Tendinitis"],
     category: "Sports",
     difficulty: "intermediate",
     clues: [
@@ -353,6 +377,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 26,
     condition: "Cauda Equina Syndrome",
+    aliases: ["CES"],
     category: "Musculoskeletal",
     difficulty: "advanced",
     clues: [
@@ -366,6 +391,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 27,
     condition: "Guillain-Barre Syndrome",
+    aliases: ["GBS", "Guillain Barre"],
     category: "Neurological",
     difficulty: "advanced",
     clues: [
@@ -379,6 +405,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 28,
     condition: "Developmental Coordination Disorder",
+    aliases: ["DCD"],
     category: "Pediatrics",
     difficulty: "advanced",
     clues: [
@@ -392,6 +419,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 29,
     condition: "Pulmonary Embolism",
+    aliases: ["PE"],
     category: "Cardiopulmonary",
     difficulty: "advanced",
     clues: [
@@ -405,6 +433,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 30,
     condition: "Fibromyalgia",
+    aliases: ["FM", "Fibro"],
     category: "Wellness",
     difficulty: "intermediate",
     clues: [
@@ -418,6 +447,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 31,
     condition: "De Quervain Tenosynovitis",
+    aliases: ["De Quervain's", "De Quervain Tendinitis"],
     category: "Musculoskeletal",
     difficulty: "intermediate",
     clues: [
@@ -431,6 +461,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 32,
     condition: "Thoracic Outlet Syndrome",
+    aliases: ["TOS"],
     category: "Musculoskeletal",
     difficulty: "advanced",
     clues: [
@@ -470,6 +501,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 35,
     condition: "Achilles Tendinopathy",
+    aliases: ["Achilles Tendinitis"],
     category: "Sports",
     difficulty: "beginner",
     clues: [
@@ -483,6 +515,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 36,
     condition: "Myocardial Infarction",
+    aliases: ["MI", "Heart Attack"],
     category: "Cardiopulmonary",
     difficulty: "beginner",
     clues: [
@@ -535,6 +568,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 40,
     condition: "Anterior Compartment Syndrome",
+    aliases: ["Compartment Syndrome", "ACS"],
     category: "Sports",
     difficulty: "advanced",
     clues: [
@@ -574,6 +608,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 43,
     condition: "Iliotibial Band Syndrome",
+    aliases: ["ITBS", "IT Band Syndrome"],
     category: "Sports",
     difficulty: "beginner",
     clues: [
@@ -587,6 +622,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 44,
     condition: "Amyotrophic Lateral Sclerosis",
+    aliases: ["ALS", "Lou Gehrig's Disease"],
     category: "Neurological",
     difficulty: "advanced",
     clues: [
@@ -600,6 +636,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 45,
     condition: "Benign Paroxysmal Positional Vertigo",
+    aliases: ["BPPV"],
     category: "Neurological",
     difficulty: "intermediate",
     clues: [
@@ -626,6 +663,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 47,
     condition: "Adhesive Capsulitis",
+    aliases: ["Frozen Shoulder"],
     category: "Musculoskeletal",
     difficulty: "intermediate",
     clues: [
@@ -639,6 +677,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 48,
     condition: "Osgood-Schlatter Disease",
+    aliases: ["OSD", "Osgood Schlatter"],
     category: "Pediatrics",
     difficulty: "beginner",
     clues: [
@@ -652,6 +691,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 49,
     condition: "Polymyalgia Rheumatica",
+    aliases: ["PMR"],
     category: "Geriatrics",
     difficulty: "advanced",
     clues: [
@@ -678,6 +718,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 51,
     condition: "Hypertension",
+    aliases: ["HTN", "High Blood Pressure"],
     category: "Wellness",
     difficulty: "beginner",
     clues: [
@@ -691,6 +732,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 52,
     condition: "Type 2 Diabetes",
+    aliases: ["T2D", "T2DM", "Type 2 Diabetes Mellitus"],
     category: "Wellness",
     difficulty: "beginner",
     clues: [
@@ -704,6 +746,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 53,
     condition: "Rotator Cuff Tendinopathy",
+    aliases: ["Rotator Cuff Tendinitis"],
     category: "Musculoskeletal",
     difficulty: "beginner",
     clues: [
@@ -717,6 +760,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 54,
     condition: "Wrist Fracture — Distal Radius",
+    aliases: ["Colles Fracture", "Distal Radius Fracture", "Wrist Fracture"],
     category: "Musculoskeletal",
     difficulty: "beginner",
     clues: [
@@ -730,6 +774,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 55,
     condition: "Medial Tibial Stress Syndrome",
+    aliases: ["MTSS", "Shin Splints"],
     category: "Sports",
     difficulty: "beginner",
     clues: [
@@ -769,6 +814,7 @@ export const differentialCases: DifferentialCaseEntry[] = [
   {
     id: 58,
     condition: "Postural Orthostatic Tachycardia Syndrome",
+    aliases: ["POTS"],
     category: "Cardiopulmonary",
     difficulty: "advanced",
     clues: [
