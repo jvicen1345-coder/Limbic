@@ -4668,11 +4668,28 @@ html[data-theme="dark"] .app-root--atrium {
   color: var(--atrium-tint);
 }
 .atrium-progress-domains { display: flex; flex-direction: column; gap: 8px; }
-.atrium-progress-domain-row { display: flex; align-items: center; gap: 8px; }
+/* Each row is a link into that domain's practice page (see AtriumProgressChart.tsx,
+   app/(app)/student/domains/[slug]/page.tsx) — reset the anchor defaults since this reads
+   as a data row, not a text link, and add a hover/focus cue so it's still discoverable as
+   clickable. */
+.atrium-progress-domain-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  margin: -4px -6px;
+  border-radius: var(--radius-md);
+  color: inherit;
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+.atrium-progress-domain-row:hover,
+.atrium-progress-domain-row:focus-visible { background: color-mix(in srgb, var(--atrium-tint) 10%, transparent); }
 .atrium-progress-domain-swatch { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .atrium-progress-domain-name { font-size: 12px; color: var(--color-text); width: 132px; flex-shrink: 0; }
 .atrium-progress-domain-bar { flex: 1; min-width: 0; }
 .atrium-progress-domain-frac { font-size: 11.5px; color: var(--color-neutral-700); width: 46px; flex-shrink: 0; text-align: right; }
+.atrium-progress-domain-arrow { flex-shrink: 0; color: var(--color-neutral-500); }
 @media (max-width: 799px) {
   .atrium-progress-card { flex-direction: column; align-items: flex-start; gap: 16px; }
   .atrium-progress-domain-name { width: auto; flex: 1; }

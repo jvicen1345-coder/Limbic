@@ -45,6 +45,7 @@ model User {
   licenses          License[]
   calculatorProfiles CalculatorProfile[]
   specialtyQuestionAnswers SpecialtyQuestionAnswer[]
+  domainQuestionAnswers DomainQuestionAnswer[]
   differentialResults DifferentialResult[]
   anatomyConnectResults AnatomyConnectResult[]
   rehabSequenceResults RehabSequenceResult[]
@@ -722,6 +723,27 @@ model SpecialtyQuestionAnswer {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, specialty, questionIndex, dateKey])
+}
+
+// Same shape and daily-reset pattern as SpecialtyQuestionAnswer above, just keyed on an
+// NPTE domain name (see lib/board-content.ts NPTE_DOMAINS/questionsForDomain) instead of a
+// specialty slug — kept as its own model rather than folded into SpecialtyQuestionAnswer's
+// `specialty` column since a domain ("Musculoskeletal") and a specialty slug
+// ("musculoskeletal") are different identity spaces that happen to overlap in wording; a
+// future report reading one table shouldn't silently pick up rows meant for the other.
+model DomainQuestionAnswer {
+  id             String   @id @default(cuid())
+  userId         String
+  domain         String
+  questionIndex  Int
+  selectedAnswer String
+  isCorrect      Boolean
+  answeredAt     DateTime @default(now())
+  dateKey        String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, domain, questionIndex, dateKey])
 }
 
 // One row per calendar day (dateKey, YYYY-MM-DD) — the day's case for the Differential
