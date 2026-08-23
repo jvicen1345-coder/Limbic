@@ -23,6 +23,7 @@ import {
   NetworkIcon,
   CalendarIcon,
   DumbbellIcon,
+  ZapIcon,
 } from "@/components/icons";
 
 const PATHS = [
@@ -60,6 +61,13 @@ const PATHS = [
     href: "/student/wellness",
     icon: HeartIcon,
     accent: "rose",
+  },
+  {
+    title: "Clinical Sharpening",
+    description: "Three daily games for clinical reasoning, anatomy recall, and treatment sequencing.",
+    href: "/student/clinical-sharpening",
+    icon: ZapIcon,
+    accent: "blue",
   },
 ] as const;
 
