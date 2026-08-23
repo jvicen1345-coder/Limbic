@@ -424,8 +424,8 @@ html[data-theme="dark"] .card.elev-lg {
 }
 
 /* — Home hero card's photo-led layout (see components/ArticleCard.tsx HeroArticleCard) —
-   title/source/evidence/read-time/date all sit directly on the image, above a bottom
-   gradient, so the space below the photo can stay to just the summary. */
+   evidence/read-time/date/save sit directly on the image; title/source sit in normal flow
+   right below it (not overlaid — see .hero-card-title below for why), then the summary. */
 .hero-card-media {
   position: relative;
   width: 100%;
@@ -433,13 +433,6 @@ html[data-theme="dark"] .card.elev-lg {
   height: 320px;
   overflow: hidden;
   background: var(--color-neutral-200);
-}
-.hero-card-gradient {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 40%;
-  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.5));
-  pointer-events: none;
 }
 .hero-card-topleft, .hero-card-topright {
   position: absolute;
@@ -468,37 +461,25 @@ html[data-theme="dark"] .card.elev-lg {
 }
 .hero-card-save-wrap .btn-ghost { color: #fff; }
 .hero-card-save-wrap .btn-ghost:hover { background: rgba(255, 255, 255, 0.18); }
-.hero-card-bottom {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  z-index: 2;
-  padding: 18px 20px;
-  box-sizing: border-box;
-}
 .hero-card-title {
   font-family: var(--font-heading);
   /* var(--font-heading-weight), not a hardcoded 800 — Caprasimo only ships weight 400 (see
-     app/layout.tsx), so anything heavier is the browser's blurry synthetic bold, most
-     visible right here since this title sits directly on a photo. */
+     app/layout.tsx), so anything heavier is the browser's blurry synthetic bold. */
   font-weight: var(--font-heading-weight);
-  font-size: 24px;
-  line-height: 1.22;
-  color: #fff;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-  /* .hero-card-bottom is bottom-anchored over a fixed-height photo (see .hero-card-media)
-     — a long title otherwise just keeps growing upward past the top edge of that photo and
-     gets hard-clipped mid-letter by its overflow: hidden. Clamping to 3 lines guarantees it
-     always fits (checked against both this and the mobile breakpoint's shorter media
-     height) and ends cleanly with an ellipsis instead. */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
+  font-size: 22px;
+  line-height: 1.25;
+  color: var(--color-text);
+  /* Used to sit bottom-anchored on top of the fixed-height photo above, which meant a long
+     title just grew upward past the photo's top edge and got hard-clipped mid-letter by
+     its overflow: hidden — clamped to 3 lines with an ellipsis to avoid that. Now in normal
+     document flow below the photo instead, so it can wrap to however many lines it actually
+     needs — no more clamp, no more cut-off titles, at the cost of a slightly taller card for
+     a long one. */
 }
 .hero-card-source {
-  margin-top: 5px;
+  margin-top: 6px;
   font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--color-neutral-700);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -506,7 +487,7 @@ html[data-theme="dark"] .card.elev-lg {
 .hero-card-source-sep { opacity: 0.6; }
 @media (max-width: 799px) {
   .hero-card-media { min-height: 240px; height: 240px; }
-  .hero-card-title { font-size: 20px; }
+  .hero-card-title { font-size: 19px; }
 }
 
 .progress-bar {
