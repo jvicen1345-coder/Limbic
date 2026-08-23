@@ -76,32 +76,30 @@ export function AtriumProgressChart({
           {currentStreak > 0 ? `${currentStreak} day${currentStreak === 1 ? "" : "s"} streak` : "No streak yet"}
         </div>
 
-        {hasAnyData ? (
-          <div className="atrium-progress-domains">
-            {domains.map((d) => (
-              <Link href={`/student/domains/${domainSlug(d.domain)}`} className="atrium-progress-domain-row" key={d.domain}>
-                <span className="atrium-progress-domain-swatch" style={{ background: d.color }} aria-hidden="true" />
-                <span className="atrium-progress-domain-name">{d.domain}</span>
-                <div className="progress-bar atrium-progress-domain-bar">
-                  <div
-                    className="progress-bar-fill"
-                    style={{
-                      width: d.total > 0 ? `${Math.round((d.correct / d.total) * 100)}%` : "0%",
-                      background: d.color,
-                    }}
-                  />
-                </div>
-                <span className="atrium-progress-domain-frac">{d.total > 0 ? `${d.correct}/${d.total}` : "Not yet"}</span>
-                <ChevronRightIcon size={14} className="atrium-progress-domain-arrow" />
-              </Link>
-            ))}
-          </div>
-        ) : (
+        {!hasAnyData && (
           <p className="atrium-dashboard-empty" style={{ margin: 0 }}>
-            Your readiness builds one day at a time. Start your daily sharpening to see your domain strengths and
-            weaknesses.
+            Your readiness builds one day at a time. Tap a domain below to start practicing it.
           </p>
         )}
+        <div className="atrium-progress-domains">
+          {domains.map((d) => (
+            <Link href={`/student/domains/${domainSlug(d.domain)}`} className="atrium-progress-domain-row" key={d.domain}>
+              <span className="atrium-progress-domain-swatch" style={{ background: d.color }} aria-hidden="true" />
+              <span className="atrium-progress-domain-name">{d.domain}</span>
+              <div className="progress-bar atrium-progress-domain-bar">
+                <div
+                  className="progress-bar-fill"
+                  style={{
+                    width: d.total > 0 ? `${Math.round((d.correct / d.total) * 100)}%` : "0%",
+                    background: d.color,
+                  }}
+                />
+              </div>
+              <span className="atrium-progress-domain-frac">{d.total > 0 ? `${d.correct}/${d.total}` : "Not yet"}</span>
+              <ChevronRightIcon size={14} className="atrium-progress-domain-arrow" />
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
