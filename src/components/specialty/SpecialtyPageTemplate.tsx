@@ -6,6 +6,7 @@ import { Breadcrumb, type BreadcrumbItem } from "@/components/Breadcrumb";
 import { ChevronRightIcon } from "@/components/icons";
 import type { ClinicalPearl, NpteConnection, OutcomeMeasureRow, SpecialTestRow, SpecialtyCondition, Sport } from "@/lib/specialty-content";
 import type { BoardQuestion } from "@/lib/board-content";
+import { SpecialtyBoardConnections } from "@/components/specialty/SpecialtyBoardConnections";
 
 type TabId = "overview" | "conditions" | "tools" | "boards" | "bysport";
 
@@ -15,44 +16,6 @@ const BASE_TABS: { id: TabId; label: string }[] = [
   { id: "tools", label: "Clinical Tools" },
   { id: "boards", label: "Board Connections" },
 ];
-
-/** One question in the "Board-Level Questions for This Specialty" preview — click-to-reveal,
- *  same correct/incorrect styling convention as components/BoardQuestionCard.tsx, just
- *  without that card's timing/streak/share machinery, since this is a specialty page's
- *  static sample rather than a tracked daily attempt. */
-function SpecialtyQuestionPreview({ question }: { question: BoardQuestion }) {
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const answered = selectedIndex !== null;
-
-  return (
-    <div className="specialty-question-card">
-      <p className="specialty-question-text">{question.question}</p>
-      <div className="specialty-question-options">
-        {question.choices.map((choice, i) => {
-          const isCorrect = i === question.correctIndex;
-          const isSelected = i === selectedIndex;
-          let stateClass = "";
-          if (answered && isCorrect) stateClass = "specialty-question-option--correct";
-          else if (answered && isSelected) stateClass = "specialty-question-option--incorrect";
-          return (
-            <button
-              key={choice}
-              type="button"
-              className={`specialty-question-option ${stateClass}`}
-              disabled={answered}
-              onClick={() => !answered && setSelectedIndex(i)}
-            >
-              {choice}
-              {answered && isCorrect && " ✓"}
-              {answered && isSelected && !isCorrect && " ✕"}
-            </button>
-          );
-        })}
-      </div>
-      {answered && <p className="specialty-question-explanation">{question.explanation}</p>}
-    </div>
-  );
-}
 
 export interface SpecialtyPageTemplateProps {
   /** Drives the --specialty-accent-{slug} CSS modifier class, see globals.css. */
@@ -317,11 +280,7 @@ export function SpecialtyPageTemplate({
           <div className="card elev-sm">
             <span className="card-title">Board-Level Questions for This Specialty</span>
             <div style={{ marginTop: 10 }}>
-              {specialtyQuestions.length > 0 ? (
-                specialtyQuestions.map((q) => <SpecialtyQuestionPreview question={q} key={q.id} />)
-              ) : (
-                <p className="specialty-table-note">No specialty-tagged questions yet — check Daily Sharpening for today&rsquo;s question.</p>
-              )}
+              <SpecialtyBoardConnections specialty={slug} questions={specialtyQuestions} />
             </div>
             <p className="specialty-table-note">Complete your Daily Sharpening for a new board question every day</p>
           </div>
