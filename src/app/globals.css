@@ -4707,8 +4707,28 @@ html[data-theme="dark"] .app-root--atrium {
 @media (max-width: 799px) {
   .atrium-greeting { font-size: 22px; }
   .atrium-countdown-number { font-size: 34px; }
-  .atrium-paths-grid { flex-direction: column; align-items: stretch; }
-  .atrium-path-card { max-width: none; }
+  /* Two per row instead of one full-width card per row — same cards, just laid out
+     vertically (icon over title over a clamped description) so a half-width column still
+     reads cleanly instead of squeezing the desktop's icon-title-description-arrow row
+     sideways. Cuts how far a reader has to scroll to see every path. */
+  .atrium-paths-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .atrium-path-card {
+    max-width: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 14px;
+  }
+  .atrium-path-icon { width: 36px; height: 36px; }
+  .atrium-path-title { font-size: 13.5px; margin-bottom: 2px; }
+  .atrium-path-desc {
+    font-size: 11px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .atrium-path-arrow { display: none; }
   .atrium-dashboard-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
