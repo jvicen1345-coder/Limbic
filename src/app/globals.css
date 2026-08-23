@@ -4493,6 +4493,18 @@ html[data-theme="dark"] .app-root--atrium {
   flex-shrink: 0;
 }
 
+/* Two columns on the real (eligible-user) Atrium dashboard — everything else in a main
+   column on the left, the Weekly Roundup panel as its own right-hand rail (see
+   app/(app)/student/page.tsx) — rather than the roundup being just another tile inside the
+   Quick Links grid below. min-width: 0 on the main column keeps its own grids
+   (.atrium-paths-grid, .atrium-dashboard-grid) from forcing the row wider than the
+   sidebar has room for. */
+.atrium-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; align-items: start; }
+.atrium-main-col { min-width: 0; }
+@media (max-width: 799px) {
+  .atrium-layout { grid-template-columns: minmax(0, 1fr); }
+}
+
 .atrium-header {
   margin-bottom: 22px;
 }
@@ -4631,6 +4643,65 @@ html[data-theme="dark"] .app-root--atrium {
 .atrium-dashboard-link--amber { color: var(--atrium-tint); }
 .atrium-dashboard-empty { font-size: 12.5px; color: var(--color-neutral-600); font-style: italic; }
 .atrium-dashboard-locked { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--color-neutral-600); }
+
+/* Weekly Roundup right-rail panel (see .atrium-layout above, app/(app)/student/page.tsx) —
+   a real preview of up to 3 of this week's picks for a paid LimbicStudent reader (see
+   lib/student-roundup.ts pickWeeklyRoundup), not just a static blurb, so there's something
+   concrete to glance at before committing to open the full 5-item roundup. */
+.atrium-roundup-panel {
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+}
+.atrium-roundup-panel-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.atrium-roundup-panel-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--atrium-tint) 16%, transparent);
+  color: var(--atrium-tint);
+}
+.atrium-roundup-panel-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 14.5px; flex: 1; }
+.atrium-roundup-panel-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--atrium-tint);
+  background: color-mix(in srgb, var(--atrium-tint) 14%, transparent);
+  padding: 3px 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.atrium-roundup-items { display: flex; flex-direction: column; }
+.atrium-roundup-item {
+  display: block;
+  padding: 10px 0;
+  border-top: 1px solid var(--atrium-border);
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 150ms ease;
+}
+.atrium-roundup-item:first-child { border-top: none; padding-top: 0; }
+.atrium-roundup-item:hover { opacity: 0.75; }
+.atrium-roundup-item-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0 0 3px;
+  color: var(--color-text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.atrium-roundup-item-meta { font-size: 11px; color: var(--color-neutral-700); margin: 0; }
+.atrium-roundup-panel-cta { display: inline-block; margin-top: 12px; }
 
 /* Progress visual (components/AtriumProgressChart.tsx) — replaces the old "Daily
    Sharpening"/"Boards Progress" text cards, moved up near the top of the page instead of
