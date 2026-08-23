@@ -247,9 +247,15 @@ export async function signInWithPassword(input: { email: string; password: strin
 /** "Continue as guest" — creates a fresh, empty account (isGuest: true, no email or
  *  password) and signs straight into it. Rate-limited by IP at the call site (see
  *  guestSignInAction in app/actions/auth.ts, lib/guest-rate-limit.ts), not here, so this
- *  stays a plain "mint one and sign in" helper. */
-export async function signInAsGuest() {
-  const user = await prisma.user.create({ data: { isGuest: true, hasOnboarded: false, hasCompletedOnboarding: false } });
+ *  stays a plain "mint one and sign in" helper. `name` comes from the optional field on the
+ *  sign-in screen's Guest tab — a plain "Guest" fallback when left blank, rather than
+ *  User.name's schema default (a placeholder clinician name meant for onboarding's "who am
+ *  I" copy, not something that should show up unexplained on an admin's account list). */
+export async function signInAsGuest(name?: string) {
+  const trimmedName = name?.trim();
+  const user = await prisma.user.create({
+    data: { isGuest: true, hasOnboarded: false, hasCompletedOnboarding: false, name: trimmedName || "Guest" },
+  });
   await issueSessionCookie(user.id);
 }
 
