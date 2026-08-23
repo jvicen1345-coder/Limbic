@@ -24,6 +24,7 @@ export default async function AdminAccountsPage() {
       isPro: true,
       compedAccess: true,
       createdAt: true,
+      lastVisitedAt: true,
       foundingFunder: { select: { paymentStatus: true } },
     },
   });
@@ -41,6 +42,11 @@ export default async function AdminAccountsPage() {
     grantedAccess: compedAreas(u),
     isFoundingFunder: u.foundingFunder?.paymentStatus === "confirmed",
     createdAt: u.createdAt.toISOString(),
+    // Stamped on every Home visit (see lib/session.ts recordHomeVisit) — the closest thing
+    // this app has to a "last active" signal, since createdAt alone only ever tells you
+    // when an account was first made, not whether anyone has used it since. Null for an
+    // account that's never opened Home (e.g. never made it past onboarding).
+    lastVisitedAt: u.lastVisitedAt?.toISOString() ?? null,
   }));
 
   return (
