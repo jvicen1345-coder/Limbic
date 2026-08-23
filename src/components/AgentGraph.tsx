@@ -11,8 +11,9 @@ import type { AgentNode, AgentLink } from "@/lib/agent-graph";
 type SimNode = AgentNode & d3.SimulationNodeDatum & { labelHalfWidth?: number };
 type SimLink = { source: string | SimNode; target: string | SimNode; kind: "tree" | "cross" };
 
-// Minimum gap kept between the edges of two neighboring labels.
-const LABEL_COLLIDE_PADDING = 10;
+// Minimum gap kept between the edges of two neighboring labels — wider than a node's own
+// radius padding alone would give, so two long clinical phrases never read as touching.
+const LABEL_COLLIDE_PADDING = 16;
 
 // Bright, glowing fills tuned for the near-black canvas — see the .agent-node-circle glow
 // filter in globals.css, which is what actually reads as "glowing," not just fill color.
@@ -24,8 +25,21 @@ const RING_COLOR: Record<number, string> = {
 };
 const RING_RADIUS: Record<number, number> = { 0: 30, 1: 22, 2: 17, 3: 12 };
 const RING_RADIUS_COMPACT: Record<number, number> = { 0: 24, 1: 18, 2: 14, 3: 10 };
-const RING_LINK_DISTANCE: Record<number, number> = { 1: 110, 2: 85, 3: 68 };
-const RING_FONT_SIZE: Record<number, number> = { 0: 13, 1: 11, 2: 10.5, 3: 9.5 };
+// Two sets — full-size canvases get noticeably more breathing room between rings; a narrow
+// (compact, see the `width < 460` checks below) canvas keeps roughly the old spacing so a
+// dense web still fits without nodes clipping the container's edges.
+const RING_LINK_DISTANCE: Record<number, number> = { 1: 150, 2: 118, 3: 95 };
+const RING_LINK_DISTANCE_COMPACT: Record<number, number> = { 1: 100, 2: 80, 3: 64 };
+// More negative than before — pushes unconnected nodes further apart from each other so a
+// crowded ring (4+ siblings) fans out across the canvas instead of bunching near its parent.
+const CHARGE_STRENGTH = -360;
+const CHARGE_STRENGTH_COMPACT = -220;
+const RING_FONT_SIZE: Record<number, number> = { 0: 14, 1: 12, 2: 11, 3: 10 };
+// How many characters a label gets before it's cut off with "…" — generous enough that
+// almost every real label in lib/agent-demo.ts/lib/threads.ts renders in full; the collide
+// force above already reserves exactly as much horizontal room as a label actually needs
+// (see labelHalfWidth), so a longer allowance here costs nothing layout-wise.
+const LABEL_MAX_CHARS: Record<number, number> = { 0: 40, 1: 34, 2: 34, 3: 34 };
 
 // Limbic Threads' "Prompt Agent" node (see AgentNode.variant) — deliberately larger and a
 // warmer color than any ring's, so it reads as an action to take rather than another piece
@@ -44,6 +58,10 @@ const ACTION_NODE_BOTTOM_CLEARANCE = 26;
 
 function truncate(label: string, max: number): string {
   return label.length > max ? `${label.slice(0, max - 1)}…` : label;
+}
+
+function truncateForRing(label: string, ring: number): string {
+  return truncate(label, LABEL_MAX_CHARS[ring] ?? LABEL_MAX_CHARS[3]);
 }
 
 function nodeRadius(d: { ring: number; variant?: "action" }, radii: Record<number, number>, compact: boolean): number {
@@ -174,11 +192,12 @@ export function AgentGraph({
           .id((d) => d.id)
           .distance((d) => {
             const target = d.target as SimNode;
-            return RING_LINK_DISTANCE[target.ring] ?? 90;
+            const distances = sizeRef.current.width < 460 ? RING_LINK_DISTANCE_COMPACT : RING_LINK_DISTANCE;
+            return distances[target.ring] ?? 90;
           })
           .strength((d) => (d.kind === "cross" ? 0.15 : 0.85))
       )
-      .force("charge", d3.forceManyBody().strength(-260))
+      .force("charge", d3.forceManyBody().strength(() => (sizeRef.current.width < 460 ? CHARGE_STRENGTH_COMPACT : CHARGE_STRENGTH)))
       .force(
         "collide",
         d3.forceCollide<SimNode>().radius((d) => {
@@ -350,7 +369,7 @@ export function AgentGraph({
           .attr("dy", r + 14)
           .attr("font-size", isAction ? 12 : (RING_FONT_SIZE[d.ring] ?? 10))
           .attr("font-weight", isAction ? 700 : 400)
-          .text(truncate(d.label, d.ring === 0 ? 26 : 20));
+          .text(truncateForRing(d.label, d.ring));
       });
 
     const merged = entered.merge(nodeSel);
@@ -365,7 +384,7 @@ export function AgentGraph({
       // never combined with agent-node-breathing, since only a ring-0 node can breathe.
       .classed("agent-node-action", (d) => d.variant === "action");
 
-    merged.select(".agent-node-label").text((d) => truncate(d.label, d.ring === 0 ? 26 : 20));
+    merged.select(".agent-node-label").text((d) => truncateForRing(d.label, d.ring));
     merged
       .select(".agent-node-circle")
       .attr("r", (d) => nodeRadius(d, radii, compact))
