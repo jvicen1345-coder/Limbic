@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/lib/session";
 import { EXERCISES } from "@/lib/exercises-static";
-import { ExternalLinkIcon } from "@/components/icons";
+import { PlayIcon } from "@/components/icons";
 
 export default async function TopExercisesPage() {
   const user = await getCurrentUser();
@@ -17,9 +17,9 @@ export default async function TopExercisesPage() {
         appropriate for you.
       </div>
 
-      <div className="wellness-card-columns">
-        {EXERCISES.map((ex, i) => (
-          <div key={ex.id} className="wellness-assess-card">
+      <div className="assess-page-layout">
+        {EXERCISES.map((ex, i) => [
+          <div key={ex.id} className="wellness-assess-card assess-test-card">
             <div className="wellness-exercise-header">
               <span className="wellness-exercise-number">{i + 1}</span>
               <div className="wellness-calc-title" style={{ margin: 0 }}>
@@ -37,10 +37,6 @@ export default async function TopExercisesPage() {
             </div>
 
             <p className="wellness-calc-desc">{ex.benefits}</p>
-
-            <a href={ex.youtubeUrl} target="_blank" rel="noopener noreferrer" className="wellness-video-link">
-              Watch demonstration <ExternalLinkIcon size={12} />
-            </a>
 
             <div className="wellness-assess-steps-label">How to perform</div>
             <ol className="wellness-assess-steps">
@@ -68,8 +64,21 @@ export default async function TopExercisesPage() {
             </div>
 
             <div className="wellness-calc-source">{ex.setsReps}</div>
-          </div>
-        ))}
+          </div>,
+
+          <div key={`${ex.id}-video`} className="assess-video-cell">
+            {i === 0 && <div className="assess-right-panel-heading">Video References</div>}
+            <div className="assess-video-card">
+              <div className="assess-video-title">{ex.name}</div>
+              <div className="assess-video-thumb">
+                <PlayIcon size={28} className="assess-video-thumb-icon" />
+              </div>
+              <a className="assess-video-link" href={ex.youtubeUrl} target="_blank" rel="noopener noreferrer">
+                Watch demonstration
+              </a>
+            </div>
+          </div>,
+        ])}
       </div>
     </div>
   );
