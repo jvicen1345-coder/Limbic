@@ -96,7 +96,8 @@ export function TugCognitiveCalculator() {
           cutoff. As a general trend, a dual-task cost above roughly 20% is often considered clinically meaningful,
           and an absolute dual-task TUG time above ~15 seconds is more consistently associated with elevated fall
           risk across studies than the percentage cost alone. Use alongside the standard TUG norms and the rest of
-          the fall risk picture, not as a standalone cutoff.
+          the fall risk picture, not as a standalone cutoff. Test-retest reliability studies report a minimal
+          detectable change of roughly 2.6-2.8 seconds for total dual-task time in older adults.
         </p>
       </CalcModal>
     </>

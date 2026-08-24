@@ -113,7 +113,8 @@ export function DashCalculator() {
         </div>
         <p style={{ fontSize: 11, color: "var(--color-neutral-700)", marginTop: 8 }}>
           The full score requires at least 27 of 30 items answered per the published scoring manual, unanswered items
-          here default to 1 (no difficulty/none).
+          here default to 1 (no difficulty/none). Minimal detectable change: ~11 points. Minimal clinically important
+          difference: ~11 points (musculoskeletal disorders, pooled meta-analysis estimate).
         </p>
       </CalcModal>
     </>

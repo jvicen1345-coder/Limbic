@@ -85,7 +85,8 @@ export function ThirtySecondStsCalculator() {
         <p style={{ fontSize: 11, color: "var(--color-neutral-700)", marginTop: 10 }}>
           Source: Rikli RE, Jones CJ. Development and validation of a functional fitness test for community-residing
           older adults. J Aging Phys Act. 1999. Values below the range suggest below-average lower extremity strength
-          and increased fall risk for that age/sex group.
+          and increased fall risk for that age/sex group. Minimal detectable change: ~2 repetitions
+          (community-dwelling older adults).
         </p>
       </CalcModal>
     </>
