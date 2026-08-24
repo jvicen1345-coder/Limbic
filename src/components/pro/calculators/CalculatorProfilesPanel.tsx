@@ -6,12 +6,15 @@ import {
   createCalculatorProfileAction,
   deleteCalculatorProfileAction,
   deleteCalculatorResultAction,
+  updateCalculatorProfileDemographicsAction,
   type CalculatorProfileView,
 } from "@/app/actions/calculator-profiles";
 import { PlusIcon, TrashIcon, CheckIcon, XIcon } from "@/components/icons";
 
 function CreateProfileForm({ onCreated, onCancel }: { onCreated: (p: CalculatorProfileView) => void; onCancel: () => void }) {
   const [label, setLabel] = useState("");
+  const [age, setAge] = useState("");
+  const [sex, setSex] = useState<"" | "male" | "female">("");
   const [selected, setSelected] = useState<string[]>([]);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -35,6 +38,24 @@ function CreateProfileForm({ onCreated, onCancel }: { onCreated: (p: CalculatorP
       </div>
       <p style={{ fontSize: 11, color: "var(--color-neutral-700)", margin: "4px 0 12px" }}>
         Use a non-identifying label — initials, a room number, or a session code — not the patient&rsquo;s real name.
+      </p>
+
+      <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
+        <div className="field" style={{ flex: 1 }}>
+          <label htmlFor="calc-profile-age">Age (optional)</label>
+          <input id="calc-profile-age" className="input" type="number" min={0} max={130} value={age} onChange={(e) => setAge(e.target.value)} />
+        </div>
+        <div className="field" style={{ flex: 1 }}>
+          <label htmlFor="calc-profile-sex">Sex (optional)</label>
+          <select id="calc-profile-sex" className="input" value={sex} onChange={(e) => setSex(e.target.value as "" | "male" | "female")}>
+            <option value="">Unspecified</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+          </select>
+        </div>
+      </div>
+      <p style={{ fontSize: 11, color: "var(--color-neutral-700)", margin: "-6px 0 12px" }}>
+        Pre-fills age/sex-normed tests (30-Second Sit-to-Stand, 6MWT) so you don&rsquo;t retype them for every test.
       </p>
 
       <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6 }}>Tests planned for this session</div>
@@ -62,7 +83,8 @@ function CreateProfileForm({ onCreated, onCancel }: { onCreated: (p: CalculatorP
           onClick={() => {
             setError(null);
             startTransition(async () => {
-              const result = await createCalculatorProfileAction(label, selected);
+              const ageNum = age.trim() !== "" ? Number(age) : null;
+              const result = await createCalculatorProfileAction(label, selected, ageNum, sex || null);
               if (!result.ok || !result.profile) {
                 setError(result.error ?? "Something went wrong.");
                 return;
@@ -149,6 +171,66 @@ function ResultRow({ result, onDeleted }: { result: CalculatorProfileView["resul
   );
 }
 
+/** Inline, always-editable age/sex for the active profile — saves on blur (age) or change
+ *  (sex) rather than needing its own explicit save button, since these are two small,
+ *  low-stakes fields a clinician may want to fix mid-visit (set at creation, or correct
+ *  later) without a modal. Local `age`/`sex` state re-syncs whenever the active profile
+ *  itself changes (switching profiles, or a fresh save landing) via the key prop on this
+ *  component from its caller, rather than an effect. */
+function ClientDetailsEditor({ profile, onUpdated }: { profile: CalculatorProfileView; onUpdated: (age: number | null, sex: "male" | "female" | null) => void }) {
+  const [age, setAge] = useState(profile.age != null ? String(profile.age) : "");
+  const [sex, setSex] = useState<"" | "male" | "female">(profile.sex ?? "");
+  const [pending, startTransition] = useTransition();
+
+  const save = (nextAge: number | null, nextSex: "male" | "female" | null) => {
+    startTransition(async () => {
+      const result = await updateCalculatorProfileDemographicsAction(profile.id, nextAge, nextSex);
+      if (result.ok) onUpdated(nextAge, nextSex);
+    });
+  };
+
+  return (
+    <div style={{ display: "flex", gap: 10, margin: "8px 0 12px" }}>
+      <div className="field" style={{ flex: 1 }}>
+        <label htmlFor={`calc-profile-detail-age-${profile.id}`} style={{ fontSize: 11 }}>
+          Age
+        </label>
+        <input
+          id={`calc-profile-detail-age-${profile.id}`}
+          className="input"
+          type="number"
+          min={0}
+          max={130}
+          disabled={pending}
+          value={age}
+          onChange={(e) => setAge(e.target.value)}
+          onBlur={() => save(age.trim() !== "" ? Number(age) : null, sex || null)}
+        />
+      </div>
+      <div className="field" style={{ flex: 1 }}>
+        <label htmlFor={`calc-profile-detail-sex-${profile.id}`} style={{ fontSize: 11 }}>
+          Sex
+        </label>
+        <select
+          id={`calc-profile-detail-sex-${profile.id}`}
+          className="input"
+          disabled={pending}
+          value={sex}
+          onChange={(e) => {
+            const next = e.target.value as "" | "male" | "female";
+            setSex(next);
+            save(age.trim() !== "" ? Number(age) : null, next || null);
+          }}
+        >
+          <option value="">Unspecified</option>
+          <option value="female">Female</option>
+          <option value="male">Male</option>
+        </select>
+      </div>
+    </div>
+  );
+}
+
 /** The right-side panel on /pro/calculators — a clinician creates a Calculator Profile for
  *  a visit (a plain de-identified label, never a real patient name — see
  *  CreateProfileForm above), checks off which of the 12 tests they plan to run, then makes
@@ -163,6 +245,7 @@ export function CalculatorProfilesPanel({
   onProfileCreated,
   onProfileDeleted,
   onResultDeleted,
+  onProfileDemographicsUpdated,
 }: {
   profiles: CalculatorProfileView[];
   activeProfileId: string | null;
@@ -170,6 +253,7 @@ export function CalculatorProfilesPanel({
   onProfileCreated: (profile: CalculatorProfileView) => void;
   onProfileDeleted: (profileId: string) => void;
   onResultDeleted: (profileId: string, resultId: string) => void;
+  onProfileDemographicsUpdated: (profileId: string, age: number | null, sex: "male" | "female" | null) => void;
 }) {
   const [creating, setCreating] = useState(profiles.length === 0);
   const activeProfile = profiles.find((p) => p.id === activeProfileId) ?? null;
@@ -226,6 +310,12 @@ export function CalculatorProfilesPanel({
           <div className="card-kicker" style={{ marginTop: 4 }}>
             {activeProfile.label}
           </div>
+
+          <ClientDetailsEditor
+            key={activeProfile.id}
+            profile={activeProfile}
+            onUpdated={(age, sex) => onProfileDemographicsUpdated(activeProfile.id, age, sex)}
+          />
 
           {activeProfile.selectedTests.length > 0 && (
             <div style={{ margin: "8px 0 14px" }}>

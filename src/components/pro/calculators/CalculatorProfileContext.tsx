@@ -9,6 +9,14 @@ import { createContext, useContext } from "react";
  *  drilling through app/(app)/pro/calculators/page.tsx. */
 export interface CalculatorProfileContextValue {
   activeProfileLabel: string | null;
+  /** The active profile's age/sex (see CalculatorProfile.age/sex in schema.prisma), null
+   *  when no profile is active or neither was entered. Read by the age/sex-normed
+   *  calculators (30-Second Sit-to-Stand, 6MWT) to pre-fill their own local inputs on mount
+   *  or when the active profile changes, so a clinician doesn't retype the same two values
+   *  into every test for the same visit. Still just a pre-fill — each calculator's inputs
+   *  stay locally editable/overridable from there. */
+  activeProfileAge: number | null;
+  activeProfileSex: "male" | "female" | null;
   /** Resolves true on success. CalcModal shows a brief "Saved" confirmation either way
    *  based on the result, rather than assuming success. */
   saveResult: (testKey: string, testName: string, value: string, interpretation: string) => Promise<boolean>;
@@ -16,6 +24,8 @@ export interface CalculatorProfileContextValue {
 
 const CalculatorProfileContext = createContext<CalculatorProfileContextValue>({
   activeProfileLabel: null,
+  activeProfileAge: null,
+  activeProfileSex: null,
   saveResult: async () => false,
 });
 

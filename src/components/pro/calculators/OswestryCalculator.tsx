@@ -186,7 +186,9 @@ export function OswestryCalculator() {
           <div className="pro-calc-result-label">{result.label}</div>
         </div>
         <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", marginTop: 8 }}>
-          0-20% minimal, 21-40% moderate, 41-60% severe, 61-80% crippled, 81-100% bed bound or exaggerating.
+          0-20% minimal, 21-40% moderate, 41-60% severe, 61-80% crippled, 81-100% bed bound or exaggerating. Minimal
+          detectable change: ~9 percentage points. Minimal clinically important difference: ~10 percentage points
+          (commonly cited; varies with calculation method and population).
         </p>
       </CalcModal>
     </>

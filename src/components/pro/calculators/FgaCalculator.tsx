@@ -154,6 +154,10 @@ export function FgaCalculator() {
           </div>
           <div className="pro-calc-result-label">{fallRisk ? "Below 22, indicates fall risk" : "22 or above, cut score not met"}</div>
         </div>
+        <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", marginTop: 12 }}>
+          Minimal detectable change: 4.2 points (stroke). Minimal clinically important difference: 4 points
+          (community-dwelling older adults).
+        </p>
       </CalcModal>
     </>
   );

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CalcModal, CalcCardShell } from "./CalcModal";
 import { CalcTimer } from "./CalcTimer";
+import { useCalculatorProfile } from "./CalculatorProfileContext";
 
 const M_PER_FT = 0.3048;
 
@@ -20,15 +21,35 @@ function lowerLimitOfNormalMeters(predicted: number, sex: "male" | "female"): nu
 
 /** Fully functional — unit conversion (m/ft), the built-in 6-minute countdown (see
  *  CalcTimer), and the real validated Enright & Sherrill predicted-distance regression
- *  equation with its lower limit of normal are all live. */
+ *  equation with its lower limit of normal are all live. Age/sex pre-fill from the active
+ *  Calculator Profile (see CalculatorProfileContext.tsx) whenever it's set, so a clinician
+ *  who already entered them there doesn't retype them here — still freely editable locally
+ *  afterward. Height/weight have no profile equivalent (the profile is deliberately
+ *  de-identified and those two are more visit-specific anyway), so they're always typed
+ *  in fresh here. */
 export function SixMinuteWalkCalculator() {
+  const { activeProfileAge, activeProfileSex } = useCalculatorProfile();
   const [open, setOpen] = useState(false);
   const [unit, setUnit] = useState<"m" | "ft">("m");
   const [distance, setDistance] = useState("");
-  const [age, setAge] = useState("");
-  const [sex, setSex] = useState<"male" | "female">("female");
+  const [age, setAge] = useState(activeProfileAge != null ? String(activeProfileAge) : "");
+  const [sex, setSex] = useState<"male" | "female">(activeProfileSex ?? "female");
   const [heightCm, setHeightCm] = useState("");
   const [weightKg, setWeightKg] = useState("");
+
+  // Re-syncs from the active Calculator Profile whenever it changes — the "adjust state
+  // during render" pattern (comparing against a snapshot of the previous render) rather
+  // than an effect, same reasoning as CalcModal.tsx's SaveToProfileFooter: an effect's
+  // setState here would cause an extra visible re-render for what should be synchronous
+  // with the prop change.
+  const [prevAge, setPrevAge] = useState(activeProfileAge);
+  const [prevSex, setPrevSex] = useState(activeProfileSex);
+  if (activeProfileAge !== prevAge || activeProfileSex !== prevSex) {
+    setPrevAge(activeProfileAge);
+    setPrevSex(activeProfileSex);
+    if (activeProfileAge != null) setAge(String(activeProfileAge));
+    if (activeProfileSex != null) setSex(activeProfileSex);
+  }
 
   const distanceNum = Number(distance);
   const distanceMeters = distance !== "" && Number.isFinite(distanceNum) ? (unit === "m" ? distanceNum : distanceNum * M_PER_FT) : null;
@@ -126,7 +147,8 @@ export function SixMinuteWalkCalculator() {
         )}
         <p style={{ fontSize: 11, color: "var(--color-neutral-700)", marginTop: 10 }}>
           Source: Enright PL, Sherrill DL. Reference equations for the six-minute walk in healthy adults. Am J Respir
-          Crit Care Med. 1998.
+          Crit Care Med. 1998. Minimal detectable change: ~54 meters (community-dwelling older adults); MCID is
+          highly condition-dependent, ranging from roughly 15 to 195 meters across published populations.
         </p>
       </CalcModal>
     </>
