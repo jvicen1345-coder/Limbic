@@ -4,7 +4,7 @@ import { ProGate } from "@/components/pro/ProGate";
 import { getCalculatorProfilesForCurrentUser } from "@/app/actions/calculator-profiles";
 
 export const metadata: Metadata = {
-  title: "Calculators",
+  title: "Outcome Measures",
 };
 import { CalculatorWorkspace } from "@/components/pro/calculators/CalculatorWorkspace";
 import { NprsCalculator } from "@/components/pro/calculators/NprsCalculator";
@@ -29,13 +29,13 @@ export default async function ProCalculatorsPage() {
 
   return (
     <div className="screen-pad">
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Clinical Calculators</h1>
+      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Outcome Measures</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
         Validated outcome measures and functional assessments, scored and interpreted in real time.
       </p>
 
       {!hasAccess ? (
-        <ProGate toolName="Clinical Calculators" />
+        <ProGate toolName="Outcome Measures" />
       ) : (
         <CalculatorWorkspace initialProfiles={profiles}>
           <div className="pro-grid-2">

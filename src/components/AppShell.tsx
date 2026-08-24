@@ -351,7 +351,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         {proExpanded && (
           <>
             <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Clinical Calculators" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Outcome Measures" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Decision Rules" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/red-flags" icon={<AlertCircleIcon />} label="Red Flag Screening" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
