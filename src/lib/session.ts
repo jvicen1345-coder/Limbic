@@ -171,12 +171,12 @@ export function hasLicenseAccess(user: {
 }
 
 /** Outcome Measures, Decision Rules, Red Flag Screening, Special Tests, Lab Values,
- *  Medications, and Guidelines are useful clinical-knowledge references for a PT student to
- *  learn from too, not just a paying PRO clinician — so these seven specifically (not the
- *  rest of the LimbicPRO toolbox: Documentation, CE Tracker, the HEP Builder, which are
- *  about running a real practice rather than learning the material) also open up to any
- *  hasStudentAccess() account. Real LimbicPRO members are unaffected — this only widens who
- *  else gets through, never narrows the existing isPro check. */
+ *  Medications, Research & Statistics Literacy, and Guidelines are useful clinical-knowledge
+ *  references for a PT student to learn from too, not just a paying PRO clinician — so these
+ *  eight specifically (not the rest of the LimbicPRO toolbox: Documentation, CE Tracker, the
+ *  HEP Builder, which are about running a real practice rather than learning the material)
+ *  also open up to any hasStudentAccess() account. Real LimbicPRO members are unaffected —
+ *  this only widens who else gets through, never narrows the existing isPro check. */
 export function hasClinicalReferenceAccess(user: { isPro: boolean; email: string | null; licenseEmail: string | null; compedAccess: unknown }): boolean {
   return user.isPro || hasStudentAccess(user);
 }
