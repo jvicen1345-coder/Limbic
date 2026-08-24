@@ -10,18 +10,21 @@ interface TrackerStatus {
   lastSynced: string | null;
 }
 
-/** One row per tracker on the Activity Log's "Connect a tracker" card — Fitbit and Strava
+/** One row per tracker on the Activity Log's "Connect a tracker" card — Google Health
+ *  (which now carries Fitbit's wearable data, see lib/google-health-oauth.ts) and Strava
  *  both expose real OAuth2 APIs (unlike Apple Health, see AppleHealthSyncCard.tsx/
  *  AppleHealthUploadCard.tsx for that workaround), so connecting is a plain redirect to
- *  the provider's own consent screen (see app/auth/fitbit/route.ts, app/auth/strava/
- *  route.ts) rather than anything this component drives itself. The row itself always
- *  renders — even before the site owner has configured that provider's env vars (see
- *  lib/google-health-oauth.ts googleHealthEnabled, lib/strava-oauth.ts stravaEnabled) — so readers see
- *  the option and are prompted to link it the moment it's live, rather than the feature
- *  appearing out of nowhere later with no lead-up. Unlike "Continue with Google" (which
- *  hides outright when unconfigured, since that's the reader's *only* sign-in path and a
- *  dead link there would be actively misleading), a not-yet-configured tracker instead
- *  shows a "Coming soon" badge in place of the Connect button. */
+ *  the provider's own consent screen (see app/auth/fitbit/route.ts — route path kept as
+ *  "fitbit" since that's still what FitnessConnection.provider stores in the database,
+ *  only the on-screen label changed — app/auth/strava/route.ts) rather than anything this
+ *  component drives itself. The row itself always renders — even before the site owner has
+ *  configured that provider's env vars (see lib/google-health-oauth.ts googleHealthEnabled,
+ *  lib/strava-oauth.ts stravaEnabled) — so readers see the option and are prompted to link
+ *  it the moment it's live, rather than the feature appearing out of nowhere later with no
+ *  lead-up. Unlike "Continue with Google" (which hides outright when unconfigured, since
+ *  that's the reader's *only* sign-in path and a dead link there would be actively
+ *  misleading), a not-yet-configured tracker instead shows a "Coming soon" badge in place
+ *  of the Connect button. */
 function TrackerRow({
   label,
   provider,
@@ -93,9 +96,9 @@ export function TrackerConnectCard({
     <div className="card elev-sm" style={{ marginBottom: 18 }}>
       <div className="card-kicker">Connect a tracker</div>
       <p className="card-body" style={{ marginTop: 2 }}>
-        Fitbit and Strava both sync automatically once connected, no automations to set up.
+        Google Health and Strava both sync automatically once connected, no automations to set up.
       </p>
-      <TrackerRow label="Fitbit" provider="fitbit" status={fitbit} />
+      <TrackerRow label="Google Health" provider="fitbit" status={fitbit} />
       <TrackerRow label="Strava" provider="strava" status={strava} />
     </div>
   );
