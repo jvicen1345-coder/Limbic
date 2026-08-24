@@ -19,14 +19,15 @@ const CATEGORY_CLASS: Record<GeneralizabilityResult["category"], string> = {
  *  BMI/VO2 Max are. Reuses the exact Poor/Fair/Good/Excellent badge styling
  *  HrvCalculatorCard/Vo2MaxCalculatorCard already use, for the same visual vocabulary.
  *
- *  The first field doubles as a link/citation box — a PubMed URL, bare PMID, DOI, or
- *  citation/title resolves server-side to a real fetched abstract (see
- *  lib/pubmed.ts resolvePubmedAbstract), which is what actually gets read; typing a plain
- *  population description straight into the same box still works exactly as before if
- *  nothing resolves. result.resolvedArticle and result.studyPopulationSummary are how the
- *  reader confirms what was actually found/read before trusting the score. */
-export function GeneralizabilityChecker() {
-  const [studyInput, setStudyInput] = useState("");
+ *  studyInput is lifted to the shared field ArticleToolsPanel renders once above both this
+ *  and ArticleHistogramExplorer — a PubMed URL, bare PMID, DOI, or citation/title resolves
+ *  server-side to a real fetched abstract (see lib/pubmed.ts resolvePubmedAbstract), which
+ *  is what actually gets read; typing a plain population description into that same shared
+ *  box still works exactly as before if nothing resolves (this tool, unlike the histogram
+ *  one, has that free-text fallback). result.resolvedArticle and
+ *  result.studyPopulationSummary are how the reader confirms what was actually found/read
+ *  before trusting the score. */
+export function GeneralizabilityChecker({ studyInput }: { studyInput: string }) {
   const [targetPopulation, setTargetPopulation] = useState("");
   const [result, setResult] = useState<GeneralizabilityResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -52,23 +53,12 @@ export function GeneralizabilityChecker() {
     <div className="card elev-sm">
       <div className="card-kicker">Generalizability Checker</div>
       <p className="card-body" style={{ marginTop: 2 }}>
-        Paste a PubMed link, PMID, DOI, or citation and it&rsquo;ll read the actual abstract — or just describe the
-        study&rsquo;s population yourself. Either way, describe the population you&rsquo;re comparing it to and get a
-        scored read on how well the findings likely transfer.
+        Reads the study pasted into the Study field above (or just its population, if that&rsquo;s what you typed
+        there instead of a link). Describe the population you&rsquo;re comparing it to below and get a scored read on
+        how well the findings likely transfer.
       </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 12 }}>
-        <div className="field">
-          <label htmlFor="gen-study-input">Study — link, PMID, DOI, citation, or a description of its population</label>
-          <textarea
-            className="input"
-            id="gen-study-input"
-            rows={3}
-            placeholder="e.g. https://pubmed.ncbi.nlm.nih.gov/34567890/ — or 45 adults aged 20-35 with acute low back pain, recruited from one outpatient clinic"
-            value={studyInput}
-            onChange={(e) => setStudyInput(e.target.value)}
-          />
-        </div>
+      <div style={{ marginTop: 12 }}>
         <div className="field">
           <label htmlFor="gen-target-population">Your patient or population</label>
           <textarea

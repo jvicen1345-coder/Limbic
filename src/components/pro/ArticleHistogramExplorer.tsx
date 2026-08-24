@@ -19,10 +19,14 @@ function formatStat(v: ArticleVariable): string {
  *  approximate distribution for it — see lib/article-variables.ts for the extraction step
  *  (a real PubMed abstract required, model only extracts real reported numbers) and
  *  lib/histogram.ts for the deterministic, non-LLM bin math that turns those numbers into
- *  bars. Same resolve-a-real-article-first shape as GeneralizabilityChecker.tsx, but this
- *  tool has no free-text fallback: a plotted histogram implies real numbers behind it. */
-export function ArticleHistogramExplorer() {
-  const [studyInput, setStudyInput] = useState("");
+ *  bars.
+ *
+ *  studyInput is lifted to the shared field ArticleToolsPanel renders once above both this
+ *  and GeneralizabilityChecker.tsx — this tool still has no free-text fallback of its own
+ *  (a plotted histogram implies real numbers behind it), so typing a plain population
+ *  description into that shared field works for the Generalizability Checker below/above
+ *  it but just fails to resolve here, same as it always did when this had its own field. */
+export function ArticleHistogramExplorer({ studyInput }: { studyInput: string }) {
   const [result, setResult] = useState<ArticleVariablesResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -52,22 +56,10 @@ export function ArticleHistogramExplorer() {
     <div className="card elev-sm">
       <div className="card-kicker">Article Histogram Explorer</div>
       <p className="card-body" style={{ marginTop: 2 }}>
-        Paste a PubMed link, PMID, DOI, or citation and pick one of its reported variables to see an
-        approximate distribution — reconstructed from the article&rsquo;s own summary statistics, the same
-        shape-first habit the guide below teaches.
+        Reads the study pasted into the Study field above and picks out its reported variables — pick one to see an
+        approximate distribution, reconstructed from the article&rsquo;s own summary statistics, the same shape-first
+        habit the guide below teaches.
       </p>
-
-      <div className="field" style={{ marginTop: 12 }}>
-        <label htmlFor="hist-study-input">Study — link, PMID, DOI, or citation</label>
-        <textarea
-          className="input"
-          id="hist-study-input"
-          rows={2}
-          placeholder="e.g. https://pubmed.ncbi.nlm.nih.gov/34567890/"
-          value={studyInput}
-          onChange={(e) => setStudyInput(e.target.value)}
-        />
-      </div>
 
       <button type="button" className="btn btn-primary" disabled={!canFind} onClick={handleFind} style={{ marginTop: 12 }}>
         {pending ? "Reading article…" : "Find variables"}
