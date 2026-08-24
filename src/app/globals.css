@@ -1714,32 +1714,24 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 .crossword-clue-banner-num { font-weight: 700; margin-right: 6px; }
 
-.crossword-mobile-keys { display: none; }
-/* Touch-only (not just "narrow screen") — a touch laptop at desktop width still gets it,
-   a mouse/trackpad user on a narrow window still doesn't, matching what the row is
-   actually for: an alternative to a touchscreen's on-screen keyboard, not a breakpoint. */
-@media (hover: none) and (pointer: coarse) {
-  .crossword-mobile-keys { display: flex; gap: 6px; overflow-x: auto; margin-top: 16px; padding-bottom: 4px; }
+/* The actual focus target for every keystroke (see CrosswordGame.tsx's inputRef) — visually
+   invisible but a real, focusable, in-DOM <input>, which is what lets tapping a cell raise
+   the device's own keyboard on mobile instead of the old on-screen A-Z strip (removed) that
+   made a reader slide across a cramped alphabet row to find each letter. font-size: 16px
+   specifically avoids iOS Safari's automatic zoom-in on focusing a smaller input. */
+.crossword-hidden-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: none;
+  outline: none;
+  opacity: 0;
+  pointer-events: none;
+  font-size: 16px;
 }
-.crossword-mobile-key {
-  flex-shrink: 0;
-  min-width: 34px;
-  height: 40px;
-  padding: 0 4px;
-  border-radius: 999px;
-  border: 1px solid var(--color-divider);
-  background: var(--color-card-surface);
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 15px;
-  color: var(--color-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.crossword-mobile-key:active { background: var(--color-accent); color: #fff; }
-.crossword-mobile-key-back { min-width: 46px; font-size: 13px; color: var(--color-neutral-700); }
 
 .crossword-clues-panel { display: flex; flex-direction: column; gap: 28px; }
 .crossword-clue-section-title {
