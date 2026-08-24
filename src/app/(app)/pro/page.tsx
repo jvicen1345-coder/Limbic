@@ -25,7 +25,7 @@ const PRO_TOOLS: { name: string; description: string; count: string; href: strin
   { name: "Lab Values", description: "Complete reference with PT-specific clinical implications", count: "6 categories", href: "/pro/lab-values" },
   { name: "Medications", description: "Common drug classes with exercise and treatment precautions", count: "8 drug classes", href: "/pro/medications" },
   { name: "Therapeutic Exercises", description: "Condition-specific exercises with setup, technique, dosage, and cueing", count: "Growing library", href: "/pro/exercises" },
-  { name: "Research & Statistics Literacy", description: "How to break down a research article and interpret the statistics inside it", count: "2 guides", href: "/pro/research-literacy" },
+  { name: "Research & Statistics Literacy", description: "How to break down a research article, interpret the statistics inside it, and a generalizability checker", count: "2 guides + tool", href: "/pro/research-literacy" },
   { name: "Documentation", description: "Templates for evaluations, progress notes, and discharge", count: "7 templates", href: "/pro/documentation" },
   { name: "CE Tracker", description: "Track continuing education hours toward license renewal", count: "Track hours", href: "/pro/ce-tracker" },
   { name: "Guidelines", description: "APTA and evidence-based clinical practice guidelines", count: "12 guidelines", href: "/pro/guidelines" },
