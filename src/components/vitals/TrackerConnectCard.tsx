@@ -16,7 +16,7 @@ interface TrackerStatus {
  *  the provider's own consent screen (see app/auth/fitbit/route.ts, app/auth/strava/
  *  route.ts) rather than anything this component drives itself. The row itself always
  *  renders — even before the site owner has configured that provider's env vars (see
- *  lib/fitbit-oauth.ts fitbitEnabled, lib/strava-oauth.ts stravaEnabled) — so readers see
+ *  lib/google-health-oauth.ts googleHealthEnabled, lib/strava-oauth.ts stravaEnabled) — so readers see
  *  the option and are prompted to link it the moment it's live, rather than the feature
  *  appearing out of nowhere later with no lead-up. Unlike "Continue with Google" (which
  *  hides outright when unconfigured, since that's the reader's *only* sign-in path and a

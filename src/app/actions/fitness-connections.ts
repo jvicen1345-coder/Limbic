@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
-import { revokeFitbitToken } from "@/lib/fitbit-oauth";
+import { revokeGoogleHealthToken } from "@/lib/google-health-oauth";
 import { deauthorizeStrava } from "@/lib/strava-oauth";
 import { syncFitbitForUser } from "@/lib/fitbit-sync";
 import { syncStravaForUser } from "@/lib/strava-sync";
@@ -28,7 +28,7 @@ export async function disconnectFitnessConnectionAction(provider: Provider): Pro
   if (!connection) return;
 
   if (provider === "fitbit") {
-    await revokeFitbitToken(connection.accessToken);
+    await revokeGoogleHealthToken(connection.accessToken);
   } else {
     await deauthorizeStrava(connection.accessToken);
   }

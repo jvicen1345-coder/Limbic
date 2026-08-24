@@ -17,11 +17,25 @@ export function mapActivityNameToCategory(rawName: string): VitalsCategory {
   return "cardio";
 }
 
-/** Turns an Apple `HKWorkoutActivityType...` / Fitbit activity name / Strava `type` into a
- *  short human-readable label for the Activity Log's "activity" column — strips the Apple
- *  HealthKit type prefix if present, otherwise passes the name through unchanged. */
+/** Turns an Apple `HKWorkoutActivityType...` / Strava `type` / Google Health `exerciseType`
+ *  (e.g. "STRENGTH_TRAINING") into a short human-readable label for the Activity Log's
+ *  "activity" column — strips the Apple HealthKit type prefix if present, splits
+ *  underscore-separated enum values (Google Health) and camelCase ones (Apple/Strava) alike. */
 export function humanizeActivityName(rawName: string): string {
   const stripped = rawName.replace(/^HKWorkoutActivityType/, "");
+  if (stripped.includes("_")) {
+    // "STRENGTH_TRAINING" -> "Strength Training".
+    return stripped
+      .split("_")
+      .map((word) => (word ? word[0].toUpperCase() + word.slice(1).toLowerCase() : word))
+      .join(" ")
+      .trim();
+  }
+  // A plain single-word enum value with no separator at all (Google Health's "RUNNING") —
+  // title-case it rather than shouting it back in the Activity Log.
+  if (/^[A-Z]+$/.test(stripped)) {
+    return stripped[0] + stripped.slice(1).toLowerCase();
+  }
   // Splits "TraditionalStrengthTraining" into "Traditional Strength Training".
   return stripped.replace(/([a-z])([A-Z])/g, "$1 $2").trim() || rawName;
 }
