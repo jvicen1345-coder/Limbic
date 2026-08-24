@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CalcModal, CalcCardShell } from "./CalcModal";
 import { CalcTimer } from "./CalcTimer";
+import { useCalculatorProfile } from "./CalculatorProfileContext";
 
 // The real published Rikli & Jones (1999) 30-Second Chair Stand age/sex-normative table
 // (average range, mean +/- 1 SD).
@@ -16,14 +17,41 @@ const STS_NORMS: Record<string, string> = {
   "90-94": "male: 7-12, female: 4-11",
 };
 
+const AGE_GROUP_BANDS = Object.keys(STS_NORMS);
+
+/** Maps a raw client age (as entered on a Calculator Profile) to the nearest published
+ *  Rikli & Jones 5-year band, clamped to the table's 60-94 range rather than leaving a
+ *  younger/older client's age unmatched. */
+function ageToGroup(age: number): string {
+  const index = Math.floor((age - 60) / 5);
+  return AGE_GROUP_BANDS[Math.max(0, Math.min(AGE_GROUP_BANDS.length - 1, index))];
+}
+
 /** Fully functional — reps and age/sex inputs, the built-in 30-second countdown (see
  *  CalcTimer), and the real published Rikli & Jones normative comparison table are all
- *  live. */
+ *  live. Age/sex pre-fill from the active Calculator Profile (see
+ *  CalculatorProfileContext.tsx) whenever it's set, so a clinician who already entered
+ *  them there doesn't retype them here — still freely editable locally afterward. */
 export function ThirtySecondStsCalculator() {
+  const { activeProfileAge, activeProfileSex } = useCalculatorProfile();
   const [open, setOpen] = useState(false);
   const [reps, setReps] = useState("");
-  const [ageGroup, setAgeGroup] = useState("60-64");
-  const [sex, setSex] = useState("female");
+  const [ageGroup, setAgeGroup] = useState(activeProfileAge != null ? ageToGroup(activeProfileAge) : "60-64");
+  const [sex, setSex] = useState(activeProfileSex ?? "female");
+
+  // Re-syncs from the active Calculator Profile whenever it changes (a different profile
+  // selected, or age/sex edited on the current one) — the "adjust state during render"
+  // pattern (comparing against a snapshot of the previous render) rather than an effect,
+  // same reasoning as CalcModal.tsx's SaveToProfileFooter: an effect's setState here would
+  // cause an extra visible re-render for what should be synchronous with the prop change.
+  const [prevAge, setPrevAge] = useState(activeProfileAge);
+  const [prevSex, setPrevSex] = useState(activeProfileSex);
+  if (activeProfileAge !== prevAge || activeProfileSex !== prevSex) {
+    setPrevAge(activeProfileAge);
+    setPrevSex(activeProfileSex);
+    if (activeProfileAge != null) setAgeGroup(ageToGroup(activeProfileAge));
+    if (activeProfileSex != null) setSex(activeProfileSex);
+  }
 
   return (
     <>
@@ -68,7 +96,7 @@ export function ThirtySecondStsCalculator() {
           </div>
           <div className="field" style={{ flex: 1 }}>
             <label htmlFor="sts-sex">Sex</label>
-            <select id="sts-sex" className="input" value={sex} onChange={(e) => setSex(e.target.value)}>
+            <select id="sts-sex" className="input" value={sex} onChange={(e) => setSex(e.target.value as "male" | "female")}>
               <option value="female">Female</option>
               <option value="male">Male</option>
             </select>

@@ -17,12 +17,21 @@ export interface CalculatorProfileView {
   id: string;
   label: string;
   selectedTests: string[];
+  /** Optional — see CalculatorProfile.age/sex in schema.prisma. Read by
+   *  CalculatorWorkspace.tsx to pre-fill the shared CalculatorProfileContext, which the
+   *  age/sex-normed calculators (30-Second Sit-to-Stand, 6MWT) read on mount. */
+  age: number | null;
+  sex: "male" | "female" | null;
   createdAt: string;
   results: CalculatorResultView[];
 }
 
 function toSelectedTests(raw: unknown): string[] {
   return Array.isArray(raw) ? raw.filter((t): t is string => typeof t === "string") : [];
+}
+
+function toSex(raw: string | null): "male" | "female" | null {
+  return raw === "male" || raw === "female" ? raw : null;
 }
 
 function serializeResult(r: { id: string; testKey: string; testName: string; value: string; interpretation: string; completedAt: Date }): CalculatorResultView {
@@ -64,6 +73,8 @@ export async function getCalculatorProfilesForCurrentUser(): Promise<CalculatorP
     id: p.id,
     label: p.label,
     selectedTests: toSelectedTests(p.selectedTests),
+    age: p.age,
+    sex: toSex(p.sex),
     createdAt: p.createdAt.toISOString(),
     results: p.results.map(serializeResult),
   }));
@@ -78,22 +89,40 @@ export interface CalculatorProfileActionResult {
 /** Creates a new profile — deliberately just a free-text `label` with no dedicated
  *  name/DOB/MRN fields (see CalculatorProfile in schema.prisma), so this never asks for or
  *  stores real patient-identifying information; CreateProfileForm's placeholder nudges
- *  toward a non-identifying label instead. */
-export async function createCalculatorProfileAction(label: string, selectedTests: string[]): Promise<CalculatorProfileActionResult> {
+ *  toward a non-identifying label instead. age/sex are the one exception, and only because
+ *  they're inputs the age/sex-normed calculators already ask for individually (30-Second
+ *  Sit-to-Stand, 6MWT) — collecting them once here just avoids re-typing the same two
+ *  values into each one. Both optional; age validated to a plausible human range. */
+export async function createCalculatorProfileAction(
+  label: string,
+  selectedTests: string[],
+  age?: number | null,
+  sex?: "male" | "female" | null
+): Promise<CalculatorProfileActionResult> {
   const user = await requireCalcAccess();
   if (!user) return { ok: false, error: "Not authorized." };
   const trimmed = label.trim();
   if (!trimmed) return { ok: false, error: "Give this profile a label." };
   if (trimmed.length > 60) return { ok: false, error: "Keep the label under 60 characters." };
+  const cleanAge = age != null && Number.isFinite(age) && age >= 0 && age <= 130 ? Math.round(age) : null;
+  const cleanSex = toSex(sex ?? null);
 
   const created = await prisma.calculatorProfile.create({
-    data: { userId: user.id, label: trimmed, selectedTests },
+    data: { userId: user.id, label: trimmed, selectedTests, age: cleanAge, sex: cleanSex },
     include: { results: true },
   });
   revalidatePath("/pro/calculators");
   return {
     ok: true,
-    profile: { id: created.id, label: created.label, selectedTests: toSelectedTests(created.selectedTests), createdAt: created.createdAt.toISOString(), results: [] },
+    profile: {
+      id: created.id,
+      label: created.label,
+      selectedTests: toSelectedTests(created.selectedTests),
+      age: created.age,
+      sex: toSex(created.sex),
+      createdAt: created.createdAt.toISOString(),
+      results: [],
+    },
   };
 }
 
@@ -104,6 +133,23 @@ export async function updateCalculatorProfileTestsAction(profileId: string, sele
   const user = await requireCalcAccess();
   if (!user) return { ok: false };
   const { count } = await prisma.calculatorProfile.updateMany({ where: { id: profileId, userId: user.id }, data: { selectedTests } });
+  if (count === 0) return { ok: false };
+  revalidatePath("/pro/calculators");
+  return { ok: true };
+}
+
+/** Edits a profile's age/sex after creation — for a clinician who skipped it up front, or
+ *  needs to correct it mid-visit. Same validation as createCalculatorProfileAction. */
+export async function updateCalculatorProfileDemographicsAction(
+  profileId: string,
+  age: number | null,
+  sex: "male" | "female" | null
+): Promise<{ ok: boolean }> {
+  const user = await requireCalcAccess();
+  if (!user) return { ok: false };
+  const cleanAge = age != null && Number.isFinite(age) && age >= 0 && age <= 130 ? Math.round(age) : null;
+  const cleanSex = toSex(sex);
+  const { count } = await prisma.calculatorProfile.updateMany({ where: { id: profileId, userId: user.id }, data: { age: cleanAge, sex: cleanSex } });
   if (count === 0) return { ok: false };
   revalidatePath("/pro/calculators");
   return { ok: true };

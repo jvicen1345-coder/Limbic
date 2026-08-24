@@ -37,7 +37,14 @@ export function CalculatorWorkspace({
   );
 
   return (
-    <CalculatorProfileProvider value={{ activeProfileLabel: activeProfile?.label ?? null, saveResult }}>
+    <CalculatorProfileProvider
+      value={{
+        activeProfileLabel: activeProfile?.label ?? null,
+        activeProfileAge: activeProfile?.age ?? null,
+        activeProfileSex: activeProfile?.sex ?? null,
+        saveResult,
+      }}
+    >
       <div className="pro-calc-layout">
         <div className="pro-calc-main">{children}</div>
         <CalculatorProfilesPanel
@@ -54,6 +61,9 @@ export function CalculatorWorkspace({
           }}
           onResultDeleted={(profileId, resultId) => {
             setProfiles((prev) => prev.map((p) => (p.id === profileId ? { ...p, results: p.results.filter((r) => r.id !== resultId) } : p)));
+          }}
+          onProfileDemographicsUpdated={(profileId, age, sex) => {
+            setProfiles((prev) => prev.map((p) => (p.id === profileId ? { ...p, age, sex } : p)));
           }}
         />
       </div>

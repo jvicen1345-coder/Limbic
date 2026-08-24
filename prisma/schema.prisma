@@ -791,6 +791,13 @@ model CalculatorProfile {
   // a result can still be saved for a test that isn't on it (see saveCalculatorResultAction
   // in app/actions/calculator-profiles.ts).
   selectedTests Json               @default("[]")
+  // Optional — entered once per visit here rather than re-typed into each individual
+  // calculator's own age/sex fields (see CalculatorProfileContext.tsx), so every
+  // age/sex-normed test (30-Second Sit-to-Stand, 6MWT) pre-fills from the same source. Never
+  // a DOB or other identifying field, same "de-identified" intent as `label` above — just
+  // enough to look up the right normative table.
+  age           Int?
+  sex           String?
   createdAt     DateTime           @default(now())
   results       CalculatorResult[]
 }
