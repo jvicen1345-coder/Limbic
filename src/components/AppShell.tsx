@@ -366,11 +366,9 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             {(isPro || isStudent) && (
               <>
                 <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Outcome Measures" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Decision Rules" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/pro/red-flags" icon={<AlertCircleIcon />} label="Red Flag Screening" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Screening & Decision Support" bold={false} onNavigate={onNavigate} />
                 <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Lab Values" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/pro/medications" icon={<HeartIcon />} label="Medications" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Clinical Reference" bold={false} onNavigate={onNavigate} />
                 <NavLink href="/pro/exercises" icon={<DumbbellIcon />} label="Therapeutic Exercises" bold={false} onNavigate={onNavigate} />
                 <NavLink href="/pro/research-literacy" icon={<SearchIcon />} label="Research & Statistics Literacy" bold={false} onNavigate={onNavigate} />
                 <NavLink href="/pro/documentation" icon={<FileTextIcon />} label="Documentation" locked={!isPro} bold={false} onNavigate={onNavigate} />

@@ -6998,11 +6998,13 @@ select.connexion-visit-input { color-scheme: dark; }
 
 /* ============================================================================
    LimbicPRO Clinical Toolbox — shared across /pro/calculators, /pro/decision-
-   rules, /pro/red-flags, /pro/special-tests, /pro/lab-values, /pro/medications,
-   /pro/documentation, /pro/ce-tracker, /pro/guidelines, and the /pro overview
-   tools grid. One shared vocabulary (.pro-*) so all nine new tool pages read as
-   one coherent product surface rather than nine one-off layouts, following the
-   same .card/.card-kicker/.tag/--color-accent tokens the rest of the app uses.
+   rules (now also its own Red Flag Screening tab, see ScreeningDecisionTabs.tsx),
+   /pro/special-tests, /pro/lab-values (now also its own Medications tab, see
+   ClinicalReferenceTabs.tsx), /pro/documentation, /pro/ce-tracker,
+   /pro/guidelines, and the /pro overview tools grid. One shared vocabulary
+   (.pro-*) so every tool page reads as one coherent product surface rather
+   than a pile of one-off layouts, following the same .card/.card-kicker/.tag/
+   --color-accent tokens the rest of the app uses.
    ============================================================================ */
 
 /* — Overview hub tools grid — */
@@ -7064,8 +7066,8 @@ select.connexion-visit-input { color-scheme: dark; }
 }
 .pro-locked-list li svg { flex-shrink: 0; margin-top: 2px; color: var(--color-accent); }
 
-/* — Disclaimer card — amber left border/tint, reused by /pro/decision-rules,
-   /pro/red-flags, /pro/lab-values, /pro/medications. Theme-adaptive amber
+/* — Disclaimer card — amber left border/tint, reused by both tabs of
+   /pro/decision-rules and both tabs of /pro/lab-values. Theme-adaptive amber
    token (unlike the Connexion HIPAA disclaimer's fixed-dark-card literal
    hex) since these PRO pages sit on the normal themed surface. */
 .pro-disclaimer {
