@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { ChevronRightIcon } from "@/components/icons";
 
-/** One interactive red-flag checklist category (/pro/red-flags) — each checked flag turns
- *  red and the running positive count shows in the collapsed summary. */
+/** One interactive red-flag checklist category (the Red Flag Screening tab of
+ *  /pro/decision-rules, see ScreeningDecisionTabs.tsx) — each checked flag turns red and
+ *  the running positive count shows in the collapsed summary. */
 export function RedFlagCategory({ title, flags }: { title: string; flags: string[] }) {
   const [checked, setChecked] = useState<boolean[]>(Array(flags.length).fill(false));
   const count = checked.filter(Boolean).length;

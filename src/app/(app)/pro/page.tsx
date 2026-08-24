@@ -9,21 +9,21 @@ import { CrownIcon, ChevronRightIcon } from "@/components/icons";
 import { PRO_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
 
-/** The LimbicPRO clinical toolbox — twelve tool sections, each its own page under /pro/*
- *  (see app/(app)/pro/calculators, /decision-rules, etc.). Eight of these also open up to
- *  a .edu Limbic Student account (see lib/session.ts hasClinicalReferenceAccess) — the
+/** The LimbicPRO clinical toolbox — ten tool sections, each its own page under /pro/*
+ *  (see app/(app)/pro/calculators, /decision-rules, etc. — Decision Rules and Red Flag
+ *  Screening now share one page/tab bar, as do Lab Values and Medications, see
+ *  ScreeningDecisionTabs.tsx/ClinicalReferenceTabs.tsx). Six of these also open up to a
+ *  .edu Limbic Student account (see lib/session.ts hasClinicalReferenceAccess) — the
  *  remaining four (Documentation, CE Tracker, Home Exercise Programs, and the HEP Builder)
  *  stay isPro-only, since they're about running a real practice rather than learning the
  *  material. Either way this overview doesn't need to know which is which: each tool page
- *  decides its own gate (ProGate) once clicked through. Rendered as a 2x5 card grid on
+ *  decides its own gate (ProGate) once clicked through. Rendered as a 2-column card grid on
  *  desktop, single column on mobile (see .pro-tools-grid in globals.css). */
 const PRO_TOOLS: { name: string; description: string; count: string; href: string }[] = [
   { name: "Outcome Measures", description: "12 validated outcome measures and functional assessments", count: "12 tools", href: "/pro/calculators" },
-  { name: "Decision Rules", description: "8 evidence-based clinical decision rules with scoring", count: "8 rules", href: "/pro/decision-rules" },
-  { name: "Red Flag Screening", description: "6 category screening checklists for urgent referral", count: "6 categories", href: "/pro/red-flags" },
+  { name: "Screening & Decision Support", description: "8 clinical decision rules plus red flag screening checklists for urgent referral", count: "8 rules + 6 categories", href: "/pro/decision-rules" },
   { name: "Special Tests", description: "Organized by body region with sensitivity and specificity", count: "7 regions", href: "/pro/special-tests" },
-  { name: "Lab Values", description: "Complete reference with PT-specific clinical implications", count: "6 categories", href: "/pro/lab-values" },
-  { name: "Medications", description: "Common drug classes with exercise and treatment precautions", count: "8 drug classes", href: "/pro/medications" },
+  { name: "Clinical Reference", description: "Lab values and medication classes with PT-specific clinical implications", count: "6 lab + 8 drug categories", href: "/pro/lab-values" },
   { name: "Therapeutic Exercises", description: "Condition-specific exercises with setup, technique, dosage, and cueing", count: "Growing library", href: "/pro/exercises" },
   { name: "Research & Statistics Literacy", description: "How to break down a research article, interpret the statistics inside it, and a generalizability checker", count: "2 guides + tool", href: "/pro/research-literacy" },
   { name: "Documentation", description: "Templates for evaluations, progress notes, and discharge", count: "7 templates", href: "/pro/documentation" },
@@ -81,7 +81,7 @@ export default async function ProOverviewPage() {
 
       <h2 style={{ fontSize: 18, margin: "8px 0 4px" }}>The Clinical Toolbox</h2>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 4px" }}>
-        Twelve tool sections built for how you actually practice, all in the app, nothing emailed out.
+        Ten tool sections built for how you actually practice, all in the app, nothing emailed out.
       </p>
       <div className="pro-tools-grid">
         {PRO_TOOLS.map((tool) => (
