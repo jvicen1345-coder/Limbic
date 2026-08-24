@@ -108,20 +108,23 @@ const STRATEGY_STEPS = [
 
 const COMING_SOON_ITEMS = ["Flashcard decks by system", "Full practice question bank", "Study schedule generator"] as const;
 
-type BoardsTab = "sharpening" | "breakdown" | "resources";
+type BoardsTab = "sharpening" | "breakdown" | "research" | "resources";
 
 const TABS: { id: BoardsTab; label: string }[] = [
   { id: "sharpening", label: "Daily Sharpening" },
   { id: "breakdown", label: "NPTE Breakdown" },
+  { id: "research", label: "Research & Stats" },
   { id: "resources", label: "Resources" },
 ];
 
-/** The three tab panels below the always-visible Limbic Boards header (title + streak
+/** The four tab panels below the always-visible Limbic Boards header (title + streak
  *  badge, rendered by app/(app)/boards/page.tsx above this component). A plain useState
  *  tab switch — not routes, so the header above never remounts — rather than the
  *  Link-driven .sub-tabs pattern (see components/SubTabs.tsx) used for multi-page
- *  sections elsewhere, since these three panels are one page's content, not separate
- *  destinations. */
+ *  sections elsewhere, since these four panels are one page's content, not separate
+ *  destinations. Research & Stats used to be just a card inside Resources (a grab-bag of
+ *  external FSBPT links) — promoted to its own tab since it's a full guide + AI tool
+ *  (app/(app)/pro/research-literacy) in its own right, not another external reference link. */
 export function BoardsTabs({
   dateKey,
   question,
@@ -319,6 +322,30 @@ export function BoardsTabs({
         </div>
       )}
 
+      {activeTab === "research" && (
+        <div>
+          <div style={{ margin: "0 0 4px" }}>
+            <h2 style={{ fontSize: 19, margin: "0 0 4px" }}>Research & Statistics Literacy</h2>
+            <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 14px" }}>
+              How to break down a research article and interpret the statistics inside it — the Non-Systems section
+              of the NPTE covers evidence-based practice, and it&rsquo;s the same skill you&rsquo;ll use reading real
+              studies once you&rsquo;re practicing.
+            </p>
+          </div>
+
+          <div className="card elev-sm">
+            <div className="card-title">The Full Guide</div>
+            <p className="boards-resource-disclaimer" style={{ margin: "4px 0 12px" }}>
+              How to break down a research article section by section, how to read the statistics inside it, a
+              generalizability checker, and an article histogram explorer — all in one place.
+            </p>
+            <Link href="/pro/research-literacy" className="btn btn-primary">
+              Open the guide →
+            </Link>
+          </div>
+        </div>
+      )}
+
       {activeTab === "resources" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div className="card elev-sm">
@@ -350,17 +377,6 @@ export function BoardsTabs({
               ))}
             </div>
             <p className="boards-resource-disclaimer">External links: opens FSBPT website</p>
-          </div>
-
-          <div className="card elev-sm">
-            <div className="card-title">Research & Statistics Literacy</div>
-            <p className="boards-resource-disclaimer" style={{ margin: "4px 0 12px" }}>
-              How to break down a research article and interpret the statistics inside it — the Non-Systems section of the NPTE covers
-              evidence-based practice, and it&rsquo;s the same skill you&rsquo;ll use reading real studies once you&rsquo;re practicing.
-            </p>
-            <Link href="/pro/research-literacy" className="btn btn-secondary">
-              Open the guide →
-            </Link>
           </div>
 
           <div className="card elev-sm">
