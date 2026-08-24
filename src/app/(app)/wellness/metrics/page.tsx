@@ -8,9 +8,10 @@ import { Vo2MaxCalculatorCard } from "@/components/metrics/Vo2MaxCalculatorCard"
 import type { WellnessProfile } from "@/lib/vitals";
 
 /** Pure calculator inputs — tracking/trends now live on the Overview page's "Trends" tab
- *  (see app/(app)/wellness/page.tsx), RPE moved to the Rep Continuum page (it's about
- *  training intensity, not a body metric), and the weekly activity log moved to its own
- *  page at /wellness/activity. The identity fields each calculator needs (age, weight,
+ *  (see app/(app)/wellness/page.tsx), RPE moved to the Exercise Library page's Rep
+ *  Continuum tab (it's about training intensity, not a body metric), and the weekly
+ *  activity log moved to its own page at /wellness/activity. The identity fields each
+ *  calculator needs (age, weight,
  *  height, sex...) are entered right here via BodyMetricsCard, not on a separate page,
  *  it's the one place this profile is entered; every calculator below just reads it back. */
 export default async function MetricsPage() {

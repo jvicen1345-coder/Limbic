@@ -34,7 +34,6 @@ import {
   ActivityIcon,
   AppleIcon,
   DumbbellIcon,
-  RefreshIcon,
   ChevronRightIcon,
   ShieldIcon,
   HeartIcon,
@@ -397,8 +396,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             <NavLink href="/wellness/activity" icon={<ZapIcon />} label="Activity Log" bold={false} onNavigate={onNavigate} />
             <NavLink href="/wellness/nutrition" icon={<AppleIcon />} label="Nutrition" bold={false} onNavigate={onNavigate} />
             <NavLink href="/wellness/assess" icon={<CheckCircleIcon />} label="Assess Yourself" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/wellness/exercises" icon={<DumbbellIcon />} label="Top 10 Exercises" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/wellness/continuum" icon={<RefreshIcon />} label="Rep Continuum" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/wellness/exercises" icon={<DumbbellIcon />} label="Exercise Library" bold={false} onNavigate={onNavigate} />
             <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" bold={false} onNavigate={onNavigate} />
           </>
         )}
