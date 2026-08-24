@@ -38,7 +38,10 @@ export default async function MetricsPage() {
         All metrics are for general wellness education only. Not medical advice. Consult your physician for medical interpretation.
       </div>
 
-      <BodyMetricsCard initial={profile} />
+      <BodyMetricsCard
+        initial={profile}
+        googleHealthSyncedAt={row?.googleHealthSyncedAt ? row.googleHealthSyncedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : null}
+      />
 
       <div id="calculators" className="wellness-section-label" style={{ marginTop: 8 }}>
         Your Health Calculators

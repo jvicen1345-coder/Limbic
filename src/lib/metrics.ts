@@ -16,6 +16,9 @@ export const METRICS_LOG_METRICS = [
   "sitAndRise",
   "wallSit",
   "shoulderScratch",
+  "bodyFat",
+  "oxygenSaturation",
+  "bloodGlucose",
 ] as const;
 export type MetricsLogMetric = (typeof METRICS_LOG_METRICS)[number];
 

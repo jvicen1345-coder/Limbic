@@ -17,8 +17,11 @@ function toNumberOrNull(value: string): number | null {
 
 /** The one place this profile is entered — every calculator elsewhere in Health & Wellness
  *  (BMI, Max HR, HRV, VO2 Max, Macro, Assess Yourself's score) just reads what's saved here
- *  via lib/vitals.ts's WellnessProfile shape instead of asking for it again. */
-export function BodyMetricsCard({ initial }: { initial: WellnessProfile }) {
+ *  via lib/vitals.ts's WellnessProfile shape instead of asking for it again. Weight/height
+ *  can also arrive from a connected Google Health account (see
+ *  lib/google-health-metrics-sync.ts) — googleHealthSyncedAt just labels where the current
+ *  values came from; editing and saving here always overwrites them, same as it always has. */
+export function BodyMetricsCard({ initial, googleHealthSyncedAt }: { initial: WellnessProfile; googleHealthSyncedAt?: string | null }) {
   const [age, setAge] = useState(initial.age?.toString() ?? "");
   const [heightFeet, setHeightFeet] = useState(initial.heightFeet?.toString() ?? "");
   const [heightInches, setHeightInches] = useState(initial.heightInches?.toString() ?? "");
@@ -63,6 +66,12 @@ export function BodyMetricsCard({ initial }: { initial: WellnessProfile }) {
             <input className="input" id="vitals-weight" type="number" min={0} value={weightLbs} onChange={(e) => setWeightLbs(e.target.value)} />
           </div>
         </div>
+
+        {googleHealthSyncedAt && (
+          <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", margin: 0 }}>
+            Weight and height synced from Google Health as of {googleHealthSyncedAt} — edit and save to override.
+          </p>
+        )}
 
         <div className="field">
           <label htmlFor="vitals-height-feet">Height</label>

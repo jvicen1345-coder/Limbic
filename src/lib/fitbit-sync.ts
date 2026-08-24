@@ -3,8 +3,25 @@ import { prisma } from "@/lib/db";
 import { refreshGoogleHealthToken } from "@/lib/google-health-oauth";
 import { mapActivityNameToCategory, humanizeActivityName, upsertSyncedVitalsLog, type SyncedActivityEntry } from "@/lib/fitness-sync";
 import type { VitalsCategory } from "@/lib/vitals";
+import type { FitnessConnection } from "@/generated/prisma/client";
 
 const SYNC_WINDOW_DAYS = 7;
+
+/** Shared by this file's exercise sync and lib/google-health-metrics-sync.ts's vitals sync —
+ *  both hit the same Google OAuth2 client/tokens, just different dataTypes underneath, so
+ *  the "refresh if expiring, persist the new pair" logic only needs to live once. Throws if
+ *  the refresh itself fails, same as the exercise sync's original behavior. */
+export async function getValidGoogleHealthAccessToken(
+  connection: Pick<FitnessConnection, "id" | "accessToken" | "refreshToken" | "expiresAt">
+): Promise<string> {
+  if (connection.expiresAt.getTime() >= Date.now() + 60_000) return connection.accessToken;
+  const refreshed = await refreshGoogleHealthToken(connection.refreshToken);
+  await prisma.fitnessConnection.update({
+    where: { id: connection.id },
+    data: { accessToken: refreshed.accessToken, refreshToken: refreshed.refreshToken, expiresAt: refreshed.expiresAt },
+  });
+  return refreshed.accessToken;
+}
 
 /** A Google API "CivilDateTime" — local wall-clock date/time in whatever timezone the
  *  wearer's device was in, alongside the interval's own UTC startTime/endTime (see
@@ -58,19 +75,12 @@ export async function syncFitbitForUser(userId: string): Promise<{ synced: numbe
   const connection = await prisma.fitnessConnection.findUnique({ where: { userId_provider: { userId, provider: "fitbit" } } });
   if (!connection) return { error: "Fitbit is not connected" };
 
-  let accessToken = connection.accessToken;
-  if (connection.expiresAt.getTime() < Date.now() + 60_000) {
-    try {
-      const refreshed = await refreshGoogleHealthToken(connection.refreshToken);
-      accessToken = refreshed.accessToken;
-      await prisma.fitnessConnection.update({
-        where: { id: connection.id },
-        data: { accessToken: refreshed.accessToken, refreshToken: refreshed.refreshToken, expiresAt: refreshed.expiresAt },
-      });
-    } catch (err) {
-      console.error("[fitbit-sync] token refresh failed", err);
-      return { error: "Fitbit connection expired, reconnect it" };
-    }
+  let accessToken: string;
+  try {
+    accessToken = await getValidGoogleHealthAccessToken(connection);
+  } catch (err) {
+    console.error("[fitbit-sync] token refresh failed", err);
+    return { error: "Fitbit connection expired, reconnect it" };
   }
 
   const since = new Date(Date.now() - SYNC_WINDOW_DAYS * 86400000).toISOString().slice(0, 19);
