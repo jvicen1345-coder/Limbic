@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { ResearchLiteracyGuide } from "@/components/pro/ResearchLiteracyGuide";
-import { GeneralizabilityChecker } from "@/components/pro/GeneralizabilityChecker";
-import { ArticleHistogramExplorer } from "@/components/pro/ArticleHistogramExplorer";
+import { ArticleToolsPanel } from "@/components/pro/ArticleToolsPanel";
 
 export const metadata: Metadata = {
   title: "Research & Statistics Literacy",
@@ -24,11 +23,8 @@ export default async function ResearchLiteracyPage() {
         <ProGate toolName="Research & Statistics Literacy" />
       ) : (
         <>
-          <div style={{ marginBottom: 20 }}>
-            <GeneralizabilityChecker />
-          </div>
           <div style={{ marginBottom: 28 }}>
-            <ArticleHistogramExplorer />
+            <ArticleToolsPanel />
           </div>
           <ResearchLiteracyGuide />
         </>
