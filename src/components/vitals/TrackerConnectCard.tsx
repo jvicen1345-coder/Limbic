@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { syncFitnessConnectionAction, disconnectFitnessConnectionAction } from "@/app/actions/fitness-connections";
 import { LockIcon } from "@/components/icons";
 
@@ -60,7 +61,12 @@ function TrackerRow({
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "10px 0", borderTop: "1px solid var(--color-divider)" }}>
       <div>
-        <div style={{ fontWeight: 600, fontSize: 13.5 }}>{label}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 600, fontSize: 13.5 }}>
+          {provider === "strava" && (
+            <Image src="/strava-badge.png" alt="" width={18} height={18} style={{ borderRadius: 4 }} />
+          )}
+          {label}
+        </div>
         <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
           {status.locked
             ? "Included with any Limbic subscription or Founding Funder"
