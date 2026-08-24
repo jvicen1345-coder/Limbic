@@ -91,7 +91,7 @@ export async function refreshStravaToken(refreshToken: string, athleteId: string
 }
 
 /** Best-effort deauthorize on disconnect, same "don't block on it" reasoning as
- *  revokeFitbitToken in lib/fitbit-oauth.ts. */
+ *  revokeGoogleHealthToken in lib/google-health-oauth.ts. */
 export async function deauthorizeStrava(accessToken: string): Promise<void> {
   await fetch("https://www.strava.com/oauth/deauthorize", {
     method: "POST",

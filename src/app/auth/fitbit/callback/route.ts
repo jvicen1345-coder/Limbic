@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { exchangeFitbitCode } from "@/lib/fitbit-oauth";
+import { exchangeGoogleHealthCode } from "@/lib/google-health-oauth";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { syncFitbitForUser } from "@/lib/fitbit-sync";
@@ -29,19 +29,20 @@ export async function GET(request: NextRequest) {
   if (!expectedState || !returnedState || expectedState !== returnedState) return failure("fitbit_state_mismatch");
 
   try {
-    const tokens = await exchangeFitbitCode(code);
+    const tokens = await exchangeGoogleHealthCode(code);
     await prisma.fitnessConnection.upsert({
       where: { userId_provider: { userId: user.id, provider: "fitbit" } },
+      // No externalId here — Google's token response has no Fitbit-style user id, and
+      // FitnessConnection.externalId was only ever kept for reference, never read anywhere.
       create: {
         userId: user.id,
         provider: "fitbit",
-        externalId: tokens.userId,
+        externalId: "",
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
         expiresAt: tokens.expiresAt,
       },
       update: {
-        externalId: tokens.userId,
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
         expiresAt: tokens.expiresAt,

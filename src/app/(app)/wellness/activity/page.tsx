@@ -8,7 +8,7 @@ import { LogActivityForm } from "@/components/vitals/LogActivityForm";
 import { InsightsCard } from "@/components/vitals/InsightsCard";
 import { AppleHealthUploadCard } from "@/components/vitals/AppleHealthUploadCard";
 import { TrackerConnectCard } from "@/components/vitals/TrackerConnectCard";
-import { fitbitEnabled } from "@/lib/fitbit-oauth";
+import { googleHealthEnabled as fitbitEnabled } from "@/lib/google-health-oauth";
 import { stravaEnabled } from "@/lib/strava-oauth";
 
 /** The exercise-input page — weekly cardio/strength/mobility/mindfulness logging, split
