@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { DailySharpeningSession } from "@/components/DailySharpeningSession";
-import { ExternalLinkIcon } from "@/components/icons";
 import type { BoardQuestion, BoardTerm } from "@/lib/board-content";
 import type { DailyCase } from "@/lib/cases-static";
 
@@ -64,41 +63,6 @@ const NPTE_DEEP_DIVES = [
   },
 ] as const;
 
-const FSBPT_LINKS = [
-  { title: "FSBPT Content Outline", href: "https://www.fsbpt.org/Free-Resources/NPTE-Content-Outline" },
-  { title: "FSBPT Candidate Handbook", href: "https://www.fsbpt.org/Free-Resources/Candidate-Handbooks" },
-  { title: "FSBPT Practice Exam", href: "https://www.fsbpt.org/Free-Resources/Practice-Examinations" },
-] as const;
-
-// Moved here from its own page (app/(app)/student/resources — since removed) and the
-// Atrium's sidebar link alongside it (see components/AppShell.tsx) — free, official FSBPT
-// resources belong with the rest of Limbic Boards' Resources tab rather than a separate
-// destination. Distinct URLs from FSBPT_LINKS above (an older FSBPT URL structure the site
-// still serves) and different content (registration/licensure rather than the exam content
-// outline/practice exam), so kept as its own card rather than merged into that list.
-const NPTE_RESOURCES = [
-  {
-    title: "NPTE Candidate Handbook",
-    description: "Everything about registering for and taking the NPTE, straight from FSBPT.",
-    href: "https://www.fsbpt.org/FreeResources/NPTECandidateHandbook.aspx",
-  },
-  {
-    title: "Free NPTE Demo Exam",
-    description: "Try real-format sample questions before your actual exam.",
-    href: "https://www.fsbpt.org/Secondary-Pages/Exam-Candidates/National-Exam-NPTE/Prepare-for-Exam/NPTE-Demo-Exam",
-  },
-  {
-    title: "State Licensure Requirements",
-    description: "Compare licensing requirements across every state and jurisdiction.",
-    href: "https://www.fsbpt.org/FreeResources/RegulatoryResources/LicensureReferenceGuide.aspx",
-  },
-  {
-    title: "PT Licensure Compact",
-    description: "See which states let you practice across state lines on one license.",
-    href: "https://www.fsbpt.org/FreeResources/PhysicalTherapyLicensureCompact.aspx",
-  },
-] as const;
-
 const STRATEGY_STEPS = [
   "Complete your Daily Sharpening every day; consistency beats cramming.",
   "Use the NPTE Breakdown tab to understand what to prioritize.",
@@ -108,20 +72,23 @@ const STRATEGY_STEPS = [
 
 const COMING_SOON_ITEMS = ["Flashcard decks by system", "Full practice question bank", "Study schedule generator"] as const;
 
-type BoardsTab = "sharpening" | "breakdown" | "resources";
+type BoardsTab = "sharpening" | "breakdown" | "research" | "resources";
 
 const TABS: { id: BoardsTab; label: string }[] = [
   { id: "sharpening", label: "Daily Sharpening" },
   { id: "breakdown", label: "NPTE Breakdown" },
+  { id: "research", label: "Research & Stats" },
   { id: "resources", label: "Resources" },
 ];
 
-/** The three tab panels below the always-visible Limbic Boards header (title + streak
+/** The four tab panels below the always-visible Limbic Boards header (title + streak
  *  badge, rendered by app/(app)/boards/page.tsx above this component). A plain useState
  *  tab switch — not routes, so the header above never remounts — rather than the
  *  Link-driven .sub-tabs pattern (see components/SubTabs.tsx) used for multi-page
- *  sections elsewhere, since these three panels are one page's content, not separate
- *  destinations. */
+ *  sections elsewhere, since these four panels are one page's content, not separate
+ *  destinations. Research & Stats used to be just a card inside Resources (a grab-bag of
+ *  external FSBPT links) — promoted to its own tab since it's a full guide + AI tool
+ *  (app/(app)/pro/research-literacy) in its own right, not another external reference link. */
 export function BoardsTabs({
   dateKey,
   question,
@@ -319,50 +286,32 @@ export function BoardsTabs({
         </div>
       )}
 
-      {activeTab === "resources" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <div className="card elev-sm">
-            <div className="card-title">Official FSBPT Resources</div>
-            <div className="boards-resource-link-list" style={{ marginTop: 8 }}>
-              {FSBPT_LINKS.map((l) => (
-                <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer" className="boards-resource-link">
-                  {l.title}
-                </a>
-              ))}
-            </div>
-            <p className="boards-resource-disclaimer">External links: opens FSBPT website</p>
+      {activeTab === "research" && (
+        <div>
+          <div style={{ margin: "0 0 4px" }}>
+            <h2 style={{ fontSize: 19, margin: "0 0 4px" }}>Research & Statistics Literacy</h2>
+            <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 14px" }}>
+              How to break down a research article and interpret the statistics inside it — the Non-Systems section
+              of the NPTE covers evidence-based practice, and it&rsquo;s the same skill you&rsquo;ll use reading real
+              studies once you&rsquo;re practicing.
+            </p>
           </div>
 
           <div className="card elev-sm">
-            <div className="card-title">Official NPTE Resources</div>
+            <div className="card-title">The Full Guide</div>
             <p className="boards-resource-disclaimer" style={{ margin: "4px 0 12px" }}>
-              Free official resources from FSBPT, the national board that runs the NPTE and coordinates PT licensure.
+              How to break down a research article section by section, how to read the statistics inside it, a
+              generalizability checker, and an article histogram explorer — all in one place.
             </p>
-            <div className="boards-npte-resource-grid">
-              {NPTE_RESOURCES.map((r) => (
-                <a key={r.href} href={r.href} target="_blank" rel="noopener noreferrer" className="boards-npte-resource-card">
-                  <div className="boards-npte-resource-title">
-                    {r.title}
-                    <ExternalLinkIcon size={12} />
-                  </div>
-                  <p className="boards-npte-resource-desc">{r.description}</p>
-                </a>
-              ))}
-            </div>
-            <p className="boards-resource-disclaimer">External links: opens FSBPT website</p>
-          </div>
-
-          <div className="card elev-sm">
-            <div className="card-title">Research & Statistics Literacy</div>
-            <p className="boards-resource-disclaimer" style={{ margin: "4px 0 12px" }}>
-              How to break down a research article and interpret the statistics inside it — the Non-Systems section of the NPTE covers
-              evidence-based practice, and it&rsquo;s the same skill you&rsquo;ll use reading real studies once you&rsquo;re practicing.
-            </p>
-            <Link href="/pro/research-literacy" className="btn btn-secondary">
+            <Link href="/pro/research-literacy" className="btn btn-primary">
               Open the guide →
             </Link>
           </div>
+        </div>
+      )}
 
+      {activeTab === "resources" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div className="card elev-sm">
             <div className="card-title">How to Use Limbic Boards</div>
             <div className="boards-strategy-list" style={{ marginTop: 12 }}>

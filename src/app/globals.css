@@ -6316,11 +6316,17 @@ html[data-theme="dark"] .app-root--atrium {
 .boards-streak-week-dot-active { background: var(--color-accent); }
 .boards-streak-week-label { font-size: 12.5px; color: var(--color-neutral-700); margin-left: 6px; }
 
-/* — Resources tab (components/BoardsTabs.tsx) — the FSBPT link list's arrow is a literal
-   unicode character via ::after, same "no icon component" approach .article-related-arrow
-   already uses elsewhere, not a new icon. The Study Strategy numbered steps mirror
+/* — FSBPT/NPTE resource links (app/(app)/student/resources/page.tsx) — kept the
+   "boards-"-prefixed class names even after these two cards moved out of Limbic Boards'
+   Resources tab (components/BoardsTabs.tsx) to their own free, no-subscription-required
+   page, since renaming a class is pure churn with no visible effect. .boards-resource-
+   disclaimer is still shared with Boards' own Research & Stats tab description, so it stays
+   put either way. The FSBPT link list's arrow is a literal unicode character via ::after,
+   same "no icon component" approach .article-related-arrow already uses elsewhere, not a
+   new icon. Boards' own Resources tab (Study Strategy/Coming Soon cards) has its own
+   classes below unrelated to this block — the Study Strategy numbered steps mirror
    /connexion/protocol's .connexion-step-number treatment (a large, muted background
-   number) but in brand blue instead of Connexion's gold. The Coming Soon card's muted
+   number) but in brand blue instead of Connexion's gold; the Coming Soon card's muted
    background/border is set inline on the element itself (see LimbicAgentCard.tsx for the
    same "override .card's background inline, not via a new class" convention) — only its
    list/badge need dedicated classes here. */
@@ -6348,13 +6354,12 @@ html[data-theme="dark"] .app-root--atrium {
 .boards-resource-link:hover::after { transform: translate(2px, -2px); }
 .boards-resource-disclaimer { font-size: 11.5px; color: var(--color-neutral-700); margin: 12px 0 0; }
 
-/* Official NPTE Resources card — moved here from its own page (app/(app)/student/resources
-   — since removed) and the Atrium sidebar link that pointed to it. Its own richer
-   title+description treatment (unlike the plain link list above) carried over from that
-   page rather than flattened into .boards-resource-link, since these 4 already had real
-   descriptions worth keeping. 2 columns rather than that page's 3 — this card sits in
-   Boards' narrower 760px column, not the Atrium's 960px one. */
-.boards-npte-resource-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 8px 0 12px; }
+/* Official NPTE Resources card — lives on app/(app)/student/resources/page.tsx's own
+   960px-wide page (see .atrium-page), not squeezed into Boards' narrower 760px column
+   anymore, so this is back to 3 columns. Its own richer title+description treatment
+   (unlike the plain link list above) is worth the extra width, since these 4 already had
+   real descriptions worth keeping rather than flattening into .boards-resource-link. */
+.boards-npte-resource-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 8px 0 12px; }
 .boards-npte-resource-card {
   display: flex;
   flex-direction: column;

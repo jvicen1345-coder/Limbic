@@ -226,16 +226,18 @@ interface NavContentProps {
   hasLicense: boolean;
   isPro: boolean;
   /** True for a .edu sign-in email or a site admin account (see lib/session.ts
-   *  hasStudentAccess) — gates the Limbic Student section's sub-links below: a non-
-   *  qualifying account still sees the section toggle and its single landing link (labeled
-   *  "Overview" rather than "Atrium" — see the student zoneTwoSections entry below), which
-   *  itself renders a sales pitch rather than the real dashboard (see app/(app)/student/
-   *  page.tsx's own !hasStudentAccess branch), but never sees the individual sub-links
-   *  (Break Down Slides, SOAP Note, etc.) as locked list items — same "collapse to just the
-   *  overview" treatment the pro zoneTwoSections entry gives LimbicPRO's own sub-links.
-   *  Limbic Games (/wordle) is open to everyone regardless of this flag. This is a separate
-   *  concern from zoneTwoOrder below — isStudent only ever changes what renders inside the
-   *  section; zoneTwoOrder only ever reorders sections that already render. */
+   *  hasStudentAccess) — gates the Limbic Student section's paid-tier sub-links below: a
+   *  non-qualifying account still sees the section toggle, its landing link (labeled
+   *  "Overview" rather than "Atrium" — see the student zoneTwoSections entry below, which
+   *  itself renders a sales pitch rather than the real dashboard, see app/(app)/student/
+   *  page.tsx's own !hasStudentAccess branch), and NPTE Resources (free FSBPT/NPTE
+   *  reference links, gated on nothing but being signed in — see app/(app)/student/
+   *  resources/page.tsx), but never sees the individual paid-tier sub-links (Break Down
+   *  Slides, SOAP Note, etc.) as locked list items — same "collapse to just the overview"
+   *  treatment the pro zoneTwoSections entry gives LimbicPRO's own sub-links. Limbic Games
+   *  (/wordle) is open to everyone regardless of this flag. This is a separate concern from
+   *  zoneTwoOrder below — isStudent only ever changes what renders inside the section;
+   *  zoneTwoOrder only ever reorders sections that already render. */
   isStudent: boolean;
   /** True only for a real, paid LimbicStudent subscription (studentTier === "limbicStudent",
    *  see lib/session.ts) — narrower than isStudent above, which also includes any .edu
@@ -327,6 +329,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         {studentExpanded && (
           <>
             <NavLink href="/student" icon={<GraduationCapIcon />} label={isStudent ? "Atrium" : "Overview"} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/student/resources" icon={<ListIcon />} label="NPTE Resources" bold={false} onNavigate={onNavigate} />
             {isStudent && (
               <>
                 <NavLink href="/student/slides" icon={<FileTextIcon />} label="Break Down Slides" bold={false} onNavigate={onNavigate} />
