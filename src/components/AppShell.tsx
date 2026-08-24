@@ -226,11 +226,16 @@ interface NavContentProps {
   hasLicense: boolean;
   isPro: boolean;
   /** True for a .edu sign-in email or a site admin account (see lib/session.ts
-   *  hasStudentAccess) — gates the whole Limbic Student section below: hidden entirely (no
-   *  locked state) for anyone who doesn't qualify. Limbic Games (/wordle) is open to
-   *  everyone regardless of this flag. This is a separate concern from zoneTwoOrder below —
-   *  isStudent decides *whether* the section can appear at all; a non-qualifying account
-   *  never sees it regardless of role. zoneTwoOrder only ever reorders sections that do. */
+   *  hasStudentAccess) — gates the Limbic Student section's sub-links below: a non-
+   *  qualifying account still sees the section toggle and its single landing link (labeled
+   *  "Overview" rather than "Atrium" — see the student zoneTwoSections entry below), which
+   *  itself renders a sales pitch rather than the real dashboard (see app/(app)/student/
+   *  page.tsx's own !hasStudentAccess branch), but never sees the individual sub-links
+   *  (Break Down Slides, SOAP Note, etc.) as locked list items — same "collapse to just the
+   *  overview" treatment the pro zoneTwoSections entry gives LimbicPRO's own sub-links.
+   *  Limbic Games (/wordle) is open to everyone regardless of this flag. This is a separate
+   *  concern from zoneTwoOrder below — isStudent only ever changes what renders inside the
+   *  section; zoneTwoOrder only ever reorders sections that already render. */
   isStudent: boolean;
   /** True only for a real, paid LimbicStudent subscription (studentTier === "limbicStudent",
    *  see lib/session.ts) — narrower than isStudent above, which also includes any .edu
@@ -321,21 +326,23 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         />
         {studentExpanded && (
           <>
-            <NavLink href="/student" icon={<GraduationCapIcon />} label="Atrium" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/student/slides" icon={<FileTextIcon />} label="Break Down Slides" locked={!isStudent} lockLabel="STUDENT" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/student/soap" icon={<PencilIcon />} label="Practice a SOAP Note" locked={!isStudent} lockLabel="STUDENT" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/student/wellness" icon={<HeartIcon />} label="Mental Wellness" locked={!isStudent} lockLabel="STUDENT" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" locked={!isVerifiedStudent} lockLabel="STUDENT+" bold={false} onNavigate={onNavigate} />
-            <NavLink
-              href="/student/specialties"
-              icon={<BandageIcon />}
-              label="Specialties"
-              locked={!isStudent}
-              lockLabel="STUDENT"
-              exact={false}
-              bold={false}
-              onNavigate={onNavigate}
-            />
+            <NavLink href="/student" icon={<GraduationCapIcon />} label={isStudent ? "Atrium" : "Overview"} bold={false} onNavigate={onNavigate} />
+            {isStudent && (
+              <>
+                <NavLink href="/student/slides" icon={<FileTextIcon />} label="Break Down Slides" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/student/soap" icon={<PencilIcon />} label="Practice a SOAP Note" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/student/wellness" icon={<HeartIcon />} label="Mental Wellness" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" locked={!isVerifiedStudent} lockLabel="STUDENT+" bold={false} onNavigate={onNavigate} />
+                <NavLink
+                  href="/student/specialties"
+                  icon={<BandageIcon />}
+                  label="Specialties"
+                  exact={false}
+                  bold={false}
+                  onNavigate={onNavigate}
+                />
+              </>
+            )}
           </>
         )}
       </>
@@ -351,18 +358,22 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         {proExpanded && (
           <>
             <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Outcome Measures" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Decision Rules" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/red-flags" icon={<AlertCircleIcon />} label="Red Flag Screening" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Lab Values" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/medications" icon={<HeartIcon />} label="Medications" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/exercises" icon={<DumbbellIcon />} label="Therapeutic Exercises" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/research-literacy" icon={<SearchIcon />} label="Research & Statistics Literacy" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/documentation" icon={<FileTextIcon />} label="Documentation" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/guidelines" icon={<BookmarkIcon />} label="Guidelines" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            {(isPro || isStudent) && (
+              <>
+                <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Outcome Measures" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Decision Rules" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/red-flags" icon={<AlertCircleIcon />} label="Red Flag Screening" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Lab Values" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/medications" icon={<HeartIcon />} label="Medications" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/exercises" icon={<DumbbellIcon />} label="Therapeutic Exercises" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/research-literacy" icon={<SearchIcon />} label="Research & Statistics Literacy" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/documentation" icon={<FileTextIcon />} label="Documentation" locked={!isPro} bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/guidelines" icon={<BookmarkIcon />} label="Guidelines" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
+              </>
+            )}
             <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
           </>
         )}
