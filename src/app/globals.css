@@ -2678,6 +2678,25 @@ html[data-theme="dark"] .nav-founding-link-active {
 .vitals-insight-item:last-child { border-bottom: none; }
 .vitals-insight-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--color-accent); margin-top: 6px; flex-shrink: 0; }
 
+/* MoodPickerCard's 5-point same-day check-in (see components/vitals/MoodPickerCard.tsx) —
+   a plain round emoji button, filled/ringed when it's today's picked value. */
+.mood-picker-option {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-card-surface);
+  font-size: 19px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.mood-picker-option:hover:not(:disabled) { border-color: var(--color-accent); }
+.mood-picker-option[data-selected="true"] { border-color: var(--color-accent); border-width: 2px; background: color-mix(in srgb, var(--color-accent) 12%, var(--color-card-surface)); }
+.mood-picker-option:disabled { opacity: 0.6; cursor: default; }
+
 @media (max-width: 480px) {
   .vitals-chart-track { max-width: 26px; }
 }

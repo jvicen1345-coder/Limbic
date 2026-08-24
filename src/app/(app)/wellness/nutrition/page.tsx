@@ -4,13 +4,17 @@ import { prisma } from "@/lib/db";
 import { getWellnessArticles } from "@/lib/articles";
 import { NUTRITION_SECTIONS, NUTRITION_GOAL_TIPS, NUTRITION_QUICK_TIPS, nutritionTipForDate, isNutritionArticle } from "@/lib/nutrition-content";
 import { todayDateKey } from "@/lib/wordle-words";
+import { todayLocalDateStr } from "@/lib/today";
 import type { WellnessGoal } from "@/lib/vitals";
 import { WellnessDisclaimer } from "@/components/vitals/WellnessDisclaimer";
 import { LockIcon, ExternalLinkIcon } from "@/components/icons";
 import type { WellnessArticle } from "@/lib/types";
 import { MacroCalculatorCard } from "@/components/metrics/MacroCalculatorCard";
+import { NutritionSyncCard } from "@/components/vitals/NutritionSyncCard";
 import { NUTRITION_SOURCES } from "@/lib/nutrition-macros";
 import type { WellnessProfile } from "@/lib/vitals";
+
+const TODAY_NUTRITION_METRICS = ["caloriesConsumed", "proteinConsumedG", "carbsConsumedG", "fatConsumedG"] as const;
 
 const NUTRITION_ARTICLE_LIMIT = 6;
 
@@ -29,10 +33,16 @@ export default async function NutritionPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const [articlePool, profile] = await Promise.all([
+  const startOfToday = new Date(todayLocalDateStr() + "T00:00:00");
+  const [articlePool, profile, todaysNutritionLogs] = await Promise.all([
     getWellnessArticles(),
     prisma.vitalsProfile.findUnique({ where: { userId: user.id } }),
+    prisma.metricsLog.findMany({
+      where: { userId: user.id, metric: { in: [...TODAY_NUTRITION_METRICS] }, loggedAt: { gte: startOfToday } },
+      orderBy: { loggedAt: "desc" },
+    }),
   ]);
+  const nutritionByMetric = new Map(todaysNutritionLogs.map((r) => [r.metric, r.value]));
 
   const nutritionArticles = articlePool.filter((a) => isNutritionArticle(a.title, a.summary)).slice(0, NUTRITION_ARTICLE_LIMIT);
 
@@ -132,6 +142,13 @@ export default async function NutritionPage() {
           </div>
         ))}
       </div>
+
+      <NutritionSyncCard
+        calories={nutritionByMetric.get("caloriesConsumed") ?? null}
+        proteinG={nutritionByMetric.get("proteinConsumedG") ?? null}
+        carbsG={nutritionByMetric.get("carbsConsumedG") ?? null}
+        fatG={nutritionByMetric.get("fatConsumedG") ?? null}
+      />
 
       <div className="nutrition-section-label" style={{ marginBottom: 12 }}>
         Macro Calculator

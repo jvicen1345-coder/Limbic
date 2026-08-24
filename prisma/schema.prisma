@@ -305,6 +305,8 @@ model User {
   healthSyncToken     HealthSyncToken?
   fitnessConnections  FitnessConnection[]
   metricsLogs         MetricsLog[]
+  sleepLogs           SleepLog[]
+  moodLogs            MoodLog[]
   ceLogs              CELog[]
   foundingFunder      FoundingFunder?
 
@@ -560,10 +562,52 @@ model MetricsLog {
   id       String   @id @default(cuid())
   userId   String
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  metric   String // "bmi" | "hrv" | "vo2max" | "restingHR" | "maxHR" | "singleLegStance" | "sitAndRise" | "wallSit" | "shoulderScratch" | "bodyFat" | "oxygenSaturation" | "bloodGlucose"
+  metric   String // "bmi" | "hrv" | "vo2max" | "restingHR" | "maxHR" | "singleLegStance" | "sitAndRise" | "wallSit" | "shoulderScratch" | "bodyFat" | "oxygenSaturation" | "bloodGlucose" | "sleepHours" | "caloriesConsumed" | "proteinConsumedG" | "carbsConsumedG" | "fatConsumedG"
   value    Float
   notes    String?
   loggedAt DateTime @default(now())
+}
+
+// One row per night, synced from a connected Google Health account's `sleep` data type (see
+// lib/google-health-sleep-sync.ts) — no manual-entry path, unlike VitalsLog/MetricsLog,
+// since there's no reasonable way for a reader to self-report sleep stages/duration
+// accurately after the fact. Upserted in place per date on every sync, same
+// re-syncing-is-safe convention as VitalsLog's apple_health rows.
+model SleepLog {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Local date the sleep session's wearer fell asleep on — the night of, not the morning
+  // woken up, matching how "last night's sleep" is normally talked about.
+  date          DateTime
+  minutesAsleep Int
+  minutesInBed  Int?
+  minutesAwake  Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, date])
+}
+
+// One row per day — a simple 1 (worst) to 5 (best) mood scale, entered manually (see
+// app/actions/mood.ts saveMoodLogAction) or best-effort synced from a connected Google
+// Health account's `moods` data type (see lib/mood-sync.ts) when its value maps cleanly onto
+// this same 1-5 scale. `source` distinguishes the two so a reader's own manual entry for a
+// day is never silently overwritten by a same-day sync (see lib/mood-sync.ts for the exact
+// precedence rule) — unlike weight/height/sleep, a reader's own subjective mood entry is the
+// more trustworthy signal when both exist for the same day.
+model MoodLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime
+  mood      Int
+  notes     String?
+  source    String // "manual" | "google_health"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
 }
 
 // A single logged CE course entry for LimbicPRO's CE Hours Tracker (/pro/ce-tracker) —

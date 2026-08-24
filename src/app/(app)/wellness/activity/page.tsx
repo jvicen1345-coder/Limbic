@@ -8,8 +8,10 @@ import { LogActivityForm } from "@/components/vitals/LogActivityForm";
 import { InsightsCard } from "@/components/vitals/InsightsCard";
 import { AppleHealthUploadCard } from "@/components/vitals/AppleHealthUploadCard";
 import { TrackerConnectCard } from "@/components/vitals/TrackerConnectCard";
+import { MoodPickerCard, type MoodHistoryEntry } from "@/components/vitals/MoodPickerCard";
 import { googleHealthEnabled as fitbitEnabled } from "@/lib/google-health-oauth";
 import { stravaEnabled } from "@/lib/strava-oauth";
+import { todayLocalDateStr } from "@/lib/today";
 
 /** The exercise-input page — weekly cardio/strength/mobility/mindfulness logging, split
  *  out from Metrics (which is now pure calculators, see app/(app)/wellness/metrics/page.tsx)
@@ -41,6 +43,14 @@ export default async function ActivityLogPage() {
   // if that ever changes.
   const foundingFunder = await prisma.foundingFunder.findUnique({ where: { userId: user.id }, select: { confirmed: true } });
   const stravaUnlocked = user.isPro || user.studentTier === "limbicStudent" || user.isWellnessPlus || !!foundingFunder?.confirmed;
+
+  const sevenDaysAgo = new Date(now);
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+  const moodRows = await prisma.moodLog.findMany({ where: { userId: user.id, date: { gte: sevenDaysAgo } }, orderBy: { date: "asc" } });
+  const todayIso = todayLocalDateStr();
+  const moodHistory: MoodHistoryEntry[] = moodRows.map((r) => ({ date: dateToLocalIso(r.date), mood: r.mood }));
+  const todayMood = moodHistory.find((m) => m.date === todayIso)?.mood ?? null;
 
   const logs: VitalsLogEntry[] = logRows.map((r) => ({
     id: r.id,
@@ -85,6 +95,8 @@ export default async function ActivityLogPage() {
       />
 
       <AppleHealthUploadCard />
+
+      <MoodPickerCard todayMood={todayMood} recentDays={moodHistory} />
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">This week&rsquo;s activity</div>
