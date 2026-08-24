@@ -32,6 +32,14 @@ export const RESEARCH_LITERACY_SECTIONS: LiteracySection[] = [
         ],
       },
       {
+        title: "Start with what's already typical — prevalence sets the baseline",
+        body: [
+          "Before you can judge whether a paper's finding is meaningful, you need to know the baseline: how common is this outcome, characteristic, or diagnosis in the population already? Prevalence — the proportion of a population with a given characteristic at a point in time — is what lets you judge whether a reported value is expected or unusual, the same reasoning you'd use at the bedside when a single patient's value has you unsure whether to be concerned.",
+          "Example: roughly 25% of adults 65+ fall in a given year (CDC). A paper reporting a 30% fall rate in its sample isn't describing anything unusual; one reporting 60% probably is, and should prompt you to ask what's different about that sample.",
+          "If the outcome variable is roughly normally distributed and the paper reports a mean and standard deviation (SD), the 68-95-99.7 rule gives you a fast sanity check: about 68% of values fall within ±1 SD of the mean, 95% within ±2 SD, and 99.7% within ±3 SD. A subject or patient several SDs out isn't just \"high\" or \"low\" — they're a statistical outlier, and that's worth asking why.",
+        ],
+      },
+      {
         title: "Introduction: what gap is this actually filling?",
         body: [
           "A good introduction narrows from \"here's what's known\" to \"here's the specific unanswered question\" to \"here's our hypothesis.\" If you can't find a clear gap being filled, be skeptical of why the study was done at all.",
@@ -48,11 +56,28 @@ export const RESEARCH_LITERACY_SECTIONS: LiteracySection[] = [
         ],
       },
       {
+        title: "Know what kind of variable you're reading",
+        body: [
+          "A variable is a measurement of some underlying construct — the construct is what the researchers actually care about (e.g., balance ability, fear of falling), the variable is how they operationalized it (e.g., a specific test's total score). Identify the independent variable(s) (IV — what was manipulated or used to define groups) and dependent variable(s) (DV — the outcome being measured); if you can't cleanly state both, you likely don't understand the study's actual question yet.",
+          "Also identify each key variable's level of measurement, because it determines which statistics are even valid: nominal (categories with no order — sex, treatment group), ordinal (ranked categories with unequal intervals — most questionnaire totals, like a fear-of-falling or quality-of-life scale), interval (equal intervals, no true zero — rare in PT), or ratio (equal intervals with a true zero — most physical measurements: time, force, distance, weight).",
+          "This matters because papers routinely average ordinal data (Likert-based questionnaire totals) and run tests built for continuous, normally-distributed data on it, which can overstate the precision of what's really a ranked score. It's not automatically wrong — composite ordinal scores are often treated as approximately interval in practice — but it's worth noticing when a paper does it without comment.",
+        ],
+      },
+      {
         title: "Results: separate what they measured from what they claim",
         body: [
           "Read the actual numbers in the tables before reading the authors' prose description of them — authors sometimes describe a result more favorably in text than the raw data supports.",
           "Distinguish statistical significance from clinical significance (see the Statistics section below) — a real, reproducible effect can still be too small to matter to a patient.",
           "Check the dropout/attrition rate and whether the analysis was intention-to-treat (everyone analyzed in the group they were assigned to, even if they didn't finish) versus per-protocol (only those who completed treatment) — per-protocol-only analyses can inflate how good an intervention looks by dropping the people it didn't work for.",
+        ],
+      },
+      {
+        title: "Never trust a summary statistic without seeing the shape of the data",
+        body: [
+          "Anscombe's Quartet (1973) is the classic demonstration of why: four datasets with identical means, standard deviations, and correlations that look completely different once plotted — one roughly linear, one curved, one a straight line thrown off by a single outlier. A results table alone can't tell you which of those you're looking at; if the paper includes a histogram, scatterplot, or box plot, look at it before trusting the numbers next to it.",
+          "Skewness determines which measure of central tendency is telling the truth. In a right-skewed distribution (a long tail of high values — typical for completion times or anything with a natural floor near zero), the mean gets pulled toward the tail and can overstate the \"typical\" value; the median is more resistant to outliers and often the more honest number. When mean and median are close, the distribution is roughly symmetric and the mean is trustworthy on its own.",
+          "Watch for bimodal data too — two distinct peaks usually mean the sample is really two different subgroups pooled together (e.g., a wide age range spanning both young and older adults). A single mean describes an \"average\" subject who may not actually exist in the data — a real threat to how you interpret the result, separate from any statistical significance question.",
+          "If a paper reports only mean ± SD for a variable you'd expect to be skewed, and never shows a distribution or reports a median, treat the \"average\" with some skepticism about how representative it really is of a typical participant.",
         ],
       },
       {
