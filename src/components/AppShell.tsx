@@ -334,7 +334,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
               <>
                 <NavLink href="/student/slides" icon={<FileTextIcon />} label="Break Down Slides" bold={false} onNavigate={onNavigate} />
                 <NavLink href="/student/soap" icon={<PencilIcon />} label="Practice a SOAP Note" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/student/wellness" icon={<HeartIcon />} label="Mental Wellness" bold={false} onNavigate={onNavigate} />
                 <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" locked={!isVerifiedStudent} lockLabel="STUDENT+" bold={false} onNavigate={onNavigate} />
                 <NavLink
                   href="/student/specialties"
@@ -344,6 +343,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
                   bold={false}
                   onNavigate={onNavigate}
                 />
+                <NavLink href="/student/wellness" icon={<HeartIcon />} label="Mental Wellness" bold={false} onNavigate={onNavigate} />
               </>
             )}
           </>
