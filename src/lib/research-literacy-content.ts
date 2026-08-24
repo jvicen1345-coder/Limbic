@@ -69,6 +69,14 @@ export const RESEARCH_LITERACY_SECTIONS: LiteracySection[] = [
           "Design isn't everything — a well-run cohort study can be more trustworthy than a poorly-run, underpowered RCT. Design sets the ceiling; execution (the Methods questions above) determines how close a given study gets to it.",
         ],
       },
+      {
+        title: "Generalizability — does this apply to the patient in front of you?",
+        body: [
+          "Generalizability (also called external validity) is how well a study's findings apply beyond the exact sample it was tested on — to a different population, setting, or context. It's a separate question from internal validity (whether the study was designed well enough to correctly measure what it claims within its own sample) — a study can be internally airtight and still generalize poorly.",
+          "What narrows it: narrow inclusion/exclusion criteria (excluding anyone with comorbidities, prior surgery, certain ages), a single site or a demographically narrow sample, a highly controlled or artificial setting that's hard to replicate in real practice, and short follow-up that doesn't show whether an effect holds long-term.",
+          "In practice: compare the study's stated population against your own patient on the factors that plausibly matter for this question — age, diagnosis and severity, comorbidities, prior treatment history, and setting. The more those diverge, the more caution the result deserves, even if the study itself was well-run. See the Generalizability Checker below for a structured way to work through this comparison for a specific article.",
+        ],
+      },
     ],
   },
   {

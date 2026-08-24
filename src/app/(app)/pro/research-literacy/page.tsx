@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
 import { ProGate } from "@/components/pro/ProGate";
 import { ResearchLiteracyGuide } from "@/components/pro/ResearchLiteracyGuide";
+import { GeneralizabilityChecker } from "@/components/pro/GeneralizabilityChecker";
 
 export const metadata: Metadata = {
   title: "Research & Statistics Literacy",
@@ -18,7 +19,16 @@ export default async function ResearchLiteracyPage() {
         How to critically read a research article and interpret the statistics inside it.
       </p>
 
-      {!hasClinicalReferenceAccess(user) ? <ProGate toolName="Research & Statistics Literacy" /> : <ResearchLiteracyGuide />}
+      {!hasClinicalReferenceAccess(user) ? (
+        <ProGate toolName="Research & Statistics Literacy" />
+      ) : (
+        <>
+          <div style={{ marginBottom: 28 }}>
+            <GeneralizabilityChecker />
+          </div>
+          <ResearchLiteracyGuide />
+        </>
+      )}
     </div>
   );
 }
