@@ -13,7 +13,6 @@ type Direction = "across" | "down";
 type GameStatus = "playing" | "won";
 
 const SIZE = 5;
-const MOBILE_KEYS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 /** A fixed handful of confetti pieces for the completion overlay (see .crossword-confetti-*
  *  in globals.css) — reuses existing palette tokens rather than inventing new hex values, so
@@ -159,9 +158,17 @@ export function CrosswordGame({
     return () => clearInterval(id);
   }, [timerRunning, status]);
 
+  // The single focus target for every keystroke, letter or navigation — a visually hidden
+  // <input> (see .crossword-hidden-input) rather than the old on-screen A-Z button strip, so
+  // tapping a cell brings up the device's own keyboard on mobile instead of requiring a
+  // slide-to-find-the-letter tap on a cramped alphabet row. Kept focused throughout play by
+  // refocusing it on every cell/clue selection below.
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const selectCell = useCallback(
     (r: number, c: number) => {
       if (isBlack(r, c)) return;
+      inputRef.current?.focus();
       if (touched && selected.row === r && selected.col === c) {
         const other: Direction = direction === "across" ? "down" : "across";
         if (findClue(puzzle, other, r, c)) setDirection(other);
@@ -265,33 +272,54 @@ export function CrosswordGame({
     [selected, isBlack]
   );
 
+  // Auto-focus on mount so a desktop reader can start typing immediately, same as the old
+  // window-level listener let them — mobile readers get the keyboard on their first tap
+  // instead, since iOS/Android only allow a focus() call to raise the keyboard from inside a
+  // user gesture (a plain mount effect can't do that on touch devices).
   useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
+    inputRef.current?.focus();
+  }, []);
+
+  // Backspace and the arrow keys never produce a printable character, so they're handled
+  // here on keydown; every letter (physical or on-screen mobile keyboard alike) goes through
+  // handleHiddenInputChange below instead — splitting it this way, rather than reading
+  // e.key for letters too, is what makes this work reliably across mobile keyboards that
+  // don't always dispatch a conventional keydown for a typed letter (predictive-text taps,
+  // swipe input) but always fire a change event.
+  const handleHiddenInputKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const key = e.key;
-      if (/^[a-zA-Z]$/.test(key)) {
-        e.preventDefault();
-        typeLetter(key.toUpperCase());
-      } else if (key === "Backspace") {
+      if (e.key === "Backspace") {
         e.preventDefault();
         backspace();
-      } else if (key === "ArrowLeft") {
+      } else if (e.key === "ArrowLeft") {
         e.preventDefault();
         moveArrow(0, -1);
-      } else if (key === "ArrowRight") {
+      } else if (e.key === "ArrowRight") {
         e.preventDefault();
         moveArrow(0, 1);
-      } else if (key === "ArrowUp") {
+      } else if (e.key === "ArrowUp") {
         e.preventDefault();
         moveArrow(-1, 0);
-      } else if (key === "ArrowDown") {
+      } else if (e.key === "ArrowDown") {
         e.preventDefault();
         moveArrow(1, 0);
       }
-    }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [typeLetter, backspace, moveArrow]);
+    },
+    [backspace, moveArrow]
+  );
+
+  // Cleared back to "" after every keystroke so the input is always ready for the next
+  // single letter — takes the last letter typed rather than the first, so a mobile keyboard
+  // that briefly leaves an autocomplete suggestion in the field still behaves correctly.
+  const handleHiddenInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const letters = e.target.value.replace(/[^a-zA-Z]/g, "");
+      e.target.value = "";
+      if (letters) typeLetter(letters[letters.length - 1].toUpperCase());
+    },
+    [typeLetter]
+  );
 
   const numberAt = useMemo(() => {
     const map = new Map<string, number>();
@@ -376,16 +404,20 @@ export function CrosswordGame({
             )}
           </div>
 
-          <div className="crossword-mobile-keys">
-            {MOBILE_KEYS.map((letter) => (
-              <button key={letter} type="button" className="crossword-mobile-key" onClick={() => typeLetter(letter)}>
-                {letter}
-              </button>
-            ))}
-            <button type="button" className="crossword-mobile-key crossword-mobile-key-back" onClick={backspace}>
-              ⌫
-            </button>
-          </div>
+          <input
+            ref={inputRef}
+            type="text"
+            inputMode="text"
+            autoCapitalize="characters"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            defaultValue=""
+            onChange={handleHiddenInputChange}
+            onKeyDown={handleHiddenInputKeyDown}
+            className="crossword-hidden-input"
+            aria-label="Type a letter"
+          />
         </div>
 
         <div className="crossword-right-col">
@@ -399,6 +431,7 @@ export function CrosswordGame({
                     activeClue?.number === clue.number && direction === "across" ? " crossword-clue-item-active" : ""
                   }${isClueSolved(clue, "across") ? " crossword-clue-item-done" : ""}`}
                   onClick={() => {
+                    inputRef.current?.focus();
                     setTouched(true);
                     setSelected({ row: clue.row, col: clue.col });
                     setDirection("across");
@@ -418,6 +451,7 @@ export function CrosswordGame({
                     activeClue?.number === clue.number && direction === "down" ? " crossword-clue-item-active" : ""
                   }${isClueSolved(clue, "down") ? " crossword-clue-item-done" : ""}`}
                   onClick={() => {
+                    inputRef.current?.focus();
                     setTouched(true);
                     setSelected({ row: clue.row, col: clue.col });
                     setDirection("down");
