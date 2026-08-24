@@ -170,7 +170,7 @@ export function hasLicenseAccess(user: {
   return user.licenseNumber != null || isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
 }
 
-/** Clinical Calculators, Decision Rules, Red Flag Screening, Special Tests, Lab Values,
+/** Outcome Measures, Decision Rules, Red Flag Screening, Special Tests, Lab Values,
  *  Medications, and Guidelines are useful clinical-knowledge references for a PT student to
  *  learn from too, not just a paying PRO clinician — so these seven specifically (not the
  *  rest of the LimbicPRO toolbox: Documentation, CE Tracker, the HEP Builder, which are

@@ -18,7 +18,7 @@ import { SubTabs } from "@/components/SubTabs";
  *  a 2x5 card grid on desktop, single column on mobile (see .pro-tools-grid in
  *  globals.css). */
 const PRO_TOOLS: { name: string; description: string; count: string; href: string }[] = [
-  { name: "Clinical Calculators", description: "12 validated outcome measures and functional assessments", count: "12 tools", href: "/pro/calculators" },
+  { name: "Outcome Measures", description: "12 validated outcome measures and functional assessments", count: "12 tools", href: "/pro/calculators" },
   { name: "Decision Rules", description: "8 evidence-based clinical decision rules with scoring", count: "8 rules", href: "/pro/decision-rules" },
   { name: "Red Flag Screening", description: "6 category screening checklists for urgent referral", count: "6 categories", href: "/pro/red-flags" },
   { name: "Special Tests", description: "Organized by body region with sensitivity and specificity", count: "7 regions", href: "/pro/special-tests" },
