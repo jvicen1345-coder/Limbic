@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { DailySharpeningSession } from "@/components/DailySharpeningSession";
 import { ExternalLinkIcon } from "@/components/icons";
@@ -349,6 +350,17 @@ export function BoardsTabs({
               ))}
             </div>
             <p className="boards-resource-disclaimer">External links: opens FSBPT website</p>
+          </div>
+
+          <div className="card elev-sm">
+            <div className="card-title">Research & Statistics Literacy</div>
+            <p className="boards-resource-disclaimer" style={{ margin: "4px 0 12px" }}>
+              How to break down a research article and interpret the statistics inside it — the Non-Systems section of the NPTE covers
+              evidence-based practice, and it&rsquo;s the same skill you&rsquo;ll use reading real studies once you&rsquo;re practicing.
+            </p>
+            <Link href="/pro/research-literacy" className="btn btn-secondary">
+              Open the guide →
+            </Link>
           </div>
 
           <div className="card elev-sm">

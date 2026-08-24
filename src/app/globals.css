@@ -3071,6 +3071,25 @@ html[data-theme="dark"] .nav-founding-link-active {
   font-size: 12.5px;
 }
 .wellness-calc-education p { margin: 10px 0 0; line-height: 1.6; color: var(--color-neutral-700); }
+
+/* ResearchLiteracyGuide's topic cards (see components/pro/ResearchLiteracyGuide.tsx) — a
+   <details>/<summary> card rather than the plain-text summary above, since each topic here
+   is its own standalone card in a list, not a single aside under one calculator. */
+.research-literacy-topic-summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  list-style: none;
+}
+.research-literacy-topic-summary::-webkit-details-marker { display: none; }
+.research-literacy-topic-summary::before {
+  content: "+";
+  display: inline-block;
+  width: 16px;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+.research-literacy-topic[open] .research-literacy-topic-summary::before { content: "–"; }
 .wellness-calc-source { font-size: 11px; color: var(--color-neutral-600); margin-top: 10px; }
 
 /* — Missing-profile notice — shown instead of a calculator's own input fields for anything

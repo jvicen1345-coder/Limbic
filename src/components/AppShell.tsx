@@ -358,6 +358,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Lab Values" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/medications" icon={<HeartIcon />} label="Medications" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/exercises" icon={<DumbbellIcon />} label="Therapeutic Exercises" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/research-literacy" icon={<SearchIcon />} label="Research & Statistics Literacy" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/documentation" icon={<FileTextIcon />} label="Documentation" locked={!isPro} bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/guidelines" icon={<BookmarkIcon />} label="Guidelines" locked={!isPro && !isStudent} bold={false} onNavigate={onNavigate} />
