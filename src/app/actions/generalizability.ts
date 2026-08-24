@@ -12,16 +12,16 @@ const NOT_ALLOWED_ERROR: GeneralizabilityError = { ok: false, message: "The Gene
  *  full clinical decision-support tool. Re-checked here, not just gated on the page's UI —
  *  a Server Action is its own callable endpoint regardless of which page's UI calls it. */
 export async function checkGeneralizabilityAction(
-  studyPopulation: string,
+  studyInput: string,
   targetPopulation: string
 ): Promise<GeneralizabilityResult | GeneralizabilityError> {
   const user = await getCurrentUser();
   if (!user || !hasClinicalReferenceAccess(user)) return NOT_ALLOWED_ERROR;
 
-  const study = studyPopulation.trim();
+  const study = studyInput.trim();
   const target = targetPopulation.trim();
   if (!study || !target) {
-    return { ok: false, message: "Describe both the study's population and the population you're comparing it to." };
+    return { ok: false, message: "Add a study (a link, PMID, DOI, citation, or description of its population) and the population you're comparing it to." };
   }
 
   return checkGeneralizability(study, target);

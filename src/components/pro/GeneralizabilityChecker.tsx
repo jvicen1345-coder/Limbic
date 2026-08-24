@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { checkGeneralizabilityAction } from "@/app/actions/generalizability";
+import { ExternalLinkIcon } from "@/components/icons";
 import type { GeneralizabilityResult } from "@/lib/generalizability";
 
 const CATEGORY_CLASS: Record<GeneralizabilityResult["category"], string> = {
@@ -16,21 +17,28 @@ const CATEGORY_CLASS: Record<GeneralizabilityResult["category"], string> = {
  *  back" shape as this app's other calculators, just backed by an LLM call instead of a
  *  formula, since "does this population match" isn't reducible to arithmetic the way
  *  BMI/VO2 Max are. Reuses the exact Poor/Fair/Good/Excellent badge styling
- *  HrvCalculatorCard/Vo2MaxCalculatorCard already use, for the same visual vocabulary. */
+ *  HrvCalculatorCard/Vo2MaxCalculatorCard already use, for the same visual vocabulary.
+ *
+ *  The first field doubles as a link/citation box — a PubMed URL, bare PMID, DOI, or
+ *  citation/title resolves server-side to a real fetched abstract (see
+ *  lib/pubmed.ts resolvePubmedAbstract), which is what actually gets read; typing a plain
+ *  population description straight into the same box still works exactly as before if
+ *  nothing resolves. result.resolvedArticle and result.studyPopulationSummary are how the
+ *  reader confirms what was actually found/read before trusting the score. */
 export function GeneralizabilityChecker() {
-  const [studyPopulation, setStudyPopulation] = useState("");
+  const [studyInput, setStudyInput] = useState("");
   const [targetPopulation, setTargetPopulation] = useState("");
   const [result, setResult] = useState<GeneralizabilityResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const canCheck = studyPopulation.trim().length > 0 && targetPopulation.trim().length > 0 && !pending;
+  const canCheck = studyInput.trim().length > 0 && targetPopulation.trim().length > 0 && !pending;
 
   const handleCheck = () => {
     if (!canCheck) return;
     setError(null);
     startTransition(async () => {
-      const res = await checkGeneralizabilityAction(studyPopulation, targetPopulation);
+      const res = await checkGeneralizabilityAction(studyInput, targetPopulation);
       if (res.ok) {
         setResult(res);
       } else {
@@ -44,21 +52,21 @@ export function GeneralizabilityChecker() {
     <div className="card elev-sm">
       <div className="card-kicker">Generalizability Checker</div>
       <p className="card-body" style={{ marginTop: 2 }}>
-        Describe a study&rsquo;s population and the population you&rsquo;re comparing it to — age range, diagnosis and
-        severity, comorbidities, setting, anything relevant — and get a scored read on how well the findings likely
-        transfer.
+        Paste a PubMed link, PMID, DOI, or citation and it&rsquo;ll read the actual abstract — or just describe the
+        study&rsquo;s population yourself. Either way, describe the population you&rsquo;re comparing it to and get a
+        scored read on how well the findings likely transfer.
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 12 }}>
         <div className="field">
-          <label htmlFor="gen-study-population">Study&rsquo;s population</label>
+          <label htmlFor="gen-study-input">Study — link, PMID, DOI, citation, or a description of its population</label>
           <textarea
             className="input"
-            id="gen-study-population"
+            id="gen-study-input"
             rows={3}
-            placeholder="e.g. 45 adults aged 20-35 with acute (under 6 weeks) low back pain, no prior surgery, recruited from one outpatient clinic"
-            value={studyPopulation}
-            onChange={(e) => setStudyPopulation(e.target.value)}
+            placeholder="e.g. https://pubmed.ncbi.nlm.nih.gov/34567890/ — or 45 adults aged 20-35 with acute low back pain, recruited from one outpatient clinic"
+            value={studyInput}
+            onChange={(e) => setStudyInput(e.target.value)}
           />
         </div>
         <div className="field">
@@ -84,11 +92,27 @@ export function GeneralizabilityChecker() {
 
       {result && (
         <div className="wellness-calc-result">
+          {result.resolvedArticle && (
+            <a
+              href={result.resolvedArticle.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "var(--color-accent-700)", marginBottom: 10 }}
+            >
+              Found: {result.resolvedArticle.title} — {result.resolvedArticle.journal}
+              <ExternalLinkIcon size={11} />
+            </a>
+          )}
+
           <div className="wellness-calc-result-row">
             <span className="wellness-calc-result-value">{result.score}/4</span>
             <span className={`wellness-badge ${CATEGORY_CLASS[result.category]}`}>{result.category}</span>
           </div>
-          <p style={{ fontSize: 13.5, color: "var(--color-neutral-700)", margin: "10px 0 0", lineHeight: 1.6 }}>{result.rationale}</p>
+
+          <p style={{ fontSize: 12.5, color: "var(--color-neutral-600)", margin: "10px 0 0", fontStyle: "italic" }}>
+            {result.studyPopulationSummary}
+          </p>
+          <p style={{ fontSize: 13.5, color: "var(--color-neutral-700)", margin: "8px 0 0", lineHeight: 1.6 }}>{result.rationale}</p>
 
           {result.matches.length > 0 && (
             <div style={{ marginTop: 12 }}>
@@ -115,8 +139,8 @@ export function GeneralizabilityChecker() {
       )}
 
       <p style={{ fontSize: 11.5, color: "var(--color-neutral-600)", marginTop: 14 }}>
-        A support judgment based only on what you describe here, not a substitute for reading the actual study and
-        applying your own clinical reasoning.
+        A support judgment based only on the PubMed abstract or description given, not a substitute for reading the
+        actual study and applying your own clinical reasoning.
       </p>
     </div>
   );

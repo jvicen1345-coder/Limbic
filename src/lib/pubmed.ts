@@ -71,8 +71,25 @@ async function fetchText(url: string): Promise<string | null> {
   }
 }
 
+/** PubMed abstract XML legitimately contains numeric character references (e.g. "&#x2265;"
+ *  for "≥") for symbols that don't survive plain ASCII — fast-xml-parser's default entity
+ *  handling doesn't reliably unescape these, so they were passing straight through into
+ *  displayed/AI-read abstract text as literal "&#x2265;" instead of "≥". Decoded here as a
+ *  final pass, plus the 5 predefined XML entities, so every caller of stripHtml (feed
+ *  summaries, and lib/generalizability.ts's full-abstract reads) gets clean text either way. */
+function decodeXmlEntities(s: string): string {
+  return s
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'");
+}
+
 function stripHtml(s: string): string {
-  return s.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  return decodeXmlEntities(s.replace(/<[^>]*>/g, " ")).replace(/\s+/g, " ").trim();
 }
 
 function estimateReadMins(text: string): number {
@@ -225,4 +242,67 @@ export async function fetchPubmedResearch(limit = DEFAULT_LIMIT): Promise<Articl
 export async function fetchPubmedById(pmid: string): Promise<Article | null> {
   const articles = await buildArticlesFromIds([pmid]);
   return articles[0] ?? null;
+}
+
+const PUBMED_URL_RE = /pubmed\.ncbi\.nlm\.nih\.gov\/(\d{1,9})/i;
+const BARE_PMID_RE = /^\d{4,9}$/;
+const DOI_RE = /10\.\d{4,9}\/\S+/;
+
+export interface PubmedAbstractLookup {
+  pmid: string;
+  title: string;
+  journal: string;
+  url: string;
+  /** The full, untruncated abstract — unlike Article.summary above, which is clipped to
+   *  320 chars for feed-card display. Can be empty string for an older record with no
+   *  abstract on file; callers should handle that rather than treating it as a failure. */
+  abstract: string;
+}
+
+/** Resolves free-form input — a PubMed URL, a bare PMID, a DOI, or a plain-text citation/
+ *  title — down to one real PubMed record with its full abstract, for lib/generalizability.ts's
+ *  Generalizability Checker (see that file's comment on why the full-text esearch-then-efetch
+ *  path lives here rather than reusing searchPubmed/fetchPubmedById above, both of which
+ *  return the feed-truncated Article shape). Returns null if nothing resolves — including a
+ *  too-short/ambiguous free-text input, which isn't attempted as a search term at all, to
+ *  avoid esearch's "no match" fallback silently returning an unrelated top-of-database
+ *  result for something like a stray word or a mistyped fragment. Never throws. */
+export async function resolvePubmedAbstract(input: string): Promise<PubmedAbstractLookup | null> {
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+
+  let pmid: string | null = null;
+  const urlMatch = trimmed.match(PUBMED_URL_RE);
+  if (urlMatch) {
+    pmid = urlMatch[1];
+  } else if (BARE_PMID_RE.test(trimmed)) {
+    pmid = trimmed;
+  } else {
+    const doiMatch = trimmed.match(DOI_RE);
+    if (doiMatch || trimmed.length >= 8) {
+      const term = doiMatch ? `${doiMatch[0]}[DOI]` : trimmed;
+      const searchUrl = `${EUTILS}/esearch.fcgi?db=pubmed&retmode=json&retmax=1&term=${encodeURIComponent(term)}`;
+      const searchJson = (await fetchJson(searchUrl)) as { esearchresult?: { idlist?: string[] } } | null;
+      pmid = searchJson?.esearchresult?.idlist?.[0] ?? null;
+    }
+  }
+  if (!pmid) return null;
+
+  const [summaryJson, efetchXml] = await Promise.all([
+    fetchJson(`${EUTILS}/esummary.fcgi?db=pubmed&retmode=json&id=${pmid}`) as Promise<{
+      result?: Record<string, EsummaryEntry>;
+    } | null>,
+    fetchText(`${EUTILS}/efetch.fcgi?db=pubmed&rettype=abstract&retmode=xml&id=${pmid}`),
+  ]);
+  const entry = summaryJson?.result?.[pmid];
+  if (!entry?.title) return null;
+
+  const meta = efetchXml ? extractPubmedMeta(efetchXml) : new Map<string, PubmedMeta>();
+  return {
+    pmid,
+    title: entry.title.replace(/\.$/, ""),
+    journal: entry.fulljournalname || entry.source || "PubMed",
+    url: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
+    abstract: meta.get(pmid)?.abstract ?? "",
+  };
 }
