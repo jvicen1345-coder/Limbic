@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { deleteVitalsLog, logVitalsActivity } from "@/app/actions/vitals";
 import { VITALS_CATEGORIES, VITALS_CATEGORY_LABEL, VITALS_CATEGORY_SUGGESTIONS, type VitalsCategory, type VitalsLogEntry } from "@/lib/vitals";
 import { todayLocalDateStr } from "@/lib/today";
@@ -99,6 +100,9 @@ export function LogActivityForm({ recentLogs }: { recentLogs: VitalsLogEntry[] }
               <span className={`vitals-chart-legend-dot vitals-color-${log.category}`} />
               <span className="vitals-log-activity">
                 {log.activity}
+                {log.source === "strava" && (
+                  <Image src="/strava-badge.png" alt="" width={14} height={14} style={{ borderRadius: 3, marginLeft: 6 }} />
+                )}
                 {log.source !== "manual" && <span className="vitals-log-synced-badge">Synced</span>}
               </span>
               <span className="vitals-log-minutes">{log.minutes} min</span>
