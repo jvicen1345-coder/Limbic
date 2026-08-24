@@ -32,6 +32,16 @@ export default async function ActivityLogPage() {
   const fitbitConnection = fitnessConnections.find((c) => c.provider === "fitbit") ?? null;
   const stravaConnection = fitnessConnections.find((c) => c.provider === "strava") ?? null;
 
+  // Strava specifically is paywalled (Google Health/Apple Health stay free) — Strava's own
+  // API now costs Limbic a recurring per-athlete-tier subscription fee (see
+  // lib/strava-oauth.ts), unlike Google Health/Apple Health, which cost nothing regardless
+  // of how many readers connect. Any paid Limbic tier, or a confirmed Founding Funder spot
+  // (see schema.prisma FoundingFunder.confirmed), unlocks it — Founding Funder already
+  // flips isPro true on claim, but checked directly here too so this doesn't silently break
+  // if that ever changes.
+  const foundingFunder = await prisma.foundingFunder.findUnique({ where: { userId: user.id }, select: { confirmed: true } });
+  const stravaUnlocked = user.isPro || user.studentTier === "limbicStudent" || user.isWellnessPlus || !!foundingFunder?.confirmed;
+
   const logs: VitalsLogEntry[] = logRows.map((r) => ({
     id: r.id,
     date: dateToLocalIso(r.date),
@@ -70,6 +80,7 @@ export default async function ActivityLogPage() {
           lastSynced: stravaConnection?.lastSyncedAt
             ? stravaConnection.lastSyncedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })
             : null,
+          locked: !stravaUnlocked,
         }}
       />
 

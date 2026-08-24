@@ -3,11 +3,17 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { syncFitnessConnectionAction, disconnectFitnessConnectionAction } from "@/app/actions/fitness-connections";
+import { LockIcon } from "@/components/icons";
 
 interface TrackerStatus {
   enabled: boolean;
   connected: boolean;
   lastSynced: string | null;
+  /** True if this reader hasn't unlocked this specific tracker — see stravaUnlocked in
+   *  app/(app)/wellness/activity/page.tsx. Checked before `enabled`/`connected`: a locked
+   *  reader always sees the paywall, whether or not the site owner has configured this
+   *  provider's API credentials yet, rather than "Coming soon" or a live Connect button. */
+  locked?: boolean;
 }
 
 /** One row per tracker on the Activity Log's "Connect a tracker" card — Google Health
@@ -56,16 +62,23 @@ function TrackerRow({
       <div>
         <div style={{ fontWeight: 600, fontSize: 13.5 }}>{label}</div>
         <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
-          {!status.enabled
-            ? "Not connected yet"
-            : status.connected
-              ? status.lastSynced
-                ? `Connected — last synced ${status.lastSynced}`
-                : "Connected — syncing soon"
-              : "Not connected"}
+          {status.locked
+            ? "Included with any Limbic subscription or Founding Funder"
+            : !status.enabled
+              ? "Not connected yet"
+              : status.connected
+                ? status.lastSynced
+                  ? `Connected — last synced ${status.lastSynced}`
+                  : "Connected — syncing soon"
+                : "Not connected"}
         </div>
       </div>
-      {!status.enabled ? (
+      {status.locked ? (
+        <a href="/pro" className="btn btn-secondary" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <LockIcon size={13} />
+          Upgrade
+        </a>
+      ) : !status.enabled ? (
         <span className="boards-badge-soon">Coming soon</span>
       ) : status.connected ? (
         <div style={{ display: "flex", gap: 8 }}>
