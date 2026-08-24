@@ -475,18 +475,24 @@ model UserCalendarEvent {
 // raw rows, derive views on read" approach as ReadArticle/BoardActivity elsewhere in this
 // schema.
 model VitalsProfile {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  age           Int?
-  heightFeet    Int?
-  heightInches  Int?
-  weightLbs     Float?
-  biologicalSex String?
-  activityLevel String?
-  wellnessGoal  String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  age                  Int?
+  heightFeet           Int?
+  heightInches         Int?
+  weightLbs            Float?
+  biologicalSex        String?
+  activityLevel        String?
+  wellnessGoal         String?
+  // Set whenever lib/google-health-metrics-sync.ts overwrites weightLbs/heightFeet/
+  // heightInches from a connected Google Health account, so BodyMetricsCard can show "synced
+  // from Google Health" instead of implying the reader typed these in. A manual Save from
+  // that card always wins going forward until the next sync overwrites again — same
+  // whoever-wrote-last convention as VitalsLog's apple_health/manual rows.
+  googleHealthSyncedAt DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }
 
 model VitalsLog {
@@ -554,7 +560,7 @@ model MetricsLog {
   id       String   @id @default(cuid())
   userId   String
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  metric   String // "bmi" | "hrv" | "vo2max" | "restingHR" | "maxHR" | "singleLegStance" | "sitAndRise" | "wallSit" | "shoulderScratch"
+  metric   String // "bmi" | "hrv" | "vo2max" | "restingHR" | "maxHR" | "singleLegStance" | "sitAndRise" | "wallSit" | "shoulderScratch" | "bodyFat" | "oxygenSaturation" | "bloodGlucose"
   value    Float
   notes    String?
   loggedAt DateTime @default(now())

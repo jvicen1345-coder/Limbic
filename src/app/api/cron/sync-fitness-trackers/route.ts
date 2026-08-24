@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { syncFitbitForUser } from "@/lib/fitbit-sync";
 import { syncStravaForUser } from "@/lib/strava-sync";
+import { syncGoogleHealthMetricsForUser } from "@/lib/google-health-metrics-sync";
 
 /**
  * Runs syncFitbitForUser/syncStravaForUser for every connected FitnessConnection — see the
@@ -24,6 +25,7 @@ export async function GET(request: NextRequest) {
   for (const { userId, provider } of connections) {
     try {
       const result = provider === "fitbit" ? await syncFitbitForUser(userId) : await syncStravaForUser(userId);
+      if (provider === "fitbit") await syncGoogleHealthMetricsForUser(userId);
       if ("error" in result) failed++;
       else synced++;
     } catch (err) {

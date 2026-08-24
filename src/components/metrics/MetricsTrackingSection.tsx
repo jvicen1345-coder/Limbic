@@ -12,7 +12,22 @@ const TRACKED_METRICS: { key: MetricsLogMetric; label: string; unit: string; dec
   { key: "bmi", label: "BMI", unit: "", decimals: 1, color: "var(--color-accent)" },
   { key: "hrv", label: "HRV", unit: "ms", decimals: 0, color: "var(--color-vitals-mobility)" },
   { key: "vo2max", label: "VO2 Max", unit: "mL/kg/min", decimals: 1, color: "var(--color-vitals-strength)" },
+  // Populated from a connected Google Health account (lib/google-health-metrics-sync.ts), no
+  // manual calculator writes these — restingHR/bodyFat are the two most commonly available
+  // from a typical wearable; oxygenSaturation/bloodGlucose are still captured (see log
+  // history below) but skipped here since fewer readers will have that data and every
+  // existing color token is already spoken for on this chart.
+  { key: "restingHR", label: "Resting HR", unit: "bpm", decimals: 0, color: "var(--color-vitals-mindfulness)" },
+  { key: "bodyFat", label: "Body Fat", unit: "%", decimals: 1, color: "var(--color-accent-2)" },
 ];
+
+/** Display-only labels for MetricsLog metrics that appear in the log history below but
+ *  aren't crowded onto the shared line chart above (see TRACKED_METRICS's comment) — without
+ *  this, the log history would fall back to the raw camelCase metric key. */
+const EXTRA_METRIC_LABELS: Partial<Record<MetricsLogMetric, string>> = {
+  oxygenSaturation: "O2 Saturation",
+  bloodGlucose: "Blood Glucose",
+};
 
 const TREND_ARROW: Record<string, string> = { up: "↑", down: "↓", stable: "→" };
 const CHART_WIDTH = 640;
@@ -66,7 +81,8 @@ export function MetricsTrackingSection({ logs }: { logs: MetricsLogEntry[] }) {
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
-          BMI, HRV, and VO2 Max results you&rsquo;ve saved from the calculators above, over time.
+          BMI, HRV, and VO2 Max results you&rsquo;ve saved from the calculators above, plus resting heart rate and body fat synced from
+          Google Health if connected, over time.
         </p>
         <Link href="/wellness/metrics#calculators" className="wellness-snapshot-link" style={{ marginTop: 0, whiteSpace: "nowrap" }}>
           Log today&rsquo;s metrics →
@@ -130,7 +146,9 @@ export function MetricsTrackingSection({ logs }: { logs: MetricsLogEntry[] }) {
               <span className="wellness-log-history-date">
                 {entry.loggedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
               </span>
-              <span className="wellness-log-history-metric">{TRACKED_METRICS.find((m) => m.key === entry.metric)?.label ?? entry.metric}</span>
+              <span className="wellness-log-history-metric">
+                {TRACKED_METRICS.find((m) => m.key === entry.metric)?.label ?? EXTRA_METRIC_LABELS[entry.metric] ?? entry.metric}
+              </span>
               <span className="wellness-log-history-value">{entry.value.toFixed(1)}</span>
             </div>
           ))}
