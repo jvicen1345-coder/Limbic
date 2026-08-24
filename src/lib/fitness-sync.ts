@@ -77,3 +77,34 @@ export async function upsertSyncedVitalsLog(
 export function isVitalsCategory(value: unknown): value is VitalsCategory {
   return typeof value === "string" && (VITALS_CATEGORIES as readonly string[]).includes(value);
 }
+
+/** A Google Health "CivilDateTime" — local wall-clock date/time in whatever timezone the
+ *  wearer's device was in, alongside the interval's own UTC startTime/endTime (see
+ *  developers.google.com/health/reference/rest, ObservationTimeInterval/SessionTimeInterval:
+ *  both carry civilStartTime/civilEndTime "output only" fields for exactly this reason —
+ *  grouping by day should use the wearer's day, not a UTC day that can be off by one). */
+export interface GoogleHealthCivilDateTime {
+  year: number;
+  month: number;
+  day: number;
+}
+
+export interface GoogleHealthInterval {
+  startTime: string; // RFC 3339, UTC
+  endTime: string; // RFC 3339, UTC
+  civilStartTime?: GoogleHealthCivilDateTime;
+}
+
+/** Prefers the wearer's local (civil) date over the UTC startTime, which can land on the
+ *  wrong day for anyone not near UTC — falls back to the UTC date if civilStartTime is ever
+ *  missing from a response (documented as present, but "output only" fields on a new API are
+ *  worth not hard-depending on). Shared by every Google Health sync that groups interval-
+ *  shaped data points by day (exercise, nutrition log entries, sleep sessions). */
+export function localDateFromGoogleHealthInterval(interval: GoogleHealthInterval | undefined): string | null {
+  if (!interval) return null;
+  if (interval.civilStartTime) {
+    const { year, month, day } = interval.civilStartTime;
+    return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  }
+  return interval.startTime ? interval.startTime.slice(0, 10) : null;
+}

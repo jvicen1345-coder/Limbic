@@ -19,6 +19,10 @@ const TRACKED_METRICS: { key: MetricsLogMetric; label: string; unit: string; dec
   // existing color token is already spoken for on this chart.
   { key: "restingHR", label: "Resting HR", unit: "bpm", decimals: 0, color: "var(--color-vitals-mindfulness)" },
   { key: "bodyFat", label: "Body Fat", unit: "%", decimals: 1, color: "var(--color-accent-2)" },
+  // Synced from lib/google-health-sleep-sync.ts, stored in hours (not the raw "sleepHours"
+  // key's literal minutes-vs-hours ambiguity — it really is hours, see that file's own
+  // upsertSyncedSleepMetricLog comment for why the conversion happens there).
+  { key: "sleepHours", label: "Sleep", unit: "hrs", decimals: 1, color: "var(--color-migration-amber)" },
 ];
 
 /** Display-only labels for MetricsLog metrics that appear in the log history below but
@@ -81,8 +85,8 @@ export function MetricsTrackingSection({ logs }: { logs: MetricsLogEntry[] }) {
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
-          BMI, HRV, and VO2 Max results you&rsquo;ve saved from the calculators above, plus resting heart rate and body fat synced from
-          Google Health if connected, over time.
+          BMI, HRV, and VO2 Max results you&rsquo;ve saved from the calculators above, plus resting heart rate, body fat, and sleep synced
+          from Google Health if connected, over time.
         </p>
         <Link href="/wellness/metrics#calculators" className="wellness-snapshot-link" style={{ marginTop: 0, whiteSpace: "nowrap" }}>
           Log today&rsquo;s metrics →

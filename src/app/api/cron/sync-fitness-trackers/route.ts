@@ -3,6 +3,9 @@ import { prisma } from "@/lib/db";
 import { syncFitbitForUser } from "@/lib/fitbit-sync";
 import { syncStravaForUser } from "@/lib/strava-sync";
 import { syncGoogleHealthMetricsForUser } from "@/lib/google-health-metrics-sync";
+import { syncGoogleHealthNutritionForUser } from "@/lib/google-health-nutrition-sync";
+import { syncGoogleHealthSleepForUser } from "@/lib/google-health-sleep-sync";
+import { syncGoogleHealthMoodForUser } from "@/lib/mood-sync";
 
 /**
  * Runs syncFitbitForUser/syncStravaForUser for every connected FitnessConnection — see the
@@ -25,7 +28,12 @@ export async function GET(request: NextRequest) {
   for (const { userId, provider } of connections) {
     try {
       const result = provider === "fitbit" ? await syncFitbitForUser(userId) : await syncStravaForUser(userId);
-      if (provider === "fitbit") await syncGoogleHealthMetricsForUser(userId);
+      if (provider === "fitbit") {
+        await syncGoogleHealthMetricsForUser(userId);
+        await syncGoogleHealthNutritionForUser(userId);
+        await syncGoogleHealthSleepForUser(userId);
+        await syncGoogleHealthMoodForUser(userId);
+      }
       if ("error" in result) failed++;
       else synced++;
     } catch (err) {

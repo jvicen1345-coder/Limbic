@@ -1,7 +1,14 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { refreshGoogleHealthToken } from "@/lib/google-health-oauth";
-import { mapActivityNameToCategory, humanizeActivityName, upsertSyncedVitalsLog, type SyncedActivityEntry } from "@/lib/fitness-sync";
+import {
+  mapActivityNameToCategory,
+  humanizeActivityName,
+  upsertSyncedVitalsLog,
+  localDateFromGoogleHealthInterval,
+  type SyncedActivityEntry,
+  type GoogleHealthInterval,
+} from "@/lib/fitness-sync";
 import type { VitalsCategory } from "@/lib/vitals";
 import type { FitnessConnection } from "@/generated/prisma/client";
 
@@ -23,45 +30,15 @@ export async function getValidGoogleHealthAccessToken(
   return refreshed.accessToken;
 }
 
-/** A Google API "CivilDateTime" — local wall-clock date/time in whatever timezone the
- *  wearer's device was in, alongside the interval's own UTC startTime/endTime (see
- *  developers.google.com/health/reference/rest, ObservationTimeInterval/SessionTimeInterval:
- *  both carry civilStartTime/civilEndTime "output only" fields for exactly this reason —
- *  grouping by day should use the wearer's day, not a UTC day that can be off by one). */
-interface CivilDateTime {
-  year: number;
-  month: number;
-  day: number;
-}
-
-interface GoogleHealthExerciseInterval {
-  startTime: string; // RFC 3339, UTC
-  endTime: string; // RFC 3339, UTC
-  civilStartTime?: CivilDateTime;
-}
-
 interface GoogleHealthExerciseDataPoint {
   exercise?: {
     exerciseType?: string;
-    interval?: GoogleHealthExerciseInterval;
+    interval?: GoogleHealthInterval;
   };
 }
 
 interface GoogleHealthDataPointsResponse {
   dataPoints?: GoogleHealthExerciseDataPoint[];
-}
-
-/** Prefers the wearer's local (civil) date over the UTC startTime, which can land on the
- *  wrong day for anyone not near UTC — falls back to the UTC date if civilStartTime is
- *  ever missing from a response (documented as present, but "output only" fields on a new
- *  API are worth not hard-depending on). */
-function localDateFromInterval(interval: GoogleHealthExerciseInterval | undefined): string | null {
-  if (!interval) return null;
-  if (interval.civilStartTime) {
-    const { year, month, day } = interval.civilStartTime;
-    return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-  }
-  return interval.startTime ? interval.startTime.slice(0, 10) : null;
 }
 
 /** Pulls the last week of exercise sessions for one connected Google Health account and
@@ -99,7 +76,7 @@ export async function syncFitbitForUser(userId: string): Promise<{ synced: numbe
   for (const point of data.dataPoints ?? []) {
     const exercise = point.exercise;
     if (!exercise?.exerciseType || !exercise.interval) continue;
-    const date = localDateFromInterval(exercise.interval);
+    const date = localDateFromGoogleHealthInterval(exercise.interval);
     if (!date) continue;
 
     const start = Date.parse(exercise.interval.startTime);
