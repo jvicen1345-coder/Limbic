@@ -24,15 +24,18 @@ const GOOGLE_HEALTH_CLIENT_SECRET = process.env.GOOGLE_HEALTH_CLIENT_SECRET;
  *  ordinary "Sign in with Google" client. */
 export const GOOGLE_HEALTH_REDIRECT_URI = "https://limbic.center/auth/fitbit/callback";
 
-// Two scopes requested together in one consent screen — activity_and_fitness covers
+// Three scopes requested together in one consent screen — activity_and_fitness covers
 // exercise sessions (see lib/fitbit-sync.ts), health_metrics_and_measurements covers the
 // body/vitals readings lib/google-health-metrics-sync.ts reads (weight, height, heart rate,
-// HRV, body fat, oxygen saturation, blood glucose). Both are Restricted scopes reviewed
+// HRV, body fat, oxygen saturation, blood glucose), and profile covers the single `age`
+// field on the users/me/profile resource (a different endpoint shape than the others — see
+// google-health-metrics-sync.ts's fetchProfileAge). All three are Restricted scopes reviewed
 // together under the same OAuth client (see lib/google-health-oauth.ts's file comment).
-// Anyone who connected before this scope was added needs to disconnect and reconnect once —
+// Anyone who connected before a scope was added needs to disconnect and reconnect once —
 // Google doesn't retroactively grant a newly-added scope to an already-issued token.
 const SCOPE =
   "https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly " +
+  "https://www.googleapis.com/auth/googlehealth.profile.readonly " +
   "https://www.googleapis.com/auth/googlehealth.health_metrics_and_measurements.readonly";
 
 export function googleHealthEnabled(): boolean {

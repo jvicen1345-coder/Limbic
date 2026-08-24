@@ -61,6 +61,27 @@ function readBoundedNumber(point: GoogleHealthGenericDataPoint | null, camelData
   return value;
 }
 
+/** Age isn't a dataType under dataTypes/{type}/dataPoints like the others — it's a single field
+ *  on the separate users/me/profile resource ("The age in years based on the user's birth
+ *  date" — the birth date itself isn't exposed, only this derived value), requiring its own
+ *  profile.readonly scope (see lib/google-health-oauth.ts). Bounded the same defensive way
+ *  as readBoundedNumber: a wrong field name or an implausible value both fail safe (null),
+ *  never a bad write. */
+async function fetchProfileAge(accessToken: string): Promise<number | null> {
+  const res = await fetch("https://health.googleapis.com/v4/users/me/profile", {
+    headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    console.error(`[google-health-metrics-sync] profile fetch failed (${res.status}): ${body.slice(0, 300)}`);
+    return null;
+  }
+  const profile = (await res.json()) as { age?: unknown };
+  const age = typeof profile.age === "number" ? profile.age : typeof profile.age === "string" ? Number(profile.age) : NaN;
+  if (!Number.isFinite(age) || age < 5 || age > 120) return null;
+  return age;
+}
+
 async function upsertSyncedMetricLog(userId: string, metric: MetricsLogMetric, value: number): Promise<void> {
   const startOfToday = new Date(todayLocalDateStr() + "T00:00:00");
   const existing = await prisma.metricsLog.findFirst({
@@ -73,16 +94,16 @@ async function upsertSyncedMetricLog(userId: string, metric: MetricsLogMetric, v
   }
 }
 
-/** Pulls weight/height/heart-rate/HRV/body-fat/oxygen-saturation/blood-glucose from a
- *  connected Google Health account — weight and height overwrite VitalsProfile (the same
- *  fields BodyMetricsCard's manual form edits, see prisma/schema.prisma's
+/** Pulls age/weight/height/heart-rate/HRV/body-fat/oxygen-saturation/blood-glucose from a
+ *  connected Google Health account — age, weight, and height overwrite VitalsProfile (the
+ *  same fields BodyMetricsCard's manual form edits, see prisma/schema.prisma's
  *  googleHealthSyncedAt comment for the "whoever wrote last wins" policy), the rest land as
  *  MetricsLog rows the Trends chart and log history already know how to render. Requires the
- *  health_metrics_and_measurements.readonly scope (see lib/google-health-oauth.ts) — an
- *  account connected before that scope was added has none of these dataPoints authorized,
- *  so every fetch below 403s harmlessly until they reconnect. Called alongside
- *  syncFitbitForUser from the same call sites (app/actions/fitness-connections.ts,
- *  app/api/cron/sync-fitness-trackers/route.ts). */
+ *  health_metrics_and_measurements.readonly and profile.readonly scopes (see
+ *  lib/google-health-oauth.ts) — an account connected before those scopes were added has
+ *  none of this authorized, so every fetch below 403s harmlessly until they reconnect.
+ *  Called alongside syncFitbitForUser from the same call sites
+ *  (app/actions/fitness-connections.ts, app/api/cron/sync-fitness-trackers/route.ts). */
 export async function syncGoogleHealthMetricsForUser(userId: string): Promise<{ synced: number } | { error: string }> {
   const connection = await prisma.fitnessConnection.findUnique({ where: { userId_provider: { userId, provider: "fitbit" } } });
   if (!connection) return { error: "Google Health is not connected" };
@@ -97,7 +118,7 @@ export async function syncGoogleHealthMetricsForUser(userId: string): Promise<{ 
 
   let synced = 0;
 
-  const [weightPoint, heightPoint, heartRatePoint, hrvPoint, bodyFatPoint, oxygenPoint, glucosePoint] = await Promise.all([
+  const [weightPoint, heightPoint, heartRatePoint, hrvPoint, bodyFatPoint, oxygenPoint, glucosePoint, age] = await Promise.all([
     fetchLatestDataPoint(accessToken, "weight"),
     fetchLatestDataPoint(accessToken, "height"),
     fetchLatestDataPoint(accessToken, "heart-rate"),
@@ -105,12 +126,13 @@ export async function syncGoogleHealthMetricsForUser(userId: string): Promise<{ 
     fetchLatestDataPoint(accessToken, "body-fat"),
     fetchLatestDataPoint(accessToken, "oxygen-saturation"),
     fetchLatestDataPoint(accessToken, "blood-glucose"),
+    fetchProfileAge(accessToken),
   ]);
 
   const weightGrams = readBoundedNumber(weightPoint, "weight", "weightGrams", 18000, 320000);
   const heightMeters = readBoundedNumber(heightPoint, "height", "heightMeters", 0.6, 2.5);
 
-  if (weightGrams != null || heightMeters != null) {
+  if (weightGrams != null || heightMeters != null || age != null) {
     const weightLbs = weightGrams != null ? weightGrams / 453.59237 : undefined;
     let heightFeet: number | undefined;
     let heightInches: number | undefined;
@@ -122,10 +144,15 @@ export async function syncGoogleHealthMetricsForUser(userId: string): Promise<{ 
 
     await prisma.vitalsProfile.upsert({
       where: { userId },
-      create: { userId, weightLbs, heightFeet, heightInches, googleHealthSyncedAt: new Date() },
-      update: { ...(weightLbs != null && { weightLbs }), ...(heightFeet != null && { heightFeet, heightInches }), googleHealthSyncedAt: new Date() },
+      create: { userId, age: age ?? undefined, weightLbs, heightFeet, heightInches, googleHealthSyncedAt: new Date() },
+      update: {
+        ...(age != null && { age }),
+        ...(weightLbs != null && { weightLbs }),
+        ...(heightFeet != null && { heightFeet, heightInches }),
+        googleHealthSyncedAt: new Date(),
+      },
     });
-    synced += (weightGrams != null ? 1 : 0) + (heightMeters != null ? 1 : 0);
+    synced += (weightGrams != null ? 1 : 0) + (heightMeters != null ? 1 : 0) + (age != null ? 1 : 0);
   }
 
   const readings: [MetricsLogMetric, number | null][] = [
