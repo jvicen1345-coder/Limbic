@@ -866,7 +866,7 @@ export const ATLAS_CONTENT: Record<string, ZoneContent> = {
         insertion: "Dorsal expansion digits 2-5",
         action: "Toe extension and ankle dorsiflexion",
         nerve: "Deep peroneal",
-        rootLevel: "L5-S1",
+        rootLevel: "L4-L5",
       },
       {
         name: "Extensor Hallucis Longus",
@@ -874,7 +874,7 @@ export const ATLAS_CONTENT: Record<string, ZoneContent> = {
         insertion: "Distal phalanx great toe",
         action: "Great toe extension and dorsiflexion",
         nerve: "Deep peroneal",
-        rootLevel: "L5",
+        rootLevel: "L4-L5",
       },
       {
         name: "Peroneus Tertius",
