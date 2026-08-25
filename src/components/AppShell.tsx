@@ -363,6 +363,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         {proExpanded && (
           <>
             <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
             {(isPro || isStudent) && (
               <>
                 <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Outcome Measures" bold={false} onNavigate={onNavigate} />
@@ -377,7 +378,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
                 <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
               </>
             )}
-            <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
           </>
         )}
       </>
