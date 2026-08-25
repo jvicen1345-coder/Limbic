@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition, type RefObject } from "react";
 import { extractArticleVariablesAction } from "@/app/actions/article-variables";
 import { ExternalLinkIcon } from "@/components/icons";
 import { buildHistogramBins, type ArticleVariable } from "@/lib/histogram";
@@ -25,8 +25,15 @@ function formatStat(v: ArticleVariable): string {
  *  and GeneralizabilityChecker.tsx — this tool still has no free-text fallback of its own
  *  (a plotted histogram implies real numbers behind it), so typing a plain population
  *  description into that shared field works for the Generalizability Checker below/above
- *  it but just fails to resolve here, same as it always did when this had its own field. */
-export function ArticleHistogramExplorer({ studyInput }: { studyInput: string }) {
+ *  it but just fails to resolve here, same as it always did when this had its own field.
+ *
+ *  submitRef (optional) is how ArticleToolsPanel's shared "send" button/Enter key triggers
+ *  this tool's own find without lifting its fetch state up — kept pointed at the latest
+ *  handleFind on every render via a ref-only effect (no setState, so it's not the "sync
+ *  state from a prop" pattern the other calculators' profile pre-fill avoids), and
+ *  handleFind already no-ops via canFind when studyInput is empty, so the panel can call it
+ *  unconditionally. */
+export function ArticleHistogramExplorer({ studyInput, submitRef }: { studyInput: string; submitRef?: RefObject<() => void> }) {
   const [result, setResult] = useState<ArticleVariablesResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -48,6 +55,10 @@ export function ArticleHistogramExplorer({ studyInput }: { studyInput: string })
       }
     });
   };
+
+  useEffect(() => {
+    if (submitRef) submitRef.current = handleFind;
+  });
 
   const selectedVariable = result?.variables[selectedIndex] ?? null;
   const bins = selectedVariable ? buildHistogramBins(selectedVariable) : null;

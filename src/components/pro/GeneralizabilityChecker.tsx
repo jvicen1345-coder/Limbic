@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition, type RefObject } from "react";
 import { checkGeneralizabilityAction } from "@/app/actions/generalizability";
 import { ExternalLinkIcon } from "@/components/icons";
 import type { GeneralizabilityResult } from "@/lib/generalizability";
@@ -26,8 +26,15 @@ const CATEGORY_CLASS: Record<GeneralizabilityResult["category"], string> = {
  *  box still works exactly as before if nothing resolves (this tool, unlike the histogram
  *  one, has that free-text fallback). result.resolvedArticle and
  *  result.studyPopulationSummary are how the reader confirms what was actually found/read
- *  before trusting the score. */
-export function GeneralizabilityChecker({ studyInput }: { studyInput: string }) {
+ *  before trusting the score.
+ *
+ *  submitRef (optional) is how ArticleToolsPanel's shared "send" button/Enter key triggers
+ *  this tool's own check without lifting its fetch state up — kept pointed at the latest
+ *  handleCheck on every render via a ref-only effect (no setState, so it's not the "sync
+ *  state from a prop" pattern the other calculators' profile pre-fill avoids), and
+ *  handleCheck already no-ops via canCheck when the population field isn't filled in yet,
+ *  so the panel can call it unconditionally. */
+export function GeneralizabilityChecker({ studyInput, submitRef }: { studyInput: string; submitRef?: RefObject<() => void> }) {
   const [targetPopulation, setTargetPopulation] = useState("");
   const [result, setResult] = useState<GeneralizabilityResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +56,10 @@ export function GeneralizabilityChecker({ studyInput }: { studyInput: string }) 
     });
   };
 
+  useEffect(() => {
+    if (submitRef) submitRef.current = handleCheck;
+  });
+
   return (
     <div className="card elev-sm">
       <div className="card-kicker">Generalizability Checker</div>
@@ -68,6 +79,12 @@ export function GeneralizabilityChecker({ studyInput }: { studyInput: string }) 
             placeholder="e.g. 68-year-old with chronic (2+ years) low back pain, prior L4-L5 fusion, several comorbidities"
             value={targetPopulation}
             onChange={(e) => setTargetPopulation(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleCheck();
+              }
+            }}
           />
         </div>
       </div>
