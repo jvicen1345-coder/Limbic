@@ -28,7 +28,7 @@ const PRO_TOOLS: { name: string; description: string; count: string; href: strin
   { name: "Research & Statistics Literacy", description: "How to break down a research article, interpret the statistics inside it, and a generalizability checker", count: "2 guides + tool", href: "/pro/research-literacy" },
   { name: "Documentation", description: "Templates for evaluations, progress notes, and discharge", count: "7 templates", href: "/pro/documentation" },
   { name: "CE Tracker", description: "Track continuing education hours toward license renewal", count: "Track hours", href: "/pro/ce-tracker" },
-  { name: "Guidelines", description: "APTA and evidence-based clinical practice guidelines", count: "12 guidelines", href: "/pro/guidelines" },
+  { name: "Guidelines", description: "APTA and evidence-based clinical practice guidelines", count: "23 guidelines", href: "/pro/guidelines" },
   { name: "Home Exercise Programs", description: "Build and export patient HEP programs", count: "Build & save", href: "/hep" },
 ];
 

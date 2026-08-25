@@ -12,14 +12,15 @@ interface Guideline {
   recommendations: string[];
 }
 
-const REGIONS = ["All", "Spine", "Shoulder", "Hip", "Knee", "Ankle", "Neurological", "Cardiopulmonary", "Pediatrics", "Geriatrics"] as const;
+const REGIONS = ["All", "Spine", "Shoulder", "Elbow & Hand", "Hip", "Knee", "Ankle", "Neurological", "Cardiopulmonary", "Pediatrics", "Geriatrics"] as const;
 
 // Real, verifiable clinical practice guidelines with their actual DOIs. A few conditions
 // from the original list didn't correspond to a real, verifiable citation as originally
 // dated/titled, so they were corrected against the actual published guideline:
 //  - Shoulder: the real ICF-linked JOSPT guideline is the 2013 Adhesive Capsulitis CPG,
 //    not a 2022 document (2022 JOSPT vol 52 is a differently-titled Rotator Cuff Disorders
-//    CPG from a different guideline series).
+//    CPG from a different guideline series — the real rotator cuff CPG, added below, is the
+//    2025 "Rotator Cuff Tendinopathy Diagnosis, Nonsurgical Medical Care, and Rehabilitation").
 //  - Stroke: the real JNPT CPG is the 2020 Locomotor Function guideline, not 2022.
 //  - Fall prevention: the current APTA Geriatrics CPG is the 2025 update; no 2021 version exists.
 //  - COPD: no 2019 APTA-authored CPG exists; the real, current pulmonary rehab CPG is
@@ -27,6 +28,14 @@ const REGIONS = ["All", "Spine", "Shoulder", "Hip", "Knee", "Ankle", "Neurologic
 //  - Bell's Palsy: no PT-specific (APTA) clinical practice guideline exists for this
 //    condition, so it was replaced with the real APTA Neurologic PT vestibular hypofunction
 //    CPG, a genuine guideline covering the same Neurological region.
+//
+// Expanded to every other real, verifiable ICF-linked/APTA-academy CPG found (Aug 2026) —
+// each checked against its actual JOSPT/Physical Therapy/Pediatric Physical Therapy DOI
+// before being added, same discipline as above. Three entries above were also superseded by
+// real, more recent revisions and updated in place: Hip Osteoarthritis (2017 -> 2025),
+// Achilles Tendinopathy (2018 -> 2024), and Plantar Fasciitis (2014 -> 2023). A candidate
+// Pelvic Girdle Pain (antepartum) CPG was investigated but left out — its exact year/DOI
+// couldn't be independently confirmed (paywalled), so it's omitted rather than guessed.
 const GUIDELINES: Guideline[] = [
   {
     condition: "Low Back Pain",
@@ -57,11 +66,11 @@ const GUIDELINES: Guideline[] = [
     ],
   },
   {
-    condition: "Hip Pain and Mobility Deficits",
+    condition: "Hip Pain and Mobility Deficits: Hip Osteoarthritis",
     org: "APTA",
-    year: 2017,
+    year: 2025,
     region: "Hip",
-    url: "https://www.jospt.org/doi/10.2519/jospt.2017.0301",
+    url: "https://www.jospt.org/doi/10.2519/jospt.2025.0301",
     recommendations: [
       "Use patient-reported outcome measures alongside physical impairment measures to classify severity and track progress.",
       "Combine manual therapy with flexibility, strengthening, and endurance exercise to reduce pain and improve function and gait.",
@@ -85,17 +94,17 @@ const GUIDELINES: Guideline[] = [
     ],
   },
   {
-    condition: "Achilles Pain and Mobility Deficits",
+    condition: "Achilles Pain, Stiffness, and Muscle Power Deficits: Midportion Achilles Tendinopathy",
     org: "APTA",
-    year: 2018,
+    year: 2024,
     region: "Ankle",
-    url: "https://www.jospt.org/doi/10.2519/jospt.2018.0302",
+    url: "https://www.jospt.org/doi/10.2519/jospt.2024.0302",
     recommendations: [
       "Classify presentation as midportion versus insertional Achilles tendinopathy, since management differs, particularly around dorsiflexion range for insertional cases.",
-      "Use progressive loading exercise, including eccentric or heavy slow-resistance protocols, as the primary intervention.",
+      "Use tendon loading exercise, with load as high as tolerated, as first-line treatment — at least 3 sessions a week — to improve function and reduce pain.",
       "Consider orthotic devices or heel lifts as an adjunct to reduce tendon load in select patients, particularly early in care or with insertional involvement.",
       "Use manual therapy adjunctively rather than as a stand-alone intervention; evidence for it alone is limited.",
-      "Educate patients on the typically prolonged recovery timeline for tendinopathy and the importance of adherence to progressive loading.",
+      "Provide education and counseling — either a pain-science or pathoanatomic focus — alongside tendon-loading exercise, given the typically prolonged recovery timeline.",
     ],
   },
   {
@@ -183,17 +192,171 @@ const GUIDELINES: Guideline[] = [
     ],
   },
   {
-    condition: "Plantar Fasciitis",
+    condition: "Heel Pain: Plantar Fasciitis",
     org: "APTA",
-    year: 2014,
+    year: 2023,
     region: "Ankle",
-    url: "https://www.jospt.org/doi/10.2519/jospt.2014.0303",
+    url: "https://www.jospt.org/doi/10.2519/jospt.2023.0303",
     recommendations: [
       "Combine manual therapy, joint and soft tissue mobilization, with a stretching program, particularly for short-term pain relief.",
       "Prescribe plantar fascia-specific and gastrocnemius/soleus stretching as first-line self-management.",
       "Use foot orthoses, prefabricated or custom, for short- to mid-term pain and function improvement.",
       "Consider night splints for patients with symptoms lasting longer than 6 months.",
       "Use taping for short-term (up to 3 weeks) pain relief while other interventions take effect.",
+    ],
+  },
+  {
+    condition: "Knee Stability and Movement Coordination Impairments: Knee Ligament Sprain (ACL)",
+    org: "APTA",
+    year: 2017,
+    region: "Knee",
+    url: "https://www.jospt.org/doi/10.2519/jospt.2017.0303",
+    recommendations: [
+      "Assess knee laxity/stability, lower-limb movement coordination, thigh muscle strength, effusion, and range of motion as impairment measures across the episode of care.",
+      "Use reproducible physical performance measures, such as single-limb hop tests, to assess activity limitations and readiness to progress.",
+      "Prescribe neuromuscular and progressive strength training regardless of whether management is operative or nonoperative.",
+      "Base return-to-sport progression on criteria (strength and hop-test symmetry, movement quality) rather than time since injury or surgery alone.",
+      "Screen for and address psychological readiness, not just physical impairments, before clearing return to cutting/pivoting sport.",
+    ],
+  },
+  {
+    condition: "Exercise-Based Knee and Anterior Cruciate Ligament Injury Prevention",
+    org: "APTA",
+    year: 2023,
+    region: "Knee",
+    url: "https://www.jospt.org/doi/10.2519/jospt.2023.0301",
+    recommendations: [
+      "Implement multicomponent neuromuscular training programs — combining strength, plyometric, balance, and agility elements — over single-component programs to reduce ACL injury risk.",
+      "Prioritize these programs for adolescent and young adult athletes in cutting/pivoting sports, where risk (and evidence of benefit) is highest.",
+      "Run programs at least twice weekly, continued through the competitive season rather than as a preseason-only block, since benefit fades once training stops.",
+      "Emphasize proper landing mechanics and dynamic knee valgus control as a central training target.",
+      "Favor coach- or clinician-led implementation with real-time feedback over unsupervised home programs to improve adherence and effect.",
+    ],
+  },
+  {
+    condition: "Ankle Stability and Movement Coordination Impairments: Lateral Ankle Ligament Sprains",
+    org: "APTA",
+    year: 2021,
+    region: "Ankle",
+    url: "https://www.jospt.org/doi/10.2519/jospt.2021.0302",
+    recommendations: [
+      "Distinguish a first-time acute lateral ankle sprain from chronic ankle instability, since management and prognosis differ between the two.",
+      "Favor early functional mobilization and protected weight-bearing (bracing/taping) over prolonged immobilization for acute sprains.",
+      "Prescribe balance and proprioceptive training to reduce both short-term reinjury risk and progression to chronic instability.",
+      "Use manual therapy adjunctively to address residual talocrural or subtalar mobility deficits.",
+      "Base return to sport or activity on criteria — functional hop and balance testing — rather than time since injury alone.",
+    ],
+  },
+  {
+    condition: "Hip Pain and Movement Dysfunction Associated With Nonarthritic Hip Joint Pain",
+    org: "APTA",
+    year: 2023,
+    region: "Hip",
+    url: "https://www.jospt.org/doi/10.2519/jospt.2023.0302",
+    recommendations: [
+      "Consider osseous abnormalities (e.g., FAI morphology), ligamentous laxity, connective tissue disorders, and activity demands as risk factors when evaluating nonarthritic hip pain.",
+      "Use a multimodal program: strengthening of hip-specific muscles (iliopsoas, gluteus medius/maximus, rotators), trunk musculature, and general lower-extremity strength.",
+      "Add manual therapy, postural and movement correction, stretching, and balance training alongside strengthening rather than as stand-alone care.",
+      "Modify aggravating activities and loading while the strengthening program is established, rather than resting completely.",
+      "Track outcomes with validated hip-specific patient-reported measures across the episode of care.",
+    ],
+  },
+  {
+    condition: "Rotator Cuff Tendinopathy: Diagnosis, Nonsurgical Medical Care, and Rehabilitation",
+    org: "JOSPT",
+    year: 2025,
+    region: "Shoulder",
+    url: "https://www.jospt.org/doi/10.2519/jospt.2025.13182",
+    recommendations: [
+      "Reserve diagnostic imaging for patients who fail to respond to an initial course of conservative care, rather than as a routine first step.",
+      "Center nonsurgical care on individualized, progressive exercise rather than passive modalities.",
+      "Address psychosocial factors (pain beliefs, fear-avoidance, expectations) alongside the physical impairments, since they influence outcomes.",
+      "Apply the same diagnosis to rotator cuff tendinopathy with or without calcifications and to partial-thickness tears — surgical referral is not the default for these presentations.",
+      "Use a structured, criteria-based return-to-sport or return-to-activity progression for elite and recreational athletes rather than a fixed timeline.",
+    ],
+  },
+  {
+    condition: "Lateral Elbow Pain and Muscle Function Impairments",
+    org: "APTA",
+    year: 2022,
+    region: "Elbow & Hand",
+    url: "https://www.jospt.org/doi/10.2519/jospt.2022.0302",
+    recommendations: [
+      "Use the Patient-Rated Tennis Elbow Evaluation (PRTEE) to track pain/irritability and function over the episode of care.",
+      "Prescribe progressive loading exercise (isometric, isotonic, or eccentric) as the primary intervention rather than rest alone.",
+      "Consider a counterforce brace as a short-term adjunct for symptom relief during daily activities.",
+      "Use elbow and wrist manual therapy adjunctively to support the exercise program, not as a stand-alone treatment.",
+      "Set expectations for a protracted course with high recurrence risk, and favor corticosteroid injection sparingly given its lack of durable benefit relative to exercise.",
+    ],
+  },
+  {
+    condition: "Hand Pain and Sensory Deficits: Carpal Tunnel Syndrome",
+    org: "APTA",
+    year: 2026,
+    region: "Elbow & Hand",
+    url: "https://www.jospt.org/doi/10.2519/jospt.2026.0301",
+    recommendations: [
+      "Use nocturnal wrist splinting in a neutral position as a first-line conservative intervention.",
+      "Add median nerve and tendon gliding exercises as an adjunct to splinting.",
+      "Use manual therapy, including carpal bone mobilization, adjunctively to address mobility deficits.",
+      "Address ergonomic and activity contributors (repetitive/sustained wrist flexion or extension, vibration exposure) alongside direct intervention.",
+      "Refer for electrodiagnostic testing when the diagnosis is unclear or symptoms are progressive, to guide conservative-versus-surgical decision-making.",
+    ],
+  },
+  {
+    condition: "Physical Therapy Management of Older Adults With Hip Fracture",
+    org: "APTA",
+    year: 2021,
+    region: "Geriatrics",
+    url: "https://www.jospt.org/doi/10.2519/jospt.2021.0301",
+    recommendations: [
+      "Begin mobilization as early as medically appropriate after surgical fixation to reduce complications and support function.",
+      "Progress weight-bearing and gait training according to the specific surgical fixation used, in coordination with the surgical team.",
+      "Screen and document fall-risk factors and pressure-ulcer risk as a standard part of the episode of care.",
+      "Coordinate care within a multidisciplinary, delirium-aware framework, since cognitive status affects rehab participation and safety.",
+      "Address discharge planning and home safety (equipment, environmental hazards) before transition out of formal PT care.",
+    ],
+  },
+  {
+    condition: "Physical Therapist Management of Total Knee Arthroplasty",
+    org: "APTA",
+    year: 2026,
+    region: "Knee",
+    url: "https://academic.oup.com/ptj/article/106/7/pzag058",
+    recommendations: [
+      "Provide preoperative physical therapy education and, when feasible, prehabilitation to set expectations and support postoperative recovery.",
+      "Prioritize early postoperative mobilization, gait training, and edema management as core components of care.",
+      "Consider neuromuscular electrical stimulation as an adjunct for quadriceps strength recovery in select patients.",
+      "Use validated outcome measures (e.g., functional performance tests, patient-reported measures) to track recovery and guide discharge timing.",
+      "Progress strengthening and functional training according to individual recovery milestones rather than a fixed visit count.",
+    ],
+  },
+  {
+    condition: "Physical Therapist Management of Parkinson Disease",
+    org: "APTA",
+    year: 2022,
+    region: "Neurological",
+    url: "https://academic.oup.com/ptj/article/102/4/pzab302",
+    recommendations: [
+      "Prescribe aerobic exercise and progressive resistance training — evidence supports benefit sustained over 6 months to 2 years, even for early- to mid-stage disease.",
+      "Include balance training and gait training targeting freezing, festination, and postural instability specifically.",
+      "Use external cueing (visual, auditory, or rhythmic) to address freezing of gait and improve movement initiation.",
+      "Favor task-specific and community-based exercise programs to support long-term adherence beyond the formal episode of care.",
+      "Apply a behavior-change approach and integrated/coordinated care, since this scope is limited to idiopathic, typical Parkinson disease rather than atypical parkinsonism.",
+    ],
+  },
+  {
+    condition: "Physical Therapy Management of Congenital Muscular Torticollis",
+    org: "APTA",
+    year: 2018,
+    region: "Pediatrics",
+    url: "https://doi.org/10.1097/PEP.0000000000000544",
+    recommendations: [
+      "Use passive stretching of the involved sternocleidomastoid, combined with active movement strategies (positioning, handling, tummy time) to encourage symmetric active rotation.",
+      "Center the program on caregiver education and a consistent home program, since most of the intervention dose happens outside clinic visits.",
+      "Grade severity and monitor progress with standardized measures (e.g., cervical rotation range of motion, the CMT Severity Scale) rather than visual assessment alone.",
+      "Distinguish discontinuation of direct PT services, a later reassessment, and formal discharge as separate decision points in the episode of care.",
+      "Refer for further medical/surgical evaluation when passive rotation deficit or asymmetry fails to resolve with an adequate trial of conservative care.",
     ],
   },
 ];
