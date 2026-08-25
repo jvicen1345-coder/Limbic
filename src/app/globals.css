@@ -7627,3 +7627,118 @@ button.plan-compare-name:hover { text-decoration: underline; }
 @media (min-width: 861px) {
   .hep-template-panel:not([open]) .hep-template-panel-body { display: flex !important; }
 }
+
+/* — Limbic Atlas (app/(app)/atlas/page.tsx, components/atlas/*) — an interactive body map:
+   a left region list, a center anterior/posterior SVG, and a right clinical-detail panel.
+   Wide wrapper (like .home-pad) rather than .screen-pad's 900px cap, since the three-column
+   layout below needs real room. */
+.atlas-page { width: 100%; padding: 36px 44px 60px; max-width: 1300px; margin: 0 auto; box-sizing: border-box; }
+.atlas-page-title { font-size: 24px; margin: 0 0 4px; }
+.atlas-page-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 4px; }
+.atlas-page-note { font-size: 12px; color: var(--color-neutral-600); margin: 0 0 20px; }
+
+.atlas-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Region nav — desktop list, grouped and collapsible (reuses .pro-accordion-summary's
+   chevron-rotate mechanics from components/pro/SpecialTestsLibrary.tsx). */
+.atlas-region-nav { display: flex; flex-direction: column; gap: 4px; }
+.atlas-region-group { border-bottom: 1px solid var(--color-divider); padding-bottom: 8px; }
+.atlas-region-group-summary { padding: 8px 2px; font-size: 12.5px; font-weight: 600; }
+.atlas-region-list { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.atlas-region-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  padding: 7px 10px;
+  font-size: 12.5px;
+  color: var(--color-text);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.atlas-region-link:hover { background: var(--color-neutral-100); }
+.atlas-region-link.active { border-left-color: var(--color-accent); background: var(--color-accent-100); color: var(--color-accent-700); font-weight: 600; }
+
+/* Mobile-only region dropdown — hidden on desktop, shown above the body map under 900px
+   (see the layout collapse below). */
+.atlas-mobile-nav { display: none; }
+
+.atlas-map-col { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.atlas-view-toggle { display: flex; gap: 24px; border-bottom: 1px solid var(--color-divider); width: 100%; justify-content: center; }
+.atlas-view-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 4px 10px;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.atlas-view-btn.active { color: var(--color-accent-700); border-bottom-color: var(--color-accent); }
+
+.atlas-body-svg { width: 100%; max-width: 300px; height: auto; }
+.atlas-outline { fill: none; stroke: var(--color-neutral-400); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.atlas-zone {
+  fill: rgba(255, 255, 255, 0.05);
+  stroke: var(--color-neutral-400);
+  stroke-width: 1;
+  cursor: pointer;
+  transition: fill 0.15s;
+}
+.atlas-zone:hover { fill: rgba(99, 179, 237, 0.2); }
+.atlas-zone--selected, .atlas-zone--selected:hover { fill: rgba(99, 179, 237, 0.4); }
+.atlas-zone:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+
+/* Right clinical panel */
+.atlas-content-panel {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  min-width: 0;
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+.atlas-panel-empty { font-size: 13px; color: var(--color-neutral-700); }
+.atlas-panel-title { font-size: 18px; margin: 0 0 12px; }
+.atlas-panel-section { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+.atlas-panel-section:first-of-type { margin-top: 0; }
+.atlas-muscle-entry, .atlas-list-entry { font-size: 12.5px; line-height: 1.5; display: flex; flex-direction: column; gap: 2px; }
+.atlas-muscle-name, .atlas-list-entry-name { font-weight: 600; color: var(--color-text); margin-bottom: 2px; }
+.atlas-pearls-list { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.6; display: flex; flex-direction: column; gap: 6px; }
+
+/* Free-tier preview — same blur + fade-to-surface + centered upgrade card recipe as
+   .nutrition-paywall on app/(app)/wellness/nutrition/page.tsx. */
+.atlas-paywall { position: relative; overflow: hidden; border-radius: var(--radius-lg); margin-top: 16px; }
+.atlas-paywall-content { filter: blur(5px); pointer-events: none; user-select: none; }
+.atlas-paywall-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--color-surface) 55%, transparent) 0%, var(--color-surface) 85%);
+}
+.atlas-paywall-card { text-align: center; max-width: 280px; }
+.atlas-paywall-card p { font-size: 12.5px; color: var(--color-neutral-700); margin: 6px 0 14px; }
+
+@media (max-width: 900px) {
+  .atlas-layout { grid-template-columns: 1fr; }
+  .atlas-region-nav { display: none; }
+  .atlas-mobile-nav { display: block; order: -1; }
+  .atlas-content-panel { position: static; max-height: none; }
+  .atlas-body-svg { max-width: 260px; }
+}
