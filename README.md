@@ -36,6 +36,18 @@ continue as a guest. Guests can read/search/save articles and personalize their 
 but Home Exercise Programs, APTA News, and Under Review are gated behind having a
 license on file (matching the source design).
 
+## Testing
+
+```bash
+npm test   # runs the Playwright suite in e2e/ (playwright.config.ts)
+```
+
+These are real end-to-end tests, not mocks — they drive a headless browser against your
+local dev server (started automatically if one isn't already running on :3000) and the
+local SQLite `dev.db`, so `.env` needs to be set up first (see "Getting started" above).
+Currently covers the landing page and the sign-in/sign-up/onboarding flow, including a
+regression test for the sign-in rate limiter (see "Password auth & reset emails" below).
+
 ## Deploying (Vercel + Turso)
 
 None of this can be done from a coding assistant — each step needs your own account —
@@ -219,9 +231,12 @@ The sign-in/forgot-password/reset-password flows are deliberately vague on failu
 password" always redirects to the same "check your email" state) so a failed attempt can't
 be used to test which emails have accounts — the one exception is sign*up*, which does say
 "an account with that email already exists," the ~universal convention for that specific
-screen. There's no rate limiting on sign-in attempts or reset requests (no Redis/Upstash or
-similar in this stack yet) beyond "don't send a second reset email while an unexpired one is
-still live" — a real production hardening pass would want actual throttling here.
+screen. Sign-in and reset requests are both rate-limited (no Redis/Upstash — a plain per-email
+fixed-window counter in the same SQLite/Turso database, `SignInThrottle`/
+`PasswordResetThrottle`): sign-in locks an
+email out for 15 minutes after 5 failed attempts (`lib/sign-in-rate-limit.ts`, cleared on a
+successful sign-in), and reset requests are capped at 3 per hour per email regardless of
+whether that address has an account (`lib/password-reset-rate-limit.ts`).
 
 ## Stripe subscriptions
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { ClipSaveButton } from "@/components/ClipSaveButton";
 import { RefreshClipsButton } from "@/components/RefreshClipsButton";
 import { markClipSeenAction } from "@/app/actions/clips";
@@ -205,8 +206,7 @@ function ClipSlide({
             style={{ width: "100%", height: "100%", border: "none", pointerEvents: apiFailed ? "auto" : "none" }}
           />
         ) : thumbUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element -- external, unconfigured domain
-          <img src={thumbUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <Image src={thumbUrl} alt="" fill sizes="100vw" style={{ objectFit: "cover" }} />
         ) : (
           <div style={{ width: "100%", height: "100%", background: "#000" }} />
         )}

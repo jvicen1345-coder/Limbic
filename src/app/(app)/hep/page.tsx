@@ -74,6 +74,8 @@ export default async function HepPage() {
                             <img
                               src={imageUrl}
                               alt={ex.name}
+                              loading="lazy"
+                              decoding="async"
                               style={{ width: 48, height: 48, borderRadius: "var(--radius-sm)", objectFit: "cover", flexShrink: 0 }}
                             />
                           )}

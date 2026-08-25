@@ -19,6 +19,12 @@ export function ArticleImage({ src, height = 90, fill = false }: { src: string; 
     <img
       src={src}
       alt=""
+      // Hero cards render above the fold, so they load eager (the default) — everything
+      // else is a list-card thumbnail further down the feed, worth deferring since these
+      // come from arbitrary publisher domains next/image can't optimize (see the
+      // eslint-disable above) and a feed can have dozens on one page.
+      loading={fill ? undefined : "lazy"}
+      decoding="async"
       onError={() => setFailed(true)}
       style={
         fill
