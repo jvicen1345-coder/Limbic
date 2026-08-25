@@ -29,7 +29,10 @@ async function startCheckout(plan: BillablePlan, returnPath: string) {
     customer: customerId,
     line_items: [{ price: priceId, quantity: 1 }],
     subscription_data: { metadata: { userId: user.id, plan } },
-    success_url: `${origin}${returnPath}?checkout=success`,
+    // `plan` on the success URL only (never needed on cancel) lets the destination page
+    // show which tier was just purchased, e.g. "Welcome to Clinic PRO" — see the
+    // comparison table's success banner in app/(app)/profile/membership/page.tsx.
+    success_url: `${origin}${returnPath}?checkout=success&plan=${plan}`,
     cancel_url: `${origin}${returnPath}?checkout=canceled`,
   });
 
@@ -59,6 +62,20 @@ export async function subscribeToWellnessPlusMonthlyAction() {
 
 export async function subscribeToWellnessPlusYearlyAction() {
   await startCheckout("wellnessPlusYearly", "/wellness/membership");
+}
+
+/** Same plan as subscribeToWellnessPlusMonthlyAction above, but for the tier-comparison
+ *  table on /profile/membership (see app/(app)/profile/membership/page.tsx) — returns the
+ *  reader there afterward instead of to /wellness/membership, so the success/cancel banner
+ *  shows up on the page they actually clicked from. */
+export async function subscribeToWellnessPlusFromProfileAction() {
+  await startCheckout("wellnessPlusMonthly", "/profile/membership");
+}
+
+/** Clinic PRO — billing-only for now, same shape as LimbicWellness+ above (see
+ *  app/(app)/profile/membership/page.tsx's comparison table). */
+export async function subscribeToClinicAction() {
+  await startCheckout("clinic", "/profile/membership");
 }
 
 /** Redirects to the Stripe-hosted Customer Portal, where a reader manages payment methods
@@ -91,4 +108,8 @@ export async function cancelStudentTierAction() {
 
 export async function cancelWellnessPlusAction() {
   await openBillingPortal("/wellness/membership");
+}
+
+export async function cancelClinicProAction() {
+  await openBillingPortal("/profile/membership");
 }
