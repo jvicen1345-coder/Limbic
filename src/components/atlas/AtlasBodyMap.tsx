@@ -353,6 +353,32 @@ function Zone({
   );
 }
 
+/** A non-interactive skin-toned copy of every zone, rendered once behind the real
+ *  (interactive, translucent) zone paths — since adjacent zones' edges already line up
+ *  (see the file doc comment), stacking their filled duplicates reads as one continuous
+ *  shaded body rather than a flat outline. The interactive layer's own fill stays exactly
+ *  as before (near-transparent at rest, the spec'd blue rgba on hover/select), which is
+ *  what lets that blue tint alpha-composite over this skin tone instead of the two layers
+ *  needing to be merged into one. Each shape gets a radial gradient (light toward the
+ *  center, a touch deeper toward the edge) for a soft, rounded, non-flat look, rather than
+ *  a single flat fill color — cheap to fake without hand-illustrated shading. */
+function SkinLayer({ zones }: { zones: ZoneDef[] }) {
+  return (
+    <g aria-hidden="true">
+      {zones.map((def) =>
+        def.paired ? (
+          <g key={def.contentKey}>
+            <path d={segsToD(def.segs)} className="atlas-skin" />
+            <path d={segsToD(def.segs.map(mirrorSeg))} className="atlas-skin" />
+          </g>
+        ) : (
+          <path key={def.contentKey} d={segsToD(def.segs)} className="atlas-skin" />
+        )
+      )}
+    </g>
+  );
+}
+
 export function AtlasBodyMap({
   view,
   selectedZone,
@@ -368,7 +394,14 @@ export function AtlasBodyMap({
 
   return (
     <svg viewBox="0 0 240 560" className="atlas-body-svg" role="img" aria-label={`${view === "anterior" ? "Front" : "Back"} view of the body — select a region`}>
-      <circle cx={CENTER_X} cy={26} r={20} className="atlas-outline" aria-hidden="true" />
+      <defs>
+        <radialGradient id="atlas-skin-gradient" cx="50%" cy="35%" r="75%">
+          <stop offset="0%" stopColor="var(--atlas-skin-light)" />
+          <stop offset="100%" stopColor="var(--atlas-skin-shade)" />
+        </radialGradient>
+      </defs>
+      <circle cx={CENTER_X} cy={26} r={20} className="atlas-skin atlas-skin-head" />
+      <SkinLayer zones={zones} />
       {zones.map((def) =>
         def.paired ? (
           <g key={def.contentKey}>

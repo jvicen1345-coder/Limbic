@@ -7686,8 +7686,21 @@ button.plan-compare-name:hover { text-decoration: underline; }
 }
 .atlas-view-btn.active { color: var(--color-accent-700); border-bottom-color: var(--color-accent); }
 
-.atlas-body-svg { width: 100%; max-width: 300px; height: auto; }
-.atlas-outline { fill: none; stroke: var(--color-neutral-400); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.atlas-body-svg {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  /* Same skin tone regardless of light/dark UI theme (see components/atlas/AtlasBodyMap.tsx
+     SkinLayer) — an illustrated body's own coloring isn't something the app's theme toggle
+     should touch, only the chrome around it. */
+  --atlas-skin-light: #f0d3b8;
+  --atlas-skin-shade: #cf9f74;
+}
+/* The non-interactive skin-toned layer sitting behind the real (interactive) zone paths —
+   see SkinLayer's doc comment. No stroke of its own; the interactive layer on top still
+   draws every zone boundary. */
+.atlas-skin { fill: url(#atlas-skin-gradient); stroke: none; }
+.atlas-skin-head { stroke: var(--color-neutral-400); stroke-width: 1.5; }
 .atlas-zone {
   fill: rgba(255, 255, 255, 0.05);
   stroke: var(--color-neutral-400);
@@ -7695,8 +7708,8 @@ button.plan-compare-name:hover { text-decoration: underline; }
   cursor: pointer;
   transition: fill 0.15s;
 }
-.atlas-zone:hover { fill: rgba(99, 179, 237, 0.2); }
-.atlas-zone--selected, .atlas-zone--selected:hover { fill: rgba(99, 179, 237, 0.4); }
+.atlas-zone:hover { fill: rgba(99, 179, 237, 0.25); }
+.atlas-zone--selected, .atlas-zone--selected:hover { fill: rgba(99, 179, 237, 0.45); }
 .atlas-zone:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
 
 /* Right clinical panel */
