@@ -403,7 +403,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         )}
       </>
     ),
-    nexus: (
+    nexus: isAdmin ? (
       <>
         <NavToggle
           icon={<UsersIcon />}
@@ -434,6 +434,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           </>
         )}
       </>
+    ) : (
+      // Nexus isn't launched for non-admins yet — every /nexus/* route redirects them to the
+      // same "coming soon" waitlist screen regardless of which sub-page they land on (see
+      // app/(app)/nexus/layout.tsx), so a 4-link expandable section here would just be four
+      // paths to one identical screen. One plain link in, straight to the waitlist.
+      <NavLink href="/nexus" icon={<UsersIcon />} label="Nexus" exact={false} onNavigate={onNavigate} />
     ),
     saved: (
       <>

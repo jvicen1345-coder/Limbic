@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { PlayIcon } from "@/components/icons";
 
 const placeholderStyle: React.CSSProperties = {
@@ -41,16 +42,17 @@ export function VideoThumbnail({ src }: { src: string | null }) {
 
   return (
     <div style={{ position: "relative", width: "100%", aspectRatio: "16/9" }}>
-      {/* eslint-disable-next-line @next/next/no-img-element -- external, unconfigured domain */}
-      <img
+      <Image
         ref={imgRef}
         src={src}
         alt=""
+        fill
+        sizes="(max-width: 700px) 100vw, 700px"
+        style={{ objectFit: "cover" }}
         onError={() => setFailed(true)}
         onLoad={(e) => {
           if (e.currentTarget.naturalWidth === 0) setFailed(true);
         }}
-        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
       />
       <div
         style={{
