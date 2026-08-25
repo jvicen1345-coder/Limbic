@@ -7686,31 +7686,34 @@ button.plan-compare-name:hover { text-decoration: underline; }
 }
 .atlas-view-btn.active { color: var(--color-accent-700); border-bottom-color: var(--color-accent); }
 
-.atlas-body-svg {
+/* Real illustration + invisible hit-zone overlay (see components/atlas/AtlasBodyMap.tsx) —
+   .atlas-body-stage stacks the <img> and the overlay <svg> on the same box so their shared
+   1000×1400 viewBox lines up at any rendered size. White background behind it since the
+   source illustration isn't transparent on every edge in every browser's SVG rasterizer,
+   regardless of the app's own light/dark theme — an anatomical illustration's own canvas
+   isn't something the theme toggle should tint. */
+.atlas-body-stage {
+  position: relative;
   width: 100%;
   max-width: 300px;
-  height: auto;
-  /* Same skin tone regardless of light/dark UI theme (see components/atlas/AtlasBodyMap.tsx
-     SkinLayer) — an illustrated body's own coloring isn't something the app's theme toggle
-     should touch, only the chrome around it. */
-  --atlas-skin-light: #f0d3b8;
-  --atlas-skin-shade: #cf9f74;
+  aspect-ratio: 1000 / 1400;
+  background: #fff;
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
-/* The non-interactive skin-toned layer sitting behind the real (interactive) zone paths —
-   see SkinLayer's doc comment. No stroke of its own; the interactive layer on top still
-   draws every zone boundary. */
-.atlas-skin { fill: url(#atlas-skin-gradient); stroke: none; }
-.atlas-skin-head { stroke: var(--color-neutral-400); stroke-width: 1.5; }
+.atlas-body-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.atlas-hitzone-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .atlas-zone {
-  fill: rgba(255, 255, 255, 0.05);
-  stroke: var(--color-neutral-400);
-  stroke-width: 1;
+  fill: transparent;
   cursor: pointer;
   transition: fill 0.15s;
 }
-.atlas-zone:hover { fill: rgba(99, 179, 237, 0.25); }
-.atlas-zone--selected, .atlas-zone--selected:hover { fill: rgba(99, 179, 237, 0.45); }
+.atlas-zone:hover { fill: rgba(99, 179, 237, 0.3); }
+.atlas-zone--selected, .atlas-zone--selected:hover { fill: rgba(99, 179, 237, 0.5); }
 .atlas-zone:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+
+.atlas-credit { font-size: 10.5px; color: var(--color-neutral-600); text-align: center; margin-top: 4px; }
+.atlas-credit a { color: inherit; text-decoration: underline; }
 
 /* Right clinical panel */
 .atlas-content-panel {
@@ -7753,5 +7756,5 @@ button.plan-compare-name:hover { text-decoration: underline; }
   .atlas-region-nav { display: none; }
   .atlas-mobile-nav { display: block; order: -1; }
   .atlas-content-panel { position: static; max-height: none; }
-  .atlas-body-svg { max-width: 260px; }
+  .atlas-body-stage { max-width: 260px; }
 }

@@ -271,6 +271,20 @@ export function AtlasClient({ hasFullAccess }: { hasFullAccess: boolean }) {
           </button>
         </div>
         <AtlasBodyMap view={view} selectedZone={selectedZone} onSelectZone={setSelectedZone} getZoneName={getZoneName} />
+        {/* Required by the illustrations' CC BY-SA 3.0 license (see public/atlas/*.svg,
+         *  sourced from Wikimedia Commons — "Muscular system.svg" / "Muscular system-back.svg"
+         *  by Termininja) — attribution stays with the image everywhere it's shown, not just
+         *  on a separate credits page. */}
+        <p className="atlas-credit">
+          Illustration:{" "}
+          <a href="https://commons.wikimedia.org/wiki/File:Muscular_system.svg" target="_blank" rel="noopener noreferrer">
+            Termininja
+          </a>
+          , licensed under{" "}
+          <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.en" target="_blank" rel="noopener noreferrer">
+            CC BY-SA 3.0
+          </a>
+        </p>
       </div>
 
       <aside className="atlas-content-panel">
