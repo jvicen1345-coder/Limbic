@@ -274,34 +274,44 @@ export default async function ProfileMembershipPage({
         </table>
       </div>
 
-      {/* Mobile: one full-width card per tier, stacked — a normal vertical scroll through
-          each tier's complete feature list instead of horizontally scrolling the table one
+      {/* Mobile: one full-width card per tier, stacked — listing only what that tier
+          includes (plus its own upcoming items), not every row with a dash for what it
+          lacks. Much shorter to scroll through than the full parity grid, and comparing
+          tiers is a normal vertical scroll rather than horizontally scrolling the table one
           column at a time. Only shown below 799px (see .plan-compare-cards in globals.css). */}
       <div className="plan-compare-cards">
-        {TIERS.map((tier) => (
-          <div className={tier.current ? "plan-compare-card plan-compare-card--current" : "plan-compare-card"} key={tier.key}>
-            <div className="plan-compare-card-header">
-              <TierHeader tier={tier} billingEnabled={billingEnabled} />
+        {TIERS.map((tier) => {
+          const included = FEATURES.filter((row) => cellFor(row, tier.key) === true);
+          const soon = COMING_SOON.filter((row) => cellFor(row, tier.key) === "soon");
+          return (
+            <div className={tier.current ? "plan-compare-card plan-compare-card--current" : "plan-compare-card"} key={tier.key}>
+              <div className="plan-compare-card-header">
+                <TierHeader tier={tier} billingEnabled={billingEnabled} />
+              </div>
+              <ul className="plan-compare-card-features">
+                {included.map((row) => (
+                  <li key={row.label}>
+                    <span className="plan-compare-check">✓</span>
+                    {row.label}
+                  </li>
+                ))}
+              </ul>
+              {soon.length > 0 && (
+                <>
+                  <div className="plan-compare-card-soon">Coming Soon</div>
+                  <ul className="plan-compare-card-features">
+                    {soon.map((row) => (
+                      <li key={row.label}>
+                        <span className="plan-compare-soon">Soon</span>
+                        {row.label}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
-            <ul className="plan-compare-card-features">
-              {FEATURES.map((row) => (
-                <li key={row.label}>
-                  <span>{row.label}</span>
-                  <CellMark value={cellFor(row, tier.key)} />
-                </li>
-              ))}
-            </ul>
-            <div className="plan-compare-card-soon">Coming Soon</div>
-            <ul className="plan-compare-card-features">
-              {COMING_SOON.map((row) => (
-                <li key={row.label}>
-                  <span>{row.label}</span>
-                  <CellMark value={cellFor(row, tier.key)} />
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {hasBillableSubscription && (
