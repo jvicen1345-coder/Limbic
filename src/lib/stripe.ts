@@ -29,13 +29,13 @@ export function getStripe(): Stripe {
 // app/(app)/wellness/membership/page.tsx), just monthly vs. annual pricing. Kept as
 // separate BillablePlan values (rather than a plan + interval pair) so the rest of this
 // file's one-price-per-plan shape doesn't need to change.
-export type BillablePlan = "pro" | "limbicStudent" | "wellnessPlusMonthly" | "wellnessPlusYearly";
+export type BillablePlan = "pro" | "limbicStudent" | "wellnessPlusMonthly" | "wellnessPlusYearly" | "clinic";
 
 /** Real Price ids created in the Stripe Dashboard (Products & Prices) — see
  *  .env.example/README for the setup steps. Dollar amounts themselves ($25/mo, $5/mo,
- *  $3/mo, $18/yr) live only as display copy in app/(app)/pro/membership/page.tsx and
- *  app/(app)/wellness/membership/page.tsx; this file never hardcodes a price, only which
- *  env var holds each plan's Price id. */
+ *  $3/mo, $18/yr, $100/mo) live only as display copy in app/(app)/profile/membership/page.tsx
+ *  and app/(app)/wellness/membership/page.tsx; this file never hardcodes a price, only
+ *  which env var holds each plan's Price id. */
 export function priceIdForPlan(plan: BillablePlan): string | undefined {
   switch (plan) {
     case "pro":
@@ -46,6 +46,8 @@ export function priceIdForPlan(plan: BillablePlan): string | undefined {
       return process.env.STRIPE_PRICE_WELLNESS_PLUS_MONTHLY;
     case "wellnessPlusYearly":
       return process.env.STRIPE_PRICE_WELLNESS_PLUS_YEARLY;
+    case "clinic":
+      return process.env.STRIPE_PRICE_CLINIC;
   }
 }
 
@@ -60,6 +62,7 @@ export function planForPriceId(priceId: string | undefined): BillablePlan | null
   if (priceId === process.env.STRIPE_PRICE_LIMBIC_STUDENT) return "limbicStudent";
   if (priceId === process.env.STRIPE_PRICE_WELLNESS_PLUS_MONTHLY) return "wellnessPlusMonthly";
   if (priceId === process.env.STRIPE_PRICE_WELLNESS_PLUS_YEARLY) return "wellnessPlusYearly";
+  if (priceId === process.env.STRIPE_PRICE_CLINIC) return "clinic";
   return null;
 }
 

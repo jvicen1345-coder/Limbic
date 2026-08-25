@@ -85,6 +85,7 @@ function resolvePlan(subscription: Stripe.Subscription): BillablePlan | null {
 }
 
 const WELLNESS_PLUS_PLANS = new Set<BillablePlan>(["wellnessPlusMonthly", "wellnessPlusYearly"]);
+const CLINIC_PLANS = new Set<BillablePlan>(["clinic"]);
 
 async function syncSubscription(subscription: Stripe.Subscription) {
   const userId = await resolveUserId(subscription);
@@ -117,6 +118,16 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     return;
   }
 
+  // Clinic PRO is additive too (a clinic subscription can coexist with an individual
+  // isPro/studentTier one), same reasoning as LimbicWellness+ above.
+  if (CLINIC_PLANS.has(plan)) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { clinicProSubscriptionId: subscription.id, isClinicPro: active },
+    });
+    return;
+  }
+
   await prisma.user.update({
     where: { id: userId },
     data: {
@@ -144,6 +155,16 @@ async function clearSubscription(subscription: Stripe.Subscription) {
     await prisma.user.update({
       where: { id: userId },
       data: { wellnessPlusSubscriptionId: null, isWellnessPlus: false, wellnessPlusInterval: null },
+    });
+    return;
+  }
+
+  if (CLINIC_PLANS.has(plan)) {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { clinicProSubscriptionId: true } });
+    if (user?.clinicProSubscriptionId !== subscription.id) return;
+    await prisma.user.update({
+      where: { id: userId },
+      data: { clinicProSubscriptionId: null, isClinicPro: false },
     });
     return;
   }

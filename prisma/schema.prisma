@@ -138,6 +138,14 @@ model User {
   wellnessPlusInterval       String?
   wellnessPlusSubscriptionId String? @unique
 
+  // Clinic PRO — same additive shape as LimbicWellness+ above (a clinic subscription can
+  // coexist with an individual isPro/studentTier one), so it gets its own subscription-id
+  // column rather than sharing stripeSubscriptionId. Billing-only for now (see
+  // app/(app)/profile/membership/page.tsx) — no team-seat/clinic-admin feature gate wired
+  // to it yet.
+  isClinicPro             Boolean @default(false)
+  clinicProSubscriptionId String? @unique
+
   // Admin-granted complimentary access to a paid tier, for a specific account rather than
   // every admin (see /admin/accounts, grantAccessAction/revokeAccessAction in
   // app/actions/admin.ts). JSON-encoded GrantArea[] (see lib/session.ts) — a subset of
