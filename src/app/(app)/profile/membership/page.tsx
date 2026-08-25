@@ -11,6 +11,7 @@ import { PROFILE_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
 
 type Cell = boolean | "soon";
+type TierKey = "free" | "wellness" | "student" | "pro" | "clinic";
 
 interface FeatureRow {
   label: string;
@@ -21,9 +22,9 @@ interface FeatureRow {
   clinic: Cell;
 }
 
-/** Every row of the tier-comparison table below, in display order. Kept as one flat list
- *  (rather than grouped sub-tables) so the sticky feature-label column (see
- *  .plan-compare-table in globals.css) has one continuous set of rows to stay aligned
+/** Every row of the tier-comparison table/cards below, in display order. Kept as one flat
+ *  list (rather than grouped sub-tables) so the sticky feature-label column on desktop
+ *  (see .plan-compare-table in globals.css) has one continuous set of rows to stay aligned
  *  against while scrolling horizontally. */
 const FEATURES: FeatureRow[] = [
   { label: "Daily PT News Feed", free: true, wellness: true, student: true, pro: true, clinic: true },
@@ -71,21 +72,65 @@ function CellMark({ value }: { value: Cell }) {
   return value ? <span className="plan-compare-check">✓</span> : <span className="plan-compare-dash">—</span>;
 }
 
+function cellFor(row: FeatureRow, key: TierKey): Cell {
+  return row[key];
+}
+
+interface TierConfig {
+  key: TierKey;
+  label: string;
+  price: string;
+  current: boolean;
+  /** Server Action to submit for checkout — null when this tier can't be purchased right
+   *  now: Free (nothing to buy) or Limbic Student without a .edu email (the action itself
+   *  already re-checks hasStudentAccess and silently no-ops, but showing a plain
+   *  non-clickable name avoids a confusing dead click). */
+  action: (() => Promise<void>) | null;
+  nonClickableReason?: string;
+}
+
+/** Renders one tier's name/price/current-plan-pill — shared between the desktop table's
+ *  <th> header cells and the mobile per-tier cards below, so the two layouts can never
+ *  drift out of sync on which tier is purchasable/current. */
+function TierHeader({ tier, billingEnabled }: { tier: TierConfig; billingEnabled: boolean }) {
+  return (
+    <>
+      {tier.current || !tier.action ? (
+        <span className="plan-compare-name" data-current={tier.current ? "true" : undefined} title={tier.nonClickableReason}>
+          {tier.label}
+        </span>
+      ) : (
+        <form action={tier.action}>
+          <button type="submit" className="plan-compare-name" disabled={!billingEnabled}>
+            {tier.label}
+          </button>
+        </form>
+      )}
+      <div className="plan-compare-price">{tier.price}</div>
+      {tier.current && <span className="plan-compare-current-pill">Current Plan</span>}
+    </>
+  );
+}
+
 /** Moved here from /pro/membership (see that route, now a redirect) — subscribing/
  *  managing billing is an account-settings action, so it lives alongside the rest of
  *  Profile's own tabs rather than under the LimbicPro feature-comparison section.
  *
- *  Redesigned as a single full-width comparison table across all five tiers (Free,
- *  Limbic Wellness+, Limbic Student, LimbicPro, Clinic Pro) rather than one card per
- *  purchasable tier — see FEATURES/COMING_SOON above for the row data. Each tier's column
- *  header is its purchase entry point: the tier name is a Server Action-backed form
- *  submit button styled as a plain text link (see .plan-compare-name in globals.css),
- *  swapped for a non-clickable name + "Current Plan" pill once the reader already has
- *  that tier. Free never has a link (nothing to purchase); Clinic Pro is a new tier (see
- *  User.isClinicPro/clinicProSubscriptionId in schema.prisma) with the same additive
- *  billing shape as Wellness+ — billing-only for now, no team-seat/clinic-admin feature
- *  gate actually wired up yet (see "Clinic Admin Dashboard"/"Up to 6 Team Seats" rows,
- *  which describe what Clinic Pro will unlock, not something built elsewhere in this PR). */
+ *  Redesigned as a full comparison across all five tiers (Free, Limbic Wellness+, Limbic
+ *  Student, LimbicPro, Clinic Pro) rather than one card per purchasable tier — see
+ *  FEATURES/COMING_SOON above for the row data, shared by both layouts below. Desktop keeps
+ *  a single scannable table (.plan-compare-table); below 799px (see globals.css) it swaps
+ *  for one full-width card per tier, each listing every feature row top to bottom, so
+ *  comparing tiers on a phone is a normal vertical scroll rather than horizontal scrolling
+ *  one column at a time. Each tier's name is its purchase entry point: a Server
+ *  Action-backed form submit button styled as a plain text link (see .plan-compare-name in
+ *  globals.css), swapped for a non-clickable name + "Current Plan" pill once the reader
+ *  already has that tier. Free never has a link (nothing to purchase); Clinic Pro is a new
+ *  tier (see User.isClinicPro/clinicProSubscriptionId in schema.prisma) with the same
+ *  additive billing shape as Wellness+ — billing-only for now, no team-seat/clinic-admin
+ *  feature gate actually wired up yet (see "Clinic Admin Dashboard"/"Up to 6 Team Seats"
+ *  rows, which describe what Clinic Pro will unlock, not something built elsewhere in this
+ *  PR). */
 export default async function ProfileMembershipPage({
   searchParams,
 }: {
@@ -118,6 +163,21 @@ export default async function ProfileMembershipPage({
   const onPro = user.isPro;
   const onClinic = user.isClinicPro;
   const onFree = !onWellness && !onStudent && !onPro && !onClinic;
+
+  const TIERS: TierConfig[] = [
+    { key: "free", label: "Free", price: "$0", current: onFree, action: null },
+    { key: "wellness", label: "Limbic Wellness+", price: "$3/mo", current: onWellness, action: onWellness ? null : subscribeToWellnessPlusFromProfileAction },
+    {
+      key: "student",
+      label: "Limbic Student",
+      price: "$5/mo",
+      current: onStudent,
+      action: onStudent || !student ? null : subscribeToStudentTierAction,
+      nonClickableReason: !onStudent && !student ? "Sign in with a .edu email to purchase Limbic Student" : undefined,
+    },
+    { key: "pro", label: "LimbicPRO", price: "$25/mo", current: onPro, action: onPro ? null : subscribeToProAction },
+    { key: "clinic", label: "Clinic PRO", price: "$100/mo", current: onClinic, action: onClinic ? null : subscribeToClinicAction },
+  ];
 
   return (
     <div className="screen-pad">
@@ -172,103 +232,29 @@ export default async function ProfileMembershipPage({
         </p>
       )}
 
+      {/* Desktop/tablet: one scannable table. Hidden below 799px in favor of the per-tier
+          card stack below (see .plan-compare-wrap in globals.css). */}
       <div className="plan-compare-wrap">
         <table className="plan-compare-table">
           <thead>
             <tr>
               <th scope="col">Feature</th>
-              <th scope="col">
-                <div className="plan-compare-name" data-current={onFree ? "true" : undefined}>
-                  Free
-                </div>
-                <div className="plan-compare-price">$0</div>
-                {onFree && <span className="plan-compare-current-pill">Current Plan</span>}
-              </th>
-              <th scope="col">
-                {onWellness ? (
-                  <span className="plan-compare-name" data-current="true">
-                    Limbic Wellness+
-                  </span>
-                ) : (
-                  <form action={subscribeToWellnessPlusFromProfileAction}>
-                    <button type="submit" className="plan-compare-name" disabled={!billingEnabled}>
-                      Limbic Wellness+
-                    </button>
-                  </form>
-                )}
-                <div className="plan-compare-price">$3/mo</div>
-                {onWellness && <span className="plan-compare-current-pill">Current Plan</span>}
-              </th>
-              <th scope="col">
-                {onStudent ? (
-                  <span className="plan-compare-name" data-current="true">
-                    Limbic Student
-                  </span>
-                ) : student ? (
-                  <form action={subscribeToStudentTierAction}>
-                    <button type="submit" className="plan-compare-name" disabled={!billingEnabled}>
-                      Limbic Student
-                    </button>
-                  </form>
-                ) : (
-                  <span className="plan-compare-name" data-current="true" title="Sign in with a .edu email to purchase Limbic Student">
-                    Limbic Student
-                  </span>
-                )}
-                <div className="plan-compare-price">$5/mo</div>
-                {onStudent && <span className="plan-compare-current-pill">Current Plan</span>}
-              </th>
-              <th scope="col">
-                {onPro ? (
-                  <span className="plan-compare-name" data-current="true">
-                    LimbicPRO
-                  </span>
-                ) : (
-                  <form action={subscribeToProAction}>
-                    <button type="submit" className="plan-compare-name" disabled={!billingEnabled}>
-                      LimbicPRO
-                    </button>
-                  </form>
-                )}
-                <div className="plan-compare-price">$25/mo</div>
-                {onPro && <span className="plan-compare-current-pill">Current Plan</span>}
-              </th>
-              <th scope="col">
-                {onClinic ? (
-                  <span className="plan-compare-name" data-current="true">
-                    Clinic PRO
-                  </span>
-                ) : (
-                  <form action={subscribeToClinicAction}>
-                    <button type="submit" className="plan-compare-name" disabled={!billingEnabled}>
-                      Clinic PRO
-                    </button>
-                  </form>
-                )}
-                <div className="plan-compare-price">$100/mo</div>
-                {onClinic && <span className="plan-compare-current-pill">Current Plan</span>}
-              </th>
+              {TIERS.map((tier) => (
+                <th scope="col" key={tier.key}>
+                  <TierHeader tier={tier} billingEnabled={billingEnabled} />
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {FEATURES.map((row) => (
               <tr key={row.label}>
                 <th scope="row">{row.label}</th>
-                <td>
-                  <CellMark value={row.free} />
-                </td>
-                <td>
-                  <CellMark value={row.wellness} />
-                </td>
-                <td>
-                  <CellMark value={row.student} />
-                </td>
-                <td>
-                  <CellMark value={row.pro} />
-                </td>
-                <td>
-                  <CellMark value={row.clinic} />
-                </td>
+                {TIERS.map((tier) => (
+                  <td key={tier.key}>
+                    <CellMark value={cellFor(row, tier.key)} />
+                  </td>
+                ))}
               </tr>
             ))}
             <tr className="plan-compare-divider-row">
@@ -277,25 +263,45 @@ export default async function ProfileMembershipPage({
             {COMING_SOON.map((row) => (
               <tr key={row.label}>
                 <th scope="row">{row.label}</th>
-                <td>
-                  <CellMark value={row.free} />
-                </td>
-                <td>
-                  <CellMark value={row.wellness} />
-                </td>
-                <td>
-                  <CellMark value={row.student} />
-                </td>
-                <td>
-                  <CellMark value={row.pro} />
-                </td>
-                <td>
-                  <CellMark value={row.clinic} />
-                </td>
+                {TIERS.map((tier) => (
+                  <td key={tier.key}>
+                    <CellMark value={cellFor(row, tier.key)} />
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile: one full-width card per tier, stacked — a normal vertical scroll through
+          each tier's complete feature list instead of horizontally scrolling the table one
+          column at a time. Only shown below 799px (see .plan-compare-cards in globals.css). */}
+      <div className="plan-compare-cards">
+        {TIERS.map((tier) => (
+          <div className={tier.current ? "plan-compare-card plan-compare-card--current" : "plan-compare-card"} key={tier.key}>
+            <div className="plan-compare-card-header">
+              <TierHeader tier={tier} billingEnabled={billingEnabled} />
+            </div>
+            <ul className="plan-compare-card-features">
+              {FEATURES.map((row) => (
+                <li key={row.label}>
+                  <span>{row.label}</span>
+                  <CellMark value={cellFor(row, tier.key)} />
+                </li>
+              ))}
+            </ul>
+            <div className="plan-compare-card-soon">Coming Soon</div>
+            <ul className="plan-compare-card-features">
+              {COMING_SOON.map((row) => (
+                <li key={row.label}>
+                  <span>{row.label}</span>
+                  <CellMark value={cellFor(row, tier.key)} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
 
       {hasBillableSubscription && (

@@ -7323,6 +7323,42 @@ button.plan-compare-name:hover { text-decoration: underline; }
   padding: 8px 12px;
 }
 
+/* Mobile alternative to the table above — one full-width card per tier, each listing
+   every feature row top to bottom, so comparing tiers on a phone is a normal vertical
+   scroll rather than horizontally scrolling the table one column at a time. Hidden on
+   desktop/tablet; swaps with .plan-compare-wrap at the same breakpoint as the rest of the
+   app's mobile layout (see AppShell's >=1024px desktop-layout switch). */
+.plan-compare-cards { display: none; }
+@media (max-width: 799px) {
+  .plan-compare-wrap { display: none; }
+  .plan-compare-cards { display: flex; flex-direction: column; gap: 16px; margin: 16px 0; }
+}
+
+.plan-compare-card { border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface); }
+.plan-compare-card--current { border-color: var(--color-accent); border-width: 2px; }
+.plan-compare-card-header { background: var(--color-card-surface); padding: 16px; text-align: center; }
+.plan-compare-card-features { list-style: none; margin: 0; padding: 0 16px; }
+.plan-compare-card-features li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-divider);
+  font-size: 13px;
+  color: var(--color-text);
+}
+.plan-compare-card-features li:last-child { border-bottom: none; }
+.plan-compare-card-soon {
+  background: var(--color-card-surface);
+  color: var(--color-neutral-700);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  padding: 8px 16px;
+}
+
 /* — Category count badge (red-flag positive counters) — */
 .pro-flag-count { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--color-neutral-700); }
 .pro-flag-count.pro-flag-count--active { color: #dc2626; }
