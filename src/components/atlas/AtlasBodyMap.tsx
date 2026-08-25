@@ -2,8 +2,9 @@
 
 /** The two clickable body diagrams for Limbic Atlas (see components/atlas/AtlasClient.tsx)
  *  — a simplified, front (anterior) and back (posterior) silhouette with real body curves
- *  (sloped shoulders, a tapered waist, tapered/bulged limbs, rounded hands and feet)
- *  rather than boxy straight-edge segments, built from a shared 240×560 coordinate grid.
+ *  (sloped shoulders, a tapered waist, limbs that bulge at the muscle belly and pinch at
+ *  the joint, a hand with a thumb and grouped fingers, a foot with grouped toes) rather
+ *  than boxy straight-edge segments, built from a shared 240×560 coordinate grid.
  *
  *  Every clickable region is a <path> described as a small list of draw commands (`Seg`)
  *  instead of a raw `d` string, so a paired left/right region can be authored once (the
@@ -63,70 +64,94 @@ function segsToD(segs: Seg[]): string {
 }
 
 // — Shared limb segments (see the file doc comment on why these are reused across views) —
+// Bicep/thigh bellies bow out further than before and pinch in at the joint (elbow/knee
+// narrower than the segments above and below it) rather than a near-constant-width tube,
+// closer to how a real limb's muscle bulk actually reads.
 const ARM_UPPER: Seg[] = [
-  ["M", 37, 114],
+  ["M", 35, 116],
   ["L", 64, 111],
-  ["Q", 61, 135, 60, 155],
-  ["Q", 59, 172, 60, 186],
-  ["L", 35, 188],
-  ["Q", 34, 172, 33, 155],
-  ["Q", 32, 135, 37, 114],
+  ["Q", 60, 138, 58, 158],
+  ["Q", 57, 175, 59, 186],
+  ["L", 34, 189],
+  ["Q", 32, 172, 31, 155],
+  ["Q", 30, 133, 35, 116],
   ["Z"],
 ];
 const ARM_ELBOW: Seg[] = [
-  ["M", 35, 188],
-  ["L", 60, 186],
-  ["Q", 61, 196, 58, 205],
-  ["L", 34, 207],
-  ["Q", 33, 197, 35, 188],
+  ["M", 34, 189],
+  ["L", 59, 186],
+  ["Q", 58, 196, 54, 203],
+  ["L", 37, 205],
+  ["Q", 33, 197, 34, 189],
   ["Z"],
 ];
 const ARM_FOREARM: Seg[] = [
-  ["M", 34, 207],
-  ["L", 58, 205],
-  ["Q", 55, 225, 53, 240],
-  ["Q", 51, 255, 50, 268],
-  ["L", 27, 270],
-  ["Q", 26, 255, 27, 238],
-  ["Q", 28, 222, 34, 207],
+  ["M", 37, 205],
+  ["L", 54, 203],
+  ["Q", 52, 222, 50, 236],
+  ["Q", 48, 252, 46, 266],
+  ["L", 25, 268],
+  ["Q", 24, 252, 26, 236],
+  ["Q", 28, 218, 37, 205],
   ["Z"],
 ];
 const LEG_THIGH: Seg[] = [
-  ["M", 78, 242],
-  ["L", 103, 244],
-  ["Q", 107, 270, 105, 295],
-  ["Q", 104, 315, 101, 330],
-  ["L", 72, 328],
-  ["Q", 69, 310, 68, 290],
-  ["Q", 67, 265, 78, 242],
+  ["M", 75, 244],
+  ["L", 103, 246],
+  ["Q", 109, 272, 106, 298],
+  ["Q", 104, 318, 100, 332],
+  ["L", 71, 330],
+  ["Q", 67, 312, 66, 292],
+  ["Q", 64, 264, 75, 244],
   ["Z"],
 ];
 const LEG_KNEE: Seg[] = [
-  ["M", 72, 328],
-  ["L", 101, 330],
-  ["Q", 103, 340, 101, 350],
-  ["L", 74, 348],
-  ["Q", 72, 339, 72, 328],
+  ["M", 71, 330],
+  ["L", 100, 332],
+  ["Q", 102, 341, 98, 350],
+  ["L", 76, 348],
+  ["Q", 72, 340, 71, 330],
   ["Z"],
 ];
 const LEG_SHIN: Seg[] = [
-  ["M", 74, 348],
-  ["L", 101, 350],
-  ["Q", 105, 375, 103, 400],
-  ["Q", 101, 420, 97, 438],
-  ["L", 68, 436],
-  ["Q", 65, 415, 66, 392],
-  ["Q", 67, 368, 74, 348],
+  ["M", 76, 348],
+  ["L", 98, 350],
+  ["Q", 103, 375, 101, 400],
+  ["Q", 99, 420, 95, 438],
+  ["L", 69, 436],
+  ["Q", 66, 414, 67, 390],
+  ["Q", 68, 366, 76, 348],
   ["Z"],
 ];
-const LEG_ANKLE_FOOT: Seg[] = [
-  ["M", 68, 436],
-  ["L", 97, 438],
-  ["Q", 101, 448, 100, 460],
-  ["Q", 99, 474, 89, 481],
-  ["Q", 78, 486, 67, 481],
-  ["Q", 60, 474, 61, 462],
-  ["Q", 62, 448, 68, 436],
+// A hand and a foot, not a rounded mitt/wedge: a clear thumb notch and two shallow
+// scallops suggesting grouped fingers on the hand; a heel-side taper and two shallow toe
+// scallops on the foot. Kept shallow rather than five sharp individual digits each — at
+// the size this renders (the whole figure caps out around 300px wide), sharp notches read
+// as jagged noise rather than fingers/toes.
+const HAND: Seg[] = [
+  ["M", 25, 268],
+  ["L", 46, 266],
+  ["Q", 49, 272, 48, 280],
+  ["Q", 53, 284, 50, 290],
+  ["Q", 46, 292, 45, 286],
+  ["L", 44, 292],
+  ["Q", 46, 300, 42, 304],
+  ["Q", 40, 308, 35, 306],
+  ["Q", 31, 310, 27, 306],
+  ["Q", 23, 300, 22, 290],
+  ["Q", 21, 280, 25, 268],
+  ["Z"],
+];
+const FOOT: Seg[] = [
+  ["M", 69, 436],
+  ["L", 95, 438],
+  ["Q", 100, 448, 99, 459],
+  ["Q", 100, 468, 96, 472],
+  ["Q", 92, 477, 87, 474],
+  ["Q", 82, 479, 77, 475],
+  ["Q", 72, 479, 68, 474],
+  ["Q", 62, 469, 61, 460],
+  ["Q", 60, 448, 69, 436],
   ["Z"],
 ];
 
@@ -145,11 +170,11 @@ const ANTERIOR_ZONES: ZoneDef[] = [
     paired: false,
     segs: [
       ["M", 101, 68],
-      ["Q", 93, 95, 94, 122],
-      ["Q", 95, 135, 99, 142],
-      ["L", 141, 142],
-      ["Q", 145, 135, 146, 122],
-      ["Q", 147, 95, 139, 68],
+      ["Q", 91, 92, 92, 118],
+      ["Q", 93, 132, 98, 142],
+      ["L", 142, 142],
+      ["Q", 147, 132, 148, 118],
+      ["Q", 149, 92, 139, 68],
       ["Z"],
     ],
   },
@@ -157,12 +182,12 @@ const ANTERIOR_ZONES: ZoneDef[] = [
     contentKey: "abdominals",
     paired: false,
     segs: [
-      ["M", 99, 142],
-      ["Q", 93, 165, 95, 188],
-      ["Q", 96, 200, 101, 209],
-      ["L", 139, 209],
-      ["Q", 144, 200, 145, 188],
-      ["Q", 147, 165, 141, 142],
+      ["M", 98, 142],
+      ["Q", 90, 162, 92, 182],
+      ["Q", 93, 196, 100, 209],
+      ["L", 140, 209],
+      ["Q", 147, 196, 148, 182],
+      ["Q", 150, 162, 142, 142],
       ["Z"],
     ],
   },
@@ -171,9 +196,9 @@ const ANTERIOR_ZONES: ZoneDef[] = [
     paired: true,
     segs: [
       ["M", 101, 68],
-      ["Q", 76, 66, 56, 73],
-      ["Q", 38, 80, 34, 98],
-      ["Q", 31, 108, 37, 114],
+      ["Q", 74, 64, 52, 74],
+      ["Q", 35, 82, 30, 100],
+      ["Q", 28, 110, 35, 116],
       ["L", 64, 111],
       ["Q", 80, 100, 90, 85],
       ["Q", 96, 76, 101, 68],
@@ -183,36 +208,23 @@ const ANTERIOR_ZONES: ZoneDef[] = [
   { contentKey: "biceps-anterior", paired: true, segs: ARM_UPPER },
   { contentKey: "elbow-anterior", paired: true, segs: ARM_ELBOW },
   { contentKey: "forearm-anterior", paired: true, segs: ARM_FOREARM },
-  {
-    contentKey: "wrist-hand",
-    paired: true,
-    segs: [
-      ["M", 27, 270],
-      ["L", 50, 268],
-      ["Q", 52, 278, 51, 290],
-      ["Q", 50, 302, 43, 310],
-      ["Q", 36, 316, 28, 312],
-      ["Q", 21, 306, 21, 294],
-      ["Q", 21, 280, 27, 270],
-      ["Z"],
-    ],
-  },
+  { contentKey: "wrist-hand", paired: true, segs: HAND },
   {
     contentKey: "hip-flexors",
     paired: true,
     segs: [
-      ["M", 101, 209],
-      ["Q", 85, 210, 78, 220],
-      ["Q", 74, 230, 78, 242],
-      ["L", 103, 244],
-      ["Q", 106, 225, 101, 209],
+      ["M", 100, 209],
+      ["Q", 82, 210, 74, 221],
+      ["Q", 70, 232, 75, 244],
+      ["L", 103, 246],
+      ["Q", 107, 225, 100, 209],
       ["Z"],
     ],
   },
   { contentKey: "quadriceps", paired: true, segs: LEG_THIGH },
   { contentKey: "knee-anterior", paired: true, segs: LEG_KNEE },
   { contentKey: "anterior-leg", paired: true, segs: LEG_SHIN },
-  { contentKey: "ankle-foot-anterior", paired: true, segs: LEG_ANKLE_FOOT },
+  { contentKey: "ankle-foot-anterior", paired: true, segs: FOOT },
 ];
 
 const POSTERIOR_ZONES: ZoneDef[] = [
@@ -222,11 +234,11 @@ const POSTERIOR_ZONES: ZoneDef[] = [
     paired: false,
     segs: [
       ["M", 112, 68],
-      ["Q", 108, 100, 109, 135],
-      ["Q", 110, 150, 112, 160],
+      ["Q", 107, 100, 108, 135],
+      ["Q", 109, 150, 112, 160],
       ["L", 128, 160],
-      ["Q", 130, 150, 131, 135],
-      ["Q", 132, 100, 128, 68],
+      ["Q", 131, 150, 132, 135],
+      ["Q", 133, 100, 128, 68],
       ["Z"],
     ],
   },
@@ -235,11 +247,11 @@ const POSTERIOR_ZONES: ZoneDef[] = [
     paired: false,
     segs: [
       ["M", 112, 160],
-      ["Q", 109, 180, 111, 196],
+      ["Q", 108, 180, 111, 196],
       ["Q", 112, 204, 115, 209],
       ["L", 125, 209],
       ["Q", 128, 204, 129, 196],
-      ["Q", 131, 180, 128, 160],
+      ["Q", 132, 180, 128, 160],
       ["Z"],
     ],
   },
@@ -248,11 +260,11 @@ const POSTERIOR_ZONES: ZoneDef[] = [
     paired: true,
     segs: [
       ["M", 101, 68],
-      ["Q", 80, 66, 64, 73],
-      ["Q", 56, 77, 52, 88],
-      ["L", 68, 100],
-      ["Q", 88, 95, 100, 82],
-      ["Q", 104, 76, 101, 68],
+      ["Q", 76, 64, 58, 75],
+      ["Q", 48, 82, 44, 96],
+      ["L", 64, 102],
+      ["Q", 86, 94, 97, 80],
+      ["Q", 100, 74, 101, 68],
       ["Z"],
     ],
   },
@@ -260,12 +272,11 @@ const POSTERIOR_ZONES: ZoneDef[] = [
     contentKey: "rotator-cuff-posterior",
     paired: true,
     segs: [
-      ["M", 52, 88],
-      ["L", 68, 100],
-      ["Q", 64, 105, 64, 111],
-      ["L", 37, 114],
-      ["Q", 34, 105, 36, 95],
-      ["Q", 39, 90, 52, 88],
+      ["M", 44, 96],
+      ["Q", 38, 104, 35, 116],
+      ["L", 64, 111],
+      ["Q", 66, 106, 64, 102],
+      ["L", 44, 96],
       ["Z"],
     ],
   },
@@ -277,8 +288,8 @@ const POSTERIOR_ZONES: ZoneDef[] = [
     paired: true,
     segs: [
       ["M", 115, 209],
-      ["Q", 97, 209, 87, 217],
-      ["Q", 82, 224, 84, 232],
+      ["Q", 96, 209, 85, 218],
+      ["Q", 80, 225, 83, 233],
       ["L", 105, 231],
       ["Q", 108, 218, 115, 209],
       ["Z"],
@@ -288,18 +299,18 @@ const POSTERIOR_ZONES: ZoneDef[] = [
     contentKey: "gluteus-maximus",
     paired: true,
     segs: [
-      ["M", 84, 232],
+      ["M", 83, 233],
       ["L", 105, 231],
-      ["Q", 107, 238, 103, 244],
-      ["L", 78, 242],
-      ["Q", 78, 236, 84, 232],
+      ["Q", 108, 238, 103, 246],
+      ["L", 75, 244],
+      ["Q", 76, 237, 83, 233],
       ["Z"],
     ],
   },
   { contentKey: "hamstrings", paired: true, segs: LEG_THIGH },
   { contentKey: "knee-posterior", paired: true, segs: LEG_KNEE },
   { contentKey: "calf-gastrocnemius", paired: true, segs: LEG_SHIN },
-  { contentKey: "achilles-posterior-ankle", paired: true, segs: LEG_ANKLE_FOOT },
+  { contentKey: "achilles-posterior-ankle", paired: true, segs: FOOT },
 ];
 
 function Zone({
