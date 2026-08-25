@@ -7,15 +7,13 @@ import { AGENT_DEMO_NODES, AGENT_DEMO_CROSS_LINKS } from "@/lib/agent-demo";
 import type { AgentNode, AgentLink, AgentRing } from "@/lib/agent-graph";
 
 /**
- * Phase 1 launch state (see the Pro page's roadmap table: Launch 2026 -> Limbic Agent
- * "Demo only"). Every question reveals the same hand-written web from lib/agent-demo.ts
- * instead of a live model call — no ANTHROPIC_API_KEY spend, and no risk of the "isn't
- * available right now" failure state reaching a real visitor before the feature is
- * actually funded and proven. Flip to false for the "Beta for PRO users" phase — nothing
- * else about this component needs to change, the live askAgentAction/expandAgentNodeAction
- * path below is already fully wired and unchanged.
+ * Live now that a real ANTHROPIC_API_KEY is configured — every question goes through the
+ * real askAgentAction/expandAgentNodeAction model call (lib/agent.ts) instead of the
+ * hand-written web in lib/agent-demo.ts. Flip back to true if ANTHROPIC_API_KEY spend or
+ * reliability ever needs the demo fallback again; nothing else about this component needs
+ * to change either way.
  */
-const AGENT_DEMO_MODE = true;
+const AGENT_DEMO_MODE = false;
 
 /** Before any question is asked, the canvas shows exactly this one node, breathing (see
  *  the .agent-node-breathing rule in globals.css) — "the best clinician in the world,

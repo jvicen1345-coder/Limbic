@@ -1,11 +1,11 @@
 import type { AgentNode, AgentLink } from "@/lib/agent-graph";
 
 /**
- * Limbic Agent's Phase 1 launch content: "Demo only" (see the Pro page's roadmap table).
- * Hand-written, not AI-generated at request time — real PT clinical reasoning, the same
- * accuracy bar as lib/board-content.ts, curated to show off what the live version will do
- * once it's funded and enabled. Every question in demo mode reveals this same web (see
- * AGENT_DEMO_MODE in AgentClient.tsx); nothing here is a live model response.
+ * Limbic Agent's original Phase 1 launch content — a demo fallback now that the real
+ * model call is live (see AGENT_DEMO_MODE in AgentClient.tsx). Hand-written, not
+ * AI-generated at request time — real PT clinical reasoning, the same accuracy bar as
+ * lib/board-content.ts. If AGENT_DEMO_MODE is ever flipped back to true, every question
+ * reveals this same web again; nothing here is a live model response.
  */
 
 const centerId = "demo-center";
