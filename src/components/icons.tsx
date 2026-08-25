@@ -736,6 +736,22 @@ export function ShieldIcon(props: IconProps) {
   );
 }
 
+/** A simple standing-figure outline — Limbic Atlas's sidebar/header mark (see
+ *  app/(app)/atlas/page.tsx). Head, torso, and limbs as one clean stroke shape, in keeping
+ *  with the body map's own "simplified anatomical outline" style rather than a literal
+ *  anatomy icon. */
+export function BodyIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="4" r="2" />
+      <path d="M12 8v6" />
+      <path d="M7 10l5-2 5 2" />
+      <path d="M9 22l2-8" />
+      <path d="M15 22l-2-8" />
+    </Svg>
+  );
+}
+
 /** Google's own multi-color "G" mark (see app/(app)/../sign-in — components/SignInForm.tsx's
  *  "Continue with Google" button) — fixed brand colors, not currentColor, same reasoning as
  *  LogoIcon above: this one isn't meant to be recolored by the surrounding theme either. */

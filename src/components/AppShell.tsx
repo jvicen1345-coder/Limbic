@@ -38,6 +38,7 @@ import {
   ShieldIcon,
   HeartIcon,
   PencilIcon,
+  BodyIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { StudentVerifiedBadge } from "@/components/StudentVerifiedBadge";
@@ -483,6 +484,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
+      <NavLink href="/atlas" icon={<BodyIcon />} label="Limbic Atlas" onNavigate={onNavigate} />
 
       {zoneTwoOrder.map((key) => (
         <Fragment key={key}>{zoneTwoSections[key]}</Fragment>
