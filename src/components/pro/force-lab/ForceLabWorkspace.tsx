@@ -160,6 +160,15 @@ export function ForceLabWorkspace({
     setMode("manual");
   };
 
+  // Always available from the page header (see the button in the header row below), not
+  // just from inside a loaded session's own action row — clears back to a blank Manual
+  // Entry form regardless of what's currently shown in the center column.
+  const handleNewSession = () => {
+    setSelectedSessionId(null);
+    setImportPrefill(null);
+    setMode("manual");
+  };
+
   return (
     <>
       <div className="forcelab-header-row">
@@ -167,9 +176,14 @@ export function ForceLabWorkspace({
           <h1 className="forcelab-title">Force Lab</h1>
           <p className="forcelab-subtitle">Handheld dynamometer data — powered by ActiveForce</p>
         </div>
-        <Link href="/profile/credentials" className="forcelab-unit-pill">
-          {forceUnit}
-        </Link>
+        <div className="forcelab-header-actions">
+          <button type="button" className="btn btn-primary" onClick={handleNewSession}>
+            New Session
+          </button>
+          <Link href="/profile/credentials" className="forcelab-unit-pill">
+            {forceUnit}
+          </Link>
+        </div>
       </div>
 
       <div className="forcelab-columns">
@@ -187,11 +201,6 @@ export function ForceLabWorkspace({
               onEdit={handleEdit}
               onDeleted={handleDeleted}
               onLinked={handleLinked}
-              onNewSession={() => {
-                setSelectedSessionId(null);
-                setImportPrefill(null);
-                setMode("manual");
-              }}
             />
           ) : (
             <>

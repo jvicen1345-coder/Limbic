@@ -17,6 +17,17 @@ export interface AssessmentTrendPoint {
  *  instead of "% of max force". No "use client": purely presentational, safe to render
  *  straight from the server page. */
 export function ForceLabAssessmentTrendChart({ muscleGroup, points, unitLabel }: { muscleGroup: string; points: AssessmentTrendPoint[]; unitLabel: string }) {
+  if (points.length < 2) {
+    return (
+      <div className="card elev-sm forcelab-assessment-trend-card">
+        <div className="forcelab-assessment-trend-title">{muscleGroup}</div>
+        <div className="forcelab-trend-chart">
+          <p className="forcelab-trend-need-more">Add a second assessment to see trends across time.</p>
+        </div>
+      </div>
+    );
+  }
+
   const maxForce = Math.max(1, ...points.flatMap((p) => [p.leftPeak ?? 0, p.rightPeak ?? 0]));
   const n = points.length;
 
