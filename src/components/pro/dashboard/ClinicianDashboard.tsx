@@ -13,7 +13,6 @@ import {
   type PatientDetail,
   type PatientListEntry,
   type PeerComparisonBenchmark,
-  type ReferralSourceBreakdownEntry,
   type WeeklyResearchDigest,
 } from "@/app/actions/clinician-dashboard";
 import { getDashboardResearchFeedAction } from "@/app/actions/dashboard-research";
@@ -36,7 +35,6 @@ export interface ClinicianDashboardProps {
   todaysPatients: PatientListEntry[];
   outcomeReminderPatients: PatientListEntry[];
   episodeLengthStats: EpisodeLengthStats;
-  referralBreakdown: ReferralSourceBreakdownEntry[];
   weeklyDigest: WeeklyResearchDigest;
   peerBenchmarks: PeerComparisonBenchmark[];
   clinicianName: string;
@@ -73,7 +71,6 @@ export function ClinicianDashboard({
   todaysPatients,
   outcomeReminderPatients,
   episodeLengthStats,
-  referralBreakdown,
   weeklyDigest,
   peerBenchmarks,
   clinicianName,
@@ -256,12 +253,7 @@ export function ClinicianDashboard({
         </div>
       </div>
 
-      <PracticeMetrics
-        patients={initialPatients}
-        episodeLengthStats={episodeLengthStats}
-        referralBreakdown={referralBreakdown}
-        peerBenchmarks={peerBenchmarks}
-      />
+      <PracticeMetrics patients={initialPatients} episodeLengthStats={episodeLengthStats} peerBenchmarks={peerBenchmarks} />
 
       {patientDetail && (
         <PreparePatientModal

@@ -1,9 +1,4 @@
-import type {
-  EpisodeLengthStats,
-  PatientListEntry,
-  PeerComparisonBenchmark,
-  ReferralSourceBreakdownEntry,
-} from "@/app/actions/clinician-dashboard";
+import type { EpisodeLengthStats, PatientListEntry, PeerComparisonBenchmark } from "@/app/actions/clinician-dashboard";
 
 const REASSESSMENT_AMBER = "#c9853a";
 // Above this share of the active caseload being due for reassessment at once, the tile
@@ -25,18 +20,16 @@ function benchmarkVerdict(benchmark: PeerComparisonBenchmark): { label: string; 
 }
 
 /** Zone 3 of /pro/dashboard. The first three cards are computed straight off the
- *  already-loaded active caseload (`patients`); the discharged-episode-length, referral
- *  breakdown, and peer-comparison sections need their own server-fetched props since none
- *  of that is derivable from the active-only `patients` list. */
+ *  already-loaded active caseload (`patients`); the discharged-episode-length and
+ *  peer-comparison sections need their own server-fetched props since none of that is
+ *  derivable from the active-only `patients` list. */
 export function PracticeMetrics({
   patients,
   episodeLengthStats,
-  referralBreakdown,
   peerBenchmarks,
 }: {
   patients: PatientListEntry[];
   episodeLengthStats: EpisodeLengthStats;
-  referralBreakdown: ReferralSourceBreakdownEntry[];
   peerBenchmarks: PeerComparisonBenchmark[];
 }) {
   const activeCount = patients.length;
@@ -57,8 +50,6 @@ export function PracticeMetrics({
   const rateIsHigh = reassessRate > HIGH_REASSESSMENT_RATE;
 
   const qualifyingRegions = episodeLengthStats.byRegion.filter((r) => r.patientCount >= 2).sort((a, b) => b.patientCount - a.patientCount);
-  const qualifyingReferralSources = referralBreakdown.filter((r) => r.count >= 1);
-  const maxReferralCount = Math.max(1, ...qualifyingReferralSources.map((r) => r.count));
 
   return (
     <>
@@ -131,27 +122,6 @@ export function PracticeMetrics({
               </table>
             )}
           </>
-        )}
-      </div>
-
-      <div className="card elev-sm">
-        <div className="card-kicker">Referral Sources</div>
-        {qualifyingReferralSources.length === 0 ? (
-          <p className="clindash-metric-card-sub" style={{ marginTop: 8 }}>
-            Add referral sources when creating patients to track where your patients come from.
-          </p>
-        ) : (
-          <div className="clindash-region-bars">
-            {qualifyingReferralSources.map((r) => (
-              <div className="clindash-region-bar-row" key={r.source}>
-                <span className="clindash-region-bar-label">{r.source}</span>
-                <span className="clindash-region-bar-track">
-                  <span className="clindash-region-bar-fill" style={{ width: `${(r.count / maxReferralCount) * 100}%` }} />
-                </span>
-                <span className="clindash-region-bar-count">{r.count}</span>
-              </div>
-            ))}
-          </div>
         )}
       </div>
     </div>

@@ -9,7 +9,6 @@ import {
   getTodaysPatients,
   getPatientsWithOutcomeReminders,
   getEpisodeLengthStats,
-  getReferralSourceBreakdown,
   getWeeklyResearchDigest,
   getPeerComparisonBenchmarks,
 } from "@/app/actions/clinician-dashboard";
@@ -54,7 +53,6 @@ export default async function ClinicianDashboardPage() {
     todaysPatients,
     outcomeReminderPatients,
     episodeLengthStats,
-    referralBreakdown,
     weeklyDigest,
     peerBenchmarks,
     clinicMembership,
@@ -68,7 +66,6 @@ export default async function ClinicianDashboardPage() {
     getTodaysPatients(),
     getPatientsWithOutcomeReminders(),
     getEpisodeLengthStats(),
-    getReferralSourceBreakdown(),
     getWeeklyResearchDigest(user.specialty),
     getPeerComparisonBenchmarks(),
     getClinicMembershipInfo(),
@@ -90,7 +87,6 @@ export default async function ClinicianDashboardPage() {
         todaysPatients={todaysPatients}
         outcomeReminderPatients={outcomeReminderPatients}
         episodeLengthStats={episodeLengthStats}
-        referralBreakdown={referralBreakdown}
         weeklyDigest={weeklyDigest}
         peerBenchmarks={peerBenchmarks}
         clinicianName={user.name}
