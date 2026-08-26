@@ -15,7 +15,13 @@ import { conditionIntelligenceMap } from "@/lib/condition-intelligence";
 import { mcidValues } from "@/lib/outcome-benchmarks";
 import { detectRedFlags } from "@/lib/red-flag-detector";
 import { goalBank } from "@/lib/goal-bank";
+import { getWeeklyResearchDigest as getWeeklyResearchDigestFeed, type WeeklyResearchDigest } from "@/lib/dashboard-research";
 import type { ClinicalPatient, OutcomeMeasureEntry, PatientHEPAssignment, ClinicalNote, RedFlagAlert } from "@/generated/prisma/client";
+
+// Type-only re-export so callers (ResearchFeedPanel.tsx, ClinicianDashboard.tsx) can import
+// WeeklyResearchDigest from this action file instead of reaching into lib/dashboard-research
+// directly — erased at compile time, so it doesn't violate "use server"'s runtime-exports-only rule.
+export type { WeeklyResearchDigest };
 
 /**
  * LimbicPRO Clinician Dashboard (/pro/dashboard) server actions.
@@ -1095,4 +1101,223 @@ export async function getEpisodeLengthStats(): Promise<EpisodeLengthStats> {
   }));
 
   return { overallAverageVisits, totalDischarged: discharged.length, byRegion };
+}
+
+/* ============================================================================
+   Professional connection features (CE Due Date Countdown, Specialty Research Digest,
+   Clinical Question Log, Peer Comparison via MCID Benchmarks). Same conventions as the
+   rest of this file.
+   ============================================================================ */
+
+export interface CECountdown {
+  renewalDate: Date;
+  daysUntilRenewal: number;
+  hoursCompleted: number;
+  hoursRequired: number;
+  hoursRemaining: number;
+  /** hoursRemaining / daysRemaining stays at or below a sustainable weekly pace — see the
+   *  literal check below for the exact threshold. */
+  onTrack: boolean;
+}
+
+/** The right column's CE Countdown card — reads the same User.ceLicenseExpiry /
+ *  ceTotalRequired fields the existing CE Tracker page (/pro/ce-tracker,
+ *  updateCEPreferences in app/actions/pro-toolbox.ts) already reads and writes, rather
+ *  than a separate "CEReminder" table: a clinician has exactly one real renewal date, and
+ *  two different records claiming to track it would drift out of sync the moment either
+ *  UI updated one but not the other. Returns null when no renewal date has been set yet —
+ *  the card shows its "track your renewal deadline" prompt instead. */
+export async function getCECountdown(): Promise<CECountdown | null> {
+  const user = await requireProUser();
+  if (!user || !user.ceLicenseExpiry) return null;
+
+  const hoursRequired = user.ceTotalRequired ?? 30;
+  const ceLogs = await prisma.cELog.findMany({ where: { userId: user.id }, select: { hours: true } });
+  const hoursCompleted = ceLogs.reduce((sum, l) => sum + l.hours, 0);
+  const hoursRemaining = Math.max(0, hoursRequired - hoursCompleted);
+
+  const msRemaining = user.ceLicenseExpiry.getTime() - Date.now();
+  const daysUntilRenewal = Math.ceil(msRemaining / 86400000);
+
+  // "Reasonable pace" — hours remaining spread over the days left shouldn't demand more
+  // than roughly an hour of CE per week to finish on time.
+  const weeksRemaining = Math.max(1, daysUntilRenewal / 7);
+  const onTrack = daysUntilRenewal > 0 && hoursRemaining / weeksRemaining <= 1;
+
+  return {
+    renewalDate: user.ceLicenseExpiry,
+    daysUntilRenewal,
+    hoursCompleted,
+    hoursRequired,
+    hoursRemaining,
+    onTrack,
+  };
+}
+
+/** "Save" on the CE Countdown card's setup/edit form — updates the same two User fields
+ *  the CE Tracker page's own license form writes (see updateCEPreferences in
+ *  pro-toolbox.ts), leaving ceState/ceRenewalCycle untouched since this smaller form
+ *  doesn't collect them. */
+export async function upsertCERenewalDate(renewalDate: string, totalRequired: number): Promise<ClinicianDashboardResult> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  if (!renewalDate || !Number.isFinite(totalRequired) || totalRequired <= 0) {
+    return { ok: false, error: "A renewal date and a valid required-hours total are required." };
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { ceLicenseExpiry: new Date(`${renewalDate}T00:00:00`), ceTotalRequired: Math.round(totalRequired) },
+  });
+  revalidatePath("/pro/dashboard");
+  return { ok: true };
+}
+
+/** Thin wrapper around lib/dashboard-research.ts's own getWeeklyResearchDigest — kept here
+ *  too (re-exported under the same name) so every dashboard data-fetch this feature spec
+ *  asked for lives in this one actions file, matching where the rest of them live. */
+export async function getWeeklyResearchDigest(specialty: string): Promise<WeeklyResearchDigest> {
+  const user = await requireProUser();
+  if (!user) return { specialtyLabel: "Your Specialty", articles: [], rangeStart: "", rangeEnd: "" };
+  return getWeeklyResearchDigestFeed(specialty);
+}
+
+export interface ClinicalQuestionRecord {
+  id: string;
+  question: string;
+  answered: boolean;
+  createdAt: Date;
+}
+
+const UNANSWERED_QUESTIONS_LIMIT = 10;
+
+/** "Add Question" on the Clinical Question Log (right column, default workspace state). */
+export async function logClinicalQuestion(question: string): Promise<ClinicianDashboardResult<{ question: ClinicalQuestionRecord }>> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const trimmed = question.trim();
+  if (!trimmed) return { ok: false, error: "A question is required." };
+
+  const created = await prisma.clinicalQuestion.create({ data: { userId: user.id, question: trimmed } });
+  revalidatePath("/pro/dashboard");
+  return { ok: true, question: created };
+}
+
+/** "Ask Limbic Agent" on a logged question — marks it answered and hands back the question
+ *  text so the client can open /agent?topic=... in a new tab (the real Limbic Agent route
+ *  in this app — the feature spec this shipped from said "/pro/agent", which doesn't
+ *  exist; see AppShell.tsx's own nav link for the real one). This action only marks the
+ *  question answered — it doesn't record what the agent actually said, since Limbic Agent
+ *  itself isn't wired to report back into this dashboard. */
+export async function answerClinicalQuestion(questionId: string): Promise<ClinicianDashboardResult<{ question: string }>> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const record = await prisma.clinicalQuestion.findUnique({ where: { id: questionId } });
+  if (!record || record.userId !== user.id) return { ok: false, error: "Question not found." };
+
+  await prisma.clinicalQuestion.update({ where: { id: questionId }, data: { answered: true, answeredAt: new Date() } });
+  revalidatePath("/pro/dashboard");
+  return { ok: true, question: record.question };
+}
+
+export async function deleteClinicalQuestion(questionId: string): Promise<ClinicianDashboardResult> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const record = await prisma.clinicalQuestion.findUnique({ where: { id: questionId } });
+  if (!record || record.userId !== user.id) return { ok: false, error: "Question not found." };
+
+  await prisma.clinicalQuestion.delete({ where: { id: questionId } });
+  revalidatePath("/pro/dashboard");
+  return { ok: true };
+}
+
+/** Up to UNANSWERED_QUESTIONS_LIMIT unanswered questions, most recent first — the Question
+ *  Log's own "maximum 10 unanswered questions shown" cap. Answered questions are a
+ *  separate, collapsed-by-default list the client already has via the same fetch (see
+ *  getAllQuestions below) rather than a second round trip. */
+export async function getUnansweredQuestions(): Promise<ClinicalQuestionRecord[]> {
+  const user = await requireProUser();
+  if (!user) return [];
+  return prisma.clinicalQuestion.findMany({
+    where: { userId: user.id, answered: false },
+    orderBy: { createdAt: "desc" },
+    take: UNANSWERED_QUESTIONS_LIMIT,
+  });
+}
+
+export interface ClinicalQuestionLogView {
+  unanswered: ClinicalQuestionRecord[];
+  unansweredTotalCount: number;
+  answered: ClinicalQuestionRecord[];
+}
+
+/** Everything the Clinical Question Log section needs in one call — the unanswered list
+ *  (capped, plus the true total so the UI can show a "See all" link only when there's more
+ *  than the cap), and answered questions for the collapsed "Answered" rows. */
+export async function getAllQuestions(): Promise<ClinicalQuestionLogView> {
+  const user = await requireProUser();
+  if (!user) return { unanswered: [], unansweredTotalCount: 0, answered: [] };
+
+  const [unanswered, unansweredTotalCount, answered] = await Promise.all([
+    prisma.clinicalQuestion.findMany({
+      where: { userId: user.id, answered: false },
+      orderBy: { createdAt: "desc" },
+      take: UNANSWERED_QUESTIONS_LIMIT,
+    }),
+    prisma.clinicalQuestion.count({ where: { userId: user.id, answered: false } }),
+    prisma.clinicalQuestion.findMany({ where: { userId: user.id, answered: true }, orderBy: { createdAt: "desc" } }),
+  ]);
+
+  return { unanswered, unansweredTotalCount, answered };
+}
+
+export interface PeerComparisonBenchmark {
+  measureName: string;
+  averageImprovement: number;
+  patientCount: number;
+  benchmark: OutcomeBenchmark;
+}
+
+/** Practice Metrics zone's "How Your Patients Compare" section — for every outcome measure
+ *  where at least 2 of this clinician's patients each have 2+ recorded scores, averages
+ *  each patient's own (latest minus first) improvement, sign-adjusted per
+ *  benchmark.higherIsBetter so a "lower is better" measure like NPRS still reads as a
+ *  positive number when pain went down. All patients (active and discharged) count here —
+ *  unlike the Episode Length cards, this isn't scoped to one status. */
+export async function getPeerComparisonBenchmarks(): Promise<PeerComparisonBenchmark[]> {
+  const user = await requireProUser();
+  if (!user) return [];
+
+  const patients = await prisma.clinicalPatient.findMany({
+    where: { userId: user.id },
+    select: { condition: true, outcomes: { orderBy: { recordedAt: "asc" }, select: { measureName: true, score: true, maxScore: true } } },
+  });
+
+  const perMeasure = new Map<string, { improvements: number[]; benchmark: OutcomeBenchmark }>();
+  for (const patient of patients) {
+    const byMeasure = new Map<string, { score: number; maxScore: number }[]>();
+    for (const o of patient.outcomes) {
+      const list = byMeasure.get(o.measureName) ?? [];
+      list.push({ score: o.score, maxScore: o.maxScore });
+      byMeasure.set(o.measureName, list);
+    }
+    for (const [measureName, entries] of byMeasure) {
+      if (entries.length < 2) continue;
+      const benchmark = lookupBenchmark(patient.condition, measureName);
+      if (!benchmark) continue;
+      const rawChange = entries[entries.length - 1].score - entries[0].score;
+      const improvement = benchmark.higherIsBetter ? rawChange : -rawChange;
+      const bucket = perMeasure.get(measureName) ?? { improvements: [], benchmark };
+      bucket.improvements.push(improvement);
+      perMeasure.set(measureName, bucket);
+    }
+  }
+
+  const results: PeerComparisonBenchmark[] = [];
+  for (const [measureName, bucket] of perMeasure) {
+    if (bucket.improvements.length < 2) continue;
+    const averageImprovement = bucket.improvements.reduce((sum, v) => sum + v, 0) / bucket.improvements.length;
+    results.push({ measureName, averageImprovement, patientCount: bucket.improvements.length, benchmark: bucket.benchmark });
+  }
+  return results.sort((a, b) => b.patientCount - a.patientCount);
 }

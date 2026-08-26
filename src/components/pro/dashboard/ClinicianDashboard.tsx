@@ -12,7 +12,9 @@ import {
   type EpisodeLengthStats,
   type PatientDetail,
   type PatientListEntry,
+  type PeerComparisonBenchmark,
   type ReferralSourceBreakdownEntry,
+  type WeeklyResearchDigest,
 } from "@/app/actions/clinician-dashboard";
 import { getDashboardResearchFeedAction } from "@/app/actions/dashboard-research";
 import type { Article } from "@/lib/types";
@@ -34,6 +36,8 @@ export interface ClinicianDashboardProps {
   outcomeReminderPatients: PatientListEntry[];
   episodeLengthStats: EpisodeLengthStats;
   referralBreakdown: ReferralSourceBreakdownEntry[];
+  weeklyDigest: WeeklyResearchDigest;
+  peerBenchmarks: PeerComparisonBenchmark[];
   clinicianName: string;
   clinicianCredential: string;
   clinicianClinicName: string;
@@ -57,6 +61,8 @@ export function ClinicianDashboard({
   outcomeReminderPatients,
   episodeLengthStats,
   referralBreakdown,
+  weeklyDigest,
+  peerBenchmarks,
   clinicianName,
   clinicianCredential,
   clinicianClinicName,
@@ -207,11 +213,16 @@ export function ClinicianDashboard({
         />
 
         <div className="clindash-col-research">
-          <ResearchFeedPanel articles={researchArticles} patientLabel={patientLabel} />
+          <ResearchFeedPanel articles={researchArticles} patientLabel={patientLabel} weeklyDigest={weeklyDigest} />
         </div>
       </div>
 
-      <PracticeMetrics patients={initialPatients} episodeLengthStats={episodeLengthStats} referralBreakdown={referralBreakdown} />
+      <PracticeMetrics
+        patients={initialPatients}
+        episodeLengthStats={episodeLengthStats}
+        referralBreakdown={referralBreakdown}
+        peerBenchmarks={peerBenchmarks}
+      />
       <ClinicProPlaceholder />
 
       {patientDetail && (

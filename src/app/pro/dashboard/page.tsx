@@ -10,6 +10,8 @@ import {
   getPatientsWithOutcomeReminders,
   getEpisodeLengthStats,
   getReferralSourceBreakdown,
+  getWeeklyResearchDigest,
+  getPeerComparisonBenchmarks,
 } from "@/app/actions/clinician-dashboard";
 import { ProGate } from "@/components/pro/ProGate";
 import { ClinicianDashboard } from "@/components/pro/dashboard/ClinicianDashboard";
@@ -51,6 +53,8 @@ export default async function ClinicianDashboardPage() {
     outcomeReminderPatients,
     episodeLengthStats,
     referralBreakdown,
+    weeklyDigest,
+    peerBenchmarks,
   ] = await Promise.all([
     getDashboardSummary(),
     getActivePatients(),
@@ -60,6 +64,8 @@ export default async function ClinicianDashboardPage() {
     getPatientsWithOutcomeReminders(),
     getEpisodeLengthStats(),
     getReferralSourceBreakdown(),
+    getWeeklyResearchDigest(user.specialty),
+    getPeerComparisonBenchmarks(),
   ]);
 
   if (!summary) return null; // requireProUser inside the actions already matches the isPro check above
@@ -77,6 +83,8 @@ export default async function ClinicianDashboardPage() {
         outcomeReminderPatients={outcomeReminderPatients}
         episodeLengthStats={episodeLengthStats}
         referralBreakdown={referralBreakdown}
+        weeklyDigest={weeklyDigest}
+        peerBenchmarks={peerBenchmarks}
         clinicianName={user.name}
         clinicianCredential={credential ?? ""}
         clinicianClinicName={user.clinicName ?? ""}

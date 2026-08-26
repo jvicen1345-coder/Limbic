@@ -1175,6 +1175,11 @@ model VisitLog {
 // just opens Limbic Agent with the question pre-loaded; `answer`/`answeredAt` are set if a
 // future flow ever records the agent's response back onto this row, not by the current
 // "open agent" action itself.
+// Backs the Clinical Question Log (right column, default workspace state — see
+// logClinicalQuestion/answerClinicalQuestion/deleteClinicalQuestion/getUnansweredQuestions
+// in app/actions/clinician-dashboard.ts). A later feature pass asked for a model named
+// "ClinicalQuestionLog" with this exact same shape — reused this one instead of adding a
+// second, identical table under a different name.
 model ClinicalQuestion {
   id         String    @id @default(cuid())
   userId     String

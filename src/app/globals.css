@@ -8401,3 +8401,81 @@ button.plan-compare-name:hover { text-decoration: underline; }
 @media (max-width: 700px) {
   .clindash-goal-top { flex-direction: column; align-items: flex-start; }
 }
+
+/* ============================================================================
+   Clinician Dashboard — Prompt 4 professional-connection features (CE Countdown, Specialty
+   Research Digest, Clinical Question Log, Peer Comparison benchmarks).
+   ============================================================================ */
+
+.clindash-ce-card { margin-bottom: 16px; }
+.clindash-ce-days { font-family: var(--font-heading); font-size: 30px; line-height: 1; }
+.clindash-ce-days-label { font-size: 12px; color: var(--color-neutral-700); margin-top: 4px; }
+.clindash-ce-progress-bar { height: 7px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; margin: 12px 0 6px; }
+.clindash-ce-progress-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
+.clindash-ce-hours-line { font-size: 12px; color: var(--color-neutral-700); }
+.clindash-ce-track-pill {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-top: 8px;
+}
+.clindash-ce-track-pill--on { background: color-mix(in srgb, var(--color-success) 16%, transparent); color: var(--color-success); }
+.clindash-ce-track-pill--behind { background: color-mix(in srgb, #c9853a 16%, transparent); color: #c9853a; }
+.clindash-ce-actions { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.clindash-ce-edit-link { font-size: 11.5px; color: var(--color-neutral-700); background: none; border: none; cursor: pointer; padding: 0; }
+
+.clindash-digest-header-row { margin-bottom: 4px; }
+.clindash-digest-title { font-family: var(--font-heading); font-size: 15px; }
+.clindash-digest-subtitle { font-size: 11px; color: var(--color-neutral-700); margin: 2px 0 10px; }
+.clindash-digest-item { padding: 10px 0; border-top: 1px solid var(--color-divider); }
+.clindash-digest-item:first-child { border-top: none; }
+.clindash-digest-item-title {
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+}
+.clindash-digest-item-meta { font-size: 10.5px; color: var(--color-neutral-700); margin-top: 4px; }
+.clindash-digest-placeholder { font-size: 11.5px; color: var(--color-neutral-700); font-style: italic; padding: 10px 0; border-top: 1px solid var(--color-divider); }
+
+.clindash-question-log { margin-top: 16px; }
+.clindash-question-card {
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  margin-bottom: 8px;
+}
+.clindash-question-text {
+  font-size: 12.5px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.clindash-question-date { font-size: 10.5px; color: var(--color-neutral-700); margin-top: 3px; }
+.clindash-question-actions { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.clindash-question-ask { font-size: 11.5px; color: var(--color-accent); background: none; border: none; cursor: pointer; padding: 0; font-weight: 600; }
+.clindash-question-delete { font-size: 11.5px; color: var(--color-danger); background: none; border: none; cursor: pointer; padding: 0; }
+.clindash-question-answered-label { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--color-success); cursor: pointer; }
+.clindash-question-see-all { display: block; text-align: center; font-size: 11.5px; margin-top: 4px; }
+
+.clindash-benchmarks-section { margin-top: 24px; }
+.clindash-benchmarks-header { font-family: var(--font-heading); font-size: 17px; }
+.clindash-benchmarks-subtitle { font-size: 12px; color: var(--color-neutral-700); margin: 2px 0 14px; }
+.clindash-benchmark-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.clindash-benchmark-card-measure { font-weight: 700; font-size: 13.5px; margin-bottom: 4px; }
+.clindash-benchmark-card-stat { font-size: 12px; color: var(--color-neutral-700); margin-bottom: 2px; }
+.clindash-benchmark-card-verdict { font-size: 12.5px; font-weight: 600; margin-top: 6px; }
+.clindash-benchmark-card-verdict--good { color: var(--color-success); }
+.clindash-benchmark-card-verdict--warn { color: #c9853a; }
+.clindash-benchmark-card-verdict--bad { color: var(--color-danger); }
+.clindash-benchmark-card-source { font-size: 10.5px; color: var(--color-neutral-700); margin-top: 6px; }
+.clindash-benchmarks-disclaimer { font-size: 11px; color: var(--color-neutral-700); margin-top: 12px; line-height: 1.5; }
