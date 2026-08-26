@@ -12,6 +12,7 @@ import { ConditionIntelligenceCard } from "./ConditionIntelligenceCard";
 import { TreatmentIdeasCard } from "./TreatmentIdeasCard";
 import { ClinicalAlertBanner } from "./ClinicalAlertBanner";
 import { PatientGoalsSection } from "./PatientGoalsSection";
+import { ForceLabSummary } from "./ForceLabSummary";
 
 // A patient is offered early access to "Generate Discharge Summary" once they're this
 // close to their planned total visits, so a clinician can review/regenerate before the
@@ -33,6 +34,7 @@ function ActiveWorkspace({
   outcomeActionsRef,
   redFlagAlerts,
   onDismissRedFlag,
+  forceUnit,
 }: {
   patient: PatientDetail;
   availableHEPs: AvailableHEP[];
@@ -48,6 +50,7 @@ function ActiveWorkspace({
   outcomeActionsRef: MutableRefObject<OutcomeMeasuresSectionHandle | null>;
   redFlagAlerts: { id: string; description: string }[];
   onDismissRedFlag: (alertId: string) => void;
+  forceUnit: string;
 }) {
   const nearingDischarge =
     patient.status === "active" && patient.totalVisits - patient.visitCount <= DISCHARGE_SUMMARY_EARLY_ACCESS_VISITS_REMAINING;
@@ -146,6 +149,7 @@ function ActiveWorkspace({
         actionsRef={outcomeActionsRef}
       />
       <HEPSection patient={patient} availableHEPs={availableHEPs} onChanged={onChanged} />
+      <ForceLabSummary patientId={patient.id} patientCode={patient.patientCode} forceUnit={forceUnit} />
       <ClinicalNotesSection patient={patient} onChanged={onChanged} />
     </div>
   );
@@ -177,6 +181,7 @@ export function PatientWorkspace({
   outcomeActionsRef,
   redFlagAlerts,
   onDismissRedFlag,
+  forceUnit,
 }: {
   selectedPatient: PatientDetail | null;
   loadingDetail: boolean;
@@ -200,6 +205,7 @@ export function PatientWorkspace({
   outcomeActionsRef: MutableRefObject<OutcomeMeasuresSectionHandle | null>;
   redFlagAlerts: { id: string; description: string }[];
   onDismissRedFlag: (alertId: string) => void;
+  forceUnit: string;
 }) {
   return (
     <div className="card elev-sm" style={{ minHeight: 300 }}>
@@ -222,6 +228,7 @@ export function PatientWorkspace({
             outcomeActionsRef={outcomeActionsRef}
             redFlagAlerts={redFlagAlerts}
             onDismissRedFlag={onDismissRedFlag}
+            forceUnit={forceUnit}
           />
         )
       ) : (

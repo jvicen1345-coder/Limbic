@@ -304,6 +304,13 @@ model User {
   ceRenewalCycle  Int? // years
   ceTotalRequired Float?
 
+  // Limbic Force Lab (/pro/force-lab) — "lbs" | "kg", same fixed-but-app-enforced-value-set
+  // convention as HEPTemplate.bodyPart. Null until set from Profile's "Dynamometer Unit
+  // Preference" radios; every reader of it (getUserForceUnit in app/actions/force-lab.ts)
+  // treats null as "lbs" rather than requiring a migration default, since ForceLabSession
+  // rows already default their own `unit` column to "lbs" the same way.
+  forceUnit String?
+
   passwordResetTokens PasswordResetToken[]
   savedArticles       SavedArticle[]
   savedWellness       SavedWellness[]
@@ -349,6 +356,7 @@ model User {
   transfersFrom       PatientTransfer[]     @relation("TransferFrom")
   transfersTo         PatientTransfer[]     @relation("TransferTo")
   clinicReports       ClinicOutcomeReport[]
+  forceLabSessions    ForceLabSession[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -1095,6 +1103,7 @@ model ClinicalPatient {
   referralSource   ReferralSource[]
   dischargeSummary DischargeSummary[]
   transfers        PatientTransfer[]
+  forceLabSessions ForceLabSession[]
 
   // A clinician's own patient codes must be unique to them (not globally — two different
   // clinicians can each have their own "PT-001") — enforced here, not just checked in
@@ -1436,6 +1445,60 @@ model ClinicInvite {
   createdAt DateTime @default(now())
 
   clinic Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+}
+
+// Limbic Force Lab (/pro/force-lab) — handheld dynamometer session data, manually entered
+// or parsed from an ActiveForce screenshot via lib/force-lab-import.ts. patientCode is a
+// point-in-time denormalized copy of the linked patient's code (kept even if the patient
+// is later renamed/unlinked, since a session's own history — e.g. the /pro/force-lab/
+// patient/[patientCode] page's URL — is keyed by the code as typed at save time);
+// patientId is the real, nullable FK a session actually links through once a clinician
+// runs "Link to Patient" — a session can exist unlinked (patientCode and patientId both
+// null) for a quick reading not yet tied to a caseload record.
+model ForceLabSession {
+  id              String   @id @default(cuid())
+  userId          String
+  patientCode     String?
+  patientId       String?
+  muscleGroup     String
+  bodyRegion      String
+  rightPeak       Float?
+  leftPeak        Float?
+  rightTimeToPeak Float?
+  leftTimeToPeak  Float?
+  difference      Float?
+  percentDiff     Float?
+  lsi             Float?
+  unit            String   @default("lbs")
+  notes           String?
+  // "activeforce_screenshot" when created via parseScreenshot's reviewed-and-confirmed
+  // output, null for a manually-entered session — see createForceLabSession.
+  importedFrom    String?
+  sessionDate     DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient ClinicalPatient? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+}
+
+// Published handheld-dynamometer normative values (lib/force-lab-norms.ts, seeded via
+// seedForceLabNorms) — looked up by muscleGroup + an age/sex bucket in getNormativeData
+// (app/actions/force-lab.ts). Not user-scoped: this is reference literature data, the same
+// for every clinician, same "static + seeded, not per-account" shape as ForceLabNorm's
+// muscleGroups/mcidValues siblings in lib/force-lab-muscles.ts and lib/outcome-benchmarks.ts.
+model ForceLabNorm {
+  id          String   @id @default(cuid())
+  muscleGroup String
+  bodyRegion  String
+  side        String
+  ageMin      Int
+  ageMax      Int
+  sex         String
+  meanLbs     Float
+  sdLbs       Float
+  source      String
+  createdAt   DateTime @default(now())
 }
 
 // One of the 25 "Founding 25" spots on /founding-funders. Created two ways: self-serve via

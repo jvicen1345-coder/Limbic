@@ -42,9 +42,20 @@ export default async function PatientBriefPage({
     include: {
       hepAssignments: { orderBy: { assignedAt: "desc" }, take: 1 },
       preBriefs: { where: { patientFacing: true }, orderBy: { generatedAt: "desc" }, take: 1 },
+      forceLabSessions: { orderBy: { sessionDate: "desc" } },
     },
   });
   if (!patient || patient.userId !== user.id) notFound();
+
+  // Most recent session per muscle group — same "one current reading per muscle group"
+  // shape as StrengthProfilePanel's own grouping — plus the single most recent date across
+  // all of them for the section's "Date of measurement" line, per the spec.
+  const forceLabByMuscle = new Map<string, (typeof patient.forceLabSessions)[number]>();
+  for (const s of patient.forceLabSessions) {
+    if (!forceLabByMuscle.has(s.muscleGroup)) forceLabByMuscle.set(s.muscleGroup, s);
+  }
+  const forceLabRows = Array.from(forceLabByMuscle.values());
+  const forceLabDate = patient.forceLabSessions[0]?.sessionDate ?? null;
 
   const clinicianName = query.name || user.name;
   const clinicianCredential = query.credential ?? "";
@@ -144,6 +155,27 @@ export default async function PatientBriefPage({
             ) : (
               <p className="patient-brief-summary-text">See your printed or digital handout for full exercise details.</p>
             )}
+          </div>
+        )}
+
+        {forceLabRows.length > 0 && (
+          <div className="patient-brief-section">
+            <div className="pbrief-forcelab-title">Strength Measurements</div>
+            {forceLabDate && (
+              <p className="patient-brief-summary-text" style={{ margin: "0 0 6px" }}>
+                Date of measurement: {new Date(forceLabDate).toLocaleDateString()}
+              </p>
+            )}
+            {forceLabRows.map((s) => (
+              <div className="pbrief-forcelab-row" key={s.muscleGroup}>
+                <span>{s.muscleGroup}</span>
+                <span>
+                  R: {s.rightPeak != null ? `${s.rightPeak} ${s.unit}` : "—"} &nbsp; L: {s.leftPeak != null ? `${s.leftPeak} ${s.unit}` : "—"}
+                  {s.lsi != null ? ` · LSI ${s.lsi}%` : ""}
+                </span>
+              </div>
+            ))}
+            <p className="pbrief-forcelab-note">Measured using handheld dynamometer — ActiveForce.</p>
           </div>
         )}
 

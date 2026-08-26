@@ -51,6 +51,10 @@ export interface ClinicianDashboardProps {
    *  and isAdmin true is the only case that adds the tab bar/Team Overview tab. */
   isClinicAdmin: boolean;
   clinicPatientsToday: number | null;
+  /** Force Lab's Dynamometer Unit Preference (see User.forceUnit, getUserForceUnit in
+   *  app/actions/force-lab.ts) — threaded down to the active patient workspace's Force Lab
+   *  section so its peak-force display matches the clinician's own preference. */
+  forceUnit: string;
 }
 
 /** Client orchestrator for /pro/dashboard — owns which patient is selected and everything
@@ -78,6 +82,7 @@ export function ClinicianDashboard({
   clinicianEmail,
   isClinicAdmin,
   clinicPatientsToday,
+  forceUnit,
 }: ClinicianDashboardProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -241,6 +246,7 @@ export function ClinicianDashboard({
               outcomeActionsRef={outcomeActionsRef}
               redFlagAlerts={activeRedFlagAlerts}
               onDismissRedFlag={handleDismissRedFlag}
+              forceUnit={forceUnit}
             />
           )}
         </div>

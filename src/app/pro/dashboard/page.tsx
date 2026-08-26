@@ -14,6 +14,7 @@ import {
   getPeerComparisonBenchmarks,
 } from "@/app/actions/clinician-dashboard";
 import { getClinicMembershipInfo, getClinicPatientsTodayCount } from "@/app/actions/clinic-pro";
+import { getUserForceUnit } from "@/app/actions/force-lab";
 import { ProGate } from "@/components/pro/ProGate";
 import { ClinicianDashboard } from "@/components/pro/dashboard/ClinicianDashboard";
 
@@ -58,6 +59,7 @@ export default async function ClinicianDashboardPage() {
     peerBenchmarks,
     clinicMembership,
     clinicPatientsToday,
+    forceUnit,
   ] = await Promise.all([
     getDashboardSummary(),
     getActivePatients(),
@@ -71,6 +73,7 @@ export default async function ClinicianDashboardPage() {
     getPeerComparisonBenchmarks(),
     getClinicMembershipInfo(),
     getClinicPatientsTodayCount(),
+    getUserForceUnit(),
   ]);
 
   if (!summary) return null; // requireProUser inside the actions already matches the isPro check above
@@ -96,6 +99,7 @@ export default async function ClinicianDashboardPage() {
         clinicianEmail={user.email ?? ""}
         isClinicAdmin={clinicMembership?.isAdmin ?? false}
         clinicPatientsToday={clinicPatientsToday}
+        forceUnit={forceUnit}
       />
     </div>
   );
