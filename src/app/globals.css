@@ -8692,6 +8692,15 @@ button.plan-compare-name:hover { text-decoration: underline; }
   font-weight: 700;
 }
 
+@media (max-width: 640px) {
+  .forcelab-history-list { gap: 6px; }
+  .forcelab-history-card { padding: 8px 10px; }
+  .forcelab-history-card-muscle { font-size: 12px; }
+  .forcelab-history-card-date { font-size: 10px; margin: 1px 0 4px; }
+  .forcelab-history-card-peaks { font-size: 11px; margin-bottom: 4px; }
+  .forcelab-lsi-pill { padding: 0 6px; font-size: 10px; }
+}
+
 /* — Main Entry (center column) — */
 .forcelab-entry-layout { display: flex; gap: 18px; align-items: flex-start; }
 .forcelab-entry-fields { flex: 1; min-width: 0; }
