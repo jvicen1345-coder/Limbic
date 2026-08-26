@@ -7,12 +7,13 @@ import { AGENT_DEMO_NODES, AGENT_DEMO_CROSS_LINKS } from "@/lib/agent-demo";
 import type { AgentNode, AgentLink, AgentRing } from "@/lib/agent-graph";
 
 /**
- * Back in demo mode — every question reveals the same hand-written web from
- * lib/agent-demo.ts instead of a live model call. The real askAgentAction/
- * expandAgentNodeAction path (lib/agent.ts) stays fully wired underneath; flip to false to
- * go live again (that's all that's needed — nothing else about this component changes).
+ * Live mode — every question calls the real askAgentAction/expandAgentNodeAction path
+ * (lib/agent.ts). Note: as of this flip, this environment's ANTHROPIC_API_KEY is empty, so
+ * every call will fail with the generic "isn't available right now" error until a real key
+ * (and billing on that Anthropic account) is configured. Flip back to true to fall back to
+ * the hand-written demo web in lib/agent-demo.ts.
  */
-const AGENT_DEMO_MODE = true;
+const AGENT_DEMO_MODE = false;
 
 /** Before any question is asked, the canvas shows exactly this one node, breathing (see
  *  the .agent-node-breathing rule in globals.css) — "the best clinician in the world,

@@ -18,15 +18,13 @@ const RING_PAUSE_MS = 500;
 
 /**
  * The 5 insight nodes (see lib/threads-graph.ts THREADS_INSIGHT_META) call Limbic Agent
- * live — same ANTHROPIC_API_KEY-gated path as lib/agent.ts, currently unfunded, so every
- * attempt fails with the same generic "isn't available right now" message regardless of
- * PRO status. Rather than let a click sit there and fail (reading as a bug, not a
- * limitation), this skips the attempt entirely and shows a plain "Coming Soon" state —
- * same spirit as AgentClient.tsx's own AGENT_DEMO_MODE flag. Flip to true once billing is
- * set up on the Anthropic account; nothing else about this component needs to change,
- * the real generateThreadsInsightAction path below is already fully wired.
+ * live — same ANTHROPIC_API_KEY-gated path as lib/agent.ts. Note: as of this flip, this
+ * environment's ANTHROPIC_API_KEY is empty, so every attempt will fail with the generic
+ * "isn't available right now" message until a real key (and billing on that Anthropic
+ * account) is configured — same caveat as AgentClient.tsx's own AGENT_DEMO_MODE flag.
+ * Flip back to false to show a plain "Coming Soon" state instead of attempting the call.
  */
-const THREADS_INSIGHTS_ENABLED = false;
+const THREADS_INSIGHTS_ENABLED = true;
 
 /** Matches a "navigate" node's href that points at another article (e.g. the Connected
  *  Research/Related Guidelines nodes built in lib/threads.ts) — nothing else, so a Search

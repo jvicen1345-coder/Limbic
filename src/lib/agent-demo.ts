@@ -1,10 +1,10 @@
 import type { AgentNode, AgentLink } from "@/lib/agent-graph";
 
 /**
- * Limbic Agent's demo content, currently live (see AGENT_DEMO_MODE in AgentClient.tsx) —
- * every question reveals this same hand-written web instead of a real model call.
- * Hand-written, not AI-generated at request time — real PT clinical reasoning, the same
- * accuracy bar as lib/board-content.ts. Nothing here is a live model response.
+ * Limbic Agent's demo content — the hand-written web AGENT_DEMO_MODE (AgentClient.tsx)
+ * falls back to when set to true, instead of a real model call. Hand-written, not
+ * AI-generated at request time — real PT clinical reasoning, the same accuracy bar as
+ * lib/board-content.ts. Nothing here is a live model response.
  */
 
 const centerId = "demo-center";
