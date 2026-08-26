@@ -189,9 +189,9 @@ export interface CreatePatientInput {
   totalVisits: number;
   nextVisit?: string; // "YYYY-MM-DD"
   /** Optional free-text referral source (e.g. "Dr. Smith — Orthopedics", "Self-referral")
-   *  — saved as a ReferralSource row alongside the patient, not a field on
-   *  ClinicalPatient itself, so it stays the single place getReferralSourceBreakdown reads
-   *  from. */
+   *  — saved as a ReferralSource row alongside the patient, not a field on ClinicalPatient
+   *  itself. Read by the Clinic Report's own referral-sources breakdown (see clinic-pro.ts);
+   *  the dashboard's own "Referral Sources" card that used to read it was removed. */
   referralSource?: string;
 }
 
@@ -1042,27 +1042,6 @@ export async function addReferralSource(patientId: string, source: string): Prom
   await prisma.referralSource.create({ data: { userId: user.id, patientId, source: trimmedSource } });
   revalidatePath("/pro/dashboard");
   return { ok: true };
-}
-
-export interface ReferralSourceBreakdownEntry {
-  source: string;
-  count: number;
-}
-
-/** Practice Metrics zone's "Referral Sources" bar chart — grouped by exact source-string
- *  match (see ReferralSource's own schema.prisma comment on why this is free text, not a
- *  fixed list), most patients first. */
-export async function getReferralSourceBreakdown(): Promise<ReferralSourceBreakdownEntry[]> {
-  const user = await requireProUser();
-  if (!user) return [];
-
-  const rows = await prisma.referralSource.groupBy({
-    by: ["source"],
-    where: { userId: user.id },
-    _count: { source: true },
-  });
-
-  return rows.map((r) => ({ source: r.source, count: r._count.source })).sort((a, b) => b.count - a.count);
 }
 
 export interface EpisodeLengthStats {
