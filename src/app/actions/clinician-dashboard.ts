@@ -1104,56 +1104,11 @@ export async function getEpisodeLengthStats(): Promise<EpisodeLengthStats> {
 }
 
 /* ============================================================================
-   Professional connection features (CE Due Date Countdown, Specialty Research Digest,
-   Clinical Question Log, Peer Comparison via MCID Benchmarks). Same conventions as the
-   rest of this file.
+   Professional connection features (Specialty Research Digest, Clinical Question Log,
+   Peer Comparison via MCID Benchmarks). Same conventions as the rest of this file. The CE
+   Due Date Countdown card that used to live here was removed from the dashboard — CE
+   Tracker (/pro/ce-tracker) is the one place renewal date/progress is shown.
    ============================================================================ */
-
-export interface CECountdown {
-  renewalDate: Date;
-  daysUntilRenewal: number;
-  hoursCompleted: number;
-  hoursRequired: number;
-  hoursRemaining: number;
-  /** hoursRemaining / daysRemaining stays at or below a sustainable weekly pace — see the
-   *  literal check below for the exact threshold. */
-  onTrack: boolean;
-}
-
-/** The right column's CE Countdown card — reads the same User.ceLicenseExpiry /
- *  ceTotalRequired fields the existing CE Tracker page (/pro/ce-tracker,
- *  updateCEPreferences in app/actions/pro-toolbox.ts) already reads and writes, rather
- *  than a separate "CEReminder" table: a clinician has exactly one real renewal date, and
- *  two different records claiming to track it would drift out of sync the moment either
- *  UI updated one but not the other. Returns null when no renewal date has been set yet —
- *  the card shows its "track your renewal deadline" prompt instead. */
-export async function getCECountdown(): Promise<CECountdown | null> {
-  const user = await requireProUser();
-  if (!user || !user.ceLicenseExpiry) return null;
-
-  const hoursRequired = user.ceTotalRequired ?? 30;
-  const ceLogs = await prisma.cELog.findMany({ where: { userId: user.id }, select: { hours: true } });
-  const hoursCompleted = ceLogs.reduce((sum, l) => sum + l.hours, 0);
-  const hoursRemaining = Math.max(0, hoursRequired - hoursCompleted);
-
-  const msRemaining = user.ceLicenseExpiry.getTime() - Date.now();
-  const daysUntilRenewal = Math.ceil(msRemaining / 86400000);
-
-  // "Reasonable pace" — hours remaining spread over the days left shouldn't demand more
-  // than roughly an hour of CE per week to finish on time.
-  const weeksRemaining = Math.max(1, daysUntilRenewal / 7);
-  const onTrack = daysUntilRenewal > 0 && hoursRemaining / weeksRemaining <= 1;
-
-  return {
-    renewalDate: user.ceLicenseExpiry,
-    daysUntilRenewal,
-    hoursCompleted,
-    hoursRequired,
-    hoursRemaining,
-    onTrack,
-  };
-}
-
 
 /** Thin wrapper around lib/dashboard-research.ts's own getWeeklyResearchDigest — kept here
  *  too (re-exported under the same name) so every dashboard data-fetch this feature spec

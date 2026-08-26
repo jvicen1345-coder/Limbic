@@ -18,7 +18,7 @@ import { ChevronRightIcon, PlusIcon } from "@/components/icons";
 const ADDITIONAL_SEAT_PRICE = "$15 per additional seat above 6";
 
 /** "Team Overview" tab (see ClinicianDashboard.tsx's tab bar) — self-fetching, same
- *  "mount effect + local getX() call" pattern as CECountdownCard/ClinicalQuestionLogSection,
+ *  "mount effect + local getX() call" pattern as ClinicalQuestionLogSection,
  *  since this only ever renders for a clinic admin who's actively switched to this tab, not
  *  on every dashboard load. `onChanged` lets a parent-level refreshTick bump ride along
  *  with this component's own refetch, matching ClinicianDashboard.tsx's existing
