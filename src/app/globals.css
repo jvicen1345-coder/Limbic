@@ -8510,7 +8510,13 @@ button.plan-compare-name:hover { text-decoration: underline; }
    of this dashboard's CSS.
    ============================================================================ */
 
-.clindash-tab-bar { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--color-divider); }
+/* flex-wrap: wrap — added for Force Lab's 3rd tab (Paste Assessment): a `nowrap` flex row
+   whose items don't fit doesn't wrap to a new line, it overflows past the row's own bounds
+   into whatever sits next to it (here, the Strength Profile column) since CSS Grid columns
+   don't clip overflowing children by default. Only changes behavior once a row's tabs don't
+   fit at their natural width — a no-op for every other .clindash-tab-bar usage (e.g. Clinic
+   PRO Team Overview's 2 tabs), which already fit on one line. */
+.clindash-tab-bar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--color-divider); }
 .clindash-tab {
   background: none;
   border: none;
