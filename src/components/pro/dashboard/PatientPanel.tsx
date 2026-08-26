@@ -13,6 +13,7 @@ interface AddPatientForm {
   specialty: string;
   totalVisits: string;
   nextVisit: string;
+  referralSource: string;
 }
 
 const EMPTY_FORM: AddPatientForm = {
@@ -22,6 +23,7 @@ const EMPTY_FORM: AddPatientForm = {
   specialty: CLINICIAN_SPECIALTIES[0],
   totalVisits: "12",
   nextVisit: "",
+  referralSource: "",
 };
 
 /** Left column of /pro/dashboard — the active caseload list plus its slide-open "Add
@@ -32,10 +34,15 @@ export function PatientPanel({
   patients,
   selectedPatientId,
   onSelect,
+  outcomeReminderIds,
 }: {
   patients: PatientListEntry[];
   selectedPatientId: string | null;
   onSelect: (id: string | null) => void;
+  /** Patient ids currently in getPatientsWithOutcomeReminders — a visitCount milestone
+   *  with no outcome recorded today (see OutcomeMilestoneBanner.tsx for the workspace-side
+   *  counterpart). Renders the small "Reassessment due" pill below. */
+  outcomeReminderIds: Set<string>;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -54,6 +61,7 @@ export function PatientPanel({
         specialty: form.specialty,
         totalVisits,
         nextVisit: form.nextVisit || undefined,
+        referralSource: form.referralSource || undefined,
       });
       if (!result.ok) {
         setError(result.error);
@@ -151,6 +159,16 @@ export function PatientPanel({
               onChange={(e) => setForm((f) => ({ ...f, nextVisit: e.target.value }))}
             />
           </div>
+          <div className="field" style={{ margin: 0 }}>
+            <label htmlFor="pp-referral">Referral source (optional)</label>
+            <input
+              className="input"
+              id="pp-referral"
+              placeholder="e.g. Dr. Smith — Orthopedics, Self-referral, Word of mouth"
+              value={form.referralSource}
+              onChange={(e) => setForm((f) => ({ ...f, referralSource: e.target.value }))}
+            />
+          </div>
 
           {error && <p style={{ fontSize: 12, color: "var(--color-danger)", margin: 0 }}>{error}</p>}
 
@@ -193,13 +211,14 @@ export function PatientPanel({
                 {p.dueForReassessment && <span className="clindash-reassess-dot" title="Due for reassessment" />}
               </div>
               <div className="clindash-patient-condition">{p.condition}</div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3, flexWrap: "wrap" }}>
                 <span className={`tag ${bodyRegionTagClass(p.bodyRegion)}`} style={{ fontSize: 10 }}>
                   {p.bodyRegion}
                 </span>
                 <span className="clindash-patient-progress">
                   Visit {p.visitCount} of {p.totalVisits}
                 </span>
+                {outcomeReminderIds.has(p.id) && <span className="clindash-reassess-pill">Reassessment due</span>}
               </div>
             </button>
           ))}

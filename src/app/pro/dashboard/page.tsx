@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/db";
-import { getArticles } from "@/lib/articles";
-import { buildLimbicAgentInsights } from "@/lib/limbic-agent-insights";
-import { firstName, timeOfDayGreeting, credentialFromName } from "@/lib/meta";
-import { visitorHourOfDay } from "@/lib/timezone";
+import { credentialFromName } from "@/lib/meta";
 import { getResearchFeedArticles } from "@/lib/dashboard-research";
-import { getDashboardSummary, getActivePatients, getAvailableHEPs } from "@/app/actions/clinician-dashboard";
+import {
+  getDashboardSummary,
+  getActivePatients,
+  getAvailableHEPs,
+  getTodaysPatients,
+  getPatientsWithOutcomeReminders,
+  getEpisodeLengthStats,
+  getReferralSourceBreakdown,
+  getWeeklyResearchDigest,
+  getPeerComparisonBenchmarks,
+} from "@/app/actions/clinician-dashboard";
+import { getClinicMembershipInfo, getClinicPatientsTodayCount } from "@/app/actions/clinic-pro";
 import { ProGate } from "@/components/pro/ProGate";
 import { ClinicianDashboard } from "@/components/pro/dashboard/ClinicianDashboard";
 
@@ -38,43 +45,57 @@ export default async function ClinicianDashboardPage() {
     );
   }
 
-  const [summary, patients, availableHEPs, articles, readRows, defaultResearch] = await Promise.all([
+  const [
+    summary,
+    patients,
+    availableHEPs,
+    defaultResearch,
+    todaysPatients,
+    outcomeReminderPatients,
+    episodeLengthStats,
+    referralBreakdown,
+    weeklyDigest,
+    peerBenchmarks,
+    clinicMembership,
+    clinicPatientsToday,
+  ] = await Promise.all([
     getDashboardSummary(),
     getActivePatients(),
     getAvailableHEPs(),
-    getArticles(),
-    prisma.readArticle.findMany({
-      where: { userId: user.id },
-      orderBy: { updatedAt: "desc" },
-      select: { articleId: true, updatedAt: true, scrollProgress: true },
-    }),
     getResearchFeedArticles(user.specialty),
+    getTodaysPatients(),
+    getPatientsWithOutcomeReminders(),
+    getEpisodeLengthStats(),
+    getReferralSourceBreakdown(),
+    getWeeklyResearchDigest(user.specialty),
+    getPeerComparisonBenchmarks(),
+    getClinicMembershipInfo(),
+    getClinicPatientsTodayCount(),
   ]);
 
   if (!summary) return null; // requireProUser inside the actions already matches the isPro check above
 
-  const limbicAgentInsights = buildLimbicAgentInsights(
-    readRows,
-    articles,
-    user.followedTopics as unknown as string[],
-    user.createdAt
-  );
   const credential = credentialFromName(user.name);
-  const greeting = `${timeOfDayGreeting(await visitorHourOfDay())}, ${firstName(user.name)}${credential ? `, ${credential}` : ""}`;
 
   return (
     <div className="screen-pad clindash-page page-enter">
       <ClinicianDashboard
-        greeting={greeting}
         summary={summary}
         initialPatients={patients}
         availableHEPs={availableHEPs}
-        limbicAgentInsights={limbicAgentInsights}
         defaultResearchArticles={defaultResearch}
+        todaysPatients={todaysPatients}
+        outcomeReminderPatients={outcomeReminderPatients}
+        episodeLengthStats={episodeLengthStats}
+        referralBreakdown={referralBreakdown}
+        weeklyDigest={weeklyDigest}
+        peerBenchmarks={peerBenchmarks}
         clinicianName={user.name}
         clinicianCredential={credential ?? ""}
         clinicianClinicName={user.clinicName ?? ""}
         clinicianEmail={user.email ?? ""}
+        isClinicAdmin={clinicMembership?.isAdmin ?? false}
+        clinicPatientsToday={clinicPatientsToday}
       />
     </div>
   );

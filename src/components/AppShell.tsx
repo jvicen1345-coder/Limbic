@@ -256,13 +256,19 @@ interface NavContentProps {
    *  (isStudent/isAdmin above are the only actual visibility gates), this just changes
    *  which order they render in. */
   zoneTwoOrder: ZoneTwoKey[];
+  /** Clinic PRO team membership (see getClinicMembershipInfo in app/actions/clinic-pro.ts)
+   *  — null for an account with no active clinic membership, in which case none of the
+   *  clinic-specific nav below renders. isAdmin on this object (not the site-admin `isAdmin`
+   *  prop above, an unrelated concept) gates "Team Dashboard"/"Clinic Report"; every member
+   *  including a non-admin one gets the footer's clinic-name pill. */
+  clinicMembership: { clinicName: string; isAdmin: boolean } | null;
   /** Called after any nav link is clicked — used to close the mobile drawer on navigation. */
   onNavigate?: () => void;
 }
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, isAdmin, aptaCount, nexusRequestCount, zoneTwoOrder, onNavigate }: NavContentProps) {
+function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, isAdmin, aptaCount, nexusRequestCount, zoneTwoOrder, clinicMembership, onNavigate }: NavContentProps) {
   const pathname = usePathname();
   // Collapsed by default unless already somewhere under /nexus (so landing on, say,
   // /nexus/messages via a direct link or a widget elsewhere in the app doesn't hide the
@@ -366,6 +372,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           <>
             {isPro && (
               <NavLink href="/pro/dashboard" icon={<LayoutDashboardIcon />} label="Dashboard" bold={false} onNavigate={onNavigate} />
+            )}
+            {isPro && clinicMembership?.isAdmin && (
+              <>
+                <NavLink href="/pro/dashboard?tab=team" icon={<UsersIcon />} label="Team Dashboard" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/clinic-report" icon={<FileTextIcon />} label="Clinic Report" bold={false} onNavigate={onNavigate} />
+              </>
             )}
             <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
             <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
@@ -528,6 +540,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
             {isStudent ? (school ? `DPT Student · ${school}` : "DPT Student") : `${specialtyLabel} · ${practiceState}`}
           </div>
+          {clinicMembership && <div className="nav-footer-clinic-pill">{clinicMembership.clinicName}</div>}
         </Link>
         <ThemeToggle />
         <form action={signOutAction}>
@@ -560,6 +573,8 @@ export interface AppShellProps {
   /** See lib/user-role.ts zoneTwoOrder() — computed in app/(app)/layout.tsx off the
    *  account's userRole. */
   zoneTwoOrder: ZoneTwoKey[];
+  /** See NavContentProps' own doc comment on this same field. */
+  clinicMembership: { clinicName: string; isAdmin: boolean } | null;
   children: React.ReactNode;
 }
 
@@ -577,6 +592,7 @@ export function AppShell({
   nexusRequestCount,
   savedCount,
   zoneTwoOrder,
+  clinicMembership,
   children,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -594,6 +610,7 @@ export function AppShell({
     aptaCount,
     nexusRequestCount,
     zoneTwoOrder,
+    clinicMembership,
   };
   // Extends the Atrium's warm palette out to the surrounding chrome (sidebar/topbar/
   // drawer/bottomnav) whenever any Atrium route is active — see .app-root--atrium in

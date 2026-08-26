@@ -84,3 +84,25 @@ export async function sendLicenseVerifiedEmail(to: string, name: string, license
     `,
   });
 }
+
+/** Sends a Clinic PRO team invitation — see inviteClinicMember in app/actions/clinic-pro.ts,
+ *  the only caller, which already treats "email not configured" as expected-and-logged the
+ *  same way requestPasswordResetAction does above. Plain text, not HTML, per this feature's
+ *  spec — the only email in this file that isn't. */
+export async function sendClinicInviteEmail(to: string, clinicianName: string, clinicName: string, acceptUrl: string): Promise<void> {
+  await client().emails.send({
+    from: FROM,
+    to,
+    subject: `You have been invited to join ${clinicName} on Limbic Center`,
+    text: `${clinicianName} has invited you to join ${clinicName} on Limbic Center.
+
+Limbic Center is the physical therapy platform built for PT professionals.
+
+Accept your invitation:
+${acceptUrl}
+
+This invitation expires in 7 days.
+
+Limbic Center — limbic.center`,
+  });
+}

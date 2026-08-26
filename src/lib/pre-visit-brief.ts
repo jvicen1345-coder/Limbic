@@ -115,3 +115,115 @@ Return only the 3 paragraph summary. No labels. No extra text.`,
     return null;
   }
 }
+
+const TREATMENT_IDEAS_SYSTEM_PROMPT = `You are a clinical decision support tool for licensed physical therapists. You suggest evidence-based treatment ideas for specific patient presentations. You never diagnose. You never replace clinical judgment. You provide evidence-based starting points only.
+
+Return exactly 3 treatment ideas as a JSON array of strings. Each idea is one sentence — specific, actionable, evidence-based. Reference the visit stage and any outcome trends. No numbering. No extra text. Just the JSON array.`;
+
+/** Strips a ```json ... ``` (or bare ```) code fence if the model wrapped its JSON array
+ *  in one despite TREATMENT_IDEAS_SYSTEM_PROMPT saying not to — cheap defensive parse, not
+ *  a full markdown parser. */
+function stripCodeFence(text: string): string {
+  const fenced = text.trim().match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+  return fenced ? fenced[1] : text;
+}
+
+/** "What should I try next?" on the active patient workspace (see
+ *  components/pro/dashboard/TreatmentIdeasCard.tsx and generateTreatmentIdeas in
+ *  app/actions/clinician-dashboard.ts, which is what persists the result to
+ *  TreatmentIdea). Reuses BriefPatientInput — same patient shape the pre-visit brief
+ *  functions above already take. */
+export async function generateTreatmentIdeas(patient: BriefPatientInput): Promise<string[] | null> {
+  try {
+    const message = await client.messages.create({
+      model: MODEL,
+      max_tokens: 400,
+      system: TREATMENT_IDEAS_SYSTEM_PROMPT,
+      messages: [
+        {
+          role: "user",
+          content: `Suggest 3 evidence-based treatment ideas for this patient:
+Condition: ${patient.condition}
+Body region: ${patient.bodyRegion}
+Visit: ${patient.visitCount} of ${patient.totalVisits}
+Outcomes: ${summarizeOutcomes(patient.outcomes)}
+
+Return only a JSON array of 3 strings.`,
+        },
+      ],
+    });
+
+    const content = message.content[0];
+    if (content.type !== "text") return null;
+    const parsed = JSON.parse(stripCodeFence(content.text));
+    if (!Array.isArray(parsed) || !parsed.every((idea) => typeof idea === "string")) return null;
+    return parsed;
+  } catch (error) {
+    console.error("Treatment idea generation failed:", error);
+    return null;
+  }
+}
+
+export interface DischargeSummaryPatientInput {
+  patientCode: string;
+  condition: string;
+  bodyRegion: string;
+  visitCount: number;
+  totalVisits: number;
+  outcomes: { measureName: string; score: number; maxScore: number; recordedAt: Date }[];
+  goals: { goalText: string; status: string }[];
+  lastHEP?: string;
+}
+
+const DISCHARGE_SUMMARY_SYSTEM_PROMPT = `You are a clinical documentation assistant for licensed physical therapists. You generate concise discharge summaries based on patient data. The summary is clinical in tone and written for the clinician to review and confirm before use.
+
+Write a discharge summary in exactly 3 paragraphs:
+Paragraph 1 — Patient presentation and plan of care summary. Condition, total visits completed, overall episode description.
+Paragraph 2 — Functional outcomes and goal achievement. Reference outcome measure trends if available. State whether goals were met, partially met, or not met.
+Paragraph 3 — Discharge status and home program. Functional status at discharge, what the patient is being discharged to, home program instructions if applicable.
+
+Clinical language. Precise. No filler. Under 150 words total.`;
+
+/** "Generate Discharge Summary" inside the "Before You Discharge" modal (see
+ *  DischargeModal.tsx and generateDischargeSummaryAction in
+ *  app/actions/clinician-dashboard.ts, which is what saves the (still-unconfirmed) result
+ *  to DischargeSummary). */
+export async function generateDischargeSummary(patient: DischargeSummaryPatientInput): Promise<string | null> {
+  try {
+    const outcomeSummary =
+      patient.outcomes.length > 0
+        ? patient.outcomes.map((o) => `${o.measureName}: ${o.score}/${o.maxScore} recorded ${new Date(o.recordedAt).toLocaleDateString()}`).join(", ")
+        : "No outcome measures recorded";
+
+    const goalSummary =
+      patient.goals.length > 0 ? patient.goals.map((g) => `${g.goalText} — ${g.status}`).join(". ") : "No formal goals recorded";
+
+    const message = await client.messages.create({
+      model: MODEL,
+      max_tokens: 500,
+      system: DISCHARGE_SUMMARY_SYSTEM_PROMPT,
+      messages: [
+        {
+          role: "user",
+          content: `Generate a discharge summary for this patient:
+Patient code: ${patient.patientCode}
+Condition: ${patient.condition}
+Body region: ${patient.bodyRegion}
+Total visits completed: ${patient.visitCount} of ${patient.totalVisits} planned
+Outcome measures: ${outcomeSummary}
+Goals: ${goalSummary}
+${patient.lastHEP ? `Home program: ${patient.lastHEP}` : ""}
+
+Return only the 3 paragraph summary.`,
+        },
+      ],
+    });
+
+    const content = message.content[0];
+    if (content.type !== "text") return null;
+    return content.text.trim();
+  } catch (error) {
+    console.error("Discharge summary generation failed:", error);
+    return null;
+  }
+}

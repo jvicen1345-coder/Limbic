@@ -31,6 +31,31 @@ export const OUTCOME_MEASURES = ["Berg", "TUG", "LEFS", "DASH", "NPRS", "PSFS", 
 
 export const CLINICAL_NOTE_TYPES = ["Initial Eval", "SOAP", "Progress Note", "Discharge Summary"] as const;
 
+/** Goal category labels for the Patient Goals section's dropdown (see
+ *  PatientGoalsSection.tsx) — kept here, not in the (server-only) lib/goal-bank.ts, since
+ *  the dropdown itself is a client component and only needs the category labels, not the
+ *  goal text those categories map to (fetched separately via getGoalBankSuggestions).
+ *  Must stay in sync with goalBank's keys in lib/goal-bank.ts. */
+export const GOAL_CATEGORIES = [
+  "Spine — Mobility",
+  "Spine — Strength",
+  "Shoulder — Mobility",
+  "Shoulder — Strength",
+  "Knee — Mobility",
+  "Knee — Strength",
+  "Hip — Mobility",
+  "Hip — Strength",
+  "Ankle — Mobility",
+  "Ankle — Strength",
+  "Balance — Fall Prevention",
+  "Neurological — Mobility",
+  "Neurological — Strength",
+  "Cardiopulmonary — Endurance",
+  "General — Function",
+] as const;
+
+export const GOAL_STATUSES = ["active", "met", "partially-met", "not-met"] as const;
+
 /** A patient is flagged "due for reassessment" every REASSESSMENT_INTERVAL_VISITS visits
  *  (a standard periodic-reassessment cadence), or once it's been
  *  REASSESSMENT_STALE_DAYS since they were last seen — see

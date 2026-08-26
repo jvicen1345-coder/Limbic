@@ -5,8 +5,10 @@ const REASSESSMENT_AMBER = "#c9853a";
 /** Four stat tiles above the three-column layout (see ClinicianDashboard.tsx) — always
  *  built off the server-fetched `summary` prop, which re-renders automatically after any
  *  mutation's revalidatePath("/pro/dashboard") without this component owning any state of
- *  its own. */
-export function DailyBriefBar({ summary }: { summary: DashboardSummary }) {
+ *  its own. `clinicPatientsToday` adds a fifth, read-only tile for a Clinic PRO team
+ *  member (see getClinicPatientsTodayCount in app/actions/clinic-pro.ts) — null for a solo
+ *  clinician with no clinic membership, in which case the row stays exactly four tiles. */
+export function DailyBriefBar({ summary, clinicPatientsToday }: { summary: DashboardSummary; clinicPatientsToday: number | null }) {
   const ceOnTrack = summary.ceHours.completed > 15;
 
   return (
@@ -37,6 +39,12 @@ export function DailyBriefBar({ summary }: { summary: DashboardSummary }) {
           {summary.ceHours.completed} of {summary.ceHours.total} hrs
         </div>
       </div>
+      {clinicPatientsToday !== null && (
+        <div className="card elev-sm clindash-brief-tile">
+          <div className="clindash-brief-tile-label">Clinic Patients Today</div>
+          <div className="clindash-brief-tile-value">{clinicPatientsToday}</div>
+        </div>
+      )}
     </div>
   );
 }

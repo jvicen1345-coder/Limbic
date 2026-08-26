@@ -1,10 +1,36 @@
 "use client";
 
-import { Fragment, useState, useTransition } from "react";
-import { addOutcomeEntry, type PatientDetail } from "@/app/actions/clinician-dashboard";
+import { Fragment, useEffect, useState, useTransition } from "react";
+import type { MutableRefObject } from "react";
+
+export interface OutcomeMeasuresSectionHandle {
+  /** Opens the Add Score form and scrolls it into view — called imperatively from the
+   *  workspace milestone banner's "Record Outcomes Now" button while this section is
+   *  already mounted (see PatientWorkspace.tsx), rather than through a prop-diffing signal
+   *  (this section persists across re-renders for the same patient, so there's no clean
+   *  "did this specific click already fire" prop shape to diff against). */
+  openAndScroll: () => void;
+  /** Same as openAndScroll, plus pre-fills the measure field — used by the Condition
+   *  Intelligence card's "Recommended Measures" pills (see ConditionIntelligenceCard.tsx).
+   *  Falls back to the "Other" option with the name typed into the custom-measure field
+   *  when it isn't one of OUTCOME_MEASURES' fixed choices. */
+  prefillMeasure: (measureName: string) => void;
+}
+import { addOutcomeEntry, type OutcomeBenchmark, type PatientDetail } from "@/app/actions/clinician-dashboard";
 import { OUTCOME_MEASURES } from "@/lib/clinician-dashboard-types";
 import { ChevronRightIcon, PlusIcon } from "@/components/icons";
 import type { OutcomeMeasureEntry } from "@/generated/prisma/client";
+
+function benchmarkVerdict(history: OutcomeMeasureEntry[], benchmark: OutcomeBenchmark): { label: string; className: string } | null {
+  if (history.length < 2) return null;
+  const first = history[0];
+  const latest = history[history.length - 1];
+  const rawChange = latest.score - first.score;
+  const improvement = benchmark.higherIsBetter ? rawChange : -rawChange;
+  if (improvement <= 0) return { label: "Score has declined", className: "clindash-benchmark-pill--bad" };
+  if (improvement >= benchmark.mcid) return { label: "Meaningful improvement achieved", className: "clindash-benchmark-pill--good" };
+  return { label: "Progress below MCID threshold", className: "clindash-benchmark-pill--warn" };
+}
 
 function trendArrow(latest: OutcomeMeasureEntry, previous: OutcomeMeasureEntry | undefined) {
   if (!previous) return null;
@@ -46,12 +72,65 @@ function TrendChart({ history }: { history: OutcomeMeasureEntry[] }) {
 
 const EMPTY_FORM = { measureName: OUTCOME_MEASURES[0] as string, customMeasure: "", score: "", maxScore: "", notes: "" };
 
-export function OutcomeMeasuresSection({ patient, onChanged }: { patient: PatientDetail; onChanged: () => void }) {
+export function OutcomeMeasuresSection({
+  patient,
+  onChanged,
+  initiallyOpen = false,
+  actionsRef,
+}: {
+  patient: PatientDetail;
+  onChanged: () => void;
+  /** True when this mount was triggered by a "jump straight to recording an outcome"
+   *  action (Morning Rounds' "Record Outcomes" reminder row) — this section only exists
+   *  in the tree once a patient is selected (see PatientWorkspace.tsx), so a plain
+   *  mount-time initializer + a one-time mount effect covers that case cleanly, no
+   *  prop-diffing needed. */
+  initiallyOpen?: boolean;
+  /** Lets a sibling (the workspace's milestone banner, still mounted for the *same*
+   *  already-selected patient) trigger openAndScroll imperatively — same lightweight
+   *  ref-registration pattern as ArticleToolsPanel's submitRef in
+   *  GeneralizabilityChecker.tsx. The registration effect below only ever assigns to a
+   *  ref, never calls setState, so it isn't subject to this repo's
+   *  react-hooks/set-state-in-effect rule. */
+  actionsRef?: MutableRefObject<OutcomeMeasuresSectionHandle | null>;
+}) {
   const [pending, startTransition] = useTransition();
-  const [formOpen, setFormOpen] = useState(false);
+  const [formOpen, setFormOpen] = useState(initiallyOpen);
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initiallyOpen) {
+      document.getElementById("clindash-outcomes-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    // Mount-only — initiallyOpen is only meant to matter for the render this component
+    // was created with, not for later prop changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!actionsRef) return;
+    const openAndScroll = () => {
+      setFormOpen(true);
+      document.getElementById("clindash-outcomes-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    actionsRef.current = {
+      openAndScroll,
+      prefillMeasure: (measureName) => {
+        const isKnown = (OUTCOME_MEASURES as readonly string[]).includes(measureName);
+        setForm((f) => ({
+          ...f,
+          measureName: isKnown ? measureName : "Other",
+          customMeasure: isKnown ? f.customMeasure : measureName,
+        }));
+        openAndScroll();
+      },
+    };
+    return () => {
+      actionsRef.current = null;
+    };
+  });
 
   const measureNames = Array.from(new Set(patient.outcomes.map((o) => o.measureName)));
   const byMeasure = new Map(measureNames.map((name) => [name, patient.outcomes.filter((o) => o.measureName === name)]));
@@ -78,7 +157,7 @@ export function OutcomeMeasuresSection({ patient, onChanged }: { patient: Patien
   };
 
   return (
-    <div className="clindash-section">
+    <div className="clindash-section" id="clindash-outcomes-section">
       <div className="clindash-section-header">
         <div className="card-kicker" style={{ margin: 0 }}>
           Outcome Measures
@@ -137,6 +216,17 @@ export function OutcomeMeasuresSection({ patient, onChanged }: { patient: Patien
                               </div>
                             ))}
                         </div>
+                        {(() => {
+                          const benchmark = patient.benchmarks[name];
+                          if (!benchmark) return null;
+                          const verdict = benchmarkVerdict(history, benchmark);
+                          return (
+                            <div>
+                              <p className="clindash-benchmark-line">MCID for this measure is {benchmark.mcid} points</p>
+                              {verdict && <span className={`clindash-benchmark-pill ${verdict.className}`}>{verdict.label}</span>}
+                            </div>
+                          );
+                        })()}
                         <TrendChart history={history} />
                       </td>
                     </tr>

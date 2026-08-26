@@ -7,6 +7,7 @@ import { SPECIALTY_META } from "@/lib/meta";
 import { AppShell } from "@/components/AppShell";
 import { OnboardingRoleModal } from "@/components/OnboardingRoleModal";
 import { zoneTwoOrder } from "@/lib/user-role";
+import { getClinicMembershipInfo } from "@/app/actions/clinic-pro";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
@@ -17,11 +18,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // all until this resolves (see components/OnboardingRoleModal.tsx).
   if (!user.hasCompletedOnboarding) return <OnboardingRoleModal />;
 
-  const [aptaArticles, savedCount, nexusRequestCount, isAdmin] = await Promise.all([
+  const [aptaArticles, savedCount, nexusRequestCount, isAdmin, clinicMembership] = await Promise.all([
     getAptaNewsArticles(),
     prisma.savedArticle.count({ where: { userId: user.id } }),
     prisma.connection.count({ where: { recipientId: user.id, status: "pending" } }),
     isSiteAdmin(),
+    getClinicMembershipInfo(),
   ]);
 
   const hasLicense = hasLicenseAccess(user);
@@ -48,6 +50,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       nexusRequestCount={nexusRequestCount}
       savedCount={savedCount}
       zoneTwoOrder={zoneTwoOrder(user.userRole)}
+      clinicMembership={clinicMembership}
     >
       {children}
     </AppShell>
