@@ -8832,7 +8832,101 @@ button.plan-compare-name:hover { text-decoration: underline; }
 .forcelab-summary-peaks { display: flex; gap: 10px; font-size: 11.5px; white-space: nowrap; }
 .forcelab-summary-date { font-size: 10.5px; color: var(--color-neutral-700); white-space: nowrap; }
 
+/* — Paste Assessment tab (PasteAssessmentPanel.tsx) — */
+.forcelab-paste-textarea { width: 100%; min-height: 200px; margin-top: 12px; resize: vertical; font-family: var(--font-mono, monospace); font-size: 12px; }
+.forcelab-paste-confirmation { font-size: 12.5px; color: var(--color-success); font-weight: 600; margin: 8px 0 0; }
+.forcelab-paste-preview { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 20px; align-items: start; }
+.forcelab-paste-meta-panel { display: flex; flex-direction: column; gap: 0; }
+.forcelab-paste-meta-panel .field { margin-top: 10px; }
+.forcelab-paste-meta-panel .field:first-child { margin-top: 0; }
+.forcelab-paste-table-panel { min-width: 0; }
+.forcelab-inline-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.forcelab-automatch-note { font-size: 11px; color: var(--color-success); font-weight: 600; margin: 4px 0 0; }
+.forcelab-unrecognized-note { font-size: 10.5px; color: #c9853a; font-weight: 600; margin-top: 2px; }
+.forcelab-row-count { font-size: 11.5px; color: var(--color-neutral-700); margin: 8px 0 0; }
+.forcelab-paste-disclaimer { font-size: 10.5px; color: var(--color-neutral-700); font-style: italic; margin: 10px 0 0; }
+
+@media (max-width: 900px) {
+  .forcelab-paste-preview { grid-template-columns: 1fr; }
+}
+
+/* — Past Results section (PastResultsSection.tsx / AssessmentExpandedView.tsx /
+   AssessmentComparisonView.tsx) — full-width, below the three-column workspace. Reuses
+   .forcelab-patient-history-table for every table in this group rather than a fourth
+   near-identical table style. */
+.forcelab-results-section { margin-top: 20px; }
+.forcelab-compare-hint { font-size: 12px; color: var(--color-accent); margin: 4px 0 10px; }
+.forcelab-results-row--selected { background: var(--color-accent-100); }
+.forcelab-results-actions { display: flex; gap: 6px; white-space: nowrap; }
+
+.forcelab-expanded-view { padding: 14px 4px; }
+.forcelab-expanded-meta-bar { display: flex; flex-wrap: wrap; gap: 8px; }
+.forcelab-meta-pill {
+  display: inline-block; padding: 3px 10px; border-radius: 999px; background: var(--color-surface-2);
+  font-size: 11.5px; color: var(--color-neutral-700);
+}
+.forcelab-expanded-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-divider); }
+.forcelab-patient-pill {
+  display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--color-accent-100);
+  color: var(--color-accent); font-size: 12px; font-weight: 700;
+}
+
+.forcelab-change--up { color: var(--color-success); font-weight: 700; }
+.forcelab-change--down { color: var(--color-danger); font-weight: 700; }
+.forcelab-change--muted { color: var(--color-neutral-700); }
+
+.forcelab-ai-card { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--color-divider); }
+.forcelab-ai-card-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+.forcelab-ai-generated-label { font-size: 10.5px; color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.03em; }
+.forcelab-ai-text { font-size: 13px; line-height: 1.6; background: var(--color-surface-2); border-radius: var(--radius-md); padding: 12px 14px; margin: 0; }
+.forcelab-ai-disclaimer { font-size: 10.5px; color: var(--color-neutral-700); font-style: italic; margin: 8px 0 0; }
+
+@media (max-width: 600px) {
+  .forcelab-expanded-meta-bar { flex-direction: column; align-items: flex-start; }
+}
+
+/* — Patient session page's Full Assessments cards (PatientAssessmentCard.tsx) and
+   cross-assessment trend charts (ForceLabAssessmentTrendChart.tsx) — */
+.forcelab-assessment-summary-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.forcelab-assessment-summary-card { padding: 12px 14px; border: 1px solid var(--color-divider); border-radius: var(--radius-md); }
+.forcelab-assessment-summary-top { display: flex; align-items: baseline; gap: 10px; }
+.forcelab-assessment-summary-date { font-weight: 700; font-size: 13.5px; }
+.forcelab-assessment-summary-count { font-size: 11.5px; color: var(--color-neutral-700); }
+.forcelab-assessment-summary-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.forcelab-assessment-summary-more { font-size: 10.5px; color: var(--color-neutral-700); align-self: center; }
+.forcelab-assessment-summary-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+.forcelab-assessment-trends-section { margin-top: 20px; }
+.forcelab-assessment-trends-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.forcelab-assessment-trend-card { padding: 14px; }
+.forcelab-assessment-trend-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.forcelab-trend-swatch--lsi { border-radius: 2px; }
+
+@media (max-width: 800px) {
+  .forcelab-assessment-trends-grid { grid-template-columns: 1fr; }
+}
+
+/* — Dashboard Force Lab section's Latest Assessment card (ForceLabSummary.tsx) — */
+.forcelab-latest-assessment { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--color-divider); }
+.forcelab-latest-assessment-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 6px; }
+.forcelab-latest-assessment-row { display: flex; align-items: baseline; gap: 10px; }
+.forcelab-latest-assessment-date { font-weight: 700; font-size: 12.5px; }
+.forcelab-latest-assessment-count { font-size: 11px; color: var(--color-neutral-700); }
+.forcelab-latest-assessment-pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+
 /* — Patient brief print document's Strength Measurements section — */
 .pbrief-forcelab-title { font-size: 14px; font-weight: 700; color: #3b6fe0; margin-bottom: 8px; }
 .pbrief-forcelab-row { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; padding: 4px 0; border-bottom: 1px solid #eee; }
 .pbrief-forcelab-note { font-size: 10.5px; color: #666; margin-top: 6px; font-style: italic; }
+
+/* — Force Lab single-assessment print document's muscle-group table (see
+   app/pro/force-lab/assessment/[assessmentId]/print/page.tsx) — same literal-hex,
+   theme-independent approach as every other patient-brief/pbrief rule in this block, for
+   the same reason: this document must look identical no matter the clinician's own theme.
+   LSI color is applied inline per-cell (varies per row), not via a class. */
+.pbrief-assessment-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.pbrief-assessment-table th {
+  text-align: left; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.03em;
+  color: #666; padding: 5px 6px; border-bottom: 1px solid #ccc; white-space: nowrap;
+}
+.pbrief-assessment-table td { padding: 6px; border-bottom: 1px solid #eee; white-space: nowrap; }

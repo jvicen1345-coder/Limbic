@@ -227,3 +227,70 @@ Return only the 3 paragraph summary.`,
     return null;
   }
 }
+
+export interface AssessmentComparisonInput {
+  date: string;
+  identifier?: string;
+  muscleGroups: {
+    muscleGroup: string;
+    peakForceLeft?: number;
+    peakForceRight?: number;
+    lsi?: number;
+    forceWeightRatioLeft?: number;
+    forceWeightRatioRight?: number;
+  }[];
+}
+
+const COMPARISON_SYSTEM_PROMPT = `You are a clinical decision support tool for licensed physical therapists. You interpret handheld dynamometer assessment comparisons. Your role is to identify clinically meaningful changes between two assessments and flag areas of concern or improvement.
+
+Write a comparison interpretation in exactly 3 to 4 sentences:
+- Identify the most significant improvements
+- Identify any areas of decline or persistent asymmetry
+- Note any values with LSI below 80% that warrant clinical attention
+- One sentence on overall trajectory
+
+Be specific with numbers. Use clinical language. No filler. No disclaimers.`;
+
+function formatAssessmentForComparison(a: AssessmentComparisonInput): string {
+  return a.muscleGroups
+    .map((m) => `${m.muscleGroup}: Left ${m.peakForceLeft ?? "N/A"} lb, Right ${m.peakForceRight ?? "N/A"} lb, LSI ${m.lsi ?? "N/A"}%`)
+    .join("\n");
+}
+
+/** "Generate Interpretation" on the Force Lab Past Results comparison view (see
+ *  compareAssessments in app/actions/force-lab.ts, which is what persists the result to
+ *  ForceLabComparison) — assessmentA/assessmentB are whichever two the clinician picked, in
+ *  the order picked, not date-sorted, since the prompt states each one's own date. */
+export async function generateAssessmentComparison(
+  assessmentA: AssessmentComparisonInput,
+  assessmentB: AssessmentComparisonInput
+): Promise<string | null> {
+  try {
+    const message = await client.messages.create({
+      model: MODEL,
+      max_tokens: 400,
+      system: COMPARISON_SYSTEM_PROMPT,
+      messages: [
+        {
+          role: "user",
+          content: `Compare these two dynamometer assessments:
+
+ASSESSMENT A — ${assessmentA.date}:
+${formatAssessmentForComparison(assessmentA)}
+
+ASSESSMENT B — ${assessmentB.date}:
+${formatAssessmentForComparison(assessmentB)}
+
+Generate a clinical comparison interpretation.`,
+        },
+      ],
+    });
+
+    const content = message.content[0];
+    if (content.type !== "text") return null;
+    return content.text.trim();
+  } catch (error) {
+    console.error("Comparison generation failed:", error);
+    return null;
+  }
+}
