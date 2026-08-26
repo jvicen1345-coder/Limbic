@@ -83,21 +83,31 @@ function segsToD(segs: Seg[]): string {
     .join(" ");
 }
 
+/** Recalibrated against a fresh coordinate-grid read of the actual illustration (see the
+ *  PR this shipped in) — the original elbow/glute placements were off by ~100+ units,
+ *  putting "Elbow — Anterior" mid-forearm instead of at the cubital fossa. Where a real
+ *  anatomical boundary is diagonal rather than horizontal (the inguinal crease, the
+ *  gluteal fold), the zone uses a few extra points instead of a plain rectangle — the
+ *  alpha-mask in AtlasBodyMap already clips every zone to the illustration's true outer
+ *  silhouette, so the only boundary that needs real precision is the seam BETWEEN two
+ *  zones sharing one limb, not the zone's outer edge. */
 const ANTERIOR_ZONES: ZoneDef[] = [
   { contentKey: "cervical-anterior", paired: false, segs: rectSegs(440, 195, 560, 268) },
-  { contentKey: "sternum-chest", paired: false, segs: rectSegs(355, 268, 645, 440) },
-  { contentKey: "abdominals", paired: false, segs: rectSegs(395, 440, 605, 580) },
+  { contentKey: "sternum-chest", paired: false, segs: rectSegs(355, 268, 645, 455) },
+  { contentKey: "abdominals", paired: false, segs: rectSegs(395, 455, 605, 600) },
   { contentKey: "shoulder-anterior", paired: true, segs: rectSegs(270, 265, 355, 350) },
-  { contentKey: "biceps-anterior", paired: true, segs: rectSegs(195, 350, 340, 605) },
-  { contentKey: "elbow-anterior", paired: true, segs: rectSegs(180, 605, 310, 645) },
-  { contentKey: "forearm-anterior", paired: true, segs: rectSegs(175, 645, 300, 770) },
-  { contentKey: "wrist-hand", paired: true, segs: rectSegs(135, 770, 270, 865) },
-  { contentKey: "hip-flexors", paired: true, segs: rectSegs(360, 580, 500, 660) },
-  { contentKey: "quadriceps", paired: true, segs: rectSegs(355, 660, 430, 950) },
-  { contentKey: "hip-adductors", paired: true, segs: rectSegs(430, 660, 500, 950) },
-  { contentKey: "knee-anterior", paired: true, segs: rectSegs(355, 950, 500, 1015) },
-  { contentKey: "anterior-leg", paired: true, segs: rectSegs(360, 1015, 500, 1200) },
-  { contentKey: "ankle-foot-anterior", paired: true, segs: rectSegs(350, 1200, 500, 1295) },
+  { contentKey: "biceps-anterior", paired: true, segs: rectSegs(195, 350, 340, 480) },
+  { contentKey: "elbow-anterior", paired: true, segs: rectSegs(175, 480, 315, 575) },
+  { contentKey: "forearm-anterior", paired: true, segs: rectSegs(170, 575, 300, 760) },
+  { contentKey: "wrist-hand", paired: true, segs: rectSegs(135, 760, 270, 865) },
+  // Inguinal crease runs diagonally — higher (closer to the pubis) medially, lower
+  // laterally — so hip-flexors/quadriceps share a slanted seam instead of a flat one.
+  { contentKey: "hip-flexors", paired: true, segs: [["M", 360, 580], ["L", 500, 580], ["L", 500, 650], ["L", 360, 710], ["Z"]] },
+  { contentKey: "quadriceps", paired: true, segs: [["M", 355, 710], ["L", 430, 650], ["L", 430, 940], ["L", 355, 940], ["Z"]] },
+  { contentKey: "hip-adductors", paired: true, segs: rectSegs(430, 650, 500, 940) },
+  { contentKey: "knee-anterior", paired: true, segs: rectSegs(355, 940, 500, 1005) },
+  { contentKey: "anterior-leg", paired: true, segs: rectSegs(360, 1005, 500, 1195) },
+  { contentKey: "ankle-foot-anterior", paired: true, segs: rectSegs(350, 1195, 500, 1295) },
 ];
 
 const POSTERIOR_ZONES: ZoneDef[] = [
@@ -106,12 +116,19 @@ const POSTERIOR_ZONES: ZoneDef[] = [
   { contentKey: "lumbar-spine", paired: false, segs: rectSegs(450, 480, 550, 600) },
   { contentKey: "upper-trapezius", paired: true, segs: rectSegs(280, 230, 450, 320) },
   { contentKey: "rotator-cuff-posterior", paired: true, segs: rectSegs(280, 320, 390, 395) },
-  { contentKey: "triceps-posterior", paired: true, segs: rectSegs(210, 350, 330, 590) },
-  { contentKey: "elbow-posterior", paired: true, segs: rectSegs(200, 590, 320, 630) },
-  { contentKey: "forearm-posterior", paired: true, segs: rectSegs(190, 630, 310, 770) },
-  { contentKey: "gluteus-medius", paired: true, segs: rectSegs(360, 600, 455, 660) },
-  { contentKey: "gluteus-maximus", paired: true, segs: rectSegs(380, 660, 500, 700) },
-  { contentKey: "hamstrings", paired: true, segs: rectSegs(370, 700, 500, 950) },
+  { contentKey: "triceps-posterior", paired: true, segs: rectSegs(210, 350, 330, 460) },
+  { contentKey: "elbow-posterior", paired: true, segs: rectSegs(195, 460, 320, 560) },
+  { contentKey: "forearm-posterior", paired: true, segs: rectSegs(185, 560, 310, 760) },
+  { contentKey: "gluteus-medius", paired: true, segs: rectSegs(355, 590, 460, 670) },
+  // Gluteal fold curves like a shallow "U" — deepest at the intergluteal cleft (the
+  // centerline), rising toward the lateral hip — so glute max/hamstrings share a curved
+  // seam (approximated with a couple of extra points) instead of a flat one.
+  {
+    contentKey: "gluteus-maximus",
+    paired: true,
+    segs: [["M", 375, 670], ["L", 500, 670], ["L", 500, 735], ["L", 440, 715], ["L", 375, 700], ["Z"]],
+  },
+  { contentKey: "hamstrings", paired: true, segs: [["M", 375, 700], ["L", 440, 715], ["L", 500, 735], ["L", 500, 950], ["L", 375, 950], ["Z"]] },
   { contentKey: "knee-posterior", paired: true, segs: rectSegs(370, 950, 500, 1010) },
   { contentKey: "calf-gastrocnemius", paired: true, segs: rectSegs(375, 1010, 500, 1180) },
   { contentKey: "achilles-posterior-ankle", paired: true, segs: rectSegs(370, 1180, 500, 1290) },
