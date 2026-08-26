@@ -188,10 +188,16 @@ export function AtlasBodyMap({
          *  target — masking below doesn't change what registers a click). But its hover/
          *  selected fill is clipped to the illustration's own silhouette via this alpha mask,
          *  so the highlight hugs the muscle's outline instead of showing as a floating box
-         *  with visible corners over blank background. */}
+         *  with visible corners over blank background. The illustration's linework has plenty
+         *  of thin unpainted seams and pinholes within the silhouette itself (gaps between
+         *  adjacent drawn muscle shapes, hairline strokes) — dilating the mask's alpha a few
+         *  units closes those over so the highlight doesn't look speckled with background. */}
         <defs>
+          <filter id={`${maskId}-dilate`} x="-5%" y="-5%" width="110%" height="110%">
+            <feMorphology in="SourceGraphic" operator="dilate" radius="3" />
+          </filter>
           <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1400" style={{ maskType: "alpha" }}>
-            <image href={src} x="0" y="0" width="1000" height="1400" />
+            <image href={src} x="0" y="0" width="1000" height="1400" filter={`url(#${maskId}-dilate)`} />
           </mask>
         </defs>
         <g mask={`url(#${maskId})`}>
