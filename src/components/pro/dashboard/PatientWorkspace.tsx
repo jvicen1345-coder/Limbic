@@ -1,4 +1,6 @@
-import type { MutableRefObject } from "react";
+"use client";
+
+import { useState, type MutableRefObject } from "react";
 import type { AvailableHEP, DashboardSummary, PatientDetail, PatientListEntry } from "@/app/actions/clinician-dashboard";
 import { bodyRegionTagClass } from "@/lib/clinician-dashboard-types";
 import { PreVisitBriefSection } from "./PreVisitBriefSection";
@@ -13,6 +15,7 @@ import { TreatmentIdeasCard } from "./TreatmentIdeasCard";
 import { ClinicalAlertBanner } from "./ClinicalAlertBanner";
 import { PatientGoalsSection } from "./PatientGoalsSection";
 import { ForceLabSummary } from "./ForceLabSummary";
+import { EditPatientForm } from "./EditPatientForm";
 
 // A patient is offered early access to "Generate Discharge Summary" once they're this
 // close to their planned total visits, so a clinician can review/regenerate before the
@@ -55,6 +58,7 @@ function ActiveWorkspace({
   const nearingDischarge =
     patient.status === "active" && patient.totalVisits - patient.visitCount <= DISCHARGE_SUMMARY_EARLY_ACCESS_VISITS_REMAINING;
   const progressPercent = patient.totalVisits > 0 ? Math.min(100, Math.round((patient.visitCount / patient.totalVisits) * 100)) : 0;
+  const [editOpen, setEditOpen] = useState(false);
 
   return (
     <div>
@@ -84,6 +88,9 @@ function ActiveWorkspace({
           </div>
         </div>
         <div className="clindash-patient-header-actions">
+          <button type="button" className="btn btn-secondary" onClick={() => setEditOpen((v) => !v)}>
+            Edit
+          </button>
           <button type="button" className="btn btn-primary" onClick={onPrepareForPatient} disabled={patient.status !== "active"}>
             Prepare for Patient
           </button>
@@ -99,6 +106,8 @@ function ActiveWorkspace({
           )}
         </div>
       </div>
+
+      {editOpen && <EditPatientForm patient={patient} onChanged={onChanged} onClose={() => setEditOpen(false)} />}
 
       <PatientGoalsSection patient={patient} onChanged={onChanged} />
 

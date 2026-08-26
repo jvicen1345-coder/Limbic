@@ -1154,24 +1154,6 @@ export async function getCECountdown(): Promise<CECountdown | null> {
   };
 }
 
-/** "Save" on the CE Countdown card's setup/edit form — updates the same two User fields
- *  the CE Tracker page's own license form writes (see updateCEPreferences in
- *  pro-toolbox.ts), leaving ceState/ceRenewalCycle untouched since this smaller form
- *  doesn't collect them. */
-export async function upsertCERenewalDate(renewalDate: string, totalRequired: number): Promise<ClinicianDashboardResult> {
-  const user = await requireProUser();
-  if (!user) return { ok: false, error: "Not authorized." };
-  if (!renewalDate || !Number.isFinite(totalRequired) || totalRequired <= 0) {
-    return { ok: false, error: "A renewal date and a valid required-hours total are required." };
-  }
-
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { ceLicenseExpiry: new Date(`${renewalDate}T00:00:00`), ceTotalRequired: Math.round(totalRequired) },
-  });
-  revalidatePath("/pro/dashboard");
-  return { ok: true };
-}
 
 /** Thin wrapper around lib/dashboard-research.ts's own getWeeklyResearchDigest — kept here
  *  too (re-exported under the same name) so every dashboard data-fetch this feature spec

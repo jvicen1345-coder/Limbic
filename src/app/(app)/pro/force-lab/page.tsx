@@ -13,10 +13,10 @@ export const metadata: Metadata = {
  *  connected to (but not nested inside) the LimbicPRO Clinician Dashboard's patient
  *  records: ForceLabSession links to ClinicalPatient by id, the dashboard's active-patient
  *  workspace shows a Force Lab summary, and the patient brief print document gets a
- *  Strength Measurements section — but this page itself is its own standalone tool, same
- *  "outside the (app) route group, no AppShell sidebar" shell as /pro/dashboard (see that
- *  page's own comment) for internal consistency across every /pro/* tool page that isn't a
- *  simple reference lookup.
+ *  Strength Measurements section — but this page itself is its own standalone tool. Lives
+ *  in the (app) route group (moved here from a standalone src/app/pro/force-lab so the
+ *  AppShell sidebar shows up here too — the sidebar's own "Force Lab" link would otherwise
+ *  drop the reader into a page with no way back).
  *
  *  `?patient=<id>` pre-selects a patient in the entry form and the strength-profile column
  *  — see the "Add Session" links from the dashboard's Force Lab section and the patient

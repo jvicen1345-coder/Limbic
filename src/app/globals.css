@@ -8448,7 +8448,6 @@ button.plan-compare-name:hover { text-decoration: underline; }
 .clindash-ce-track-pill--on { background: color-mix(in srgb, var(--color-success) 16%, transparent); color: var(--color-success); }
 .clindash-ce-track-pill--behind { background: color-mix(in srgb, #c9853a 16%, transparent); color: #c9853a; }
 .clindash-ce-actions { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
-.clindash-ce-edit-link { font-size: 11.5px; color: var(--color-neutral-700); background: none; border: none; cursor: pointer; padding: 0; }
 
 .clindash-digest-header-row { margin-bottom: 4px; }
 .clindash-digest-title { font-family: var(--font-heading); font-size: 15px; }
@@ -8583,9 +8582,9 @@ button.plan-compare-name:hover { text-decoration: underline; }
   .clindash-transfer-recent-row { flex-direction: column; gap: 2px; }
 }
 
-/* Clinic Setup / Accept Invite / Clinic Report — standalone pages outside the AppShell
-   sidebar (same convention as /pro/dashboard and /pro/patient-brief), so each supplies its
-   own minimal shell rather than relying on shared layout chrome. */
+/* Clinic Setup / Clinic Report — a small centered-card shell within the AppShell layout
+   (Accept Invite stays genuinely standalone, since it must work for a signed-out visitor —
+   see app/clinic/accept-invite/page.tsx). */
 .clindash-standalone-page {
   max-width: 480px;
   margin: 0 auto;
@@ -8612,6 +8611,11 @@ button.plan-compare-name:hover { text-decoration: underline; }
 
 @media print {
   .clindash-report-no-print { display: none !important; }
+  /* Clinic Report's "Download Report" (window.print()) is the one print flow that lives
+     inside the AppShell layout — every other printable page (patient brief) is standalone
+     with no chrome to begin with. Hides the sidebar/topbar/bottomnav wrapper for any page
+     printed from inside (app), not just this one. */
+  .app-sidebar, .app-mobile-topbar, .app-bottomnav { display: none !important; }
 }
 
 /* ============================================================================

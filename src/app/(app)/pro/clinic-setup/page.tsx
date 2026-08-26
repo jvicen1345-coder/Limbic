@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 
 /** Clinic PRO's one-time setup flow — authenticated, Clinic PRO subscription required (see
  *  User.isClinicPro, the same billing flag /profile/membership's tier comparison already
- *  gates the "Clinic PRO" purchase button on). Outside the (app) route group, no AppShell
- *  sidebar, matching its sibling /pro/dashboard and /pro/patient-brief — see .clindash-
- *  standalone-page in globals.css. */
+ *  gates the "Clinic PRO" purchase button on). Lives in the (app) route group for the
+ *  AppShell sidebar — see .clindash-standalone-page in globals.css, still used for this
+ *  page's own centered-card content shell inside that layout. */
 export default async function ClinicSetupPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
