@@ -334,6 +334,8 @@ model User {
   visitLogs           VisitLog[]
   clinicalQuestions   ClinicalQuestion[]
   endOfDaySummaries   EndOfDaySummary[]
+  treatmentIdeas      TreatmentIdea[]
+  redFlagAlerts       RedFlagAlert[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -1066,6 +1068,8 @@ model ClinicalPatient {
   clinicalNotes  ClinicalNote[]
   preBriefs      PreVisitBrief[]
   visitLogs      VisitLog[]
+  treatmentIdeas TreatmentIdea[]
+  redFlagAlerts  RedFlagAlert[]
 
   // A clinician's own patient codes must be unique to them (not globally — two different
   // clinicians can each have their own "PT-001") — enforced here, not just checked in
@@ -1195,6 +1199,56 @@ model EndOfDaySummary {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, dateKey])
+}
+
+// A future DB-backed home for the condition-intelligence lookup — today
+// getConditionIntelligence (see app/actions/clinician-dashboard.ts) reads straight from the
+// static conditionIntelligenceMap in lib/condition-intelligence.ts, not this table, same
+// "static now, schema ready for later" shape as the Clinic PRO models below. Not written to
+// or read from by any action yet.
+model ConditionIntelligence {
+  id            String   @id @default(cuid())
+  condition     String   @unique
+  bodyRegion    String
+  topMeasures   Json
+  episodeLength String
+  guideline     String
+  boardPearl    String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// One "What should I try next?" generation (see generateTreatmentIdeas in
+// app/actions/clinician-dashboard.ts) — ideas is a JSON array of the 3 suggestion strings
+// the model returned. Only the most recent row per (userId, patientId, today) is what the
+// workspace shows; older rows are kept as history, not queried by the UI today.
+model TreatmentIdea {
+  id          String   @id @default(cuid())
+  userId      String
+  patientId   String
+  ideas       Json
+  generatedAt DateTime @default(now())
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+// One detected pattern from lib/red-flag-detector.ts's declining_outcomes / no_progress /
+// overdue_reassessment checks — dismissed is per-flag (see dismissRedFlagAlert), not
+// per-patient, so dismissing one detected issue never hides a different one detected later.
+// checkRedFlags is idempotent about re-creating rows for a pattern that's still active and
+// not yet dismissed (see that action's own comment for how it avoids duplicate alerts).
+model RedFlagAlert {
+  id          String   @id @default(cuid())
+  userId      String
+  patientId   String
+  flagType    String
+  description String
+  dismissed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
 }
 
 // One of the 25 "Founding 25" spots on /founding-funders. Created two ways: self-serve via

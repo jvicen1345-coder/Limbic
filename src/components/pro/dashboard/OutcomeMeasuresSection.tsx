@@ -10,11 +10,27 @@ export interface OutcomeMeasuresSectionHandle {
    *  (this section persists across re-renders for the same patient, so there's no clean
    *  "did this specific click already fire" prop shape to diff against). */
   openAndScroll: () => void;
+  /** Same as openAndScroll, plus pre-fills the measure field — used by the Condition
+   *  Intelligence card's "Recommended Measures" pills (see ConditionIntelligenceCard.tsx).
+   *  Falls back to the "Other" option with the name typed into the custom-measure field
+   *  when it isn't one of OUTCOME_MEASURES' fixed choices. */
+  prefillMeasure: (measureName: string) => void;
 }
-import { addOutcomeEntry, type PatientDetail } from "@/app/actions/clinician-dashboard";
+import { addOutcomeEntry, type OutcomeBenchmark, type PatientDetail } from "@/app/actions/clinician-dashboard";
 import { OUTCOME_MEASURES } from "@/lib/clinician-dashboard-types";
 import { ChevronRightIcon, PlusIcon } from "@/components/icons";
 import type { OutcomeMeasureEntry } from "@/generated/prisma/client";
+
+function benchmarkVerdict(history: OutcomeMeasureEntry[], benchmark: OutcomeBenchmark): { label: string; className: string } | null {
+  if (history.length < 2) return null;
+  const first = history[0];
+  const latest = history[history.length - 1];
+  const rawChange = latest.score - first.score;
+  const improvement = benchmark.higherIsBetter ? rawChange : -rawChange;
+  if (improvement <= 0) return { label: "Score has declined", className: "clindash-benchmark-pill--bad" };
+  if (improvement >= benchmark.mcid) return { label: "Meaningful improvement achieved", className: "clindash-benchmark-pill--good" };
+  return { label: "Progress below MCID threshold", className: "clindash-benchmark-pill--warn" };
+}
 
 function trendArrow(latest: OutcomeMeasureEntry, previous: OutcomeMeasureEntry | undefined) {
   if (!previous) return null;
@@ -95,10 +111,20 @@ export function OutcomeMeasuresSection({
 
   useEffect(() => {
     if (!actionsRef) return;
+    const openAndScroll = () => {
+      setFormOpen(true);
+      document.getElementById("clindash-outcomes-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
     actionsRef.current = {
-      openAndScroll: () => {
-        setFormOpen(true);
-        document.getElementById("clindash-outcomes-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      openAndScroll,
+      prefillMeasure: (measureName) => {
+        const isKnown = (OUTCOME_MEASURES as readonly string[]).includes(measureName);
+        setForm((f) => ({
+          ...f,
+          measureName: isKnown ? measureName : "Other",
+          customMeasure: isKnown ? f.customMeasure : measureName,
+        }));
+        openAndScroll();
       },
     };
     return () => {
@@ -190,6 +216,17 @@ export function OutcomeMeasuresSection({
                               </div>
                             ))}
                         </div>
+                        {(() => {
+                          const benchmark = patient.benchmarks[name];
+                          if (!benchmark) return null;
+                          const verdict = benchmarkVerdict(history, benchmark);
+                          return (
+                            <div>
+                              <p className="clindash-benchmark-line">MCID for this measure is {benchmark.mcid} points</p>
+                              {verdict && <span className={`clindash-benchmark-pill ${verdict.className}`}>{verdict.label}</span>}
+                            </div>
+                          );
+                        })()}
                         <TrendChart history={history} />
                       </td>
                     </tr>

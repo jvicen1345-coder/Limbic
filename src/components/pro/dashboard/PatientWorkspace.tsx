@@ -8,6 +8,9 @@ import { ClinicalNotesSection } from "./ClinicalNotesSection";
 import { MorningRounds } from "./MorningRounds";
 import { VisitLogBanner } from "./VisitLogBanner";
 import { OutcomeMilestoneBanner } from "./OutcomeMilestoneBanner";
+import { ConditionIntelligenceCard } from "./ConditionIntelligenceCard";
+import { TreatmentIdeasCard } from "./TreatmentIdeasCard";
+import { ClinicalAlertBanner } from "./ClinicalAlertBanner";
 
 function ActiveWorkspace({
   patient,
@@ -23,6 +26,8 @@ function ActiveWorkspace({
   onDismissMilestone,
   initiallyOpenOutcomes,
   outcomeActionsRef,
+  redFlagAlerts,
+  onDismissRedFlag,
 }: {
   patient: PatientDetail;
   availableHEPs: AvailableHEP[];
@@ -37,11 +42,15 @@ function ActiveWorkspace({
   onDismissMilestone: () => void;
   initiallyOpenOutcomes: boolean;
   outcomeActionsRef: MutableRefObject<OutcomeMeasuresSectionHandle | null>;
+  redFlagAlerts: { id: string; description: string }[];
+  onDismissRedFlag: (alertId: string) => void;
 }) {
   const progressPercent = patient.totalVisits > 0 ? Math.min(100, Math.round((patient.visitCount / patient.totalVisits) * 100)) : 0;
 
   return (
     <div>
+      <ClinicalAlertBanner alerts={redFlagAlerts} onDismiss={onDismissRedFlag} />
+
       {showVisitBanner && (
         <VisitLogBanner
           key={patient.id}
@@ -77,7 +86,11 @@ function ActiveWorkspace({
         </div>
       </div>
 
+      <ConditionIntelligenceCard condition={patient.condition} outcomeActionsRef={outcomeActionsRef} />
+
       <PreVisitBriefSection patient={patient} />
+
+      <TreatmentIdeasCard patientId={patient.id} />
 
       <div className="clindash-section">
         <div className="clindash-visit-progress-label">
@@ -138,6 +151,8 @@ export function PatientWorkspace({
   onDismissMilestone,
   initiallyOpenOutcomes,
   outcomeActionsRef,
+  redFlagAlerts,
+  onDismissRedFlag,
 }: {
   selectedPatient: PatientDetail | null;
   loadingDetail: boolean;
@@ -160,6 +175,8 @@ export function PatientWorkspace({
   onDismissMilestone: () => void;
   initiallyOpenOutcomes: boolean;
   outcomeActionsRef: MutableRefObject<OutcomeMeasuresSectionHandle | null>;
+  redFlagAlerts: { id: string; description: string }[];
+  onDismissRedFlag: (alertId: string) => void;
 }) {
   return (
     <div className="card elev-sm" style={{ minHeight: 300 }}>
@@ -181,6 +198,8 @@ export function PatientWorkspace({
             onDismissMilestone={onDismissMilestone}
             initiallyOpenOutcomes={initiallyOpenOutcomes}
             outcomeActionsRef={outcomeActionsRef}
+            redFlagAlerts={redFlagAlerts}
+            onDismissRedFlag={onDismissRedFlag}
           />
         )
       ) : (

@@ -115,3 +115,51 @@ Return only the 3 paragraph summary. No labels. No extra text.`,
     return null;
   }
 }
+
+const TREATMENT_IDEAS_SYSTEM_PROMPT = `You are a clinical decision support tool for licensed physical therapists. You suggest evidence-based treatment ideas for specific patient presentations. You never diagnose. You never replace clinical judgment. You provide evidence-based starting points only.
+
+Return exactly 3 treatment ideas as a JSON array of strings. Each idea is one sentence — specific, actionable, evidence-based. Reference the visit stage and any outcome trends. No numbering. No extra text. Just the JSON array.`;
+
+/** Strips a ```json ... ``` (or bare ```) code fence if the model wrapped its JSON array
+ *  in one despite TREATMENT_IDEAS_SYSTEM_PROMPT saying not to — cheap defensive parse, not
+ *  a full markdown parser. */
+function stripCodeFence(text: string): string {
+  const fenced = text.trim().match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+  return fenced ? fenced[1] : text;
+}
+
+/** "What should I try next?" on the active patient workspace (see
+ *  components/pro/dashboard/TreatmentIdeasCard.tsx and generateTreatmentIdeas in
+ *  app/actions/clinician-dashboard.ts, which is what persists the result to
+ *  TreatmentIdea). Reuses BriefPatientInput — same patient shape the pre-visit brief
+ *  functions above already take. */
+export async function generateTreatmentIdeas(patient: BriefPatientInput): Promise<string[] | null> {
+  try {
+    const message = await client.messages.create({
+      model: MODEL,
+      max_tokens: 400,
+      system: TREATMENT_IDEAS_SYSTEM_PROMPT,
+      messages: [
+        {
+          role: "user",
+          content: `Suggest 3 evidence-based treatment ideas for this patient:
+Condition: ${patient.condition}
+Body region: ${patient.bodyRegion}
+Visit: ${patient.visitCount} of ${patient.totalVisits}
+Outcomes: ${summarizeOutcomes(patient.outcomes)}
+
+Return only a JSON array of 3 strings.`,
+        },
+      ],
+    });
+
+    const content = message.content[0];
+    if (content.type !== "text") return null;
+    const parsed = JSON.parse(stripCodeFence(content.text));
+    if (!Array.isArray(parsed) || !parsed.every((idea) => typeof idea === "string")) return null;
+    return parsed;
+  } catch (error) {
+    console.error("Treatment idea generation failed:", error);
+    return null;
+  }
+}

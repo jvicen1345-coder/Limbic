@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
+  checkRedFlags,
   dischargePatient,
+  dismissRedFlagAlert,
   getPatientDetail,
   hasLoggedVisitToday,
   type AvailableHEP,
@@ -65,6 +67,7 @@ export function ClinicianDashboard({
   const [fetchedDetail, setFetchedDetail] = useState<PatientDetail | null>(null);
   const [fetchedResearch, setFetchedResearch] = useState<Article[] | null>(null);
   const [visitAlreadyLoggedToday, setVisitAlreadyLoggedToday] = useState(false);
+  const [redFlagAlerts, setRedFlagAlerts] = useState<{ id: string; description: string }[]>([]);
   const [detailFor, setDetailFor] = useState<string | null>(null);
   const [refreshTick, setRefreshTick] = useState(0);
   const [dischargePending, startDischarge] = useTransition();
@@ -99,11 +102,16 @@ export function ClinicianDashboard({
       getPatientDetail(selectedPatientId),
       getDashboardResearchFeedAction(selectedPatientId),
       hasLoggedVisitToday(selectedPatientId),
-    ]).then(([detail, research, loggedToday]) => {
+      // Runs on every open and every onChanged-triggered refetch (e.g. after saving an
+      // outcome) — exactly the "after any outcome entry is saved or a patient record is
+      // opened" trigger the Red Flag Monitor spec calls for, without a separate effect.
+      checkRedFlags(selectedPatientId),
+    ]).then(([detail, research, loggedToday, redFlags]) => {
       if (cancelled) return;
       setFetchedDetail(detail);
       setFetchedResearch(research);
       setVisitAlreadyLoggedToday(loggedToday);
+      setRedFlagAlerts(redFlags.ok ? redFlags.alerts : []);
       setDetailFor(selectedPatientId);
     });
     return () => {
@@ -119,6 +127,7 @@ export function ClinicianDashboard({
   const showVisitBanner = detailIsCurrent && !visitAlreadyLoggedToday && visitBannerHandledFor !== selectedPatientId;
   const isMilestonePatient = patientDetail != null && outcomeReminderPatients.some((p) => p.id === patientDetail.id);
   const showMilestoneBanner = detailIsCurrent && isMilestonePatient && milestoneDismissedFor !== selectedPatientId;
+  const activeRedFlagAlerts = detailIsCurrent ? redFlagAlerts : [];
 
   const handleSelect = (id: string | null) => {
     setPendingOutcomeOpenFor(null);
@@ -138,6 +147,11 @@ export function ClinicianDashboard({
   const handleChanged = () => {
     setRefreshTick((t) => t + 1);
     router.refresh();
+  };
+
+  const handleDismissRedFlag = (alertId: string) => {
+    setRedFlagAlerts((alerts) => alerts.filter((a) => a.id !== alertId));
+    void dismissRedFlagAlert(alertId);
   };
 
   const handleDischarge = () => {
@@ -189,6 +203,8 @@ export function ClinicianDashboard({
           onDismissMilestone={() => setMilestoneDismissedFor(selectedPatientId)}
           initiallyOpenOutcomes={initiallyOpenOutcomes}
           outcomeActionsRef={outcomeActionsRef}
+          redFlagAlerts={activeRedFlagAlerts}
+          onDismissRedFlag={handleDismissRedFlag}
         />
 
         <div className="clindash-col-research">

@@ -7948,8 +7948,14 @@ button.plan-compare-name:hover { text-decoration: underline; }
 
 .clindash-trend-chart-wrap { margin-top: 6px; padding: 10px 4px 4px; }
 .clindash-trend-chart-name { font-size: 11.5px; font-weight: 600; margin-bottom: 6px; }
-.clindash-trend-chart { position: relative; height: 70px; }
-.clindash-trend-chart-line { position: absolute; inset: 0; }
+.clindash-trend-chart { position: relative; height: 70px; overflow: hidden; }
+/* width/height 100% is required, not just inset:0 -- an absolutely positioned <svg> with no
+   explicit size is a *replaced element with an intrinsic aspect ratio* (from its viewBox),
+   so per the CSS sizing algorithm for absolutely positioned replaced elements it sizes
+   itself to preserve that 1:1 ratio instead of stretching to fill top/right/bottom/left:0
+   the way a non-replaced <div> would -- it rendered as a 582x582 square blowing out of this
+   70px-tall box until these were added. */
+.clindash-trend-chart-line { position: absolute; inset: 0; width: 100%; height: 100%; }
 .clindash-trend-point {
   position: absolute;
   width: 7px;
@@ -8295,3 +8301,70 @@ button.plan-compare-name:hover { text-decoration: underline; }
   .clindash-today-row { flex-direction: column; align-items: flex-start; }
   .clindash-reminder-row { flex-direction: column; align-items: flex-start; }
 }
+
+/* ============================================================================
+   Clinician Dashboard — Prompt 2 clinical-intelligence features (Condition Intelligence
+   card, outcome benchmarking, treatment idea generator, red flag monitor).
+   ============================================================================ */
+
+.clindash-ci-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px; }
+.clindash-ci-section-title { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--color-neutral-700); margin-bottom: 5px; }
+.clindash-ci-measures { display: flex; flex-wrap: wrap; gap: 6px; }
+.clindash-ci-measure-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+  border: 1px solid var(--color-accent-300);
+  cursor: pointer;
+}
+.clindash-ci-text { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; }
+.clindash-ci-pearl { font-size: 12.5px; color: var(--color-neutral-700); font-style: italic; line-height: 1.5; }
+.clindash-ci-find-link { display: inline; font-size: 11.5px; margin-left: 6px; color: var(--color-accent); text-decoration: none; }
+.clindash-ci-find-link:hover { text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .clindash-ci-grid { grid-template-columns: 1fr; }
+}
+
+.clindash-benchmark-line { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
+.clindash-benchmark-pill { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-top: 4px; }
+.clindash-benchmark-pill--good { background: color-mix(in srgb, var(--color-success) 16%, transparent); color: var(--color-success); }
+.clindash-benchmark-pill--warn { background: color-mix(in srgb, #c9853a 16%, transparent); color: #c9853a; }
+.clindash-benchmark-pill--bad { background: color-mix(in srgb, var(--color-danger) 14%, transparent); color: var(--color-danger); }
+
+.clindash-treatment-ideas-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.clindash-treatment-idea-row {
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 8px 12px;
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-neutral-100);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+.clindash-treatment-ideas-actions { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+
+.clindash-alert-banner {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #c9853a 10%, transparent);
+  border: 1px solid #c9853a;
+  margin-bottom: 16px;
+}
+.clindash-alert-header { font-weight: 700; color: #c9853a; margin-bottom: 8px; }
+.clindash-alert-list { display: flex; flex-direction: column; gap: 8px; }
+.clindash-alert-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; font-size: 13px; }
+.clindash-alert-item-text { display: flex; gap: 6px; }
+.clindash-alert-item-text::before { content: "•"; flex-shrink: 0; }
+.clindash-alert-item-dismiss {
+  font-size: 11.5px;
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+.clindash-alert-footer { margin-top: 10px; font-size: 11.5px; }

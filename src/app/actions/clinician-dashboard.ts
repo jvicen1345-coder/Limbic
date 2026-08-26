@@ -3,10 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
-import { generateClinicalBrief, generatePatientBrief } from "@/lib/pre-visit-brief";
+import { generateClinicalBrief, generatePatientBrief, generateTreatmentIdeas as generateTreatmentIdeasBrief } from "@/lib/pre-visit-brief";
 import { REASSESSMENT_INTERVAL_VISITS, REASSESSMENT_STALE_DAYS } from "@/lib/clinician-dashboard-types";
 import { todayLocalDateStr } from "@/lib/today";
-import type { ClinicalPatient, OutcomeMeasureEntry, PatientHEPAssignment, ClinicalNote } from "@/generated/prisma/client";
+import { conditionIntelligenceMap } from "@/lib/condition-intelligence";
+import { mcidValues } from "@/lib/outcome-benchmarks";
+import { detectRedFlags } from "@/lib/red-flag-detector";
+import type { ClinicalPatient, OutcomeMeasureEntry, PatientHEPAssignment, ClinicalNote, RedFlagAlert } from "@/generated/prisma/client";
 
 /**
  * LimbicPRO Clinician Dashboard (/pro/dashboard) server actions.
@@ -316,6 +319,12 @@ export interface PatientDetail extends PatientListEntry {
    *  "today's" clinical brief (patientFacing: false) by filtering on generatedAt itself
    *  rather than a second round-trip, since this is already loaded. */
   preBriefs: { id: string; brief: string; patientFacing: boolean; confirmedAt: Date | null; generatedAt: Date }[];
+  /** Published MCID/MDC benchmark per distinct measure this patient has a score for (see
+   *  getOutcomeBenchmarks) — computed here rather than as a separate client round-trip per
+   *  measure, since lib/outcome-benchmarks.ts is server-only and the set of measures is
+   *  already known from `outcomes` above. Missing a key means no published benchmark exists
+   *  for that measure. */
+  benchmarks: Record<string, OutcomeBenchmark>;
 }
 
 export async function getPatientDetail(patientId: string): Promise<PatientDetail | null> {
@@ -331,6 +340,13 @@ export async function getPatientDetail(patientId: string): Promise<PatientDetail
     },
   });
   if (!patient || patient.userId !== user.id) return null;
+
+  const measureNames = Array.from(new Set(patient.outcomes.map((o) => o.measureName)));
+  const benchmarks: Record<string, OutcomeBenchmark> = {};
+  for (const name of measureNames) {
+    const benchmark = lookupBenchmark(patient.condition, name);
+    if (benchmark) benchmarks[name] = benchmark;
+  }
 
   return {
     id: patient.id,
@@ -351,6 +367,7 @@ export async function getPatientDetail(patientId: string): Promise<PatientDetail
     hepAssignments: patient.hepAssignments,
     clinicalNotes: patient.clinicalNotes,
     preBriefs: patient.preBriefs,
+    benchmarks,
   };
 }
 
@@ -677,4 +694,147 @@ export async function dismissEndOfDaySummary(): Promise<ClinicianDashboardResult
 
   revalidatePath("/pro/dashboard");
   return { ok: true };
+}
+
+/* ============================================================================
+   Clinical intelligence features (Condition Intelligence card, outcome benchmarking,
+   treatment idea generator, red flag monitor). Same conventions as the rest of this file.
+   ============================================================================ */
+
+export interface ConditionIntelligenceData {
+  topMeasures: string[];
+  episodeLength: string;
+  guideline: string;
+  boardPearl: string;
+}
+
+/** Static lookup only (see lib/condition-intelligence.ts's own comment on why) — gated
+ *  behind requireProUser for consistency with every other action here, not because the
+ *  data itself is sensitive. */
+export async function getConditionIntelligence(condition: string): Promise<ConditionIntelligenceData | null> {
+  const user = await requireProUser();
+  if (!user) return null;
+  return conditionIntelligenceMap[condition] ?? null;
+}
+
+/** "What should I try next?" on the active patient workspace — generates without
+ *  overwriting: every call creates a fresh TreatmentIdea row (see
+ *  components/pro/dashboard/TreatmentIdeasCard.tsx, which shows today's most recent row if
+ *  one exists before offering to generate, same "don't call the model again for nothing"
+ *  reasoning as the pre-visit brief). */
+export async function generateTreatmentIdeas(patientId: string): Promise<ClinicianDashboardResult<{ ideas: string[] }>> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const context = await loadBriefContext(user.id, patientId);
+  if (!context) return { ok: false, error: "Patient not found." };
+
+  const ideas = await generateTreatmentIdeasBrief(context);
+  if (!ideas) return { ok: false, error: "Limbic Agent isn't available right now. Try again in a moment." };
+
+  await prisma.treatmentIdea.create({ data: { userId: user.id, patientId, ideas } });
+  revalidatePath("/pro/dashboard");
+  return { ok: true, ideas };
+}
+
+export interface TreatmentIdeaRecord {
+  id: string;
+  ideas: string[];
+  generatedAt: Date;
+}
+
+/** Today's most recently generated treatment ideas for this patient, if any — lets
+ *  TreatmentIdeasCard show a saved result instead of an empty "generate" prompt on
+ *  reopen, same pattern as PreVisitBriefSection's savedToday lookup. */
+export async function getTodaysTreatmentIdeas(patientId: string): Promise<TreatmentIdeaRecord | null> {
+  const user = await requireProUser();
+  if (!user) return null;
+  const patient = await requireOwnedPatient(user.id, patientId);
+  if (!patient) return null;
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const row = await prisma.treatmentIdea.findFirst({
+    where: { patientId, generatedAt: { gte: startOfToday } },
+    orderBy: { generatedAt: "desc" },
+  });
+  if (!row) return null;
+  return { id: row.id, ideas: row.ideas as unknown as string[], generatedAt: row.generatedAt };
+}
+
+/** Runs lib/red-flag-detector.ts's checks against this patient's current outcome/visit
+ *  data and persists any newly-detected pattern as a RedFlagAlert — "newly-detected" means
+ *  no existing row (dismissed or not) already carries that exact (flagType, description)
+ *  pair for this patient, so re-running this on every outcome save or patient open doesn't
+ *  spam duplicate rows, and a dismissed alert only comes back once the underlying
+ *  situation has actually changed (a different description — e.g. a new decline event, a
+ *  higher day count crossing a new threshold), not just because the same still-true
+ *  condition was checked again. Returns every currently-undismissed alert for the patient,
+ *  which is what the workspace's Clinical Alert banner renders. */
+export async function checkRedFlags(patientId: string): Promise<ClinicianDashboardResult<{ alerts: RedFlagAlert[] }>> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const patient = await requireOwnedPatient(user.id, patientId);
+  if (!patient) return { ok: false, error: "Patient not found." };
+
+  const [outcomes, existingAlerts] = await Promise.all([
+    prisma.outcomeMeasureEntry.findMany({ where: { patientId } }),
+    prisma.redFlagAlert.findMany({ where: { patientId } }),
+  ]);
+
+  const detected = detectRedFlags({ outcomes, visitCount: patient.visitCount, lastSeen: patient.lastSeen });
+  const existingSignatures = new Set(existingAlerts.map((a) => `${a.flagType}::${a.description}`));
+  const newOnes = detected.filter((d) => !existingSignatures.has(`${d.type}::${d.description}`));
+
+  if (newOnes.length > 0) {
+    await prisma.redFlagAlert.createMany({
+      data: newOnes.map((d) => ({ userId: user.id, patientId, flagType: d.type, description: d.description })),
+    });
+  }
+
+  const activeAlerts = await prisma.redFlagAlert.findMany({
+    where: { patientId, dismissed: false },
+    orderBy: { createdAt: "desc" },
+  });
+  return { ok: true, alerts: activeAlerts };
+}
+
+/** "Dismiss" on one bullet of the Clinical Alert banner — per-alert, not per-patient, so
+ *  dismissing one detected pattern never hides a different one still active. */
+export async function dismissRedFlagAlert(alertId: string): Promise<ClinicianDashboardResult> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const alert = await prisma.redFlagAlert.findUnique({ where: { id: alertId } });
+  if (!alert || alert.userId !== user.id) return { ok: false, error: "Alert not found." };
+
+  await prisma.redFlagAlert.update({ where: { id: alertId }, data: { dismissed: true } });
+  revalidatePath("/pro/dashboard");
+  return { ok: true };
+}
+
+export interface OutcomeBenchmark {
+  mcid: number;
+  mdc: number;
+  description: string;
+  source: string;
+  higherIsBetter: boolean;
+}
+
+function lookupBenchmark(condition: string, measureName: string): OutcomeBenchmark | null {
+  const entry = mcidValues[measureName];
+  if (!entry) return null;
+  return entry[condition] ?? entry.default ?? null;
+}
+
+/** Published MCID/MDC lookup (lib/outcome-benchmarks.ts) — `condition` is checked first
+ *  for a future condition-specific entry, falling back to each measure's "default" row,
+ *  which is all the static data has today. Takes only the two fields the lookup actually
+ *  needs — a single score/maxScore pair can't tell you an "improvement" on its own; the
+ *  improvement-vs-MCID comparison the workspace shows is computed by the caller from the
+ *  patient's own score *history* (first recorded vs. latest — see
+ *  OutcomeMeasuresSection.tsx and PracticeMetrics.tsx's peer-comparison cards), not from a
+ *  single point this action would otherwise have to ignore. */
+export async function getOutcomeBenchmarks(condition: string, measureName: string): Promise<OutcomeBenchmark | null> {
+  const user = await requireProUser();
+  if (!user) return null;
+  return lookupBenchmark(condition, measureName);
 }
