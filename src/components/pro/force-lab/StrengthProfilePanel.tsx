@@ -13,17 +13,19 @@ function lsiColor(lsi: number | null): string {
  *  full-width version share this one component (`layout` only changes column count via
  *  CSS, see .forcelab-profile-regions--full below).
  *
- *  Bar width is always "raw value scaled to the region's max tested value", never the
- *  norm-based percentage the spec also describes: a norm lookup needs the patient's age
- *  and sex, and this app deliberately stores neither anywhere (ClinicalPatient has no PHI
- *  fields at all — patients are referenced only by clinician-assigned code, see that
- *  model's own schema.prisma comment) — age/sex only ever exist as transient, per-session
- *  form state for Section 3's live normative comparison at entry time, never persisted. A
- *  saved session has no age/sex to look a norm back up with later, so this view can only
- *  ever fall back to the spec's own "if no norm" behavior. Scaled within each body region
- *  (not across the whole profile) since, e.g., Grip Strength and Ankle Dorsiflexion have
- *  very different natural magnitudes in lbs — a cross-region scale would read as
- *  Grip always maxed out and everything else always tiny. */
+ *  Bar width is the entry's own LSI (left/right symmetry) percentage, matching the color
+ *  and the printed "NN%" — never the norm-based percentage the spec also describes: a norm
+ *  lookup needs the patient's age and sex, and this app deliberately stores neither anywhere
+ *  (ClinicalPatient has no PHI fields at all — patients are referenced only by
+ *  clinician-assigned code, see that model's own schema.prisma comment) — age/sex only ever
+ *  exist as transient, per-session form state for Section 3's live normative comparison at
+ *  entry time, never persisted. A saved session has no age/sex to look a norm back up with
+ *  later, so this view can only ever fall back to the spec's own "if no norm" behavior.
+ *  (Bar width used to be raw peak force scaled to the region's max tested value, so a
+ *  perfectly symmetric 99% LSI muscle could still render as a half-empty bar next to a
+ *  stronger-but-less-symmetric one in the same region — confusing since the color and
+ *  number both read as "good." LSI is already a 0-100 percentage, so no per-region scaling
+ *  is needed here the way raw force values needed one.) */
 export function StrengthProfilePanel({
   profile,
   forceUnit,
@@ -53,8 +55,6 @@ export function StrengthProfilePanel({
           );
         }
 
-        const regionMax = Math.max(1, ...entries.map((e) => Math.max(e.rightPeak ?? 0, e.leftPeak ?? 0)));
-
         return (
           <div className="forcelab-profile-region" key={region}>
             <div className="forcelab-profile-region-title">{region}</div>
@@ -80,7 +80,7 @@ export function StrengthProfilePanel({
                 );
               }
 
-              const widthPercent = Math.min(100, (peak / regionMax) * 100);
+              const widthPercent = Math.min(100, entry.lsi ?? 0);
               const color = lsiColor(entry.lsi);
               return (
                 <div className="forcelab-profile-bar-row" key={entry.muscleGroup}>
