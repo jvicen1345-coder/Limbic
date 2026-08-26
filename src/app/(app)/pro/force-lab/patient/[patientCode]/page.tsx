@@ -42,10 +42,12 @@ export default async function ForceLabPatientPage({ params }: { params: Promise<
     patient ? getAssessmentHistory(patient.id) : Promise.resolve([]),
   ]);
 
-  // Trend visualization — every muscle group tested across at least 2 full assessments
-  // (a single assessment has nothing to trend against). `assessments` is oldest-first (see
-  // getAssessmentHistory), so pushing in iteration order keeps each muscle group's own
-  // points chronological without a separate sort.
+  // Trend visualization — every muscle group ever tested gets a slot; `assessments` is
+  // oldest-first (see getAssessmentHistory), so pushing in iteration order keeps each
+  // muscle group's own points chronological without a separate sort. A muscle group with
+  // only one assessment still gets a card here — ForceLabAssessmentTrendChart itself shows
+  // a muted "add a second assessment" message instead of an empty chart frame rather than
+  // silently vanishing from the section.
   const trendsByMuscle = new Map<string, AssessmentTrendPoint[]>();
   for (const a of assessments) {
     for (const s of a.sessions) {
@@ -54,7 +56,7 @@ export default async function ForceLabPatientPage({ params }: { params: Promise<
       trendsByMuscle.set(s.muscleGroup, points);
     }
   }
-  const trendEntries = Array.from(trendsByMuscle.entries()).filter(([, points]) => points.length >= 2);
+  const trendEntries = Array.from(trendsByMuscle.entries());
 
   return (
     <div className="screen-pad forcelab-page page-enter">

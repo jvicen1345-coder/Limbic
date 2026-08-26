@@ -10,7 +10,13 @@ import type { ForceLabSession } from "@/generated/prisma/client";
  *  independently-normalized ones that would visually hide it. */
 export function ForceLabTrendChart({ sessions, unitLabel }: { sessions: ForceLabSession[]; unitLabel: string }) {
   if (sessions.length < 2) {
-    return <p className="forcelab-trend-need-more">Add more sessions to see trends.</p>;
+    return (
+      <div className="forcelab-trend-wrap">
+        <div className="forcelab-trend-chart">
+          <p className="forcelab-trend-need-more">Add a second assessment to see trends across time.</p>
+        </div>
+      </div>
+    );
   }
 
   const maxValue = Math.max(1, ...sessions.flatMap((s) => [s.rightPeak ?? 0, s.leftPeak ?? 0]));

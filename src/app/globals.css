@@ -8636,6 +8636,9 @@ button.plan-compare-name:hover { text-decoration: underline; }
 .forcelab-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
 .forcelab-title { font-family: var(--font-heading); font-size: 26px; margin: 0; }
 .forcelab-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 2px 0 0; }
+/* Right side of the header — New Session (always visible, regardless of which tab/session
+   is showing below) plus the existing unit pill. */
+.forcelab-header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .forcelab-unit-pill {
   display: inline-block;
   padding: 4px 12px;
@@ -8650,7 +8653,7 @@ button.plan-compare-name:hover { text-decoration: underline; }
   white-space: nowrap;
 }
 
-.forcelab-columns { display: grid; grid-template-columns: 240px minmax(0, 1fr) 280px; gap: 20px; align-items: start; }
+.forcelab-columns { display: grid; grid-template-columns: 240px minmax(0, 1fr) 260px; gap: 20px; align-items: start; }
 .forcelab-col-history, .forcelab-col-profile { min-width: 0; }
 .forcelab-col-center { min-width: 0; }
 
@@ -8755,7 +8758,7 @@ button.plan-compare-name:hover { text-decoration: underline; }
 
 /* — Loaded session view — */
 .forcelab-session-view-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.forcelab-session-view-title { font-family: var(--font-heading); font-size: 20px; margin: 0; }
+.forcelab-session-view-title { font-family: var(--font-heading); font-size: 20px; font-weight: 700; line-height: 1.3; margin: 0; }
 .forcelab-session-view-sub { font-size: 12.5px; color: var(--color-neutral-700); margin: 4px 0 0; display: flex; align-items: center; }
 .forcelab-session-view-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
 
@@ -8783,7 +8786,10 @@ button.plan-compare-name:hover { text-decoration: underline; }
 /* — Trend chart (SessionDetailView + the right column's Trends card) — same absolutely-
    positioned-SVG sizing fix as .clindash-trend-chart-line (see that rule's own comment). */
 .forcelab-trend-wrap { margin-top: 6px; }
-.forcelab-trend-chart { position: relative; height: 90px; overflow: hidden; padding: 4px; }
+/* display:flex centers a plain (non-absolutely-positioned) child like .forcelab-trend-need
+   -more below — the SVG line and point dots are all position:absolute, so they're unaffected
+   and keep rendering exactly as before when there IS enough data for a real chart. */
+.forcelab-trend-chart { position: relative; height: 90px; overflow: hidden; padding: 4px; display: flex; align-items: center; justify-content: center; }
 .forcelab-trend-line { position: absolute; inset: 0; width: 100%; height: 100%; }
 .forcelab-trend-point { position: absolute; width: 7px; height: 7px; border-radius: 999px; transform: translate(-50%, 50%); }
 .forcelab-trend-point--right { background: var(--color-accent); }
@@ -8794,7 +8800,7 @@ button.plan-compare-name:hover { text-decoration: underline; }
 .forcelab-trend-swatch { width: 8px; height: 8px; border-radius: 999px; }
 .forcelab-trend-swatch--right { background: var(--color-accent); }
 .forcelab-trend-swatch--left { background: #c9853a; }
-.forcelab-trend-need-more { font-size: 11.5px; color: var(--color-neutral-700); font-style: italic; margin-top: 4px; }
+.forcelab-trend-need-more { font-size: 11.5px; color: var(--color-neutral-700); font-style: italic; text-align: center; margin: 0; padding: 0 8px; }
 
 /* — Strength Profile (right column, compact; full-width on the patient session page) — */
 .forcelab-profile-regions { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
@@ -8807,6 +8813,11 @@ button.plan-compare-name:hover { text-decoration: underline; }
 .forcelab-profile-bar-label span:last-child { font-weight: 700; white-space: nowrap; }
 .forcelab-profile-bar-track { display: block; height: 8px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
 .forcelab-profile-bar-fill { display: block; height: 100%; border-radius: 999px; }
+/* Unilateral entries (one side only, so no LSI) skip the bar entirely — see
+   StrengthProfilePanel.tsx. font-weight set inline on the span itself since
+   .forcelab-profile-bar-label span:last-child above already forces bold. */
+.forcelab-profile-unilateral { color: var(--color-neutral-700); font-size: 11px; }
+.forcelab-profile-unilateral em { font-style: italic; margin-left: 4px; }
 
 /* — Patient session page (/pro/force-lab/patient/[patientCode]) — */
 .forcelab-patient-history-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 14px; }

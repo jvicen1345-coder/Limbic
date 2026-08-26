@@ -61,13 +61,32 @@ export function StrengthProfilePanel({
             {entries.map((entry) => {
               const peak = Math.max(entry.rightPeak ?? 0, entry.leftPeak ?? 0);
               const displayPeak = convertForDisplay(peak, entry.unit, forceUnit);
+              const isUnilateral = entry.lsi == null;
+
+              // Unilateral entries (only one side tested, so no LSI) skip the bar entirely
+              // — a colored bar/percentage implies a bilateral comparison that was never
+              // made, so showing one here would misleadingly read as a real measurement.
+              if (isUnilateral) {
+                return (
+                  <div className="forcelab-profile-bar-row" key={entry.muscleGroup}>
+                    <div className="forcelab-profile-bar-label">
+                      <span>{entry.muscleGroup}</span>
+                      <span className="forcelab-profile-unilateral" style={{ fontWeight: 400 }}>
+                        {displayPeak.toFixed(1)} {forceUnit}
+                        <em>Unilateral</em>
+                      </span>
+                    </div>
+                  </div>
+                );
+              }
+
               const widthPercent = Math.min(100, (peak / regionMax) * 100);
               const color = lsiColor(entry.lsi);
               return (
                 <div className="forcelab-profile-bar-row" key={entry.muscleGroup}>
                   <div className="forcelab-profile-bar-label">
                     <span>{entry.muscleGroup}</span>
-                    <span style={{ color }}>{entry.lsi != null ? `${entry.lsi}%` : `${displayPeak.toFixed(1)} ${forceUnit}`}</span>
+                    <span style={{ color }}>{entry.lsi}%</span>
                   </div>
                   <span className="forcelab-profile-bar-track">
                     <span className="forcelab-profile-bar-fill" style={{ width: `${widthPercent}%`, background: color }} />

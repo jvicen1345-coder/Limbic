@@ -30,7 +30,6 @@ export function SessionDetailView({
   onEdit,
   onDeleted,
   onLinked,
-  onNewSession,
 }: {
   session: ForceLabSession;
   patients: PatientListEntry[];
@@ -39,10 +38,6 @@ export function SessionDetailView({
   onEdit: () => void;
   onDeleted: () => void;
   onLinked: (session: ForceLabSession) => void;
-  /** Leaves this read-only view for a blank Manual Entry form — the only way back to the
-   *  tabs once a session is loaded, since the tab bar itself only renders in "manual"/
-   *  "import" mode (see ForceLabWorkspace.tsx). */
-  onNewSession: () => void;
 }) {
   const [pending, startTransition] = useTransition();
   const [linkOpen, setLinkOpen] = useState(false);
@@ -86,9 +81,6 @@ export function SessionDetailView({
           </p>
         </div>
         <div className="forcelab-session-view-actions">
-          <button type="button" className="btn btn-primary" style={{ fontSize: 12 }} onClick={onNewSession}>
-            New Session
-          </button>
           <button type="button" className="btn btn-secondary" style={{ fontSize: 12 }} onClick={onEdit}>
             Edit
           </button>
