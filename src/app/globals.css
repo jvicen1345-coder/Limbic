@@ -336,6 +336,38 @@ button { font-family: inherit; }
 .input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
 textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius-md); }
 input[type="checkbox"] { accent-color: var(--color-accent); width: 16px; height: 16px; cursor: pointer; }
+/* A bare <select class="input"> or <input type="date" class="input"> renders its own native
+ * chrome (a squared-off control, its own dropdown arrow/calendar icon, sometimes a visible
+ * inset ring) on top of .input's pill styling above, instead of blending into it — most
+ * visible on mobile Chrome/Safari where that native box reads as a second, mismatched
+ * rectangle sitting inside the rounded field. Stripping the native appearance and drawing a
+ * theme-matched chevron in its place makes every .input look like one consistent control
+ * regardless of its underlying element. color-scheme is set explicitly (not `light dark`)
+ * so the still-native bits that remain — the select's own dropdown panel, the date input's
+ * calendar popover — follow this app's manual theme toggle rather than the OS's, which
+ * `light dark` would do instead. */
+select.input {
+  -webkit-appearance: none;
+  appearance: none;
+  color-scheme: light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7' fill='none'%3E%3Cpath d='M1 1L5.5 5.5L10 1' stroke='%2366799e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 34px;
+}
+html[data-theme="dark"] select.input {
+  color-scheme: dark;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7' fill='none'%3E%3Cpath d='M1 1L5.5 5.5L10 1' stroke='%237686ac' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+input[type="date"].input {
+  -webkit-appearance: none;
+  appearance: none;
+  color-scheme: light;
+  display: flex;
+  align-items: center;
+}
+html[data-theme="dark"] input[type="date"].input { color-scheme: dark; }
+input[type="date"].input::-webkit-date-and-time-value { text-align: left; }
 @media (max-width: 799px) {
   /* iOS Safari (and most other mobile browsers) auto-zooms the whole page on focus when a
      text input's computed font-size is under 16px, to keep the text legible to type into —

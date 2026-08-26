@@ -39,14 +39,15 @@ export function AppleHealthUploadCard() {
       </p>
 
       <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 10, flexWrap: "wrap" }}>
-        <input
-          ref={inputRef}
-          type="file"
-          accept=".zip"
-          onChange={handleUpload}
-          disabled={isPending}
-          style={{ fontSize: 12.5 }}
-        />
+        {/* The bare native file input renders its own OS-level button chrome, which reads
+         *  as a mismatched box dropped into this card's otherwise custom-styled UI —
+         *  same fix as CELogForm.tsx's own certificate upload: keep the real <input>
+         *  hidden but functional, and drive it from a normal styled button instead. */}
+        <input ref={inputRef} type="file" accept=".zip" onChange={handleUpload} disabled={isPending} style={{ display: "none" }} />
+        <button type="button" className="btn btn-secondary" disabled={isPending} onClick={() => inputRef.current?.click()}>
+          {isPending ? "Reading…" : "Choose File"}
+        </button>
+        {fileName && !isPending && <span style={{ fontSize: 12.5, color: "var(--color-neutral-700)" }}>{fileName}</span>}
       </div>
 
       {isPending && (
