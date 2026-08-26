@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   checkRedFlags,
   dismissRedFlagAlert,
@@ -22,9 +22,10 @@ import { DailyBriefBar } from "./DailyBriefBar";
 import { PatientPanel } from "./PatientPanel";
 import { PatientWorkspace } from "./PatientWorkspace";
 import { ResearchFeedPanel } from "./ResearchFeedPanel";
-import { PracticeMetrics, ClinicProPlaceholder } from "./PracticeMetrics";
+import { PracticeMetrics } from "./PracticeMetrics";
 import { PreparePatientModal } from "./PreparePatientModal";
 import { DischargeModal } from "./DischargeModal";
+import { TeamOverview } from "./TeamOverview";
 import type { OutcomeMeasuresSectionHandle } from "./OutcomeMeasuresSection";
 
 export interface ClinicianDashboardProps {
@@ -42,6 +43,14 @@ export interface ClinicianDashboardProps {
   clinicianCredential: string;
   clinicianClinicName: string;
   clinicianEmail: string;
+  /** Clinic PRO — null for a solo clinician with no active clinic membership. Non-null and
+   *  isAdmin false for an ordinary team member (see the spec's "patient panel shows only
+   *  patients assigned to this clinician — filtered by userId... daily brief bar adds a
+   *  fifth tile" — both already true of the props this component already receives, so a
+   *  non-admin member needs nothing else here beyond clinicPatientsToday below). Non-null
+   *  and isAdmin true is the only case that adds the tab bar/Team Overview tab. */
+  isClinicAdmin: boolean;
+  clinicPatientsToday: number | null;
 }
 
 /** Client orchestrator for /pro/dashboard — owns which patient is selected and everything
@@ -67,8 +76,15 @@ export function ClinicianDashboard({
   clinicianCredential,
   clinicianClinicName,
   clinicianEmail,
+  isClinicAdmin,
+  clinicPatientsToday,
 }: ClinicianDashboardProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // Initialized once from ?tab=team (see the sidebar's "Team Dashboard" link in
+  // AppShell.tsx) — a plain useState initializer, not an effect, so switching tabs
+  // afterward is ordinary client state and never re-reads the URL.
+  const [activeTab, setActiveTab] = useState<"patients" | "team">(() => (searchParams.get("tab") === "team" ? "team" : "patients"));
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   // The most recently *fetched* detail/research/visit-logged trio, plus which patient it's
   // for — render below only trusts it when detailFor still matches selectedPatientId, so
@@ -175,7 +191,7 @@ export function ClinicianDashboard({
 
   return (
     <>
-      <DailyBriefBar summary={summary} />
+      <DailyBriefBar summary={summary} clinicPatientsToday={clinicPatientsToday} />
 
       <div className="clindash-columns">
         <div className="clindash-col-patients">
@@ -187,30 +203,47 @@ export function ClinicianDashboard({
           />
         </div>
 
-        <PatientWorkspace
-          selectedPatient={patientDetail}
-          loadingDetail={loadingDetail}
-          availableHEPs={availableHEPs}
-          onChanged={handleChanged}
-          onOpenDischargeModal={() => setDischargeModalOpen(true)}
-          onPrepareForPatient={() => setPrepareModalOpen(true)}
-          todaysPatients={todaysPatients}
-          outcomeReminderPatients={outcomeReminderPatients}
-          allPatients={initialPatients}
-          summary={summary}
-          onStartSession={handleStartSession}
-          onRecordOutcomes={handleRecordOutcomes}
-          onSelectPatient={handleSelect}
-          showVisitBanner={showVisitBanner}
-          onVisitLogged={handleChanged}
-          onVisitBannerDismiss={() => setVisitBannerHandledFor(selectedPatientId)}
-          showMilestoneBanner={showMilestoneBanner}
-          onDismissMilestone={() => setMilestoneDismissedFor(selectedPatientId)}
-          initiallyOpenOutcomes={initiallyOpenOutcomes}
-          outcomeActionsRef={outcomeActionsRef}
-          redFlagAlerts={activeRedFlagAlerts}
-          onDismissRedFlag={handleDismissRedFlag}
-        />
+        <div className="clindash-col-workspace">
+          {isClinicAdmin && (
+            <div className="clindash-tab-bar">
+              <button type="button" className={`clindash-tab ${activeTab === "patients" ? "clindash-tab--active" : ""}`} onClick={() => setActiveTab("patients")}>
+                My Patients
+              </button>
+              <button type="button" className={`clindash-tab ${activeTab === "team" ? "clindash-tab--active" : ""}`} onClick={() => setActiveTab("team")}>
+                Team Overview
+              </button>
+            </div>
+          )}
+
+          {isClinicAdmin && activeTab === "team" ? (
+            <TeamOverview />
+          ) : (
+            <PatientWorkspace
+              selectedPatient={patientDetail}
+              loadingDetail={loadingDetail}
+              availableHEPs={availableHEPs}
+              onChanged={handleChanged}
+              onOpenDischargeModal={() => setDischargeModalOpen(true)}
+              onPrepareForPatient={() => setPrepareModalOpen(true)}
+              todaysPatients={todaysPatients}
+              outcomeReminderPatients={outcomeReminderPatients}
+              allPatients={initialPatients}
+              summary={summary}
+              onStartSession={handleStartSession}
+              onRecordOutcomes={handleRecordOutcomes}
+              onSelectPatient={handleSelect}
+              showVisitBanner={showVisitBanner}
+              onVisitLogged={handleChanged}
+              onVisitBannerDismiss={() => setVisitBannerHandledFor(selectedPatientId)}
+              showMilestoneBanner={showMilestoneBanner}
+              onDismissMilestone={() => setMilestoneDismissedFor(selectedPatientId)}
+              initiallyOpenOutcomes={initiallyOpenOutcomes}
+              outcomeActionsRef={outcomeActionsRef}
+              redFlagAlerts={activeRedFlagAlerts}
+              onDismissRedFlag={handleDismissRedFlag}
+            />
+          )}
+        </div>
 
         <div className="clindash-col-research">
           <ResearchFeedPanel articles={researchArticles} patientLabel={patientLabel} weeklyDigest={weeklyDigest} />
@@ -223,7 +256,6 @@ export function ClinicianDashboard({
         referralBreakdown={referralBreakdown}
         peerBenchmarks={peerBenchmarks}
       />
-      <ClinicProPlaceholder />
 
       {patientDetail && (
         <PreparePatientModal

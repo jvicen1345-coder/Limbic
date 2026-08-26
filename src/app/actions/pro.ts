@@ -113,3 +113,14 @@ export async function cancelWellnessPlusAction() {
 export async function cancelClinicProAction() {
   await openBillingPortal("/profile/membership");
 }
+
+/** Team Overview tab's "Add Seats" link (see components/pro/dashboard/TeamOverview.tsx) —
+ *  there's no separate per-seat Stripe Price to select a quantity against (Clinic PRO is
+ *  still the one flat $100/mo subscription — see subscribeToClinicAction above), so this
+ *  reuses the same Customer Portal every other "manage this subscription" action already
+ *  opens, where the admin can adjust the underlying subscription with Stripe support/self-
+ *  serve tooling. Returns to /pro/dashboard rather than /profile/membership since that's
+ *  where the admin clicked "Add Seats" from. */
+export async function manageClinicSeatsAction() {
+  await openBillingPortal("/pro/dashboard");
+}

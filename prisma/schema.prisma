@@ -340,6 +340,16 @@ model User {
   referralSources     ReferralSource[]
   dischargeSummaries  DischargeSummary[]
 
+  // Clinic PRO (see Clinic's own doc comment) — clinicAdmin is set only for the one clinic
+  // this account owns, if any; clinicMemberships covers every clinic team this account is
+  // (or was) a member of, including its own admin row, since Clinic PRO gives every
+  // clinician a ClinicMembership rather than treating the admin as a special case.
+  clinicAdmin         Clinic?               @relation("ClinicAdmin")
+  clinicMemberships   ClinicMembership[]
+  transfersFrom       PatientTransfer[]     @relation("TransferFrom")
+  transfersTo         PatientTransfer[]     @relation("TransferTo")
+  clinicReports       ClinicOutcomeReport[]
+
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
   nexusPosts          NexusPost[]
@@ -1038,14 +1048,21 @@ model HEPTemplate {
 // is never shared across accounts (see the ownership check at the top of every mutating
 // action in app/actions/clinician-dashboard.ts).
 //
-// Clinic PRO expansion path (multi-clinician, not built yet): add a `clinicId String?`
-// column here, gate dashboard queries by clinicId instead of/in addition to userId once
-// that ships, and give `specialty` below real teeth for cross-clinician filtering — it's
-// already captured per patient for exactly that reason, even though today's single-user
-// dashboard doesn't need to filter by it.
+// Clinic PRO expansion: `clinicId` is stamped by transferPatient (app/actions/clinic-pro.ts)
+// the first time a patient moves between clinicians on a clinic's team — deliberately NOT
+// set by createPatient (app/actions/clinician-dashboard.ts), since this task's constraints
+// forbid changing any existing action beyond adding new ones. `userId` above stays the real
+// current owner regardless of clinicId; every clinic-wide read (Team Overview, the "Clinic
+// Patients Today" tile, the Clinic Outcome Report) is computed by joining ClinicMembership
+// -> userId directly rather than depending on this column being populated, so a clinic
+// whose members never transfer a patient still gets fully correct team-wide aggregates.
+// Nullable and SetNull on delete: a solo clinician's patients never have one, and a
+// clinic's patients keep existing on their owning clinician's caseload even if the clinic
+// itself is later deleted.
 model ClinicalPatient {
   id          String    @id @default(cuid())
   userId      String
+  clinicId    String?
   patientCode String
   condition   String
   bodyRegion  String
@@ -1066,6 +1083,7 @@ model ClinicalPatient {
   updatedAt   DateTime  @updatedAt
 
   user           User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinic         Clinic?                @relation(fields: [clinicId], references: [id], onDelete: SetNull)
   outcomes       OutcomeMeasureEntry[]
   hepAssignments PatientHEPAssignment[]
   clinicalNotes  ClinicalNote[]
@@ -1076,6 +1094,7 @@ model ClinicalPatient {
   goals            PatientGoal[]
   referralSource   ReferralSource[]
   dischargeSummary DischargeSummary[]
+  transfers        PatientTransfer[]
 
   // A clinician's own patient codes must be unique to them (not globally — two different
   // clinicians can each have their own "PT-001") — enforced here, not just checked in
@@ -1315,6 +1334,108 @@ model DischargeSummary {
 
   user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+// Clinic PRO — the multi-clinician expansion of the solo dashboard above (see
+// ClinicalPatient's own doc comment, which already anticipated this exact `clinicId`
+// column). A clinic is billing-gated on User.isClinicPro/clinicProSubscriptionId
+// (app/actions/pro.ts subscribeToClinicAction) — that billing tier already existed before
+// any of these models did; this is what wires a real feature behind it. One admin per
+// clinic (adminUserId is @unique — a clinic has exactly one owner, never co-admins),
+// membership rows for every clinician on the team including the admin themselves (so
+// "how many active clinicians" is one query, not admin-plus-memberships).
+model Clinic {
+  id          String   @id @default(cuid())
+  name        String
+  adminUserId String   @unique
+  planType    String   @default("clinic_pro")
+  maxSeats    Int      @default(6)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  admin       User                  @relation("ClinicAdmin", fields: [adminUserId], references: [id], onDelete: Cascade)
+  memberships ClinicMembership[]
+  patients    ClinicalPatient[]
+  transfers   PatientTransfer[]
+  reports     ClinicOutcomeReport[]
+  invites     ClinicInvite[]
+}
+
+// One row per clinician on a clinic's team, including the admin (see Clinic's own comment).
+// "role" is "admin" | "clinician" (plain String, matching this schema's existing
+// fixed-but-app-enforced-value-set convention — see HEPTemplate.bodyPart). "status" is
+// "active" | "inactive" — removeClinicMember (app/actions/clinic-pro.ts) sets inactive
+// rather than deleting the row, so a former member's patient/transfer history stays
+// attached to a real membership record instead of a dangling reference.
+model ClinicMembership {
+  id         String    @id @default(cuid())
+  clinicId   String
+  userId     String
+  role       String    @default("clinician")
+  status     String    @default("active")
+  invitedAt  DateTime  @default(now())
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  clinic Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([clinicId, userId])
+}
+
+// An audit trail entry for reassigning a ClinicalPatient from one clinician to another
+// within the same clinic (see transferPatient in app/actions/clinic-pro.ts) — the transfer
+// itself updates ClinicalPatient.userId directly; this row is the "who/when/why" history
+// shown in the Team Overview tab's "Recent transfers" list, never the ownership record
+// itself.
+model PatientTransfer {
+  id            String   @id @default(cuid())
+  clinicId      String
+  patientId     String
+  fromUserId    String
+  toUserId      String
+  reason        String?
+  transferredAt DateTime @default(now())
+
+  clinic   Clinic          @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient  ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  fromUser User            @relation("TransferFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User            @relation("TransferTo", fields: [toUserId], references: [id], onDelete: Cascade)
+}
+
+// A generated, anonymous practice-wide report (see generateClinicReport in
+// app/actions/clinic-pro.ts and /pro/clinic-report) — reportData is the full computed JSON
+// (practice overview, outcome trends, referral sources, CE compliance) so re-viewing a past
+// report from Report History never re-aggregates live data that may have since changed.
+// generatedBy is the admin who ran it — always the clinic admin, but kept as its own column
+// (rather than assumed from Clinic.adminUserId) in case admin ownership ever transfers.
+model ClinicOutcomeReport {
+  id             String   @id @default(cuid())
+  clinicId       String
+  generatedAt    DateTime @default(now())
+  dateRangeStart DateTime
+  dateRangeEnd   DateTime
+  reportData     Json
+  generatedBy    String
+
+  clinic Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [generatedBy], references: [id], onDelete: Cascade)
+}
+
+// A pending invitation to join a clinic (see inviteClinicMember/acceptClinicInvite in
+// app/actions/clinic-pro.ts) — becomes a ClinicMembership once accepted; the invite row
+// itself is kept (accepted: true) rather than deleted, as a record of who invited whom and
+// when.
+model ClinicInvite {
+  id        String   @id @default(cuid())
+  clinicId  String
+  email     String
+  token     String   @unique @default(cuid())
+  accepted  Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  clinic Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 }
 
 // One of the 25 "Founding 25" spots on /founding-funders. Created two ways: self-serve via

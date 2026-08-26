@@ -1,4 +1,3 @@
-import { UsersIcon } from "@/components/icons";
 import type {
   EpisodeLengthStats,
   PatientListEntry,
@@ -189,22 +188,5 @@ export function PracticeMetrics({
       </p>
     </div>
     </>
-  );
-}
-
-/** Zone 4 — a static, non-interactive card describing the multi-clinician expansion this
- *  schema is already shaped for (every clinical model here is scoped by a single userId
- *  today — see schema.prisma's ClinicalPatient and friends). Nothing on this page links
- *  anywhere from it; it's a preview of what's coming, not a feature toggle. */
-export function ClinicProPlaceholder() {
-  return (
-    <div className="clindash-expansion-card">
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, color: "var(--color-text)" }}>
-        <UsersIcon size={16} />
-        <strong style={{ fontFamily: "var(--font-heading)", fontSize: 14 }}>Clinic PRO</strong>
-      </div>
-      Share a caseload across a full clinic — multiple clinicians, shared scheduling, and practice-wide reporting on
-      top of the same clinician dashboard you&rsquo;re using today. Coming soon.
-    </div>
   );
 }
