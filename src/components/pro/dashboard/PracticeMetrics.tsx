@@ -1,5 +1,5 @@
 import { UsersIcon } from "@/components/icons";
-import type { PatientListEntry } from "@/app/actions/clinician-dashboard";
+import type { EpisodeLengthStats, PatientListEntry, ReferralSourceBreakdownEntry } from "@/app/actions/clinician-dashboard";
 
 const REASSESSMENT_AMBER = "#c9853a";
 // Above this share of the active caseload being due for reassessment at once, the tile
@@ -7,10 +7,19 @@ const REASSESSMENT_AMBER = "#c9853a";
 // Brief bar's own amber, just expressed as a rate instead of a raw count.
 const HIGH_REASSESSMENT_RATE = 0.25;
 
-/** Zone 3 of /pro/dashboard — three read-only practice metrics computed straight off the
- *  already-loaded active caseload (see ClinicianDashboard.tsx's `patients` prop), so this
- *  needs no server action or extra data fetch of its own. */
-export function PracticeMetrics({ patients }: { patients: PatientListEntry[] }) {
+/** Zone 3 of /pro/dashboard. The first three cards are computed straight off the
+ *  already-loaded active caseload (`patients`); the discharged-episode-length and referral
+ *  breakdown cards need their own server-fetched props (`episodeLengthStats`,
+ *  `referralBreakdown`) since neither is derivable from the active-only `patients` list. */
+export function PracticeMetrics({
+  patients,
+  episodeLengthStats,
+  referralBreakdown,
+}: {
+  patients: PatientListEntry[];
+  episodeLengthStats: EpisodeLengthStats;
+  referralBreakdown: ReferralSourceBreakdownEntry[];
+}) {
   const activeCount = patients.length;
 
   // "Episode length" here means the planned length of care (totalVisits) averaged across
@@ -27,6 +36,10 @@ export function PracticeMetrics({ patients }: { patients: PatientListEntry[] }) 
   const dueCount = patients.filter((p) => p.dueForReassessment).length;
   const reassessRate = activeCount > 0 ? dueCount / activeCount : 0;
   const rateIsHigh = reassessRate > HIGH_REASSESSMENT_RATE;
+
+  const qualifyingRegions = episodeLengthStats.byRegion.filter((r) => r.patientCount >= 2).sort((a, b) => b.patientCount - a.patientCount);
+  const qualifyingReferralSources = referralBreakdown.filter((r) => r.count >= 1);
+  const maxReferralCount = Math.max(1, ...qualifyingReferralSources.map((r) => r.count));
 
   return (
     <div className="clindash-metrics-row">
@@ -68,6 +81,58 @@ export function PracticeMetrics({ patients }: { patients: PatientListEntry[] }) 
         <div className="clindash-metric-card-sub">
           {dueCount} of {activeCount} active patients due
         </div>
+      </div>
+
+      <div className="card elev-sm">
+        <div className="card-kicker">Episode Length — Discharged</div>
+        {episodeLengthStats.totalDischarged === 0 ? (
+          <p className="clindash-metric-card-sub" style={{ marginTop: 8 }}>
+            Discharge your first patient to start tracking episode length.
+          </p>
+        ) : (
+          <>
+            <div className="clindash-metric-card-value">{episodeLengthStats.overallAverageVisits!.toFixed(1)}</div>
+            <div className="clindash-metric-card-sub">avg visits to discharge</div>
+            {qualifyingRegions.length === 0 ? (
+              <p className="clindash-metric-card-sub" style={{ marginTop: 8 }}>
+                Not enough data yet.
+              </p>
+            ) : (
+              <table className="clindash-region-stat-table">
+                <tbody>
+                  {qualifyingRegions.map((r) => (
+                    <tr key={r.bodyRegion}>
+                      <td>{r.bodyRegion}</td>
+                      <td style={{ textAlign: "right" }}>{r.averageVisits.toFixed(1)} avg</td>
+                      <td style={{ textAlign: "right" }}>{r.patientCount} patients</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </>
+        )}
+      </div>
+
+      <div className="card elev-sm">
+        <div className="card-kicker">Referral Sources</div>
+        {qualifyingReferralSources.length === 0 ? (
+          <p className="clindash-metric-card-sub" style={{ marginTop: 8 }}>
+            Add referral sources when creating patients to track where your patients come from.
+          </p>
+        ) : (
+          <div className="clindash-region-bars">
+            {qualifyingReferralSources.map((r) => (
+              <div className="clindash-region-bar-row" key={r.source}>
+                <span className="clindash-region-bar-label">{r.source}</span>
+                <span className="clindash-region-bar-track">
+                  <span className="clindash-region-bar-fill" style={{ width: `${(r.count / maxReferralCount) * 100}%` }} />
+                </span>
+                <span className="clindash-region-bar-count">{r.count}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

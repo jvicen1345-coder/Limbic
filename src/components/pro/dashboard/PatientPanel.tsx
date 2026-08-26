@@ -13,6 +13,7 @@ interface AddPatientForm {
   specialty: string;
   totalVisits: string;
   nextVisit: string;
+  referralSource: string;
 }
 
 const EMPTY_FORM: AddPatientForm = {
@@ -22,6 +23,7 @@ const EMPTY_FORM: AddPatientForm = {
   specialty: CLINICIAN_SPECIALTIES[0],
   totalVisits: "12",
   nextVisit: "",
+  referralSource: "",
 };
 
 /** Left column of /pro/dashboard — the active caseload list plus its slide-open "Add
@@ -59,6 +61,7 @@ export function PatientPanel({
         specialty: form.specialty,
         totalVisits,
         nextVisit: form.nextVisit || undefined,
+        referralSource: form.referralSource || undefined,
       });
       if (!result.ok) {
         setError(result.error);
@@ -154,6 +157,16 @@ export function PatientPanel({
               type="date"
               value={form.nextVisit}
               onChange={(e) => setForm((f) => ({ ...f, nextVisit: e.target.value }))}
+            />
+          </div>
+          <div className="field" style={{ margin: 0 }}>
+            <label htmlFor="pp-referral">Referral source (optional)</label>
+            <input
+              className="input"
+              id="pp-referral"
+              placeholder="e.g. Dr. Smith — Orthopedics, Self-referral, Word of mouth"
+              value={form.referralSource}
+              onChange={(e) => setForm((f) => ({ ...f, referralSource: e.target.value }))}
             />
           </div>
 

@@ -336,6 +336,9 @@ model User {
   endOfDaySummaries   EndOfDaySummary[]
   treatmentIdeas      TreatmentIdea[]
   redFlagAlerts       RedFlagAlert[]
+  patientGoals        PatientGoal[]
+  referralSources     ReferralSource[]
+  dischargeSummaries  DischargeSummary[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -1067,9 +1070,12 @@ model ClinicalPatient {
   hepAssignments PatientHEPAssignment[]
   clinicalNotes  ClinicalNote[]
   preBriefs      PreVisitBrief[]
-  visitLogs      VisitLog[]
-  treatmentIdeas TreatmentIdea[]
-  redFlagAlerts  RedFlagAlert[]
+  visitLogs        VisitLog[]
+  treatmentIdeas   TreatmentIdea[]
+  redFlagAlerts    RedFlagAlert[]
+  goals            PatientGoal[]
+  referralSource   ReferralSource[]
+  dischargeSummary DischargeSummary[]
 
   // A clinician's own patient codes must be unique to them (not globally — two different
   // clinicians can each have their own "PT-001") — enforced here, not just checked in
@@ -1246,6 +1252,61 @@ model RedFlagAlert {
   description String
   dismissed   Boolean  @default(false)
   createdAt   DateTime @default(now())
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+// One functional goal on a patient's plan of care — either picked from lib/goal-bank.ts's
+// pre-written SMART goals via the "Use This Goal" button, or written from scratch (see
+// addPatientGoal in app/actions/clinician-dashboard.ts). status is plain String — "active" |
+// "met" | "partially-met" | "not-met" — same fixed-but-app-enforced-value-set convention as
+// ClinicalPatient.status.
+model PatientGoal {
+  id        String   @id @default(cuid())
+  patientId String
+  userId    String
+  goalText  String
+  category  String
+  timeframe String
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Where a patient came from — captured once, at patient creation (see the Add Patient
+// form's optional Referral Source field) — free text, not a fixed list, since referral
+// sources vary too much by clinic to enumerate (a referring physician's name, "self-referral",
+// "word of mouth", etc). getReferralSourceBreakdown groups these by exact string match for
+// the Practice Metrics zone's bar chart.
+model ReferralSource {
+  id        String   @id @default(cuid())
+  userId    String
+  patientId String
+  source    String
+  createdAt DateTime @default(now())
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+// A generated discharge summary, reviewed and (optionally) edited by the clinician before
+// confirming — see generateDischargeSummaryAction/confirmDischargeSummary in
+// app/actions/clinician-dashboard.ts and the "Before You Discharge" modal. `confirmed`
+// mirrors PreVisitBrief's own confirmedAt pattern: unconfirmed rows are draft text a
+// clinician might still edit or regenerate, never shown on the patient record until
+// confirmed.
+model DischargeSummary {
+  id          String    @id @default(cuid())
+  userId      String
+  patientId   String
+  summary     String
+  confirmed   Boolean   @default(false)
+  confirmedAt DateTime?
+  createdAt   DateTime  @default(now())
 
   user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)

@@ -1,17 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   checkRedFlags,
-  dischargePatient,
   dismissRedFlagAlert,
   getPatientDetail,
   hasLoggedVisitToday,
   type AvailableHEP,
   type DashboardSummary,
+  type EpisodeLengthStats,
   type PatientDetail,
   type PatientListEntry,
+  type ReferralSourceBreakdownEntry,
 } from "@/app/actions/clinician-dashboard";
 import { getDashboardResearchFeedAction } from "@/app/actions/dashboard-research";
 import type { Article } from "@/lib/types";
@@ -21,6 +22,7 @@ import { PatientWorkspace } from "./PatientWorkspace";
 import { ResearchFeedPanel } from "./ResearchFeedPanel";
 import { PracticeMetrics, ClinicProPlaceholder } from "./PracticeMetrics";
 import { PreparePatientModal } from "./PreparePatientModal";
+import { DischargeModal } from "./DischargeModal";
 import type { OutcomeMeasuresSectionHandle } from "./OutcomeMeasuresSection";
 
 export interface ClinicianDashboardProps {
@@ -30,6 +32,8 @@ export interface ClinicianDashboardProps {
   defaultResearchArticles: Article[];
   todaysPatients: PatientListEntry[];
   outcomeReminderPatients: PatientListEntry[];
+  episodeLengthStats: EpisodeLengthStats;
+  referralBreakdown: ReferralSourceBreakdownEntry[];
   clinicianName: string;
   clinicianCredential: string;
   clinicianClinicName: string;
@@ -51,6 +55,8 @@ export function ClinicianDashboard({
   defaultResearchArticles,
   todaysPatients,
   outcomeReminderPatients,
+  episodeLengthStats,
+  referralBreakdown,
   clinicianName,
   clinicianCredential,
   clinicianClinicName,
@@ -70,8 +76,8 @@ export function ClinicianDashboard({
   const [redFlagAlerts, setRedFlagAlerts] = useState<{ id: string; description: string }[]>([]);
   const [detailFor, setDetailFor] = useState<string | null>(null);
   const [refreshTick, setRefreshTick] = useState(0);
-  const [dischargePending, startDischarge] = useTransition();
   const [prepareModalOpen, setPrepareModalOpen] = useState(false);
+  const [dischargeModalOpen, setDischargeModalOpen] = useState(false);
 
   // Per-opening dismissal tracking for the visit-log and outcome-milestone banners — reset
   // to null (i.e. "not yet handled") every time selectedPatientId changes at all, including
@@ -154,15 +160,9 @@ export function ClinicianDashboard({
     void dismissRedFlagAlert(alertId);
   };
 
-  const handleDischarge = () => {
-    if (!selectedPatientId) return;
-    startDischarge(async () => {
-      const result = await dischargePatient(selectedPatientId);
-      if (result.ok) {
-        router.refresh();
-        setRefreshTick((t) => t + 1);
-      }
-    });
+  const handlePatientDischarged = () => {
+    router.refresh();
+    setRefreshTick((t) => t + 1);
   };
 
   const patientLabel = patientDetail ? `${patientDetail.bodyRegion} · ${patientDetail.condition}` : null;
@@ -186,9 +186,8 @@ export function ClinicianDashboard({
           loadingDetail={loadingDetail}
           availableHEPs={availableHEPs}
           onChanged={handleChanged}
-          onDischarge={handleDischarge}
+          onOpenDischargeModal={() => setDischargeModalOpen(true)}
           onPrepareForPatient={() => setPrepareModalOpen(true)}
-          dischargePending={dischargePending}
           todaysPatients={todaysPatients}
           outcomeReminderPatients={outcomeReminderPatients}
           allPatients={initialPatients}
@@ -212,7 +211,7 @@ export function ClinicianDashboard({
         </div>
       </div>
 
-      <PracticeMetrics patients={initialPatients} />
+      <PracticeMetrics patients={initialPatients} episodeLengthStats={episodeLengthStats} referralBreakdown={referralBreakdown} />
       <ClinicProPlaceholder />
 
       {patientDetail && (
@@ -224,6 +223,15 @@ export function ClinicianDashboard({
           clinicianClinicName={clinicianClinicName}
           clinicianEmail={clinicianEmail}
           onClose={() => setPrepareModalOpen(false)}
+        />
+      )}
+
+      {selectedPatientId && (
+        <DischargeModal
+          open={dischargeModalOpen}
+          patientId={selectedPatientId}
+          onClose={() => setDischargeModalOpen(false)}
+          onDischarged={handlePatientDischarged}
         />
       )}
     </>

@@ -163,3 +163,67 @@ Return only a JSON array of 3 strings.`,
     return null;
   }
 }
+
+export interface DischargeSummaryPatientInput {
+  patientCode: string;
+  condition: string;
+  bodyRegion: string;
+  visitCount: number;
+  totalVisits: number;
+  outcomes: { measureName: string; score: number; maxScore: number; recordedAt: Date }[];
+  goals: { goalText: string; status: string }[];
+  lastHEP?: string;
+}
+
+const DISCHARGE_SUMMARY_SYSTEM_PROMPT = `You are a clinical documentation assistant for licensed physical therapists. You generate concise discharge summaries based on patient data. The summary is clinical in tone and written for the clinician to review and confirm before use.
+
+Write a discharge summary in exactly 3 paragraphs:
+Paragraph 1 — Patient presentation and plan of care summary. Condition, total visits completed, overall episode description.
+Paragraph 2 — Functional outcomes and goal achievement. Reference outcome measure trends if available. State whether goals were met, partially met, or not met.
+Paragraph 3 — Discharge status and home program. Functional status at discharge, what the patient is being discharged to, home program instructions if applicable.
+
+Clinical language. Precise. No filler. Under 150 words total.`;
+
+/** "Generate Discharge Summary" inside the "Before You Discharge" modal (see
+ *  DischargeModal.tsx and generateDischargeSummaryAction in
+ *  app/actions/clinician-dashboard.ts, which is what saves the (still-unconfirmed) result
+ *  to DischargeSummary). */
+export async function generateDischargeSummary(patient: DischargeSummaryPatientInput): Promise<string | null> {
+  try {
+    const outcomeSummary =
+      patient.outcomes.length > 0
+        ? patient.outcomes.map((o) => `${o.measureName}: ${o.score}/${o.maxScore} recorded ${new Date(o.recordedAt).toLocaleDateString()}`).join(", ")
+        : "No outcome measures recorded";
+
+    const goalSummary =
+      patient.goals.length > 0 ? patient.goals.map((g) => `${g.goalText} — ${g.status}`).join(". ") : "No formal goals recorded";
+
+    const message = await client.messages.create({
+      model: MODEL,
+      max_tokens: 500,
+      system: DISCHARGE_SUMMARY_SYSTEM_PROMPT,
+      messages: [
+        {
+          role: "user",
+          content: `Generate a discharge summary for this patient:
+Patient code: ${patient.patientCode}
+Condition: ${patient.condition}
+Body region: ${patient.bodyRegion}
+Total visits completed: ${patient.visitCount} of ${patient.totalVisits} planned
+Outcome measures: ${outcomeSummary}
+Goals: ${goalSummary}
+${patient.lastHEP ? `Home program: ${patient.lastHEP}` : ""}
+
+Return only the 3 paragraph summary.`,
+        },
+      ],
+    });
+
+    const content = message.content[0];
+    if (content.type !== "text") return null;
+    return content.text.trim();
+  } catch (error) {
+    console.error("Discharge summary generation failed:", error);
+    return null;
+  }
+}

@@ -11,14 +11,19 @@ import { OutcomeMilestoneBanner } from "./OutcomeMilestoneBanner";
 import { ConditionIntelligenceCard } from "./ConditionIntelligenceCard";
 import { TreatmentIdeasCard } from "./TreatmentIdeasCard";
 import { ClinicalAlertBanner } from "./ClinicalAlertBanner";
+import { PatientGoalsSection } from "./PatientGoalsSection";
+
+// A patient is offered early access to "Generate Discharge Summary" once they're this
+// close to their planned total visits, so a clinician can review/regenerate before the
+// actual discharge conversation rather than starting cold in the moment.
+const DISCHARGE_SUMMARY_EARLY_ACCESS_VISITS_REMAINING = 2;
 
 function ActiveWorkspace({
   patient,
   availableHEPs,
   onChanged,
-  onDischarge,
+  onOpenDischargeModal,
   onPrepareForPatient,
-  dischargePending,
   showVisitBanner,
   onVisitLogged,
   onVisitBannerDismiss,
@@ -32,9 +37,8 @@ function ActiveWorkspace({
   patient: PatientDetail;
   availableHEPs: AvailableHEP[];
   onChanged: () => void;
-  onDischarge: () => void;
+  onOpenDischargeModal: () => void;
   onPrepareForPatient: () => void;
-  dischargePending: boolean;
   showVisitBanner: boolean;
   onVisitLogged: () => void;
   onVisitBannerDismiss: () => void;
@@ -45,6 +49,8 @@ function ActiveWorkspace({
   redFlagAlerts: { id: string; description: string }[];
   onDismissRedFlag: (alertId: string) => void;
 }) {
+  const nearingDischarge =
+    patient.status === "active" && patient.totalVisits - patient.visitCount <= DISCHARGE_SUMMARY_EARLY_ACCESS_VISITS_REMAINING;
   const progressPercent = patient.totalVisits > 0 ? Math.min(100, Math.round((patient.visitCount / patient.totalVisits) * 100)) : 0;
 
   return (
@@ -78,19 +84,38 @@ function ActiveWorkspace({
           <button type="button" className="btn btn-primary" onClick={onPrepareForPatient} disabled={patient.status !== "active"}>
             Prepare for Patient
           </button>
+          {nearingDischarge && (
+            <button type="button" className="btn btn-secondary" onClick={onOpenDischargeModal}>
+              Generate Discharge Summary
+            </button>
+          )}
           {patient.status === "active" && (
-            <button type="button" className="btn clindash-discharge-btn" onClick={onDischarge} disabled={dischargePending}>
-              {dischargePending ? "Discharging…" : "Discharge"}
+            <button type="button" className="btn clindash-discharge-btn" onClick={onOpenDischargeModal}>
+              Discharge
             </button>
           )}
         </div>
       </div>
+
+      <PatientGoalsSection patient={patient} onChanged={onChanged} />
 
       <ConditionIntelligenceCard condition={patient.condition} outcomeActionsRef={outcomeActionsRef} />
 
       <PreVisitBriefSection patient={patient} />
 
       <TreatmentIdeasCard patientId={patient.id} />
+
+      {patient.status === "discharged" && patient.confirmedDischargeSummary && (
+        <div className="clindash-section">
+          <div className="card-kicker" style={{ margin: "0 0 8px" }}>
+            Discharge Summary
+          </div>
+          <div className="clindash-discharge-summary-box">{patient.confirmedDischargeSummary.summary}</div>
+          <p className="clindash-discharge-summary-date">
+            Confirmed {new Date(patient.confirmedDischargeSummary.confirmedAt).toLocaleDateString()}
+          </p>
+        </div>
+      )}
 
       <div className="clindash-section">
         <div className="clindash-visit-progress-label">
@@ -134,9 +159,8 @@ export function PatientWorkspace({
   loadingDetail,
   availableHEPs,
   onChanged,
-  onDischarge,
+  onOpenDischargeModal,
   onPrepareForPatient,
-  dischargePending,
   todaysPatients,
   outcomeReminderPatients,
   allPatients,
@@ -158,9 +182,8 @@ export function PatientWorkspace({
   loadingDetail: boolean;
   availableHEPs: AvailableHEP[];
   onChanged: () => void;
-  onDischarge: () => void;
+  onOpenDischargeModal: () => void;
   onPrepareForPatient: () => void;
-  dischargePending: boolean;
   todaysPatients: PatientListEntry[];
   outcomeReminderPatients: PatientListEntry[];
   allPatients: PatientListEntry[];
@@ -188,9 +211,8 @@ export function PatientWorkspace({
             patient={selectedPatient}
             availableHEPs={availableHEPs}
             onChanged={onChanged}
-            onDischarge={onDischarge}
+            onOpenDischargeModal={onOpenDischargeModal}
             onPrepareForPatient={onPrepareForPatient}
-            dischargePending={dischargePending}
             showVisitBanner={showVisitBanner}
             onVisitLogged={onVisitLogged}
             onVisitBannerDismiss={onVisitBannerDismiss}

@@ -3,12 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
-import { generateClinicalBrief, generatePatientBrief, generateTreatmentIdeas as generateTreatmentIdeasBrief } from "@/lib/pre-visit-brief";
+import {
+  generateClinicalBrief,
+  generatePatientBrief,
+  generateTreatmentIdeas as generateTreatmentIdeasBrief,
+  generateDischargeSummary as generateDischargeSummaryBrief,
+} from "@/lib/pre-visit-brief";
 import { REASSESSMENT_INTERVAL_VISITS, REASSESSMENT_STALE_DAYS } from "@/lib/clinician-dashboard-types";
 import { todayLocalDateStr } from "@/lib/today";
 import { conditionIntelligenceMap } from "@/lib/condition-intelligence";
 import { mcidValues } from "@/lib/outcome-benchmarks";
 import { detectRedFlags } from "@/lib/red-flag-detector";
+import { goalBank } from "@/lib/goal-bank";
 import type { ClinicalPatient, OutcomeMeasureEntry, PatientHEPAssignment, ClinicalNote, RedFlagAlert } from "@/generated/prisma/client";
 
 /**
@@ -176,6 +182,11 @@ export interface CreatePatientInput {
   specialty: string;
   totalVisits: number;
   nextVisit?: string; // "YYYY-MM-DD"
+  /** Optional free-text referral source (e.g. "Dr. Smith — Orthopedics", "Self-referral")
+   *  — saved as a ReferralSource row alongside the patient, not a field on
+   *  ClinicalPatient itself, so it stays the single place getReferralSourceBreakdown reads
+   *  from. */
+  referralSource?: string;
 }
 
 export type ClinicianDashboardResult<T extends object = object> = ({ ok: true } & T) | { ok: false; error: string };
@@ -207,6 +218,11 @@ export async function createPatient(data: CreatePatientInput): Promise<Clinician
       nextVisit: data.nextVisit ? new Date(`${data.nextVisit}T00:00:00`) : null,
     },
   });
+
+  const referralSource = data.referralSource?.trim();
+  if (referralSource) {
+    await prisma.referralSource.create({ data: { userId: user.id, patientId: created.id, source: referralSource } });
+  }
 
   revalidatePath("/pro/dashboard");
   return {
@@ -325,6 +341,11 @@ export interface PatientDetail extends PatientListEntry {
    *  already known from `outcomes` above. Missing a key means no published benchmark exists
    *  for that measure. */
   benchmarks: Record<string, OutcomeBenchmark>;
+  goals: PatientGoalRecord[];
+  /** The most recently confirmed discharge summary, if any — same data
+   *  getConfirmedDischargeSummary returns, included here too so the read-only "Discharge
+   *  Summary" section on a discharged patient's record doesn't need its own round trip. */
+  confirmedDischargeSummary: ConfirmedDischargeSummary | null;
 }
 
 export async function getPatientDetail(patientId: string): Promise<PatientDetail | null> {
@@ -337,6 +358,8 @@ export async function getPatientDetail(patientId: string): Promise<PatientDetail
       hepAssignments: { orderBy: { assignedAt: "desc" } },
       clinicalNotes: { orderBy: { visitNumber: "desc" } },
       preBriefs: { orderBy: { generatedAt: "desc" } },
+      goals: { orderBy: { createdAt: "desc" } },
+      dischargeSummary: { where: { confirmed: true }, orderBy: { confirmedAt: "desc" }, take: 1 },
     },
   });
   if (!patient || patient.userId !== user.id) return null;
@@ -368,6 +391,10 @@ export async function getPatientDetail(patientId: string): Promise<PatientDetail
     clinicalNotes: patient.clinicalNotes,
     preBriefs: patient.preBriefs,
     benchmarks,
+    goals: patient.goals,
+    confirmedDischargeSummary: patient.dischargeSummary[0]
+      ? { summary: patient.dischargeSummary[0].summary, confirmedAt: patient.dischargeSummary[0].confirmedAt! }
+      : null,
   };
 }
 
@@ -837,4 +864,235 @@ export async function getOutcomeBenchmarks(condition: string, measureName: strin
   const user = await requireProUser();
   if (!user) return null;
   return lookupBenchmark(condition, measureName);
+}
+
+/* ============================================================================
+   Practice building features (Episode Length Tracker, Discharge Summary Generator, Goal
+   Bank Integration, Referral Tracker). Same conventions as the rest of this file.
+   ============================================================================ */
+
+/** Static goal-text lookup (lib/goal-bank.ts) for the "Suggested Goals" panel —
+ *  `bodyRegion` isn't needed for the lookup itself (goalBank is keyed on the
+ *  "Region — Function" category label alone, which already encodes the region), but is
+ *  kept in the signature to match how PatientGoalsSection.tsx calls this alongside the
+ *  patient's own bodyRegion for a future region-aware ranking of suggestions. */
+export async function getGoalBankSuggestions(_bodyRegion: string, category: string): Promise<string[]> {
+  const user = await requireProUser();
+  if (!user) return [];
+  return goalBank[category] ?? [];
+}
+
+export interface PatientGoalRecord {
+  id: string;
+  goalText: string;
+  category: string;
+  timeframe: string;
+  status: string;
+  createdAt: Date;
+}
+
+export async function addPatientGoal(
+  patientId: string,
+  goalText: string,
+  category: string,
+  timeframe: string
+): Promise<ClinicianDashboardResult<{ goal: PatientGoalRecord }>> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const patient = await requireOwnedPatient(user.id, patientId);
+  if (!patient) return { ok: false, error: "Patient not found." };
+
+  const trimmedText = goalText.trim();
+  if (!trimmedText) return { ok: false, error: "Goal text is required." };
+
+  const goal = await prisma.patientGoal.create({
+    data: { userId: user.id, patientId, goalText: trimmedText, category, timeframe: timeframe.trim() },
+  });
+
+  revalidatePath("/pro/dashboard");
+  return { ok: true, goal };
+}
+
+/** Status dropdown on each goal row — active | met | partially-met | not-met (see
+ *  GOAL_STATUSES in lib/clinician-dashboard-types.ts). */
+export async function updateGoalStatus(goalId: string, status: string): Promise<ClinicianDashboardResult> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const goal = await prisma.patientGoal.findUnique({ where: { id: goalId } });
+  if (!goal || goal.userId !== user.id) return { ok: false, error: "Goal not found." };
+
+  await prisma.patientGoal.update({ where: { id: goalId }, data: { status } });
+  revalidatePath("/pro/dashboard");
+  return { ok: true };
+}
+
+async function loadDischargeContext(userId: string, patientId: string) {
+  const patient = await prisma.clinicalPatient.findUnique({
+    where: { id: patientId },
+    include: {
+      outcomes: { orderBy: { recordedAt: "asc" } },
+      goals: { orderBy: { createdAt: "asc" } },
+      hepAssignments: { orderBy: { assignedAt: "desc" }, take: 1 },
+    },
+  });
+  if (!patient || patient.userId !== userId) return null;
+  return {
+    patientCode: patient.patientCode,
+    condition: patient.condition,
+    bodyRegion: patient.bodyRegion,
+    visitCount: patient.visitCount,
+    totalVisits: patient.totalVisits,
+    outcomes: patient.outcomes.map((o) => ({
+      measureName: o.measureName,
+      score: o.score,
+      maxScore: o.maxScore,
+      recordedAt: o.recordedAt,
+    })),
+    goals: patient.goals.map((g) => ({ goalText: g.goalText, status: g.status })),
+    lastHEP: patient.hepAssignments[0]?.hepName,
+  };
+}
+
+/** Step 1 of the "Before You Discharge" modal — generates and saves a draft (confirmed:
+ *  false) DischargeSummary, which confirmDischargeSummary later finalizes. Every call
+ *  creates a fresh row (same "Regenerate creates, doesn't overwrite" reasoning as
+ *  generateTreatmentIdeas) — the modal only ever shows the most recent one. */
+export async function generateDischargeSummaryAction(patientId: string): Promise<ClinicianDashboardResult<{ summary: string }>> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const context = await loadDischargeContext(user.id, patientId);
+  if (!context) return { ok: false, error: "Patient not found." };
+
+  const summary = await generateDischargeSummaryBrief(context);
+  if (!summary) return { ok: false, error: "Limbic Agent isn't available right now. Try again in a moment." };
+
+  await prisma.dischargeSummary.create({ data: { userId: user.id, patientId, summary, confirmed: false } });
+  revalidatePath("/pro/dashboard");
+  return { ok: true, summary };
+}
+
+/** "Confirm and Discharge" — finalizes the most recent draft summary (or, if the clinician
+ *  somehow reaches this with no prior generate call, creates one directly as confirmed) with
+ *  whatever text is currently in the modal's editable textarea, which may differ from what
+ *  was generated if the clinician edited it. Does not itself call dischargePatient — the
+ *  modal calls both in sequence, same "compose two small actions" shape as everywhere else
+ *  a UI flow needs more than one mutation. */
+export async function confirmDischargeSummary(patientId: string, summaryText: string): Promise<ClinicianDashboardResult> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const patient = await requireOwnedPatient(user.id, patientId);
+  if (!patient) return { ok: false, error: "Patient not found." };
+
+  const summary = summaryText.trim();
+  if (!summary) return { ok: false, error: "Summary text can't be empty." };
+
+  const draft = await prisma.dischargeSummary.findFirst({ where: { patientId, confirmed: false }, orderBy: { createdAt: "desc" } });
+  if (draft) {
+    await prisma.dischargeSummary.update({
+      where: { id: draft.id },
+      data: { summary, confirmed: true, confirmedAt: new Date() },
+    });
+  } else {
+    await prisma.dischargeSummary.create({
+      data: { userId: user.id, patientId, summary, confirmed: true, confirmedAt: new Date() },
+    });
+  }
+
+  revalidatePath("/pro/dashboard");
+  return { ok: true };
+}
+
+export interface ConfirmedDischargeSummary {
+  summary: string;
+  confirmedAt: Date;
+}
+
+/** The read-only "Discharge Summary" section on a discharged patient's record — the most
+ *  recently confirmed summary, if any (a patient discharged via "Discharge Without
+ *  Summary" simply has none). */
+export async function getConfirmedDischargeSummary(patientId: string): Promise<ConfirmedDischargeSummary | null> {
+  const user = await requireProUser();
+  if (!user) return null;
+  const patient = await requireOwnedPatient(user.id, patientId);
+  if (!patient) return null;
+
+  const row = await prisma.dischargeSummary.findFirst({
+    where: { patientId, confirmed: true },
+    orderBy: { confirmedAt: "desc" },
+  });
+  if (!row || !row.confirmedAt) return null;
+  return { summary: row.summary, confirmedAt: row.confirmedAt };
+}
+
+export async function addReferralSource(patientId: string, source: string): Promise<ClinicianDashboardResult> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const patient = await requireOwnedPatient(user.id, patientId);
+  if (!patient) return { ok: false, error: "Patient not found." };
+
+  const trimmedSource = source.trim();
+  if (!trimmedSource) return { ok: false, error: "A referral source is required." };
+
+  await prisma.referralSource.create({ data: { userId: user.id, patientId, source: trimmedSource } });
+  revalidatePath("/pro/dashboard");
+  return { ok: true };
+}
+
+export interface ReferralSourceBreakdownEntry {
+  source: string;
+  count: number;
+}
+
+/** Practice Metrics zone's "Referral Sources" bar chart — grouped by exact source-string
+ *  match (see ReferralSource's own schema.prisma comment on why this is free text, not a
+ *  fixed list), most patients first. */
+export async function getReferralSourceBreakdown(): Promise<ReferralSourceBreakdownEntry[]> {
+  const user = await requireProUser();
+  if (!user) return [];
+
+  const rows = await prisma.referralSource.groupBy({
+    by: ["source"],
+    where: { userId: user.id },
+    _count: { source: true },
+  });
+
+  return rows.map((r) => ({ source: r.source, count: r._count.source })).sort((a, b) => b.count - a.count);
+}
+
+export interface EpisodeLengthStats {
+  overallAverageVisits: number | null;
+  totalDischarged: number;
+  byRegion: { bodyRegion: string; averageVisits: number; patientCount: number }[];
+}
+
+/** Practice Metrics zone's Episode Length card — averages visitCount (visits actually
+ *  completed by the time of discharge), not totalVisits (the originally *planned* count
+ *  the active-caseload Episode Length card in PracticeMetrics.tsx uses) — a discharged
+ *  patient's real episode length is what they actually needed, which may differ from plan. */
+export async function getEpisodeLengthStats(): Promise<EpisodeLengthStats> {
+  const user = await requireProUser();
+  if (!user) return { overallAverageVisits: null, totalDischarged: 0, byRegion: [] };
+
+  const discharged = await prisma.clinicalPatient.findMany({
+    where: { userId: user.id, status: "discharged" },
+    select: { visitCount: true, bodyRegion: true },
+  });
+
+  if (discharged.length === 0) return { overallAverageVisits: null, totalDischarged: 0, byRegion: [] };
+
+  const overallAverageVisits = discharged.reduce((sum, p) => sum + p.visitCount, 0) / discharged.length;
+
+  const byRegionMap = new Map<string, number[]>();
+  for (const p of discharged) {
+    const list = byRegionMap.get(p.bodyRegion) ?? [];
+    list.push(p.visitCount);
+    byRegionMap.set(p.bodyRegion, list);
+  }
+  const byRegion = Array.from(byRegionMap.entries()).map(([bodyRegion, visits]) => ({
+    bodyRegion,
+    averageVisits: visits.reduce((sum, v) => sum + v, 0) / visits.length,
+    patientCount: visits.length,
+  }));
+
+  return { overallAverageVisits, totalDischarged: discharged.length, byRegion };
 }
