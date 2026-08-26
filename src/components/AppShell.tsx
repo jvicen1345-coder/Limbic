@@ -38,6 +38,7 @@ import {
   ShieldIcon,
   HeartIcon,
   PencilIcon,
+  LayoutDashboardIcon,
   BodyIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -363,6 +364,9 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         />
         {proExpanded && (
           <>
+            {isPro && (
+              <NavLink href="/pro/dashboard" icon={<LayoutDashboardIcon />} label="Dashboard" bold={false} onNavigate={onNavigate} />
+            )}
             <NavLink href="/pro" icon={<CrownIcon />} label="Overview" badge={isPro ? "Pro" : undefined} bold={false} onNavigate={onNavigate} />
             <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
             {(isPro || isStudent) && (
