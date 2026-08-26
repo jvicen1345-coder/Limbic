@@ -8172,3 +8172,126 @@ button.plan-compare-name:hover { text-decoration: underline; }
   .patient-brief-section { break-inside: avoid; page-break-inside: avoid; }
   @page { margin: 0.75in; }
 }
+
+/* ============================================================================
+   Clinician Dashboard — Prompt 1 daily-habit features (Morning Rounds, visit logging,
+   outcome-milestone banners, End of Day summary). Extends the .clindash-* block above —
+   same naming convention, same reuse-existing-tokens approach.
+   ============================================================================ */
+
+.clindash-morning-title { font-size: 22px; margin: 0 0 2px; }
+.clindash-morning-date { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 18px; }
+
+.clindash-eod-card { padding: 20px; margin-bottom: 20px; }
+.clindash-eod-header { font-family: var(--font-heading); font-size: 16px; margin-bottom: 12px; }
+.clindash-eod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.clindash-eod-stat-value { font-family: var(--font-heading); font-size: 22px; }
+.clindash-eod-stat-value--danger { color: var(--color-danger); }
+.clindash-eod-stat-label { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
+.clindash-eod-note { font-size: 12px; color: var(--color-neutral-700); margin-top: 12px; }
+.clindash-eod-actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+
+.clindash-today-list { display: flex; flex-direction: column; gap: 8px; }
+.clindash-today-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+}
+.clindash-today-row-main { min-width: 0; }
+.clindash-today-row-code { font-weight: 700; font-size: 13.5px; }
+.clindash-today-row-condition { font-size: 12px; color: var(--color-neutral-700); }
+.clindash-today-row-outcome { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
+
+.clindash-reminders-header { color: #c9853a; margin: 0 0 8px; }
+.clindash-reminder-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #c9853a 10%, transparent);
+  border: 1px solid color-mix(in srgb, #c9853a 30%, transparent);
+  margin-bottom: 8px;
+}
+.clindash-reminder-row-main { min-width: 0; }
+.clindash-reminder-row-code { font-weight: 700; font-size: 13px; }
+.clindash-reminder-row-condition { font-size: 11.5px; color: var(--color-neutral-700); }
+
+.clindash-quickstats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+.clindash-quickstat-tile { padding: 12px 14px; text-align: center; }
+.clindash-quickstat-value { font-family: var(--font-heading); font-size: 20px; }
+.clindash-quickstat-label { font-size: 10.5px; color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 3px; }
+
+.clindash-switch-view-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font: inherit;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  margin-top: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.clindash-patient-search-wrap { margin-top: 8px; }
+.clindash-patient-search-results { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.clindash-patient-search-result {
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.clindash-visit-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-100);
+  border: 1px solid var(--color-accent-300);
+  margin-bottom: 16px;
+}
+.clindash-visit-banner-actions { display: flex; align-items: center; gap: 8px; }
+.clindash-visit-banner-confirm { font-size: 13px; font-weight: 600; color: var(--color-success); }
+
+.clindash-milestone-banner {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #c9853a 10%, transparent);
+  border: 1px solid #c9853a;
+  margin-bottom: 16px;
+}
+.clindash-milestone-banner-text { font-size: 13.5px; color: var(--color-text); margin-bottom: 8px; }
+.clindash-milestone-banner-actions { display: flex; align-items: center; gap: 14px; }
+.clindash-milestone-banner-dismiss { font-size: 12px; color: var(--color-neutral-700); background: none; border: none; cursor: pointer; padding: 0; }
+
+.clindash-reassess-pill {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #c9853a 18%, transparent);
+  color: #c9853a;
+}
+
+@media (max-width: 700px) {
+  .clindash-eod-grid { grid-template-columns: 1fr 1fr; }
+  .clindash-quickstats-row { grid-template-columns: 1fr; }
+  .clindash-today-row { flex-direction: column; align-items: flex-start; }
+  .clindash-reminder-row { flex-direction: column; align-items: flex-start; }
+}

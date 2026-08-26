@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { generateClinicalBrief, generatePatientBrief } from "@/lib/pre-visit-brief";
 import { REASSESSMENT_INTERVAL_VISITS, REASSESSMENT_STALE_DAYS } from "@/lib/clinician-dashboard-types";
+import { todayLocalDateStr } from "@/lib/today";
 import type { ClinicalPatient, OutcomeMeasureEntry, PatientHEPAssignment, ClinicalNote } from "@/generated/prisma/client";
 
 /**
@@ -522,4 +523,158 @@ export async function getAvailableHEPs(): Promise<AvailableHEP[]> {
     orderBy: { name: "asc" },
   });
   return templates;
+}
+
+/* ============================================================================
+   Daily habit features (Morning Rounds view, visit logging, outcome reminders, End of
+   Day summary) — see components/pro/dashboard/MorningRounds.tsx and the visit-log banner
+   in ClinicianDashboard.tsx. Same conventions as the rest of this file: every action
+   re-derives the user from the session, never a client-supplied id.
+   ============================================================================ */
+
+/** Active patients whose nextVisit falls on today's local date, earliest first — the
+ *  Morning Rounds view's "Today's Patients" list. nextVisit is stored at local midnight
+ *  (see createPatient/updatePatient), so a plain date-string comparison is enough — no
+ *  need for a day-boundary range query. */
+export async function getTodaysPatients(): Promise<PatientListEntry[]> {
+  const patients = await getActivePatients();
+  const today = todayLocalDateStr();
+  return patients
+    .filter((p) => p.nextVisit != null && todayLocalDateStr(p.nextVisit) === today)
+    .sort((a, b) => a.nextVisit!.getTime() - b.nextVisit!.getTime());
+}
+
+/** Whether this patient already has a VisitLog entry from today — the visit-confirmation
+ *  banner (see ClinicianDashboard.tsx) checks this before showing "Did you see [code]
+ *  today?" so a clinician who already logged the visit isn't asked again on every
+ *  reselect. */
+export async function hasLoggedVisitToday(patientId: string): Promise<boolean> {
+  const user = await requireProUser();
+  if (!user) return false;
+  const patient = await requireOwnedPatient(user.id, patientId);
+  if (!patient) return false;
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const count = await prisma.visitLog.count({ where: { patientId, loggedAt: { gte: startOfToday } } });
+  return count > 0;
+}
+
+/** "Yes — Log Visit" on the visit-confirmation banner — bumps visitCount and lastSeen on
+ *  the patient record and writes a VisitLog row in one transaction, so the two can never
+ *  drift out of sync (a visitCount bump with no corresponding log, or vice versa). */
+export async function logVisit(patientId: string): Promise<ClinicianDashboardResult<{ visitCount: number }>> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const patient = await requireOwnedPatient(user.id, patientId);
+  if (!patient) return { ok: false, error: "Patient not found." };
+
+  const now = new Date();
+  const [updated] = await prisma.$transaction([
+    prisma.clinicalPatient.update({ where: { id: patientId }, data: { visitCount: { increment: 1 }, lastSeen: now } }),
+    prisma.visitLog.create({ data: { userId: user.id, patientId, visitNumber: patient.visitCount + 1 } }),
+  ]);
+
+  revalidatePath("/pro/dashboard");
+  return { ok: true, visitCount: updated.visitCount };
+}
+
+/** Active patients at a REASSESSMENT_INTERVAL_VISITS milestone (visitCount a nonzero
+ *  multiple of 6) who don't already have an outcome entry recorded today — distinct from
+ *  getPatientsNeedingReassessment's dueForReassessment flag (which also fires on staleness
+ *  and doesn't clear itself the moment a score is logged): this is specifically "flagged
+ *  today, and still needs today's score," for the Morning Rounds reminders section and the
+ *  workspace's milestone banner. */
+export async function getPatientsWithOutcomeReminders(): Promise<PatientListEntry[]> {
+  const patients = await getActivePatients();
+  const milestonePatients = patients.filter((p) => p.visitCount > 0 && p.visitCount % REASSESSMENT_INTERVAL_VISITS === 0);
+  if (milestonePatients.length === 0) return [];
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const todaysOutcomes = await prisma.outcomeMeasureEntry.findMany({
+    where: { patientId: { in: milestonePatients.map((p) => p.id) }, recordedAt: { gte: startOfToday } },
+    select: { patientId: true },
+  });
+  const recordedTodayIds = new Set(todaysOutcomes.map((o) => o.patientId));
+  return milestonePatients.filter((p) => !recordedTodayIds.has(p.id));
+}
+
+export interface EndOfDaySummaryData {
+  patientsSeen: number;
+  notesCompleted: number;
+  notesOutstanding: number;
+  ceHoursThisWeek: number;
+  dismissed: boolean;
+}
+
+/** Computes today's End of Day stats and upserts them onto EndOfDaySummary, refreshing the
+ *  counts on every call (a clinician could still log a visit or a note after first opening
+ *  the card) without touching `dismissed` — only dismissEndOfDaySummary sets that. Safe to
+ *  call repeatedly; the client only calls it once local time is past 4pm (see
+ *  components/pro/dashboard/MorningRounds.tsx), but nothing here depends on that. */
+export async function getEndOfDaySummary(): Promise<EndOfDaySummaryData | null> {
+  const user = await requireProUser();
+  if (!user) return null;
+
+  const dateKey = todayLocalDateStr();
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const weekStart = startOfWeek(new Date());
+
+  const [visitLogsToday, notesToday, activePatients, ceLogsThisWeek] = await Promise.all([
+    prisma.visitLog.findMany({ where: { userId: user.id, loggedAt: { gte: startOfToday } }, select: { patientId: true } }),
+    prisma.clinicalNote.count({ where: { userId: user.id, createdAt: { gte: startOfToday } } }),
+    prisma.clinicalPatient.findMany({
+      where: { userId: user.id, status: "active" },
+      select: { id: true, visitCount: true, clinicalNotes: { select: { visitNumber: true } } },
+    }),
+    prisma.cELog.findMany({ where: { userId: user.id, completedAt: { gte: weekStart } }, select: { hours: true } }),
+  ]);
+
+  const seenTodayIds = new Set(visitLogsToday.map((v) => v.patientId));
+  const notesOutstanding = activePatients.filter(
+    (p) => seenTodayIds.has(p.id) && p.visitCount > 0 && !p.clinicalNotes.some((n) => n.visitNumber === p.visitCount)
+  ).length;
+  const ceHoursThisWeek = ceLogsThisWeek.reduce((sum, l) => sum + l.hours, 0);
+
+  const data = {
+    patientsSeen: seenTodayIds.size,
+    notesCompleted: notesToday,
+    notesOutstanding,
+    ceHoursThisWeek,
+  };
+
+  const summary = await prisma.endOfDaySummary.upsert({
+    where: { userId_dateKey: { userId: user.id, dateKey } },
+    update: data,
+    create: { userId: user.id, dateKey, ...data },
+  });
+
+  return {
+    patientsSeen: summary.patientsSeen,
+    notesCompleted: summary.notesCompleted,
+    notesOutstanding: summary.notesOutstanding,
+    ceHoursThisWeek: summary.ceHoursThisWeek,
+    dismissed: summary.dismissed,
+  };
+}
+
+/** "Dismiss" on the End of Day card — hides it for the rest of today without deleting the
+ *  underlying stats. Upserts rather than a plain update since a clinician could theoretically
+ *  dismiss before getEndOfDaySummary has ever created today's row (defensive only — the UI
+ *  always calls getEndOfDaySummary first to render the card's numbers). */
+export async function dismissEndOfDaySummary(): Promise<ClinicianDashboardResult> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+
+  const dateKey = todayLocalDateStr();
+  await prisma.endOfDaySummary.upsert({
+    where: { userId_dateKey: { userId: user.id, dateKey } },
+    update: { dismissed: true },
+    create: { userId: user.id, dateKey, patientsSeen: 0, notesCompleted: 0, notesOutstanding: 0, ceHoursThisWeek: 0, dismissed: true },
+  });
+
+  revalidatePath("/pro/dashboard");
+  return { ok: true };
 }

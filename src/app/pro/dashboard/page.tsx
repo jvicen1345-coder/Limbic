@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/db";
-import { getArticles } from "@/lib/articles";
-import { buildLimbicAgentInsights } from "@/lib/limbic-agent-insights";
-import { firstName, timeOfDayGreeting, credentialFromName } from "@/lib/meta";
-import { visitorHourOfDay } from "@/lib/timezone";
+import { credentialFromName } from "@/lib/meta";
 import { getResearchFeedArticles } from "@/lib/dashboard-research";
-import { getDashboardSummary, getActivePatients, getAvailableHEPs } from "@/app/actions/clinician-dashboard";
+import {
+  getDashboardSummary,
+  getActivePatients,
+  getAvailableHEPs,
+  getTodaysPatients,
+  getPatientsWithOutcomeReminders,
+} from "@/app/actions/clinician-dashboard";
 import { ProGate } from "@/components/pro/ProGate";
 import { ClinicianDashboard } from "@/components/pro/dashboard/ClinicianDashboard";
 
@@ -38,39 +40,28 @@ export default async function ClinicianDashboardPage() {
     );
   }
 
-  const [summary, patients, availableHEPs, articles, readRows, defaultResearch] = await Promise.all([
+  const [summary, patients, availableHEPs, defaultResearch, todaysPatients, outcomeReminderPatients] = await Promise.all([
     getDashboardSummary(),
     getActivePatients(),
     getAvailableHEPs(),
-    getArticles(),
-    prisma.readArticle.findMany({
-      where: { userId: user.id },
-      orderBy: { updatedAt: "desc" },
-      select: { articleId: true, updatedAt: true, scrollProgress: true },
-    }),
     getResearchFeedArticles(user.specialty),
+    getTodaysPatients(),
+    getPatientsWithOutcomeReminders(),
   ]);
 
   if (!summary) return null; // requireProUser inside the actions already matches the isPro check above
 
-  const limbicAgentInsights = buildLimbicAgentInsights(
-    readRows,
-    articles,
-    user.followedTopics as unknown as string[],
-    user.createdAt
-  );
   const credential = credentialFromName(user.name);
-  const greeting = `${timeOfDayGreeting(await visitorHourOfDay())}, ${firstName(user.name)}${credential ? `, ${credential}` : ""}`;
 
   return (
     <div className="screen-pad clindash-page page-enter">
       <ClinicianDashboard
-        greeting={greeting}
         summary={summary}
         initialPatients={patients}
         availableHEPs={availableHEPs}
-        limbicAgentInsights={limbicAgentInsights}
         defaultResearchArticles={defaultResearch}
+        todaysPatients={todaysPatients}
+        outcomeReminderPatients={outcomeReminderPatients}
         clinicianName={user.name}
         clinicianCredential={credential ?? ""}
         clinicianClinicName={user.clinicName ?? ""}

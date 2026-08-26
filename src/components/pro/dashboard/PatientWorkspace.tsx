@@ -1,39 +1,13 @@
-import Link from "next/link";
-import { LimbicAgentCard } from "@/components/LimbicAgentCard";
-import { FileTextIcon, CalendarIcon, BandageIcon } from "@/components/icons";
-import type { LimbicAgentInsights } from "@/lib/limbic-agent-insights";
-import type { AvailableHEP, PatientDetail } from "@/app/actions/clinician-dashboard";
+import type { MutableRefObject } from "react";
+import type { AvailableHEP, DashboardSummary, PatientDetail, PatientListEntry } from "@/app/actions/clinician-dashboard";
 import { bodyRegionTagClass } from "@/lib/clinician-dashboard-types";
 import { PreVisitBriefSection } from "./PreVisitBriefSection";
-import { OutcomeMeasuresSection } from "./OutcomeMeasuresSection";
+import { OutcomeMeasuresSection, type OutcomeMeasuresSectionHandle } from "./OutcomeMeasuresSection";
 import { HEPSection } from "./HEPSection";
 import { ClinicalNotesSection } from "./ClinicalNotesSection";
-
-const QUICK_LINKS = [
-  { href: "/pro/documentation", label: "Documentation", icon: FileTextIcon },
-  { href: "/pro/ce-tracker", label: "CE Tracker", icon: CalendarIcon },
-  { href: "/hep", label: "Home Exercise Programs", icon: BandageIcon },
-];
-
-function DefaultWorkspace({ greeting, limbicAgentInsights }: { greeting: string; limbicAgentInsights: LimbicAgentInsights }) {
-  return (
-    <div>
-      <h1 className="clindash-workspace-greeting">{greeting}</h1>
-      <p className="clindash-workspace-sub">Select a patient from your caseload, or add a new one, to get started.</p>
-
-      <LimbicAgentCard insights={limbicAgentInsights} isPro />
-
-      <div className="clindash-quick-links">
-        {QUICK_LINKS.map((l) => (
-          <Link key={l.href} href={l.href} className="btn btn-secondary">
-            <l.icon size={14} />
-            {l.label}
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
+import { MorningRounds } from "./MorningRounds";
+import { VisitLogBanner } from "./VisitLogBanner";
+import { OutcomeMilestoneBanner } from "./OutcomeMilestoneBanner";
 
 function ActiveWorkspace({
   patient,
@@ -42,6 +16,13 @@ function ActiveWorkspace({
   onDischarge,
   onPrepareForPatient,
   dischargePending,
+  showVisitBanner,
+  onVisitLogged,
+  onVisitBannerDismiss,
+  showMilestoneBanner,
+  onDismissMilestone,
+  initiallyOpenOutcomes,
+  outcomeActionsRef,
 }: {
   patient: PatientDetail;
   availableHEPs: AvailableHEP[];
@@ -49,11 +30,28 @@ function ActiveWorkspace({
   onDischarge: () => void;
   onPrepareForPatient: () => void;
   dischargePending: boolean;
+  showVisitBanner: boolean;
+  onVisitLogged: () => void;
+  onVisitBannerDismiss: () => void;
+  showMilestoneBanner: boolean;
+  onDismissMilestone: () => void;
+  initiallyOpenOutcomes: boolean;
+  outcomeActionsRef: MutableRefObject<OutcomeMeasuresSectionHandle | null>;
 }) {
   const progressPercent = patient.totalVisits > 0 ? Math.min(100, Math.round((patient.visitCount / patient.totalVisits) * 100)) : 0;
 
   return (
     <div>
+      {showVisitBanner && (
+        <VisitLogBanner
+          key={patient.id}
+          patientId={patient.id}
+          patientCode={patient.patientCode}
+          onLogged={onVisitLogged}
+          onDismiss={onVisitBannerDismiss}
+        />
+      )}
+
       <div className="clindash-patient-header">
         <div>
           <div className="clindash-patient-header-code">{patient.patientCode}</div>
@@ -95,20 +93,30 @@ function ActiveWorkspace({
         </div>
       </div>
 
-      <OutcomeMeasuresSection patient={patient} onChanged={onChanged} />
+      {showMilestoneBanner && (
+        <OutcomeMilestoneBanner
+          visitCount={patient.visitCount}
+          onRecordNow={() => outcomeActionsRef.current?.openAndScroll()}
+          onDismiss={onDismissMilestone}
+        />
+      )}
+
+      <OutcomeMeasuresSection
+        patient={patient}
+        onChanged={onChanged}
+        initiallyOpen={initiallyOpenOutcomes}
+        actionsRef={outcomeActionsRef}
+      />
       <HEPSection patient={patient} availableHEPs={availableHEPs} onChanged={onChanged} />
       <ClinicalNotesSection patient={patient} onChanged={onChanged} />
     </div>
   );
 }
 
-/** Center column of /pro/dashboard — either the default "no patient selected" state (the
- *  same Limbic Agent insight card as the home feed, plus quick links into the rest of
- *  LimbicPRO) or the full active-patient workspace, switched purely on whether
- *  `selectedPatient` is non-null. */
+/** Center column of /pro/dashboard — either Morning Rounds (no patient selected) or the
+ *  full active-patient workspace, switched purely on whether `selectedPatient` is
+ *  non-null. */
 export function PatientWorkspace({
-  greeting,
-  limbicAgentInsights,
   selectedPatient,
   loadingDetail,
   availableHEPs,
@@ -116,9 +124,21 @@ export function PatientWorkspace({
   onDischarge,
   onPrepareForPatient,
   dischargePending,
+  todaysPatients,
+  outcomeReminderPatients,
+  allPatients,
+  summary,
+  onStartSession,
+  onRecordOutcomes,
+  onSelectPatient,
+  showVisitBanner,
+  onVisitLogged,
+  onVisitBannerDismiss,
+  showMilestoneBanner,
+  onDismissMilestone,
+  initiallyOpenOutcomes,
+  outcomeActionsRef,
 }: {
-  greeting: string;
-  limbicAgentInsights: LimbicAgentInsights;
   selectedPatient: PatientDetail | null;
   loadingDetail: boolean;
   availableHEPs: AvailableHEP[];
@@ -126,6 +146,20 @@ export function PatientWorkspace({
   onDischarge: () => void;
   onPrepareForPatient: () => void;
   dischargePending: boolean;
+  todaysPatients: PatientListEntry[];
+  outcomeReminderPatients: PatientListEntry[];
+  allPatients: PatientListEntry[];
+  summary: DashboardSummary;
+  onStartSession: (patientId: string) => void;
+  onRecordOutcomes: (patientId: string) => void;
+  onSelectPatient: (patientId: string) => void;
+  showVisitBanner: boolean;
+  onVisitLogged: () => void;
+  onVisitBannerDismiss: () => void;
+  showMilestoneBanner: boolean;
+  onDismissMilestone: () => void;
+  initiallyOpenOutcomes: boolean;
+  outcomeActionsRef: MutableRefObject<OutcomeMeasuresSectionHandle | null>;
 }) {
   return (
     <div className="card elev-sm" style={{ minHeight: 300 }}>
@@ -140,10 +174,25 @@ export function PatientWorkspace({
             onDischarge={onDischarge}
             onPrepareForPatient={onPrepareForPatient}
             dischargePending={dischargePending}
+            showVisitBanner={showVisitBanner}
+            onVisitLogged={onVisitLogged}
+            onVisitBannerDismiss={onVisitBannerDismiss}
+            showMilestoneBanner={showMilestoneBanner}
+            onDismissMilestone={onDismissMilestone}
+            initiallyOpenOutcomes={initiallyOpenOutcomes}
+            outcomeActionsRef={outcomeActionsRef}
           />
         )
       ) : (
-        <DefaultWorkspace greeting={greeting} limbicAgentInsights={limbicAgentInsights} />
+        <MorningRounds
+          todaysPatients={todaysPatients}
+          outcomeReminderPatients={outcomeReminderPatients}
+          allPatients={allPatients}
+          summary={summary}
+          onStartSession={onStartSession}
+          onRecordOutcomes={onRecordOutcomes}
+          onSelectPatient={onSelectPatient}
+        />
       )}
     </div>
   );

@@ -331,6 +331,9 @@ model User {
   clinicalPatients    ClinicalPatient[]
   clinicalNotes       ClinicalNote[]
   preVisitBriefs      PreVisitBrief[]
+  visitLogs           VisitLog[]
+  clinicalQuestions   ClinicalQuestion[]
+  endOfDaySummaries   EndOfDaySummary[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -1062,6 +1065,7 @@ model ClinicalPatient {
   hepAssignments PatientHEPAssignment[]
   clinicalNotes  ClinicalNote[]
   preBriefs      PreVisitBrief[]
+  visitLogs      VisitLog[]
 
   // A clinician's own patient codes must be unique to them (not globally — two different
   // clinicians can each have their own "PT-001") — enforced here, not just checked in
@@ -1138,6 +1142,59 @@ model PreVisitBrief {
 
   user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+// One tap of "Yes — Log Visit" on the visit-confirmation banner (see logVisit in
+// app/actions/clinician-dashboard.ts) — a durable per-visit record, separate from
+// ClinicalPatient.visitCount/lastSeen (which it also bumps), so "was this patient already
+// logged today" can be checked without relying on lastSeen alone (a clinician could
+// legitimately update lastSeen some other way in the future).
+model VisitLog {
+  id          String   @id @default(cuid())
+  userId      String
+  patientId   String
+  loggedAt    DateTime @default(now())
+  visitNumber Int
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+// A quick-capture note-to-self from the Clinical Question Log (right column, default
+// workspace state) — "what came up in clinic today that's worth looking into." Answering
+// just opens Limbic Agent with the question pre-loaded; `answer`/`answeredAt` are set if a
+// future flow ever records the agent's response back onto this row, not by the current
+// "open agent" action itself.
+model ClinicalQuestion {
+  id         String    @id @default(cuid())
+  userId     String
+  question   String
+  answered   Boolean   @default(false)
+  answeredAt DateTime?
+  answer     String?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// One row per clinician per calendar day (dateKey, e.g. "2026-08-26") — the source for the
+// End of Day summary card on the Morning Rounds view. Upserted by getEndOfDaySummary
+// whenever it's computed after 4pm local time; `dismissed` is what makes the card
+// disappear for the rest of that day without needing separate client-only state.
+model EndOfDaySummary {
+  id               String    @id @default(cuid())
+  userId           String
+  dateKey          String
+  patientsSeen     Int
+  notesCompleted   Int
+  notesOutstanding Int
+  ceHoursThisWeek  Float
+  dismissed        Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dateKey])
 }
 
 // One of the 25 "Founding 25" spots on /founding-funders. Created two ways: self-serve via

@@ -32,10 +32,15 @@ export function PatientPanel({
   patients,
   selectedPatientId,
   onSelect,
+  outcomeReminderIds,
 }: {
   patients: PatientListEntry[];
   selectedPatientId: string | null;
   onSelect: (id: string | null) => void;
+  /** Patient ids currently in getPatientsWithOutcomeReminders — a visitCount milestone
+   *  with no outcome recorded today (see OutcomeMilestoneBanner.tsx for the workspace-side
+   *  counterpart). Renders the small "Reassessment due" pill below. */
+  outcomeReminderIds: Set<string>;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -193,13 +198,14 @@ export function PatientPanel({
                 {p.dueForReassessment && <span className="clindash-reassess-dot" title="Due for reassessment" />}
               </div>
               <div className="clindash-patient-condition">{p.condition}</div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3, flexWrap: "wrap" }}>
                 <span className={`tag ${bodyRegionTagClass(p.bodyRegion)}`} style={{ fontSize: 10 }}>
                   {p.bodyRegion}
                 </span>
                 <span className="clindash-patient-progress">
                   Visit {p.visitCount} of {p.totalVisits}
                 </span>
+                {outcomeReminderIds.has(p.id) && <span className="clindash-reassess-pill">Reassessment due</span>}
               </div>
             </button>
           ))}
