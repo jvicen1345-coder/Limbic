@@ -8619,6 +8619,13 @@ button.plan-compare-name:hover { text-decoration: underline; }
    bars) rather than redeclaring the same rules under a second name.
    ============================================================================ */
 
+/* Overrides .screen-pad's 900px cap — same reasoning/pattern as .clindash-page and
+   .atlas-page: a three-column layout (240px + flexible center + 260px, see
+   .forcelab-columns below) needs real room, and 900px squeezed the center column down to a
+   couple hundred px regardless of how wide the actual viewport was. .screen-pad still
+   supplies the padding; this only overrides max-width. */
+.forcelab-page { max-width: 1400px; margin: 0 auto; }
+
 .forcelab-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
 .forcelab-title { font-family: var(--font-heading); font-size: 26px; margin: 0; }
 .forcelab-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 2px 0 0; }
