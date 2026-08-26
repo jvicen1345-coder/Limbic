@@ -65,9 +65,11 @@ export function PatientGoalsSection({ patient, onChanged }: { patient: PatientDe
         setError(result.error);
         return;
       }
+      // Clears and stays open (rather than closing) so adding several goals in a row
+      // doesn't need "Add Goal" clicked again between each one — timeframe/category are
+      // left as-is since a run of goals often shares both.
       setGoalText("");
       setTimeframe("");
-      setFormOpen(false);
       onChanged();
     });
   };

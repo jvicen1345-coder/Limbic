@@ -13,8 +13,8 @@ export async function generateMetadata({ params }: { params: Promise<{ patientCo
 }
 
 /** One patient's full Force Lab history — reached from the dashboard's Force Lab section
- *  ("View all in Force Lab") and from a session's own patient-code pill. Same "outside the
- *  (app) route group" shell as /pro/force-lab itself. */
+ *  ("View all in Force Lab") and from a session's own patient-code pill. Same (app) route
+ *  group placement as /pro/force-lab itself, for the sidebar. */
 export default async function ForceLabPatientPage({ params }: { params: Promise<{ patientCode: string }> }) {
   const user = await getCurrentUser();
   if (!user) return null;

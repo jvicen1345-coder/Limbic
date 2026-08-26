@@ -17,6 +17,7 @@ export interface OutcomeMeasuresSectionHandle {
   prefillMeasure: (measureName: string) => void;
 }
 import { addOutcomeEntry, type OutcomeBenchmark, type PatientDetail } from "@/app/actions/clinician-dashboard";
+import { getCalculatorProfilesForCurrentUser } from "@/app/actions/calculator-profiles";
 import { OUTCOME_MEASURES } from "@/lib/clinician-dashboard-types";
 import { ChevronRightIcon, PlusIcon } from "@/components/icons";
 import type { OutcomeMeasureEntry } from "@/generated/prisma/client";
@@ -99,6 +100,11 @@ export function OutcomeMeasuresSection({
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+  // Measure names pulled from the clinician's own saved Calculators tests (see
+  // /pro/calculators) — testKey/testName are per-CalculatorResult, and CalculatorProfile
+  // has no patient link (it's a de-identified scoring tool), so this is a user-scoped "which
+  // tests have I actually run" list added to the picker below, not a per-patient query.
+  const [savedTestNames, setSavedTestNames] = useState<string[]>([]);
 
   useEffect(() => {
     if (initiallyOpen) {
@@ -110,6 +116,25 @@ export function OutcomeMeasuresSection({
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    getCalculatorProfilesForCurrentUser().then((profiles) => {
+      if (cancelled) return;
+      const names = new Set<string>();
+      for (const profile of profiles) {
+        for (const result of profile.results) names.add(result.testName);
+      }
+      setSavedTestNames(Array.from(names));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const standardMeasures = (OUTCOME_MEASURES as readonly string[]).filter((m) => m !== "Other");
+  const testedMeasures = savedTestNames.filter((name) => !standardMeasures.includes(name));
+  const knownMeasures = [...standardMeasures, ...testedMeasures];
+
+  useEffect(() => {
     if (!actionsRef) return;
     const openAndScroll = () => {
       setFormOpen(true);
@@ -118,7 +143,7 @@ export function OutcomeMeasuresSection({
     actionsRef.current = {
       openAndScroll,
       prefillMeasure: (measureName) => {
-        const isKnown = (OUTCOME_MEASURES as readonly string[]).includes(measureName);
+        const isKnown = knownMeasures.includes(measureName);
         setForm((f) => ({
           ...f,
           measureName: isKnown ? measureName : "Other",
@@ -249,11 +274,23 @@ export function OutcomeMeasuresSection({
                 value={form.measureName}
                 onChange={(e) => setForm((f) => ({ ...f, measureName: e.target.value }))}
               >
-                {OUTCOME_MEASURES.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
+                <optgroup label="Standard measures">
+                  {standardMeasures.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </optgroup>
+                {testedMeasures.length > 0 && (
+                  <optgroup label="From your saved tests">
+                    {testedMeasures.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                <option value="Other">Other</option>
               </select>
             </div>
             {form.measureName === "Other" && (
