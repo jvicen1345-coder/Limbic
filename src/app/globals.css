@@ -7688,16 +7688,14 @@ button.plan-compare-name:hover { text-decoration: underline; }
 
 /* Real illustration + invisible hit-zone overlay (see components/atlas/AtlasBodyMap.tsx) —
    .atlas-body-stage stacks the <img> and the overlay <svg> on the same box so their shared
-   1000×1400 viewBox lines up at any rendered size. White background behind it since the
-   source illustration isn't transparent on every edge in every browser's SVG rasterizer,
-   regardless of the app's own light/dark theme — an anatomical illustration's own canvas
-   isn't something the theme toggle should tint. */
+   1000×1400 viewBox lines up at any rendered size. No background fill — the source SVG's own
+   canvas is transparent, so the figure sits directly on the page background instead of a
+   white card behind it. */
 .atlas-body-stage {
   position: relative;
   width: 100%;
-  max-width: 300px;
+  max-width: 480px;
   aspect-ratio: 1000 / 1400;
-  background: #fff;
   border-radius: var(--radius-md);
   overflow: hidden;
 }
@@ -7756,5 +7754,5 @@ button.plan-compare-name:hover { text-decoration: underline; }
   .atlas-region-nav { display: none; }
   .atlas-mobile-nav { display: block; order: -1; }
   .atlas-content-panel { position: static; max-height: none; }
-  .atlas-body-stage { max-width: 260px; }
+  .atlas-body-stage { max-width: 340px; }
 }

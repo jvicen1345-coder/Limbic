@@ -690,6 +690,89 @@ export const ATLAS_CONTENT: Record<string, ZoneContent> = {
     ],
   },
 
+  "hip-adductors": {
+    name: "Hip Adductors — Medial Thigh",
+    keyMuscles: [
+      {
+        name: "Adductor Longus",
+        origin: "Body of pubis, inferior to pubic crest",
+        insertion: "Middle third of linea aspera",
+        action: "Adducts thigh",
+        nerve: "Obturator",
+        rootLevel: "L2-L4",
+      },
+      {
+        name: "Adductor Magnus",
+        origin: "Adductor part — inferior pubic ramus and ischial ramus. Hamstring part — ischial tuberosity",
+        insertion: "Adductor part — gluteal tuberosity and linea aspera. Hamstring part — adductor tubercle of femur",
+        action: "Adducts thigh — adductor part also flexes, hamstring part extends thigh",
+        nerve: "Adductor part — obturator. Hamstring part — tibial division of sciatic",
+        rootLevel: "L2-L4",
+      },
+      {
+        name: "Gracilis",
+        origin: "Body and inferior ramus of pubis",
+        insertion: "Pes anserine — medial tibia",
+        action: "Adducts thigh, flexes and medially rotates leg",
+        nerve: "Obturator",
+        rootLevel: "L2-L3",
+      },
+      {
+        name: "Pectineus",
+        origin: "Superior ramus of pubis",
+        insertion: "Pectineal line of femur",
+        action: "Adducts and flexes thigh",
+        nerve: "Femoral — may also receive an obturator branch",
+        rootLevel: "L2-L3",
+      },
+    ],
+    commonConditions: [
+      {
+        name: "Adductor Strain — Groin Strain",
+        mechanism: "Forceful or eccentric hip adduction against resistance — cutting, kicking, skating. Adductor longus most frequently involved.",
+        boardPearl:
+          "Most common groin injury in athletes — soccer, hockey, and football highest risk. Palpate 2-3cm distal to pubic tubercle. Adductor-strengthening programs (Copenhagen adduction exercise) reduce recurrence.",
+      },
+      {
+        name: "Athletic Pubalgia — Sports Hernia",
+        mechanism: "Chronic overload at the rectus abdominis-adductor longus aponeurotic complex on the pubis — repetitive twisting and kicking",
+        boardPearl:
+          "No palpable hernia on exam — distinguishes from true inguinal hernia. Pain with resisted sit-up and resisted hip adduction. Often coexists with adductor-related groin pain — part of the Doha agreement groin pain classification.",
+      },
+      {
+        name: "Osteitis Pubis",
+        mechanism: "Repetitive shear stress at the pubic symphysis from opposing adductor and abdominal pull — common in soccer and distance running",
+        boardPearl:
+          "Focal tenderness directly over the pubic symphysis. Bone marrow edema on MRI. Managed with load modification and combined adductor and core strengthening.",
+      },
+    ],
+    specialTests: [
+      {
+        name: "Adductor Squeeze Test",
+        assesses: "Adductor strain severity and groin pain reproduction",
+        sensitivity: "N/A",
+        specificity: "N/A",
+        positive: "Pain or weakness squeezing examiner's fist or a cuff between the knees at 0, 45, and 90 degrees hip flexion",
+      },
+      {
+        name: "Resisted Hip Adduction",
+        assesses: "Adductor strain",
+        sensitivity: "N/A",
+        specificity: "N/A",
+        positive: "Pain reproduction with resisted hip adduction in supine",
+      },
+    ],
+    outcomemeasures: [
+      { name: "HAGOS", description: "Copenhagen hip and groin outcome score", mdcOrCutoff: "0-100 — higher is better" },
+      { name: "LEFS", description: "Lower extremity functional scale", mdcOrCutoff: "0-80 — MDC 9" },
+    ],
+    boardPearls: [
+      "Adductor longus — most commonly strained muscle in the groin",
+      "Obturator nerve — L2-L4 — innervates the adductor group except adductor magnus's hamstring portion, which runs off the tibial division of the sciatic nerve",
+      "Groin pain in athletes is often multifactorial — adductor-related, pubic-related, inguinal-related, and iliopsoas-related categories per the Doha agreement",
+    ],
+  },
+
   quadriceps: {
     name: "Quadriceps",
     keyMuscles: [
@@ -866,7 +949,7 @@ export const ATLAS_CONTENT: Record<string, ZoneContent> = {
         insertion: "Dorsal expansion digits 2-5",
         action: "Toe extension and ankle dorsiflexion",
         nerve: "Deep peroneal",
-        rootLevel: "L5-S1",
+        rootLevel: "L4-L5",
       },
       {
         name: "Extensor Hallucis Longus",
@@ -874,7 +957,7 @@ export const ATLAS_CONTENT: Record<string, ZoneContent> = {
         insertion: "Distal phalanx great toe",
         action: "Great toe extension and dorsiflexion",
         nerve: "Deep peroneal",
-        rootLevel: "L5",
+        rootLevel: "L4-L5",
       },
       {
         name: "Peroneus Tertius",

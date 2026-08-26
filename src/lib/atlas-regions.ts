@@ -16,7 +16,7 @@ export const ANTERIOR_GROUPS: AtlasRegionGroup[] = [
   { label: "Arm and Elbow", zones: ["biceps-anterior", "elbow-anterior"] },
   { label: "Forearm and Wrist", zones: ["forearm-anterior", "wrist-hand"] },
   { label: "Core and Abdomen", zones: ["abdominals"] },
-  { label: "Hip and Thigh", zones: ["hip-flexors", "quadriceps"] },
+  { label: "Hip and Thigh", zones: ["hip-flexors", "hip-adductors", "quadriceps"] },
   { label: "Knee", zones: ["knee-anterior"] },
   { label: "Lower Leg and Ankle", zones: ["anterior-leg", "ankle-foot-anterior"] },
 ];
