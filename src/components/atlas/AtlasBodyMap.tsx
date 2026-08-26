@@ -170,6 +170,7 @@ export function AtlasBodyMap({
 }) {
   const zones = view === "anterior" ? ANTERIOR_ZONES : POSTERIOR_ZONES;
   const src = view === "anterior" ? "/atlas/muscular-system-anterior.svg" : "/atlas/muscular-system-posterior.svg";
+  const maskId = `atlas-silhouette-${view}`;
 
   return (
     <div className="atlas-body-stage">
@@ -183,16 +184,28 @@ export function AtlasBodyMap({
         role="img"
         aria-label={`${view === "anterior" ? "Front" : "Back"} view of the body — select a region`}
       >
-        {zones.map((def) =>
-          def.paired ? (
-            <g key={def.contentKey}>
-              <Zone def={def} side="left" selectedZone={selectedZone} onSelectZone={onSelectZone} getZoneName={getZoneName} />
-              <Zone def={def} side="right" selectedZone={selectedZone} onSelectZone={onSelectZone} getZoneName={getZoneName} />
-            </g>
-          ) : (
-            <Zone key={def.contentKey} def={def} side={null} selectedZone={selectedZone} onSelectZone={onSelectZone} getZoneName={getZoneName} />
-          )
-        )}
+        {/* Each zone's clickable <path> is still a plain rectangle (generous, forgiving hit
+         *  target — masking below doesn't change what registers a click). But its hover/
+         *  selected fill is clipped to the illustration's own silhouette via this alpha mask,
+         *  so the highlight hugs the muscle's outline instead of showing as a floating box
+         *  with visible corners over blank background. */}
+        <defs>
+          <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1400" style={{ maskType: "alpha" }}>
+            <image href={src} x="0" y="0" width="1000" height="1400" />
+          </mask>
+        </defs>
+        <g mask={`url(#${maskId})`}>
+          {zones.map((def) =>
+            def.paired ? (
+              <g key={def.contentKey}>
+                <Zone def={def} side="left" selectedZone={selectedZone} onSelectZone={onSelectZone} getZoneName={getZoneName} />
+                <Zone def={def} side="right" selectedZone={selectedZone} onSelectZone={onSelectZone} getZoneName={getZoneName} />
+              </g>
+            ) : (
+              <Zone key={def.contentKey} def={def} side={null} selectedZone={selectedZone} onSelectZone={onSelectZone} getZoneName={getZoneName} />
+            )
+          )}
+        </g>
       </svg>
     </div>
   );
