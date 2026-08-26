@@ -4,6 +4,7 @@ import { buildLicenseView } from "@/lib/license";
 import type { CeCategory } from "@/lib/types";
 import { ProfessionalDatesForm } from "@/components/ProfessionalDatesForm";
 import { ProfessionalCredentialsCard } from "@/components/ProfessionalCredentialsCard";
+import { ForceUnitPreferenceForm } from "@/components/ForceUnitPreferenceForm";
 import { isRecentGraduate } from "@/lib/professional-dates";
 import { PROFILE_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
@@ -78,6 +79,11 @@ export default async function ProfileCredentialsPage() {
         isStudent={isStudentForCredentials}
         accountName={user.name}
       />
+
+      <div className="card elev-sm" style={{ marginBottom: 18 }}>
+        <div className="card-kicker">Force Lab</div>
+        <ForceUnitPreferenceForm forceUnit={user.forceUnit} />
+      </div>
 
       <div className="card elev-sm">
         <div className="card-kicker">License & CE</div>

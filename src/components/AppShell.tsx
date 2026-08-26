@@ -373,6 +373,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             {isPro && (
               <NavLink href="/pro/dashboard" icon={<LayoutDashboardIcon />} label="Dashboard" bold={false} onNavigate={onNavigate} />
             )}
+            {isPro && <NavLink href="/pro/force-lab" icon={<ZapIcon />} label="Force Lab" bold={false} onNavigate={onNavigate} />}
             {isPro && clinicMembership?.isAdmin && (
               <>
                 <NavLink href="/pro/dashboard?tab=team" icon={<UsersIcon />} label="Team Dashboard" bold={false} onNavigate={onNavigate} />
