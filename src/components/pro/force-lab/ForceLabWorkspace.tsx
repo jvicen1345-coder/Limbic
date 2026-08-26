@@ -3,10 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { StrengthProfileEntry } from "@/app/actions/force-lab";
+import type { StrengthProfileEntry, ForceLabAssessmentWithSessions } from "@/app/actions/force-lab";
 import { SessionHistoryPanel } from "./SessionHistoryPanel";
 import { ForceLabEntryForm } from "./ForceLabEntryForm";
 import { ForceLabImportPanel } from "./ForceLabImportPanel";
+import { PasteAssessmentPanel } from "./PasteAssessmentPanel";
+import { PastResultsSection } from "./PastResultsSection";
 import { SessionDetailView } from "./SessionDetailView";
 import { StrengthProfilePanel } from "./StrengthProfilePanel";
 import { ForceLabTrendChart } from "./ForceLabTrendChart";
@@ -15,7 +17,7 @@ import type { PatientListEntry } from "@/app/actions/clinician-dashboard";
 import type { ForceLabSession } from "@/generated/prisma/client";
 import type { ForceLabPrefill } from "./ForceLabEntryForm";
 
-type CenterMode = "manual" | "import" | "view";
+type CenterMode = "manual" | "import" | "paste" | "view";
 
 /** Client orchestrator for /pro/force-lab — same "owns the interactive state, server page
  *  only does the initial fetch" split as ClinicianDashboard.tsx. `sessions` starts from the
@@ -28,6 +30,7 @@ export function ForceLabWorkspace({
   forceUnit,
   initialPatientId,
   initialSessionId,
+  initialCompareAssessmentId,
 }: {
   initialSessions: ForceLabSession[];
   patients: PatientListEntry[];
@@ -38,6 +41,10 @@ export function ForceLabWorkspace({
    *  opens straight to that session's read-only view instead of the blank Manual Entry
    *  tab. */
   initialSessionId?: string | null;
+  /** "Compare" on the patient session page's Full Assessments cards (its own
+   *  `?compareAssessment=` query param) — arms Past Results' comparison with this
+   *  assessment already picked as the first side. */
+  initialCompareAssessmentId?: string | null;
 }) {
   const router = useRouter();
   const [sessions, setSessions] = useState(initialSessions);
@@ -48,6 +55,11 @@ export function ForceLabWorkspace({
   const [lastLoadedMuscleGroup, setLastLoadedMuscleGroup] = useState<string | null>(initialSession?.muscleGroup ?? null);
   const [importPrefill, setImportPrefill] = useState<ForceLabPrefill | null>(null);
   const [importError, setImportError] = useState(false);
+  // Bumped on every assessment save so the sibling Past Results section (which owns its own
+  // self-fetched assessment list, separate from this workspace's `sessions` state) knows to
+  // refetch — router.refresh() alone only re-supplies this page's server-fetched props, it
+  // doesn't re-run a client component's own mount-effect fetch.
+  const [assessmentsVersion, setAssessmentsVersion] = useState(0);
 
   const selectedSession = sessions.find((s) => s.id === selectedSessionId) ?? null;
 
@@ -121,6 +133,19 @@ export function ForceLabWorkspace({
     router.refresh();
   };
 
+  // A pasted assessment creates several sessions at once (one per muscle group) rather than
+  // the single row every other save handler above deals with — merged into `sessions` the
+  // same way so Session History / Strength Profile / Trends pick them up immediately, but
+  // there's no single row to jump into "view" mode for, so this stays on the Paste
+  // Assessment tab (which resets itself and shows its own confirmation — see
+  // PasteAssessmentPanel).
+  const handleAssessmentSaved = (assessment: ForceLabAssessmentWithSessions) => {
+    setSessions((prev) => [...assessment.sessions, ...prev]);
+    if (assessment.patientId) setSelectedPatientId(assessment.patientId);
+    setAssessmentsVersion((v) => v + 1);
+    router.refresh();
+  };
+
   const handleEdit = () => {
     if (!selectedSession) return;
     setImportPrefill({
@@ -188,6 +213,13 @@ export function ForceLabWorkspace({
                 >
                   Import Screenshot
                 </button>
+                <button
+                  type="button"
+                  className={`clindash-tab ${mode === "paste" ? "clindash-tab--active" : ""}`}
+                  onClick={() => setMode("paste")}
+                >
+                  Paste Assessment
+                </button>
               </div>
 
               {importError && (
@@ -206,6 +238,13 @@ export function ForceLabWorkspace({
                     setImportError(true);
                     setMode("manual");
                   }}
+                />
+              ) : mode === "paste" ? (
+                <PasteAssessmentPanel
+                  patients={patients}
+                  initialPatientId={selectedPatientId}
+                  onSaved={handleAssessmentSaved}
+                  onPatientChange={setSelectedPatientId}
                 />
               ) : (
                 <ForceLabEntryForm
@@ -246,6 +285,8 @@ export function ForceLabWorkspace({
           </div>
         </div>
       </div>
+
+      <PastResultsSection patients={patients} initialCompareAssessmentId={initialCompareAssessmentId ?? null} refreshKey={assessmentsVersion} />
     </>
   );
 }

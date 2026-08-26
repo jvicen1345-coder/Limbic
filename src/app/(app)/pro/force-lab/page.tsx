@@ -20,8 +20,15 @@ export const metadata: Metadata = {
  *
  *  `?patient=<id>` pre-selects a patient in the entry form and the strength-profile column
  *  — see the "Add Session" links from the dashboard's Force Lab section and the patient
- *  session page's "New Session" button. */
-export default async function ForceLabPage({ searchParams }: { searchParams: Promise<{ patient?: string; session?: string }> }) {
+ *  session page's "New Session" button. `?compareAssessment=<id>` arms the Past Results
+ *  section's comparison with that assessment pre-selected — see the "Compare" button on the
+ *  patient session page's Full Assessments cards, which can't build the whole comparison UI
+ *  itself since it lives on a different route. */
+export default async function ForceLabPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ patient?: string; session?: string; compareAssessment?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!user) return null;
 
@@ -37,7 +44,7 @@ export default async function ForceLabPage({ searchParams }: { searchParams: Pro
     );
   }
 
-  const { patient, session } = await searchParams;
+  const { patient, session, compareAssessment } = await searchParams;
 
   const [patients, sessions, forceUnit] = await Promise.all([getActivePatients(), getForceLabSessions(), getUserForceUnit()]);
 
@@ -49,6 +56,7 @@ export default async function ForceLabPage({ searchParams }: { searchParams: Pro
         forceUnit={forceUnit}
         initialPatientId={patient ?? null}
         initialSessionId={session ?? null}
+        initialCompareAssessmentId={compareAssessment ?? null}
       />
     </div>
   );

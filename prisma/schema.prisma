@@ -84,7 +84,7 @@ model User {
   // "Prepare for Patient" review step (see components/pro/PreparePatientModal.tsx). Null
   // for every account until set via the Profile "About you" form — the print page omits
   // the "Practice:" line entirely rather than showing a blank one when this is unset.
-  clinicName    String?
+  clinicName String?
 
   // Set once the reader flips the "I've added Limbic" switch on the Get the App card (see
   // components/GetTheAppCard.tsx) — collapses that card to a compact done state and hides
@@ -335,17 +335,17 @@ model User {
   // LimbicPRO Clinician Dashboard (/pro/dashboard) — see ClinicalPatient below. All three
   // scope to userId directly (never shared across accounts, no clinicId yet — see that
   // model's own doc comment for the Clinic PRO expansion path).
-  clinicalPatients    ClinicalPatient[]
-  clinicalNotes       ClinicalNote[]
-  preVisitBriefs      PreVisitBrief[]
-  visitLogs           VisitLog[]
-  clinicalQuestions   ClinicalQuestion[]
-  endOfDaySummaries   EndOfDaySummary[]
-  treatmentIdeas      TreatmentIdea[]
-  redFlagAlerts       RedFlagAlert[]
-  patientGoals        PatientGoal[]
-  referralSources     ReferralSource[]
-  dischargeSummaries  DischargeSummary[]
+  clinicalPatients   ClinicalPatient[]
+  clinicalNotes      ClinicalNote[]
+  preVisitBriefs     PreVisitBrief[]
+  visitLogs          VisitLog[]
+  clinicalQuestions  ClinicalQuestion[]
+  endOfDaySummaries  EndOfDaySummary[]
+  treatmentIdeas     TreatmentIdea[]
+  redFlagAlerts      RedFlagAlert[]
+  patientGoals       PatientGoal[]
+  referralSources    ReferralSource[]
+  dischargeSummaries DischargeSummary[]
 
   // Clinic PRO (see Clinic's own doc comment) — clinicAdmin is set only for the one clinic
   // this account owns, if any; clinicMemberships covers every clinic team this account is
@@ -357,6 +357,8 @@ model User {
   transfersTo         PatientTransfer[]     @relation("TransferTo")
   clinicReports       ClinicOutcomeReport[]
   forceLabSessions    ForceLabSession[]
+  forceLabAssessments ForceLabAssessment[]
+  forceLabComparisons ForceLabComparison[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -1090,20 +1092,21 @@ model ClinicalPatient {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  user           User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  clinic         Clinic?                @relation(fields: [clinicId], references: [id], onDelete: SetNull)
-  outcomes       OutcomeMeasureEntry[]
-  hepAssignments PatientHEPAssignment[]
-  clinicalNotes  ClinicalNote[]
-  preBriefs      PreVisitBrief[]
-  visitLogs        VisitLog[]
-  treatmentIdeas   TreatmentIdea[]
-  redFlagAlerts    RedFlagAlert[]
-  goals            PatientGoal[]
-  referralSource   ReferralSource[]
-  dischargeSummary DischargeSummary[]
-  transfers        PatientTransfer[]
-  forceLabSessions ForceLabSession[]
+  user                User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinic              Clinic?                @relation(fields: [clinicId], references: [id], onDelete: SetNull)
+  outcomes            OutcomeMeasureEntry[]
+  hepAssignments      PatientHEPAssignment[]
+  clinicalNotes       ClinicalNote[]
+  preBriefs           PreVisitBrief[]
+  visitLogs           VisitLog[]
+  treatmentIdeas      TreatmentIdea[]
+  redFlagAlerts       RedFlagAlert[]
+  goals               PatientGoal[]
+  referralSource      ReferralSource[]
+  dischargeSummary    DischargeSummary[]
+  transfers           PatientTransfer[]
+  forceLabSessions    ForceLabSession[]
+  forceLabAssessments ForceLabAssessment[]
 
   // A clinician's own patient codes must be unique to them (not globally — two different
   // clinicians can each have their own "PT-001") — enforced here, not just checked in
@@ -1225,15 +1228,15 @@ model ClinicalQuestion {
 // whenever it's computed after 4pm local time; `dismissed` is what makes the card
 // disappear for the rest of that day without needing separate client-only state.
 model EndOfDaySummary {
-  id               String    @id @default(cuid())
+  id               String   @id @default(cuid())
   userId           String
   dateKey          String
   patientsSeen     Int
   notesCompleted   Int
   notesOutstanding Int
   ceHoursThisWeek  Float
-  dismissed        Boolean   @default(false)
-  createdAt        DateTime  @default(now())
+  dismissed        Boolean  @default(false)
+  createdAt        DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1472,14 +1475,99 @@ model ForceLabSession {
   unit            String   @default("lbs")
   notes           String?
   // "activeforce_screenshot" when created via parseScreenshot's reviewed-and-confirmed
-  // output, null for a manually-entered session — see createForceLabSession.
+  // output, "activeforce_paste" when created as one muscle group's row within a
+  // createForceLabAssessment() full-assessment import, null for a manually-entered session
+  // — see createForceLabSession / createForceLabAssessment.
   importedFrom    String?
   sessionDate     DateTime @default(now())
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  patient ClinicalPatient? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  // Set only for the "activeforce_paste" sessions createForceLabAssessment() generates —
+  // one ForceLabSession per muscle group in the pasted assessment, all sharing this parent.
+  // Null for every manually-entered or screenshot-imported session, which have no assessment
+  // to belong to.
+  assessmentId          String?
+  averageForceLeft      Float?
+  averageForceRight     Float?
+  forceWeightRatioLeft  Float?
+  forceWeightRatioRight Float?
+  rep1Left              Float?
+  rep1Right             Float?
+  rep2Left              Float?
+  rep2Right             Float?
+  rep3Left              Float?
+  rep3Right             Float?
+  timeToPeakAvgLeft     Float?
+  timeToPeakAvgRight    Float?
+
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient    ClinicalPatient?    @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  // Cascade (not SetNull like `patient` above) — deleteForceLabAssessment is specced to
+  // delete "assessment and all linked sessions" together, since these rows only exist as
+  // one paste-import's per-muscle-group breakdown, not independent readings a clinician
+  // entered on their own.
+  assessment ForceLabAssessment? @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+}
+
+// One full ActiveForce "session" export pasted in via the Paste Assessment tab (see
+// lib/force-lab-parser.ts's parseActiveForcePaste and createForceLabAssessment in
+// app/actions/force-lab.ts) — one row per paste, covering every muscle group tested that
+// visit. Each muscle group within it becomes its own ForceLabSession row (see
+// ForceLabSession.assessmentId above) so the existing per-muscle history/trend/strength-
+// profile code keeps working unmodified; this model exists on top of that to keep the
+// assessment-level metadata (patient weight/age/sex/dominant side, the raw pasted text) and
+// let two full visits be compared as a unit rather than muscle-group by muscle-group.
+// patientId works the same as ForceLabSession.patientId — nullable, set once a clinician
+// links the assessment (directly, or auto-matched by identifier at import time).
+model ForceLabAssessment {
+  id                String   @id @default(cuid())
+  userId            String
+  patientId         String?
+  // Free-text patient identifier as printed in the ActiveForce export (often, but not
+  // always, a clinic's own patient code) — used only to auto-match against
+  // ClinicalPatient.patientCode at import time; never displayed as if it were PHI-checked.
+  identifier        String?
+  assessmentDate    DateTime
+  patientWeight     Float?
+  patientWeightUnit String?  @default("kg")
+  patientAge        Int?
+  patientSex        String?
+  dominantSide      String?
+  musclesTested     Int      @default(0)
+  // The full pasted text, kept verbatim for reference/audit (see the Paste Assessment tab's
+  // "Raw text is stored for reference" disclaimer) — never re-parsed after save.
+  rawText           String
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient      ClinicalPatient?     @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  sessions     ForceLabSession[]
+  comparisonsA ForceLabComparison[] @relation("ComparisonA")
+  comparisonsB ForceLabComparison[] @relation("ComparisonB")
+}
+
+// A saved AI-generated interpretation for one specific pair of ForceLabAssessments (see
+// compareAssessments in app/actions/force-lab.ts and generateAssessmentComparison in
+// lib/pre-visit-brief.ts) — cached by (assessmentAId, assessmentBId) so re-opening the same
+// comparison doesn't regenerate it; "Regenerate" in the UI creates a new row rather than
+// overwriting, same reasoning as TreatmentIdea/DischargeSummary keeping prior generations
+// instead of updating in place. assessmentA/assessmentB are ordered as picked by the
+// clinician (first row selected = A), not date-sorted, since the interpretation prompt
+// itself states each assessment's date and reads naturally either direction.
+model ForceLabComparison {
+  id             String   @id @default(cuid())
+  userId         String
+  assessmentAId  String
+  assessmentBId  String
+  interpretation String?
+  generatedAt    DateTime @default(now())
+
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assessmentA ForceLabAssessment @relation("ComparisonA", fields: [assessmentAId], references: [id], onDelete: Cascade)
+  assessmentB ForceLabAssessment @relation("ComparisonB", fields: [assessmentBId], references: [id], onDelete: Cascade)
 }
 
 // Published handheld-dynamometer normative values (lib/force-lab-norms.ts, seeded via

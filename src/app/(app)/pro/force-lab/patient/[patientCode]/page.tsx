@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { getForceLabSessionsByPatientCode, getStrengthProfile, getUserForceUnit } from "@/app/actions/force-lab";
+import { getForceLabSessionsByPatientCode, getStrengthProfile, getUserForceUnit, getAssessmentHistory } from "@/app/actions/force-lab";
 import { ProGate } from "@/components/pro/ProGate";
 import { StrengthProfilePanel } from "@/components/pro/force-lab/StrengthProfilePanel";
 import { PatientSessionHistoryTable } from "@/components/pro/force-lab/PatientSessionHistoryTable";
+import { PatientAssessmentCard } from "@/components/pro/force-lab/PatientAssessmentCard";
+import { ForceLabAssessmentTrendChart, type AssessmentTrendPoint } from "@/components/pro/force-lab/ForceLabAssessmentTrendChart";
 
 export async function generateMetadata({ params }: { params: Promise<{ patientCode: string }> }): Promise<Metadata> {
   const { patientCode } = await params;
@@ -33,11 +35,26 @@ export default async function ForceLabPatientPage({ params }: { params: Promise<
 
   const patient = await prisma.clinicalPatient.findUnique({ where: { userId_patientCode: { userId: user.id, patientCode } } });
 
-  const [sessions, forceUnit, strengthProfile] = await Promise.all([
+  const [sessions, forceUnit, strengthProfile, assessments] = await Promise.all([
     getForceLabSessionsByPatientCode(patientCode),
     getUserForceUnit(),
     patient ? getStrengthProfile(patient.id) : Promise.resolve([]),
+    patient ? getAssessmentHistory(patient.id) : Promise.resolve([]),
   ]);
+
+  // Trend visualization — every muscle group tested across at least 2 full assessments
+  // (a single assessment has nothing to trend against). `assessments` is oldest-first (see
+  // getAssessmentHistory), so pushing in iteration order keeps each muscle group's own
+  // points chronological without a separate sort.
+  const trendsByMuscle = new Map<string, AssessmentTrendPoint[]>();
+  for (const a of assessments) {
+    for (const s of a.sessions) {
+      const points = trendsByMuscle.get(s.muscleGroup) ?? [];
+      points.push({ date: a.assessmentDate, leftPeak: s.leftPeak, rightPeak: s.rightPeak, lsi: s.lsi });
+      trendsByMuscle.set(s.muscleGroup, points);
+    }
+  }
+  const trendEntries = Array.from(trendsByMuscle.entries()).filter(([, points]) => points.length >= 2);
 
   return (
     <div className="screen-pad forcelab-page page-enter">
@@ -58,10 +75,41 @@ export default async function ForceLabPatientPage({ params }: { params: Promise<
         <StrengthProfilePanel profile={strengthProfile} forceUnit={forceUnit} layout="full" />
       </div>
 
+      <div className="card elev-sm" style={{ marginBottom: 20 }}>
+        <div className="card-kicker">Full Assessments</div>
+        {assessments.length === 0 ? (
+          <p style={{ fontSize: 12.5, color: "var(--color-neutral-700)", marginTop: 8 }}>
+            No full assessments imported for this patient yet — use the Paste Assessment tab on Force Lab.
+          </p>
+        ) : (
+          <div className="forcelab-assessment-summary-list">
+            {assessments
+              .slice()
+              .reverse()
+              .map((a) => (
+                <PatientAssessmentCard key={a.id} assessment={a} />
+              ))}
+          </div>
+        )}
+      </div>
+
       <div className="card elev-sm">
         <div className="card-kicker">Session History</div>
         <PatientSessionHistoryTable sessions={sessions} forceUnit={forceUnit} />
       </div>
+
+      {trendEntries.length > 0 && (
+        <div className="forcelab-assessment-trends-section">
+          <div className="card-kicker" style={{ margin: "20px 0 10px" }}>
+            Trends Across Assessments
+          </div>
+          <div className="forcelab-assessment-trends-grid">
+            {trendEntries.map(([muscleGroup, points]) => (
+              <ForceLabAssessmentTrendChart key={muscleGroup} muscleGroup={muscleGroup} points={points} unitLabel={forceUnit} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
