@@ -51,36 +51,45 @@ const IMAGE_SEARCH_MAX = 96;
 const HOME_GRID_SIZE = 7;
 const HOME_HERO_POOL_SIZE = 5;
 
-/** Attaches images to `ranked`, batch by batch, stopping once there are enough resolved
- *  candidates to fill the grid (with mutually distinct images) plus a hero pool, or once
+function hasEnoughImages(processed: Article[]): boolean {
+  const seenImages = new Set<string>();
+  let totalImaged = 0;
+  for (const a of processed) {
+    if (!a.image) continue;
+    totalImaged++;
+    seenImages.add(a.image);
+  }
+  return seenImages.size >= HOME_GRID_SIZE && totalImaged >= HOME_GRID_SIZE + HOME_HERO_POOL_SIZE;
+}
+
+async function resolveImageBatch(batch: Article[]): Promise<Article[]> {
+  return attachTopicImages(await attachRealImages(batch));
+}
+
+/** Attaches images to `ranked`, stopping once there are enough resolved candidates to
+ *  fill the grid (with mutually distinct images) plus a hero pool, or once
  *  IMAGE_SEARCH_MAX is reached. Returns every article it attempted (imaged or not, in
  *  their original rank order) — the shape HomeFeed already expects for the rest of the
  *  ranked pool (see rankedForDisplay below), just with more of the prefix processed than
- *  the old fixed FEED_IMAGE_LIMIT ever guaranteed. */
+ *  the old fixed FEED_IMAGE_LIMIT ever guaranteed.
+ *
+ *  Used to walk the pool in chunks of IMAGE_SEARCH_BATCH, awaiting each chunk's og:image
+ *  scrape (lib/og-image.ts) before starting the next — up to 6 rounds to reach
+ *  IMAGE_SEARCH_MAX, each gated behind that scrape's own 5s per-request timeout, so a
+ *  thin/unlucky day could add up to ~30s to every visitor's Home load, not just the first
+ *  one (a cache miss there is a real round trip to an arbitrary third-party server, not a
+ *  DB read). The first chunk alone is enough on a normal day — this only ever reaches a
+ *  second round when it isn't — so resolving everything past that first chunk in one more
+ *  parallel round (instead of looping in further chunks) bounds the worst case to two
+ *  rounds (~10s) without firing all IMAGE_SEARCH_MAX requests on the common day the first
+ *  chunk alone already suffices. */
 async function resolveHomeImages(ranked: Article[]): Promise<Article[]> {
-  const processed: Article[] = [];
-  const seenImages = new Set<string>();
-  let distinctImaged = 0;
-  let totalImaged = 0;
+  const pool = ranked.slice(0, Math.min(ranked.length, IMAGE_SEARCH_MAX));
+  const first = await resolveImageBatch(pool.slice(0, IMAGE_SEARCH_BATCH));
+  if (pool.length <= IMAGE_SEARCH_BATCH || hasEnoughImages(first)) return first;
 
-  for (let offset = 0; offset < Math.min(ranked.length, IMAGE_SEARCH_MAX); offset += IMAGE_SEARCH_BATCH) {
-    const batch = ranked.slice(offset, offset + IMAGE_SEARCH_BATCH);
-    const withReal = await attachRealImages(batch);
-    const withTopic = await attachTopicImages(withReal);
-    processed.push(...withTopic);
-
-    for (const a of withTopic) {
-      if (!a.image) continue;
-      totalImaged++;
-      if (!seenImages.has(a.image)) {
-        seenImages.add(a.image);
-        distinctImaged++;
-      }
-    }
-    if (distinctImaged >= HOME_GRID_SIZE && totalImaged >= HOME_GRID_SIZE + HOME_HERO_POOL_SIZE) break;
-  }
-
-  return processed;
+  const rest = await resolveImageBatch(pool.slice(IMAGE_SEARCH_BATCH));
+  return [...first, ...rest];
 }
 
 export default async function HomePage() {
