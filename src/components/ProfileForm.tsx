@@ -9,7 +9,9 @@ export function ProfileForm({
   specialty,
   practiceState,
   school,
+  clinicName,
   isStudent,
+  isPro,
   headline,
   bio,
 }: {
@@ -20,7 +22,12 @@ export function ProfileForm({
    *  student account (see AppShell.tsx) — only editable here when isStudent, since it has
    *  no meaning for a practicing clinician account. */
   school: string;
+  /** Shown on the LimbicPRO Clinician Dashboard's patient-brief print document (see
+   *  app/pro/patient-brief/[patientId]/page.tsx) — only editable here when isPro, same
+   *  "no meaning outside that context" reasoning as school/isStudent above. */
+  clinicName: string;
   isStudent: boolean;
+  isPro: boolean;
   headline: string;
   bio: string;
 }) {
@@ -37,6 +44,18 @@ export function ProfileForm({
           onChange={(e) => startTransition(() => updateProfileFieldAction("name", e.target.value))}
         />
       </div>
+      {isPro && (
+        <div className="field">
+          <label htmlFor="pf-clinic-name">Clinic Name</label>
+          <input
+            className="input"
+            id="pf-clinic-name"
+            placeholder="e.g. Newport Beach Physical Therapy"
+            defaultValue={clinicName}
+            onChange={(e) => startTransition(() => updateProfileFieldAction("clinicName", e.target.value))}
+          />
+        </div>
+      )}
       <div className="field">
         <label htmlFor="pf-specialty">Specialty</label>
         <select

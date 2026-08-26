@@ -7788,3 +7788,387 @@ button.plan-compare-name:hover { text-decoration: underline; }
   .atlas-content-panel { position: static; max-height: none; }
   .atlas-body-stage { max-width: 340px; }
 }
+
+/* ============================================================================
+   LimbicPRO Clinician Dashboard (/pro/dashboard) — see app/pro/dashboard/page.tsx
+   and components/pro/dashboard/*.tsx. Prefixed .clindash- throughout so nothing here
+   collides with the rest of the app's class names. Reuses the existing design
+   language (.card/.card-kicker/.field/.input/.btn/.tag) rather than inventing a
+   second one — new classes here are purely for this page's own layout shapes
+   (the 3-column grid, stat tiles, the outcome trend chart) that nothing else needs.
+   ============================================================================ */
+
+.clindash-page { max-width: 1400px; margin: 0 auto; }
+
+/* — Daily Brief bar — four stat tiles, full width above the three columns. Grid (not
+   the existing .dashboard-metrics-row flex row) specifically so the mobile breakpoint
+   below can go to a real 2x2 instead of a single stacked column. */
+.clindash-brief-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.clindash-brief-tile { padding: 14px 16px; }
+.clindash-brief-tile-label {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin-bottom: 6px;
+}
+.clindash-brief-tile-value { font-family: var(--font-heading); font-size: 24px; line-height: 1.1; }
+
+/* — Three-column layout — */
+.clindash-columns {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr) 280px;
+  gap: 20px;
+  align-items: start;
+}
+.clindash-col-patients,
+.clindash-col-research { min-width: 0; }
+.clindash-col-workspace { min-width: 0; }
+
+/* — Patient panel (left column) — */
+.clindash-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.clindash-panel-header .card-kicker { margin: 0; }
+.clindash-add-patient-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+}
+.clindash-add-patient-actions { display: flex; gap: 8px; }
+.clindash-hipaa-note {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 12%, transparent);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+}
+.clindash-patient-list { display: flex; flex-direction: column; gap: 6px; }
+.clindash-patient-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  border-left: 3px solid transparent;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.clindash-patient-card:hover { background: var(--color-neutral-100); }
+.clindash-patient-card--selected { border-left-color: var(--color-accent); background: var(--color-accent-100); }
+.clindash-patient-card-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.clindash-patient-code { font-weight: 700; font-size: 13.5px; }
+.clindash-reassess-dot { width: 7px; height: 7px; border-radius: 999px; background: #c9853a; flex-shrink: 0; }
+.clindash-patient-condition {
+  font-size: 11.5px;
+  color: var(--color-neutral-700);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.clindash-patient-progress { font-size: 11px; color: var(--color-neutral-700); margin-top: 3px; }
+.clindash-empty-state { font-size: 13px; color: var(--color-neutral-700); padding: 8px 2px; line-height: 1.5; }
+
+/* — Main workspace (center column) — */
+.clindash-workspace-greeting { font-size: 22px; margin: 0 0 4px; }
+.clindash-workspace-sub { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 18px; }
+.clindash-quick-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+.clindash-patient-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.clindash-patient-header-code { font-family: var(--font-heading); font-size: 24px; }
+.clindash-patient-header-condition { font-size: 13.5px; color: var(--color-neutral-700); margin-top: 2px; }
+.clindash-patient-header-pills { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+.clindash-status-pill { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+.clindash-status-pill--active { background: color-mix(in srgb, var(--color-success) 18%, transparent); color: var(--color-success); }
+.clindash-status-pill--discharged { background: var(--color-neutral-200); color: var(--color-neutral-700); }
+.clindash-patient-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.clindash-discharge-btn { color: var(--color-danger); background: none; border: 1px solid var(--color-divider); }
+
+.clindash-section { margin-bottom: 22px; }
+.clindash-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.clindash-section-header .card-kicker { margin: 0; }
+
+.clindash-brief-box {
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-100);
+  border: 1px solid var(--color-accent-300);
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+.clindash-brief-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.clindash-brief-generated-label { font-size: 11.5px; color: var(--color-neutral-700); }
+.clindash-disclaimer { font-size: 11px; color: var(--color-neutral-700); margin-top: 8px; line-height: 1.5; }
+
+.clindash-visit-progress-label { font-family: var(--font-heading); font-size: 18px; margin-bottom: 8px; }
+.clindash-progress-bar { height: 8px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
+.clindash-progress-bar-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
+.clindash-visit-dates { display: flex; gap: 18px; margin-top: 8px; font-size: 12px; color: var(--color-neutral-700); }
+
+.clindash-outcome-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.clindash-outcome-table th {
+  text-align: left;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  padding: 0 8px 6px 0;
+  font-weight: 600;
+}
+.clindash-outcome-row { cursor: pointer; }
+.clindash-outcome-row td { padding: 8px 8px 8px 0; border-top: 1px solid var(--color-divider); }
+.clindash-outcome-row:hover td { background: var(--color-neutral-100); }
+.clindash-trend-arrow { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 12px; }
+.clindash-trend-arrow--up { color: var(--color-success); }
+.clindash-trend-arrow--down { color: var(--color-danger); }
+.clindash-trend-arrow--flat { color: var(--color-neutral-600); }
+.clindash-outcome-history { padding: 4px 0 10px; font-size: 11.5px; color: var(--color-neutral-700); }
+.clindash-outcome-history-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed var(--color-divider); }
+
+.clindash-trend-chart-wrap { margin-top: 6px; padding: 10px 4px 4px; }
+.clindash-trend-chart-name { font-size: 11.5px; font-weight: 600; margin-bottom: 6px; }
+.clindash-trend-chart { position: relative; height: 70px; }
+.clindash-trend-chart-line { position: absolute; inset: 0; }
+.clindash-trend-point {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  transform: translate(-50%, 50%);
+}
+.clindash-trend-label { position: absolute; font-size: 10px; color: var(--color-neutral-700); white-space: nowrap; }
+.clindash-trend-need-more { font-size: 11.5px; color: var(--color-neutral-700); font-style: italic; margin-top: 4px; }
+
+.clindash-inline-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+}
+.clindash-inline-form-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.clindash-inline-form-row > * { flex: 1; min-width: 110px; }
+.clindash-inline-form-actions { display: flex; gap: 8px; }
+
+.clindash-hep-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--color-divider); font-size: 13px; }
+.clindash-hep-item:first-child { border-top: none; }
+.clindash-hep-item-name { font-weight: 600; }
+.clindash-hep-item-date { font-size: 11.5px; color: var(--color-neutral-700); }
+
+.clindash-note-item { padding: 10px 0; border-top: 1px solid var(--color-divider); cursor: pointer; }
+.clindash-note-item:first-child { border-top: none; }
+.clindash-note-item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 11.5px; color: var(--color-neutral-700); }
+.clindash-note-type-pill { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--color-accent-100); color: var(--color-accent-700); }
+.clindash-note-preview { font-size: 12.5px; margin-top: 4px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.clindash-note-full { font-size: 12.5px; margin-top: 4px; line-height: 1.5; white-space: pre-wrap; }
+
+/* — Research feed (right column) — */
+.clindash-research-sub { font-size: 11.5px; color: var(--color-neutral-700); margin: -6px 0 10px; }
+.clindash-research-list { display: flex; flex-direction: column; gap: 8px; }
+.clindash-research-item {
+  display: block;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  color: inherit;
+  text-decoration: none;
+}
+.clindash-research-item-meta { font-size: 10px; color: var(--color-accent-700); margin-bottom: 3px; }
+.clindash-research-item-title { font-family: var(--font-heading); font-size: 12.5px; line-height: 1.3; }
+.clindash-research-see-all { display: block; font-size: 12px; margin-top: 10px; text-align: center; }
+.clindash-quick-tools { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+
+/* — Zone 3: Practice Metrics — */
+.clindash-metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+.clindash-metric-card-value { font-family: var(--font-heading); font-size: 26px; margin: 6px 0 2px; }
+.clindash-metric-card-sub { font-size: 12px; color: var(--color-neutral-700); }
+.clindash-region-bars { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.clindash-region-bar-row { display: flex; align-items: center; gap: 8px; font-size: 11.5px; }
+.clindash-region-bar-label { width: 92px; flex-shrink: 0; color: var(--color-neutral-700); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.clindash-region-bar-track { flex: 1; height: 10px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
+.clindash-region-bar-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
+.clindash-region-bar-count { width: 18px; flex-shrink: 0; text-align: right; color: var(--color-neutral-700); }
+.clindash-reassess-rate--ok { color: var(--color-success); }
+.clindash-reassess-rate--high { color: #c9853a; }
+
+/* — Zone 4: expansion placeholder — */
+.clindash-expansion-card {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--color-divider);
+  color: var(--color-neutral-700);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .clindash-brief-row { grid-template-columns: repeat(2, 1fr); }
+  .clindash-columns { grid-template-columns: 1fr; }
+  .clindash-metrics-row { grid-template-columns: 1fr; }
+}
+
+/* — Prepare for Patient modal (components/pro/dashboard/PreparePatientModal.tsx) — sits
+   in the same .cal-modal-backdrop overlay every other modal in this app uses, just with
+   its own larger card (spec calls for a full-screen review flow, not a small form) rather
+   than reusing .cal-modal's fixed 420px width. */
+.ppm-modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 720px;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+.ppm-steps { display: flex; gap: 8px; margin-bottom: 20px; }
+.ppm-step { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.ppm-step-bar { height: 4px; border-radius: 999px; background: var(--color-divider); }
+.ppm-step-bar--active,
+.ppm-step-bar--done { background: var(--color-accent); }
+.ppm-step-label { font-size: 10.5px; color: var(--color-neutral-700); }
+.ppm-step-label--active { color: var(--color-accent-700); font-weight: 600; }
+.ppm-step-heading { font-family: var(--font-heading); font-size: 19px; margin-bottom: 14px; }
+.ppm-textarea { width: 100%; min-height: 160px; font: inherit; font-size: 13.5px; line-height: 1.6; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--color-divider); background: var(--color-surface); color: var(--color-text); resize: vertical; }
+.ppm-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; gap: 10px; }
+.ppm-actions-right { display: flex; gap: 8px; }
+.ppm-hep-row { display: grid; grid-template-columns: 1.4fr 0.6fr 0.6fr 0.8fr 1fr; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--color-divider); }
+.ppm-hep-row:first-child { border-top: none; }
+.ppm-hep-row-name { font-size: 12.5px; font-weight: 600; }
+.ppm-details-grid { display: flex; flex-direction: column; gap: 12px; }
+.ppm-details-row { display: flex; flex-direction: column; gap: 4px; }
+.ppm-details-label { font-size: 11px; color: var(--color-neutral-700); }
+.ppm-details-static { font-size: 13.5px; padding: 8px 0; }
+.ppm-patient-name-line { font-size: 13.5px; color: var(--color-neutral-700); border-bottom: 1px solid var(--color-divider); padding-bottom: 10px; }
+.ppm-patient-name-note { font-size: 11px; color: var(--color-warn); margin-top: 4px; }
+.ppm-download-wrap { text-align: center; padding: 30px 10px; }
+.ppm-download-instruction { font-size: 12px; color: var(--color-neutral-700); margin-top: 12px; max-width: 380px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+
+@media (max-width: 700px) {
+  .ppm-hep-row { grid-template-columns: 1fr; gap: 4px; }
+  .ppm-steps { flex-wrap: wrap; }
+}
+
+/* ============================================================================
+   LimbicPRO Patient Document (/pro/patient-brief/[patientId]) — always renders in light
+   mode regardless of the viewer's theme preference (see that page's own comment on why),
+   so every rule below uses literal colors rather than the --color-* custom properties,
+   which would otherwise pick up html[data-theme="dark"]'s dark values. Self-contained by
+   design: nothing here reads from or feeds into the rest of the app's design system.
+   ============================================================================ */
+
+.patient-brief-page {
+  background: #eeede8;
+  min-height: 100vh;
+  color: #1a1a1a;
+}
+.patient-brief-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 20px;
+  background: #1a1a1a;
+  color: #fff;
+}
+.patient-brief-topbar a,
+.patient-brief-topbar button {
+  font: inherit;
+}
+.patient-brief-doc {
+  max-width: 750px;
+  margin: 28px auto 60px;
+  background: #ffffff;
+  color: #1a1a1a;
+  padding: 48px 56px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+}
+.patient-brief-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid #1a1a1a;
+  margin-bottom: 22px;
+}
+.patient-brief-clinic-name { font-size: 20px; font-weight: 700; }
+.patient-brief-clinic-tagline { font-size: 11.5px; color: #555; margin-top: 2px; }
+.patient-brief-doc-title { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #555; margin-bottom: 4px; }
+.patient-brief-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 24px;
+  font-size: 12.5px;
+  margin-bottom: 26px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #ddd;
+}
+.patient-brief-meta-label { color: #666; }
+.patient-brief-meta-value { font-weight: 600; }
+.patient-brief-section { margin-bottom: 24px; }
+.patient-brief-section-title { font-size: 13px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 10px; color: #1a1a1a; }
+.patient-brief-summary-text { font-size: 13.5px; line-height: 1.7; white-space: pre-wrap; }
+.patient-brief-hep-name { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.patient-brief-hep-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.patient-brief-hep-table th {
+  text-align: left;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #666;
+  border-bottom: 1px solid #ccc;
+  padding: 6px 8px 6px 0;
+}
+.patient-brief-hep-row td { padding: 8px 8px 8px 0; border-bottom: 1px solid #eee; }
+.patient-brief-footer {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
+  font-size: 10.5px;
+  color: #777;
+  line-height: 1.6;
+}
+
+@media print {
+  .patient-brief-topbar { display: none !important; }
+  .patient-brief-page { background: #fff !important; min-height: 0; }
+  .patient-brief-doc {
+    box-shadow: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    max-width: none;
+  }
+  .patient-brief-hep-row,
+  .patient-brief-section { break-inside: avoid; page-break-inside: avoid; }
+  @page { margin: 0.75in; }
+}

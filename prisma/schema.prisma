@@ -79,6 +79,13 @@ model User {
   // ProfileForm.tsx) — most non-student accounts will never set it.
   school        String?
 
+  // The clinician's practice/clinic name — shown on the LimbicPRO Clinician Dashboard's
+  // patient-brief print document (see app/pro/patient-brief/[patientId]/page.tsx) and its
+  // "Prepare for Patient" review step (see components/pro/PreparePatientModal.tsx). Null
+  // for every account until set via the Profile "About you" form — the print page omits
+  // the "Practice:" line entirely rather than showing a blank one when this is unset.
+  clinicName    String?
+
   // Set once the reader flips the "I've added Limbic" switch on the Get the App card (see
   // components/GetTheAppCard.tsx) — collapses that card to a compact done state and hides
   // the shortcut icon next to Refresh on Home (see components/HomeFeed.tsx). Default false
@@ -317,6 +324,13 @@ model User {
   moodLogs            MoodLog[]
   ceLogs              CELog[]
   foundingFunder      FoundingFunder?
+
+  // LimbicPRO Clinician Dashboard (/pro/dashboard) — see ClinicalPatient below. All three
+  // scope to userId directly (never shared across accounts, no clinicId yet — see that
+  // model's own doc comment for the Clinic PRO expansion path).
+  clinicalPatients    ClinicalPatient[]
+  clinicalNotes       ClinicalNote[]
+  preVisitBriefs      PreVisitBrief[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -1005,6 +1019,125 @@ model HEPTemplate {
   exercises Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  patientAssignments PatientHEPAssignment[]
+}
+
+// LimbicPRO Clinician Dashboard (/pro/dashboard) — a solo PT's own caseload tracker. No PHI
+// is stored anywhere in this model or the ones below it: patients are referenced only by a
+// clinician-assigned code (e.g. "PT-001"), never a name — see the Add Patient form's HIPAA
+// reminder in components/pro/PatientPanel.tsx. Every record scopes to userId directly and
+// is never shared across accounts (see the ownership check at the top of every mutating
+// action in app/actions/clinician-dashboard.ts).
+//
+// Clinic PRO expansion path (multi-clinician, not built yet): add a `clinicId String?`
+// column here, gate dashboard queries by clinicId instead of/in addition to userId once
+// that ships, and give `specialty` below real teeth for cross-clinician filtering — it's
+// already captured per patient for exactly that reason, even though today's single-user
+// dashboard doesn't need to filter by it.
+model ClinicalPatient {
+  id          String    @id @default(cuid())
+  userId      String
+  patientCode String
+  condition   String
+  bodyRegion  String
+  specialty   String
+  visitCount  Int       @default(0)
+  totalVisits Int
+  startDate   DateTime  @default(now())
+  lastSeen    DateTime?
+  nextVisit   DateTime?
+  // "active" | "discharged" — plain String, same fixed-but-app-enforced-value-set
+  // convention as HEPTemplate.bodyPart above (see that field's comment).
+  status      String    @default("active")
+  // Clinician's free-text notes on the patient record itself (distinct from the
+  // per-visit ClinicalNote log below) — plaintext, same disclaimer as every note-taking
+  // surface on this dashboard: the clinician is responsible for not entering PHI here.
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user           User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  outcomes       OutcomeMeasureEntry[]
+  hepAssignments PatientHEPAssignment[]
+  clinicalNotes  ClinicalNote[]
+  preBriefs      PreVisitBrief[]
+
+  // A clinician's own patient codes must be unique to them (not globally — two different
+  // clinicians can each have their own "PT-001") — enforced here, not just checked in
+  // createPatient, so a race between two concurrent requests can't both slip through.
+  @@unique([userId, patientCode])
+}
+
+model OutcomeMeasureEntry {
+  id          String   @id @default(cuid())
+  patientId   String
+  // e.g. "Berg", "TUG", "LEFS", "DASH", "NPRS", "PSFS", "KOOS", "IKDC", "Oswestry", or a
+  // clinician-typed "Other" name — see OUTCOME_MEASURES in lib/clinician-dashboard-types.ts.
+  measureName String
+  score       Float
+  maxScore    Float
+  notes       String?
+  recordedAt  DateTime @default(now())
+
+  patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model PatientHEPAssignment {
+  id          String   @id @default(cuid())
+  patientId   String
+  // Null when the clinician typed a program name manually instead of picking a saved
+  // HEPTemplate (see the "Enter manually" option on the Assign HEP form) — hepName is
+  // always set either way, hepId only when it's a real linked template.
+  hepId       String?
+  hepName     String
+  // Snapshot of the template's exercises (or a manually-entered list) at assignment time,
+  // same "snapshot, not a live reference" reasoning as HEPTemplate.exercises itself — later
+  // edits to the source HEPTemplate shouldn't silently change what a patient was actually
+  // given on a past visit.
+  exercises   Json?
+  assignedAt  DateTime @default(now())
+  lastUpdated DateTime @updatedAt
+
+  patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  hep     HEPTemplate?    @relation(fields: [hepId], references: [id], onDelete: SetNull)
+}
+
+model ClinicalNote {
+  id          String   @id @default(cuid())
+  userId      String
+  patientId   String
+  visitNumber Int
+  // "Initial Eval" | "SOAP" | "Progress Note" | "Discharge Summary" — see
+  // CLINICAL_NOTE_TYPES in lib/clinician-dashboard-types.ts.
+  noteType    String
+  // Plaintext — the clinician is responsible for not entering PHI here (see the disclaimer
+  // shown on the Add Note form); no encryption-at-rest until the BAA upgrade covers it.
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+// A generated pre-visit brief — either the clinician-facing clinical reasoning aid
+// (patientFacing false, from generateClinicalBrief) or the patient-facing progress summary
+// reviewed and confirmed through the "Prepare for Patient" modal (patientFacing true,
+// confirmedAt set once the clinician clicks through — see confirmPatientBrief in
+// app/actions/clinician-dashboard.ts). Both share one model since they're the same kind of
+// record at different points in that review flow, not two different concepts.
+model PreVisitBrief {
+  id            String    @id @default(cuid())
+  userId        String
+  patientId     String
+  brief         String
+  patientFacing Boolean   @default(false)
+  confirmedAt   DateTime?
+  generatedAt   DateTime  @default(now())
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
 }
 
 // One of the 25 "Founding 25" spots on /founding-funders. Created two ways: self-serve via
