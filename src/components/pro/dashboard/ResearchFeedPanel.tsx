@@ -3,7 +3,6 @@ import { decorateArticle } from "@/lib/feed";
 import { ActivityIcon, CheckCircleIcon, ListIcon } from "@/components/icons";
 import type { Article } from "@/lib/types";
 import type { WeeklyResearchDigest } from "@/app/actions/clinician-dashboard";
-import { CECountdownCard } from "./CECountdownCard";
 import { ClinicalQuestionLogSection } from "./ClinicalQuestionLogSection";
 
 const QUICK_TOOLS = [
@@ -62,7 +61,7 @@ function WeeklyDigest({ digest }: { digest: WeeklyResearchDigest }) {
  *  plain article list this panel always had — see lib/dashboard-research.ts's
  *  getResearchFeedArticles for the 3-tier fallback that decides what `articles` holds
  *  there. Default mode (no patient selected) instead shows the weekly specialty digest,
- *  the CE Countdown card above it, and the Clinical Question Log below it. */
+ *  with the Clinical Question Log below it. */
 export function ResearchFeedPanel({
   articles,
   patientLabel,
@@ -73,50 +72,46 @@ export function ResearchFeedPanel({
   weeklyDigest: WeeklyResearchDigest;
 }) {
   return (
-    <>
-      <CECountdownCard />
-
-      <div className="card elev-sm">
-        <div className="card-kicker" style={{ margin: 0 }}>
-          Live Research Feed
-        </div>
-
-        {patientLabel ? (
-          <>
-            <p className="clindash-research-sub">Matched to {patientLabel}</p>
-            {articles.length === 0 ? (
-              <p style={{ fontSize: 12.5, color: "var(--color-neutral-700)" }}>Nothing new right now.</p>
-            ) : (
-              <div className="clindash-research-list">
-                {articles.map((a) => {
-                  const d = decorateArticle(a, []);
-                  return (
-                    <Link key={a.id} href={`/article/${a.id}`} className="clindash-research-item">
-                      <div className="clindash-research-item-meta">
-                        {d.typeLabel} · {d.dateLabel}
-                      </div>
-                      <div className="clindash-research-item-title">{a.title}</div>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </>
-        ) : (
-          <WeeklyDigest digest={weeklyDigest} />
-        )}
-
-        <div className="clindash-quick-tools">
-          {QUICK_TOOLS.map((t) => (
-            <Link key={t.href} href={t.href} className="btn btn-secondary" style={{ fontSize: 12.5, justifyContent: "flex-start" }}>
-              <t.icon size={14} />
-              {t.label}
-            </Link>
-          ))}
-        </div>
-
-        {!patientLabel && <ClinicalQuestionLogSection />}
+    <div className="card elev-sm">
+      <div className="card-kicker" style={{ margin: 0 }}>
+        Live Research Feed
       </div>
-    </>
+
+      {patientLabel ? (
+        <>
+          <p className="clindash-research-sub">Matched to {patientLabel}</p>
+          {articles.length === 0 ? (
+            <p style={{ fontSize: 12.5, color: "var(--color-neutral-700)" }}>Nothing new right now.</p>
+          ) : (
+            <div className="clindash-research-list">
+              {articles.map((a) => {
+                const d = decorateArticle(a, []);
+                return (
+                  <Link key={a.id} href={`/article/${a.id}`} className="clindash-research-item">
+                    <div className="clindash-research-item-meta">
+                      {d.typeLabel} · {d.dateLabel}
+                    </div>
+                    <div className="clindash-research-item-title">{a.title}</div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </>
+      ) : (
+        <WeeklyDigest digest={weeklyDigest} />
+      )}
+
+      <div className="clindash-quick-tools">
+        {QUICK_TOOLS.map((t) => (
+          <Link key={t.href} href={t.href} className="btn btn-secondary" style={{ fontSize: 12.5, justifyContent: "flex-start" }}>
+            <t.icon size={14} />
+            {t.label}
+          </Link>
+        ))}
+      </div>
+
+      {!patientLabel && <ClinicalQuestionLogSection />}
+    </div>
   );
 }

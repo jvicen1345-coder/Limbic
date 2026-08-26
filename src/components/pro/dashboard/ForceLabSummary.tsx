@@ -18,7 +18,7 @@ function lsiColor(lsi: number): string {
 
 /** Active patient workspace's Force Lab section (below HEP Assignments, above Clinical
  *  Notes — see PatientWorkspace.tsx) — self-fetching, same "mount effect + local getX()
- *  call" pattern as CECountdownCard/ClinicalQuestionLogSection, since this is the one place
+ *  call" pattern as ClinicalQuestionLogSection, since this is the one place
  *  Force Lab data reaches the Clinician Dashboard and doesn't need to block the rest of
  *  the workspace's first paint. */
 export function ForceLabSummary({ patientId, patientCode, forceUnit }: { patientId: string; patientCode: string; forceUnit: string }) {

@@ -8427,27 +8427,13 @@ button.plan-compare-name:hover { text-decoration: underline; }
 }
 
 /* ============================================================================
-   Clinician Dashboard — Prompt 4 professional-connection features (CE Countdown, Specialty
-   Research Digest, Clinical Question Log, Peer Comparison benchmarks).
-   ============================================================================ */
+   Clinician Dashboard — Prompt 4 professional-connection features (Specialty Research
+   Digest, Clinical Question Log, Peer Comparison benchmarks). The CE Countdown card that
+   used to live here was removed from the dashboard; .clindash-ce-progress-bar/-fill below
+   are kept — TeamOverview.tsx's own seats-used bar still uses them. */
 
-.clindash-ce-card { margin-bottom: 16px; }
-.clindash-ce-days { font-family: var(--font-heading); font-size: 30px; line-height: 1; }
-.clindash-ce-days-label { font-size: 12px; color: var(--color-neutral-700); margin-top: 4px; }
 .clindash-ce-progress-bar { height: 7px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; margin: 12px 0 6px; }
 .clindash-ce-progress-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
-.clindash-ce-hours-line { font-size: 12px; color: var(--color-neutral-700); }
-.clindash-ce-track-pill {
-  display: inline-block;
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 2px 9px;
-  border-radius: 999px;
-  margin-top: 8px;
-}
-.clindash-ce-track-pill--on { background: color-mix(in srgb, var(--color-success) 16%, transparent); color: var(--color-success); }
-.clindash-ce-track-pill--behind { background: color-mix(in srgb, #c9853a 16%, transparent); color: #c9853a; }
-.clindash-ce-actions { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
 
 .clindash-digest-header-row { margin-bottom: 4px; }
 .clindash-digest-title { font-family: var(--font-heading); font-size: 15px; }
