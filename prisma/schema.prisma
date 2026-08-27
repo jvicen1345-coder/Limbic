@@ -1539,6 +1539,12 @@ model ForceLabAssessment {
   // "Raw text is stored for reference" disclaimer) — never re-parsed after save.
   rawText           String
   notes             String?
+  // Plain-language AI summary for the Patient Report (see generatePatientReportSummary in
+  // app/actions/force-lab.ts) — its own field rather than reusing `notes`, since `notes` is
+  // the clinician's own free-text field and already renders verbatim in the Clinical
+  // Report; overwriting it here would both destroy that text and leak into a document this
+  // feature must not change.
+  patientSummary    String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 

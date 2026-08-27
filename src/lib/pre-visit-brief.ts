@@ -294,3 +294,71 @@ Generate a clinical comparison interpretation.`,
     return null;
   }
 }
+
+export interface PatientStrengthSummaryInput {
+  patientAge?: number;
+  patientSex?: string;
+  dominantSide?: string;
+  muscleGroups: {
+    muscleGroup: string;
+    peakForceLeft?: number;
+    peakForceRight?: number;
+    lsi?: number;
+  }[];
+}
+
+const PATIENT_STRENGTH_SUMMARY_SYSTEM_PROMPT = `You are helping a physical therapist communicate strength assessment results to their patient in plain, encouraging language. Write a summary that a patient with no medical background can understand.
+
+Write exactly 3 short paragraphs:
+Paragraph 1 — Overall summary. How did they do overall. Encouraging but honest.
+Paragraph 2 — Strengths. What muscle groups are performing well and what that means for them functionally.
+Paragraph 3 — Areas to focus on. What needs work and one encouraging sentence about what improving those areas will mean for their daily life.
+
+Never use abbreviations. Never use clinical jargon. Write to the patient directly using "you" and "your". Keep total length under 100 words. Do not mention specific pound values — describe strength in plain terms like "strong", "slightly weaker", "significantly weaker than the other side".`;
+
+/** "Generate Patient Summary" / "Regenerate Summary" on the Force Lab assessment print
+ *  page's Patient Report tab (see generatePatientReportSummary in app/actions/force-lab.ts,
+ *  which is what persists the result to ForceLabAssessment.patientSummary). Reuses the LSI
+ *  thresholds already established for the strength-profile/pill coloring elsewhere in Force
+ *  Lab (90/85 — see getLSIStatus in lib/force-lab-units.ts, whose own boundary is 90/80; 85
+ *  matches this feature's own "Needs Attention" cutoff instead since that's the line the
+ *  patient report's own Focus Areas section uses). */
+export async function generatePatientStrengthSummary(assessment: PatientStrengthSummaryInput): Promise<string | null> {
+  try {
+    const concernGroups = assessment.muscleGroups
+      .filter((m) => m.lsi !== undefined && m.lsi < 85)
+      .map((m) => `${m.muscleGroup} — LSI ${m.lsi}%`)
+      .join(", ");
+
+    const strongGroups = assessment.muscleGroups
+      .filter((m) => m.lsi !== undefined && m.lsi >= 90)
+      .map((m) => `${m.muscleGroup} — LSI ${m.lsi}%`)
+      .join(", ");
+
+    const message = await client.messages.create({
+      model: MODEL,
+      max_tokens: 300,
+      system: PATIENT_STRENGTH_SUMMARY_SYSTEM_PROMPT,
+      messages: [
+        {
+          role: "user",
+          content: `Generate a patient-friendly strength summary:
+Patient age: ${assessment.patientAge ?? "unknown"}
+Patient sex: ${assessment.patientSex ?? "unknown"}
+Dominant side: ${assessment.dominantSide ?? "unknown"}
+Performing well — LSI above 90%: ${strongGroups || "none recorded"}
+Needs attention — LSI below 85%: ${concernGroups || "none"}
+
+Return only the 3 paragraph summary.`,
+        },
+      ],
+    });
+
+    const content = message.content[0];
+    if (content.type !== "text") return null;
+    return content.text.trim();
+  } catch (error) {
+    console.error("Patient summary generation failed:", error);
+    return null;
+  }
+}

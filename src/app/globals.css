@@ -8836,20 +8836,50 @@ button.plan-compare-name:hover { text-decoration: underline; }
 .forcelab-patient-history-table td { padding: 8px; border-bottom: 1px solid var(--color-divider); white-space: nowrap; }
 .forcelab-patient-history-table-wrap { overflow-x: auto; }
 
-/* — Dashboard integration (components/pro/dashboard/ForceLabSummary.tsx) — */
-.forcelab-summary-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 8px 0;
-  border-top: 1px dashed var(--color-divider);
-  font-size: 12px;
+/* — Dashboard integration (components/pro/dashboard/ForceLabSummary.tsx) — a compact
+   session-count-and-most-recent-reading card rather than a scrolling list of every session,
+   since this is one of several sections stacked in the active patient workspace and was
+   previously the tallest one on a caseload with any real Force Lab history. */
+.forcelab-card-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.forcelab-card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700); }
+.forcelab-card-patient-code { font-size: 11.5px; color: var(--color-neutral-700); }
+.forcelab-card-meta { font-size: 12px; color: var(--color-neutral-700); margin: 4px 0 0; }
+.forcelab-card-empty { font-size: 12.5px; color: var(--color-neutral-700); text-align: center; margin: 10px 0; }
+.forcelab-card-empty-btn { width: 100%; text-align: center; color: var(--color-accent); border-color: var(--color-accent); }
+
+.forcelab-card-divider { border-top: 1px solid var(--color-divider); margin: 10px 0; }
+.forcelab-card-section-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 6px; }
+.forcelab-card-muscle-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.forcelab-card-columns { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.forcelab-card-values { font-size: 13px; display: flex; flex-direction: column; gap: 2px; }
+.forcelab-card-values div:first-child { color: var(--color-accent); }
+.forcelab-card-values div:last-child { color: var(--color-neutral-700); }
+.forcelab-card-lsi-col { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.forcelab-card-trend { font-size: 11px; }
+.forcelab-card-trend--stable { color: var(--color-neutral-700); }
+
+.forcelab-card-attention-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 0; }
+.forcelab-card-attention-muscle { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.forcelab-card-attention-tags { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+
+.forcelab-card-actions { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.forcelab-card-action-outline {
+  flex: 1;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text);
 }
-.forcelab-summary-row:first-child { border-top: none; }
-.forcelab-summary-muscle { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
-.forcelab-summary-peaks { display: flex; gap: 10px; font-size: 11.5px; white-space: nowrap; }
-.forcelab-summary-date { font-size: 10.5px; color: var(--color-neutral-700); white-space: nowrap; }
+.forcelab-card-action-link { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; color: var(--color-accent); }
+
+@media (max-width: 600px) {
+  .forcelab-card-columns { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .forcelab-card-lsi-col { flex-direction: row; align-items: center; }
+  .forcelab-card-actions { flex-direction: column; align-items: stretch; }
+}
 
 /* — Paste Assessment tab (PasteAssessmentPanel.tsx) — */
 .forcelab-paste-textarea { width: 100%; min-height: 200px; margin-top: 12px; resize: vertical; font-family: var(--font-mono, monospace); font-size: 12px; }
@@ -8925,14 +8955,6 @@ button.plan-compare-name:hover { text-decoration: underline; }
   .forcelab-assessment-trends-grid { grid-template-columns: 1fr; }
 }
 
-/* — Dashboard Force Lab section's Latest Assessment card (ForceLabSummary.tsx) — */
-.forcelab-latest-assessment { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--color-divider); }
-.forcelab-latest-assessment-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 6px; }
-.forcelab-latest-assessment-row { display: flex; align-items: baseline; gap: 10px; }
-.forcelab-latest-assessment-date { font-weight: 700; font-size: 12.5px; }
-.forcelab-latest-assessment-count { font-size: 11px; color: var(--color-neutral-700); }
-.forcelab-latest-assessment-pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
-
 /* — Patient brief print document's Strength Measurements section — */
 .pbrief-forcelab-title { font-size: 14px; font-weight: 700; color: #3b6fe0; margin-bottom: 8px; }
 .pbrief-forcelab-row { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; padding: 4px 0; border-bottom: 1px solid #eee; }
@@ -8949,3 +8971,106 @@ button.plan-compare-name:hover { text-decoration: underline; }
   color: #666; padding: 5px 6px; border-bottom: 1px solid #ccc; white-space: nowrap;
 }
 .pbrief-assessment-table td { padding: 6px; border-bottom: 1px solid #eee; white-space: nowrap; }
+
+/* — Force Lab print page's Clinical/Patient report toggle (ForceLabAssessmentPrintTopbar.tsx)
+   — a plain segmented control living inside the existing dark .patient-brief-topbar, so it
+   uses the topbar's own white-on-dark palette rather than the app's --color-* tokens (same
+   reasoning as every other rule in this print-document block). */
+.pbrief-report-toggle { display: flex; gap: 2px; background: rgba(255, 255, 255, 0.12); border-radius: var(--radius-md); padding: 2px; }
+.pbrief-report-toggle-btn {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: calc(var(--radius-md) - 2px);
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+}
+.pbrief-report-toggle-btn--active { background: #fff; color: #1a1a1a; }
+.pbrief-topbar-actions { display: flex; align-items: center; gap: 10px; }
+.pbrief-patient-generate-error { background: #1a1a1a; color: #ff8a8a; font-size: 12px; text-align: center; margin: 0; padding: 6px 20px; }
+
+@media print {
+  .pbrief-report-toggle,
+  .pbrief-patient-generate-error { display: none !important; }
+}
+
+/* The topbar was built for two items (back link, print button); the report toggle and
+   Generate Summary button pushed it past what a phone-width row can hold without every
+   child squeezing down to a multi-line sliver — stack everything into its own full-width
+   row instead once it can't fit on one line. */
+@media (max-width: 700px) {
+  .patient-brief-topbar { flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px 14px; }
+  .patient-brief-topbar > a { order: 1; }
+  .pbrief-report-toggle { order: 3; width: 100%; justify-content: center; }
+  .pbrief-topbar-actions { order: 2; width: 100%; justify-content: center; flex-wrap: wrap; }
+}
+
+/* ============================================================================
+   Force Lab assessment print page's Patient Report tab (ForceLabPatientReportBody.tsx) —
+   plain-language sibling to the Clinical Report above, sharing its .patient-brief-doc/
+   .patient-brief-header/-clinic-name/-tagline shell and the same literal-hex,
+   theme-independent approach (this document must look identical regardless of the
+   clinician's own theme). Everything below is specific to this tab's own layout: the title
+   row, AI summary, per-muscle-group strength-bar cards, and focus-areas/meaning sections.
+   ============================================================================ */
+
+.pbrief-patient-title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 4px; }
+.pbrief-patient-title { font-size: 22px; margin: 0; }
+.pbrief-patient-title-date { font-size: 13px; color: #666; white-space: nowrap; }
+.pbrief-patient-prepared-by { font-size: 13px; color: #666; margin: 6px 0 0; }
+.pbrief-patient-name-line { font-size: 13px; margin: 18px 0 0; }
+.pbrief-patient-rule { border: none; border-top: 1px solid #ddd; margin: 18px 0; }
+
+.pbrief-patient-section { break-inside: avoid; page-break-inside: avoid; }
+.pbrief-patient-section-title { font-size: 15px; font-weight: 700; color: #3b6fe0; margin: 0 0 8px; }
+.pbrief-patient-subtitle { font-size: 12.5px; color: #666; line-height: 1.6; margin: 0 0 14px; }
+.pbrief-patient-summary-text { font-size: 13px; line-height: 1.7; margin: 0; white-space: pre-wrap; }
+.pbrief-patient-summary-placeholder {
+  font-size: 12.5px;
+  color: #888;
+  font-style: italic;
+  background: #f5f5f3;
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin: 0;
+}
+
+.pbrief-muscle-card { break-inside: avoid; page-break-inside: avoid; padding: 10px 0; }
+.pbrief-muscle-card-name { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.pbrief-muscle-card-rule { border: none; border-top: 1px solid rgba(221, 221, 221, 0.4); margin: 0; }
+
+.pbrief-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 12px; }
+.pbrief-bar-label { width: 40px; flex-shrink: 0; color: #666; }
+.pbrief-bar-track { flex: 1; background: #eee; border-radius: 6px; height: 12px; overflow: hidden; }
+.pbrief-bar-fill { display: block; height: 12px; border-radius: 6px; }
+.pbrief-bar-fill--right { background: #3b6fe0; }
+.pbrief-bar-fill--left { background: #c9853a; }
+.pbrief-bar-value { width: 48px; flex-shrink: 0; text-align: right; font-size: 12px; }
+
+.pbrief-symmetry-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.pbrief-symmetry-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; font-size: 11.5px; font-weight: 700; }
+.pbrief-patient-norm { font-size: 11.5px; color: #666; }
+
+.pbrief-focus-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px solid #eee; font-size: 13px; }
+.pbrief-focus-muscle { font-weight: 700; }
+.pbrief-focus-label { color: #666; text-align: right; }
+
+.pbrief-patient-bullets { font-size: 12.5px; line-height: 1.7; margin: 0; padding-left: 20px; }
+.pbrief-patient-note-space { height: 60px; border-bottom: 1px dashed #ccc; margin-top: 10px; }
+
+.pbrief-patient-footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 32px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 10px; color: #777; }
+
+@media (max-width: 600px) {
+  .pbrief-patient-title-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .pbrief-bar-label { width: 36px; }
+  .pbrief-patient-footer { flex-direction: column; gap: 4px; }
+  .pbrief-focus-row { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .pbrief-focus-label { text-align: left; }
+}
+
+@media print {
+  .pbrief-muscle-card { break-inside: avoid; page-break-inside: avoid; }
+}
