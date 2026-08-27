@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { StrengthProfileEntry, ForceLabAssessmentWithSessions } from "@/app/actions/force-lab";
-import { SessionHistoryPanel } from "./SessionHistoryPanel";
 import { ForceLabEntryForm } from "./ForceLabEntryForm";
 import { ForceLabImportPanel } from "./ForceLabImportPanel";
 import { PasteAssessmentPanel } from "./PasteAssessmentPanel";
@@ -13,11 +12,19 @@ import { SessionDetailView } from "./SessionDetailView";
 import { StrengthProfilePanel } from "./StrengthProfilePanel";
 import { ForceLabTrendChart } from "./ForceLabTrendChart";
 import { bodyRegionForMuscle } from "@/lib/force-lab-muscles";
+import { convertForDisplay, getLSIStatus, FORCE_LAB_GREEN, FORCE_LAB_AMBER, FORCE_LAB_RED } from "@/lib/force-lab-units";
 import type { PatientListEntry } from "@/app/actions/clinician-dashboard";
 import type { ForceLabSession } from "@/generated/prisma/client";
 import type { ForceLabPrefill } from "./ForceLabEntryForm";
 
 type CenterMode = "manual" | "import" | "paste" | "view";
+
+function lsiPillColor(lsi: number): string {
+  const status = getLSIStatus(lsi);
+  if (status === "normal") return FORCE_LAB_GREEN;
+  if (status === "caution") return FORCE_LAB_AMBER;
+  return FORCE_LAB_RED;
+}
 
 /** Client orchestrator for /pro/force-lab — same "owns the interactive state, server page
  *  only does the initial fetch" split as ClinicianDashboard.tsx. `sessions` starts from the
@@ -62,6 +69,11 @@ export function ForceLabWorkspace({
   const [assessmentsVersion, setAssessmentsVersion] = useState(0);
 
   const selectedSession = sessions.find((s) => s.id === selectedSessionId) ?? null;
+
+  const mostRecentSession =
+    sessions.length === 0
+      ? null
+      : sessions.slice().sort((a, b) => new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime())[0];
 
   // Both derived straight from the locally-owned `sessions` array rather than a separate
   // server round trip keyed on [selectedPatientId]/[lastLoadedMuscleGroup] — an earlier
@@ -187,8 +199,53 @@ export function ForceLabWorkspace({
       </div>
 
       <div className="forcelab-columns">
-        <div className="forcelab-col-history">
-          <SessionHistoryPanel sessions={sessions} forceUnit={forceUnit} selectedSessionId={selectedSessionId} onSelect={handleSelectSession} />
+        <div className="forcelab-col-history card elev-sm">
+          <div className="card-kicker">Recent Sessions</div>
+          {sessions.length === 0 || !mostRecentSession ? (
+            <p className="forcelab-history-empty">No sessions recorded. Add your first session above.</p>
+          ) : (
+            <>
+              <p className="forcelab-history-empty" style={{ marginBottom: 10 }}>
+                {sessions.length} session{sessions.length === 1 ? "" : "s"} recorded
+              </p>
+              <button
+                type="button"
+                className={`forcelab-history-card ${selectedSessionId === mostRecentSession.id ? "forcelab-history-card--active" : ""}`}
+                onClick={() => handleSelectSession(mostRecentSession.id)}
+              >
+                <div className="forcelab-history-card-muscle">{mostRecentSession.muscleGroup}</div>
+                <div className="forcelab-history-card-date">{new Date(mostRecentSession.sessionDate).toLocaleDateString()}</div>
+                <div className="forcelab-history-card-peaks">
+                  <span>
+                    R:{" "}
+                    {mostRecentSession.rightPeak != null
+                      ? `${convertForDisplay(mostRecentSession.rightPeak, mostRecentSession.unit, forceUnit)} ${forceUnit}`
+                      : "—"}
+                  </span>
+                  <span>
+                    L:{" "}
+                    {mostRecentSession.leftPeak != null
+                      ? `${convertForDisplay(mostRecentSession.leftPeak, mostRecentSession.unit, forceUnit)} ${forceUnit}`
+                      : "—"}
+                  </span>
+                </div>
+                <div className="forcelab-history-card-tags">
+                  {mostRecentSession.lsi != null && (
+                    <span
+                      className="forcelab-lsi-pill"
+                      style={{ color: lsiPillColor(mostRecentSession.lsi), borderColor: lsiPillColor(mostRecentSession.lsi) }}
+                    >
+                      LSI {mostRecentSession.lsi}%
+                    </span>
+                  )}
+                  {mostRecentSession.patientCode && <span className="tag">{mostRecentSession.patientCode}</span>}
+                </div>
+              </button>
+            </>
+          )}
+          <Link href="/pro/force-lab/sessions" className="clindash-seats-add-link" style={{ display: "inline-block", marginTop: 10 }}>
+            View All Sessions →
+          </Link>
         </div>
 
         <div className="forcelab-col-center card elev-sm">
