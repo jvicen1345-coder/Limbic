@@ -6,7 +6,7 @@ import { getCurrentUser } from "@/lib/session";
 import { calculateDifference, calculateLSI, calculatePercentDiff } from "@/lib/force-lab-units";
 import { parseForceLabScreenshot, type ParsedForceLabScreenshot } from "@/lib/force-lab-import";
 import { parseActiveForcePaste, type ParsedAssessment, type ParsedMuscleGroup } from "@/lib/force-lab-parser";
-import { generateAssessmentComparison, type AssessmentComparisonInput } from "@/lib/pre-visit-brief";
+import { generateAssessmentComparison, generatePatientStrengthSummary, type AssessmentComparisonInput } from "@/lib/pre-visit-brief";
 import { seedForceLabNorms } from "@/lib/force-lab-norms";
 import { bodyRegionForMuscle } from "@/lib/force-lab-muscles";
 import type { ClinicianDashboardResult } from "./clinician-dashboard";
@@ -625,4 +625,142 @@ export async function compareAssessments(assessmentAId: string, assessmentBId: s
   });
 
   return { ok: true, comparison, assessmentA, assessmentB };
+}
+
+// ============================================================================
+// Dashboard card (components/pro/dashboard/ForceLabSummary.tsx) — a single consolidated
+// fetch for the active patient workspace's Force Lab section, replacing that component's
+// old separate getForceLabSessions/getAssessmentHistory calls.
+// ============================================================================
+
+export type ForceLabTrend = "improving" | "declining" | "stable" | "insufficient_data";
+
+// Below this, two consecutive LSI readings for the same muscle group read as "the same"
+// rather than a real change — same spirit as PracticeMetrics.tsx's HIGH_REASSESSMENT_RATE
+// constant: a named, documented threshold rather than a bare number inline.
+const LSI_TREND_STABLE_THRESHOLD = 2;
+
+// A muscle group surfaces in "Needs Attention" below this LSI — matches getLSIStatus's own
+// "caution"/"deficit" boundary in lib/force-lab-units.ts.
+const NEEDS_ATTENTION_LSI_THRESHOLD = 85;
+const NEEDS_ATTENTION_COUNT = 2;
+
+/** Compares the two most recent sessions for one muscle group (by sessionDate) — same
+ *  "last two readings" comparison for both the Most Recent section's own trend and each
+ *  Needs Attention row's trend, so this is the only place that logic is written. */
+function computeMuscleGroupTrend(allSessions: ForceLabSession[], muscleGroup: string): ForceLabTrend {
+  const forGroup = allSessions
+    .filter((s) => s.muscleGroup === muscleGroup && s.lsi != null)
+    .slice()
+    .sort((a, b) => new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime());
+  if (forGroup.length < 2) return "insufficient_data";
+
+  const [latest, previous] = forGroup;
+  const change = latest.lsi! - previous.lsi!;
+  if (Math.abs(change) < LSI_TREND_STABLE_THRESHOLD) return "stable";
+  return change > 0 ? "improving" : "declining";
+}
+
+export interface ForceLabCardData {
+  sessionCount: number;
+  mostRecent: {
+    muscleGroup: string;
+    sessionDate: Date;
+    rightPeak: number | null;
+    leftPeak: number | null;
+    lsi: number | null;
+    unit: string;
+  } | null;
+  mostRecentTrend: ForceLabTrend;
+  needsAttention: { muscleGroup: string; lsi: number; trend: ForceLabTrend }[];
+  latestAssessmentDate: Date | null;
+}
+
+/** The redesigned Force Lab dashboard card's sole data source (see ForceLabSummary.tsx) —
+ *  everything the card needs in one round trip instead of the old component's separate
+ *  session-list and assessment-history fetches. Like every other action in this file, the
+ *  acting user comes from the session rather than a `userId` parameter (see this file's own
+ *  top-of-file comment on why that departs from the literal spec signature). */
+export async function getForceLabCardData(patientId: string): Promise<ForceLabCardData> {
+  const empty: ForceLabCardData = { sessionCount: 0, mostRecent: null, mostRecentTrend: "insufficient_data", needsAttention: [], latestAssessmentDate: null };
+
+  const user = await requireProUser();
+  if (!user) return empty;
+  const patient = await requireOwnedPatient(user.id, patientId);
+  if (!patient) return empty;
+
+  const [sessions, latestAssessment] = await Promise.all([
+    prisma.forceLabSession.findMany({ where: { userId: user.id, patientId }, orderBy: { sessionDate: "desc" } }),
+    prisma.forceLabAssessment.findFirst({ where: { userId: user.id, patientId }, orderBy: { assessmentDate: "desc" }, select: { assessmentDate: true } }),
+  ]);
+
+  if (sessions.length === 0) return { ...empty, latestAssessmentDate: latestAssessment?.assessmentDate ?? null };
+
+  const mostRecentSession = sessions[0];
+  const mostRecent = {
+    muscleGroup: mostRecentSession.muscleGroup,
+    sessionDate: mostRecentSession.sessionDate,
+    rightPeak: mostRecentSession.rightPeak,
+    leftPeak: mostRecentSession.leftPeak,
+    lsi: mostRecentSession.lsi,
+    unit: mostRecentSession.unit,
+  };
+  const mostRecentTrend = computeMuscleGroupTrend(sessions, mostRecentSession.muscleGroup);
+
+  // One entry per muscle group — its own most recent LSI reading — same dedup pattern as
+  // getStrengthProfile above, since "lowest LSI muscle groups" needs each group's current
+  // standing, not every historical reading of it.
+  const seen = new Set<string>();
+  const latestPerMuscleGroup: { muscleGroup: string; lsi: number }[] = [];
+  for (const s of sessions) {
+    if (seen.has(s.muscleGroup) || s.lsi == null) continue;
+    seen.add(s.muscleGroup);
+    latestPerMuscleGroup.push({ muscleGroup: s.muscleGroup, lsi: s.lsi });
+  }
+
+  const needsAttention = latestPerMuscleGroup
+    .filter((m) => m.lsi < NEEDS_ATTENTION_LSI_THRESHOLD)
+    .sort((a, b) => a.lsi - b.lsi)
+    .slice(0, NEEDS_ATTENTION_COUNT)
+    .map((m) => ({ muscleGroup: m.muscleGroup, lsi: m.lsi, trend: computeMuscleGroupTrend(sessions, m.muscleGroup) }));
+
+  return { sessionCount: sessions.length, mostRecent, mostRecentTrend, needsAttention, latestAssessmentDate: latestAssessment?.assessmentDate ?? null };
+}
+
+// ============================================================================
+// Patient-friendly report (print page toggle) — see lib/force-lab-plain-language.ts for
+// the plain-English translation helpers and lib/pre-visit-brief.ts's
+// generatePatientStrengthSummary for the AI call itself.
+// ============================================================================
+
+/** "Generate Patient Summary" / "Regenerate Summary" on the print page's Patient Report
+ *  tab. Saves to ForceLabAssessment.patientSummary — a field of its own rather than reusing
+ *  `notes` (the spec's literal storage suggestion): `notes` is the clinician's own free-text
+ *  field, already rendered verbatim in the unchanged Clinical Report, and overwriting it here
+ *  would both destroy whatever the clinician wrote there and leak into a document this
+ *  feature is explicitly not supposed to touch. */
+export async function generatePatientReportSummary(assessmentId: string): Promise<ClinicianDashboardResult<{ summary: string }>> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const assessment = await requireOwnedAssessment(user.id, assessmentId);
+  if (!assessment) return { ok: false, error: "Assessment not found." };
+
+  const sessions = await prisma.forceLabSession.findMany({ where: { assessmentId }, orderBy: { muscleGroup: "asc" } });
+
+  const summary = await generatePatientStrengthSummary({
+    patientAge: assessment.patientAge ?? undefined,
+    patientSex: assessment.patientSex ?? undefined,
+    dominantSide: assessment.dominantSide ?? undefined,
+    muscleGroups: sessions.map((s) => ({
+      muscleGroup: s.muscleGroup,
+      peakForceLeft: s.leftPeak ?? undefined,
+      peakForceRight: s.rightPeak ?? undefined,
+      lsi: s.lsi ?? undefined,
+    })),
+  });
+  if (!summary) return { ok: false, error: "Could not generate a patient summary. Please try again." };
+
+  await prisma.forceLabAssessment.update({ where: { id: assessmentId }, data: { patientSummary: summary } });
+
+  return { ok: true, summary };
 }
