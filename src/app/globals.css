@@ -8005,6 +8005,28 @@ button.plan-compare-name:hover { text-decoration: underline; }
 .clindash-inline-form-row > * { flex: 1; min-width: 110px; }
 .clindash-inline-form-actions { display: flex; gap: 8px; }
 
+/* Outcome Measures' "Pull from a saved test" quick-fill list (OutcomeMeasuresSection.tsx) —
+   the clinician's own past Calculators results (see /pro/calculators) matching the
+   currently-selected measure, one click away from filling in Score/Max Score below. */
+.clindash-outcome-pull { display: flex; flex-direction: column; gap: 4px; }
+.clindash-outcome-pull-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); }
+.clindash-outcome-pull-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.clindash-outcome-pull-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-accent-300);
+  background: var(--color-accent-100);
+  color: var(--color-accent);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.clindash-outcome-pull-date { font-weight: 400; color: var(--color-neutral-700); }
+
 .clindash-hep-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--color-divider); font-size: 13px; }
 .clindash-hep-item:first-child { border-top: none; }
 .clindash-hep-item-name { font-weight: 600; }
