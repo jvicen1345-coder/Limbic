@@ -17,10 +17,25 @@ export interface OutcomeMeasuresSectionHandle {
   prefillMeasure: (measureName: string) => void;
 }
 import { addOutcomeEntry, type OutcomeBenchmark, type PatientDetail } from "@/app/actions/clinician-dashboard";
-import { getCalculatorProfilesForCurrentUser } from "@/app/actions/calculator-profiles";
+import { getCalculatorProfilesForCurrentUser, type CalculatorResultView } from "@/app/actions/calculator-profiles";
 import { OUTCOME_MEASURES } from "@/lib/clinician-dashboard-types";
 import { ChevronRightIcon, PlusIcon } from "@/components/icons";
 import type { OutcomeMeasureEntry } from "@/generated/prisma/client";
+
+/** Best-effort parse of a saved CalculatorResult's free-text `value` (see that field's own
+ *  comment in app/actions/calculator-profiles.ts — the exact display string a calculator
+ *  showed, not a bare number) into the score/maxScore shape OutcomeMeasureEntry needs.
+ *  Handles the two patterns every calculator in components/pro/calculators/*.tsx actually
+ *  produces for a scored instrument ("42 / 80", "45%") — a timed or count-based result (TUG's
+ *  "12.3s", MBESS's "3 errors") has no maxScore to infer, so this returns null for those
+ *  rather than guessing one. */
+function parseCalculatorValue(value: string): { score: number; maxScore: number } | null {
+  const fraction = value.match(/^([\d.]+)\s*\/\s*([\d.]+)$/);
+  if (fraction) return { score: Number(fraction[1]), maxScore: Number(fraction[2]) };
+  const percent = value.match(/^([\d.]+)\s*%$/);
+  if (percent) return { score: Number(percent[1]), maxScore: 100 };
+  return null;
+}
 
 function benchmarkVerdict(history: OutcomeMeasureEntry[], benchmark: OutcomeBenchmark): { label: string; className: string } | null {
   if (history.length < 2) return null;
@@ -100,11 +115,12 @@ export function OutcomeMeasuresSection({
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
-  // Measure names pulled from the clinician's own saved Calculators tests (see
-  // /pro/calculators) — testKey/testName are per-CalculatorResult, and CalculatorProfile
-  // has no patient link (it's a de-identified scoring tool), so this is a user-scoped "which
-  // tests have I actually run" list added to the picker below, not a per-patient query.
-  const [savedTestNames, setSavedTestNames] = useState<string[]>([]);
+  // Every saved CalculatorResult across every profile, flattened — testKey/testName are
+  // per-result, and CalculatorProfile has no patient link (it's a de-identified scoring
+  // tool), so this is a user-scoped "everything I've ever run" list, not a per-patient
+  // query. Drives both the measure-name picker below (as before) and, now, the "Pull from
+  // a saved test" quick-fill list for whichever measure is currently selected.
+  const [calculatorResults, setCalculatorResults] = useState<CalculatorResultView[]>([]);
 
   useEffect(() => {
     if (initiallyOpen) {
@@ -119,17 +135,14 @@ export function OutcomeMeasuresSection({
     let cancelled = false;
     getCalculatorProfilesForCurrentUser().then((profiles) => {
       if (cancelled) return;
-      const names = new Set<string>();
-      for (const profile of profiles) {
-        for (const result of profile.results) names.add(result.testName);
-      }
-      setSavedTestNames(Array.from(names));
+      setCalculatorResults(profiles.flatMap((p) => p.results));
     });
     return () => {
       cancelled = true;
     };
   }, []);
 
+  const savedTestNames = Array.from(new Set(calculatorResults.map((r) => r.testName)));
   const standardMeasures = (OUTCOME_MEASURES as readonly string[]).filter((m) => m !== "Other");
   const testedMeasures = savedTestNames.filter((name) => !standardMeasures.includes(name));
   const knownMeasures = [...standardMeasures, ...testedMeasures];
@@ -159,6 +172,32 @@ export function OutcomeMeasuresSection({
 
   const measureNames = Array.from(new Set(patient.outcomes.map((o) => o.measureName)));
   const byMeasure = new Map(measureNames.map((name) => [name, patient.outcomes.filter((o) => o.measureName === name)]));
+
+  // Saved test runs for whichever measure is currently selected, most recent first — the
+  // "Pull from a saved test" quick-fill list below the Measure field. Matches on the exact
+  // test name (same string OUTCOME_MEASURES and CalculatorResult.testName both use for the
+  // standard instruments, e.g. "LEFS"), so this works whether the selected measure came
+  // from the standard list or the "From your saved tests" group.
+  const effectiveMeasureName = form.measureName === "Other" ? form.customMeasure.trim() : form.measureName;
+  const matchingResults = calculatorResults
+    .filter((r) => r.testName === effectiveMeasureName)
+    .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+
+  // A non-parseable pull (a timed or count-based result with no maxScore to infer — see
+  // parseCalculatorValue) clears Score/Max Score rather than leaving whatever was already
+  // typed there: leaving stale numbers in place would read as if they came from the result
+  // just picked, when they're actually left over from a prior measure or a manual edit.
+  // Notes is different — never overwritten once the clinician has typed something, so
+  // switching pulls after starting a note doesn't clobber it.
+  const handlePull = (result: CalculatorResultView) => {
+    const parsed = parseCalculatorValue(result.value);
+    setForm((f) => ({
+      ...f,
+      score: parsed ? String(parsed.score) : "",
+      maxScore: parsed ? String(parsed.maxScore) : "",
+      notes: f.notes.trim() ? f.notes : `Saved test result: ${result.value} (${result.interpretation})`,
+    }));
+  };
 
   const handleAdd = () => {
     setError(null);
@@ -325,6 +364,21 @@ export function OutcomeMeasuresSection({
               />
             </div>
           </div>
+
+          {matchingResults.length > 0 && (
+            <div className="clindash-outcome-pull">
+              <div className="clindash-outcome-pull-label">Pull from a saved test</div>
+              <div className="clindash-outcome-pull-list">
+                {matchingResults.map((r) => (
+                  <button type="button" key={r.id} className="clindash-outcome-pull-row" onClick={() => handlePull(r)}>
+                    <span className="clindash-outcome-pull-value">{r.value}</span>
+                    <span className="clindash-outcome-pull-date">{new Date(r.completedAt).toLocaleDateString()}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="field" style={{ margin: 0 }}>
             <label htmlFor="om-notes">Notes (optional)</label>
             <input
