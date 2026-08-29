@@ -6,7 +6,7 @@ import {
   checkRedFlags,
   dismissRedFlagAlert,
   getPatientDetail,
-  hasLoggedVisitToday,
+  hasLoggedVisitRecently,
   type AvailableHEP,
   type DashboardSummary,
   type EpisodeLengthStats,
@@ -131,7 +131,7 @@ export function ClinicianDashboard({
     Promise.all([
       getPatientDetail(selectedPatientId),
       getDashboardResearchFeedAction(selectedPatientId),
-      hasLoggedVisitToday(selectedPatientId),
+      hasLoggedVisitRecently(selectedPatientId),
       // Runs on every open and every onChanged-triggered refetch (e.g. after saving an
       // outcome) — exactly the "after any outcome entry is saved or a patient record is
       // opened" trigger the Red Flag Monitor spec calls for, without a separate effect.
