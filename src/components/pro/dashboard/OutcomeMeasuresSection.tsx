@@ -22,6 +22,23 @@ import { OUTCOME_MEASURES } from "@/lib/clinician-dashboard-types";
 import { ChevronRightIcon, PlusIcon } from "@/components/icons";
 import type { OutcomeMeasureEntry } from "@/generated/prisma/client";
 
+// Two calculators save their result under a longer display name than the short form
+// OUTCOME_MEASURES uses for the same instrument (see the testName prop passed to CalcModal
+// in BergBalanceCalculator.tsx / TugCalculator.tsx vs. the "Berg"/"TUG" entries in
+// OUTCOME_MEASURES) — every other calculator's testName already matches its OUTCOME_MEASURES
+// entry exactly. Without this alias, a saved Berg/TUG result would silently never match the
+// "Berg"/"TUG" measure a clinician actually picks, and would also show up as a second,
+// differently-named entry in the "From your saved tests" group instead of folding into the
+// standard one.
+const CALCULATOR_TEST_NAME_ALIASES: Record<string, string> = {
+  "Berg Balance Scale": "Berg",
+  "Timed Up and Go": "TUG",
+};
+
+function normalizeTestName(testName: string): string {
+  return CALCULATOR_TEST_NAME_ALIASES[testName] ?? testName;
+}
+
 /** Best-effort parse of a saved CalculatorResult's free-text `value` (see that field's own
  *  comment in app/actions/calculator-profiles.ts — the exact display string a calculator
  *  showed, not a bare number) into the score/maxScore shape OutcomeMeasureEntry needs.
@@ -142,7 +159,7 @@ export function OutcomeMeasuresSection({
     };
   }, []);
 
-  const savedTestNames = Array.from(new Set(calculatorResults.map((r) => r.testName)));
+  const savedTestNames = Array.from(new Set(calculatorResults.map((r) => normalizeTestName(r.testName))));
   const standardMeasures = (OUTCOME_MEASURES as readonly string[]).filter((m) => m !== "Other");
   const testedMeasures = savedTestNames.filter((name) => !standardMeasures.includes(name));
   const knownMeasures = [...standardMeasures, ...testedMeasures];
@@ -174,13 +191,13 @@ export function OutcomeMeasuresSection({
   const byMeasure = new Map(measureNames.map((name) => [name, patient.outcomes.filter((o) => o.measureName === name)]));
 
   // Saved test runs for whichever measure is currently selected, most recent first — the
-  // "Pull from a saved test" quick-fill list below the Measure field. Matches on the exact
-  // test name (same string OUTCOME_MEASURES and CalculatorResult.testName both use for the
-  // standard instruments, e.g. "LEFS"), so this works whether the selected measure came
-  // from the standard list or the "From your saved tests" group.
+  // "Pull from a saved test" quick-fill list below the Measure field. Matches on the
+  // normalized test name (see normalizeTestName/CALCULATOR_TEST_NAME_ALIASES above), so this
+  // works whether the selected measure came from the standard list or the "From your saved
+  // tests" group.
   const effectiveMeasureName = form.measureName === "Other" ? form.customMeasure.trim() : form.measureName;
   const matchingResults = calculatorResults
-    .filter((r) => r.testName === effectiveMeasureName)
+    .filter((r) => normalizeTestName(r.testName) === effectiveMeasureName)
     .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
 
   // A non-parseable pull (a timed or count-based result with no maxScore to infer — see
