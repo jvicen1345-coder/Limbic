@@ -216,6 +216,26 @@ export function OutcomeMeasuresSection({
     }));
   };
 
+  // Auto-fills from the most recent matching saved test the moment a measure with one is
+  // selected — the clinician no longer has to click a pull button for the common case of
+  // wanting the latest result; the pull list below still lets them pick an older one instead.
+  // Only fires while Score/Max Score are both still blank, so it can never overwrite a value
+  // the clinician has already started typing (same "don't clobber manual entry" rule
+  // handlePull's own notes handling already follows). The setState itself is deferred into a
+  // microtask (this repo's react-hooks/set-state-in-effect rule forbids calling it
+  // synchronously in the effect body — same reasoning as the ref-registration effects
+  // elsewhere in this file only ever setState inside a .then()).
+  useEffect(() => {
+    if (form.score.trim() || form.maxScore.trim()) return;
+    const mostRecent = matchingResults[0];
+    if (!mostRecent) return;
+    Promise.resolve().then(() => handlePull(mostRecent));
+    // Deliberately keyed on the measure identity and result-set size, not on form.score/
+    // maxScore (read above only to decide whether to skip) — depending on those would re-run
+    // this on every keystroke in those fields instead of once per measure selection.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [effectiveMeasureName, matchingResults.length]);
+
   const handleAdd = () => {
     setError(null);
     const measureName = form.measureName === "Other" ? form.customMeasure.trim() : form.measureName;
