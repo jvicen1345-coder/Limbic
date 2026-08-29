@@ -594,19 +594,20 @@ export async function getTodaysPatients(): Promise<PatientListEntry[]> {
     .sort((a, b) => a.nextVisit!.getTime() - b.nextVisit!.getTime());
 }
 
-/** Whether this patient already has a VisitLog entry from today — the visit-confirmation
- *  banner (see ClinicianDashboard.tsx) checks this before showing "Did you see [code]
- *  today?" so a clinician who already logged the visit isn't asked again on every
- *  reselect. */
-export async function hasLoggedVisitToday(patientId: string): Promise<boolean> {
+/** Whether this patient already has a VisitLog entry within the last 24 hours — the
+ *  visit-confirmation banner (see ClinicianDashboard.tsx) checks this before showing "Did
+ *  you see [code] today?" so a clinician who already logged the visit isn't asked again on
+ *  every reselect. A rolling 24-hour window rather than a calendar-day (midnight-to-
+ *  midnight) one — logging a visit at 11pm and having the banner able to reappear an hour
+ *  later, once it's technically "a new day," defeated the point of suppressing it. */
+export async function hasLoggedVisitRecently(patientId: string): Promise<boolean> {
   const user = await requireProUser();
   if (!user) return false;
   const patient = await requireOwnedPatient(user.id, patientId);
   if (!patient) return false;
 
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  const count = await prisma.visitLog.count({ where: { patientId, loggedAt: { gte: startOfToday } } });
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const count = await prisma.visitLog.count({ where: { patientId, loggedAt: { gte: oneDayAgo } } });
   return count > 0;
 }
 

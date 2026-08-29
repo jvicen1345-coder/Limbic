@@ -10,15 +10,19 @@ function dateInputValue(d: Date | null): string {
 
 /** The active-patient workspace's "Edit" form (see PatientWorkspace.tsx, which owns
  *  whether this is shown) — wires up updatePatient, an action that already existed fully
- *  built but had no caller anywhere in the UI. Deliberately excludes visitCount/lastSeen,
- *  which updatePatient also accepts: those are system-managed by "Log Visit" (see
- *  VisitLogBanner/logVisit), and letting a clinician hand-edit them here could desync them
- *  from the VisitLog rows that back the visit-history trend elsewhere on this workspace. */
+ *  built but had no caller anywhere in the UI. Includes visitCount ("which visit a patient
+ *  is on") for hand-correcting it — e.g. a patient transferred in mid-episode, or a
+ *  data-entry slip — even though the normal way it advances is "Log Visit" (see
+ *  VisitLogBanner/logVisit). Safe to hand-edit: nothing else on this workspace cross-checks
+ *  visitCount against the number of VisitLog rows, so there's no consistency to break —
+ *  VisitLog is only ever read for "did I already log a visit in the last 24 hours" and
+ *  today's clinic-wide patient count, neither of which cares what visitCount itself says. */
 export function EditPatientForm({ patient, onChanged, onClose }: { patient: PatientDetail; onChanged: () => void; onClose: () => void }) {
   const [pending, startTransition] = useTransition();
   const [condition, setCondition] = useState(patient.condition);
   const [bodyRegion, setBodyRegion] = useState(patient.bodyRegion);
   const [specialty, setSpecialty] = useState(patient.specialty);
+  const [visitCount, setVisitCount] = useState(String(patient.visitCount));
   const [totalVisits, setTotalVisits] = useState(String(patient.totalVisits));
   const [nextVisit, setNextVisit] = useState(dateInputValue(patient.nextVisit));
   const [notes, setNotes] = useState(patient.notes ?? "");
@@ -26,9 +30,14 @@ export function EditPatientForm({ patient, onChanged, onClose }: { patient: Pati
 
   const handleSave = () => {
     setError(null);
+    const visitCountNum = Number(visitCount);
     const totalVisitsNum = Number(totalVisits);
     if (!condition.trim()) {
       setError("Condition is required.");
+      return;
+    }
+    if (!Number.isInteger(visitCountNum) || visitCountNum < 0) {
+      setError("Current visit must be a whole number, 0 or more.");
       return;
     }
     if (!Number.isFinite(totalVisitsNum) || totalVisitsNum <= 0) {
@@ -40,6 +49,7 @@ export function EditPatientForm({ patient, onChanged, onClose }: { patient: Pati
         condition,
         bodyRegion,
         specialty,
+        visitCount: visitCountNum,
         totalVisits: totalVisitsNum,
         nextVisit: nextVisit || null,
         notes,
@@ -88,6 +98,12 @@ export function EditPatientForm({ patient, onChanged, onClose }: { patient: Pati
         <div className="field" style={{ margin: 0 }}>
           <label htmlFor="ep-visits">Planned total visits</label>
           <input className="input" id="ep-visits" type="number" min="1" value={totalVisits} onChange={(e) => setTotalVisits(e.target.value)} />
+        </div>
+      </div>
+      <div className="clindash-inline-form-row">
+        <div className="field" style={{ margin: 0 }}>
+          <label htmlFor="ep-visit-count">Current visit</label>
+          <input className="input" id="ep-visit-count" type="number" min="0" value={visitCount} onChange={(e) => setVisitCount(e.target.value)} />
         </div>
       </div>
       <div className="field" style={{ margin: 0 }}>

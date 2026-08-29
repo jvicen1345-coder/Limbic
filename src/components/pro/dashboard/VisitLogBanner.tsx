@@ -8,7 +8,7 @@ const CONFIRMATION_MS = 2500;
 
 /** The "Did you see [code] today?" banner — shown by ClinicianDashboard.tsx whenever a
  *  patient is newly selected (card click or Morning Rounds' "Start Session") and
- *  hasLoggedVisitToday comes back false. Mount this with `key={patientId}` from the
+ *  hasLoggedVisitRecently comes back false. Mount this with `key={patientId}` from the
  *  parent so switching patients always starts a fresh 30s timer and clears any leftover
  *  confirmation state, rather than trying to reset internal state from a prop change. */
 export function VisitLogBanner({
