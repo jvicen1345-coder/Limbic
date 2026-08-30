@@ -2,6 +2,7 @@
 
 import { getCurrentUser, isAdminEmail } from "@/lib/session";
 import { buildArticleView, type ArticleViewData } from "@/lib/article-view";
+import { checkUnpaywall } from "@/lib/unpaywall";
 
 export interface SwapArticleResult {
   ok: true;
@@ -27,4 +28,14 @@ export async function swapArticleAction(articleId: string): Promise<SwapArticleR
   if (!data) return NOT_FOUND_ERROR;
 
   return { ok: true, data };
+}
+
+/** Powers the Open Access pill on feed cards (see components/OpenAccessPill.tsx) — cards
+ *  render first, then each card with a `doi` (PubMed articles only) independently asks for
+ *  its own open-access status, so a feed full of cards never waits on Unpaywall before
+ *  painting. checkUnpaywall's own 24h fetch cache means a DOI already looked up (by this
+ *  card, another card, or the article detail page) resolves instantly on repeat views. */
+export async function checkArticleOpenAccessAction(doi: string): Promise<boolean> {
+  const result = await checkUnpaywall(doi);
+  return result?.isOpenAccess ?? false;
 }
