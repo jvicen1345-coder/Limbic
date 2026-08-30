@@ -128,11 +128,21 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     return;
   }
 
+  // Pro and Student are mutually exclusive (see stripeSubscriptionId's own doc comment in
+  // schema.prisma) — when one becomes genuinely active, force the other's flag off in the
+  // same write, rather than trusting that a would-be conflicting subscription was already
+  // canceled (see cancelConflictingProStudentSubscription in app/actions/pro.ts, which
+  // cancels one before starting a checkout for the other, but can't guarantee its deletion
+  // webhook lands before this one does). Only forced when `active` — an inactive event
+  // (e.g. a lapsed payment) says nothing about the other plan's independent state, so it's
+  // left untouched.
   await prisma.user.update({
     where: { id: userId },
     data: {
       stripeSubscriptionId: subscription.id,
-      ...(plan === "pro" ? { isPro: active } : { studentTier: active ? plan : "none" }),
+      ...(plan === "pro"
+        ? { isPro: active, ...(active ? { studentTier: "none" } : {}) }
+        : { studentTier: active ? plan : "none", ...(active ? { isPro: false } : {}) }),
     },
   });
 }
