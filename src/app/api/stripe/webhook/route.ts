@@ -87,6 +87,20 @@ function resolvePlan(subscription: Stripe.Subscription): BillablePlan | null {
 const WELLNESS_PLUS_PLANS = new Set<BillablePlan>(["wellnessPlusMonthly", "wellnessPlusYearly"]);
 const CLINIC_PLANS = new Set<BillablePlan>(["clinic"]);
 
+/** Whether it's safe to write `subscription` over whichever *SubscriptionId column this
+ *  plan owns, given the id currently on file. A subscription this app doesn't already
+ *  track (most commonly a fresh Checkout Session whose Subscription started life
+ *  "incomplete", pending its first payment) shouldn't clobber an already-tracked id unless
+ *  it's genuinely active: an inactive event for some OTHER subscription says nothing about
+ *  the one currently on file, and blindly writing it would knock the DB's pointer off a
+ *  real, still-billing subscription — orphaning it (its own eventual deletion event's
+ *  staleness guard in clearSubscription would then never match) and, if this new one never
+ *  activates, silently dropping the reader's real paid status in the meantime too. A
+ *  subscription that's already the one on file (or becomes active) is always safe to write. */
+function shouldTrackSubscription(subscription: Stripe.Subscription, active: boolean, currentId: string | null): boolean {
+  return active || subscription.id === currentId;
+}
+
 async function syncSubscription(subscription: Stripe.Subscription) {
   const userId = await resolveUserId(subscription);
   if (!userId) {
@@ -102,11 +116,18 @@ async function syncSubscription(subscription: Stripe.Subscription) {
 
   const active = subscription.status === "active" || subscription.status === "trialing";
 
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { stripeSubscriptionId: true, wellnessPlusSubscriptionId: true, clinicProSubscriptionId: true },
+  });
+  if (!user) return;
+
   // LimbicWellness+ is additive (a reader can also be LimbicPro/LimbicStudent at the same
   // time), so it gets its own subscription-id column rather than sharing
   // stripeSubscriptionId, which only ever tracks one of the two mutually-exclusive
   // clinician tiers.
   if (WELLNESS_PLUS_PLANS.has(plan)) {
+    if (!shouldTrackSubscription(subscription, active, user.wellnessPlusSubscriptionId)) return;
     await prisma.user.update({
       where: { id: userId },
       data: {
@@ -121,6 +142,7 @@ async function syncSubscription(subscription: Stripe.Subscription) {
   // Clinic PRO is additive too (a clinic subscription can coexist with an individual
   // isPro/studentTier one), same reasoning as LimbicWellness+ above.
   if (CLINIC_PLANS.has(plan)) {
+    if (!shouldTrackSubscription(subscription, active, user.clinicProSubscriptionId)) return;
     await prisma.user.update({
       where: { id: userId },
       data: { clinicProSubscriptionId: subscription.id, isClinicPro: active },
@@ -136,6 +158,7 @@ async function syncSubscription(subscription: Stripe.Subscription) {
   // webhook lands before this one does). Only forced when `active` — an inactive event
   // (e.g. a lapsed payment) says nothing about the other plan's independent state, so it's
   // left untouched.
+  if (!shouldTrackSubscription(subscription, active, user.stripeSubscriptionId)) return;
   await prisma.user.update({
     where: { id: userId },
     data: {
