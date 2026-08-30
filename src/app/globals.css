@@ -7421,6 +7421,20 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   border-radius: 999px;
   padding: 3px 10px;
 }
+/* A tier with no Stripe Price configured yet (see TierConfig.comingSoon) — deliberately
+   neutral/muted rather than accent-colored like .plan-compare-current-pill above, so it
+   doesn't read as "you have this" at a glance. */
+.plan-compare-coming-soon-pill {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
 .plan-compare-cta-form { width: 100%; margin-top: 2px; }
 .plan-compare-cta { width: 100%; font-size: 12.5px; padding: 7px 10px; }
 

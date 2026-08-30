@@ -69,7 +69,7 @@ export default async function ProOverviewPage() {
         </div>
       ) : (
         <div className="card elev-sm" style={{ margin: "16px 0" }}>
-          <div className="card-kicker">$25/month</div>
+          <div className="card-kicker">$15/month</div>
           <p className="card-body" style={{ marginTop: 6 }}>
             Cancel any time; takes effect at the end of your current billing period.
           </p>

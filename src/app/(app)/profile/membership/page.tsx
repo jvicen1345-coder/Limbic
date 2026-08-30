@@ -5,7 +5,6 @@ import {
   cancelProAction,
   subscribeToStudentTierAction,
   subscribeToWellnessPlusFromProfileAction,
-  subscribeToClinicAction,
 } from "@/app/actions/pro";
 import { PROFILE_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
@@ -82,13 +81,19 @@ interface TierConfig {
   price: string;
   current: boolean;
   /** Server Action to submit for checkout — null when this tier can't be purchased right
-   *  now: Free (nothing to buy, so TierHeader renders no button at all) or Limbic Student
+   *  now: Free (nothing to buy, so TierHeader renders no button at all), Limbic Student
    *  without a .edu email (TierHeader renders a disabled "Subscribe" button with
    *  nonClickableReason as its title instead — the action itself already re-checks
    *  hasStudentAccess and silently no-ops regardless, but a disabled button reads clearer
-   *  than a dead click). */
+   *  than a dead click), or a tier marked comingSoon. */
   action: (() => Promise<void>) | null;
   nonClickableReason?: string;
+  /** No Stripe Price exists for this tier yet (see priceIdForPlan in lib/stripe.ts) — a
+   *  Subscribe button would just silently no-op mid-checkout (startCheckout's own
+   *  `if (!priceId) return`), so TierHeader shows a plain "Coming Soon" pill in its place
+   *  instead of a dead button. Remove once the tier's env var (e.g. STRIPE_PRICE_CLINIC) is
+   *  actually set. */
+  comingSoon?: boolean;
 }
 
 /** Renders one tier's name/price/subscribe-button-or-current-pill — shared between the
@@ -103,6 +108,8 @@ function TierHeader({ tier, billingEnabled }: { tier: TierConfig; billingEnabled
       <div className="plan-compare-price">{tier.price}</div>
       {tier.current ? (
         <span className="plan-compare-current-pill">Current Plan</span>
+      ) : tier.comingSoon ? (
+        <span className="plan-compare-coming-soon-pill">Coming Soon</span>
       ) : tier.action ? (
         <form action={tier.action} className="plan-compare-cta-form">
           <button type="submit" className="btn btn-primary plan-compare-cta" disabled={!billingEnabled}>
@@ -135,10 +142,13 @@ function TierHeader({ tier, billingEnabled }: { tier: TierConfig; billingEnabled
  *  "Current Plan" pill once the reader already has that tier. Free never has a button
  *  (nothing to purchase); Clinic Pro is a new
  *  tier (see User.isClinicPro/clinicProSubscriptionId in schema.prisma) with the same
- *  additive billing shape as Wellness+ — billing-only for now, no team-seat/clinic-admin
- *  feature gate actually wired up yet (see "Clinic Admin Dashboard"/"Up to 6 Team Seats"
- *  rows, which describe what Clinic Pro will unlock, not something built elsewhere in this
- *  PR). */
+ *  additive billing shape as Wellness+, but no Stripe Price exists for it yet — its
+ *  TierConfig sets comingSoon instead of a real action, so TierHeader shows a "Coming
+ *  Soon" pill rather than a Subscribe button that would silently fail mid-checkout. Flip
+ *  that back to a real action once STRIPE_PRICE_CLINIC is set. No team-seat/clinic-admin
+ *  feature gate actually wired up yet either (see "Clinic Admin Dashboard"/"Up to 6 Team
+ *  Seats" rows, which describe what Clinic Pro will unlock, not something built
+ *  elsewhere in this PR). */
 export default async function ProfileMembershipPage({
   searchParams,
 }: {
@@ -183,8 +193,8 @@ export default async function ProfileMembershipPage({
       action: onStudent || !student ? null : subscribeToStudentTierAction,
       nonClickableReason: !onStudent && !student ? "Sign in with a .edu email to purchase Limbic Student" : undefined,
     },
-    { key: "pro", label: "LimbicPRO", price: "$25/mo", current: onPro, action: onPro ? null : subscribeToProAction },
-    { key: "clinic", label: "Clinic PRO", price: "$100/mo", current: onClinic, action: onClinic ? null : subscribeToClinicAction },
+    { key: "pro", label: "LimbicPRO", price: "$15/mo", current: onPro, action: onPro ? null : subscribeToProAction },
+    { key: "clinic", label: "Clinic PRO", price: "$100/mo", current: onClinic, action: null, comingSoon: !onClinic },
   ];
 
   return (
