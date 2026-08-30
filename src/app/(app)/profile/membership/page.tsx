@@ -82,33 +82,41 @@ interface TierConfig {
   price: string;
   current: boolean;
   /** Server Action to submit for checkout — null when this tier can't be purchased right
-   *  now: Free (nothing to buy) or Limbic Student without a .edu email (the action itself
-   *  already re-checks hasStudentAccess and silently no-ops, but showing a plain
-   *  non-clickable name avoids a confusing dead click). */
+   *  now: Free (nothing to buy, so TierHeader renders no button at all) or Limbic Student
+   *  without a .edu email (TierHeader renders a disabled "Subscribe" button with
+   *  nonClickableReason as its title instead — the action itself already re-checks
+   *  hasStudentAccess and silently no-ops regardless, but a disabled button reads clearer
+   *  than a dead click). */
   action: (() => Promise<void>) | null;
   nonClickableReason?: string;
 }
 
-/** Renders one tier's name/price/current-plan-pill — shared between the desktop table's
- *  <th> header cells and the mobile per-tier cards below, so the two layouts can never
- *  drift out of sync on which tier is purchasable/current. */
+/** Renders one tier's name/price/subscribe-button-or-current-pill — shared between the
+ *  desktop table's <th> header cells and the mobile per-tier cards below, so the two
+ *  layouts can never drift out of sync on which tier is purchasable/current. The name
+ *  itself used to be the purchase link (a plain-text button); it's now inert display text,
+ *  with a real "Subscribe" button underneath as its own, more obvious entry point. */
 function TierHeader({ tier, billingEnabled }: { tier: TierConfig; billingEnabled: boolean }) {
   return (
-    <>
-      {tier.current || !tier.action ? (
-        <span className="plan-compare-name" data-current={tier.current ? "true" : undefined} title={tier.nonClickableReason}>
-          {tier.label}
-        </span>
-      ) : (
-        <form action={tier.action}>
-          <button type="submit" className="plan-compare-name" disabled={!billingEnabled}>
-            {tier.label}
+    <div className="plan-compare-header">
+      <div className="plan-compare-name">{tier.label}</div>
+      <div className="plan-compare-price">{tier.price}</div>
+      {tier.current ? (
+        <span className="plan-compare-current-pill">Current Plan</span>
+      ) : tier.action ? (
+        <form action={tier.action} className="plan-compare-cta-form">
+          <button type="submit" className="btn btn-primary plan-compare-cta" disabled={!billingEnabled}>
+            Subscribe
           </button>
         </form>
+      ) : (
+        tier.nonClickableReason && (
+          <button type="button" className="btn btn-secondary plan-compare-cta" disabled title={tier.nonClickableReason}>
+            Subscribe
+          </button>
+        )
       )}
-      <div className="plan-compare-price">{tier.price}</div>
-      {tier.current && <span className="plan-compare-current-pill">Current Plan</span>}
-    </>
+    </div>
   );
 }
 
@@ -122,10 +130,10 @@ function TierHeader({ tier, billingEnabled }: { tier: TierConfig; billingEnabled
  *  a single scannable table (.plan-compare-table); below 799px (see globals.css) it swaps
  *  for one full-width card per tier, each listing every feature row top to bottom, so
  *  comparing tiers on a phone is a normal vertical scroll rather than horizontal scrolling
- *  one column at a time. Each tier's name is its purchase entry point: a Server
- *  Action-backed form submit button styled as a plain text link (see .plan-compare-name in
- *  globals.css), swapped for a non-clickable name + "Current Plan" pill once the reader
- *  already has that tier. Free never has a link (nothing to purchase); Clinic Pro is a new
+ *  one column at a time. Each purchasable tier gets a real "Subscribe" button (a Server
+ *  Action-backed form submit) under its name/price — see TierHeader — swapped for a
+ *  "Current Plan" pill once the reader already has that tier. Free never has a button
+ *  (nothing to purchase); Clinic Pro is a new
  *  tier (see User.isClinicPro/clinicProSubscriptionId in schema.prisma) with the same
  *  additive billing shape as Wellness+ — billing-only for now, no team-seat/clinic-admin
  *  feature gate actually wired up yet (see "Clinic Admin Dashboard"/"Up to 6 Team Seats"
