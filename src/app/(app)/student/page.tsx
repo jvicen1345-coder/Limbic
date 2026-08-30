@@ -318,18 +318,44 @@ export default async function StudentAtriumPage() {
         </div>
 
         <div className="atrium-zone-cards">
-          <div className="atrium-supporting-row">
-            <Link href="/boards/sharpening" className="atrium-supporting-card">
-              <p className="atrium-supporting-title">Review Boards Content</p>
-              <p className="atrium-supporting-desc">One question, one term, one case a day.</p>
+          {/* Every route here is a real, existing page — "Boards" links straight to /boards
+              (not the old /boards/sharpening redirect the previous three-card row used,
+              since that route's only job is forwarding here anyway) and "Clinical
+              Reference"/"NPTE Resources" reuse the exact hrefs the sidebar's own Limbic
+              Student section links to (see AppShell.tsx), so this grid and the sidebar
+              never point at two different pages for the same label. */}
+          <div className="atrium-resource-grid">
+            <Link href="/student/clinical-sharpening" className="atrium-resource-card atrium-resource-card--primary">
+              <p className="atrium-resource-title">Daily Sharpening</p>
+              <p className="atrium-resource-desc">One question, one term, one case. Five minutes keeps your streak alive.</p>
             </Link>
-            <Link href="/student/soap" className="atrium-supporting-card">
-              <p className="atrium-supporting-title">Practice a SOAP Note</p>
-              <p className="atrium-supporting-desc">Structured templates with feedback.</p>
+            <Link href="/boards" className="atrium-resource-card">
+              <p className="atrium-resource-title">Boards</p>
+              <p className="atrium-resource-desc">NPTE prep built into your daily routine. Questions, terms, and cases by system.</p>
             </Link>
-            <Link href="/student/specialties" className="atrium-supporting-card">
-              <p className="atrium-supporting-title">Specialty Tracks</p>
-              <p className="atrium-supporting-desc">Review key conditions and clinical tools by specialty.</p>
+            <Link href="/student/specialties" className="atrium-resource-card">
+              <p className="atrium-resource-title">Specialty Tracks</p>
+              <p className="atrium-resource-desc">Key conditions, special tests, and clinical tools organized by practice area.</p>
+            </Link>
+            <Link href="/student/slides" className="atrium-resource-card">
+              <p className="atrium-resource-title">Break Down Slides</p>
+              <p className="atrium-resource-desc">Upload your lecture slides and get summaries and practice questions.</p>
+            </Link>
+            <Link href="/student/soap" className="atrium-resource-card">
+              <p className="atrium-resource-title">Practice a SOAP Note</p>
+              <p className="atrium-resource-desc">Structured documentation templates with clinical feedback.</p>
+            </Link>
+            <Link href="/pro/lab-values" className="atrium-resource-card">
+              <p className="atrium-resource-title">Clinical Reference</p>
+              <p className="atrium-resource-desc">Lab values, medications, special tests, and clinical decision rules at your fingertips.</p>
+            </Link>
+            <Link href="/student/resources" className="atrium-resource-card">
+              <p className="atrium-resource-title">NPTE Resources</p>
+              <p className="atrium-resource-desc">Everything you need for boards — content breakdown, study schedule, and exam strategy.</p>
+            </Link>
+            <Link href="/student/wellness" className="atrium-resource-card">
+              <p className="atrium-resource-title">Mental Wellness</p>
+              <p className="atrium-resource-desc">Resources and support for the mental demands of the DPT journey.</p>
             </Link>
           </div>
         </div>

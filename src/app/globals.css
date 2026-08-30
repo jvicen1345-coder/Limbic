@@ -5112,37 +5112,58 @@ html[data-theme="dark"] .app-root--atrium {
   margin: 2px 0 0;
 }
 
-/* Supporting resources — three plain, equal-weight cards (no accent colors, no icons)
-   below the primary action, one row on desktop, stacked on mobile. */
-.atrium-supporting-row {
+/* Resource grid — eight equal-weight cards (plain text, no icons) below the primary
+   action: every other study tool on this page gets one, not just the three that used to
+   fit in a single row. Grid area/spacing lives here on the .atrium-resource-grid wrapper,
+   not on .atrium-zone-cards (that class only ever sets grid-area: cards, same as every
+   other .atrium-zone-* — see .atrium-v2-grid above), so this can carry its own explicit
+   margin-top independent of that grid's own 20px area gap. Card 1 (Daily Sharpening)
+   duplicates the primary action above it on purpose — same reasoning .atrium-primary-card
+   already established for "one brand-blue accent, everything else neutral": it's the one
+   card here that gets that treatment (a left border, not the full border), still the
+   fastest way back to today's streak-keeping action for a reader who's scrolled past the
+   big card, without the other seven competing for the same visual weight. */
+.atrium-resource-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 24px;
 }
-@media (max-width: 640px) {
-  .atrium-supporting-row { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 768px) {
+  .atrium-resource-grid { grid-template-columns: repeat(2, 1fr); }
 }
-.atrium-supporting-card {
+@media (max-width: 480px) {
+  .atrium-resource-grid { grid-template-columns: 1fr; }
+}
+.atrium-resource-card {
+  position: relative;
   display: block;
-  padding: 18px;
-  border-radius: var(--radius-lg);
+  padding: 20px;
+  border-radius: 8px;
   background: var(--atrium-surface);
   border: 1px solid var(--atrium-border);
   text-decoration: none;
   color: inherit;
+  transition: border-color 150ms ease;
 }
-.atrium-supporting-title {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 14.5px;
-  margin: 0 0 6px;
-}
-.atrium-supporting-desc {
-  font-size: 12.5px;
+.atrium-resource-card:hover { border-color: color-mix(in srgb, var(--color-accent) 40%, transparent); }
+.atrium-resource-card--primary { border-left: 3px solid var(--color-accent); }
+.atrium-resource-title { font-size: 14px; font-weight: 700; color: var(--color-text); margin: 0 0 6px; }
+.atrium-resource-desc { font-size: 13px; color: var(--color-neutral-700); margin: 0; line-height: 1.5; }
+/* A plain arrow glyph, not an icon component — matches the spec's own "text only is clean
+   and consistent" reasoning for the cards themselves. content/pseudo-element rather than
+   real markup so it never affects the card's own layout or gets picked up by a screen
+   reader as meaningful content. */
+.atrium-resource-card::after {
+  content: "→";
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
   color: var(--color-neutral-700);
-  margin: 0;
-  line-height: 1.5;
+  opacity: 0;
+  transition: opacity 150ms ease;
 }
+.atrium-resource-card:hover::after { opacity: 1; }
 
 /* Progress visual (components/AtriumProgressChart.tsx) — replaces the old "Daily
    Sharpening"/"Boards Progress" text cards, moved up near the top of the page instead of

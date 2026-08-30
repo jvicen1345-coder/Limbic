@@ -37,7 +37,6 @@ import {
   ChevronRightIcon,
   ShieldIcon,
   HeartIcon,
-  PencilIcon,
   LayoutDashboardIcon,
   BodyIcon,
 } from "@/components/icons";
@@ -354,25 +353,12 @@ function NavContent({
           <>
             <NavLink href="/student" icon={<GraduationCapIcon />} label={isStudent ? "Atrium" : "Overview"} bold={false} onNavigate={onNavigate} />
             {isStudent && (
-              <>
-                <NavLink href="/student/slides" icon={<FileTextIcon />} label="Break Down Slides" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/student/soap" icon={<PencilIcon />} label="Practice a SOAP Note" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" locked={!isVerifiedStudent} lockLabel="STUDENT+" bold={false} onNavigate={onNavigate} />
-                <NavLink
-                  href="/student/specialties"
-                  icon={<BandageIcon />}
-                  label="Specialties"
-                  exact={false}
-                  bold={false}
-                  onNavigate={onNavigate}
-                />
-                <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Clinical Reference" bold={false} onNavigate={onNavigate} />
-              </>
+              <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" locked={!isVerifiedStudent} lockLabel="STUDENT+" bold={false} onNavigate={onNavigate} />
+            )}
+            {isStudent && (
+              <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Clinical Reference" bold={false} onNavigate={onNavigate} />
             )}
             <NavLink href="/student/resources" icon={<ListIcon />} label="NPTE Resources" bold={false} onNavigate={onNavigate} />
-            {isStudent && (
-              <NavLink href="/student/wellness" icon={<HeartIcon />} label="Mental Wellness" bold={false} onNavigate={onNavigate} />
-            )}
           </>
         )}
       </>
