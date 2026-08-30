@@ -10,12 +10,13 @@ import { firstName, timeOfDayGreeting } from "@/lib/meta";
 import { questionForDate, todayDateKey } from "@/lib/board-content";
 import { getAcceptedConnectionIds } from "@/lib/nexus";
 import { last7DateKeys } from "@/lib/games";
-import { getArticles } from "@/lib/articles";
-import { currentWeekKey, pickWeeklyRoundup } from "@/lib/student-roundup";
 import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumProgressChart";
+import { AtriumThisWeekCard } from "@/components/AtriumThisWeekCard";
 import { StudentGate } from "@/components/student/StudentGate";
-import { FileTextIcon, UsersIcon, PencilIcon, GraduationCapIcon, HeartIcon, ChevronRightIcon, LockIcon, ZapIcon } from "@/components/icons";
-import { getCurrentProgramPhase, getProgramPhaseLabel } from "@/lib/dpt-program";
+import { FileTextIcon, UsersIcon, PencilIcon, GraduationCapIcon, HeartIcon, ChevronRightIcon, ZapIcon } from "@/components/icons";
+import { getCurrentProgramPhase, getProgramPhaseLabel, CHAPMAN_DPT_PROGRAM } from "@/lib/dpt-program";
+import { getThisWeekAssignments } from "@/app/actions/syllabus";
+import { getWeekRecommendations, getThisWeekDateRange } from "@/lib/atrium-recommendations";
 
 const PATHS = [
   {
@@ -166,7 +167,7 @@ export default async function StudentAtriumPage() {
   // Upcoming were Quick Links entries the dashboard redesign removed — see
   // atrium-supporting-row below — but nothing about the fetch itself changed, this just
   // stops binding results neither the redesigned page nor anything else here reads).
-  const [, , weekCompletions, boardActivityRows, , allArticles] = await Promise.all([
+  const [, , weekCompletions, boardActivityRows, , thisWeekAssignments, syllabusCount] = await Promise.all([
     prisma.dailyCompletion.findFirst({
       where: { userId: user.id, dateKey: todayKey, kind: { in: ["boardQuestion", "boardTerm"] } },
     }),
@@ -183,10 +184,12 @@ export default async function StudentAtriumPage() {
       where: { userId: user.id, date: { gte: now } },
       orderBy: { date: "asc" },
     }),
-    // Fetched unconditionally, alongside everything else, so the Weekly Roundup panel's
-    // preview (below) doesn't tack an extra sequential round trip onto page load — actually
-    // used only for a paid LimbicStudent reader, same gate as the panel itself.
-    getArticles(),
+    // This Week card (see components/AtriumThisWeekCard.tsx, replacing the old Weekly
+    // Roundup panel here) — every syllabus assignment due this calendar week, plus a plain
+    // count of uploaded syllabi to tell "no assignments this week" apart from "never
+    // uploaded a syllabus" (see that component's hasSyllabi prop).
+    getThisWeekAssignments(),
+    prisma.syllabus.count({ where: { userId: user.id } }),
   ]);
 
   const daysCompletedThisWeek = new Set(boardActivityRows.map((r) => r.dateKey)).size;
@@ -211,19 +214,29 @@ export default async function StudentAtriumPage() {
     color: DOMAIN_COLORS[domain],
   }));
 
-  // A real preview of this week's roundup (see app/(app)/student/roundup/page.tsx, which
-  // this mirrors) for the right-rail panel below — only computed for a paid LimbicStudent
-  // reader, since anyone else just sees the upgrade prompt and never needs the actual
-  // picks. No saved-state needed here (unlike the roundup page itself), so this skips
-  // decorateArticle/SavedArticle entirely and just reads the plain Article fields.
-  const roundupPreview =
-    user.studentTier === "limbicStudent"
-      ? pickWeeklyRoundup(
-          allArticles.filter((a) => a.type !== "industry" && a.type !== "product"),
-          currentWeekKey(),
-          3
+  // This Week card data (see components/AtriumThisWeekCard.tsx) — the week label matches
+  // getThisWeekAssignments' own Monday-Sunday window, and recommendations are keyed by the
+  // same trimesterNumber the phase header above already reads.
+  const weekLabel = getThisWeekDateRange().label;
+  const recommendations = getWeekRecommendations(phase.trimesterNumber);
+
+  // Percent of the time between program start and the NPTE date that's already elapsed —
+  // the This Week card's NPTE progress bar. Uses the fixed Chapman calendar's programStart
+  // (see lib/dpt-program.ts), not user.dptProgramStart, since that field is stored for
+  // display only and getCurrentProgramPhase itself never reads it either.
+  const npteProgressPercent = user.npteExamDate
+    ? Math.min(
+        100,
+        Math.max(
+          0,
+          Math.round(
+            ((now.getTime() - new Date(CHAPMAN_DPT_PROGRAM.programStart).getTime()) /
+              (user.npteExamDate.getTime() - new Date(CHAPMAN_DPT_PROGRAM.programStart).getTime())) *
+              100
+          )
         )
-      : [];
+      )
+    : null;
 
   return (
     <div className="screen-pad atrium-page" style={{ maxWidth: 1120 }}>
@@ -299,64 +312,21 @@ export default async function StudentAtriumPage() {
           <p className="atrium-motivation-line">Your daily sharpening is waiting — 5 minutes keeps your streak alive.</p>
         </div>
 
-        <aside className="atrium-roundup-panel atrium-zone-roundup">
-          <div className="atrium-roundup-panel-header">
-            <span className="atrium-roundup-panel-icon">
-              <FileTextIcon size={16} />
-            </span>
-            <span className="atrium-roundup-panel-title">Weekly Roundup</span>
-            <span className="atrium-roundup-panel-badge">This week</span>
-          </div>
-
-          {user.studentTier === "limbicStudent" ? (
-            roundupPreview.length > 0 ? (
-              <>
-                <div className="atrium-roundup-items">
-                  {roundupPreview.map((a) => (
-                    <Link key={a.id} href={`/article/${a.id}`} className="atrium-roundup-item">
-                      <p className="atrium-roundup-item-title">{a.title}</p>
-                      <p className="atrium-roundup-item-meta">{a.source}</p>
-                    </Link>
-                  ))}
-                </div>
-                <Link href="/student/roundup" className="atrium-dashboard-link atrium-dashboard-link--amber atrium-roundup-panel-cta">
-                  See all 5 for this week →
-                </Link>
-              </>
-            ) : (
-              <p className="atrium-dashboard-empty">Nothing to round up right now, check back soon.</p>
-            )
-          ) : (
-            <>
-              <p className="atrium-dashboard-body">
-                Five real research, guideline, and CE items curated for coursework, refreshed every week — included with
-                LimbicStudent.
-              </p>
-              <span className="atrium-dashboard-locked">
-                <LockIcon size={11} />
-                <Link href="/profile/membership" className="atrium-dashboard-link atrium-dashboard-link--amber" style={{ margin: 0 }}>
-                  Upgrade →
-                </Link>
-              </span>
-            </>
-          )}
-
-          <div className="atrium-npte-countdown">
-            <p className="atrium-npte-countdown-label">NPTE Countdown</p>
-            {npteDays !== null && npteDays >= 0 ? (
-              <>
-                <p className={`atrium-npte-countdown-number atrium-npte-countdown-number--${npteDays > 180 ? "green" : npteDays >= 60 ? "amber" : "red"}`}>
-                  {npteDays}
-                </p>
-                <p className="atrium-npte-countdown-sub">days until boards</p>
-              </>
-            ) : (
-              <Link href="/profile#program-timeline" className="atrium-npte-countdown-link">
-                Set exam date →
-              </Link>
-            )}
-          </div>
-        </aside>
+        <AtriumThisWeekCard
+          weekLabel={weekLabel}
+          assignments={thisWeekAssignments.map((a) => ({
+            id: a.id,
+            title: a.title,
+            dueDate: a.dueDate,
+            category: a.category,
+            courseCode: a.courseCode,
+            completed: a.completed,
+          }))}
+          hasSyllabi={syllabusCount > 0}
+          recommendations={recommendations}
+          npteDays={npteDays}
+          npteProgressPercent={npteProgressPercent}
+        />
 
         <div className="atrium-zone-primary">
           {/* No "completed today" signal is fetched for /student/clinical-sharpening

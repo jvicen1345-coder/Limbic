@@ -4786,8 +4786,9 @@ html[data-theme="dark"] .app-root--atrium {
 .atrium-break-card-title { font-size: 14px; font-weight: 700; margin: 0; }
 .atrium-break-card-subtitle { font-size: 12px; color: var(--color-neutral-700); margin: 4px 0 0; }
 
-/* NPTE Countdown — a second, smaller countdown card stacked below the Weekly Roundup panel
-   (see .atrium-roundup-panel), distinct from the larger header one above which stays as-is. */
+/* NPTE Countdown — a second, smaller countdown card stacked below the This Week card's own
+   sections (see .atrium-week-panel, components/AtriumThisWeekCard.tsx), distinct from the
+   larger header one above which stays as-is. */
 .atrium-npte-countdown { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--atrium-border); }
 .atrium-npte-countdown-label {
   font-size: 11px;
@@ -4801,8 +4802,11 @@ html[data-theme="dark"] .app-root--atrium {
 .atrium-npte-countdown-number--amber { color: var(--color-warn); }
 .atrium-npte-countdown-number--red { color: var(--color-danger); }
 .atrium-npte-countdown-sub { font-size: 12px; color: var(--color-neutral-700); margin: 0; }
-.atrium-npte-countdown-link { font-size: 13px; color: var(--color-accent); font-weight: 600; text-decoration: none; }
-.atrium-npte-countdown-link:hover { text-decoration: underline; }
+.atrium-npte-countdown-empty { font-size: 12px; color: var(--color-neutral-700); margin: 0; }
+.atrium-npte-countdown-empty a { color: var(--color-accent); font-weight: 600; text-decoration: none; }
+.atrium-npte-countdown-empty a:hover { text-decoration: underline; }
+.atrium-npte-progress-track { height: 4px; background: var(--atrium-border); border-radius: 2px; overflow: hidden; margin-top: 10px; }
+.atrium-npte-progress-fill { height: 100%; background: var(--color-accent); border-radius: 2px; }
 
 .atrium-greeting-card {
   display: flex;
@@ -4929,66 +4933,92 @@ html[data-theme="dark"] .app-root--atrium {
 .atrium-dashboard-empty { font-size: 12.5px; color: var(--color-neutral-600); font-style: italic; }
 .atrium-dashboard-locked { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--color-neutral-600); }
 
-/* Weekly Roundup panel (see .atrium-v2-grid below, app/(app)/student/page.tsx) — a real
-   preview of up to 3 of this week's picks for a paid LimbicStudent reader (see
-   lib/student-roundup.ts pickWeeklyRoundup), not just a static blurb, so there's something
-   concrete to glance at before committing to open the full 5-item roundup. Sits beside the
-   streak card (roughly equal height) rather than a tall scrolling column, so it no longer
-   needs the sticky positioning an earlier full-height two-column layout gave it. */
-.atrium-roundup-panel {
+/* This Week card (see .atrium-v2-grid below, components/AtriumThisWeekCard.tsx) — replaces
+   the old Weekly Roundup panel that used to live in this same grid-area (see
+   .atrium-zone-roundup) on the Atrium only. Weekly Roundup itself (lib/student-roundup.ts,
+   app/(app)/student/roundup/page.tsx) is untouched — this page just no longer links to it.
+   Two sections — this week's syllabus assignments, then platform recommendations — plus the
+   NPTE countdown moved down from the old panel, separated by .atrium-week-divider. */
+.atrium-week-panel {
   background: var(--atrium-surface);
   border: 1px solid var(--atrium-border);
   border-radius: var(--radius-lg);
   padding: 18px;
 }
-.atrium-roundup-panel-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.atrium-roundup-panel-icon {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+.atrium-week-header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.atrium-week-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 14px; }
+.atrium-week-range { font-size: 12px; color: var(--color-neutral-700); }
+
+.atrium-week-empty-prompt {
+  border: 1px solid color-mix(in srgb, var(--color-warn) 45%, transparent);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+.atrium-week-empty-prompt p { font-size: 12.5px; color: var(--color-neutral-700); margin: 0 0 10px; }
+.atrium-week-empty-cta { font-size: 12.5px; padding: 8px 16px; }
+.atrium-week-add-link { display: inline-block; margin-top: 8px; font-size: 12.5px; color: var(--color-accent); font-weight: 600; text-decoration: none; }
+.atrium-week-add-link:hover { text-decoration: underline; }
+
+.atrium-week-assignments { display: flex; flex-direction: column; }
+.atrium-week-assignment {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: color-mix(in srgb, var(--atrium-tint) 16%, transparent);
-  color: var(--atrium-tint);
-}
-.atrium-roundup-panel-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 14.5px; flex: 1; }
-.atrium-roundup-panel-badge {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--atrium-tint);
-  background: color-mix(in srgb, var(--atrium-tint) 14%, transparent);
-  padding: 3px 8px;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-.atrium-roundup-items { display: flex; flex-direction: column; }
-.atrium-roundup-item {
-  display: block;
-  padding: 10px 0;
+  gap: 8px;
+  padding: 8px 0;
   border-top: 1px solid var(--atrium-border);
-  text-decoration: none;
-  color: inherit;
-  transition: opacity 150ms ease;
+  cursor: pointer;
 }
-.atrium-roundup-item:first-child { border-top: none; padding-top: 0; }
-.atrium-roundup-item:hover { opacity: 0.75; }
-.atrium-roundup-item-title {
+.atrium-week-assignment:first-child { border-top: none; padding-top: 0; }
+.atrium-week-assignment-due { flex-shrink: 0; font-size: 12px; font-weight: 700; min-width: 40px; }
+.atrium-week-assignment-title {
+  flex: 1;
+  min-width: 0;
   font-size: 12.5px;
-  font-weight: 600;
-  line-height: 1.4;
-  margin: 0 0 3px;
   color: var(--color-text);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
-.atrium-roundup-item-meta { font-size: 11px; color: var(--color-neutral-700); margin: 0; }
-.atrium-roundup-panel-cta { display: inline-block; margin-top: 12px; }
+.atrium-week-assignment--done .atrium-week-assignment-title { text-decoration: line-through; color: var(--color-neutral-700); }
+.atrium-week-assignment-course {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  color: var(--color-neutral-700);
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.atrium-week-assignment-dot { flex-shrink: 0; width: 7px; height: 7px; border-radius: 50%; }
+
+.atrium-week-divider { height: 1px; background: var(--atrium-border); margin: 16px 0; }
+
+.atrium-week-recs { display: flex; flex-direction: column; gap: 10px; }
+.atrium-week-recs-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin: 0;
+}
+.atrium-week-rec-row { display: flex; align-items: flex-start; gap: 8px; text-decoration: none; color: inherit; }
+.atrium-week-rec-dot { flex-shrink: 0; width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; }
+.atrium-week-rec-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.atrium-week-rec-title { font-size: 13px; font-weight: 700; color: var(--color-text); }
+.atrium-week-rec-row:hover .atrium-week-rec-title { text-decoration: underline; }
+.atrium-week-rec-desc { font-size: 12px; color: var(--color-neutral-700); }
+.atrium-week-recs-toggle {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.atrium-week-recs-toggle:hover { text-decoration: underline; }
 
 /* Dashboard redesign — three zones below the (unchanged) greeting header: a streak+roundup
    row, one unmissable primary action, then three plain supporting-resource cards. Named
@@ -9590,3 +9620,81 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .card-link-footer { text-align: center; margin-top: 40px; }
 .card-link-footer-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; margin: 0 0 2px; }
 .card-link-footer-email { font-size: 13px; color: var(--color-neutral-700); margin: 0; }
+
+/* Syllabus tracker (app/(app)/student/syllabi/page.tsx, components/student/
+   SyllabiManager.tsx) — feeds the Atrium's This Week card (see .atrium-week-panel above).
+   Reuses the sitewide .field/.input/.btn primitives throughout; only the add-tabs, review
+   table, and existing-syllabi list below are page-specific. */
+.syllabi-add-section {
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.syllabi-add-tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--atrium-border); }
+.syllabi-add-tab {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 4px 10px;
+  margin-right: 16px;
+  cursor: pointer;
+}
+.syllabi-add-tab--active { color: var(--color-accent); border-bottom-color: var(--color-accent); }
+.syllabi-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 640px) {
+  .syllabi-form-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.syllabi-error { font-size: 12.5px; color: var(--color-danger); margin: 10px 0 0; }
+
+.syllabi-review-title { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 12px; }
+.syllabi-review-table-wrap { overflow-x: auto; }
+.syllabi-review-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.syllabi-review-table th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-neutral-700);
+  padding: 0 8px 8px 0;
+}
+.syllabi-review-table td { padding: 5px 8px 5px 0; vertical-align: middle; }
+.syllabi-review-table .input { min-height: 34px; font-size: 13px; }
+.syllabi-review-course { font-size: 12px; color: var(--color-neutral-700); white-space: nowrap; }
+.syllabi-row-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+  padding: 6px;
+}
+.syllabi-row-delete:hover { color: var(--color-danger); }
+.syllabi-review-actions { display: flex; gap: 10px; margin-top: 16px; }
+
+.syllabi-list { margin-top: 8px; }
+.syllabi-card {
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.syllabi-card-summary { cursor: pointer; }
+.syllabi-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; }
+.syllabi-card-meta { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+.syllabi-card-actions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.syllabi-delete-btn {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.syllabi-delete-btn:hover { color: var(--color-danger); }

@@ -346,6 +346,9 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
               <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Clinical Reference" bold={false} onNavigate={onNavigate} />
             )}
             <NavLink href="/student/resources" icon={<ListIcon />} label="NPTE Resources" bold={false} onNavigate={onNavigate} />
+            {isStudent && (
+              <NavLink href="/student/syllabi" icon={<FileTextIcon />} label="My Syllabi" bold={false} onNavigate={onNavigate} />
+            )}
           </>
         )}
       </>
