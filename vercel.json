@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/sync-fitness-trackers",
       "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/cron/refresh-unpaywall-cache",
+      "schedule": "0 16 * * *"
     }
   ]
 }

@@ -1818,3 +1818,27 @@ model BoardsQuestionTag {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+// Cached Unpaywall open-access lookups, keyed by DOI (see lib/unpaywall-cache.ts's
+// getCachedUnpaywall, which every reader of open-access status — the article detail page,
+// the Home feed's OpenAccessPill — now goes through instead of calling lib/unpaywall.ts's
+// checkUnpaywall live on every request). Kept warm by a daily cron sweep
+// (app/api/cron/refresh-unpaywall-cache/route.ts, vercel.json) over the current live
+// PubMed pool, so in practice a reader's request is almost always a cache hit rather than
+// a live third-party call — getCachedUnpaywall still falls back to a live lookup (and
+// writes the result here) on a genuine miss, so a DOI the cron hasn't seen yet (a brand-new
+// article, or an old one reached via a direct link) still resolves correctly, just without
+// the cache's speed/resilience benefit that one time. Open-access status changes rarely
+// once a paper is published, so a generous staleness window (see
+// UNPAYWALL_CACHE_STALE_MS in lib/unpaywall-cache.ts) is safe. `bestOaLocation` is
+// JSON-encoded (or null) rather than a relation — same reasoning as BoardsQuestionTag's
+// JSON-string fields above, it's only ever read/written as one whole object.
+model UnpaywallCache {
+  doi            String   @id
+  isOpenAccess   Boolean
+  oaStatus       String
+  bestOaLocation String?
+  title          String
+  journal        String
+  checkedAt      DateTime @default(now())
+}
