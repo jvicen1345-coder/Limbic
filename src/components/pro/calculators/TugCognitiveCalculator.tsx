@@ -6,6 +6,17 @@ import { CalcTimer } from "./CalcTimer";
 
 const SECONDARY_TASKS = ["Serial subtraction (counting backward by 3s)", "Naming animals", "Reciting months backward", "Carrying a full cup of water"];
 
+/** Card copy for this measure, lifted out of the JSX so the Clinical Reference
+ *  search box can match against it (see lib/reference-search.ts) without the text
+ *  being written twice. Spread straight into CalcCardShell below. */
+export const TUG_COGNITIVE_MEASURE = {
+  name: "TUG Cognitive",
+  fullName: "Timed Up and Go, Cognitive Dual Task",
+  measures: "Fall risk under divided attention, comparing standard TUG to a dual-task TUG.",
+  population: "Older adults, neurological/cognitive-impairment risk screening",
+  itemCount: "2 items",
+} as const;
+
 /** Fully functional — timing/comparison math (by hand or the two built-in stopwatches, see
  *  CalcTimer) and the clinical interpretation guidance below are both live. Unlike the
  *  standard TUG, the dual-task-cost literature hasn't converged on one universally
@@ -25,14 +36,7 @@ export function TugCognitiveCalculator() {
 
   return (
     <>
-      <CalcCardShell
-        name="TUG Cognitive"
-        fullName="Timed Up and Go, Cognitive Dual Task"
-        measures="Fall risk under divided attention, comparing standard TUG to a dual-task TUG."
-        population="Older adults, neurological/cognitive-impairment risk screening"
-        itemCount="2 items"
-        onOpen={() => setOpen(true)}
-      />
+      <CalcCardShell {...TUG_COGNITIVE_MEASURE} onOpen={() => setOpen(true)} />
       <CalcModal
         open={open}
         title="TUG, Cognitive Dual Task"

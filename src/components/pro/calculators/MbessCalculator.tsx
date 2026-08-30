@@ -17,6 +17,17 @@ const ERROR_CRITERIA = [
   "Remaining out of the testing position for more than 5 seconds",
 ];
 
+/** Card copy for this measure, lifted out of the JSX so the Clinical Reference
+ *  search box can match against it (see lib/reference-search.ts) without the text
+ *  being written twice. Spread straight into CalcCardShell below. */
+export const MBESS_MEASURE = {
+  name: "mBESS",
+  fullName: "Modified Balance Error Scoring System",
+  measures: "Postural stability errors across 3 stances on 2 surfaces.",
+  population: "Concussion/vestibular screening",
+  itemCount: "6 conditions",
+} as const;
+
 /** Fully functional — error-count inputs, the running total, the built-in 20-second-per-
  *  stance countdown (see CalcTimer), and the real official BESS error-counting criteria
  *  are all live. */
@@ -28,14 +39,7 @@ export function MbessCalculator() {
 
   return (
     <>
-      <CalcCardShell
-        name="mBESS"
-        fullName="Modified Balance Error Scoring System"
-        measures="Postural stability errors across 3 stances on 2 surfaces."
-        population="Concussion/vestibular screening"
-        itemCount="6 conditions"
-        onOpen={() => setOpen(true)}
-      />
+      <CalcCardShell {...MBESS_MEASURE} onOpen={() => setOpen(true)} />
       <CalcModal
         open={open}
         title="mBESS, Modified Balance Error Scoring System"

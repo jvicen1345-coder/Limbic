@@ -21,13 +21,13 @@ function interpret(score: number) {
   return { label: "Low probability", color: "var(--color-success)" };
 }
 
-export function WellsDvtRule() {
+export function WellsDvtRule({ open }: { open?: boolean }) {
   const [checked, setChecked] = useState<boolean[]>(Array(CRITERIA.length).fill(false));
   const score = CRITERIA.reduce((sum, c, i) => sum + (checked[i] ? c.points : 0), 0);
   const result = interpret(score);
 
   return (
-    <RuleAccordion title="Wells Criteria for DVT" summary="Deep vein thrombosis risk stratification">
+    <RuleAccordion title="Wells Criteria for DVT" summary="Deep vein thrombosis risk stratification" open={open}>
       {CRITERIA.map((c, i) => (
         <label className="pro-check-row" key={c.label}>
           <input

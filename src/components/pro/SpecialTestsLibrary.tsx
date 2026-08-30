@@ -6,6 +6,7 @@ import { getSpecialTestVideoAction } from "@/app/actions/special-tests";
 import type { SpecialTestVideo } from "@/lib/special-test-videos";
 import { bodyRegionsForTest } from "@/lib/atlas-special-test-regions";
 import { ATLAS_CONTENT } from "@/lib/atlas-content";
+import { matchesSearch, searchTerms } from "@/lib/reference-search";
 
 interface SpecialTest {
   name: string;
@@ -621,9 +622,9 @@ function VideoDemonstration({ test }: { test: SpecialTest }) {
   );
 }
 
-function TestCard({ test }: { test: SpecialTest }) {
+function TestCard({ test, open }: { test: SpecialTest; open?: boolean }) {
   return (
-    <details className="card elev-sm">
+    <details className="card elev-sm" open={open}>
       <summary className="pro-accordion-summary">
         <div>
           <div>{test.name}</div>
@@ -660,11 +661,25 @@ function TestCard({ test }: { test: SpecialTest }) {
   );
 }
 
-export function SpecialTestsLibrary({ initialRegionId = null }: { initialRegionId?: string | null }) {
+function testMatches(terms: string[], test: SpecialTest): boolean {
+  return matchesSearch(terms, test.name, test.region, test.assesses, test.howTo, test.positiveFinding, test.clinicalNote);
+}
+
+/** Match count for this tab's label in the Clinical Reference search — see
+ *  countLabValueMatches in LabValuesReference.tsx for the shape and why. Counted across the
+ *  whole library, ignoring this component's own region chips/Atlas filter. */
+export function countSpecialTestMatches(query: string): number {
+  const terms = searchTerms(query);
+  return TESTS.filter((t) => testMatches(terms, t)).length;
+}
+
+export function SpecialTestsLibrary({ initialRegionId = null, query = "" }: { initialRegionId?: string | null; query?: string }) {
   const [region, setRegion] = useState<(typeof REGIONS)[number]>("All");
   const [atlasRegionId, setAtlasRegionId] = useState<string | null>(initialRegionId);
 
-  const chipFiltered = region === "All" ? TESTS : TESTS.filter((t) => t.region === region);
+  const terms = searchTerms(query);
+  const searched = TESTS.filter((t) => testMatches(terms, t));
+  const chipFiltered = region === "All" ? searched : searched.filter((t) => t.region === region);
   const atlasRegionName = atlasRegionId ? ATLAS_CONTENT[atlasRegionId]?.name ?? atlasRegionId : null;
   const regionTagged = atlasRegionId ? chipFiltered.filter((t) => bodyRegionsForTest(t.name, t.region).includes(atlasRegionId)) : chipFiltered;
   const noTaggedMatches = atlasRegionId !== null && regionTagged.length === 0;
@@ -701,9 +716,12 @@ export function SpecialTestsLibrary({ initialRegionId = null }: { initialRegionI
       </div>
       <div className="pro-accordion">
         {filtered.map((test, i) => (
-          <TestCard test={test} key={`${test.region}-${test.name}-${i}`} />
+          // A search narrow enough to leave a handful of tests standing opens them, so the
+          // reader lands on the technique instead of a list they still have to click.
+          <TestCard test={test} open={terms.length > 0 && filtered.length <= 3} key={`${test.region}-${test.name}-${i}`} />
         ))}
       </div>
+      {filtered.length === 0 && <p className="clinref-empty">No special tests match this search.</p>}
     </>
   );
 }

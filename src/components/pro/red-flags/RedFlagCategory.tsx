@@ -6,12 +6,12 @@ import { ChevronRightIcon } from "@/components/icons";
 /** One interactive red-flag checklist category (the Red Flag Screening tab of
  *  /pro/decision-rules, see ScreeningDecisionTabs.tsx) — each checked flag turns red and
  *  the running positive count shows in the collapsed summary. */
-export function RedFlagCategory({ title, flags }: { title: string; flags: string[] }) {
+export function RedFlagCategory({ title, flags, open }: { title: string; flags: string[]; open?: boolean }) {
   const [checked, setChecked] = useState<boolean[]>(Array(flags.length).fill(false));
   const count = checked.filter(Boolean).length;
 
   return (
-    <details className="card elev-sm">
+    <details className="card elev-sm" open={open}>
       <summary className="pro-accordion-summary">
         <div>{title}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>

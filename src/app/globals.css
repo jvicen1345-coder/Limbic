@@ -10584,3 +10584,129 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================================
+   Clinical Reference (/pro/lab-values, components/pro/ClinicalReferenceTabs.tsx)
+   — the six-tab hub. All appended, .clinref- prefixed, nothing above rewritten.
+   ============================================================================ */
+
+/* Overrides .screen-pad's 900px cap — same reasoning/pattern as .atlas-page and
+   .forcelab-page. At 900px this page was a two-column card grid with a 320px profiles
+   panel beside it, which left ~270px-wide calculator cards and turned every tab into a
+   long scroll on a desktop viewport that had a few hundred px of bare gutter either side.
+   .screen-pad still supplies the padding; this only lifts the width. */
+.clinref-page { max-width: 1500px; }
+
+/* The extra width goes into more columns rather than wider cards, which is what actually
+   shortens these tabs. Scoped to .clinref-page so the standalone /pro/calculators,
+   /pro/special-tests, and /pro/decision-rules pages keep the 2-up/1-up shape .pro-grid-2
+   and .pro-accordion give them everywhere else.
+
+   Accordion cards (special tests, decision rules, red flags, medication classes) go 2-up
+   first: they have the full page width to themselves, so ~900px of content is already two
+   comfortable columns and it halves the scroll on the longest tabs. align-items: start so
+   an expanded <details> grows its own cell instead of stretching the card beside it. */
+@media (min-width: 1240px) {
+  .clinref-page .pro-accordion {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+/* The calculator grid shares its row with the 320px profiles panel, so it needs a good deal
+   more viewport before a third column is an improvement rather than three cramped ones —
+   below this it stays 2-up and simply gets wider cards than the old 900px cap allowed. */
+@media (min-width: 1560px) {
+  .clinref-page .pro-grid-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Same reasoning one step up: on an ultrawide, three columns become three wide stripes. */
+@media (min-width: 2000px) {
+  .clinref-page .pro-grid-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Tabs and the search box share one row on desktop; the tab strip keeps its own horizontal
+   scroll (six labels, one of them long) so it can never squeeze the search box out. */
+.clinref-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+.clinref-toolbar-tabs { min-width: 0; }
+@media (min-width: 900px) {
+  .clinref-toolbar { flex-direction: row; align-items: flex-end; gap: 16px; }
+  .clinref-toolbar-tabs { flex: 1; }
+  .clinref-search { width: 260px; flex-shrink: 0; margin-bottom: 6px; }
+}
+
+.clinref-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.clinref-search-icon {
+  position: absolute;
+  left: 11px;
+  color: var(--color-neutral-600);
+  pointer-events: none;
+}
+.clinref-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 32px 9px 34px;
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 13px;
+}
+.clinref-search-input::placeholder { color: var(--color-neutral-600); text-overflow: ellipsis; }
+.clinref-search-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+/* The type="search" native clear affordance is hidden in favour of the button below, which
+   matches the rest of the app's icon buttons and stays visible in both themes. */
+.clinref-search-input::-webkit-search-cancel-button { display: none; }
+.clinref-search-clear {
+  position: absolute;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.clinref-search-clear:hover { color: var(--color-text); }
+
+/* "Nothing here, but it's on those tabs" line — only shown when the active tab has no
+   matches and another tab does. */
+.clinref-elsewhere {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  margin: 14px 0 0;
+}
+.clinref-elsewhere-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+.clinref-elsewhere-link:hover { text-decoration: underline; }
+
+/* Per-tab empty state. Full-width inside the 2-up accordion grid above, so it reads as one
+   message rather than a half-width orphan card. */
+.clinref-empty {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 14px 0 0;
+}

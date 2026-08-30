@@ -127,6 +127,17 @@ function interpretOswestry(pct: number) {
   return { label: "Bed bound or exaggerating", color: "#dc2626" };
 }
 
+/** Card copy for this measure, lifted out of the JSX so the Clinical Reference
+ *  search box can match against it (see lib/reference-search.ts) without the text
+ *  being written twice. Spread straight into CalcCardShell below. */
+export const OSWESTRY_MEASURE = {
+  name: "Oswestry",
+  fullName: "Oswestry Low Back Pain Disability Index",
+  measures: "Patient-reported disability across 10 activities of daily living.",
+  population: "Low back pain",
+  itemCount: "10 sections",
+} as const;
+
 /** Fully functional — the real Oswestry Disability Index 2.0 section names and 0-5
  *  statement wording, scored with the real formula, (total / 50) x 100. */
 export function OswestryCalculator() {
@@ -139,14 +150,7 @@ export function OswestryCalculator() {
 
   return (
     <>
-      <CalcCardShell
-        name="Oswestry"
-        fullName="Oswestry Low Back Pain Disability Index"
-        measures="Patient-reported disability across 10 activities of daily living."
-        population="Low back pain"
-        itemCount="10 sections"
-        onOpen={() => setOpen(true)}
-      />
+      <CalcCardShell {...OSWESTRY_MEASURE} onOpen={() => setOpen(true)} />
       <CalcModal
         open={open}
         title="Oswestry Low Back Pain Disability Index"
