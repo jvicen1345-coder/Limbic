@@ -747,7 +747,7 @@ export async function generatePatientReportSummary(assessmentId: string): Promis
 
   const sessions = await prisma.forceLabSession.findMany({ where: { assessmentId }, orderBy: { muscleGroup: "asc" } });
 
-  const summary = await generatePatientStrengthSummary({
+  const result = await generatePatientStrengthSummary({
     patientAge: assessment.patientAge ?? undefined,
     patientSex: assessment.patientSex ?? undefined,
     dominantSide: assessment.dominantSide ?? undefined,
@@ -758,9 +758,9 @@ export async function generatePatientReportSummary(assessmentId: string): Promis
       lsi: s.lsi ?? undefined,
     })),
   });
-  if (!summary) return { ok: false, error: "Could not generate a patient summary. Please try again." };
+  if (!result.ok) return { ok: false, error: result.error };
 
-  await prisma.forceLabAssessment.update({ where: { id: assessmentId }, data: { patientSummary: summary } });
+  await prisma.forceLabAssessment.update({ where: { id: assessmentId }, data: { patientSummary: result.summary } });
 
-  return { ok: true, summary };
+  return { ok: true, summary: result.summary };
 }
