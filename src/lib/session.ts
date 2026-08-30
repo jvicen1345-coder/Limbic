@@ -171,12 +171,14 @@ export function hasLicenseAccess(user: {
 }
 
 /** Outcome Measures, Decision Rules, Red Flag Screening, Special Tests, Lab Values,
- *  Medications, Research & Statistics Literacy, and Guidelines are useful clinical-knowledge
- *  references for a PT student to learn from too, not just a paying PRO clinician — so these
- *  eight specifically (not the rest of the LimbicPRO toolbox: Documentation, CE Tracker, the
- *  HEP Builder, which are about running a real practice rather than learning the material)
- *  also open up to any hasStudentAccess() account. Real LimbicPRO members are unaffected —
- *  this only widens who else gets through, never narrows the existing isPro check. */
+ *  Medications, Documentation, and Guidelines used to gate on this — they're now free to
+ *  any signed-in user (see FreeToolBanner.tsx and each page's own gate), so this function
+ *  no longer backs any of them. What's left is Therapeutic Exercises, Research &
+ *  Statistics Literacy, and Limbic Atlas's full-access tier (see app/(app)/pro/exercises,
+ *  /research-literacy, app/(app)/atlas/page.tsx) — real practice-adjacent or premium
+ *  content still worth opening up to a .edu Limbic Student account, not just a paying PRO
+ *  clinician. Real LimbicPRO members are unaffected either way — this only widens who else
+ *  gets through, never narrows the existing isPro check. */
 export function hasClinicalReferenceAccess(user: { isPro: boolean; email: string | null; licenseEmail: string | null; compedAccess: unknown }): boolean {
   return user.isPro || hasStudentAccess(user);
 }

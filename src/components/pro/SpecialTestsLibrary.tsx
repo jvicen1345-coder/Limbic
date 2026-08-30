@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRightIcon, FilmIcon, XIcon } from "@/components/icons";
+import { ChevronRightIcon, FilmIcon, XIcon, ExternalLinkIcon } from "@/components/icons";
 import { getSpecialTestVideoAction } from "@/app/actions/special-tests";
 import type { SpecialTestVideo } from "@/lib/special-test-videos";
 import { bodyRegionsForTest } from "@/lib/atlas-special-test-regions";
@@ -592,15 +592,28 @@ function VideoDemonstration({ test }: { test: SpecialTest }) {
 
   return (
     <div style={{ marginTop: 8 }}>
-      <div style={{ position: "relative", width: "100%", paddingTop: "56.25%", borderRadius: "var(--radius-md)", overflow: "hidden" }}>
-        <iframe
-          src={`https://www.youtube.com/embed/${video!.videoId}`}
-          title={video!.title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
-        />
-      </div>
+      <a
+        href={`https://www.youtube.com/watch?v=${video!.videoId}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "8px 16px",
+          background: "transparent",
+          border: "1px solid var(--color-divider)",
+          borderRadius: "var(--radius-md)",
+          color: "var(--color-text)",
+          fontSize: 13,
+          textDecoration: "none",
+          fontFamily: "inherit",
+          cursor: "pointer",
+        }}
+      >
+        Watch demonstration on YouTube
+        <ExternalLinkIcon size={13} />
+      </a>
       <p style={{ fontSize: 11, color: "var(--color-neutral-700)", margin: "6px 0 0" }}>
         {video!.title} — {video!.channelTitle}
       </p>

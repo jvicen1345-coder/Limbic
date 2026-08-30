@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/session";
-import { ProGate } from "@/components/pro/ProGate";
+import { FreeToolBanner } from "@/components/pro/FreeToolBanner";
 import { DocTemplateCard } from "@/components/pro/documentation/DocTemplateCard";
 
 export const metadata: Metadata = {
@@ -147,49 +147,46 @@ export default async function ProDocumentationPage() {
 
   return (
     <div className="screen-pad">
+      <FreeToolBanner isPro={user.isPro} />
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Documentation Templates</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         Evidence-based templates for PT documentation, copy, customize, and use.
       </p>
 
-      {!user.isPro ? (
-        <ProGate toolName="Documentation Templates" />
-      ) : (
-        <div className="pro-grid-2">
-          <DocTemplateCard
-            name="Initial Evaluation, Outpatient Orthopedic"
-            description="Full SOAP-format initial evaluation for an outpatient orthopedic visit."
-            format="SOAP"
-            body={INITIAL_EVAL_ORTHO}
-          />
-          <DocTemplateCard
-            name="Initial Evaluation, Neurological"
-            description="SOAP-format initial evaluation with neuro-specific sections."
-            format="SOAP"
-            body={INITIAL_EVAL_NEURO}
-          />
-          <DocTemplateCard name="Daily SOAP Note" description="Compact daily treatment note." format="SOAP" body={DAILY_SOAP} />
-          <DocTemplateCard
-            name="Progress Note"
-            description="Functional progress toward goals and continued plan of care."
-            format="Narrative"
-            body={PROGRESS_NOTE}
-          />
-          <DocTemplateCard
-            name="Discharge Summary"
-            description="Summary of goals achieved, functional status, and HEP at discharge."
-            format="Narrative"
-            body={DISCHARGE_SUMMARY}
-          />
-          <FunctionalGoalsBank />
-          <DocTemplateCard
-            name="Prior Authorization Letter"
-            description="Formal letter template for insurance prior authorization requests."
-            format="Letter"
-            body={PRIOR_AUTH_LETTER}
-          />
-        </div>
-      )}
+      <div className="pro-grid-2">
+        <DocTemplateCard
+          name="Initial Evaluation, Outpatient Orthopedic"
+          description="Full SOAP-format initial evaluation for an outpatient orthopedic visit."
+          format="SOAP"
+          body={INITIAL_EVAL_ORTHO}
+        />
+        <DocTemplateCard
+          name="Initial Evaluation, Neurological"
+          description="SOAP-format initial evaluation with neuro-specific sections."
+          format="SOAP"
+          body={INITIAL_EVAL_NEURO}
+        />
+        <DocTemplateCard name="Daily SOAP Note" description="Compact daily treatment note." format="SOAP" body={DAILY_SOAP} />
+        <DocTemplateCard
+          name="Progress Note"
+          description="Functional progress toward goals and continued plan of care."
+          format="Narrative"
+          body={PROGRESS_NOTE}
+        />
+        <DocTemplateCard
+          name="Discharge Summary"
+          description="Summary of goals achieved, functional status, and HEP at discharge."
+          format="Narrative"
+          body={DISCHARGE_SUMMARY}
+        />
+        <FunctionalGoalsBank />
+        <DocTemplateCard
+          name="Prior Authorization Letter"
+          description="Formal letter template for insurance prior authorization requests."
+          format="Letter"
+          body={PRIOR_AUTH_LETTER}
+        />
+      </div>
     </div>
   );
 }
