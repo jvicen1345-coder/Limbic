@@ -5,7 +5,8 @@ import { decorateArticle, type DecoratedArticle } from "@/lib/feed";
 import { recordArticleRead } from "@/lib/reading";
 import { buildThreadsWeb } from "@/lib/threads";
 import type { ThreadsNodeData } from "@/lib/threads-graph";
-import { checkUnpaywall, extractDoiFromUrl, type UnpaywallResult } from "@/lib/unpaywall";
+import { extractDoiFromUrl, type UnpaywallResult } from "@/lib/unpaywall";
+import { getCachedUnpaywall } from "@/lib/unpaywall-cache";
 
 export interface ArticleViewData {
   article: DecoratedArticle;
@@ -33,11 +34,11 @@ export async function buildArticleView(articleId: string, userId: string, isAdmi
   let unpaywallResult: UnpaywallResult | null = null;
   if (raw.live) {
     if (raw.doi) {
-      unpaywallResult = await checkUnpaywall(raw.doi);
+      unpaywallResult = await getCachedUnpaywall(raw.doi);
     } else if (raw.sourceUrl) {
       const extractedDoi = extractDoiFromUrl(raw.sourceUrl);
       if (extractedDoi) {
-        unpaywallResult = await checkUnpaywall(extractedDoi);
+        unpaywallResult = await getCachedUnpaywall(extractedDoi);
       }
     }
   }
