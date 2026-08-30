@@ -6,6 +6,7 @@ import { ShareButton } from "@/components/ShareButton";
 import { BackButton } from "@/components/BackButton";
 import { ArticleImage } from "@/components/ArticleImage";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { ArticleResearchPanel } from "@/components/ArticleResearchPanel";
 import { EVIDENCE_LEVEL_META } from "@/lib/evidence";
 import { slugifyTopic } from "@/lib/topic-slug";
 import { getOaStatusLabel, type UnpaywallResult } from "@/lib/unpaywall-shared";
@@ -43,10 +44,12 @@ export function ArticleReadingPane({
   article,
   related,
   unpaywallResult,
+  hasResearchAccess,
 }: {
   article: DecoratedArticle;
   related: DecoratedArticle[];
   unpaywallResult: UnpaywallResult | null;
+  hasResearchAccess: boolean;
 }) {
   const evidenceMeta = article.evidenceLevel ? EVIDENCE_LEVEL_META[article.evidenceLevel] : null;
 
@@ -182,6 +185,10 @@ export function ArticleReadingPane({
             <ShareButton />
           </div>
         </div>
+      )}
+
+      {hasResearchAccess && (article.doi || article.sourceUrl) && (
+        <ArticleResearchPanel articleDoi={article.doi ?? null} articleSourceUrl={article.sourceUrl ?? null} />
       )}
 
       {article.tags.length > 0 && (

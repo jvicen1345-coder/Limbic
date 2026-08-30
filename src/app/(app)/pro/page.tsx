@@ -39,7 +39,7 @@ const PRO_FEATURES: { name: string; description: string; href: string }[] = [
   },
   {
     name: "HEP Builder",
-    description: "Build and assign home exercise programs. Connect programs to patient records and include them in downloadable patient briefs.",
+    description: "Build and assign home exercise programs, drawing on the Limbic Movement Lab's exercise bank and phased protocols. Connect programs to patient records and include them in downloadable patient briefs.",
     href: "/hep",
   },
   {
@@ -55,6 +55,7 @@ const PRO_FEATURES: { name: string; description: string; href: string }[] = [
 ];
 
 const FREE_REFERENCE_TOOLS = [
+  "Movement Lab",
   "Outcome Measures",
   "Decision Rules",
   "Red Flag Screening",

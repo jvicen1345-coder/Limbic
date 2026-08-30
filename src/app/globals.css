@@ -10269,6 +10269,150 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 
 .outreach-update-form { padding: 16px 18px; background: color-mix(in srgb, var(--color-accent) 3%, transparent); }
 
+/* ============================================================================
+   Limbic Movement Lab — /movement-lab and the HEP Builder's picker
+   (components/movement-lab/*, lib/movement-lab/*)
+
+   Deliberately thin: the browse list reuses .card, the .pro-accordion family and the
+   .pro-filter family wholesale, because a second visual language for what is structurally
+   the same accordion-of-cards as Special Tests and Guidelines would just be inconsistency.
+
+   .btn-sm is the one genuinely general-purpose class in this block. It belongs up with the
+   rest of the .btn family, but COORDINATION.md asks features to append new classes at the
+   end of this file rather than edit existing rules to make room, so it lives here until
+   someone doing a deliberate CSS pass moves it.
+
+   The rest is only what those existing classes don't cover — the difficulty pips, the dense label/body pairs inside an
+   expanded card, the precautions callout, and the selection tray.
+   ============================================================================ */
+
+/* Compact modifier for buttons that sit inline with body text rather than terminating a
+   form — the Movement Lab's filter toggles, tray actions and per-phase "Open in HEP
+   Builder" links, where a full-size .btn would dominate the row it sits in. */
+.btn-sm { font-size: 12.5px; padding: 6px 13px; }
+.btn-sm.btn-icon { width: 30px; height: 30px; padding: 0; }
+
+.ml-pips { display: inline-flex; gap: 3px; vertical-align: middle; }
+.ml-pip {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--color-divider);
+}
+.ml-pip--on { background: var(--color-accent); }
+
+/* Two columns on anything wider than a phone, one below — these are short label/value pairs
+   (position, equipment, phase), so a single column wastes most of the row. */
+.ml-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 560px) {
+  .ml-detail-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.ml-detail-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin-bottom: 3px;
+}
+.ml-detail-body { font-size: 12.5px; color: var(--color-text); line-height: 1.55; }
+.ml-muted { font-size: 12px; color: var(--color-neutral-700); margin-top: 4px; line-height: 1.5; }
+
+.ml-ol, .ml-ul { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.55; }
+.ml-ol > li, .ml-ul > li { margin-bottom: 3px; }
+
+/* Precautions get their own tinted block rather than being one more label/body pair. Every
+   entry in the bank has at least one, and the whole reason they're mandatory is that they
+   should be hard to skim past. */
+.ml-precautions {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #c9853a 10%, transparent);
+  border-left: 3px solid #c9853a;
+}
+.ml-precautions .ml-detail-label { color: #8a5a20; }
+.ml-precautions .ml-ul, .ml-precautions .ml-detail-body { color: var(--color-text); }
+
+.ml-filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.ml-filter-row .ml-muted { margin-top: 0; }
+
+.ml-filter-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ml-phase {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+}
+.ml-phase-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.ml-phase-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 14.5px; }
+.ml-phase-head .ml-muted { margin-top: 2px; }
+
+.ml-step-list { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.55; }
+.ml-step-list > li { margin-bottom: 6px; }
+.ml-step-name { font-weight: 600; }
+
+/* Fixed rather than sticky so it stays reachable while scrolling a long result list — the
+   selection it holds is a half-built program, and having to scroll back to the bottom of
+   160 cards to find the button would be the thing that loses it. */
+.ml-tray {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px 10px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 18%);
+  max-width: calc(100vw - 24px);
+}
+.ml-tray-actions { display: flex; align-items: center; gap: 6px; }
+@media (max-width: 640px) {
+  /* Clears the mobile bottom nav so the tray doesn't sit on top of it. */
+  .ml-tray { bottom: 76px; }
+}
+
+/* The picker inside the HEP Builder (components/movement-lab/MovementLabPicker.tsx) — a
+   scrolling result list rather than the browse page's full accordion, since the clinician
+   here has already decided what they're looking for and just needs to click it. */
+.ml-picker { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.ml-picker-results {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+}
+.ml-picker-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-divider);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--color-text);
+}
+.ml-picker-row:last-child { border-bottom: none; }
+.ml-picker-row:hover { background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
+.ml-picker-row-name { display: block; font-size: 13px; font-weight: 600; }
+.ml-picker-row-sub { display: block; font-size: 11.5px; color: var(--color-neutral-700); margin-top: 2px; }
+
 /* Atrium monthly calendar (see components/AtriumCalendar.tsx, app/(app)/student/page.tsx) —
    two-column layout: a fixed-width month grid on the left, an assignment detail panel that
    fills the rest on the right. Stacks to one column under 768px. */
@@ -10583,6 +10727,139 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   .atrium-calendar-month-summary {
     grid-template-columns: 1fr;
   }
+}
+
+/* "Analyze This Study" panel on the article detail page (see
+   components/ArticleResearchPanel.tsx, components/ArticleReadingPane.tsx) — collapsed by
+   default, expands in place (no overlay). Full width at every breakpoint, so nothing extra
+   is needed for mobile beyond the 44px tap targets already on .article-research-panel-toggle
+   and .article-research-panel-submit. */
+.article-research-panel {
+  margin: 20px 0;
+}
+
+.article-research-panel-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.article-research-panel-toggle:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+.article-research-panel-toggle[aria-expanded="true"] {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.article-research-panel-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.article-research-panel-zap {
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.article-research-panel-chevron {
+  color: var(--color-neutral-700);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.article-research-panel-body {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 20px;
+}
+
+.article-research-panel-section { display: flex; flex-direction: column; }
+
+.article-research-panel-kicker {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-neutral-700);
+  font-weight: 600;
+}
+
+.article-research-panel-desc {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 6px 0 0;
+}
+
+.article-research-panel-field {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.article-research-panel-field label {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+
+.article-research-panel-prefill-note {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--color-neutral-700);
+  margin: 0;
+}
+
+.article-research-panel-field-error {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  margin: 10px 0 0;
+}
+
+.article-research-panel-error {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 12px 0 0;
+}
+
+.article-research-panel-submit {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 14px;
+}
+
+.article-research-panel-disclaimer {
+  font-size: 11.5px;
+  color: var(--color-neutral-600);
+  margin-top: 14px;
+}
+
+.article-research-panel-divider {
+  border: none;
+  border-top: 1px solid var(--color-divider);
+  margin: 16px 0;
+}
+
+@keyframes article-research-panel-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
+}
+.article-research-panel-loading-placeholder {
+  margin-top: 14px;
+  height: 60px;
+  border-radius: 8px;
+  background: var(--color-divider);
+  animation: article-research-panel-pulse 1.4s ease-in-out infinite;
 }
 
 /* ============================================================================
