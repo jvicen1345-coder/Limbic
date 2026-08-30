@@ -10398,7 +10398,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   color: #fff;
   font-weight: 700;
 }
-.calendar-cell.today.has-assignments .category-dots {
+.calendar-cell.today.has-assignments:not(.selected) .category-dots {
   background: rgba(0, 0, 0, 0.15);
   border-radius: 999px;
   padding: 1px 4px;
