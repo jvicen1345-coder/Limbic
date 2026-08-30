@@ -49,35 +49,44 @@ export async function recordHomeQuestionAction(dateKey: string, selectedIndex: n
 }
 
 /** Persists a Limbic Boards question answer — same per-user fix as the Wordle action
- *  above, plus still advances the Boards streak the same way it always did. */
-export async function recordBoardQuestionAction(dateKey: string, selectedIndex: number, elapsedSeconds?: number) {
+ *  above, plus still advances the Boards streak the same way it always did. `questionId`
+ *  is the BOARD_QUESTIONS id this answer was against: the daily pick is per-reader now
+ *  (see lib/board-content.ts pickDailyQuestion), so the date alone no longer identifies
+ *  what was asked and anything reading this row back needs the id stored on it. */
+export async function recordBoardQuestionAction(
+  dateKey: string,
+  selectedIndex: number,
+  elapsedSeconds?: number,
+  questionId?: string
+) {
   const user = await getCurrentUser();
   if (!user) return;
   await Promise.all([
     prisma.dailyCompletion.upsert({
       where: { userId_kind_dateKey: { userId: user.id, kind: "boardQuestion", dateKey } },
-      create: { userId: user.id, kind: "boardQuestion", dateKey, selectedIndex, elapsedSeconds },
-      update: { selectedIndex, elapsedSeconds },
+      create: { userId: user.id, kind: "boardQuestion", dateKey, selectedIndex, elapsedSeconds, contentId: questionId },
+      update: { selectedIndex, elapsedSeconds, contentId: questionId },
     }),
     recordBoardActivity(user.id, dateKey),
   ]);
-  revalidatePath("/boards/sharpening");
+  revalidatePath("/boards");
   revalidatePath("/student");
 }
 
-/** Persists a Limbic Boards term-of-the-day reveal — same pattern as the question action. */
-export async function recordBoardTermRevealAction(dateKey: string, elapsedSeconds?: number) {
+/** Persists a Limbic Boards term-of-the-day reveal — same pattern as the question action,
+ *  `termId` included for the same reason. */
+export async function recordBoardTermRevealAction(dateKey: string, elapsedSeconds?: number, termId?: string) {
   const user = await getCurrentUser();
   if (!user) return;
   await Promise.all([
     prisma.dailyCompletion.upsert({
       where: { userId_kind_dateKey: { userId: user.id, kind: "boardTerm", dateKey } },
-      create: { userId: user.id, kind: "boardTerm", dateKey, elapsedSeconds },
-      update: { elapsedSeconds },
+      create: { userId: user.id, kind: "boardTerm", dateKey, elapsedSeconds, contentId: termId },
+      update: { elapsedSeconds, contentId: termId },
     }),
     recordBoardActivity(user.id, dateKey),
   ]);
-  revalidatePath("/boards/sharpening");
+  revalidatePath("/boards");
   revalidatePath("/student");
 }
 
@@ -171,7 +180,7 @@ export async function recordCaseOfDayAction(
     }),
     status !== "playing" ? recordBoardActivity(user.id, dateKey) : Promise.resolve(),
   ]);
-  revalidatePath("/boards/sharpening");
+  revalidatePath("/boards");
   revalidatePath("/student");
 }
 
