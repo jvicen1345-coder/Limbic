@@ -332,7 +332,7 @@ function AnatomyConnectStatsSection({ stats }: { stats: AnatomyConnectStats }) {
         </div>
       </div>
       <div className="differential-back-link">
-        <Link href="/games">Back to Games</Link>
+        <Link href="/boards">Back to Boards</Link>
       </div>
     </div>
   );

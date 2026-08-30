@@ -124,27 +124,6 @@ export default async function GamesPage() {
         })}
       </div>
 
-      <div className="games-grid" style={{ marginTop: -6, marginBottom: 32 }}>
-        <Link href="/games/differential" className="game-card game-card-standalone">
-          <span className="game-card-daily-badge">Daily</span>
-          <div className="game-card-title">Differential</div>
-          <p className="game-card-desc">Five clues. One condition. How quickly can you identify it?</p>
-          <span className="game-card-btn">Play Today</span>
-        </Link>
-        <Link href="/games/anatomy-connect" className="game-card game-card-standalone">
-          <span className="game-card-daily-badge">Daily</span>
-          <div className="game-card-title">Anatomy Connect</div>
-          <p className="game-card-desc">Match muscles to their nerves, actions, and regions. One new puzzle every day.</p>
-          <span className="game-card-btn">Play Today</span>
-        </Link>
-        <Link href="/games/rehab-sequence" className="game-card game-card-standalone">
-          <span className="game-card-daily-badge">Daily</span>
-          <div className="game-card-title">Rehab Sequence</div>
-          <p className="game-card-desc">Eight interventions. One correct order. Arrange them the way a great clinician would.</p>
-          <span className="game-card-btn">Play Today</span>
-        </Link>
-      </div>
-
       <div className="card elev-sm" style={{ padding: 20 }}>
         <div className="games-stats-title">Your Stats</div>
         <div className="games-stats-grid">
