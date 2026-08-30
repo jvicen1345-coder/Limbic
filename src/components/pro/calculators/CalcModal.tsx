@@ -136,10 +136,8 @@ export function CalcCardShell({
 }) {
   return (
     <div className="card elev-sm pro-calc-card">
-      <div className="pro-calc-card-top">
-        <div className="pro-calc-title">{name}</div>
-        <span className={`pro-calc-admin-badge ${ADMINISTRATION_BADGE_CLASS[administration]}`}>{administration}</span>
-      </div>
+      <span className={`pro-calc-admin-badge ${ADMINISTRATION_BADGE_CLASS[administration]}`}>{administration}</span>
+      <div className="pro-calc-title">{name}</div>
       <p className="pro-calc-fullname">{fullName}</p>
       <p className="pro-calc-desc">{measures}</p>
       <p className="pro-calc-meta">

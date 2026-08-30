@@ -11003,15 +11003,12 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 
 /* Patient-reported (a PROM the patient fills out) vs clinician-administered (the PT times,
    counts, or scores it) — the other, independent axis every card shows regardless of which
-   region section it's grouped under (see CalcCardShell in calculators/CalcModal.tsx). */
-.pro-calc-card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
-}
+   region section it's grouped under (see CalcCardShell in calculators/CalcModal.tsx). An
+   eyebrow pill above the title, not beside it — several of these titles are already long
+   ("Functional Gait Assessment", "30 Second Sit to Stand") and a fixed-width badge sharing
+   a flex row with the title squeezed it down to one word per line. */
 .pro-calc-admin-badge {
-  flex-shrink: 0;
+  align-self: flex-start;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -11019,6 +11016,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   padding: 3px 8px;
   border-radius: 999px;
   white-space: nowrap;
+  margin-bottom: 4px;
 }
 .pro-calc-admin-badge--patient {
   color: var(--color-accent);
