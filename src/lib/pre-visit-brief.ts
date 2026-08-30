@@ -7,6 +7,15 @@ const client = new Anthropic();
 // shape), not because the model choice differs.
 const MODEL = "claude-opus-5";
 
+/** message.content[0] isn't reliably the response text — even at output_config.effort:
+ *  "low", claude-opus-5 can still emit a "thinking" block ahead of its actual text block,
+ *  so every call in this file searches for the real text block instead of assuming
+ *  position 0 (the bug behind "Model returned an unexpected response type" failures). */
+function firstTextBlock(content: { type: string; text?: string }[]): string | null {
+  const block = content.find((c) => c.type === "text");
+  return typeof block?.text === "string" ? block.text : null;
+}
+
 const CLINICAL_SYSTEM_PROMPT = `You are a clinical decision support tool for licensed physical therapists. You generate concise pre-visit clinical briefs to help a PT prepare for a patient session. You never provide a diagnosis. You never give medical advice. You are a starting point for clinical reasoning — not a replacement for it.
 
 Generate a pre-visit brief in exactly 3 sentences:
@@ -74,9 +83,9 @@ Return only the 3 sentence brief. No labels. No extra text.`,
       ],
     });
 
-    const content = message.content[0];
-    if (content.type !== "text") return null;
-    return content.text.trim();
+    const text = firstTextBlock(message.content);
+    if (text === null) return null;
+    return text.trim();
   } catch (error) {
     console.error("Clinical brief generation failed:", error);
     return null;
@@ -109,9 +118,9 @@ Return only the 3 paragraph summary. No labels. No extra text.`,
       ],
     });
 
-    const content = message.content[0];
-    if (content.type !== "text") return null;
-    return content.text.trim();
+    const text = firstTextBlock(message.content);
+    if (text === null) return null;
+    return text.trim();
   } catch (error) {
     console.error("Patient brief generation failed:", error);
     return null;
@@ -156,9 +165,9 @@ Return only a JSON array of 3 strings.`,
       ],
     });
 
-    const content = message.content[0];
-    if (content.type !== "text") return null;
-    const parsed = JSON.parse(stripCodeFence(content.text));
+    const text = firstTextBlock(message.content);
+    if (text === null) return null;
+    const parsed = JSON.parse(stripCodeFence(text));
     if (!Array.isArray(parsed) || !parsed.every((idea) => typeof idea === "string")) return null;
     return parsed;
   } catch (error) {
@@ -223,9 +232,9 @@ Return only the 3 paragraph summary.`,
       ],
     });
 
-    const content = message.content[0];
-    if (content.type !== "text") return null;
-    return content.text.trim();
+    const text = firstTextBlock(message.content);
+    if (text === null) return null;
+    return text.trim();
   } catch (error) {
     console.error("Discharge summary generation failed:", error);
     return null;
@@ -291,9 +300,9 @@ Generate a clinical comparison interpretation.`,
       ],
     });
 
-    const content = message.content[0];
-    if (content.type !== "text") return null;
-    return content.text.trim();
+    const text = firstTextBlock(message.content);
+    if (text === null) return null;
+    return text.trim();
   } catch (error) {
     console.error("Comparison generation failed:", error);
     return null;
@@ -372,9 +381,9 @@ Return only the 3 paragraph summary.`,
       ],
     });
 
-    const content = message.content[0];
-    if (content.type !== "text") return { ok: false, error: `Model returned an unexpected response type ("${content.type}") instead of text.` };
-    return { ok: true, summary: content.text.trim() };
+    const text = firstTextBlock(message.content);
+    if (text === null) return { ok: false, error: "Model did not return a text response." };
+    return { ok: true, summary: text.trim() };
   } catch (error) {
     console.error("Patient summary generation failed:", error);
     return { ok: false, error: describeGenerationError(error) };
