@@ -7378,58 +7378,51 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
    shape as .pro-table above, plus a sticky first column (feature labels) so the row you're
    reading stays visible while scrolling horizontally to a tier further right — see
    app/(app)/profile/membership/page.tsx. */
-.plan-compare-wrap { overflow-x: auto; margin: 16px 0; }
-.plan-compare-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 760px; }
+.plan-compare-wrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--color-divider); border-radius: var(--radius-lg); }
+.plan-compare-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
 .plan-compare-table thead th {
   background: var(--color-card-surface);
-  padding: 14px 12px;
+  padding: 20px 14px;
   border-bottom: 1px solid var(--color-divider);
   vertical-align: top;
 }
 .plan-compare-table thead th:first-child { text-align: left; position: sticky; left: 0; z-index: 2; }
-.plan-compare-table thead th:not(:first-child) { text-align: center; }
+.plan-compare-table thead th:not(:first-child) { text-align: center; border-left: 1px solid var(--color-divider); }
 .plan-compare-table tbody th {
   text-align: left;
   font-weight: 500;
-  padding: 9px 12px;
+  padding: 10px 14px;
   color: var(--color-text);
   white-space: nowrap;
   position: sticky;
   left: 0;
   background: inherit;
 }
-.plan-compare-table tbody td { text-align: center; padding: 9px 12px; }
+.plan-compare-table tbody td { text-align: center; padding: 10px 14px; border-left: 1px solid var(--color-divider); }
 .plan-compare-table tbody tr td, .plan-compare-table tbody tr th { border-bottom: 1px solid var(--color-divider); }
 .plan-compare-table tbody tr:last-child td, .plan-compare-table tbody tr:last-child th { border-bottom: none; }
 .plan-compare-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--color-card-surface) 45%, var(--color-surface)); }
 .plan-compare-table tbody tr:nth-child(odd) { background: var(--color-surface); }
 
-.plan-compare-name {
-  display: inline;
-  font-family: var(--font-heading);
-  font-weight: 400;
-  font-size: 15px;
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-  color: var(--color-text);
-  cursor: pointer;
-  text-decoration: none;
-}
-button.plan-compare-name:hover { text-decoration: underline; }
-.plan-compare-name[data-current="true"] { cursor: default; }
-.plan-compare-price { font-size: 12px; color: var(--color-neutral-700); margin-top: 3px; }
+/* One purchase column's whole header stack — name, price, and its Subscribe button (or
+   Current Plan pill) — centered and evenly spaced, in both the desktop table's <th> and the
+   mobile per-tier card header (see .plan-compare-card-header below), so the two never need
+   separate markup. */
+.plan-compare-header { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.plan-compare-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; color: var(--color-text); }
+.plan-compare-price { font-size: 15px; font-weight: 600; color: var(--color-neutral-700); }
 .plan-compare-current-pill {
   display: inline-block;
-  margin-top: 5px;
+  margin-top: 2px;
   font-size: 11px;
   font-weight: 700;
   color: #fff;
   background: var(--color-accent);
   border-radius: 999px;
-  padding: 2px 8px;
+  padding: 3px 10px;
 }
+.plan-compare-cta-form { width: 100%; margin-top: 2px; }
+.plan-compare-cta { width: 100%; font-size: 12.5px; padding: 7px 10px; }
 
 .plan-compare-check { color: #16a34a; font-weight: 700; }
 .plan-compare-dash { color: var(--color-neutral-700); }
@@ -7442,7 +7435,8 @@ button.plan-compare-name:hover { text-decoration: underline; }
   letter-spacing: 0.05em;
   font-weight: 600;
   text-align: left;
-  padding: 8px 12px;
+  padding: 8px 14px;
+  border-left: none;
 }
 
 /* Mobile alternative to the table above — one full-width card per tier, each listing
