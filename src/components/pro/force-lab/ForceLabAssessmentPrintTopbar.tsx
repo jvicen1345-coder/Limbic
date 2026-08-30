@@ -25,6 +25,18 @@ export function ForceLabAssessmentPrintTopbar({
   generatingSummary: boolean;
   hasSummary: boolean;
 }) {
+  // Patient Report with no generated summary: the "Your Results at a Glance" section (and
+  // the closing recap on the last page) would print empty, so confirm rather than silently
+  // handing the clinician a document missing its own headline section — the amber banner
+  // above already offers the same Generate Summary action for whoever'd rather fix it first.
+  const handlePrintClick = () => {
+    if (reportType === "patient" && !hasSummary) {
+      const proceed = window.confirm('Print without summary? The "Your Results at a Glance" section will be empty.');
+      if (!proceed) return;
+    }
+    window.print();
+  };
+
   return (
     <div className="patient-brief-topbar">
       <Link href="/pro/force-lab" className="btn btn-ghost" style={{ color: "#fff" }}>
@@ -55,7 +67,7 @@ export function ForceLabAssessmentPrintTopbar({
             {generatingSummary ? "Writing summary..." : hasSummary ? "Regenerate Summary" : "Generate Patient Summary"}
           </button>
         )}
-        <button type="button" className="btn btn-primary" onClick={() => window.print()}>
+        <button type="button" className="btn btn-primary" onClick={handlePrintClick}>
           <DownloadIcon size={14} />
           Print / Save as PDF
         </button>

@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { generatePatientReportSummary, type ForceLabAssessmentWithSessions } from "@/app/actions/force-lab";
 import { getLSIStatus, FORCE_LAB_GREEN, FORCE_LAB_AMBER, FORCE_LAB_RED } from "@/lib/force-lab-units";
+import { AlertCircleIcon } from "@/components/icons";
 import { ForceLabAssessmentPrintTopbar, type ForceLabReportType } from "./ForceLabAssessmentPrintTopbar";
 import { ForceLabPatientReportBody } from "./ForceLabPatientReportBody";
 
@@ -38,6 +39,7 @@ export function ForceLabAssessmentPrintView({
   clinicianName,
   clinicianCredential,
   clinicianClinicName,
+  clinicianEmail,
   generatedOn,
   initialPatientSummary,
 }: {
@@ -46,6 +48,7 @@ export function ForceLabAssessmentPrintView({
   clinicianName: string;
   clinicianCredential: string;
   clinicianClinicName: string;
+  clinicianEmail: string | null;
   generatedOn: string;
   initialPatientSummary: string | null;
 }) {
@@ -79,6 +82,21 @@ export function ForceLabAssessmentPrintView({
       />
       {generateError && <p className="pbrief-patient-generate-error">Could not generate a patient summary. Please try again.</p>}
 
+      {reportType === "patient" && summary == null && (
+        <div className="pbrief-summary-warning">
+          <AlertCircleIcon size={20} className="pbrief-summary-warning-icon" />
+          <div className="pbrief-summary-warning-text">
+            <span className="pbrief-summary-warning-title">Warning — Patient summary not generated</span>
+            <span>
+              The &quot;Your Results at a Glance&quot; section will be empty when printed. Generate Summary before downloading.
+            </span>
+          </div>
+          <button type="button" className="btn btn-primary" disabled={generating} onClick={handleGenerateSummary}>
+            {generating ? "Writing summary..." : "Generate Summary"}
+          </button>
+        </div>
+      )}
+
       {reportType === "patient" ? (
         <ForceLabPatientReportBody
           assessment={assessment}
@@ -86,6 +104,7 @@ export function ForceLabAssessmentPrintView({
           clinicianName={clinicianName}
           clinicianCredential={clinicianCredential}
           clinicianClinicName={clinicianClinicName}
+          clinicianEmail={clinicianEmail}
           summary={summary}
         />
       ) : (

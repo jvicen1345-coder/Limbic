@@ -22,7 +22,7 @@ export function plainLSILabel(lsi: number): string {
   if (lsi >= 90) return "Good symmetry";
   if (lsi >= 80) return "Mild difference between sides";
   if (lsi >= 70) return "Moderate difference between sides";
-  return "Significant difference between sides — focus area";
+  return "Significant difference between sides";
 }
 
 export function plainLSIColor(lsi: number): string {
@@ -64,4 +64,23 @@ const PLAIN_MUSCLE_GROUP_NAMES: Record<string, string> = {
 
 export function plainMuscleGroupName(muscleGroup: string): string {
   return PLAIN_MUSCLE_GROUP_NAMES[muscleGroup] ?? muscleGroup;
+}
+
+/** "Areas to Work On" row text (Patient Report) — a plain-language sentence naming whichever
+ *  side actually tested weaker, rather than a bare clinical label, so the patient reads what
+ *  it means for them instead of a symmetry-percentage callout. The 50% split (rather than
+ *  reusing plainLSILabel's 70%/80% bands) is its own tier just for this sentence's wording —
+ *  every row here already has lsi < 80, and the two halves of that range read differently to
+ *  a patient: a difference still worth attention (~50-79%) vs. one severe enough to call out
+ *  as a treatment priority (<50%). */
+export function plainFocusAreaSentence(muscleGroup: string, leftPeak: number | null, rightPeak: number | null, lsi: number): string {
+  const weakerSide = (leftPeak ?? 0) <= (rightPeak ?? 0) ? "left" : "right";
+  const strongerSide = weakerSide === "left" ? "right" : "left";
+  const name = plainMuscleGroupName(muscleGroup).toLowerCase();
+  const severe = lsi < 50;
+  const adjective = severe ? "significantly weaker" : "notably weaker";
+  const closing = severe
+    ? "This is an important area for your treatment plan."
+    : "Your therapist will prioritize this in your upcoming sessions.";
+  return `Your ${weakerSide} ${name} is ${adjective} than your ${strongerSide} side. ${closing}`;
 }
