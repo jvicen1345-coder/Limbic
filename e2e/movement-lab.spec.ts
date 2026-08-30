@@ -212,18 +212,43 @@ test.describe("Movement Lab → HEP Builder", () => {
    *
    *  Goes through @libsql/client rather than lib/db.ts because that module imports the
    *  Prisma client from the generated `@/generated/prisma/client`, which Playwright's TS
-   *  loader can't resolve — and this needs one UPDATE, not an ORM. */
+   *  loader can't resolve — and this needs one UPDATE, not an ORM.
+   *
+   *  That second connection is why this retries. SQLite takes a file-level write lock, and
+   *  the dev server holds the same file while serving the sign-up that just ran; under
+   *  fullyParallel two workers can also reach this line at once. Either produces
+   *  SQLITE_BUSY. `PRAGMA busy_timeout` makes SQLite wait for the lock instead of failing
+   *  immediately, and the retry covers the case where it waits the whole timeout out. */
   async function grantLicense(email: string) {
     const { createClient } = await import("@libsql/client");
-    const db = createClient({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
-    // User.licenseNumber is unique, so it's derived from the (already unique) email rather
-    // than being a fixed constant — otherwise these tests collide with each other in
-    // parallel, and with every previous run against the same local database.
-    await db.execute({
-      sql: "UPDATE User SET licenseNumber = ? WHERE email = ?",
-      args: [`PW-${email}`, email],
-    });
-    db.close();
+    let lastError: unknown;
+
+    for (let attempt = 0; ; attempt++) {
+      const db = createClient({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
+      try {
+        await db.execute("PRAGMA busy_timeout = 10000");
+        // User.licenseNumber is unique, so it's derived from the (already unique) email
+        // rather than being a fixed constant — otherwise these tests collide with each
+        // other in parallel, and with every previous run against the same local database.
+        const result = await db.execute({
+          sql: "UPDATE User SET licenseNumber = ? WHERE email = ?",
+          args: [`PW-${email}`, email],
+        });
+        if (result.rowsAffected === 1) return;
+        // Zero rows means the sign-up's row isn't visible on this connection yet, so it's
+        // retryable like SQLITE_BUSY rather than fatal. Letting it through silently would
+        // surface much later as a confusing "add your license" page instead of the builder,
+        // which is why it's checked at all.
+        lastError = new Error(`no User row for ${email} (UPDATE affected 0 rows)`);
+      } catch (error) {
+        if (!String(error).includes("SQLITE_BUSY")) throw error;
+        lastError = error;
+      } finally {
+        db.close();
+      }
+      if (attempt >= 4) throw lastError;
+      await new Promise((resolve) => setTimeout(resolve, 250 * 2 ** attempt));
+    }
   }
 
   test("a protocol phase deep-link arrives as a prefilled draft", async ({ page }) => {
