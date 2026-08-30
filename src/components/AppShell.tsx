@@ -150,30 +150,19 @@ function NavToggle({
   label,
   expanded,
   onClick,
-  compact = false,
   dataTour,
 }: {
   icon: React.ReactNode;
   label: string;
   expanded: boolean;
   onClick: () => void;
-  /** True for every OTHER toggle while one section is open (see expandedSection in
-   *  NavContent) — shrinks this row's own padding/font a little so the sidebar has more
-   *  room, within the same fixed height, to show the open section's sub-items without
-   *  scrolling as much. The open section's own toggle (and its sub-items, which only ever
-   *  render while their section is the open one) stay full-size. */
-  compact?: boolean;
   /** Marks this item as a target for the guided tour — see NavLink's own dataTour above. */
   dataTour?: string;
 }) {
   return (
     <button
       type="button"
-      style={{
-        ...sidebarNavStyle(false, true),
-        background: "color-mix(in srgb, var(--color-text) 6%, transparent)",
-        ...(compact ? { padding: "7px 12px", fontSize: 12.5, transition: "padding 150ms ease, font-size 150ms ease" } : null),
-      }}
+      style={{ ...sidebarNavStyle(false, true), background: "color-mix(in srgb, var(--color-text) 6%, transparent)" }}
       aria-expanded={expanded}
       onClick={onClick}
       data-tour={dataTour}
@@ -304,10 +293,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
     return null;
   });
   const toggleSection = (key: SidebarSection) => setExpandedSection((cur) => (cur === key ? null : key));
-  // A toggle other than the one currently open compacts itself (see NavToggle's `compact`
-  // prop) — nothing to compact when none are open, and the open one's own toggle stays
-  // full-size regardless.
-  const isCompact = (key: SidebarSection) => expandedSection !== null && expandedSection !== key;
   const nexusExpanded = expandedSection === "nexus";
   const proExpanded = expandedSection === "pro";
   const connexionExpanded = expandedSection === "connexion";
@@ -329,7 +314,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           label="Connexion Method"
           expanded={connexionExpanded}
           onClick={() => toggleSection("connexion")}
-          compact={isCompact("connexion")}
         />
         {connexionExpanded && (
           <>
@@ -350,7 +334,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           label="Limbic Student"
           expanded={studentExpanded}
           onClick={() => toggleSection("student")}
-          compact={isCompact("student")}
           dataTour="limbic-student"
         />
         {studentExpanded && (
@@ -374,7 +357,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           label="LimbicPRO"
           expanded={proExpanded}
           onClick={() => toggleSection("pro")}
-          compact={isCompact("pro")}
           dataTour="limbic-pro"
         />
         {proExpanded && (
@@ -411,7 +393,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           label="Health & Wellness"
           expanded={wellnessExpanded}
           onClick={() => toggleSection("wellness")}
-          compact={isCompact("wellness")}
         />
         {wellnessExpanded && (
           <>
@@ -432,7 +413,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           label="Nexus"
           expanded={nexusExpanded}
           onClick={() => toggleSection("nexus")}
-          compact={isCompact("nexus")}
         />
         {nexusExpanded && (
           <>
@@ -471,7 +451,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           label="Saved"
           expanded={savedExpanded}
           onClick={() => toggleSection("saved")}
-          compact={isCompact("saved")}
         />
         {savedExpanded && (
           <>
@@ -490,7 +469,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           label="Articles"
           expanded={articlesExpanded}
           onClick={() => toggleSection("articles")}
-          compact={isCompact("articles")}
         />
         {articlesExpanded && (
           <>
@@ -521,7 +499,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             label="Admin"
             expanded={adminExpanded}
             onClick={() => toggleSection("admin")}
-            compact={isCompact("admin")}
           />
           {adminExpanded && (
             <>
