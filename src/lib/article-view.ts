@@ -5,11 +5,13 @@ import { decorateArticle, type DecoratedArticle } from "@/lib/feed";
 import { recordArticleRead } from "@/lib/reading";
 import { buildThreadsWeb } from "@/lib/threads";
 import type { ThreadsNodeData } from "@/lib/threads-graph";
+import { checkUnpaywall, extractDoiFromUrl, type UnpaywallResult } from "@/lib/unpaywall";
 
 export interface ArticleViewData {
   article: DecoratedArticle;
   related: DecoratedArticle[];
   threadsNodes: ThreadsNodeData[];
+  unpaywallResult: UnpaywallResult | null;
 }
 
 /** Everything the article detail page needs for one article, in one place — used both by
@@ -26,6 +28,20 @@ export async function buildArticleView(articleId: string, userId: string, isAdmi
   ]);
   if (!raw) return null;
 
+  // Only attempt Unpaywall for live articles — seed articles are not real publications
+  // and do not have real DOIs or publisher URLs to look up.
+  let unpaywallResult: UnpaywallResult | null = null;
+  if (raw.live) {
+    if (raw.doi) {
+      unpaywallResult = await checkUnpaywall(raw.doi);
+    } else if (raw.sourceUrl) {
+      const extractedDoi = extractDoiFromUrl(raw.sourceUrl);
+      if (extractedDoi) {
+        unpaywallResult = await checkUnpaywall(extractedDoi);
+      }
+    }
+  }
+
   // Recorded here (not left to the caller) so it fires the same way regardless of which
   // path reached this article — a swap-in-place needs this exactly as much as a fresh
   // navigation does, since it's the only thing that drives reading history/streaks.
@@ -39,5 +55,5 @@ export async function buildArticleView(articleId: string, userId: string, isAdmi
     .map((a) => decorateArticle(a, savedIds));
   const threadsNodes = await buildThreadsWeb(raw, allArticles, isAdmin);
 
-  return { article, related, threadsNodes };
+  return { article, related, threadsNodes, unpaywallResult };
 }
