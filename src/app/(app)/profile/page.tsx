@@ -24,6 +24,8 @@ import { FoundingFunderBadgeCard } from "@/components/FoundingFunderBadgeCard";
 import { UserRoleSection } from "@/components/UserRoleSection";
 import { isUserRole, type UserRole } from "@/lib/user-role";
 import { ThemeSection } from "@/components/ThemeSection";
+import { ProgramTimelineSection } from "@/components/ProgramTimelineSection";
+import { dateToLocalIso } from "@/lib/limbic-calendar";
 
 // The long tail of keyword topics not already covered by SUGGESTED_TOPICS — comes from a
 // fixed vocabulary rather than whatever's currently loaded (see allKnownKeywordTopics).
@@ -79,6 +81,38 @@ export default async function ProfilePage() {
       )}
 
       <UserRoleSection role={isUserRole(user.userRole ?? "") ? (user.userRole as UserRole) : null} />
+
+      {isStudent && (
+        <ProgramTimelineSection
+          dptProgramStart={user.dptProgramStart ?? ""}
+          dptGraduation={user.dptGraduation ?? ""}
+          npteExamDate={user.npteExamDate ? dateToLocalIso(user.npteExamDate) : ""}
+          rotation1={{
+            site: user.rotation1Site ?? "",
+            city: user.rotation1City ?? "",
+            setting: user.rotation1Setting ?? "",
+            start: user.rotation1Start ?? "",
+            end: user.rotation1End ?? "",
+            supervisor: user.rotation1Supervisor ?? "",
+          }}
+          rotation2={{
+            site: user.rotation2Site ?? "",
+            city: user.rotation2City ?? "",
+            setting: user.rotation2Setting ?? "",
+            start: user.rotation2Start ?? "",
+            end: user.rotation2End ?? "",
+            supervisor: user.rotation2Supervisor ?? "",
+          }}
+          rotation3={{
+            site: user.rotation3Site ?? "",
+            city: user.rotation3City ?? "",
+            setting: user.rotation3Setting ?? "",
+            start: user.rotation3Start ?? "",
+            end: user.rotation3End ?? "",
+            supervisor: user.rotation3Supervisor ?? "",
+          }}
+        />
+      )}
 
       <ThemeSection
         initialTheme={

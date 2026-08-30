@@ -1,0 +1,21 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN "dptGraduation" TEXT;
+ALTER TABLE "User" ADD COLUMN "dptProgramStart" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation1City" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation1End" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation1Setting" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation1Site" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation1Start" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation1Supervisor" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation2City" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation2End" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation2Setting" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation2Site" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation2Start" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation2Supervisor" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation3City" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation3End" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation3Setting" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation3Site" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation3Start" TEXT;
+ALTER TABLE "User" ADD COLUMN "rotation3Supervisor" TEXT;

@@ -289,6 +289,36 @@ model User {
   certificationExpiry         DateTime?
   practiceStartDate           DateTime?
 
+  // DPT Program Timeline (Profile's "Program Timeline" section, see
+  // components/ProgramTimelineSection.tsx) — powers the Limbic Student Atrium's phase-aware
+  // header and rotation-specific card grid (see lib/dpt-program.ts, app/(app)/student/
+  // page.tsx). getCurrentProgramPhase itself reads a fixed Chapman University trimester
+  // calendar rather than dptProgramStart/dptGraduation below, so those two are stored for
+  // display only; the rotation1-3 fields are matched to whichever trimester
+  // getCurrentProgramPhase resolves as the active clinical rotation, by clinicalNumber. NPTE
+  // exam date reuses the existing npteExamDate field above rather than duplicating it.
+  dptProgramStart String?
+  dptGraduation   String?
+
+  rotation1Site       String?
+  rotation1City       String?
+  rotation1Setting    String?
+  rotation1Start      String?
+  rotation1End        String?
+  rotation1Supervisor String?
+  rotation2Site       String?
+  rotation2City       String?
+  rotation2Setting    String?
+  rotation2Start      String?
+  rotation2End        String?
+  rotation2Supervisor String?
+  rotation3Site       String?
+  rotation3City       String?
+  rotation3Setting    String?
+  rotation3Start      String?
+  rotation3End        String?
+  rotation3Supervisor String?
+
   // Reserved for a future "add to my calendar app" / reminder-notification feature — not
   // yet read or written by any code path, but part of this migration's schema per the
   // Limbic Calendar spec so both can be added later without another migration.

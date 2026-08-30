@@ -15,6 +15,7 @@ import { currentWeekKey, pickWeeklyRoundup } from "@/lib/student-roundup";
 import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumProgressChart";
 import { StudentGate } from "@/components/student/StudentGate";
 import { FileTextIcon, UsersIcon, PencilIcon, GraduationCapIcon, HeartIcon, ChevronRightIcon, LockIcon, ZapIcon } from "@/components/icons";
+import { getCurrentProgramPhase, getProgramPhaseLabel } from "@/lib/dpt-program";
 
 const PATHS = [
   {
@@ -127,16 +128,36 @@ export default async function StudentAtriumPage() {
   const now = new Date();
   const greeting = `${timeOfDayGreeting(now.getHours())}, ${firstName(user.name)}`;
 
-  // No per-user academic-calendar field exists yet — a fixed 6-week-in offset from "now" is
-  // a placeholder that always reads as a plausible mid-term week, pending a real start-date
-  // field (see prisma/schema.prisma User's studentTier-only date fields for what does exist).
-  const placeholderTermStart = new Date(now);
-  placeholderTermStart.setDate(placeholderTermStart.getDate() - 7 * 6);
-  const weekNumber = Math.floor((now.getTime() - placeholderTermStart.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+  // Phase-aware header (see lib/dpt-program.ts) — reads a fixed Chapman University
+  // trimester calendar, not any per-user field, so this is the same for every LimbicStudent
+  // reader for now (the Program Timeline section on Profile stores dptProgramStart/
+  // dptGraduation for display, but getCurrentProgramPhase doesn't take them as input).
+  const phase = getCurrentProgramPhase(now);
+  const phaseLabel = getProgramPhaseLabel(phase);
+
+  // Which of the three rotation blocks (see Profile's Program Timeline section) matches the
+  // phase engine's current clinical trimester, if any — used by the rotation banner and the
+  // break-transition card below to fill in the site details the calendar itself doesn't know.
+  const activeRotationNumber = phase.type === "clinical" ? phase.trimester?.clinicalNumber : phase.nextPhase?.clinicalNumber;
+  const rotationDetails =
+    activeRotationNumber === 1
+      ? { site: user.rotation1Site, city: user.rotation1City, setting: user.rotation1Setting }
+      : activeRotationNumber === 2
+        ? { site: user.rotation2Site, city: user.rotation2City, setting: user.rotation2Setting }
+        : activeRotationNumber === 3
+          ? { site: user.rotation3Site, city: user.rotation3City, setting: user.rotation3Setting }
+          : null;
 
   const npteDays = user.npteExamDate
     ? Math.ceil((user.npteExamDate.getTime() - now.getTime()) / (24 * 60 * 60 * 1000))
     : null;
+
+  // Which resource grid the Atrium's card row shows (see .atrium-zone-cards below) — a
+  // break between trimesters shows whichever grid matches what's coming next, since the
+  // point of that grid is "what do you need right now," and during a break that's whatever
+  // the next phase calls for.
+  const cardGridType: "didactic" | "clinical" =
+    phase.type === "clinical" || (phase.type === "break" && phase.nextPhase?.type === "clinical") ? "clinical" : "didactic";
 
   const todayKey = todayDateKey();
   const weekDateKeys = last7DateKeys(todayKey);
@@ -230,7 +251,16 @@ export default async function StudentAtriumPage() {
     <div className="screen-pad atrium-page" style={{ maxWidth: 1120 }}>
       <div className="atrium-header">
         <h1 className="atrium-greeting">{greeting}</h1>
-        <p className="atrium-header-meta">Week {weekNumber} of your DPT journey</p>
+        <p className="atrium-header-meta">{phaseLabel}</p>
+
+        <div className="atrium-program-progress">
+          <div className="atrium-program-progress-track">
+            <div className="atrium-program-progress-fill" style={{ width: `${phase.percentComplete}%` }} />
+          </div>
+          <span className="atrium-program-progress-label">
+            {phase.percentComplete}% complete · {phase.daysUntilGraduation} days to graduation
+          </span>
+        </div>
 
         {npteDays !== null && npteDays >= 0 ? (
           <div className="atrium-countdown">
@@ -247,6 +277,39 @@ export default async function StudentAtriumPage() {
           </p>
         )}
       </div>
+
+      {phase.type === "clinical" && phase.trimester && (
+        <div className="atrium-rotation-banner">
+          <div>
+            <p className="atrium-rotation-banner-title">Clinical Rotation {phase.trimester.clinicalNumber}</p>
+            {rotationDetails?.site ? (
+              <>
+                <p className="atrium-rotation-banner-site">
+                  {rotationDetails.site}
+                  {rotationDetails.city ? ` — ${rotationDetails.city}` : ""}
+                </p>
+                {rotationDetails.setting && <p className="atrium-rotation-banner-setting">{rotationDetails.setting}</p>}
+              </>
+            ) : (
+              <Link href="/profile#program-timeline" className="atrium-rotation-banner-link">
+                Add rotation details in Profile Settings →
+              </Link>
+            )}
+          </div>
+          <div className="atrium-rotation-banner-progress">
+            <p className="atrium-rotation-banner-week">
+              Week {phase.weekInTrimester} of {phase.totalWeeksInTrimester}
+            </p>
+            <p className="atrium-rotation-banner-remaining">{phase.daysUntilNextPhase} days remaining</p>
+            <div className="atrium-rotation-banner-bar-track">
+              <div
+                className="atrium-rotation-banner-bar-fill"
+                style={{ width: `${Math.min(100, Math.round((phase.weekInTrimester / phase.totalWeeksInTrimester) * 100))}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="atrium-v2-grid">
         <div className="atrium-zone-streak">
@@ -301,6 +364,22 @@ export default async function StudentAtriumPage() {
               </span>
             </>
           )}
+
+          <div className="atrium-npte-countdown">
+            <p className="atrium-npte-countdown-label">NPTE Countdown</p>
+            {npteDays !== null && npteDays >= 0 ? (
+              <>
+                <p className={`atrium-npte-countdown-number atrium-npte-countdown-number--${npteDays > 180 ? "green" : npteDays >= 60 ? "amber" : "red"}`}>
+                  {npteDays}
+                </p>
+                <p className="atrium-npte-countdown-sub">days until boards</p>
+              </>
+            ) : (
+              <Link href="/profile#program-timeline" className="atrium-npte-countdown-link">
+                Set exam date →
+              </Link>
+            )}
+          </div>
         </aside>
 
         <div className="atrium-zone-primary">
@@ -318,46 +397,107 @@ export default async function StudentAtriumPage() {
         </div>
 
         <div className="atrium-zone-cards">
-          {/* Every route here is a real, existing page — "Boards" links straight to /boards
-              (not the old /boards/sharpening redirect the previous three-card row used,
-              since that route's only job is forwarding here anyway) and "Clinical
-              Reference"/"NPTE Resources" reuse the exact hrefs the sidebar's own Limbic
-              Student section links to (see AppShell.tsx), so this grid and the sidebar
-              never point at two different pages for the same label. */}
-          <div className="atrium-resource-grid">
-            <Link href="/student/clinical-sharpening" className="atrium-resource-card atrium-resource-card--primary">
-              <p className="atrium-resource-title">Daily Sharpening</p>
-              <p className="atrium-resource-desc">One question, one term, one case. Five minutes keeps your streak alive.</p>
-            </Link>
-            <Link href="/boards" className="atrium-resource-card">
-              <p className="atrium-resource-title">Boards</p>
-              <p className="atrium-resource-desc">NPTE prep built into your daily routine. Questions, terms, and cases by system.</p>
-            </Link>
-            <Link href="/student/specialties" className="atrium-resource-card">
-              <p className="atrium-resource-title">Specialty Tracks</p>
-              <p className="atrium-resource-desc">Key conditions, special tests, and clinical tools organized by practice area.</p>
-            </Link>
-            <Link href="/student/slides" className="atrium-resource-card">
-              <p className="atrium-resource-title">Break Down Slides</p>
-              <p className="atrium-resource-desc">Upload your lecture slides and get summaries and practice questions.</p>
-            </Link>
-            <Link href="/student/soap" className="atrium-resource-card">
-              <p className="atrium-resource-title">Practice a SOAP Note</p>
-              <p className="atrium-resource-desc">Structured documentation templates with clinical feedback.</p>
-            </Link>
-            <Link href="/pro/lab-values" className="atrium-resource-card">
-              <p className="atrium-resource-title">Clinical Reference</p>
-              <p className="atrium-resource-desc">Lab values, medications, special tests, and clinical decision rules at your fingertips.</p>
-            </Link>
-            <Link href="/student/resources" className="atrium-resource-card">
-              <p className="atrium-resource-title">NPTE Resources</p>
-              <p className="atrium-resource-desc">Everything you need for boards — content breakdown, study schedule, and exam strategy.</p>
-            </Link>
-            <Link href="/student/wellness" className="atrium-resource-card">
-              <p className="atrium-resource-title">Mental Wellness</p>
-              <p className="atrium-resource-desc">Resources and support for the mental demands of the DPT journey.</p>
-            </Link>
-          </div>
+          {phase.type === "break" && phase.nextPhase && (
+            <div className="atrium-break-card">
+              <p className="atrium-break-card-title">
+                {phase.nextPhase.type === "clinical"
+                  ? `Rotation ${phase.nextPhase.clinicalNumber} starts in ${phase.daysUntilNextPhase} days — ${rotationDetails?.site || "Site TBD"}`
+                  : `${phase.nextPhase.name} starts in ${phase.daysUntilNextPhase} days`}
+              </p>
+              <p className="atrium-break-card-subtitle">
+                Starts{" "}
+                {new Date(`${phase.nextPhase.start}T00:00:00`).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </p>
+            </div>
+          )}
+
+          {cardGridType === "didactic" ? (
+            /* Every route here is a real, existing page — "Boards" links straight to /boards
+               (not the old /boards/sharpening redirect the previous three-card row used,
+               since that route's only job is forwarding here anyway) and "Clinical
+               Reference"/"NPTE Resources" reuse the exact hrefs the sidebar's own Limbic
+               Student section links to (see AppShell.tsx), so this grid and the sidebar
+               never point at two different pages for the same label. */
+            <div className="atrium-resource-grid">
+              <Link href="/student/clinical-sharpening" className="atrium-resource-card atrium-resource-card--primary">
+                <p className="atrium-resource-title">Daily Sharpening</p>
+                <p className="atrium-resource-desc">One question, one term, one case. Five minutes keeps your streak alive.</p>
+              </Link>
+              <Link href="/boards" className="atrium-resource-card">
+                <p className="atrium-resource-title">Boards</p>
+                <p className="atrium-resource-desc">NPTE prep built into your daily routine. Questions, terms, and cases by system.</p>
+              </Link>
+              <Link href="/student/specialties" className="atrium-resource-card">
+                <p className="atrium-resource-title">Specialty Tracks</p>
+                <p className="atrium-resource-desc">Key conditions, special tests, and clinical tools organized by practice area.</p>
+              </Link>
+              <Link href="/student/slides" className="atrium-resource-card">
+                <p className="atrium-resource-title">Break Down Slides</p>
+                <p className="atrium-resource-desc">Upload your lecture slides and get summaries and practice questions.</p>
+              </Link>
+              <Link href="/student/soap" className="atrium-resource-card">
+                <p className="atrium-resource-title">Practice a SOAP Note</p>
+                <p className="atrium-resource-desc">Structured documentation templates with clinical feedback.</p>
+              </Link>
+              <Link href="/pro/lab-values" className="atrium-resource-card">
+                <p className="atrium-resource-title">Clinical Reference</p>
+                <p className="atrium-resource-desc">Lab values, medications, special tests, and clinical decision rules at your fingertips.</p>
+              </Link>
+              <Link href="/student/resources" className="atrium-resource-card">
+                <p className="atrium-resource-title">NPTE Resources</p>
+                <p className="atrium-resource-desc">Everything you need for boards — content breakdown, study schedule, and exam strategy.</p>
+              </Link>
+              <Link href="/student/wellness" className="atrium-resource-card">
+                <p className="atrium-resource-title">Mental Wellness</p>
+                <p className="atrium-resource-desc">Resources and support for the mental demands of the DPT journey.</p>
+              </Link>
+            </div>
+          ) : (
+            /* Rotation-focused grid — swapped in for a clinical trimester (or a break that
+               leads into one), since the didactic grid's coursework tools (Break Down
+               Slides, Boards) aren't what a reader on rotation needs day to day. /agent is
+               the real route for Limbic Agent (there's no /pro/agent — see AppShell.tsx's
+               own sidebar link), same "use what actually exists" correction as Boards/
+               Clinical Reference/NPTE Resources above. */
+            <div className="atrium-resource-grid">
+              <Link href="/agent" className="atrium-resource-card atrium-resource-card--primary">
+                <p className="atrium-resource-title">Limbic Agent</p>
+                <p className="atrium-resource-desc">Clinical decision support for your rotation. Ask anything — get evidence-based answers.</p>
+              </Link>
+              <Link href="/pro/calculators" className="atrium-resource-card">
+                <p className="atrium-resource-title">Clinical Calculators</p>
+                <p className="atrium-resource-desc">Quick access to outcome measures, clinical scores, and assessment tools.</p>
+              </Link>
+              <Link href="/pro/decision-rules" className="atrium-resource-card">
+                <p className="atrium-resource-title">Decision Rules</p>
+                <p className="atrium-resource-desc">Ottawa rules, Canadian C-spine, Wells criteria, and more — at your fingertips.</p>
+              </Link>
+              <Link href="/pro/red-flags" className="atrium-resource-card">
+                <p className="atrium-resource-title">Red Flag Screening</p>
+                <p className="atrium-resource-desc">Systematic red flag checklists for every body region.</p>
+              </Link>
+              <Link href="/pro/special-tests" className="atrium-resource-card">
+                <p className="atrium-resource-title">Special Tests Library</p>
+                <p className="atrium-resource-desc">Sensitivity, specificity, and how-to for every special test you will use on rotation.</p>
+              </Link>
+              <Link href="/student/soap" className="atrium-resource-card">
+                <p className="atrium-resource-title">Practice a SOAP Note</p>
+                <p className="atrium-resource-desc">Structured documentation practice with clinical feedback.</p>
+              </Link>
+              <Link href="/student/specialties" className="atrium-resource-card">
+                <p className="atrium-resource-title">Specialty Tracks</p>
+                <p className="atrium-resource-desc">Review key conditions and clinical tools for your rotation setting.</p>
+              </Link>
+              <Link href="/pro/force-lab" className="atrium-resource-card">
+                <p className="atrium-resource-title">Force Lab</p>
+                <p className="atrium-resource-desc">Record and track dynamometer strength measurements from your rotation patients.</p>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>
