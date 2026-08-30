@@ -1,49 +1,23 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { LockIcon } from "@/components/icons";
+import { SAFETY_SCORE_DOMAINS, domainMaxScore } from "@/lib/connexion-safety-score";
 
-// TODO: Add AFIT scoring ranges when rubric is finalized
-// TODO: Replace placeholder with Delia's scoring rubric when provided
-// Contact: Delia Vicencio, PT, DPT — The Connexion Method
-const FUNCTIONAL_MOBILITY_ITEMS = ["Posture", "Flexibility", "Strength", "Balance", "Endurance"];
+const DOMAIN_DESCRIPTIONS: Record<string, string> = {
+  environmental: "A room-by-room home walkthrough — entryway, living areas, bathroom, bedroom, kitchen, and stairs — scoring 25 hazard checkpoints.",
+  mobility: "Sit-to-stand, transfers, walking, stairs, device use, and balance during functional tasks, observed directly during your visit.",
+  fallRisk: "Fall history, strength, balance, gait, cognition, footwear, and caregiver support — the factors most predictive of a future fall.",
+};
 
-// TODO: Add environmental scoring weights when rubric is finalized
-// TODO: Replace placeholder with Delia's scoring rubric when provided
-// Contact: Delia Vicencio, PT, DPT — The Connexion Method
-const HOME_ENVIRONMENT_ITEMS = ["Entryway", "Bathroom", "Bedroom", "Kitchen", "Stairs", "Lighting", "Mobility Pathways"];
+const RISK_LEVELS = ["Low Risk", "Moderate Risk", "High Risk", "Very High Risk", "Critical Risk"];
 
-// TODO: Add medical risk scoring weights when rubric is finalized
-// TODO: Replace placeholder with Delia's scoring rubric when provided
-// Contact: Delia Vicencio, PT, DPT — The Connexion Method
-const MEDICAL_RISK_ITEMS = ["Prior Falls", "Medications", "Medical History", "Vision", "Caregiver Support"];
-
-const SCORE_DOMAINS = [
-  {
-    name: "Functional Mobility",
-    description:
-      "Based on AFIT results, posture, flexibility, strength, balance, and endurance findings from your in-home assessment.",
-    items: FUNCTIONAL_MOBILITY_ITEMS,
-  },
-  {
-    name: "Home Environment",
-    description:
-      "Based on the room-by-room home walkthrough, hazard identification across entryways, bathrooms, bedroom, kitchen, stairs, lighting, and mobility pathways.",
-    items: HOME_ENVIRONMENT_ITEMS,
-  },
-  {
-    name: "Medical and Fall Risk Factors",
-    description: "Based on medical history, current medications, prior fall history, and caregiver support levels.",
-    items: MEDICAL_RISK_ITEMS,
-  },
-];
-
-const RISK_LEVELS = ["Low Risk", "Moderate Risk", "Elevated Risk", "High Risk"];
-
-/** LimbicPRO-only, same locked-state shell as /connexion/protocol. Past that gate, this is a
- *  real (placeholder) calculator structure — three scoring domains, each with its own
- *  greyed-out row inputs, and a score output card — ready for Delia's rubric to be dropped
- *  in (see the TODO comments above SCORE_DOMAINS' item lists and above the output card
- *  below), not a generic "coming soon" message like the previous version of this page. */
+/** LimbicPRO-only, same locked-state shell as /connexion/protocol. Past that gate, this
+ *  shows the real Connexion Safety Score rubric — three scoring domains (Environmental
+ *  Safety /100, Mobility & Functional Safety /48, Fall-Risk Factors /60, total /208, see
+ *  lib/connexion-safety-score.ts, transcribed from Delia Vicencio, PT, DPT's own paper
+ *  form) — with every item still greyed out, since the score itself is only ever entered
+ *  live by a Connexion PT during your visit (see /admin/connexion-safety-score for that
+ *  tool). This page is read-only display, not the fillable form. */
 export default async function ConnexionSafetyScorePage() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -84,38 +58,45 @@ export default async function ConnexionSafetyScorePage() {
 
       <h2 style={{ fontSize: 17, margin: "0 0 14px" }}>How the Score Works</h2>
       <div className="connexion-score-domain-grid">
-        {SCORE_DOMAINS.map((d) => (
-          <div className="connexion-score-domain-card" key={d.name}>
-            <div className="connexion-score-domain-name">{d.name}</div>
-            <p className="connexion-score-domain-desc">{d.description}</p>
-            <span className="connexion-badge-soon">Scoring rubric in development</span>
-            <div className="connexion-score-row-list">
-              {d.items.map((item) => (
-                <div className="connexion-score-row" key={item}>
-                  <span className="connexion-score-row-label">{item}</span>
-                  <input
-                    className="connexion-score-row-input"
-                    value="N/A"
-                    disabled
-                    readOnly
-                    aria-label={`${item} score, available after your visit`}
-                  />
-                </div>
-              ))}
+        {SAFETY_SCORE_DOMAINS.map((d) => (
+          <div className="connexion-score-domain-card" key={d.key}>
+            <div className="connexion-score-domain-name">
+              {d.name} <span style={{ fontWeight: 400, color: "var(--color-neutral-600)" }}>/ {domainMaxScore(d)}</span>
             </div>
+            <p className="connexion-score-domain-desc">{DOMAIN_DESCRIPTIONS[d.key]}</p>
+            <span className="connexion-badge-soon">Scored during your visit</span>
+            {d.sections.map((section) => (
+              <div key={section.key} className="connexion-score-row-list" style={{ marginTop: section.label ? 14 : 0 }}>
+                {section.label && (
+                  <div style={{ fontSize: 11.5, fontWeight: 600, color: "var(--color-neutral-700)", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                    {section.label}
+                  </div>
+                )}
+                {section.items.map((item) => (
+                  <div className="connexion-score-row" key={item.key}>
+                    <span className="connexion-score-row-label">{item.label}</span>
+                    <input
+                      className="connexion-score-row-input"
+                      value="N/A"
+                      disabled
+                      readOnly
+                      aria-label={`${item.label} score, available after your visit`}
+                    />
+                  </div>
+                ))}
+              </div>
+            ))}
             <p className="connexion-score-row-note">Available after your visit</p>
           </div>
         ))}
       </div>
 
-      {/* TODO: Wire scoring logic when rubric is provided by Delia */}
-      {/* TODO: Replace placeholder with Delia's scoring rubric when provided */}
-      {/* Contact: Delia Vicencio, PT, DPT — The Connexion Method */}
       <div className="connexion-score-output-card">
         <div className="connexion-score-output-title">Connexion Safety Score</div>
         <div className="connexion-score-circle" aria-hidden="true">
           N/A
         </div>
+        <p style={{ fontSize: 12.5, color: "var(--color-neutral-700)", margin: "0 0 14px" }}>out of 208</p>
         <div className="connexion-score-risk-row">
           {RISK_LEVELS.map((r) => (
             <span key={r} className="connexion-score-risk-pill">
@@ -127,8 +108,7 @@ export default async function ConnexionSafetyScorePage() {
 
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", lineHeight: 1.6, textAlign: "center", maxWidth: 620, margin: "18px auto 30px" }}>
         Your Connexion Safety Score is calculated by a licensed PT during your home visit. The score combines your
-        AFIT functional findings, home environment assessment, and medical risk factors into a single predictive
-        index.
+        environmental safety, functional mobility, and fall-risk findings into a single 0-208 predictive index.
       </p>
 
       <div className="connexion-assessment-card">

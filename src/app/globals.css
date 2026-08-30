@@ -6868,6 +6868,75 @@ select.connexion-visit-input { color-scheme: dark; }
   padding: 5px 14px;
 }
 
+/* — /admin/connexion-safety-score's fillable rubric (SafetyAssessmentForm.tsx) — a "live"
+   variant of the public preview's greyed-out .connexion-score-circle above, since this one
+   shows a real, currently-computed total rather than a permanent "N/A" placeholder. */
+.connexion-score-circle--live {
+  border-color: var(--color-migration-gold);
+  background: color-mix(in srgb, var(--color-migration-gold) 12%, var(--color-card-surface));
+  color: var(--color-text);
+}
+.connexion-assess-domain-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.connexion-assess-domain-score { font-size: 13px; font-weight: 700; color: var(--color-migration-gold); }
+.connexion-assess-section-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 6px;
+}
+.connexion-assess-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+.connexion-assess-item-row:last-child { border-bottom: none; }
+.connexion-assess-item-label { font-size: 13px; color: var(--color-text); flex: 1; min-width: 0; }
+.connexion-assess-score-buttons { display: flex; gap: 4px; flex-shrink: 0; }
+.connexion-assess-score-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-neutral-200);
+  background: var(--color-card-surface);
+  color: var(--color-neutral-700);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.connexion-assess-score-btn:hover { border-color: var(--color-migration-gold); }
+.connexion-assess-score-btn.active {
+  border-color: var(--color-migration-gold);
+  background: var(--color-migration-gold);
+  color: #241704;
+}
+.connexion-assess-toggle-btn {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-neutral-200);
+  background: var(--color-card-surface);
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.connexion-assess-toggle-btn.active {
+  border-color: var(--color-migration-gold);
+  background: color-mix(in srgb, var(--color-migration-gold) 18%, transparent);
+  color: var(--color-text);
+}
+.connexion-assess-equipment-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 0.8fr auto;
+  gap: 8px;
+  align-items: center;
+}
+@media (max-width: 600px) { .connexion-assess-equipment-row { grid-template-columns: 1fr; } }
+
 /* — /connexion/delia — a bio page for The Connexion Method's founder (was /connexion/bettie
    before her name was corrected — see AppShell.tsx/app/(app)/connexion/delia/page.tsx). */
 .connexion-delia-header { display: flex; align-items: center; gap: 20px; margin-bottom: 26px; flex-wrap: wrap; }

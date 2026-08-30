@@ -359,6 +359,7 @@ model User {
   forceLabSessions    ForceLabSession[]
   forceLabAssessments ForceLabAssessment[]
   forceLabComparisons ForceLabComparison[]
+  connexionSafetyAssessments ConnexionSafetyAssessment[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -1674,6 +1675,67 @@ model ConnexionVisitRequest {
   visitReason   String? // dropdown value instead of free text
   status        String    @default("new") // "new" | "contacted" | "scheduled" | "completed"
   createdAt     DateTime  @default(now())
+
+  safetyAssessments ConnexionSafetyAssessment[]
+}
+
+// The Connexion Safety Score™ — a proprietary home safety/fall-risk assessment (see
+// lib/connexion-safety-score.ts for the fixed ~52-item rubric this stores scores against),
+// administered in person by a licensed Connexion Method PT (isSiteAdmin-gated, same as
+// /admin/connexion-visits — this isn't a general LimbicPRO clinician tool, it's the internal
+// tool for whoever actually runs Connexion Method visits) and optionally linked back to the
+// ConnexionVisitRequest lead it fulfills. See app/actions/connexion-safety-score.ts.
+model ConnexionSafetyAssessment {
+  id               String   @id @default(cuid())
+  administeredById String
+  visitRequestId   String?
+  clientName       String
+  clientAddress    String?
+  assessmentDate   DateTime @default(now())
+
+  // JSON.stringify(Record<item key, 0-4 score>) — one entry per item key from
+  // SAFETY_SCORE_DOMAINS in lib/connexion-safety-score.ts. Never queried per-item (nothing
+  // filters "assessments where grab bars scored a 3"), so one blob beats ~52 rarely-touched
+  // integer columns.
+  itemScores String
+
+  // Recomputed from itemScores via computeSafetyScoreTotals on every create/update — cached
+  // here purely so the assessment list can show a total/risk badge per row without
+  // JSON-parsing and rescoring every assessment on every page load. Always written together
+  // with itemScores in the same action call; never set independently of it.
+  environmentalScore Int
+  mobilityScore      Int
+  fallRiskScore      Int
+  totalScore         Int
+  riskLevel          String
+
+  // JSON.stringify(string[]) of selected CRITICAL_FINDING_OPTIONS — the paper form's
+  // "Important Safety Override" checkboxes.
+  criticalFindings      String  @default("[]")
+  criticalFindingsOther String?
+
+  // JSON.stringify({ equipment, location, priority }[]) — the Equipment Recommendations table.
+  equipment String @default("[]")
+  // JSON.stringify(Record<CAREGIVER_SKILLS key, "demonstrated" | "needsTraining">).
+  caregiverSkills String @default("{}")
+
+  priorityActionsUrgent  String?
+  priorityActionsSoon    String?
+  priorityActionsMonitor String?
+
+  biggestRisk              String?
+  mostImportantChange      String?
+  equipmentRecommendedNote String?
+  caregiverTrainingNote    String?
+  followUp                 String? // FOLLOW_UP_OPTIONS key
+  followUpOther            String?
+  ptRecommendation         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  administeredBy User                   @relation(fields: [administeredById], references: [id], onDelete: Cascade)
+  visitRequest   ConnexionVisitRequest? @relation(fields: [visitRequestId], references: [id], onDelete: SetNull)
 }
 
 // A fixed-window request counter for "Continue as guest" (see lib/guest-rate-limit.ts,
