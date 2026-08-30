@@ -1,22 +1,5 @@
 import { test, expect } from "@playwright/test";
-
-/** Each test gets its own email so they can run in parallel without colliding on the same
- *  row in SignInThrottle/User — see playwright.config.ts's fullyParallel. */
-function freshEmail(label: string) {
-  return `pw-${label}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
-}
-
-const PASSWORD = "TestPass123!";
-
-async function signUp(page: import("@playwright/test").Page, email: string) {
-  await page.goto("/sign-in");
-  await page.getByText("New here? Create an account").click();
-  await page.getByLabel("Email").fill(email);
-  const passwordFields = page.locator('input[type="password"]');
-  await passwordFields.nth(0).fill(PASSWORD);
-  await passwordFields.nth(1).fill(PASSWORD);
-  await page.getByRole("button", { name: "Create account" }).click();
-}
+import { freshEmail, signUp } from "./helpers";
 
 test.describe("landing + auth", () => {
   test("landing page renders for a signed-out visitor", async ({ page }) => {
@@ -30,21 +13,46 @@ test.describe("landing + auth", () => {
     await expect(page).toHaveURL(/\/sign-in/);
   });
 
-  test("sign-up reaches onboarding, and onboarding leads into the real app", async ({ page }) => {
+  /**
+   * The first-run journey is this test's actual subject, so its three gates stay written out
+   * here with an assertion on each rather than being delegated to helpers.ts's
+   * completeFirstRun — a test that only called the helper would pass without ever checking
+   * that the gates appear in the right order, which is exactly what it exists to catch.
+   *
+   * Each gate is waited on by URL (or, for the role modal, by the heading it renders)
+   * *before* anything is clicked. The previous version clicked straight through and so
+   * reported a `/onboarding/name` step appearing in front of the topic picker as a bare
+   * "waiting for getByText('Skip for now')" timeout, which says nothing about what moved.
+   */
+  test("sign-up walks all three first-run gates and lands in the app", async ({ page }) => {
     const email = freshEmail("signup");
     await signUp(page, email);
-    await expect(page).toHaveURL(/\/onboarding/);
 
-    // A brand-new signup always goes through both onboarding steps in order: pick-topics,
-    // then "How are you using Limbic?" — .click() auto-waits for each element rather than
-    // needing manual visibility polling. The role picker's options are buttons whose
-    // accessible name combines title and subtitle ("Physical Therapist Licensed clinician").
-    await page.getByText("Skip for now").click();
+    // Gate 1 — hasSetName. Both fields are required, so Continue does nothing until filled.
+    await expect(page).toHaveURL(/\/onboarding\/name/);
+    await page.getByLabel("First name").fill("Pw");
+    await page.getByLabel("Last name").fill("Tester");
+    await page.getByRole("button", { name: "Continue to Limbic" }).click();
+
+    // Gate 2 — hasOnboarded. Picking topics is optional; "Skip for now" completes it too.
+    await expect(page).toHaveURL(/\/onboarding$/);
+    await expect(page.getByText("What are you interested in?")).toBeVisible();
+    await page.getByRole("button", { name: "Skip for now" }).click();
+
+    // Gate 3 — hasCompletedOnboarding. The role modal renders in place of the whole app
+    // shell (see app/(app)/layout.tsx), so the URL is already /home while it's showing —
+    // which is why reaching /home is not on its own proof of being through onboarding.
+    await expect(page).toHaveURL(/\/home/);
+    await expect(page.getByRole("heading", { name: "How are you using Limbic?" })).toBeVisible();
+    // Options are buttons whose accessible name combines label and description
+    // ("Physical Therapist Licensed clinician" — see lib/user-role.ts's USER_ROLES).
+    // "Physical Therapist" goes straight through; "PT Student" would add a program picker.
     await page.getByRole("button", { name: /Physical Therapist/ }).click();
     await page.getByRole("button", { name: "Continue" }).click();
 
-    await expect(page).toHaveURL(/\/home/);
+    // Past every gate: the real Home, with the app shell around it.
     await expect(page.getByText(/Good (morning|afternoon|evening)/)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "How are you using Limbic?" })).toBeHidden();
   });
 
   test("signing in with the wrong password shows a generic error", async ({ page }) => {

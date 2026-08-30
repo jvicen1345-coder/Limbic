@@ -19,6 +19,17 @@ const STS_NORMS: Record<string, string> = {
 
 const AGE_GROUP_BANDS = Object.keys(STS_NORMS);
 
+/** Card copy for this measure, lifted out of the JSX so the Clinical Reference
+ *  search box can match against it (see lib/reference-search.ts) without the text
+ *  being written twice. Spread straight into CalcCardShell below. */
+export const THIRTY_SECOND_STS_MEASURE = {
+  name: "30 Second Sit to Stand",
+  fullName: "30-Second Chair Stand Test",
+  measures: "Lower extremity strength and fall risk from repetitions completed in 30 seconds.",
+  population: "Older adults",
+  itemCount: "1 item",
+} as const;
+
 /** Maps a raw client age (as entered on a Calculator Profile) to the nearest published
  *  Rikli & Jones 5-year band, clamped to the table's 60-94 range rather than leaving a
  *  younger/older client's age unmatched. */
@@ -55,14 +66,7 @@ export function ThirtySecondStsCalculator() {
 
   return (
     <>
-      <CalcCardShell
-        name="30 Second Sit to Stand"
-        fullName="30-Second Chair Stand Test"
-        measures="Lower extremity strength and fall risk from repetitions completed in 30 seconds."
-        population="Older adults"
-        itemCount="1 item"
-        onOpen={() => setOpen(true)}
-      />
+      <CalcCardShell {...THIRTY_SECOND_STS_MEASURE} onOpen={() => setOpen(true)} />
       <CalcModal
         open={open}
         title="30 Second Sit to Stand"

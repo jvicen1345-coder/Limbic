@@ -1,4 +1,5 @@
 import { ChevronRightIcon } from "@/components/icons";
+import { matchesSearch, searchTerms } from "@/lib/reference-search";
 
 interface DrugClass {
   name: string;
@@ -76,11 +77,32 @@ const DRUG_CLASSES: DrugClass[] = [
   },
 ];
 
-export function MedicationReference() {
+function drugMatches(terms: string[], drug: DrugClass): boolean {
+  return matchesSearch(terms, drug.name, drug.examples, drug.mechanism, drug.relevance, drug.exercise, drug.redFlags);
+}
+
+/** Match count for this tab's label in the Clinical Reference search — see
+ *  countLabValueMatches in LabValuesReference.tsx for the shape and why. Searching a drug
+ *  class matches on its example drug names too, so "warfarin" finds Anticoagulants. */
+export function countMedicationMatches(query: string): number {
+  const terms = searchTerms(query);
+  return DRUG_CLASSES.filter((d) => drugMatches(terms, d)).length;
+}
+
+export function MedicationReference({ query = "" }: { query?: string }) {
+  const terms = searchTerms(query);
+  const filtered = DRUG_CLASSES.filter((d) => drugMatches(terms, d));
+
+  if (filtered.length === 0) return <p className="clinref-empty">No medication classes match this search.</p>;
+
+  // A search narrow enough to leave a handful of classes standing opens them, so the
+  // reader lands on the answer instead of a row of cards they still have to click.
+  const autoExpand = terms.length > 0 && filtered.length <= 3;
+
   return (
     <div className="pro-accordion">
-      {DRUG_CLASSES.map((drug) => (
-        <details className="card elev-sm" key={drug.name}>
+      {filtered.map((drug) => (
+        <details className="card elev-sm" key={drug.name} open={autoExpand}>
           <summary className="pro-accordion-summary">
             <div>{drug.name}</div>
             <ChevronRightIcon size={16} className="pro-accordion-chevron" />

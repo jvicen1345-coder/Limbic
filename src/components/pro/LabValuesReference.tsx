@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { matchesSearch, searchTerms } from "@/lib/reference-search";
 
 interface LabRow {
   name: string;
@@ -51,9 +52,23 @@ const HOLD_GUIDELINES = [
   "Troponin elevated, hold exercise, contact physician",
 ];
 
-export function LabValuesReference() {
+function rowMatches(terms: string[], row: LabRow): boolean {
+  return matchesSearch(terms, row.name, row.abbrev, row.range, row.relevance, row.exercise, row.hold, row.tags);
+}
+
+/** How many lab values the Clinical Reference search box would turn up — used for the match
+ *  count on this tab's label (see ClinicalReferenceTabs.tsx), so a reader searching from
+ *  another tab can see there's something here without switching first. Ignores the category
+ *  chips, which are this component's own local state. */
+export function countLabValueMatches(query: string): number {
+  const terms = searchTerms(query);
+  return ROWS.filter((r) => rowMatches(terms, r)).length;
+}
+
+export function LabValuesReference({ query = "" }: { query?: string }) {
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("All");
-  const filtered = category === "All" ? ROWS : ROWS.filter((r) => r.tags.includes(category));
+  const terms = searchTerms(query);
+  const filtered = ROWS.filter((r) => (category === "All" || r.tags.includes(category)) && rowMatches(terms, r));
 
   return (
     <>
@@ -65,32 +80,36 @@ export function LabValuesReference() {
           </button>
         ))}
       </div>
-      <div className="pro-table-wrap">
-        <table className="pro-table">
-          <thead>
-            <tr>
-              <th>Lab Value</th>
-              <th>Abbrev</th>
-              <th>Normal Range</th>
-              <th>PT Relevance</th>
-              <th>Exercise Implications</th>
-              <th>When to Hold Exercise</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((row) => (
-              <tr key={row.name}>
-                <td>{row.name}</td>
-                <td>{row.abbrev}</td>
-                <td>{row.range}</td>
-                <td>{row.relevance}</td>
-                <td>{row.exercise}</td>
-                <td className={row.hold ? "pro-table-hold" : undefined}>{row.hold ?? "—"}</td>
+      {filtered.length > 0 ? (
+        <div className="pro-table-wrap">
+          <table className="pro-table">
+            <thead>
+              <tr>
+                <th>Lab Value</th>
+                <th>Abbrev</th>
+                <th>Normal Range</th>
+                <th>PT Relevance</th>
+                <th>Exercise Implications</th>
+                <th>When to Hold Exercise</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {filtered.map((row) => (
+                <tr key={row.name}>
+                  <td>{row.name}</td>
+                  <td>{row.abbrev}</td>
+                  <td>{row.range}</td>
+                  <td>{row.relevance}</td>
+                  <td>{row.exercise}</td>
+                  <td className={row.hold ? "pro-table-hold" : undefined}>{row.hold ?? "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="clinref-empty">No lab values match this search.</p>
+      )}
 
       <div className="card elev-sm" style={{ marginTop: 16 }}>
         <div className="card-kicker">Exercise hold guidelines</div>

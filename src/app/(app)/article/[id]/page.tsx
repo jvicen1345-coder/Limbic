@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getCurrentUser, isAdminEmail } from "@/lib/session";
+import { getCurrentUser, isAdminEmail, hasClinicalReferenceAccess } from "@/lib/session";
 import { buildArticleView } from "@/lib/article-view";
 import { ArticleThreadsSplitView } from "@/components/ArticleThreadsSplitView";
 
@@ -12,5 +12,5 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
   const view = await buildArticleView(id, user.id, isAdmin);
   if (!view) notFound();
 
-  return <ArticleThreadsSplitView initialView={view} isPro={user.isPro} />;
+  return <ArticleThreadsSplitView initialView={view} isPro={user.isPro} hasResearchAccess={hasClinicalReferenceAccess(user)} />;
 }
