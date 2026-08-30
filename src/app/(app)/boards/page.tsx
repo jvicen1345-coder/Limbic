@@ -48,12 +48,11 @@ export default async function BoardsHubPage() {
           <GraduationCapIcon size={22} style={{ color: "var(--color-accent)" }} />
           <h1 style={{ fontSize: 24, margin: 0 }}>Limbic Boards</h1>
         </div>
-        <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
-          Limbic Boards&rsquo; NPTE prep tools are available to PT students and licensed clinicians. Everyone can still play
-          today&rsquo;s clinical games below.
-        </p>
-        <h2 style={{ fontSize: 19, margin: "0 0 12px" }}>Daily Games</h2>
+        <h2 style={{ fontSize: 19, margin: "16px 0 12px" }}>Daily Games</h2>
         <DailyGamesSection />
+        <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "20px 0 0" }}>
+          Limbic Boards&rsquo; NPTE prep tools are available to PT students and licensed clinicians.
+        </p>
       </div>
     );
   }
@@ -68,7 +67,9 @@ export default async function BoardsHubPage() {
     return (
       <div className="screen-pad boards-question-pad page-enter" style={{ maxWidth: 760, margin: "0 auto" }}>
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Question of the Day</h1>
-        <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
+        <h2 style={{ fontSize: 19, margin: "16px 0 12px" }}>Daily Games</h2>
+        <DailyGamesSection />
+        <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "24px 0 16px" }}>
           A board-style question for clinicians to keep sharp on, the rest of Limbic Boards is a student product.
         </p>
         <BoardQuestionCard
@@ -78,8 +79,6 @@ export default async function BoardsHubPage() {
           initialElapsedSeconds={questionCompletion?.elapsedSeconds ?? null}
           nexusOptIn={user.nexusOptIn}
         />
-        <h2 style={{ fontSize: 19, margin: "28px 0 12px" }}>Daily Games</h2>
-        <DailyGamesSection />
       </div>
     );
   }
@@ -91,12 +90,12 @@ export default async function BoardsHubPage() {
           <GraduationCapIcon size={22} style={{ color: "var(--color-accent)" }} />
           <h1 style={{ fontSize: 24, margin: 0 }}>Limbic Boards</h1>
         </div>
-        <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
+        <h2 style={{ fontSize: 19, margin: "16px 0 12px" }}>Daily Games</h2>
+        <DailyGamesSection />
+        <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "24px 0 16px" }}>
           Your NPTE prep hub, a board-style question and a term to lock in every day, building toward exam day.
         </p>
         <LimbicStudentGate toolName="Limbic Boards" />
-        <h2 style={{ fontSize: 19, margin: "28px 0 12px" }}>Daily Games</h2>
-        <DailyGamesSection />
       </div>
     );
   }
@@ -135,7 +134,10 @@ export default async function BoardsHubPage() {
           {user.boardsStreakDays > 0 ? `${user.boardsStreakDays} day${user.boardsStreakDays === 1 ? "" : "s"} streak` : "No streak yet"}
         </div>
       </div>
-      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
+      <h2 style={{ fontSize: 19, margin: "16px 0 12px" }}>Daily Games</h2>
+      <DailyGamesSection />
+
+      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "24px 0 16px" }}>
         Your NPTE prep hub, a board-style question and a term to lock in every day, building toward exam day.
       </p>
 
@@ -151,9 +153,6 @@ export default async function BoardsHubPage() {
         longestStreak={longestStreak}
         weekDays={weekDays}
       />
-
-      <h2 style={{ fontSize: 19, margin: "28px 0 12px" }}>Daily Games</h2>
-      <DailyGamesSection />
     </div>
   );
 }

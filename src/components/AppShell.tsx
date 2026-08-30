@@ -346,9 +346,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
               <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Clinical Reference" bold={false} onNavigate={onNavigate} />
             )}
             <NavLink href="/student/resources" icon={<ListIcon />} label="NPTE Resources" bold={false} onNavigate={onNavigate} />
-            {isStudent && (
-              <NavLink href="/student/syllabi" icon={<FileTextIcon />} label="My Syllabi" bold={false} onNavigate={onNavigate} />
-            )}
           </>
         )}
       </>
@@ -377,9 +374,12 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
             {(isPro || isStudent) && (
               <>
-                <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Clinical Calculators" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Decision Rules" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/pro/red-flags" icon={<AlertCircleIcon />} label="Red Flag Screening" bold={false} onNavigate={onNavigate} />
+                <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Outcome Measures" bold={false} onNavigate={onNavigate} />
+                {/* Decision Rules and Red Flag Screening used to be two separate sidebar rows/
+                    routes — merged into one link since /pro/decision-rules itself already
+                    hosts both as tabs (see components/pro/ScreeningDecisionTabs.tsx) and
+                    /pro/red-flags is now just a redirect there. */}
+                <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Screening & Decision Support" bold={false} onNavigate={onNavigate} />
                 <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" bold={false} onNavigate={onNavigate} />
                 <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
                 <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />

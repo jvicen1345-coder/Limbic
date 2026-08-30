@@ -23,7 +23,7 @@ const TRIMESTER_RECOMMENDATIONS: Record<number, PlatformRecommendation[]> = {
     { title: "MSK Specialty Track", description: "Orthopedic conditions and special tests", route: "/student/specialties/musculoskeletal", priority: "high" },
     { title: "Special Tests Library", description: "Sensitivity and specificity values", route: "/pro/special-tests", priority: "high" },
     { title: "Daily Boards Sharpening", description: "Orthopedic content is heavily tested", route: "/boards", priority: "high" },
-    { title: "Clinical Calculators", description: "Outcome measures for examination", route: "/pro/calculators", priority: "medium" },
+    { title: "Outcome Measures", description: "Outcome measures for examination", route: "/pro/calculators", priority: "medium" },
     { title: "Limbic Atlas", description: "Neurological anatomy foundations", route: "/atlas", priority: "medium" },
   ],
   3: [
@@ -42,7 +42,7 @@ const TRIMESTER_RECOMMENDATIONS: Record<number, PlatformRecommendation[]> = {
   ],
   5: [
     { title: "Limbic Agent", description: "Clinical decision support for rotation", route: "/agent", priority: "high" },
-    { title: "Clinical Calculators", description: "Outcome measures for your patients", route: "/pro/calculators", priority: "high" },
+    { title: "Outcome Measures", description: "Outcome measures for your patients", route: "/pro/calculators", priority: "high" },
     { title: "SOAP Note Practice", description: "Documentation skills for rotation", route: "/student/soap", priority: "high" },
     { title: "Red Flag Screening", description: "Essential for clinical reasoning", route: "/pro/red-flags", priority: "high" },
     { title: "Force Lab", description: "Track patient strength data", route: "/pro/force-lab", priority: "medium" },
@@ -56,7 +56,7 @@ const TRIMESTER_RECOMMENDATIONS: Record<number, PlatformRecommendation[]> = {
   ],
   7: [
     { title: "Limbic Agent", description: "Clinical decision support for rotation 2", route: "/agent", priority: "high" },
-    { title: "Clinical Calculators", description: "Outcome measures for your patients", route: "/pro/calculators", priority: "high" },
+    { title: "Outcome Measures", description: "Outcome measures for your patients", route: "/pro/calculators", priority: "high" },
     { title: "Force Lab", description: "Dynamometer data for your caseload", route: "/pro/force-lab", priority: "high" },
     { title: "Decision Rules", description: "Clinical decision support", route: "/pro/decision-rules", priority: "medium" },
     { title: "SOAP Note Practice", description: "Refine documentation on rotation", route: "/student/soap", priority: "medium" },

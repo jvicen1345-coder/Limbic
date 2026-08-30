@@ -53,15 +53,11 @@ export function AtriumThisWeekCard({
   assignments,
   hasSyllabi,
   recommendations,
-  npteDays,
-  npteProgressPercent,
 }: {
   weekLabel: string;
   assignments: ThisWeekAssignment[];
   hasSyllabi: boolean;
   recommendations: PlatformRecommendation[];
-  npteDays: number | null;
-  npteProgressPercent: number | null;
 }) {
   const [rows, setRows] = useState(assignments);
   const [, startTransition] = useTransition();
@@ -148,27 +144,6 @@ export function AtriumThisWeekCard({
           <button type="button" className="atrium-week-recs-toggle" onClick={() => setShowAllRecs((v) => !v)}>
             {showAllRecs ? "Show fewer" : "See all recommendations"}
           </button>
-        )}
-      </div>
-
-      <div className="atrium-npte-countdown">
-        <p className="atrium-npte-countdown-label">NPTE Countdown</p>
-        {npteDays !== null && npteDays >= 0 ? (
-          <>
-            <p className={`atrium-npte-countdown-number atrium-npte-countdown-number--${npteDays > 180 ? "green" : npteDays >= 60 ? "amber" : "red"}`}>
-              {npteDays}
-            </p>
-            <p className="atrium-npte-countdown-sub">days until boards</p>
-            {npteProgressPercent !== null && (
-              <div className="atrium-npte-progress-track">
-                <div className="atrium-npte-progress-fill" style={{ width: `${npteProgressPercent}%` }} />
-              </div>
-            )}
-          </>
-        ) : (
-          <p className="atrium-npte-countdown-empty">
-            Set your NPTE exam date in <Link href="/profile#program-timeline">Profile Settings</Link>
-          </p>
         )}
       </div>
     </aside>

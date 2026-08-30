@@ -4786,28 +4786,6 @@ html[data-theme="dark"] .app-root--atrium {
 .atrium-break-card-title { font-size: 14px; font-weight: 700; margin: 0; }
 .atrium-break-card-subtitle { font-size: 12px; color: var(--color-neutral-700); margin: 4px 0 0; }
 
-/* NPTE Countdown — a second, smaller countdown card stacked below the This Week card's own
-   sections (see .atrium-week-panel, components/AtriumThisWeekCard.tsx), distinct from the
-   larger header one above which stays as-is. */
-.atrium-npte-countdown { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--atrium-border); }
-.atrium-npte-countdown-label {
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-neutral-700);
-  margin: 0 0 4px;
-}
-.atrium-npte-countdown-number { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 30px; line-height: 1.1; margin: 0; }
-.atrium-npte-countdown-number--green { color: var(--color-success); }
-.atrium-npte-countdown-number--amber { color: var(--color-warn); }
-.atrium-npte-countdown-number--red { color: var(--color-danger); }
-.atrium-npte-countdown-sub { font-size: 12px; color: var(--color-neutral-700); margin: 0; }
-.atrium-npte-countdown-empty { font-size: 12px; color: var(--color-neutral-700); margin: 0; }
-.atrium-npte-countdown-empty a { color: var(--color-accent); font-weight: 600; text-decoration: none; }
-.atrium-npte-countdown-empty a:hover { text-decoration: underline; }
-.atrium-npte-progress-track { height: 4px; background: var(--atrium-border); border-radius: 2px; overflow: hidden; margin-top: 10px; }
-.atrium-npte-progress-fill { height: 100%; background: var(--color-accent); border-radius: 2px; }
-
 .atrium-greeting-card {
   display: flex;
   flex-direction: column;
@@ -5020,17 +4998,17 @@ html[data-theme="dark"] .app-root--atrium {
 }
 .atrium-week-recs-toggle:hover { text-decoration: underline; }
 
-/* Dashboard redesign — three zones below the (unchanged) greeting header: a streak+roundup
-   row, one unmissable primary action, then three plain supporting-resource cards. Named
-   grid areas (not DOM order) drive the different visual order mobile needs — the primary
-   action moves to the very top there — so the same 4 zone children work at both
+/* Dashboard redesign — two zones below the (unchanged) greeting header: a streak+roundup
+   row (the streak card now includes the Daily Clinical Sharpening CTA itself — see
+   .atrium-progress-cta in AtriumProgressChart.tsx — rather than a separate full-width
+   primary zone), then the supporting-resource cards. Named grid areas (not DOM order)
+   drive the different visual order mobile needs, so the same zone children work at both
    breakpoints without duplicating any markup. */
 .atrium-v2-grid {
   display: grid;
   grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
   grid-template-areas:
     "streak roundup"
-    "primary primary"
     "cards cards";
   gap: 20px;
   align-items: start;
@@ -5038,14 +5016,12 @@ html[data-theme="dark"] .app-root--atrium {
 }
 .atrium-zone-streak { grid-area: streak; min-width: 0; }
 .atrium-zone-roundup { grid-area: roundup; }
-.atrium-zone-primary { grid-area: primary; }
 .atrium-zone-cards { grid-area: cards; }
 
 @media (max-width: 799px) {
   .atrium-v2-grid {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
-      "primary"
       "streak"
       "roundup"
       "cards";
@@ -5061,74 +5037,11 @@ html[data-theme="dark"] .app-root--atrium {
   color: var(--color-neutral-700);
 }
 
-/* Primary action — the one element on this page with a brand-blue accent; everything
-   else here is neutral. Deliberately much larger than the supporting cards below it. */
-.atrium-primary-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 8px;
-  padding: 40px 32px;
-  border-radius: calc(var(--radius-lg) * 1.15);
-  background: var(--atrium-surface);
-  border: 2px solid var(--color-accent);
-  text-decoration: none;
-  color: inherit;
-  transition: transform 200ms ease, box-shadow 200ms ease;
-}
-.atrium-primary-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 32px color-mix(in srgb, var(--color-accent) 20%, transparent);
-}
-.atrium-primary-card--done {
-  border-color: var(--color-success);
-  cursor: default;
-}
-.atrium-primary-title {
-  /* --font-body, not --font-heading (Caprasimo) — this heading reads as body copy at this
-     size, not a display headline. Font family only: weight/size/color unchanged. */
-  font-family: var(--font-body);
-  font-weight: var(--font-heading-weight);
-  font-size: 22px;
-  margin: 0;
-}
-.atrium-primary-subtitle {
-  font-size: 14px;
-  color: var(--color-neutral-700);
-  max-width: 480px;
-  margin: 0;
-  line-height: 1.6;
-}
-.atrium-primary-cta {
-  margin-top: 12px;
-  font-size: 15px;
-  padding: 14px 34px;
-}
-.atrium-primary-done-title {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 22px;
-  color: var(--color-success);
-  margin: 0;
-}
-.atrium-primary-done-muted {
-  font-size: 13px;
-  color: var(--color-neutral-700);
-  margin: 2px 0 0;
-}
-
-/* Resource grid — eight equal-weight cards (plain text, no icons) below the primary
-   action: every other study tool on this page gets one, not just the three that used to
-   fit in a single row. Grid area/spacing lives here on the .atrium-resource-grid wrapper,
-   not on .atrium-zone-cards (that class only ever sets grid-area: cards, same as every
-   other .atrium-zone-* — see .atrium-v2-grid above), so this can carry its own explicit
-   margin-top independent of that grid's own 20px area gap. Card 1 (Daily Sharpening)
-   duplicates the primary action above it on purpose — same reasoning .atrium-primary-card
-   already established for "one brand-blue accent, everything else neutral": it's the one
-   card here that gets that treatment (a left border, not the full border), still the
-   fastest way back to today's streak-keeping action for a reader who's scrolled past the
-   big card, without the other seven competing for the same visual weight. */
+/* Resource grid — supporting-tool cards below the streak/roundup row. Grid area/spacing
+   lives here on the .atrium-resource-grid wrapper, not on .atrium-zone-cards (that class
+   only ever sets grid-area: cards, same as every other .atrium-zone-* — see .atrium-v2-grid
+   above), so this can carry its own explicit margin-top independent of that grid's own
+   20px area gap. */
 .atrium-resource-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -5154,6 +5067,19 @@ html[data-theme="dark"] .app-root--atrium {
 }
 .atrium-resource-card:hover { border-color: color-mix(in srgb, var(--color-accent) 40%, transparent); }
 .atrium-resource-card--primary { border-left: 3px solid var(--color-accent); }
+/* One symbol per card, in a tinted circle above the title — a quick visual anchor for
+   scanning the grid instead of reading every title. */
+.atrium-resource-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  color: var(--color-accent);
+}
 .atrium-resource-title { font-size: 14px; font-weight: 700; color: var(--color-text); margin: 0 0 6px; }
 .atrium-resource-desc { font-size: 13px; color: var(--color-neutral-700); margin: 0; line-height: 1.5; }
 /* A plain arrow glyph, not an icon component — matches the spec's own "text only is clean
@@ -5178,14 +5104,18 @@ html[data-theme="dark"] .app-root--atrium {
    .progress-bar-fill classes the NPTE Breakdown tab's system-weight bars already use. */
 .atrium-progress-card {
   display: flex;
-  align-items: center;
-  gap: 24px;
+  flex-direction: column;
   padding: 22px 24px;
   margin-bottom: 20px;
   border-radius: calc(var(--radius-lg) * 1.15);
   background: var(--atrium-surface);
   border: 1px solid var(--atrium-border);
 }
+/* The ring + per-domain breakdown row — was the entirety of .atrium-progress-card's own
+   layout before the Daily Clinical Sharpening CTA below folded into this same card (see
+   AtriumProgressChart.tsx's own doc comment); split out so the CTA can sit as a second row
+   underneath instead of squeezing into the same flex row as a third item. */
+.atrium-progress-top { display: flex; align-items: center; gap: 24px; }
 .atrium-progress-ring-wrap { position: relative; flex-shrink: 0; width: 100px; height: 100px; }
 .atrium-progress-ring-center {
   position: absolute;
@@ -5230,9 +5160,26 @@ html[data-theme="dark"] .app-root--atrium {
 .atrium-progress-domain-bar { flex: 1; min-width: 0; }
 .atrium-progress-domain-frac { font-size: 11.5px; color: var(--color-neutral-700); width: 46px; flex-shrink: 0; text-align: right; }
 .atrium-progress-domain-arrow { flex-shrink: 0; color: var(--color-neutral-500); }
+.atrium-progress-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--atrium-border);
+}
+.atrium-progress-cta-title { font-family: var(--font-body); font-weight: 700; font-size: 15px; margin: 0 0 2px; }
+.atrium-progress-cta-desc { font-size: 12.5px; color: var(--color-neutral-700); margin: 0; line-height: 1.4; }
+.atrium-progress-cta-btn { flex-shrink: 0; font-size: 13.5px; padding: 10px 20px; white-space: nowrap; }
+
 @media (max-width: 799px) {
-  .atrium-progress-card { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .atrium-progress-top { flex-direction: column; align-items: flex-start; gap: 16px; }
   .atrium-progress-domain-name { width: auto; flex: 1; }
+}
+@media (max-width: 480px) {
+  .atrium-progress-cta { flex-direction: column; align-items: stretch; }
+  .atrium-progress-cta-btn { width: 100%; text-align: center; }
 }
 
 .atrium-back-link {
