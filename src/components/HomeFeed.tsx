@@ -45,6 +45,17 @@ const MIN_HOME_CARDS = 7;
 // see gridTarget below.
 const GRID_SIZE = MIN_HOME_CARDS - 1;
 
+// The Research tab specifically gets a taller grid than every other tab — PubMed's fetch
+// (up to 30 fresh articles/hour, see lib/pubmed.ts DEFAULT_LIMIT) comfortably supports more
+// than MIN_HOME_CARDS, and "not enough research on Home" is a real, distinct complaint from
+// readers who'd already noticed Refresh existed. Every other tab (All/guidelines/industry/
+// ce/product) stays at the original, tighter default on purpose — Guidelines only has 8 real
+// CPGs total, ever, and CE & Events has no live source at all, so a bigger floor there would
+// just mean more "Nothing with a picture in this category yet" instead of more real content.
+// gridArticles below already shows fewer than its target rather than ever repeating a
+// picture, so this is a safe ceiling to raise — a thin batch just falls short of it.
+const RESEARCH_GRID_SIZE = 14;
+
 // The hero is the single most prominent thing on Home, so it's held to a tighter bar than
 // the grid below it: only genuinely medical sources — PubMed research and the curated AOPT
 // clinical practice guidelines (see lib/orthopt-cpg-static.ts) — never Google-News-sourced
@@ -233,8 +244,9 @@ export function HomeFeed({
   // Normally GRID_SIZE (1 hero + 6 grid = MIN_HOME_CARDS) — but if heroPool came up empty
   // (nothing eligible this batch — see HERO_ELIGIBLE_TYPES above), the hero block doesn't
   // render at all, so the grid grows to fill the gap itself rather than leaving the reader
-  // at 6 cards instead of the guaranteed minimum.
-  const gridTarget = heroPool.length > 0 ? GRID_SIZE : MIN_HOME_CARDS;
+  // at 6 cards instead of the guaranteed minimum. The Research tab always targets the taller
+  // RESEARCH_GRID_SIZE instead, hero or not — see that constant's own comment.
+  const gridTarget = filter === "research" ? RESEARCH_GRID_SIZE : heroPool.length > 0 ? GRID_SIZE : MIN_HOME_CARDS;
 
   // The grid's cards must have mutually distinct pictures — and distinct from every picture
   // the hero could be showing (see heroImages below) — walking in rank order and keeping the
