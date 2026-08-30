@@ -101,6 +101,69 @@ export async function updateProfessionalDates(field: ProfessionalDateField, valu
   revalidatePath("/", "layout");
 }
 
+export interface ProgramTimelineInput {
+  dptProgramStart: string;
+  dptGraduation: string;
+  npteExamDate: string;
+  rotation1Site: string;
+  rotation1City: string;
+  rotation1Setting: string;
+  rotation1Start: string;
+  rotation1End: string;
+  rotation1Supervisor: string;
+  rotation2Site: string;
+  rotation2City: string;
+  rotation2Setting: string;
+  rotation2Start: string;
+  rotation2End: string;
+  rotation2Supervisor: string;
+  rotation3Site: string;
+  rotation3City: string;
+  rotation3Setting: string;
+  rotation3Start: string;
+  rotation3End: string;
+  rotation3Supervisor: string;
+}
+
+/** One batch save for the whole Profile "Program Timeline" section (components/
+ *  ProgramTimelineSection.tsx) rather than per-field auto-save like updateProfessionalDates
+ *  above — that section has its own explicit Save button. Every string field empties to
+ *  null on "", same "clearing means unset" convention as the rest of this file; npteExamDate
+ *  is the one DateTime field in the mix (it's the same column ProfessionalDatesForm already
+ *  edits at /profile/credentials), so it alone gets the date-string-to-Date parse. */
+export async function updateProgramTimelineAction(data: ProgramTimelineInput) {
+  const user = await getCurrentUser();
+  if (!user) return;
+  const s = (v: string) => v || null;
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      dptProgramStart: s(data.dptProgramStart),
+      dptGraduation: s(data.dptGraduation),
+      npteExamDate: data.npteExamDate ? new Date(`${data.npteExamDate}T00:00:00`) : null,
+      rotation1Site: s(data.rotation1Site),
+      rotation1City: s(data.rotation1City),
+      rotation1Setting: s(data.rotation1Setting),
+      rotation1Start: s(data.rotation1Start),
+      rotation1End: s(data.rotation1End),
+      rotation1Supervisor: s(data.rotation1Supervisor),
+      rotation2Site: s(data.rotation2Site),
+      rotation2City: s(data.rotation2City),
+      rotation2Setting: s(data.rotation2Setting),
+      rotation2Start: s(data.rotation2Start),
+      rotation2End: s(data.rotation2End),
+      rotation2Supervisor: s(data.rotation2Supervisor),
+      rotation3Site: s(data.rotation3Site),
+      rotation3City: s(data.rotation3City),
+      rotation3Setting: s(data.rotation3Setting),
+      rotation3Start: s(data.rotation3Start),
+      rotation3End: s(data.rotation3End),
+      rotation3Supervisor: s(data.rotation3Supervisor),
+    },
+  });
+  revalidatePath("/", "layout");
+}
+
 /** Permanently deletes the signed-in reader's account and everything that cascades off it
  *  in schema.prisma — saved articles/wellness/clips, reading and games/boards history,
  *  HEP programs, calendar events, vitals, Nexus posts/likes/comments/connections/messages.

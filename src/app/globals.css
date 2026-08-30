@@ -4830,6 +4830,79 @@ html[data-theme="dark"] .app-root--atrium {
 .atrium-countdown-prompt a { color: var(--atrium-tint); font-weight: 600; text-decoration: none; }
 .atrium-countdown-prompt a:hover { text-decoration: underline; }
 
+/* Program timeline header additions (see lib/dpt-program.ts, app/(app)/student/page.tsx) —
+   sits between the phase label and the existing NPTE countdown/prompt above. */
+.atrium-program-progress { display: flex; align-items: center; gap: 10px; margin: -8px 0 16px; }
+.atrium-program-progress-track {
+  flex: 1;
+  max-width: 200px;
+  height: 4px;
+  background: var(--atrium-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.atrium-program-progress-fill { height: 100%; background: var(--color-accent); border-radius: 2px; transition: width 0.5s ease; }
+.atrium-program-progress-label { font-size: 12px; color: var(--color-neutral-700); }
+
+/* Clinical rotation banner — shown below the header, above the streak/roundup grid, only
+   while phase.type === "clinical" (see student/page.tsx). Two-column layout matching the
+   spec's "Left: rotation identity, Right: week progress" split. */
+.atrium-rotation-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+}
+.atrium-rotation-banner-title { font-size: 14px; font-weight: 700; margin: 0 0 2px; }
+.atrium-rotation-banner-site { font-size: 13px; color: var(--color-neutral-700); margin: 0; }
+.atrium-rotation-banner-setting { font-size: 12px; color: var(--color-neutral-700); margin: 2px 0 0; }
+.atrium-rotation-banner-link { font-size: 13px; color: var(--color-accent); font-weight: 600; text-decoration: none; }
+.atrium-rotation-banner-link:hover { text-decoration: underline; }
+.atrium-rotation-banner-progress { text-align: right; min-width: 140px; }
+.atrium-rotation-banner-week { font-size: 13.5px; font-weight: 700; margin: 0; }
+.atrium-rotation-banner-remaining { font-size: 12px; color: var(--color-neutral-700); margin: 2px 0 6px; }
+.atrium-rotation-banner-bar-track { height: 4px; background: var(--atrium-border); border-radius: 2px; overflow: hidden; }
+.atrium-rotation-banner-bar-fill { height: 100%; background: var(--color-accent); border-radius: 2px; }
+@media (max-width: 640px) {
+  .atrium-rotation-banner { flex-direction: column; align-items: flex-start; }
+  .atrium-rotation-banner-progress { text-align: left; width: 100%; }
+}
+
+/* Break-between-trimesters transition card — sits above whichever resource grid renders
+   (see cardGridType in student/page.tsx), full width across the cards zone. */
+.atrium-break-card {
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+.atrium-break-card-title { font-size: 14px; font-weight: 700; margin: 0; }
+.atrium-break-card-subtitle { font-size: 12px; color: var(--color-neutral-700); margin: 4px 0 0; }
+
+/* NPTE Countdown — a second, smaller countdown card stacked below the Weekly Roundup panel
+   (see .atrium-roundup-panel), distinct from the larger header one above which stays as-is. */
+.atrium-npte-countdown { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--atrium-border); }
+.atrium-npte-countdown-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin: 0 0 4px;
+}
+.atrium-npte-countdown-number { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 30px; line-height: 1.1; margin: 0; }
+.atrium-npte-countdown-number--green { color: var(--color-success); }
+.atrium-npte-countdown-number--amber { color: var(--color-warn); }
+.atrium-npte-countdown-number--red { color: var(--color-danger); }
+.atrium-npte-countdown-sub { font-size: 12px; color: var(--color-neutral-700); margin: 0; }
+.atrium-npte-countdown-link { font-size: 13px; color: var(--color-accent); font-weight: 600; text-decoration: none; }
+.atrium-npte-countdown-link:hover { text-decoration: underline; }
+
 .atrium-greeting-card {
   display: flex;
   flex-direction: column;
@@ -7510,6 +7583,25 @@ select.connexion-visit-input { color-scheme: dark; }
 .pro-accordion-chevron { flex-shrink: 0; transition: transform 150ms ease; color: var(--color-accent); }
 details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotate(90deg); }
 .pro-accordion-content { padding-top: 14px; margin-top: 14px; border-top: 1px solid var(--color-divider); display: flex; flex-direction: column; gap: 12px; }
+
+/* Profile's Program Timeline section (components/ProgramTimelineSection.tsx) — the three
+   rotation blocks reuse .pro-accordion-summary/-content/-chevron above for their expand
+   behavior, but get their own lighter box (not .card) since they already sit nested inside
+   the section's own .card — a second full card border per rotation would double up. */
+.program-timeline-academic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 12px; }
+@media (max-width: 640px) {
+  .program-timeline-academic { grid-template-columns: minmax(0, 1fr); }
+}
+.program-timeline-rotation-list { display: flex; flex-direction: column; gap: 10px; }
+.program-timeline-rotation {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+.program-timeline-rotation .pro-accordion-content { grid-template-columns: repeat(2, minmax(0, 1fr)); display: grid; }
+@media (max-width: 640px) {
+  .program-timeline-rotation .pro-accordion-content { grid-template-columns: minmax(0, 1fr); }
+}
 
 /* Checkbox criterion row — Ottawa/Canadian C-Spine/NEXUS/red-flag checklists */
 .pro-check-row { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--color-text); padding: 6px 0; cursor: pointer; }
