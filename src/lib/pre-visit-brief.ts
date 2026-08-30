@@ -56,6 +56,7 @@ export async function generateClinicalBrief(patient: BriefPatientInput): Promise
     const message = await client.messages.create({
       model: MODEL,
       max_tokens: 300,
+      output_config: { effort: "low" },
       system: CLINICAL_SYSTEM_PROMPT,
       messages: [
         {
@@ -91,6 +92,7 @@ export async function generatePatientBrief(patient: BriefPatientInput): Promise<
     const message = await client.messages.create({
       model: MODEL,
       max_tokens: 400,
+      output_config: { effort: "low" },
       system: PATIENT_SYSTEM_PROMPT,
       messages: [
         {
@@ -138,6 +140,7 @@ export async function generateTreatmentIdeas(patient: BriefPatientInput): Promis
     const message = await client.messages.create({
       model: MODEL,
       max_tokens: 400,
+      output_config: { effort: "low" },
       system: TREATMENT_IDEAS_SYSTEM_PROMPT,
       messages: [
         {
@@ -201,6 +204,7 @@ export async function generateDischargeSummary(patient: DischargeSummaryPatientI
     const message = await client.messages.create({
       model: MODEL,
       max_tokens: 500,
+      output_config: { effort: "low" },
       system: DISCHARGE_SUMMARY_SYSTEM_PROMPT,
       messages: [
         {
@@ -269,6 +273,7 @@ export async function generateAssessmentComparison(
     const message = await client.messages.create({
       model: MODEL,
       max_tokens: 400,
+      output_config: { effort: "low" },
       system: COMPARISON_SYSTEM_PROMPT,
       messages: [
         {
@@ -338,6 +343,7 @@ export async function generatePatientStrengthSummary(assessment: PatientStrength
     const message = await client.messages.create({
       model: MODEL,
       max_tokens: 300,
+      output_config: { effort: "low" },
       system: PATIENT_STRENGTH_SUMMARY_SYSTEM_PROMPT,
       messages: [
         {

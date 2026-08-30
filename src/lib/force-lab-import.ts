@@ -47,6 +47,7 @@ export async function parseForceLabScreenshot(imageBase64: string, mediaType: st
     const message = await client.messages.create({
       model: MODEL,
       max_tokens: 500,
+      output_config: { effort: "low" },
       messages: [
         {
           role: "user",
