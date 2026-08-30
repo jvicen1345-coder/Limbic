@@ -62,10 +62,26 @@ Volatile — update or ignore once these land.
 
 | Branch | Scope | Owns |
 |---|---|---|
-| `claude/limbic-movement-lab-bank-*` | Movement lab exercise bank | `src/lib/*exercises*.ts`, new data files |
-| `boards-research-stats-redesign` | Boards Research & Stats tab | `BoardsTabs.tsx`, `boards/`, `dashboard-research`, appended `.boards-*` CSS |
 | `claude/mobile-ux-review-*` | Mobile UX pass | `@media (max-width: …)` blocks only |
 | `claude/desktop-visual-review-*` | Desktop visual pass | base rules + `@media (min-width: …)` only |
 
-Merge order: movement lab → boards → mobile → desktop. The two CSS passes are the pair
-most likely to conflict; land them one at a time, and rebase the second on the first.
+Merge order: mobile → desktop. The two CSS passes are the pair most likely to conflict;
+land them one at a time, and rebase the second on the first. Neither has a branch on the
+remote as of 2026-08-30 — per rule 2 above, an unpushed branch is invisible, so treat
+these two rows as reservations rather than as work you can go read.
+
+### Recently landed (2026-08-30)
+
+- **Movement lab exercise bank** — PR #324 (and #323). Row removed.
+- **Boards Research & Stats tab** — PR #320. Row removed.
+- **Clinical Reference width + search** — PR #325, from `claude/desktop-borders-search-*`.
+  Landed ahead of the mobile and desktop passes above, which the merge order didn't
+  anticipate. It should not get in their way: everything it added to `globals.css` is one
+  appended `.clinref-*` block at the very end of the file, and it touched no `max-width`
+  media query and no existing rule. Two things to know:
+  - Append **after** that block, not before it, and don't fold it into a desktop pass —
+    the page it styles (`/pro/lab-values`) sets its own width and column counts there.
+  - It also edited `components/pro/ClinicalReferenceTabs.tsx`, the six reference
+    components under `components/pro/`, the 12 calculators, and the decision-rule/red-flag
+    cards (each now exports its card copy, and the accordion shells take an optional
+    `open`). A session working those files should rebase before starting.

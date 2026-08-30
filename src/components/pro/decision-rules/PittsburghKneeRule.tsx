@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { RuleAccordion } from "./RuleAccordion";
 
-export function PittsburghKneeRule() {
+export function PittsburghKneeRule({ open }: { open?: boolean }) {
   const [mechanism, setMechanism] = useState(false);
   const [ageCriterion, setAgeCriterion] = useState(false);
   const [unableToBearWeight, setUnableToBearWeight] = useState(false);
@@ -11,7 +11,7 @@ export function PittsburghKneeRule() {
   const indicated = mechanism && (ageCriterion || unableToBearWeight);
 
   return (
-    <RuleAccordion title="Pittsburgh Knee Rules" summary="Knee fracture screening, alternative to Ottawa">
+    <RuleAccordion title="Pittsburgh Knee Rules" summary="Knee fracture screening, alternative to Ottawa" open={open}>
       <label className="pro-check-row">
         <input type="checkbox" checked={mechanism} onChange={(e) => setMechanism(e.target.checked)} />
         Blunt trauma or fall mechanism

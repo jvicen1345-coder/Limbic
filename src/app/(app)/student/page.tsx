@@ -7,7 +7,8 @@ export const metadata: Metadata = {
   title: "Atrium",
 };
 import { firstName, timeOfDayGreeting } from "@/lib/meta";
-import { questionForDate, todayDateKey } from "@/lib/board-content";
+import { npteDomainOf, todayDateKey } from "@/lib/board-content";
+import { boardQuestionForCompletion } from "@/lib/boards-progress";
 import { getAcceptedConnectionIds } from "@/lib/nexus";
 import { last7DateKeys } from "@/lib/games";
 import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumProgressChart";
@@ -252,11 +253,18 @@ export default async function StudentAtriumPage() {
   for (const domain of Object.keys(DOMAIN_COLORS)) domainStats.set(domain, { correct: 0, total: 0 });
   for (const c of weekCompletions) {
     if (c.selectedIndex == null) continue;
-    const q = questionForDate(c.dateKey);
-    const stat = domainStats.get(q.domain) ?? { correct: 0, total: 0 };
+    // Which question a row was answering is read off the row itself now, not re-derived
+    // from its date: the daily pick is per-reader (see lib/board-content.ts
+    // pickDailyQuestion), so questionForDate() would name the wrong question for anyone
+    // whose pick differed from the global rotation. boardQuestionForCompletion still falls
+    // back to that rotation for rows written before the id was stored.
+    const q = boardQuestionForCompletion(c);
+    if (!q) continue;
+    const domain = npteDomainOf(q);
+    const stat = domainStats.get(domain) ?? { correct: 0, total: 0 };
     stat.total += 1;
     if (c.selectedIndex === q.correctIndex) stat.correct += 1;
-    domainStats.set(q.domain, stat);
+    domainStats.set(domain, stat);
   }
   const domainAccuracy: DomainAccuracy[] = Object.keys(DOMAIN_COLORS).map((domain) => ({
     domain,
