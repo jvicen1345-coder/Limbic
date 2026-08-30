@@ -124,9 +124,13 @@ export function ForceLabPatientReportBody({
           const testedValue = s.rightPeak ?? s.leftPeak;
           const normStatus = normsByMuscleGroup.get(s.muscleGroup);
 
+          // No symmetry score to color-code a unilateral test by — left with the neutral
+          // border every card starts from, rather than colored on some rows and not others.
+          const accentColor = isUnilateral ? "transparent" : plainLSIColor(s.lsi!);
+
           return (
             <div key={s.id}>
-              <div className="pbrief-muscle-card">
+              <div className="pbrief-muscle-card" style={{ borderLeftColor: accentColor }}>
                 <div className="pbrief-muscle-card-name">{plainMuscleGroupName(s.muscleGroup)}</div>
 
                 {isUnilateral ? (
