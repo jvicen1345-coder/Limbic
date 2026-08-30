@@ -92,6 +92,21 @@ function stripHtml(s: string): string {
   return decodeXmlEntities(s.replace(/<[^>]*>/g, " ")).replace(/\s+/g, " ").trim();
 }
 
+/** Some structured abstracts mark section headers with inline <i>/<b>/<u>/<sub>/<sup> tags
+ *  right inside AbstractText's own text (e.g. "<i>Background and Objectives</i>: ...")
+ *  instead of PubMed's other, `Label`-attributed AbstractText-per-section shape. Parsed as
+ *  a normal object, fast-xml-parser splits that mixed content across separate keys — the
+ *  tagged label text lands under its tag name (e.g. `i`), the surrounding text under
+ *  `#text` — and xmlNodeText only ever reads `#text`, so the label silently vanishes while
+ *  the ": " that followed the closing tag survives. Stripped from the raw XML before
+ *  parsing (not worked around after), so the whole thing collapses into one plain-text
+ *  node every reader of the parsed tree already handles correctly. These five tag names
+ *  are only ever used as inline text formatting in PubMed XML, never as structural element
+ *  names, so this is safe to apply document-wide. */
+function stripInlineFormattingTags(xml: string): string {
+  return xml.replace(/<\/?(?:i|b|u|sub|sup)>/g, "");
+}
+
 function estimateReadMins(text: string): number {
   const words = text.split(/\s+/).filter(Boolean).length;
   return Math.max(2, Math.round(words / 200) || 2);
@@ -149,7 +164,7 @@ interface PubmedMeta {
 function extractPubmedMeta(efetchXml: string): Map<string, PubmedMeta> {
   const meta = new Map<string, PubmedMeta>();
   try {
-    const parsed = xmlParser.parse(efetchXml);
+    const parsed = xmlParser.parse(stripInlineFormattingTags(efetchXml));
     const articlesRaw = parsed?.PubmedArticleSet?.PubmedArticle;
     const articles = Array.isArray(articlesRaw) ? articlesRaw : articlesRaw ? [articlesRaw] : [];
     for (const art of articles) {
