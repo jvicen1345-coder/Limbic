@@ -15,6 +15,7 @@ export const TUG_COGNITIVE_MEASURE = {
   measures: "Fall risk under divided attention, comparing standard TUG to a dual-task TUG.",
   population: "Older adults, neurological/cognitive-impairment risk screening",
   itemCount: "2 items",
+  administration: "Clinician-Administered",
 } as const;
 
 /** Fully functional — timing/comparison math (by hand or the two built-in stopwatches, see

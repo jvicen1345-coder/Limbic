@@ -24,6 +24,7 @@ export const TUG_MEASURE = {
   measures: "Functional mobility and fall risk from a single timed sit-to-walk-to-sit trial.",
   population: "Older adults, general mobility/fall-risk screening",
   itemCount: "1 item",
+  administration: "Clinician-Administered",
 } as const;
 
 /** Fully functional — a single timed-seconds input compared against the standard TUG

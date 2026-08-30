@@ -164,6 +164,7 @@ export const BERG_BALANCE_MEASURE = {
   measures: "Static and dynamic balance across 14 functional tasks.",
   population: "Older adults, neurological and balance-impaired patients",
   itemCount: "14 items",
+  administration: "Clinician-Administered",
 } as const;
 
 /** Fully functional — all 14 items, each scored 0-4 against the real published Berg

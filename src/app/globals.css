@@ -10987,3 +10987,44 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   color: var(--color-neutral-700);
   margin: 14px 0 0;
 }
+
+/* Outcome Measures body-region grouping (see app/(app)/pro/calculators/page.tsx) — each
+   .pro-calc-region is a section header + its own .pro-grid-2 of cards, so nothing about the
+   existing .pro-grid-2 / .pro-calc-card rules above needed to change. */
+.pro-calc-region { margin-bottom: 28px; }
+.pro-calc-region:last-child { margin-bottom: 0; }
+.pro-calc-region-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+/* Patient-reported (a PROM the patient fills out) vs clinician-administered (the PT times,
+   counts, or scores it) — the other, independent axis every card shows regardless of which
+   region section it's grouped under (see CalcCardShell in calculators/CalcModal.tsx). */
+.pro-calc-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.pro-calc-admin-badge {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.pro-calc-admin-badge--patient {
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+.pro-calc-admin-badge--clinician {
+  color: #16a34a;
+  background: color-mix(in srgb, #16a34a 14%, transparent);
+}

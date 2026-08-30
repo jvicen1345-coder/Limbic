@@ -18,6 +18,7 @@ export const NPRS_MEASURE = {
   measures: "Patient-reported pain intensity on a single 0-10 scale.",
   population: "Any patient reporting pain",
   itemCount: "1 item",
+  administration: "Patient-Reported",
 } as const;
 
 /** Fully functional — a single 0-10 slider with a real-time band label. */
