@@ -2,8 +2,41 @@
 
 import { redirect } from "next/navigation";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
-import { getStripe, stripeEnabled, priceIdForPlan, getOrCreateStripeCustomerId, type BillablePlan } from "@/lib/stripe";
+import { getStripe, stripeEnabled, priceIdForPlan, planForPriceId, getOrCreateStripeCustomerId, type BillablePlan } from "@/lib/stripe";
 import { appOrigin } from "@/lib/url";
+import type { User } from "@/generated/prisma/client";
+
+const PRO_STUDENT_PLANS = new Set<BillablePlan>(["pro", "limbicStudent"]);
+
+/** LimbicPro and Limbic Student share one `stripeSubscriptionId` column because a reader
+ *  can only be on one of the two at once (see that field's own doc comment in
+ *  schema.prisma) — but nothing enforced that until now. Without this, a Pro subscriber
+ *  with a .edu email (or a Student who later qualifies for Pro) could start a second,
+ *  independent subscription: the webhook would then only ever set the *new* plan's flag,
+ *  leaving the old one (e.g. isPro) stuck true forever, with the old subscription still
+ *  silently billing them — see the webhook's own syncSubscription for the matching
+ *  defense-in-depth fix. Cancels the stale subscription in Stripe *before* creating the new
+ *  checkout, immediately (not at period end, unlike the portal's own cancel button) since
+ *  the reader is actively replacing it, not just stopping payment — so its
+ *  customer.subscription.deleted event fires while the DB's stripeSubscriptionId still
+ *  points at it, letting the webhook's own staleness guard clear the old flag correctly. */
+async function cancelConflictingProStudentSubscription(user: User, plan: BillablePlan) {
+  if (!PRO_STUDENT_PLANS.has(plan) || !user.stripeSubscriptionId) return;
+
+  const stripe = getStripe();
+  try {
+    const existing = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+    const existingPlan = (existing.metadata?.plan as BillablePlan | undefined) ?? planForPriceId(existing.items.data[0]?.price.id);
+    if (existingPlan && existingPlan !== plan && PRO_STUDENT_PLANS.has(existingPlan)) {
+      await stripe.subscriptions.cancel(user.stripeSubscriptionId);
+    }
+  } catch (err) {
+    // Already canceled, already gone, or some other transient Stripe error — none of that
+    // should block starting the new checkout; syncSubscription's own dual-clear is the
+    // remaining safety net if this silently no-ops.
+    console.error("[pro] failed to cancel conflicting subscription before new checkout:", err);
+  }
+}
 
 /** Starts a real Stripe Checkout session for `plan` and redirects the reader there — isPro/
  *  studentTier/isWellnessPlus itself is only ever set afterward, by the webhook confirming
@@ -19,6 +52,8 @@ async function startCheckout(plan: BillablePlan, returnPath: string) {
 
   const priceId = priceIdForPlan(plan);
   if (!priceId) return;
+
+  await cancelConflictingProStudentSubscription(user, plan);
 
   const stripe = getStripe();
   const customerId = await getOrCreateStripeCustomerId(user);
