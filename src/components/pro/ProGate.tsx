@@ -22,7 +22,7 @@ export function ProGate({ toolName }: { toolName: string }) {
       <LockIcon size={22} style={{ color: "var(--color-migration-gold)" }} />
       <div style={{ fontFamily: "var(--font-heading)", fontSize: 18, marginTop: 10 }}>LimbicPRO Required</div>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "8px 0 4px", maxWidth: 380 }}>
-        {toolName} is one of five tools included with LimbicPRO:
+        {toolName} is included with LimbicPRO, along with:
       </p>
       <ul className="pro-locked-list">
         {PRO_INCLUDES.map((item) => (

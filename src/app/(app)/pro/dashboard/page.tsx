@@ -40,7 +40,7 @@ export default async function ClinicianDashboardPage() {
           Your complete clinician dashboard. Patient caseload, outcome tracking, and clinical intelligence in one
           place. Available with LimbicPRO — $15/month.
         </p>
-        <ProGate toolName="the Clinician Dashboard" />
+        <ProGate toolName="The Clinician Dashboard" />
       </div>
     );
   }

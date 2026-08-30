@@ -49,7 +49,9 @@ export default async function BoardsHubPage() {
           <h1 style={{ fontSize: 24, margin: 0 }}>Limbic Boards</h1>
         </div>
         <h2 style={{ fontSize: 19, margin: "16px 0 12px" }}>Daily Games</h2>
-        <DailyGamesSection />
+        <div className="boards-daily-games">
+          <DailyGamesSection />
+        </div>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "20px 0 0" }}>
           Limbic Boards&rsquo; NPTE prep tools are available to PT students and licensed clinicians.
         </p>
@@ -68,7 +70,9 @@ export default async function BoardsHubPage() {
       <div className="screen-pad boards-question-pad page-enter" style={{ maxWidth: 760, margin: "0 auto" }}>
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Question of the Day</h1>
         <h2 style={{ fontSize: 19, margin: "16px 0 12px" }}>Daily Games</h2>
-        <DailyGamesSection />
+        <div className="boards-daily-games">
+          <DailyGamesSection />
+        </div>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "24px 0 16px" }}>
           A board-style question for clinicians to keep sharp on, the rest of Limbic Boards is a student product.
         </p>
@@ -91,7 +95,9 @@ export default async function BoardsHubPage() {
           <h1 style={{ fontSize: 24, margin: 0 }}>Limbic Boards</h1>
         </div>
         <h2 style={{ fontSize: 19, margin: "16px 0 12px" }}>Daily Games</h2>
-        <DailyGamesSection />
+        <div className="boards-daily-games">
+          <DailyGamesSection />
+        </div>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "24px 0 16px" }}>
           Your NPTE prep hub, a board-style question and a term to lock in every day, building toward exam day.
         </p>
@@ -135,7 +141,9 @@ export default async function BoardsHubPage() {
         </div>
       </div>
       <h2 style={{ fontSize: 19, margin: "16px 0 12px" }}>Daily Games</h2>
-      <DailyGamesSection />
+      <div className="boards-daily-games">
+        <DailyGamesSection />
+      </div>
 
       <div style={{ marginTop: 24 }}>
         <BoardsTabs

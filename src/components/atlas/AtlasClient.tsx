@@ -535,11 +535,14 @@ export function AtlasClient({
       </div>
 
       <nav className="atlas-region-nav" aria-label="Body regions">
+        {/* Placeholder kept short enough to fit the region-nav column — the old "Search
+            muscles, conditions, tests..." was wider than the field and rendered clipped at
+            "Search muscles, conditions," a hanging comma that read as a truncation bug. */}
         <div className="atlas-search-bar">
           <input
             type="text"
             className="input atlas-search-input"
-            placeholder="Search muscles, conditions, tests..."
+            placeholder="Search muscles, tests…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             aria-label="Search Limbic Atlas"

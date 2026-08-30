@@ -9,18 +9,6 @@ import type { RehabSequenceResultView, RehabStats } from "@/app/actions/rehab-se
 
 const TOTAL_STEPS = 8;
 
-/** Fisher-Yates — a fresh shuffle every page load, per spec, run once on mount via
- *  useState's lazy initializer rather than in render (which would reshuffle on every
- *  re-render, scrambling the reader's in-progress arrangement). */
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
 function categorySlug(category: string): string {
   return category.toLowerCase();
 }
@@ -32,6 +20,7 @@ export function RehabSequenceGame({
   context,
   interventions,
   rationale,
+  initialSequence,
   initialResult,
   stats,
 }: {
@@ -40,11 +29,19 @@ export function RehabSequenceGame({
   difficulty: RehabSequenceDifficulty;
   context: string;
   interventions: string[];
+  /** The starting arrangement, shuffled once per request on the server (see
+   *  app/(app)/games/rehab-sequence/page.tsx). Shuffling here instead — in a useState lazy
+   *  initializer — ran Math.random() during SSR and again during hydration, which produced
+   *  two different orders for the same markup and threw "Hydration failed because the
+   *  server rendered text didn't match the client", discarding and re-rendering the whole
+   *  tree. Randomizing server-side keeps both passes identical while still giving every
+   *  page load its own fresh order, since this page is dynamic and re-renders per request. */
+  initialSequence: string[];
   rationale: string[];
   initialResult: RehabSequenceResultView | null;
   stats: RehabStats;
 }) {
-  const [sequence, setSequence] = useState<string[]>(() => (initialResult ? initialResult.sequenceGiven : shuffle(interventions)));
+  const [sequence, setSequence] = useState<string[]>(() => (initialResult ? initialResult.sequenceGiven : initialSequence));
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [submission, setSubmission] = useState<{
     score: number;

@@ -5,6 +5,7 @@ import { DeleteHepButton } from "@/components/DeleteHepButton";
 import { sanitizeMediaUrl } from "@/lib/media-url";
 import { ExternalLinkIcon } from "@/components/icons";
 import { getHepTemplatesAction } from "@/app/actions/hep";
+import { LicenseGate } from "@/components/pro/LicenseGate";
 
 export default async function HepPage() {
   const user = await getCurrentUser();
@@ -14,9 +15,10 @@ export default async function HepPage() {
     return (
       <div className="screen-pad">
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Home Exercise Programs</h1>
-        <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>
-          Available to signed-in clinicians only, add your license from your profile to unlock this.
+        <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
+          Build and assign home exercise programs for your patients.
         </p>
+        <LicenseGate toolName="The HEP Builder" />
       </div>
     );
   }

@@ -1152,6 +1152,28 @@ html[data-theme="dark"] .nav-founding-link-active {
      this container, so its height has to subtract both to fill exactly what's left. */
   .clips-feed { height: calc(100dvh - 64px - 76px); }
 }
+/* On desktop the feed used to stretch the full content width — a portrait 9:16 player
+   spread across ~1190px, with the caption pinned to the far left and the mute/save/share
+   controls pinned to the far right of a mostly-black field. Capping it to the width a 9:16
+   frame actually occupies at this height gives the phone-shaped feed a phone-shaped column.
+   The cap goes on .clips-feed rather than on .clips-feed-wrap: the wrap is a flex item of
+   .app-main, where `margin-inline: auto` would make it shrink-to-fit instead of centering
+   it — and its children are all height/width-relative, so shrink-to-fit resolves to zero
+   and the feed disappears entirely. The wrap stays full width; .clips-refresh-wrap, which
+   is absolutely positioned against it, is offset in by the gutter so it still tracks the
+   column's top-right corner rather than the window's. */
+@media (min-width: 800px) {
+  .clips-feed-wrap {
+    --clips-col-width: min(560px, calc(100vh * 0.5625));
+    width: 100%;
+  }
+  .clips-feed {
+    max-width: var(--clips-col-width);
+    margin-inline: auto;
+    border-radius: var(--radius-lg);
+  }
+  .clips-refresh-wrap { right: calc((100% - var(--clips-col-width)) / 2 + 14px); }
+}
 .clip-slide {
   position: relative;
   height: 100%;
@@ -1711,7 +1733,9 @@ html[data-theme="dark"] .nav-founding-link-active {
    lib/crossword-puzzles.ts) — a full page (header + two-column grid/clue-list split) rather
    than the compact single-column widget the rest of Limbic Games' mini-games use. */
 .crossword-page-pad { width: 100%; max-width: 1200px; margin: 0 auto; padding: 32px 24px 60px; box-sizing: border-box; }
-.crossword-back-link {
+/* Shared by the Mini Crossword and Daily Term headers — same "back to the hub" affordance,
+   so the rule carries both names rather than Daily Term borrowing a crossword- class. */
+.crossword-back-link, .game-back-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -1723,9 +1747,13 @@ html[data-theme="dark"] .nav-founding-link-active {
 .crossword-subtitle { font-size: 14px; color: var(--color-neutral-700); margin: 0; }
 .crossword-date { font-size: 13px; color: var(--color-neutral-600); margin-top: 4px; margin-bottom: 28px; }
 
+/* Both columns take an equal share of what's left *after* the gap — `flex: 0 0 50%` made
+   each one half the container and then added the 40px gap on top, so the pair measured
+   container + 40px and the clue column ran off the right edge of the window (the page's own
+   24px padding absorbed part of the overrun, leaving 16px past the viewport at 1440). */
 .crossword-layout { display: flex; gap: 40px; align-items: flex-start; }
-.crossword-left-col { flex: 0 0 50%; max-width: 50%; min-width: 0; }
-.crossword-right-col { flex: 0 0 50%; max-width: 50%; min-width: 0; }
+.crossword-left-col { flex: 1 1 0; min-width: 0; }
+.crossword-right-col { flex: 1 1 0; min-width: 0; }
 @media (max-width: 1023px) {
   .crossword-layout { flex-direction: column; gap: 28px; }
   .crossword-left-col, .crossword-right-col { flex: 1 1 auto; max-width: none; width: 100%; }
@@ -3771,14 +3799,38 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 .games-header-tagline { font-size: 13px; color: var(--color-neutral-700); margin: 4px 0 0; }
 
+/* auto-fit rather than a hard `repeat(3, 1fr)`: the /games hub has room for three across
+   and still gets three, but the same component also renders inside Boards' 680px reading
+   column, where three fixed columns left each card ~186px wide and broke the names across
+   two lines ("Anatomy / Connect"). Below the 210px floor the grid now drops to two columns
+   instead of crushing the cards. */
 .games-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 16px;
   margin-bottom: 32px;
 }
 @media (max-width: 720px) {
   .games-grid { grid-template-columns: 1fr; }
+}
+
+/* Boards' page column is deliberately narrow for reading the Question of the Day, but the
+   Daily Games row is a card grid, not prose — it has no reason to inherit that measure and
+   sit in a third of the page with the rest empty. Widening symmetrically out of the reading
+   column keeps it centered on the same axis as everything above it.
+
+   The pull is computed rather than fixed so it can never widen past the room that actually
+   exists: 940px is the sidebar plus .boards-question-pad's 680px max-width (with a few px
+   of slack), so (100vw - 940px) / 2 is the gutter beside that column, floored at 0 for the
+   widths where the column is narrower than its max and there is no gutter at all. The +44px
+   is the column's own padding, which this block can always reclaim, and the 150px ceiling
+   stops it widening further once the window is roomy. A fixed -150px instead overflowed the
+   content area by ~20px around 1100px wide, where that much gutter doesn't exist yet. */
+.boards-daily-games { margin-inline: 0; }
+@media (min-width: 800px) {
+  .boards-daily-games {
+    margin-inline: calc(-1 * min(150px, max(0px, (100vw - 940px) / 2) + 44px));
+  }
 }
 
 .game-card {
@@ -7937,8 +7989,14 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   border: 1px solid var(--color-divider);
   margin-top: 16px;
 }
+/* Width is 250% of the frame precisely because the scale below is 0.4 — 2.5 × 0.4 = 1, so
+   the mock always paints exactly as wide as .theme-preview-frame, whatever that measures.
+   A fixed 1000px here painted a constant 400px, which only filled the frame on a phone; on
+   desktop the frame is ~770px and the mock stopped a little past halfway, leaving the rest
+   of the bordered box empty. The 420px height is the same relationship the other way round
+   (420 × 0.4 = the frame's fixed 168px) and stays literal since that height is fixed. */
 .theme-preview {
-  width: 1000px;
+  width: 250%;
   height: 420px;
   transform: scale(0.4);
   transform-origin: top left;
@@ -8163,6 +8221,10 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .atlas-credit a { color: inherit; text-decoration: underline; }
 
 /* Right clinical panel */
+/* align-self + max-height rather than height: 100% — the panel still fills the column and
+   scrolls once a region's clinical detail is longer than the body map, but its empty state
+   (two lines of "select a region…") no longer paints ~650px of flat surface below itself,
+   which read as a broken slab rather than a waiting panel. */
 .atlas-content-panel {
   background: var(--color-card-surface);
   border: 1px solid var(--color-divider);
@@ -8170,7 +8232,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   padding: 18px;
   min-width: 0;
   flex: 0 0 320px;
-  height: 100%;
+  align-self: flex-start;
+  max-height: 100%;
   overflow-y: auto;
 }
 .atlas-panel-empty { font-size: 13px; color: var(--color-neutral-700); }

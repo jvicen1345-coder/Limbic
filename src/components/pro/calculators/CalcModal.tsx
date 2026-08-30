@@ -127,7 +127,12 @@ export function CalcCardShell({
       <p className="pro-calc-meta">
         {population} &middot; {itemCount}
       </p>
-      <button type="button" className="btn btn-primary" style={{ alignSelf: "flex-start" }} onClick={onOpen}>
+      {/* marginTop: auto pins Calculate to the bottom of the card. Grid rows already
+          stretch every card to the tallest in the row, so without this the button just
+          trailed whatever length that card's own description and metadata happened to be —
+          leaving one card's button floating mid-card with a visible gap beneath it while
+          its neighbour's sat low, on the same row. */}
+      <button type="button" className="btn btn-primary" style={{ alignSelf: "flex-start", marginTop: "auto" }} onClick={onOpen}>
         Calculate
       </button>
     </div>
