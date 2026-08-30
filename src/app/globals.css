@@ -9250,3 +9250,61 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 @media print {
   .pbrief-muscle-card { break-inside: avoid; page-break-inside: avoid; }
 }
+
+/* — /jv (QR-code business-card landing page) — a simple, centered "link in bio" page,
+   public/unauthenticated like .legal-page above, but its own minimal shell rather than
+   sharing that one (no back button, no long-form document styling). */
+.card-link-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  padding: 24px;
+  box-sizing: border-box;
+}
+.card-link-container {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.card-link-name {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 24px;
+  margin: 16px 0 2px;
+}
+.card-link-tagline {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 0 0 32px;
+}
+.card-link-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card-link-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px 20px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: border-color 0.15s, transform 0.1s;
+}
+.card-link-item:hover { border-color: var(--color-accent); }
+.card-link-item:active { transform: scale(0.98); }
+.card-link-item-label { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; }
+.card-link-item-desc { font-size: 12.5px; color: var(--color-neutral-700); }
