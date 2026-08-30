@@ -91,12 +91,17 @@ function NavLink({
   exact = true,
   bold = true,
   onNavigate,
+  dataTour,
 }: {
   href: string;
   icon: React.ReactNode;
   label: string;
   /** A number renders as a count badge (hidden at 0); a string renders as-is (e.g. "Pro"). */
   badge?: number | string;
+  /** Marks this item as a target for the guided tour (see components/LimbicTour.tsx),
+   *  which finds it via document.querySelector(`[data-tour="${dataTour}"]`). Only the
+   *  handful of items the tour actually references pass this. */
+  dataTour?: string;
   /** Same lock-badge treatment as LimbicAgentCard's "Ask Limbic Agent" button (icon + a
    *  short pill label) — for a nav item that's shown to everyone but only fully usable by
    *  a gated account (PRO, a .edu Limbic Student sign-in, etc). Takes precedence over
@@ -118,7 +123,7 @@ function NavLink({
   const active = exact ? pathname === href : pathname.startsWith(href);
   const showBadge = typeof badge === "string" ? badge.length > 0 : badge != null && badge > 0;
   return (
-    <Link href={href} style={sidebarNavStyle(active, bold)} onClick={onNavigate} data-active={active}>
+    <Link href={href} style={sidebarNavStyle(active, bold)} onClick={onNavigate} data-active={active} data-tour={dataTour}>
       {icon}
       {label}
       {locked ? (
@@ -146,6 +151,7 @@ function NavToggle({
   expanded,
   onClick,
   compact = false,
+  dataTour,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -157,6 +163,8 @@ function NavToggle({
    *  scrolling as much. The open section's own toggle (and its sub-items, which only ever
    *  render while their section is the open one) stay full-size. */
   compact?: boolean;
+  /** Marks this item as a target for the guided tour — see NavLink's own dataTour above. */
+  dataTour?: string;
 }) {
   return (
     <button
@@ -168,6 +176,7 @@ function NavToggle({
       }}
       aria-expanded={expanded}
       onClick={onClick}
+      data-tour={dataTour}
     >
       {icon}
       {label}
@@ -199,6 +208,7 @@ function FoundingFundersNavLink({ onNavigate }: { onNavigate?: () => void }) {
         href="/founding-funders"
         className={active ? "nav-founding-link nav-founding-link-active" : "nav-founding-link"}
         onClick={onNavigate}
+        data-tour="founding-funders"
       >
         <DiamondIcon size={18} />
         Founding Funders
@@ -341,6 +351,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           expanded={studentExpanded}
           onClick={() => toggleSection("student")}
           compact={isCompact("student")}
+          dataTour="limbic-student"
         />
         {studentExpanded && (
           <>
@@ -358,7 +369,14 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
     ),
     pro: (
       <>
-        <NavToggle icon={<CrownIcon />} label="LimbicPRO" expanded={proExpanded} onClick={() => toggleSection("pro")} compact={isCompact("pro")} />
+        <NavToggle
+          icon={<CrownIcon />}
+          label="LimbicPRO"
+          expanded={proExpanded}
+          onClick={() => toggleSection("pro")}
+          compact={isCompact("pro")}
+          dataTour="limbic-pro"
+        />
         {proExpanded && (
           <>
             {isPro && (
@@ -490,7 +508,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
       <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" onNavigate={onNavigate} />
-      <NavLink href="/atlas" icon={<BodyIcon />} label="Limbic Atlas" onNavigate={onNavigate} />
+      <NavLink href="/atlas" icon={<BodyIcon />} label="Limbic Atlas" onNavigate={onNavigate} dataTour="atlas" />
 
       {zoneTwoOrder.map((key) => (
         <Fragment key={key}>{zoneTwoSections[key]}</Fragment>
@@ -643,7 +661,7 @@ export function AppShell({
 
   return (
     <div className={`app-root${isAtrium ? " app-root--atrium" : ""}`}>
-      <nav className="app-sidebar">
+      <nav className="app-sidebar" data-tour="sidebar">
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
           <LogoIcon size={22} />
           <span style={{ fontFamily: "var(--font-heading)", fontSize: 19, color: "var(--color-text)" }}>

@@ -218,6 +218,18 @@ model User {
   // sets this false only in its own `create` branch, same as hasOnboarded.
   hasCompletedOnboarding Boolean @default(true)
 
+  // Gates the one-time guided product tour (see components/LimbicTour.tsx, app/(app)/
+  // home/page.tsx) — fires on Home once a brand-new account has cleared every other
+  // onboarding gate above. Same @default(true)-not-false rollout reasoning as
+  // hasOnboarded/hasSetName/hasCompletedOnboarding above (an existing account should never
+  // suddenly see the tour pop up because this field shipped) — every real account-creation
+  // path (lib/session.ts signUpWithPassword/signInWithGoogle/signInAsGuest) sets this false
+  // only in its own `create` branch. tourCompletedAt is null until the tour is finished or
+  // skipped (see completeTour in app/actions/tour.ts); resetTour clears both so "Replay
+  // Tour" on Profile can bring it back.
+  hasCompletedTour Boolean   @default(true)
+  tourCompletedAt  DateTime?
+
   // Limbic Boards (student daily-habit tools) streak — same nextStreak() logic as the
   // reading streak above, driven off BoardActivity rows instead of ReadArticle ones.
   lastBoardsActivityAt DateTime?

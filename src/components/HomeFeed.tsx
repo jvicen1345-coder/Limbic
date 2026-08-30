@@ -358,11 +358,11 @@ export function HomeFeed({
           {showGraduationTransitionCard && <GraduationTransitionCard />}
           {showMigrationReminderBanner && <MigrationReminderBanner />}
 
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 20 }} data-tour="daily-dashboard">
             <DailyDashboard data={dashboard} />
           </div>
 
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 20 }} data-tour="limbic-agent">
             <LimbicAgentCard insights={limbicAgentInsights} isPro={isPro} />
           </div>
 
@@ -393,7 +393,7 @@ export function HomeFeed({
               <HeroFeed articles={heroPool} />
             </div>
           )}
-          <div className="cards-grid home-cards-grid">
+          <div className="cards-grid home-cards-grid" data-tour="home-feed">
             {gridArticles.map((a) => (
               <ArticleCard key={a.id} article={a} />
             ))}

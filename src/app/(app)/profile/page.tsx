@@ -24,6 +24,7 @@ import { FoundingFunderBadgeCard } from "@/components/FoundingFunderBadgeCard";
 import { UserRoleSection } from "@/components/UserRoleSection";
 import { isUserRole, type UserRole } from "@/lib/user-role";
 import { ThemeSection } from "@/components/ThemeSection";
+import { ReplayTourButton } from "@/components/ReplayTourButton";
 import { ProgramTimelineSection } from "@/components/ProgramTimelineSection";
 import { dateToLocalIso } from "@/lib/limbic-calendar";
 
@@ -119,6 +120,14 @@ export default async function ProfilePage() {
           user.themePreference === "light" || user.themePreference === "dark" ? user.themePreference : "system"
         }
       />
+
+      <div className="card elev-sm" style={{ marginBottom: 18 }}>
+        <div className="card-kicker">Platform Tour</div>
+        <p className="card-body" style={{ marginTop: 2, marginBottom: 12 }}>
+          Replay the guided tour to rediscover Limbic features.
+        </p>
+        <ReplayTourButton />
+      </div>
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">About you</div>

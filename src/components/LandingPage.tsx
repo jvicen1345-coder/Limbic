@@ -112,6 +112,19 @@ export function LandingPage() {
         </div>
       </section>
 
+      <section className="landing-demo">
+        <p className="landing-demo-eyebrow">See It In Action</p>
+        <h2 className="landing-section-heading">Watch a 4-minute walkthrough</h2>
+        <p className="landing-demo-body">
+          See how Limbic works for students, clinicians, and the public — all in one platform.
+        </p>
+        {/* Placeholder until the Loom demo is recorded — swap for the real embed iframe,
+            same wrapper div, once it exists. */}
+        <div className="landing-demo-video-placeholder">
+          <p>Video coming soon</p>
+        </div>
+      </section>
+
       <section className="landing-founding">
         <h2 className="landing-founding-heading">The people who believed first</h2>
         <p className="landing-founding-body">

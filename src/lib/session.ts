@@ -255,7 +255,14 @@ export async function signInWithPassword(input: { email: string; password: strin
  *  sanctioned way to skip naming a guest. */
 export async function signInAsGuest(name: string) {
   const user = await prisma.user.create({
-    data: { isGuest: true, hasOnboarded: false, hasCompletedOnboarding: false, hasSetName: false, name: name.trim() || "Guest" },
+    data: {
+      isGuest: true,
+      hasOnboarded: false,
+      hasCompletedOnboarding: false,
+      hasSetName: false,
+      hasCompletedTour: false,
+      name: name.trim() || "Guest",
+    },
   });
   await issueSessionCookie(user.id);
 }
@@ -276,7 +283,15 @@ export async function signUpWithPassword(input: { email: string; password: strin
 
   const passwordHash = await hashPassword(input.password);
   const user = await prisma.user.create({
-    data: { email, name: nameFromEmail(email), hasOnboarded: false, hasCompletedOnboarding: false, hasSetName: false, passwordHash },
+    data: {
+      email,
+      name: nameFromEmail(email),
+      hasOnboarded: false,
+      hasCompletedOnboarding: false,
+      hasSetName: false,
+      hasCompletedTour: false,
+      passwordHash,
+    },
   });
   await signInToUserRecord(user, false);
   return { ok: true };
@@ -313,6 +328,7 @@ export async function signInWithGoogle(input: { email: string; name?: string | n
       hasOnboarded: false,
       hasCompletedOnboarding: false,
       hasSetName: false,
+      hasCompletedTour: false,
       googleId: input.sub,
     },
   });
