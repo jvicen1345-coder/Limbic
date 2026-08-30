@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { SaveButton } from "@/components/SaveButton";
 import { ArticleImage } from "@/components/ArticleImage";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { OpenAccessPill } from "@/components/OpenAccessPill";
 import { CheckIcon, NetworkIcon, ChevronRightIcon } from "@/components/icons";
 import type { DecoratedArticle } from "@/lib/feed";
 
@@ -64,6 +65,7 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
       <div className="card-meta">
         <span className={article.typeTagClass}>{article.specialtyLabel}</span>
         {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
+        <OpenAccessPill doi={article.doi} />
         <span>
           {article.source} · {article.readMins} min
         </span>
@@ -135,6 +137,7 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
         <ArticleImage key={article.id} src={article.image} fill />
         <div className="hero-card-topleft">
           {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
+          <OpenAccessPill doi={article.doi} />
         </div>
         <div className="hero-card-topright">
           <span className="hero-card-meta-pill">
