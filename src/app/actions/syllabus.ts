@@ -213,6 +213,30 @@ export async function getThisWeekAssignments() {
   });
 }
 
+/** Every assignment (complete or not) due within one calendar month, for the Atrium's
+ *  monthly calendar (see components/AtriumCalendar.tsx and app/api/assignments/route.ts,
+ *  which both call this — the route wraps it with a userId/session match check since it's
+ *  reached from a client-side fetch). userId is accepted to match the calendar's own
+ *  signature, but — same reasoning as requireStudentUser everywhere else in this file — it
+ *  is never trusted on its own; a mismatch against the session account returns nothing
+ *  rather than another account's assignments. dueDate is a plain YYYY-MM-DD string (see
+ *  schema.prisma), so a lexical range comparison against the month's first/last day is
+ *  exact, same as getThisWeekAssignments above. */
+export async function getMonthAssignments(userId: string, year: number, month: number) {
+  const user = await requireStudentUser();
+  if (!user || user.id !== userId) return [];
+
+  const monthStr = String(month).padStart(2, "0");
+  const start = `${year}-${monthStr}-01`;
+  const lastDay = new Date(year, month, 0).getDate();
+  const end = `${year}-${monthStr}-${String(lastDay).padStart(2, "0")}`;
+
+  return prisma.syllabusAssignment.findMany({
+    where: { userId: user.id, dueDate: { gte: start, lte: end } },
+    orderBy: { dueDate: "asc" },
+  });
+}
+
 export async function toggleAssignmentComplete(assignmentId: string): Promise<ActionError | { success: true; completed: boolean }> {
   const user = await requireStudentUser();
   if (!user) return { error: "Unauthorized" };
