@@ -12,12 +12,12 @@ const DOMAIN_DESCRIPTIONS: Record<string, string> = {
 const RISK_LEVELS = ["Low Risk", "Moderate Risk", "High Risk", "Very High Risk", "Critical Risk"];
 
 /** LimbicPRO-only, same locked-state shell as /connexion/protocol. Past that gate, this
- *  shows the real Connexion Safety Score rubric — three scoring domains (Environmental
+ *  previews the real Connexion Safety Score rubric — three scoring domains (Environmental
  *  Safety /100, Mobility & Functional Safety /48, Fall-Risk Factors /60, total /208, see
  *  lib/connexion-safety-score.ts, transcribed from Delia Vicencio, PT, DPT's own paper
- *  form) — with every item still greyed out, since the score itself is only ever entered
- *  live by a Connexion PT during your visit (see /admin/connexion-safety-score for that
- *  tool). This page is read-only display, not the fillable form. */
+ *  form) at the domain level only, not the full 52-item breakdown — the score itself is
+ *  only ever entered live by a Connexion PT during your visit (see
+ *  /admin/connexion-safety-score for that fillable tool). This page is read-only display. */
 export default async function ConnexionSafetyScorePage() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -65,27 +65,6 @@ export default async function ConnexionSafetyScorePage() {
             </div>
             <p className="connexion-score-domain-desc">{DOMAIN_DESCRIPTIONS[d.key]}</p>
             <span className="connexion-badge-soon">Scored during your visit</span>
-            {d.sections.map((section) => (
-              <div key={section.key} className="connexion-score-row-list" style={{ marginTop: section.label ? 14 : 0 }}>
-                {section.label && (
-                  <div style={{ fontSize: 11.5, fontWeight: 600, color: "var(--color-neutral-700)", textTransform: "uppercase", letterSpacing: "0.03em" }}>
-                    {section.label}
-                  </div>
-                )}
-                {section.items.map((item) => (
-                  <div className="connexion-score-row" key={item.key}>
-                    <span className="connexion-score-row-label">{item.label}</span>
-                    <input
-                      className="connexion-score-row-input"
-                      value="N/A"
-                      disabled
-                      readOnly
-                      aria-label={`${item.label} score, available after your visit`}
-                    />
-                  </div>
-                ))}
-              </div>
-            ))}
             <p className="connexion-score-row-note">Available after your visit</p>
           </div>
         ))}
