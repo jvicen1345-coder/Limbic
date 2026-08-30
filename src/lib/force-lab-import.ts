@@ -17,6 +17,15 @@ function stripCodeFence(text: string): string {
   return fenced ? fenced[1] : text;
 }
 
+/** message.content[0] isn't reliably the response text — even at low effort, claude-opus-5
+ *  can still emit a "thinking" block ahead of its actual text block (same fix as
+ *  lib/pre-visit-brief.ts's own firstTextBlock, duplicated here rather than shared since
+ *  this file already duplicates stripCodeFence above for the same reason). */
+function firstTextBlock(content: { type: string; text?: string }[]): string | null {
+  const block = content.find((c) => c.type === "text");
+  return typeof block?.text === "string" ? block.text : null;
+}
+
 export interface ParsedForceLabScreenshot {
   muscleGroup?: string;
   rightPeak?: number;
@@ -82,9 +91,9 @@ Return only valid JSON. If a value is not visible return null for that field.`,
       ],
     });
 
-    const content = message.content[0];
-    if (content.type !== "text") return null;
-    const parsed = JSON.parse(stripCodeFence(content.text));
+    const text = firstTextBlock(message.content);
+    if (text === null) return null;
+    const parsed = JSON.parse(stripCodeFence(text));
     if (typeof parsed !== "object" || parsed === null || typeof parsed.confidence !== "number") return null;
     return parsed as ParsedForceLabScreenshot;
   } catch (error) {
