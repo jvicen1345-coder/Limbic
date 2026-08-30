@@ -9214,7 +9214,11 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   margin: 0;
 }
 
-.pbrief-muscle-card { break-inside: avoid; page-break-inside: avoid; padding: 8px 0; }
+/* border-left-color is set inline per card (see ForceLabPatientReportBody.tsx) from the
+   same plainLSIColor the symmetry pill already uses, so the page reads by color before a
+   patient reads a single word of it — transparent for a unilateral card, which has no
+   symmetry score to color-code by. */
+.pbrief-muscle-card { break-inside: avoid; page-break-inside: avoid; padding: 8px 0 8px 14px; border-left: 4px solid transparent; }
 .pbrief-muscle-card-name { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
 .pbrief-muscle-card-rule { border: none; border-top: 1px solid rgba(221, 221, 221, 0.4); margin: 0; }
 
