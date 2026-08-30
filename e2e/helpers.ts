@@ -51,7 +51,10 @@ export async function signUp(page: Page, email: string) {
  * them surfaces as a clear URL-wait failure instead of a mystery click timeout.
  */
 export async function completeFirstRun(page: Page, { firstName = "Pw", lastName = "Tester" } = {}) {
-  await page.waitForURL(/\/onboarding\/name/);
+  // Longer wait on this first gate only: playwright.config.ts's webServer starts `next dev`,
+  // which compiles each route on first request, so the very first sign-up of a run pays for
+  // compiling /onboarding/name on top of the request itself. The later gates are warm.
+  await page.waitForURL(/\/onboarding\/name/, { timeout: 25_000 });
   await page.getByLabel("First name").fill(firstName);
   await page.getByLabel("Last name").fill(lastName);
   await page.getByRole("button", { name: "Continue to Limbic" }).click();
@@ -62,9 +65,17 @@ export async function completeFirstRun(page: Page, { firstName = "Pw", lastName 
   await page.waitForURL(/\/home/);
   await page.getByRole("button", { name: /Physical Therapist/ }).click();
   await page.getByRole("button", { name: "Continue" }).click();
-  // The modal replaces the app shell entirely, so its disappearance — not a navigation — is
-  // what says the account is actually through and the sidebar has rendered.
-  await expect(page.getByRole("button", { name: /Physical Therapist/ })).toBeHidden();
+
+  // The modal renders *instead of* AppShell, so the sidebar appearing is what says the
+  // account is genuinely through — not a navigation, since the URL was already /home while
+  // the modal was up. Waiting on the sidebar (a positive signal) rather than on the modal
+  // disappearing also gives a far better failure message if a gate is ever added after this
+  // one: "navigation not visible" rather than "the button you clicked is still there".
+  //
+  // The generous timeout is deliberate. Completing this step is a server action plus a
+  // revalidate, and the default 5s is not always enough when several workers are signing up
+  // at once — that showed up as an intermittent failure here under load, not as a bug.
+  await expect(page.getByRole("navigation")).toBeVisible({ timeout: 20_000 });
 }
 
 /** Sign up and land inside the app, past every first-run gate. */
