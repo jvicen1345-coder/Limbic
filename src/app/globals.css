@@ -10268,3 +10268,319 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .outreach-pill--not_interested { background: color-mix(in srgb, #dc2626 16%, transparent); color: #dc2626; }
 
 .outreach-update-form { padding: 16px 18px; background: color-mix(in srgb, var(--color-accent) 3%, transparent); }
+
+/* Atrium monthly calendar (see components/AtriumCalendar.tsx, app/(app)/student/page.tsx) —
+   two-column layout: a fixed-width month grid on the left, an assignment detail panel that
+   fills the rest on the right. Stacks to one column under 768px. */
+.atrium-calendar {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.atrium-calendar-left {
+  flex: 0 0 340px;
+  min-width: 0;
+}
+.atrium-calendar-right {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 10px;
+  padding: 18px;
+}
+@media (max-width: 768px) {
+  .atrium-calendar {
+    flex-direction: column;
+  }
+  .atrium-calendar-left {
+    flex-basis: auto;
+    width: 100%;
+  }
+  .atrium-calendar-right {
+    width: 100%;
+  }
+}
+
+.atrium-calendar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.atrium-calendar-nav-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--color-divider);
+  border-radius: 6px;
+  background: var(--color-card-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+}
+.atrium-calendar-nav-btn:hover { background: var(--color-divider); }
+.atrium-calendar-month-label {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+.atrium-calendar-today-btn {
+  border: 1px solid var(--color-divider);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-neutral-700);
+  font-size: 11px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.atrium-calendar-today-btn:hover { background: var(--color-card-surface); }
+
+.atrium-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+.atrium-calendar-weekdays span {
+  font-size: 11px;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--color-neutral-700);
+}
+
+/* .calendar-grid / .calendar-cell / .category-dots / .category-dot are the calendar's core
+   grid primitives — kept as their own flat classes (not atrium-calendar-* prefixed) since
+   they describe the grid shape itself, independent of where a calendar ends up embedded. */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendar-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px 2px;
+  border-radius: 6px;
+  cursor: pointer;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  position: relative;
+  transition: background 0.1s;
+}
+.calendar-cell--empty {
+  cursor: default;
+  min-height: 44px;
+}
+
+.calendar-cell:hover {
+  background: var(--color-card-surface);
+}
+
+.calendar-cell-number {
+  font-size: 14px;
+  color: var(--color-neutral-700);
+}
+.calendar-cell.has-assignments .calendar-cell-number {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.calendar-cell.today {
+  background: var(--color-accent);
+}
+.calendar-cell.today .calendar-cell-number {
+  color: #fff;
+  font-weight: 700;
+}
+.calendar-cell.today.has-assignments .category-dots {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+  padding: 1px 4px;
+}
+
+.calendar-cell.selected {
+  border: 2px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  padding: 2px 0;
+}
+.calendar-cell.selected .calendar-cell-number {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.calendar-cell.all-complete::after {
+  content: "✓";
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  font-size: 8px;
+  color: #16a34a;
+}
+
+.category-dots {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+  align-items: center;
+}
+
+.category-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.calendar-cell-more {
+  font-size: 9px;
+  color: var(--color-neutral-700);
+  margin-left: 1px;
+}
+
+.atrium-calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+.atrium-calendar-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--color-neutral-700);
+}
+
+.atrium-calendar-detail-empty {
+  text-align: center;
+  color: var(--color-neutral-700);
+  padding: 24px 0;
+}
+.atrium-calendar-month-mini-summary {
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.atrium-calendar-detail-header {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.atrium-calendar-detail-nothing {
+  text-align: center;
+  color: var(--color-neutral-700);
+  padding: 16px 0;
+}
+.atrium-calendar-add-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+
+.atrium-calendar-assignment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.atrium-calendar-assignment-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-divider);
+  cursor: pointer;
+}
+.atrium-calendar-assignment-row:last-child { border-bottom: none; }
+.atrium-calendar-assignment-dot {
+  width: 8px;
+  height: 8px;
+}
+.atrium-calendar-assignment-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.atrium-calendar-assignment-row--done .atrium-calendar-assignment-title {
+  font-weight: 400;
+  text-decoration: line-through;
+  color: var(--color-neutral-700);
+}
+.atrium-calendar-assignment-course {
+  font-size: 11px;
+  color: var(--color-neutral-700);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.atrium-calendar-assignment-category {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  text-align: right;
+  white-space: nowrap;
+}
+.atrium-calendar-assignment-urgency {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.atrium-calendar-complete-count {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  margin-top: 10px;
+}
+
+.atrium-calendar-complete-banner {
+  margin-top: 8px;
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  border-radius: 6px;
+  padding: 10px 14px;
+  text-align: center;
+  font-size: 13px;
+  color: #16a34a;
+}
+
+.atrium-calendar-month-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+.atrium-calendar-month-summary-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 10px;
+}
+.atrium-calendar-month-summary-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+.atrium-calendar-month-summary-label {
+  font-size: 11px;
+  color: var(--color-neutral-700);
+}
+@media (max-width: 480px) {
+  .atrium-calendar-month-summary {
+    grid-template-columns: 1fr;
+  }
+}
