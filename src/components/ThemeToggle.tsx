@@ -46,8 +46,12 @@ function notifyListeners() {
 /** Sidebar/drawer footer button (see components/AppShell.tsx) that cycles light → dark →
  *  system → light, persisting to both localStorage (this device, for the next reload's
  *  flash-free paint — see lib/theme-client.ts) and the database (every other device) on
- *  each click. */
-export function ThemeToggle() {
+ *  each click. `className` lets a caller opt into its own button styling (see the
+ *  redesigned desktop sidebar footer in AppShell.tsx) instead of the default
+ *  btn/btn-secondary/btn-block treatment every other caller still gets unchanged — the
+ *  8px/4px margin below is specifically that default treatment's own spacing, so it's
+ *  skipped whenever a caller supplies its own class instead. */
+export function ThemeToggle({ className }: { className?: string } = {}) {
   const preference = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const [, startTransition] = useTransition();
 
@@ -64,10 +68,10 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      className="btn btn-secondary btn-block"
+      className={className ?? "btn btn-secondary btn-block"}
       onClick={() => setPreference(next)}
       aria-label={`Switch to ${LABEL[next]}`}
-      style={{ marginTop: 8, marginBottom: 4 }}
+      style={className == null ? { marginTop: 8, marginBottom: 4 } : undefined}
     >
       {ICON[preference]}
       {LABEL[preference]}

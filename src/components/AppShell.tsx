@@ -45,27 +45,16 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { StudentVerifiedBadge } from "@/components/StudentVerifiedBadge";
 import { readStoredThemePreference, resolveTheme } from "@/lib/theme-client";
 
-function sidebarNavStyle(active: boolean, bold: boolean): React.CSSProperties {
-  return {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-    border: "none",
-    // Always a 3px left border (transparent when inactive) rather than only adding one
-    // when active — that way toggling active/inactive never shifts the icon/label by the
-    // border's width, just its color.
-    borderLeft: active ? "3px solid var(--color-accent)" : "3px solid transparent",
-    background: active ? "var(--color-accent-100)" : "none",
-    cursor: "pointer",
-    font: `${bold ? 600 : 400} 14px var(--font-body)`,
-    padding: "13px 12px",
-    borderRadius: "var(--radius-lg)",
-    textAlign: "left",
-    width: "100%",
-    color: active ? "var(--color-accent-700)" : "var(--color-text)",
-    textDecoration: "none",
-    transition: "background 150ms ease, border-color 150ms ease",
-  };
+/** First letter of each of up to the first two words in a name, uppercased — the sidebar
+ *  footer's avatar circle (see the redesigned desktop nav-footer below). Falls back to a
+ *  single "?" for an empty/whitespace-only name rather than rendering a blank circle. */
+function initialsFor(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  return parts
+    .slice(0, 2)
+    .map((p) => p[0]!.toUpperCase())
+    .join("");
 }
 
 const bottomNavStyle = (active: boolean): React.CSSProperties => ({
@@ -118,21 +107,26 @@ function NavLink({
   const pathname = usePathname();
   const active = exact ? pathname === href : pathname.startsWith(href);
   const showBadge = typeof badge === "string" ? badge.length > 0 : badge != null && badge > 0;
+  // bold=false already marks every sub-link under a NavToggle section (see every
+  // zoneTwoSections entry below) — reused directly as the "is this a sub-item" signal for
+  // the redesigned desktop sidebar's indent/12px-font treatment, rather than a second prop
+  // that would just have to be kept in sync with this one at every call site.
+  const className = `nav-link${bold ? "" : " nav-link--sub"}${active ? " nav-link--active" : ""}`;
   return (
-    <Link href={href} style={sidebarNavStyle(active, bold)} onClick={onNavigate} data-active={active}>
-      {icon}
-      {label}
+    <Link href={href} className={className} onClick={onNavigate} data-active={active}>
+      <span className="nav-icon">{icon}</span>
+      <span className="nav-label">{label}</span>
       {locked ? (
         <span
           className="tag tag-accent"
-          style={{ marginLeft: "auto", background: "var(--color-bg)", display: "inline-flex", alignItems: "center", gap: 3 }}
+          style={{ marginLeft: "auto", background: "var(--color-bg)", display: "inline-flex", alignItems: "center", gap: 3, flexShrink: 0 }}
         >
           <LockIcon size={10} />
           {lockLabel}
         </span>
       ) : (
         showBadge && (
-          <span className="tag tag-accent" style={{ marginLeft: "auto" }}>
+          <span className="tag tag-accent" style={{ marginLeft: "auto", flexShrink: 0 }}>
             {badge}
           </span>
         )
@@ -154,30 +148,29 @@ function NavToggle({
   label,
   expanded,
   onClick,
+  badge,
+  badgeHidden = false,
 }: {
   icon: React.ReactNode;
   label: string;
   expanded: boolean;
   onClick: () => void;
+  /** A short pill shown right of the label — only LimbicPRO's toggle passes this
+   *  ("PRO", see the pro zoneTwoSections entry below); every other section omits it and
+   *  renders no pill. */
+  badge?: string;
+  /** True whenever the current route is already inside this section — the pill's whole
+   *  point is to catch a reader's eye before they've engaged with LimbicPRO, so it
+   *  disappears once they're actually on a /pro (or /hep, /agent) page, where the active
+   *  sub-link's own styling already does that job. */
+  badgeHidden?: boolean;
 }) {
   return (
-    <button
-      type="button"
-      style={{ ...sidebarNavStyle(false, true), background: "color-mix(in srgb, var(--color-text) 6%, transparent)" }}
-      aria-expanded={expanded}
-      onClick={onClick}
-    >
-      {icon}
-      {label}
-      <ChevronRightIcon
-        size={14}
-        style={{
-          marginLeft: "auto",
-          flexShrink: 0,
-          transition: "transform 150ms ease",
-          transform: expanded ? "rotate(90deg)" : "none",
-        }}
-      />
+    <button type="button" className={`nav-toggle${expanded ? " nav-toggle--expanded" : ""}`} aria-expanded={expanded} onClick={onClick}>
+      <span className="nav-icon">{icon}</span>
+      <span className="nav-label">{label}</span>
+      {badge && !badgeHidden && <span className="nav-pro-pill">{badge}</span>}
+      <ChevronRightIcon size={14} className="nav-toggle-chevron" />
     </button>
   );
 }
@@ -264,11 +257,35 @@ interface NavContentProps {
   clinicMembership: { clinicName: string; isAdmin: boolean } | null;
   /** Called after any nav link is clicked — used to close the mobile drawer on navigation. */
   onNavigate?: () => void;
+  /** "desktop" (the real .app-sidebar) vs "mobile" (the slide-out .app-mobile-drawer) —
+   *  every nav item's own visual treatment differs between the two purely via CSS scoped
+   *  under those two ancestor classes (see globals.css's sidebar redesign block), so this
+   *  prop exists for exactly one thing the two genuinely can't share: the footer's markup.
+   *  The desktop footer gained a real new element (the avatar circle) the mobile drawer's
+   *  footer was never asked to have, so that one block renders two different JSX trees
+   *  instead of one CSS-scoped tree — everything else in this file stays one shared tree. */
+  variant: "desktop" | "mobile";
 }
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, isAdmin, aptaCount, nexusRequestCount, zoneTwoOrder, clinicMembership, onNavigate }: NavContentProps) {
+function NavContent({
+  profileName,
+  specialtyLabel,
+  practiceState,
+  school,
+  hasLicense,
+  isPro,
+  isStudent,
+  isVerifiedStudent,
+  isAdmin,
+  aptaCount,
+  nexusRequestCount,
+  zoneTwoOrder,
+  clinicMembership,
+  onNavigate,
+  variant,
+}: NavContentProps) {
   const pathname = usePathname();
   // Collapsed by default unless already somewhere under /nexus (so landing on, say,
   // /nexus/messages via a direct link or a widget elsewhere in the app doesn't hide the
@@ -309,7 +326,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
       <>
         <NavToggle
           icon={<ShieldIcon />}
-          label="The Connexion Method"
+          label="Connexion Method"
           expanded={connexionExpanded}
           onClick={() => setConnexionExpanded((v) => !v)}
         />
@@ -367,6 +384,8 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           label="LimbicPRO"
           expanded={proExpanded}
           onClick={() => setProExpanded((v) => !v)}
+          badge="PRO"
+          badgeHidden={pathname.startsWith("/pro") || pathname.startsWith("/hep") || pathname.startsWith("/agent")}
         />
         {proExpanded && (
           <>
@@ -503,9 +522,21 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
       <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" onNavigate={onNavigate} />
       <NavLink href="/atlas" icon={<BodyIcon />} label="Limbic Atlas" onNavigate={onNavigate} />
 
+      {/* Desktop-only (see .nav-zone-divider in globals.css) — the mobile drawer never had
+       *  a divider here and keeps not having one, only the redesigned desktop sidebar's
+       *  three-zone structure needs it. */}
+      <hr className="nav-zone-divider" />
+
       {zoneTwoOrder.map((key) => (
         <Fragment key={key}>{zoneTwoSections[key]}</Fragment>
       ))}
+
+      {/* Same desktop-only divider as above, marking Zone 2 -> Zone 3 (Admin + Founding
+       *  Funders). FoundingFundersNavLink's own .nav-founding-separator still renders right
+       *  before it, unchanged, for the mobile drawer; it's hidden on desktop (redundant
+       *  once this divider already opened Zone 3) rather than removed, so nothing about
+       *  the mobile drawer's structure has to change to make room for this. */}
+      <hr className="nav-zone-divider" />
 
       {isAdmin && (
         <>
@@ -533,29 +564,55 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
        *  the entry point into it from the normal nav. */}
       <FoundingFundersNavLink onNavigate={onNavigate} />
 
-      <div className="nav-footer">
-        <Link href="/profile" className="nav-footer-nameplate" onClick={onNavigate}>
-          <div style={{ fontSize: 12, color: "var(--color-neutral-700)", marginBottom: 4 }}>Signed in as</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)" }}>{profileName}</div>
-            {isVerifiedStudent && <StudentVerifiedBadge compact />}
-          </div>
-          <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
-            {isStudent ? (school ? `DPT Student · ${school}` : "DPT Student") : `${specialtyLabel} · ${practiceState}`}
-          </div>
-          {clinicMembership && <div className="nav-footer-clinic-pill">{clinicMembership.clinicName}</div>}
-        </Link>
-        <ThemeToggle />
-        <form action={signOutAction}>
-          <button
-            type="submit"
-            className="btn btn-ghost"
-            style={{ padding: "4px 0", fontSize: 12, color: "var(--color-neutral-700)" }}
-          >
-            Sign out
-          </button>
-        </form>
-      </div>
+      {variant === "desktop" ? (
+        <div className="nav-footer nav-footer--desktop">
+          <Link href="/profile" className="nav-footer-user" onClick={onNavigate}>
+            <span className="nav-footer-avatar" aria-hidden>
+              {initialsFor(profileName)}
+            </span>
+            <span className="nav-footer-user-text">
+              <span className="nav-footer-name-row">
+                <span className="nav-footer-name">{profileName}</span>
+                {isVerifiedStudent && <StudentVerifiedBadge compact />}
+              </span>
+              <span className="nav-footer-role">
+                {isStudent ? (school ? `DPT Student · ${school}` : "DPT Student") : `${specialtyLabel} · ${practiceState}`}
+              </span>
+              {clinicMembership && <span className="nav-footer-clinic-pill">{clinicMembership.clinicName}</span>}
+            </span>
+          </Link>
+          <ThemeToggle className="nav-footer-theme-btn" />
+          <form action={signOutAction}>
+            <button type="submit" className="nav-footer-signout">
+              Sign out
+            </button>
+          </form>
+        </div>
+      ) : (
+        <div className="nav-footer">
+          <Link href="/profile" className="nav-footer-nameplate" onClick={onNavigate}>
+            <div style={{ fontSize: 12, color: "var(--color-neutral-700)", marginBottom: 4 }}>Signed in as</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)" }}>{profileName}</div>
+              {isVerifiedStudent && <StudentVerifiedBadge compact />}
+            </div>
+            <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
+              {isStudent ? (school ? `DPT Student · ${school}` : "DPT Student") : `${specialtyLabel} · ${practiceState}`}
+            </div>
+            {clinicMembership && <div className="nav-footer-clinic-pill">{clinicMembership.clinicName}</div>}
+          </Link>
+          <ThemeToggle />
+          <form action={signOutAction}>
+            <button
+              type="submit"
+              className="btn btn-ghost"
+              style={{ padding: "4px 0", fontSize: 12, color: "var(--color-neutral-700)" }}
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
+      )}
     </>
   );
 }
@@ -660,7 +717,7 @@ export function AppShell({
             Limbic
           </span>
         </div>
-        <NavContent {...navProps} />
+        <NavContent {...navProps} variant="desktop" />
       </nav>
 
       <main className="app-main">
@@ -709,7 +766,7 @@ export function AppShell({
                 <XIcon size={18} />
               </button>
             </div>
-            <NavContent {...navProps} onNavigate={() => setDrawerOpen(false)} />
+            <NavContent {...navProps} variant="mobile" onNavigate={() => setDrawerOpen(false)} />
           </nav>
         </>
       )}
