@@ -44,7 +44,7 @@ export default async function ProCalculatorsPage() {
   const profiles = await getCalculatorProfilesForCurrentUser();
 
   return (
-    <div className="screen-pad">
+    <div className="screen-pad pro-calc-wide-page">
       <FreeToolBanner isPro={user.isPro} />
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Outcome Measures</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>

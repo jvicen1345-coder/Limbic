@@ -85,3 +85,18 @@ these two rows as reservations rather than as work you can go read.
     components under `components/pro/`, the 12 calculators, and the decision-rule/red-flag
     cards (each now exports its card copy, and the accordion shells take an optional
     `open`). A session working those files should rebase before starting.
+- **Wide-desktop grid on the standalone PRO pages** — PR from `pro-pages-desktop-width`.
+  `.clinref-page`'s own comment explicitly named `/pro/calculators`, `/pro/special-tests`,
+  and `/pro/decision-rules` as pages deliberately left at the narrower 900px/2-up shape when
+  that class shipped — this is that follow-up, plus `/pro/documentation` and
+  `/pro/guidelines` (same `.pro-grid-2`/`.pro-accordion` shapes, found via grep). Two new
+  appended classes, `.pro-wide-page` (the four pages with no side panel) and
+  `.pro-calc-wide-page` (`/pro/calculators` specifically, whose profile panel needs the same
+  wider threshold `.clinref-page`'s own calculator tab already uses) — `.clinref-page` itself
+  is untouched. One pre-existing rule *was* edited, not just appended to: added
+  `align-items: start` to the base `.pro-grid-2` rule, fixing a real bug the wider grid made
+  much more visible (a row's cards were stretching to match its tallest sibling — worst on
+  `/pro/documentation`, where the tall Functional Goals Bank card was leaving two neighbors
+  half-empty). Low risk (one property, height-only, verified against every other
+  `.pro-grid-2` consumer including the small form-field grids in CE Tracker) but worth
+  knowing before diffing this file against a fork point before it landed.

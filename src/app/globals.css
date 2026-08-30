@@ -7766,7 +7766,7 @@ select.connexion-visit-input { color-scheme: dark; }
 /* — Generic 2-column responsive card grid — calculators, decision rules,
    special tests, medications, documentation, guidelines all reuse this same
    grid shape, single column under 860px. */
-.pro-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.pro-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-items: start; }
 @media (min-width: 860px) {
   .pro-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -11187,4 +11187,42 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   .boards-review-domain { display: none; }
   .boards-domain-link-meta { font-size: 10.5px; }
   .boards-streak-stat-value { font-size: 22px; }
+}
+
+/* Extends .clinref-page's wide-desktop treatment (see that class above) to the other
+   standalone .screen-pad pages that share its card-grid/accordion shapes — /pro/documentation,
+   /pro/special-tests, /pro/decision-rules, /pro/guidelines. .clinref-page's own comment
+   explicitly called these out as deliberately left at the narrower 900px/2-up shape when that
+   class shipped; this is that follow-up, not a change to .clinref-page itself. Same
+   .screen-pad-overriding-max-width pattern as .clinref-page/.atlas-page/.forcelab-page — the
+   padding still comes from .screen-pad, only the width changes. */
+.pro-wide-page { max-width: 1500px; }
+
+/* No side panel on any of these four pages, so the grid/accordion has the full page width to
+   itself — same 1240px threshold .clinref-page uses for its own accordion tabs, which are in
+   exactly that situation once the calculator tab's 320px profile panel is out of the picture. */
+@media (min-width: 1240px) {
+  .pro-wide-page .pro-accordion {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .pro-wide-page .pro-grid-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 2000px) {
+  .pro-wide-page .pro-grid-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* The standalone /pro/calculators page specifically — unlike the four pages above, its
+   CalculatorProfilesPanel shares the row with the card grid (see .pro-calc-layout in
+   CalculatorWorkspace.tsx), the same 320px panel .clinref-page's own calculator tab has, so
+   it needs the same wider viewport before a third column helps, not the 1240px threshold
+   above. Numbers match .clinref-page's calculator-grid rules exactly, just under this page's
+   own class instead of reusing that Clinical-Reference-specific one. */
+.pro-calc-wide-page { max-width: 1500px; }
+@media (min-width: 1560px) {
+  .pro-calc-wide-page .pro-grid-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 2000px) {
+  .pro-calc-wide-page .pro-grid-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
