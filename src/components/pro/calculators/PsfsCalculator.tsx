@@ -12,6 +12,7 @@ export const PSFS_MEASURE = {
   measures: "Patient-selected activities rated for current difficulty, tracked over time.",
   population: "Any condition, any body region",
   itemCount: "3 activities",
+  administration: "Patient-Reported",
 } as const;
 
 /** Fully functional — the patient names up to 3 of their own activities, each rated 0-10,

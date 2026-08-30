@@ -108,6 +108,7 @@ export const FGA_MEASURE = {
   measures: "Gait-based dynamic balance across 10 walking tasks.",
   population: "Vestibular and balance-impaired patients",
   itemCount: "10 items",
+  administration: "Clinician-Administered",
 } as const;
 
 export function FgaCalculator() {

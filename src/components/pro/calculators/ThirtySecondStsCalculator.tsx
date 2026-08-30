@@ -28,6 +28,7 @@ export const THIRTY_SECOND_STS_MEASURE = {
   measures: "Lower extremity strength and fall risk from repetitions completed in 30 seconds.",
   population: "Older adults",
   itemCount: "1 item",
+  administration: "Clinician-Administered",
 } as const;
 
 /** Maps a raw client age (as entered on a Calculator Profile) to the nearest published

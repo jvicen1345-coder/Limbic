@@ -26,6 +26,7 @@ export const MBESS_MEASURE = {
   measures: "Postural stability errors across 3 stances on 2 surfaces.",
   population: "Concussion/vestibular screening",
   itemCount: "6 conditions",
+  administration: "Clinician-Administered",
 } as const;
 
 /** Fully functional — error-count inputs, the running total, the built-in 20-second-per-

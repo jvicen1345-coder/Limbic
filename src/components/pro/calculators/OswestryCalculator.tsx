@@ -136,6 +136,7 @@ export const OSWESTRY_MEASURE = {
   measures: "Patient-reported disability across 10 activities of daily living.",
   population: "Low back pain",
   itemCount: "10 sections",
+  administration: "Patient-Reported",
 } as const;
 
 /** Fully functional — the real Oswestry Disability Index 2.0 section names and 0-5

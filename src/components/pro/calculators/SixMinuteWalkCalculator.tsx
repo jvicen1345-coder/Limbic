@@ -28,6 +28,7 @@ export const SIX_MINUTE_WALK_MEASURE = {
   measures: "Sub-maximal aerobic capacity and functional exercise tolerance.",
   population: "Cardiopulmonary, general deconditioning",
   itemCount: "1 item",
+  administration: "Clinician-Administered",
 } as const;
 
 /** Fully functional — unit conversion (m/ft), the built-in 6-minute countdown (see

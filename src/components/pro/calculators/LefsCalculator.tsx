@@ -37,6 +37,7 @@ export const LEFS_MEASURE = {
   measures: "Patient-reported difficulty across 20 lower-extremity functional activities.",
   population: "Any lower extremity orthopedic condition",
   itemCount: "20 items",
+  administration: "Patient-Reported",
 } as const;
 
 /** Fully functional — all 20 items, each scored 0-4, summed in real time out of 80. Higher

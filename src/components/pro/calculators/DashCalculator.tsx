@@ -67,6 +67,7 @@ export const DASH_MEASURE = {
   measures: "Patient-reported upper extremity disability and symptoms.",
   population: "Any upper extremity condition",
   itemCount: "30 items",
+  administration: "Patient-Reported",
 } as const;
 
 export function DashCalculator() {
