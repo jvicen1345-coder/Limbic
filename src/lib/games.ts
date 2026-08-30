@@ -103,6 +103,13 @@ export function computeBestStreak(dateKeys: Iterable<string>): number {
 
 /** The 7 calendar days ending today (today first), for the "X out of 7 days" weekly bar. */
 export function last7DateKeys(todayKey: string): string[] {
+  return lastNDateKeys(todayKey, 7);
+}
+
+/** The N calendar days ending today (today first) — last7DateKeys' general form, for
+ *  windows sized to something other than a week (see lib/boards-progress.ts, which reaches
+ *  back RECENT_CONTENT_WINDOW_DAYS to find what a reader has recently been served). */
+export function lastNDateKeys(todayKey: string, days: number): string[] {
   const todayMs = dateKeyToUtcMs(todayKey);
-  return Array.from({ length: 7 }, (_, i) => utcMsToDateKey(todayMs - i * DAY_MS));
+  return Array.from({ length: Math.max(0, days) }, (_, i) => utcMsToDateKey(todayMs - i * DAY_MS));
 }
