@@ -7,12 +7,12 @@ import { AGENT_DEMO_NODES, AGENT_DEMO_CROSS_LINKS } from "@/lib/agent-demo";
 import type { AgentNode, AgentLink, AgentRing } from "@/lib/agent-graph";
 
 /**
- * Back in demo mode — every question reveals the same hand-written web from
- * lib/agent-demo.ts instead of a live model call. The real askAgentAction/
- * expandAgentNodeAction path (lib/agent.ts) stays fully wired underneath; flip to false to
- * go live again (that's all that's needed — nothing else about this component changes).
+ * Live — every question goes to the real askAgentAction/expandAgentNodeAction path
+ * (lib/agent.ts), a real Anthropic API call. lib/agent-demo.ts's hand-written web stays in
+ * the codebase unused; flip this back to true to fall back to it (that's all that's needed
+ * — nothing else about this component changes).
  */
-const AGENT_DEMO_MODE = true;
+const AGENT_DEMO_MODE = false;
 
 /** Before any question is asked, the canvas shows exactly this one node, breathing (see
  *  the .agent-node-breathing rule in globals.css) — "the best clinician in the world,
