@@ -155,6 +155,17 @@ function interpretBerg(total: number) {
   return { label: "High fall risk", color: "#dc2626" };
 }
 
+/** Card copy for this measure, lifted out of the JSX so the Clinical Reference
+ *  search box can match against it (see lib/reference-search.ts) without the text
+ *  being written twice. Spread straight into CalcCardShell below. */
+export const BERG_BALANCE_MEASURE = {
+  name: "Berg Balance Scale",
+  fullName: "BBS",
+  measures: "Static and dynamic balance across 14 functional tasks.",
+  population: "Older adults, neurological and balance-impaired patients",
+  itemCount: "14 items",
+} as const;
+
 /** Fully functional — all 14 items, each scored 0-4 against the real published Berg
  *  Balance Scale per-item criteria, summed in real time out of 56. */
 export function BergBalanceCalculator() {
@@ -166,14 +177,7 @@ export function BergBalanceCalculator() {
 
   return (
     <>
-      <CalcCardShell
-        name="Berg Balance Scale"
-        fullName="BBS"
-        measures="Static and dynamic balance across 14 functional tasks."
-        population="Older adults, neurological and balance-impaired patients"
-        itemCount="14 items"
-        onOpen={() => setOpen(true)}
-      />
+      <CalcCardShell {...BERG_BALANCE_MEASURE} onOpen={() => setOpen(true)} />
       <CalcModal
         open={open}
         title="Berg Balance Scale"
