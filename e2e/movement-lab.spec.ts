@@ -10,6 +10,7 @@ import {
   resolveProtocolSteps,
   searchExercises,
 } from "@/lib/movement-lab";
+import { freshEmail, signUpAndEnterApp } from "./helpers";
 
 /**
  * Data-integrity checks over the Movement Lab bank. No browser needed — these are pure
@@ -136,42 +137,6 @@ test.describe("Movement Lab data", () => {
     expect(noEquipment.every((ex) => ex.region === "Knee" && ex.equipment.includes("None"))).toBe(true);
   });
 });
-
-/** Each test gets its own email so they can run in parallel without colliding — same
- *  reasoning as e2e/auth.spec.ts's freshEmail. */
-function freshEmail(label: string) {
-  return `pw-ml-${label}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
-}
-
-const PASSWORD = "TestPass123!";
-
-/** Signs up and clears all three first-run gates in the order they appear: /onboarding/name
- *  (hasSetName), /onboarding (hasOnboarded), then the "How are you using Limbic?" role
- *  picker, which renders in place on /home rather than at its own route. The two routed
- *  steps are waited on by URL rather than assumed, so this doesn't break the next time one
- *  of them moves. */
-async function signUpAndEnterApp(page: import("@playwright/test").Page, email: string) {
-  await page.goto("/sign-in");
-  await page.getByText("New here? Create an account").click();
-  await page.getByLabel("Email").fill(email);
-  const passwordFields = page.locator('input[type="password"]');
-  await passwordFields.nth(0).fill(PASSWORD);
-  await passwordFields.nth(1).fill(PASSWORD);
-  await page.getByRole("button", { name: "Create account" }).click();
-
-  await page.waitForURL(/\/onboarding\/name/);
-  await page.getByLabel("First name").fill("Pw");
-  await page.getByLabel("Last name").fill("Tester");
-  await page.getByRole("button", { name: "Continue to Limbic" }).click();
-
-  await page.waitForURL(/\/onboarding$/);
-  await page.getByRole("button", { name: "Skip for now" }).click();
-
-  await page.waitForURL(/\/home/);
-  await page.getByRole("button", { name: /Physical Therapist/ }).click();
-  await page.getByRole("button", { name: "Continue" }).click();
-  await expect(page.getByRole("button", { name: /Physical Therapist/ })).toBeHidden();
-}
 
 test.describe("Movement Lab page", () => {
   test("browses, filters and selects exercises", async ({ page }) => {
