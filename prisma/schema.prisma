@@ -341,6 +341,12 @@ model User {
   rotation3End        String?
   rotation3Supervisor String?
 
+  // Course syllabi this student has uploaded (see app/actions/syllabus.ts) and the
+  // assignments extracted or manually added from them — feeds the Atrium's This Week card
+  // and app/(app)/student/syllabi/page.tsx.
+  syllabi     Syllabus[]
+  assignments SyllabusAssignment[]
+
   // Reserved for a future "add to my calendar app" / reminder-notification feature — not
   // yet read or written by any code path, but part of this migration's schema per the
   // Limbic Calendar spec so both can be added later without another migration.
@@ -1893,4 +1899,46 @@ model UnpaywallCache {
   title          String
   journal        String
   checkedAt      DateTime @default(now())
+}
+
+// A course syllabus a student pasted in for Limbic AI to extract assignments/exams from
+// (see lib/syllabus-parser.ts, app/actions/syllabus.ts) — powers the Atrium's This Week
+// card (app/(app)/student/page.tsx) and the syllabus management page
+// (app/(app)/student/syllabi/page.tsx). rawText/parsedAt are null until parseSyllabusFromText
+// actually runs; a syllabus added only to hold manually-entered assignments never gets either.
+model Syllabus {
+  id         String    @id @default(cuid())
+  userId     String
+  courseCode String
+  courseName String
+  trimester  Int
+  year       Int
+  uploadedAt DateTime  @default(now())
+  rawText    String?
+  parsedAt   DateTime?
+
+  user        User                  @relation(fields: [userId], references: [id])
+  assignments SyllabusAssignment[]
+}
+
+// One graded item (exam, quiz, assignment, etc.) from a Syllabus — either AI-extracted (see
+// parseSyllabusFromText) or added by hand (see addManualAssignment). dueDate is a plain
+// YYYY-MM-DD string, not DateTime — same "no timezone, just a calendar date" reasoning as
+// DailyCompletion.dateKey elsewhere in this schema, since a due date has no time-of-day
+// component that matters here.
+model SyllabusAssignment {
+  id          String    @id @default(cuid())
+  syllabusId  String
+  userId      String
+  title       String
+  dueDate     String
+  category    String
+  courseCode  String
+  courseName  String
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  syllabus Syllabus @relation(fields: [syllabusId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id])
 }
