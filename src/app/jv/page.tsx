@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 const LINKS: { label: string; description: string; href: string; icon: "limbic" | "linkedin" }[] = [
   { label: "Limbic", description: "Limbic Center | Landing page", href: "/", icon: "limbic" },
-  { label: "LinkedIn", description: "Visit Profile", href: "https://www.linkedin.com/in/jonathanvicen", icon: "linkedin" },
+  { label: "LinkedIn", description: "Visit Profile", href: "https://www.linkedin.com/in/jonathan-vicencio", icon: "linkedin" },
 ];
 
 function LinkIcon({ kind }: { kind: "limbic" | "linkedin" }) {
