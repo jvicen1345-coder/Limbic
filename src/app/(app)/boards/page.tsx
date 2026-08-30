@@ -137,22 +137,20 @@ export default async function BoardsHubPage() {
       <h2 style={{ fontSize: 19, margin: "16px 0 12px" }}>Daily Games</h2>
       <DailyGamesSection />
 
-      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "24px 0 16px" }}>
-        Your NPTE prep hub, a board-style question and a term to lock in every day, building toward exam day.
-      </p>
-
-      <BoardsTabs
-        dateKey={dateKey}
-        question={question}
-        term={term}
-        dayCase={dayCase}
-        alreadyComplete={questionCompletion?.selectedIndex != null && termCompletion != null && caseCompletion?.selectedIndex != null}
-        targetSeconds={user.boardsSharpeningTargetSeconds ?? NPTE_THREE_QUESTION_BENCHMARK_SECONDS}
-        nexusOptIn={user.nexusOptIn}
-        currentStreak={user.boardsStreakDays}
-        longestStreak={longestStreak}
-        weekDays={weekDays}
-      />
+      <div style={{ marginTop: 24 }}>
+        <BoardsTabs
+          dateKey={dateKey}
+          question={question}
+          term={term}
+          dayCase={dayCase}
+          alreadyComplete={questionCompletion?.selectedIndex != null && termCompletion != null && caseCompletion?.selectedIndex != null}
+          targetSeconds={user.boardsSharpeningTargetSeconds ?? NPTE_THREE_QUESTION_BENCHMARK_SECONDS}
+          nexusOptIn={user.nexusOptIn}
+          currentStreak={user.boardsStreakDays}
+          longestStreak={longestStreak}
+          weekDays={weekDays}
+        />
+      </div>
     </div>
   );
 }
