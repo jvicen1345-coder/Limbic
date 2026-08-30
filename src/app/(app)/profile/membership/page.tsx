@@ -36,7 +36,7 @@ const FEATURES: FeatureRow[] = [
   { label: "Limbic Boards — NPTE Prep", free: false, wellness: false, student: true, pro: true, clinic: true },
   { label: "Daily Sharpening Sessions", free: false, wellness: false, student: true, pro: true, clinic: true },
   { label: "Flashcard Decks", free: false, wellness: false, student: true, pro: true, clinic: true },
-  { label: "Clinical Calculators", free: false, wellness: false, student: false, pro: true, clinic: true },
+  { label: "Outcome Measures", free: false, wellness: false, student: false, pro: true, clinic: true },
   { label: "Decision Rules and Red Flag Screening", free: false, wellness: false, student: false, pro: true, clinic: true },
   { label: "Special Tests Library", free: false, wellness: false, student: false, pro: true, clinic: true },
   { label: "Lab Values and Medication Reference", free: false, wellness: false, student: false, pro: true, clinic: true },

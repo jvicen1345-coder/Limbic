@@ -13,8 +13,20 @@ import { last7DateKeys } from "@/lib/games";
 import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumProgressChart";
 import { AtriumThisWeekCard } from "@/components/AtriumThisWeekCard";
 import { StudentGate } from "@/components/student/StudentGate";
-import { FileTextIcon, UsersIcon, PencilIcon, GraduationCapIcon, HeartIcon, ChevronRightIcon, ZapIcon } from "@/components/icons";
-import { getCurrentProgramPhase, getGenericProgramPhase, getProgramPhaseLabel, CHAPMAN_DPT_PROGRAM, type ProgramPhase } from "@/lib/dpt-program";
+import {
+  FileTextIcon,
+  UsersIcon,
+  PencilIcon,
+  GraduationCapIcon,
+  HeartIcon,
+  ChevronRightIcon,
+  ZapIcon,
+  NetworkIcon,
+  ActivityIcon,
+  ShieldIcon,
+  ListIcon,
+} from "@/components/icons";
+import { getCurrentProgramPhase, getGenericProgramPhase, getProgramPhaseLabel, type ProgramPhase } from "@/lib/dpt-program";
 import { getThisWeekAssignments } from "@/app/actions/syllabus";
 import { getWeekRecommendations, getThisWeekDateRange } from "@/lib/atrium-recommendations";
 import { getUserProgram } from "@/app/actions/dpt-programs";
@@ -249,27 +261,10 @@ export default async function StudentAtriumPage() {
 
   // This Week card data (see components/AtriumThisWeekCard.tsx) — the week label matches
   // getThisWeekAssignments' own Monday-Sunday window, and recommendations are keyed by the
-  // same trimesterNumber the phase header above already reads.
+  // same trimesterNumber the phase header above already reads. No NPTE countdown here —
+  // that already renders once, in the header above (see .atrium-countdown below).
   const weekLabel = getThisWeekDateRange().label;
   const recommendations = getWeekRecommendations(phase.trimesterNumber);
-
-  // Percent of the time between program start and the NPTE date that's already elapsed —
-  // the This Week card's NPTE progress bar. Uses the fixed Chapman calendar's programStart
-  // (see lib/dpt-program.ts), not user.dptProgramStart, since that field is stored for
-  // display only and getCurrentProgramPhase itself never reads it either.
-  const npteProgressPercent = user.npteExamDate
-    ? Math.min(
-        100,
-        Math.max(
-          0,
-          Math.round(
-            ((now.getTime() - new Date(CHAPMAN_DPT_PROGRAM.programStart).getTime()) /
-              (user.npteExamDate.getTime() - new Date(CHAPMAN_DPT_PROGRAM.programStart).getTime())) *
-              100
-          )
-        )
-      )
-    : null;
 
   return (
     <div className="screen-pad atrium-page" style={{ maxWidth: 1120 }}>
@@ -365,23 +360,7 @@ export default async function StudentAtriumPage() {
           }))}
           hasSyllabi={syllabusCount > 0}
           recommendations={recommendations}
-          npteDays={npteDays}
-          npteProgressPercent={npteProgressPercent}
         />
-
-        <div className="atrium-zone-primary">
-          {/* No "completed today" signal is fetched for /student/clinical-sharpening
-              anywhere on this page (unlike boardsToday, which tracks Boards' separate
-              daily Q&A/term flow) — this always renders the start state rather than
-              guessing completion from an unrelated feature's data. */}
-          <Link href="/student/clinical-sharpening" className="atrium-primary-card">
-            <p className="atrium-primary-title">Daily Clinical Sharpening</p>
-            <p className="atrium-primary-subtitle">
-              One question. One term. One case. Five minutes keeps your streak alive.
-            </p>
-            <span className="btn btn-primary atrium-primary-cta">Start Today&rsquo;s Sharpening</span>
-          </Link>
-        </div>
 
         <div className="atrium-zone-cards">
           {phase.type === "break" && phase.nextPhase && (
@@ -403,46 +382,30 @@ export default async function StudentAtriumPage() {
           )}
 
           {cardGridType === "didactic" ? (
-            /* Every route here is a real, existing page — "Boards" links straight to /boards
-               (not the old /boards/sharpening redirect the previous three-card row used,
-               since that route's only job is forwarding here anyway) and "Clinical
-               Reference"/"NPTE Resources" reuse the exact hrefs the sidebar's own Limbic
-               Student section links to (see AppShell.tsx), so this grid and the sidebar
-               never point at two different pages for the same label. */
+            /* Boards, Clinical Reference, NPTE Resources, and Limbic Atlas are dropped from
+               this grid — they're unconditionally in the sidebar's Limbic Student section for
+               every reader who reaches this grid (see AppShell.tsx), so repeating them here was
+               pure duplication. The 4 tools left are ones the sidebar doesn't surface at all. */
             <div className="atrium-resource-grid">
-              <Link href="/boards" className="atrium-resource-card">
-                <p className="atrium-resource-title">Boards</p>
-                <p className="atrium-resource-desc">NPTE prep built into your daily routine. Questions, terms, and cases by system.</p>
-              </Link>
               <Link href="/student/specialties" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><GraduationCapIcon size={18} /></span>
                 <p className="atrium-resource-title">Specialty Tracks</p>
                 <p className="atrium-resource-desc">Key conditions, special tests, and clinical tools organized by practice area.</p>
               </Link>
               <Link href="/student/slides" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><FileTextIcon size={18} /></span>
                 <p className="atrium-resource-title">Break Down Slides</p>
                 <p className="atrium-resource-desc">Upload your lecture slides and get summaries and practice questions.</p>
               </Link>
               <Link href="/student/soap" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><PencilIcon size={18} /></span>
                 <p className="atrium-resource-title">Practice a SOAP Note</p>
                 <p className="atrium-resource-desc">Structured documentation templates with clinical feedback.</p>
               </Link>
-              <Link href="/pro/lab-values" className="atrium-resource-card">
-                <p className="atrium-resource-title">Clinical Reference</p>
-                <p className="atrium-resource-desc">Lab values, medications, special tests, and clinical decision rules at your fingertips.</p>
-              </Link>
-              <Link href="/student/resources" className="atrium-resource-card">
-                <p className="atrium-resource-title">NPTE Resources</p>
-                <p className="atrium-resource-desc">Everything you need for boards — content breakdown, study schedule, and exam strategy.</p>
-              </Link>
               <Link href="/student/wellness" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><HeartIcon size={18} /></span>
                 <p className="atrium-resource-title">Mental Wellness</p>
                 <p className="atrium-resource-desc">Resources and support for the mental demands of the DPT journey.</p>
-              </Link>
-              <Link href="/atlas" className="atrium-resource-card">
-                <p className="atrium-resource-title">Limbic Atlas</p>
-                <p className="atrium-resource-desc">
-                  Interactive clinical anatomy — muscles, conditions, special tests, and board pearls organized by body region.
-                </p>
               </Link>
             </div>
           ) : (
@@ -450,38 +413,47 @@ export default async function StudentAtriumPage() {
                leads into one), since the didactic grid's coursework tools (Break Down
                Slides, Boards) aren't what a reader on rotation needs day to day. /agent is
                the real route for Limbic Agent (there's no /pro/agent — see AppShell.tsx's
-               own sidebar link), same "use what actually exists" correction as Boards/
-               Clinical Reference/NPTE Resources above. */
+               own sidebar link). Force Lab, CE Tracker, etc. stay in this grid even though
+               they're also in the sidebar's LimbicPRO section, since that section is
+               isPro-gated and this grid isn't — dropping them would strand a non-Pro rotation
+               reader with no way to reach them at all. Decision Rules and Red Flag Screening
+               are combined into one card (matching the sidebar's own merge — see AppShell.tsx
+               and components/pro/ScreeningDecisionTabs.tsx) since /pro/red-flags is just a
+               redirect to /pro/decision-rules now, so two separate cards pointed at the same
+               page. */
             <div className="atrium-resource-grid">
               <Link href="/agent" className="atrium-resource-card atrium-resource-card--primary">
+                <span className="atrium-resource-icon"><NetworkIcon size={18} /></span>
                 <p className="atrium-resource-title">Limbic Agent</p>
                 <p className="atrium-resource-desc">Clinical decision support for your rotation. Ask anything — get evidence-based answers.</p>
               </Link>
               <Link href="/pro/calculators" className="atrium-resource-card">
-                <p className="atrium-resource-title">Clinical Calculators</p>
+                <span className="atrium-resource-icon"><ActivityIcon size={18} /></span>
+                <p className="atrium-resource-title">Outcome Measures</p>
                 <p className="atrium-resource-desc">Quick access to outcome measures, clinical scores, and assessment tools.</p>
               </Link>
               <Link href="/pro/decision-rules" className="atrium-resource-card">
-                <p className="atrium-resource-title">Decision Rules</p>
-                <p className="atrium-resource-desc">Ottawa rules, Canadian C-spine, Wells criteria, and more — at your fingertips.</p>
-              </Link>
-              <Link href="/pro/red-flags" className="atrium-resource-card">
-                <p className="atrium-resource-title">Red Flag Screening</p>
-                <p className="atrium-resource-desc">Systematic red flag checklists for every body region.</p>
+                <span className="atrium-resource-icon"><ShieldIcon size={18} /></span>
+                <p className="atrium-resource-title">Screening &amp; Decision Support</p>
+                <p className="atrium-resource-desc">Ottawa rules, Canadian C-spine, Wells criteria, and red flag checklists by body region.</p>
               </Link>
               <Link href="/pro/special-tests" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><ListIcon size={18} /></span>
                 <p className="atrium-resource-title">Special Tests Library</p>
                 <p className="atrium-resource-desc">Sensitivity, specificity, and how-to for every special test you will use on rotation.</p>
               </Link>
               <Link href="/student/soap" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><PencilIcon size={18} /></span>
                 <p className="atrium-resource-title">Practice a SOAP Note</p>
                 <p className="atrium-resource-desc">Structured documentation practice with clinical feedback.</p>
               </Link>
               <Link href="/student/specialties" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><GraduationCapIcon size={18} /></span>
                 <p className="atrium-resource-title">Specialty Tracks</p>
                 <p className="atrium-resource-desc">Review key conditions and clinical tools for your rotation setting.</p>
               </Link>
               <Link href="/pro/force-lab" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><ZapIcon size={18} /></span>
                 <p className="atrium-resource-title">Force Lab</p>
                 <p className="atrium-resource-desc">Record and track dynamometer strength measurements from your rotation patients.</p>
               </Link>

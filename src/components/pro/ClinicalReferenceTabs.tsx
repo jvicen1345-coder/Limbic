@@ -4,12 +4,14 @@ import { useState } from "react";
 import { SlidingTabs } from "@/components/SlidingTabs";
 import { LabValuesReference } from "@/components/pro/LabValuesReference";
 import { MedicationReference } from "@/components/pro/MedicationReference";
+import { MedicalTerminologyReference } from "@/components/pro/MedicalTerminologyReference";
 
-type Tab = "labValues" | "medications";
+type Tab = "labValues" | "medications" | "terminology";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "labValues", label: "Lab Values" },
   { id: "medications", label: "Medications" },
+  { id: "terminology", label: "Medical Terminology and Abbreviations" },
 ];
 
 /** Lab Values and Medications used to be two separate LimbicPRO sidebar rows/routes
@@ -33,6 +35,7 @@ export function ClinicalReferenceTabs() {
             <MedicationReference />
           </>
         )}
+        {tab === "terminology" && <MedicalTerminologyReference />}
       </div>
     </>
   );
