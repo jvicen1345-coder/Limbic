@@ -25,7 +25,7 @@ export default async function ProCeTrackerPage() {
       <div className="screen-pad">
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>CE Hours Tracker</h1>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
-          Track your continuing education hours toward license renewal.
+          Track your continuing education hours toward license renewal. Available with LimbicPRO — $15/month.
         </p>
         <ProGate toolName="the CE Hours Tracker" />
       </div>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
-import { ProGate } from "@/components/pro/ProGate";
+import { getCurrentUser } from "@/lib/session";
+import { FreeToolBanner } from "@/components/pro/FreeToolBanner";
 import { ScreeningDecisionTabs } from "@/components/pro/ScreeningDecisionTabs";
 
 export const metadata: Metadata = {
@@ -13,13 +13,14 @@ export default async function ProScreeningDecisionPage() {
 
   return (
     <div className="screen-pad">
+      <FreeToolBanner isPro={user.isPro} />
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Screening & Decision Support</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         Evidence-based decision rules and red flag screening to guide clinical reasoning, imaging decisions, and
         referral criteria.
       </p>
 
-      {!hasClinicalReferenceAccess(user) ? <ProGate toolName="Screening & Decision Support" /> : <ScreeningDecisionTabs />}
+      <ScreeningDecisionTabs />
     </div>
   );
 }

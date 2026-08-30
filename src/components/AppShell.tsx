@@ -361,30 +361,34 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         />
         {proExpanded && (
           <>
-            {isPro && (
-              <NavLink href="/pro/dashboard" icon={<LayoutDashboardIcon />} label="Dashboard" bold={false} onNavigate={onNavigate} />
-            )}
-            {isPro && <NavLink href="/pro/force-lab" icon={<ZapIcon />} label="Force Lab" bold={false} onNavigate={onNavigate} />}
+            {/* Dashboard/Force Lab/Limbic Agent used to be hidden entirely for a non-Pro
+                reader rather than shown-locked — now shown to everyone with the same
+                lock-pill treatment CE Tracker/HEP already had, so a signed-in reader sees
+                the full LimbicPRO toolbox and which pieces of it are still paywalled,
+                rather than some tools just silently not existing for them. */}
+            <NavLink href="/pro/dashboard" icon={<LayoutDashboardIcon />} label="Dashboard" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/force-lab" icon={<ZapIcon />} label="Force Lab" locked={!isPro} bold={false} onNavigate={onNavigate} />
             {isPro && clinicMembership?.isAdmin && (
               <>
                 <NavLink href="/pro/dashboard?tab=team" icon={<UsersIcon />} label="Team Dashboard" bold={false} onNavigate={onNavigate} />
                 <NavLink href="/pro/clinic-report" icon={<FileTextIcon />} label="Clinic Report" bold={false} onNavigate={onNavigate} />
               </>
             )}
-            <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" bold={false} onNavigate={onNavigate} />
-            {(isPro || isStudent) && (
-              <>
-                <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Outcome Measures" bold={false} onNavigate={onNavigate} />
-                {/* Decision Rules and Red Flag Screening used to be two separate sidebar rows/
-                    routes — merged into one link since /pro/decision-rules itself already
-                    hosts both as tabs (see components/pro/ScreeningDecisionTabs.tsx) and
-                    /pro/red-flags is now just a redirect there. */}
-                <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Screening & Decision Support" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
-                <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
-              </>
-            )}
+            <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            {/* Outcome Measures/Screening & Decision Support/Special Tests are free to any
+                signed-in user now (see lib/session.ts hasClinicalReferenceAccess and each
+                page's own gate) — no longer wrapped in {(isPro || isStudent) && ...}, which
+                used to hide this whole block (CE Tracker/HEP included) from a plain
+                signed-in reader who was neither Pro nor a Limbic Student. */}
+            <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Outcome Measures" bold={false} onNavigate={onNavigate} />
+            {/* Decision Rules and Red Flag Screening used to be two separate sidebar rows/
+                routes — merged into one link since /pro/decision-rules itself already
+                hosts both as tabs (see components/pro/ScreeningDecisionTabs.tsx) and
+                /pro/red-flags is now just a redirect there. */}
+            <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Screening & Decision Support" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
           </>
         )}
       </>

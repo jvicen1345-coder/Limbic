@@ -8,8 +8,8 @@ const AUDIENCE_CARDS = [
     label: "Limbic Student",
   },
   {
-    title: "Stay current. Stay connected.",
-    body: "Current evidence, clinical decision support, and the professional network the PT world has never had.",
+    title: "LimbicPRO",
+    body: "Free clinical reference for every PT — calculators, decision rules, special tests, and guidelines. Upgrade for AI decision support, Force Lab, and your patient dashboard.",
     label: "LimbicPRO",
   },
   {

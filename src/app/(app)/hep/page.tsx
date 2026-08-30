@@ -37,6 +37,18 @@ export default async function HepPage() {
         Build a home exercise program for a patient. Available to signed-in clinicians only.
       </p>
 
+      {/* HEP Builder itself only requires a license on file (see hasLicenseAccess above) —
+          LimbicPRO isn't a hard gate here, it just unlocks exercise media (see
+          isPro={user.isPro} below and sanitizeMediaUrl gating in app/actions/hep.ts). This
+          note is the "upsell messaging" the LimbicPRO repositioning calls for, without
+          actually locking a licensed-but-not-Pro clinician out of building programs. */}
+      {!user.isPro && (
+        <div className="free-tool-banner" style={{ marginBottom: 22 }}>
+          Build and assign home exercise programs to your patients. Exercise images and videos are available with
+          LimbicPRO — <a href="/profile/membership">$15/month</a>.
+        </div>
+      )}
+
       <HepWorkspace isPro={user.isPro} templatesByBodyPart={templatesByBodyPart}>
         {programs.length > 0 && (
           <>

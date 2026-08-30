@@ -37,7 +37,8 @@ export default async function ForceLabPage({
       <div className="screen-pad">
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Force Lab</h1>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
-          Handheld dynamometer data — powered by ActiveForce.
+          Import and analyze handheld dynamometer data. Track patient strength over time. Available with LimbicPRO
+          — $15/month.
         </p>
         <ProGate toolName="Force Lab" />
       </div>

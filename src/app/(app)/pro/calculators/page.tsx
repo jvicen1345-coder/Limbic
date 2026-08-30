@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
-import { ProGate } from "@/components/pro/ProGate";
+import { getCurrentUser } from "@/lib/session";
+import { FreeToolBanner } from "@/components/pro/FreeToolBanner";
 import { getCalculatorProfilesForCurrentUser } from "@/app/actions/calculator-profiles";
 
 export const metadata: Metadata = {
@@ -24,36 +24,32 @@ export default async function ProCalculatorsPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const hasAccess = hasClinicalReferenceAccess(user);
-  const profiles = hasAccess ? await getCalculatorProfilesForCurrentUser() : [];
+  const profiles = await getCalculatorProfilesForCurrentUser();
 
   return (
     <div className="screen-pad">
+      <FreeToolBanner isPro={user.isPro} />
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Outcome Measures</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
         Validated outcome measures and functional assessments, scored and interpreted in real time.
       </p>
 
-      {!hasAccess ? (
-        <ProGate toolName="Outcome Measures" />
-      ) : (
-        <CalculatorWorkspace initialProfiles={profiles}>
-          <div className="pro-grid-2">
-            <NprsCalculator />
-            <TugCalculator />
-            <ThirtySecondStsCalculator />
-            <SixMinuteWalkCalculator />
-            <BergBalanceCalculator />
-            <LefsCalculator />
-            <DashCalculator />
-            <OswestryCalculator />
-            <PsfsCalculator />
-            <MbessCalculator />
-            <TugCognitiveCalculator />
-            <FgaCalculator />
-          </div>
-        </CalculatorWorkspace>
-      )}
+      <CalculatorWorkspace initialProfiles={profiles}>
+        <div className="pro-grid-2">
+          <NprsCalculator />
+          <TugCalculator />
+          <ThirtySecondStsCalculator />
+          <SixMinuteWalkCalculator />
+          <BergBalanceCalculator />
+          <LefsCalculator />
+          <DashCalculator />
+          <OswestryCalculator />
+          <PsfsCalculator />
+          <MbessCalculator />
+          <TugCognitiveCalculator />
+          <FgaCalculator />
+        </div>
+      </CalculatorWorkspace>
     </div>
   );
 }

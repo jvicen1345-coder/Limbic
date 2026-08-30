@@ -21,11 +21,9 @@ interface FeatureRow {
   clinic: Cell;
 }
 
-/** Every row of the tier-comparison table/cards below, in display order. Kept as one flat
- *  list (rather than grouped sub-tables) so the sticky feature-label column on desktop
- *  (see .plan-compare-table in globals.css) has one continuous set of rows to stay aligned
- *  against while scrolling horizontally. */
-const FEATURES: FeatureRow[] = [
+/** The core cross-tier rows — everything above the two clinical-tool groups below, in
+ *  display order. */
+const BASE_FEATURES: FeatureRow[] = [
   { label: "Daily PT News Feed", free: true, wellness: true, student: true, pro: true, clinic: true },
   { label: "Limbic Clips", free: true, wellness: true, student: true, pro: true, clinic: true },
   { label: "Limbic Calendar", free: true, wellness: true, student: true, pro: true, clinic: true },
@@ -36,18 +34,51 @@ const FEATURES: FeatureRow[] = [
   { label: "Limbic Boards — NPTE Prep", free: false, wellness: false, student: true, pro: true, clinic: true },
   { label: "Daily Sharpening Sessions", free: false, wellness: false, student: true, pro: true, clinic: true },
   { label: "Flashcard Decks", free: false, wellness: false, student: true, pro: true, clinic: true },
-  { label: "Outcome Measures", free: false, wellness: false, student: false, pro: true, clinic: true },
-  { label: "Decision Rules and Red Flag Screening", free: false, wellness: false, student: false, pro: true, clinic: true },
-  { label: "Special Tests Library", free: false, wellness: false, student: false, pro: true, clinic: true },
-  { label: "Lab Values and Medication Reference", free: false, wellness: false, student: false, pro: true, clinic: true },
-  { label: "Documentation Templates", free: false, wellness: false, student: false, pro: true, clinic: true },
-  { label: "CE Tracker", free: false, wellness: false, student: false, pro: true, clinic: true },
+];
+
+/** The clinical-reference toolbox — no longer LimbicPRO-exclusive (see
+ *  lib/session.ts hasClinicalReferenceAccess and each /pro/* tool page's own gate), so
+ *  every tier gets a checkmark here now, Free included. Rendered under its own
+ *  "Free Clinical Reference" divider row (see FeatureDividerRow below) on desktop. */
+const FREE_CLINICAL_FEATURES: FeatureRow[] = [
+  { label: "Outcome Measures", free: true, wellness: true, student: true, pro: true, clinic: true },
+  { label: "Decision Rules and Red Flag Screening", free: true, wellness: true, student: true, pro: true, clinic: true },
+  { label: "Special Tests Library", free: true, wellness: true, student: true, pro: true, clinic: true },
+  { label: "Lab Values and Medication Reference", free: true, wellness: true, student: true, pro: true, clinic: true },
+  { label: "Documentation Templates", free: true, wellness: true, student: true, pro: true, clinic: true },
+  { label: "Clinical Guidelines", free: true, wellness: true, student: true, pro: true, clinic: true },
+];
+
+/** What's still LimbicPRO-exclusive — the practice-running tools, not the reference
+ *  material above. Rendered under its own "LimbicPRO — Clinical Tools" divider row on
+ *  desktop. Patient Outcome Tracking/Pre-Visit Clinical Briefs/Patient Brief Download are
+ *  Clinician Dashboard sub-features (see app/actions/clinician-dashboard.ts's
+ *  requireProUser gate) called out as their own rows rather than folded into the single
+ *  "Clinician Dashboard" line. */
+const PRO_CLINICAL_FEATURES: FeatureRow[] = [
   { label: "Limbic Agent — Clinical Decision Support", free: false, wellness: false, student: false, pro: true, clinic: true },
+  { label: "Force Lab — Dynamometer Data", free: false, wellness: false, student: false, pro: true, clinic: true },
+  { label: "Clinician Dashboard", free: false, wellness: false, student: false, pro: true, clinic: true },
   { label: "Home Exercise Program Builder", free: false, wellness: false, student: false, pro: true, clinic: true },
+  { label: "CE Tracker", free: false, wellness: false, student: false, pro: true, clinic: true },
+  { label: "Patient Outcome Tracking", free: false, wellness: false, student: false, pro: true, clinic: true },
+  { label: "Pre-Visit Clinical Briefs", free: false, wellness: false, student: false, pro: true, clinic: true },
+  { label: "Patient Brief Download", free: false, wellness: false, student: false, pro: true, clinic: true },
+];
+
+/** Clinic Pro-only rows — unrelated to the LimbicPRO free/paid split above, kept at the
+ *  tail end same as before. */
+const CLINIC_ONLY_FEATURES: FeatureRow[] = [
   { label: "Clinic Admin Dashboard", free: false, wellness: false, student: false, pro: false, clinic: true },
   { label: "Up to 6 Team Seats", free: false, wellness: false, student: false, pro: false, clinic: true },
   { label: "Patient HEP Management", free: false, wellness: false, student: false, pro: false, clinic: true },
 ];
+
+/** Flat concatenation of every real (non-divider) row, in display order — the desktop
+ *  table renders each group separately (with divider rows between them, see
+ *  FeatureDividerRow below); the mobile per-tier cards just need one continuous list to
+ *  filter each tier's included rows out of, same as before this was split into groups. */
+const FEATURES: FeatureRow[] = [...BASE_FEATURES, ...FREE_CLINICAL_FEATURES, ...PRO_CLINICAL_FEATURES, ...CLINIC_ONLY_FEATURES];
 
 const COMING_SOON: FeatureRow[] = [
   { label: "Limbic Jobs — PT Career Marketplace", free: false, wellness: false, student: "soon", pro: "soon", clinic: "soon" },
@@ -65,6 +96,18 @@ const PLAN_DISPLAY_NAME: Record<string, string> = {
   wellnessPlusYearly: "Limbic Wellness+",
   clinic: "Clinic PRO",
 };
+
+/** A muted, uppercase, full-width section label row — same shell as the existing
+ *  "Coming Soon" divider row (see .plan-compare-divider-row in globals.css), reused here to
+ *  split the desktop table into "Free Clinical Reference" and "LimbicPRO — Clinical Tools"
+ *  sections instead of one continuous list. */
+function FeatureDividerRow({ label }: { label: string }) {
+  return (
+    <tr className="plan-compare-divider-row">
+      <td colSpan={6}>{label}</td>
+    </tr>
+  );
+}
 
 function CellMark({ value }: { value: Cell }) {
   if (value === "soon") return <span className="plan-compare-soon">Soon</span>;
@@ -265,7 +308,7 @@ export default async function ProfileMembershipPage({
             </tr>
           </thead>
           <tbody>
-            {FEATURES.map((row) => (
+            {BASE_FEATURES.map((row) => (
               <tr key={row.label}>
                 <th scope="row">{row.label}</th>
                 {TIERS.map((tier) => (
@@ -275,9 +318,39 @@ export default async function ProfileMembershipPage({
                 ))}
               </tr>
             ))}
-            <tr className="plan-compare-divider-row">
-              <td colSpan={6}>Coming Soon</td>
-            </tr>
+            <FeatureDividerRow label="Free Clinical Reference" />
+            {FREE_CLINICAL_FEATURES.map((row) => (
+              <tr key={row.label}>
+                <th scope="row">{row.label}</th>
+                {TIERS.map((tier) => (
+                  <td key={tier.key}>
+                    <CellMark value={cellFor(row, tier.key)} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+            <FeatureDividerRow label="LimbicPRO — Clinical Tools" />
+            {PRO_CLINICAL_FEATURES.map((row) => (
+              <tr key={row.label}>
+                <th scope="row">{row.label}</th>
+                {TIERS.map((tier) => (
+                  <td key={tier.key}>
+                    <CellMark value={cellFor(row, tier.key)} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+            {CLINIC_ONLY_FEATURES.map((row) => (
+              <tr key={row.label}>
+                <th scope="row">{row.label}</th>
+                {TIERS.map((tier) => (
+                  <td key={tier.key}>
+                    <CellMark value={cellFor(row, tier.key)} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+            <FeatureDividerRow label="Coming Soon" />
             {COMING_SOON.map((row) => (
               <tr key={row.label}>
                 <th scope="row">{row.label}</th>

@@ -37,8 +37,8 @@ export default async function ClinicianDashboardPage() {
       <div className="screen-pad">
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Clinician Dashboard</h1>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
-          Manage your caseload, generate pre-visit briefs, and track outcomes — all without
-          storing a single patient name.
+          Your complete clinician dashboard. Patient caseload, outcome tracking, and clinical intelligence in one
+          place. Available with LimbicPRO — $15/month.
         </p>
         <ProGate toolName="the Clinician Dashboard" />
       </div>

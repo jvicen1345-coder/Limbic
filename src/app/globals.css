@@ -7359,6 +7359,21 @@ select.connexion-visit-input { color-scheme: dark; }
 }
 .pro-locked-list li svg { flex-shrink: 0; margin-top: 2px; color: var(--color-accent); }
 
+/* — Free clinical-reference banner — components/pro/FreeToolBanner.tsx, first element
+   inside every tool page's .screen-pad that dropped its LimbicPRO gate. An inset card
+   (rather than a full-bleed strip) so it sits naturally inside .screen-pad's own
+   max-width column instead of fighting that wrapper's padding at every breakpoint. */
+.free-tool-banner {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 10px 20px;
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 0 0 16px;
+}
+.free-tool-banner a { color: var(--color-accent); font-weight: 600; }
+
 /* — Disclaimer card — amber left border/tint, reused by both tabs of
    /pro/decision-rules and both tabs of /pro/lab-values. Theme-adaptive amber
    token (unlike the Connexion HIPAA disclaimer's fixed-dark-card literal

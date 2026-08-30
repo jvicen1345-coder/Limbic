@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
+import { getCurrentUser } from "@/lib/session";
 
 export interface CalculatorResultView {
   id: string;
@@ -45,16 +45,16 @@ function serializeResult(r: { id: string; testKey: string; testName: string; val
   };
 }
 
-/** Every gate in this file is the same hasClinicalReferenceAccess check the
- *  /pro/calculators page itself renders behind (see app/(app)/pro/calculators/page.tsx) —
- *  a Server Action is its own callable endpoint regardless of which page's UI happens to
- *  call it (same reasoning as requireProUser in app/actions/agent.ts), so this re-checks
- *  rather than trusting the page. Returns null (not a thrown error) so every caller below
- *  can short-circuit the same way a signed-out/non-clinician request into any other action
- *  in this app does. */
+/** Outcome Measures is free to any signed-in user (see app/(app)/pro/calculators/page.tsx
+ *  — no more LimbicPRO/Limbic Student gate there), so this only re-checks that the caller
+ *  is signed in at all. Still its own check rather than trusting the page: a Server Action
+ *  is its own callable endpoint regardless of which page's UI happens to call it (same
+ *  reasoning as requireProUser in app/actions/agent.ts). Returns null (not a thrown error)
+ *  so every caller below can short-circuit the same way a signed-out request into any other
+ *  action in this app does. */
 async function requireCalcAccess() {
   const user = await getCurrentUser();
-  if (!user || !hasClinicalReferenceAccess(user)) return null;
+  if (!user) return null;
   return user;
 }
 
