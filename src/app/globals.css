@@ -11026,3 +11026,165 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   color: #16a34a;
   background: color-mix(in srgb, #16a34a 14%, transparent);
 }
+
+/* ————————————————————————————————————————————————————————————————
+   Limbic Boards — appended block (see COORDINATION.md: new scoped classes go at the end
+   of this file rather than beside related rules, so parallel sessions' diffs don't
+   collide). Covers the Boards page header, the shared board-question choice list, the
+   missed-question review, the per-system record on the NPTE Breakdown cards, and the
+   Resources tab's link lists.
+   ———————————————————————————————————————————————————————————————— */
+
+/* — page header: title on the left, streak badge and NPTE countdown on the right — */
+.boards-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.boards-page-title { display: flex; align-items: center; gap: 8px; }
+.boards-page-title h1 { font-size: 24px; margin: 0; }
+.boards-header-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.boards-header-countdown {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+  padding: 4px 12px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.boards-header-countdown strong {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  color: var(--color-accent-700);
+}
+
+/* — shared answer list for a board question (Daily Sharpening step 1 and the standalone
+     clinician Question of the Day card) — */
+.board-choice-list { display: flex; flex-direction: column; gap: 8px; }
+.board-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+}
+.board-choice--dimmed { opacity: 0.6; }
+.board-choice--wrong { border: 1.5px solid var(--color-accent-700); }
+.board-choice-mark { flex-shrink: 0; font-weight: 700; }
+
+/* — streak dots: a day still to come this week is not a day that was missed — */
+.boards-streak-day-dot--future { background: transparent; box-shadow: inset 0 0 0 1.5px var(--color-divider); }
+.boards-streak-day-label--future { opacity: 0.5; }
+/* Three stats now (current streak, longest streak, accuracy) rather than two. */
+.boards-streak-stats { grid-template-columns: repeat(3, 1fr); }
+
+/* — "where you're losing points" callout above the system grid — */
+.boards-weakest-card {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.boards-weakest-body { font-size: 13px; line-height: 1.6; color: var(--color-text); margin: 8px 0 12px; }
+.boards-weakest-link { display: inline-flex; text-decoration: none; }
+
+/* — NPTE Breakdown system cards, now links into that system's practice set — */
+.npte-system-card { text-decoration: none; color: inherit; transition: border-color 0.15s ease, transform 0.15s ease; }
+.npte-system-card:hover { border-color: var(--color-accent); transform: translateY(-1px); }
+.npte-system-record {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-divider);
+}
+.npte-system-record-value { font-family: var(--font-heading); font-weight: 700; font-size: 18px; color: var(--color-text); }
+.npte-system-record-label { font-size: 11.5px; color: var(--color-neutral-700); }
+.npte-system-record-cta { width: 100%; text-align: right; font-size: 11.5px; font-weight: 600; color: var(--color-accent-700); }
+
+/* — missed-question review (Daily Sharpening tab) — */
+.boards-review-empty, .boards-review-intro {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  line-height: 1.6;
+  margin: 8px 0 0;
+}
+.boards-review-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.boards-review-item { border: 1px solid var(--color-divider); border-radius: 10px; overflow: hidden; }
+.boards-review-toggle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+.boards-review-toggle:hover { background: var(--color-neutral-100); }
+.boards-review-question { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; line-height: 1.5; }
+.boards-review-domain { flex-shrink: 0; font-size: 10.5px; color: var(--color-neutral-700); white-space: nowrap; padding-top: 2px; }
+.boards-review-body { padding: 0 12px 12px; border-top: 1px solid var(--color-divider); }
+.boards-review-answer { display: flex; gap: 8px; font-size: 12.5px; line-height: 1.5; margin: 10px 0 0; }
+.boards-review-answer-label {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-success);
+  padding-top: 2px;
+  width: 74px;
+}
+.boards-review-answer--yours .boards-review-answer-label { color: var(--color-danger); }
+.boards-review-explanation { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.6; margin: 10px 0 0; }
+.boards-review-practice-link { display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 600; }
+
+/* — Resources tab: practice-by-system rows and the official-source list — */
+.boards-domain-links, .boards-official-links { display: flex; flex-direction: column; gap: 2px; margin-top: 12px; }
+.boards-domain-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+.boards-domain-link:hover { background: var(--color-neutral-100); }
+.boards-domain-link-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.boards-domain-link-name { font-size: 13px; font-weight: 600; }
+.boards-domain-link-meta { margin-left: auto; font-size: 11.5px; color: var(--color-neutral-700); }
+.boards-official-link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+.boards-official-link:hover { background: var(--color-neutral-100); }
+.boards-official-link-name { font-size: 13px; font-weight: 600; color: var(--color-accent-700); }
+.boards-official-link-desc { font-size: 11.5px; color: var(--color-neutral-700); line-height: 1.5; }
+
+@media (max-width: 480px) {
+  .boards-review-domain { display: none; }
+  .boards-domain-link-meta { font-size: 10.5px; }
+  .boards-streak-stat-value { font-size: 22px; }
+}
