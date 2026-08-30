@@ -1,24 +1,16 @@
-import type { Metadata } from "next";
-import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
-import { ProGate } from "@/components/pro/ProGate";
-import { TherapeuticExerciseLibrary } from "@/components/pro/TherapeuticExerciseLibrary";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Exercises",
-};
-
-export default async function ProExercisesPage() {
-  const user = await getCurrentUser();
-  if (!user) return null;
-
-  return (
-    <div className="screen-pad">
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Therapeutic Exercises</h1>
-      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
-        Condition-specific exercises with setup, technique, dosage, and patient cueing.
-      </p>
-
-      {!hasClinicalReferenceAccess(user) ? <ProGate toolName="Therapeutic Exercises" /> : <TherapeuticExerciseLibrary />}
-    </div>
-  );
+/**
+ * Superseded by the Limbic Movement Lab (/movement-lab), which is the same content at a
+ * useful size — this page rendered a TherapeuticExerciseLibrary accordion over the single
+ * entry that library held, behind a PRO/Student gate. Both that component and its data
+ * module were deleted with this change; the Movement Lab is free to any signed-in user.
+ *
+ * Kept as a redirect rather than deleted: /pro/exercises is linked from lib/session.ts's
+ * comment on hasClinicalReferenceAccess and may be bookmarked, and a redirect costs nothing
+ * next to a 404. Same treatment /pro/red-flags already gets, which redirects into
+ * /pro/decision-rules after those two merged.
+ */
+export default function ProExercisesPage() {
+  redirect("/movement-lab");
 }
