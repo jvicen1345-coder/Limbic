@@ -12,6 +12,7 @@ import { getAcceptedConnectionIds } from "@/lib/nexus";
 import { last7DateKeys } from "@/lib/games";
 import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumProgressChart";
 import { AtriumThisWeekCard } from "@/components/AtriumThisWeekCard";
+import { AtriumCalendar } from "@/components/AtriumCalendar";
 import { StudentGate } from "@/components/student/StudentGate";
 import {
   FileTextIcon,
@@ -27,7 +28,7 @@ import {
   ListIcon,
 } from "@/components/icons";
 import { getCurrentProgramPhase, getGenericProgramPhase, getProgramPhaseLabel, type ProgramPhase } from "@/lib/dpt-program";
-import { getThisWeekAssignments } from "@/app/actions/syllabus";
+import { getThisWeekAssignments, getMonthAssignments } from "@/app/actions/syllabus";
 import { getWeekRecommendations, getThisWeekDateRange } from "@/lib/atrium-recommendations";
 import { getUserProgram } from "@/app/actions/dpt-programs";
 
@@ -212,7 +213,7 @@ export default async function StudentAtriumPage() {
   // Upcoming were Quick Links entries the dashboard redesign removed — see
   // atrium-supporting-row below — but nothing about the fetch itself changed, this just
   // stops binding results neither the redesigned page nor anything else here reads).
-  const [, , weekCompletions, boardActivityRows, , thisWeekAssignments, syllabusCount] = await Promise.all([
+  const [, , weekCompletions, boardActivityRows, , thisWeekAssignments, syllabusCount, monthAssignments] = await Promise.all([
     prisma.dailyCompletion.findFirst({
       where: { userId: user.id, dateKey: todayKey, kind: { in: ["boardQuestion", "boardTerm"] } },
     }),
@@ -235,6 +236,11 @@ export default async function StudentAtriumPage() {
     // uploaded a syllabus" (see that component's hasSyllabi prop).
     getThisWeekAssignments(),
     prisma.syllabus.count({ where: { userId: user.id } }),
+    // Academic Calendar (see components/AtriumCalendar.tsx, positioned between the This Week
+    // card and the resource card grid below) — every assignment due in the current calendar
+    // month, complete or not; the calendar's own month navigation re-fetches via
+    // app/api/assignments/route.ts rather than re-running this page.
+    getMonthAssignments(user.id, now.getFullYear(), now.getMonth() + 1),
   ]);
 
   const daysCompletedThisWeek = new Set(boardActivityRows.map((r) => r.dateKey)).size;
@@ -380,6 +386,58 @@ export default async function StudentAtriumPage() {
               </p>
             </div>
           )}
+
+          <section style={{ marginTop: "24px", marginBottom: "24px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+              <h2 style={{ fontSize: "16px", fontWeight: 700 }}>Academic Calendar</h2>
+              <Link href="/student/syllabi" style={{ fontSize: "12px", color: "var(--color-neutral-700)", textDecoration: "none" }}>
+                Manage syllabi →
+              </Link>
+            </div>
+
+            {monthAssignments.length === 0 && syllabusCount === 0 ? (
+              <div
+                style={{
+                  background: "var(--color-card-surface)",
+                  border: "1px solid var(--color-divider)",
+                  borderRadius: "10px",
+                  padding: "24px",
+                  textAlign: "center",
+                }}
+              >
+                <p style={{ color: "var(--color-neutral-700)", fontSize: "14px", marginBottom: "12px" }}>
+                  Upload your syllabi to see your academic calendar here.
+                </p>
+                <Link
+                  href="/student/syllabi"
+                  style={{
+                    display: "inline-block",
+                    padding: "8px 20px",
+                    background: "var(--color-accent)",
+                    color: "#fff",
+                    borderRadius: "6px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                  }}
+                >
+                  Add Syllabus
+                </Link>
+              </div>
+            ) : (
+              <AtriumCalendar
+                initialAssignments={monthAssignments.map((a) => ({
+                  id: a.id,
+                  title: a.title,
+                  dueDate: a.dueDate,
+                  category: a.category,
+                  courseCode: a.courseCode,
+                  completed: a.completed,
+                }))}
+                userId={user.id}
+              />
+            )}
+          </section>
 
           {cardGridType === "didactic" ? (
             /* Boards, Clinical Reference, NPTE Resources, and Limbic Atlas are dropped from
