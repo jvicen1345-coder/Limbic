@@ -149,20 +149,20 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
           </span>
         </div>
       </div>
-      <div style={{ padding: "16px 20px 0" }}>
+      <div style={{ padding: "16px 20px 0", textAlign: "center" }}>
         <div className="hero-card-title">{article.title}</div>
-        <div className="hero-card-source">
+        <div className="hero-card-source" style={{ justifyContent: "center" }}>
           {article.source}
           {(article.isNew || article.isRead) && <span className="hero-card-source-sep">·</span>}
           {article.isNew && <NewBadge />}
           {article.isRead && <ReadBadge />}
         </div>
       </div>
-      <div style={{ padding: "10px 20px 18px" }}>
+      <div style={{ padding: "10px 20px 18px", textAlign: "center" }}>
         <p className="card-body" style={{ fontSize: 15, margin: 0 }}>
           {article.summary}
         </p>
-        <div style={{ marginTop: 8 }}>
+        <div style={{ marginTop: 8, display: "flex", justifyContent: "center" }}>
           <ThreadsTeaser articleId={article.id} />
         </div>
       </div>
