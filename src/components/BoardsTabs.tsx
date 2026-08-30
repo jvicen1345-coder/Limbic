@@ -4,6 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { DailySharpeningSession } from "@/components/DailySharpeningSession";
+import { PaperAnatomyDiagram } from "@/components/boards/PaperAnatomyDiagram";
+import { StatisticsCardGrid } from "@/components/boards/StatisticsCardGrid";
+import { EvidenceHierarchyPyramid } from "@/components/boards/EvidenceHierarchyPyramid";
 import type { BoardQuestion, BoardTerm } from "@/lib/board-content";
 import type { DailyCase } from "@/lib/cases-static";
 
@@ -366,16 +369,21 @@ export function BoardsTabs({
             </p>
           </div>
 
-          <div className="card elev-sm">
-            <div className="card-title">The Full Guide</div>
-            <p className="boards-resource-disclaimer" style={{ margin: "4px 0 12px" }}>
-              How to break down a research article section by section, how to read the statistics inside it, a
-              generalizability checker, and an article histogram explorer — all in one place.
-            </p>
-            <Link href="/pro/research-literacy" className="btn btn-primary">
-              Open the guide →
-            </Link>
+          <h3 className="boards-research-section-title">How to Break Down a Research Article</h3>
+          <PaperAnatomyDiagram />
+
+          <h3 className="boards-research-section-title" style={{ marginTop: 32 }}>
+            How to Read the Statistics
+          </h3>
+          <StatisticsCardGrid />
+
+          <div style={{ marginTop: 32 }}>
+            <EvidenceHierarchyPyramid />
           </div>
+
+          <p className="boards-research-guide-link">
+            Need the generalizability checker or the article histogram explorer? <Link href="/pro/research-literacy">Open the full guide →</Link>
+          </p>
         </div>
       )}
 
