@@ -762,6 +762,74 @@ html[data-theme="dark"] .card.elev-lg {
   .page-enter { animation: none; }
 }
 
+/* — Guided tour (see components/LimbicTour.tsx) — the overlay/ring's position is computed
+   per-render off the highlighted element's real DOMRect (top/left/width/height set inline,
+   since that genuinely changes every step); everything else — color, spacing, elevation —
+   comes from these classes so the tooltip looks like every other card in the app and picks
+   up dark mode for free. The tooltip reuses .card/.elev-lg for its box (same background/
+   radius/shadow as any other floating panel) rather than inventing new ones. */
+.tour-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-scrim);
+  z-index: 9998;
+  pointer-events: none;
+}
+.tour-highlight {
+  position: fixed;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 15%, transparent);
+  z-index: 9999;
+  pointer-events: none;
+  transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+.tour-tooltip {
+  position: fixed;
+  z-index: 10000;
+  width: 320px;
+  box-sizing: border-box;
+  padding: 20px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  box-shadow: var(--shadow-lg);
+}
+.tour-progress { display: flex; gap: 4px; margin-bottom: 12px; }
+.tour-progress-seg { height: 3px; flex: 1; border-radius: 2px; background: var(--color-neutral-200); transition: background 0.2s ease; }
+.tour-progress-seg--done { background: var(--color-accent); }
+.tour-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+.tour-desc { font-size: 14px; color: var(--color-neutral-700); line-height: 1.6; margin: 0 0 20px; }
+.tour-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tour-skip {
+  background: none;
+  border: none;
+  color: var(--color-neutral-700);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+}
+.tour-skip:hover { color: var(--color-text); }
+
+/* Mobile — recenter the tooltip regardless of the computed inline top/left (a highlight
+   ring pinned to a desktop-only sidebar item, hidden below the same breakpoint the sidebar
+   itself uses, wouldn't land anywhere sensible on a phone screen), and hide the ring since
+   it has nothing valid to point at once the tooltip's own position no longer follows it. */
+@media (max-width: 640px) {
+  .tour-tooltip {
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: calc(100vw - 48px);
+    max-width: 360px;
+  }
+  .tour-highlight { display: none; }
+}
+
 /* A reusable fixed-ratio placeholder for any image whose real dimensions aren't known
    until it loads — most of this app's own images already avoid the problem with a fixed
    pixel height (see .hero-card-media, ArticleImage.tsx, VideoThumbnail.tsx); this covers
@@ -6291,6 +6359,31 @@ html[data-theme="dark"] .app-root--atrium {
 .landing-feature-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-divider)); }
 .landing-feature-card-name { font-family: var(--font-heading); font-weight: 800; font-size: 16.5px; margin: 0 0 8px; }
 .landing-feature-card-body { font-size: 14px; line-height: 1.6; color: var(--color-neutral-700); margin: 0; }
+
+/* — Demo video — sits between features and founding funders. .landing-demo-video-placeholder
+   is a stand-in until the real Loom walkthrough is recorded; swap its contents for the
+   embed's iframe (same wrapper div, same aspect-ratio) once it exists. */
+.landing-demo { max-width: 800px; margin: 0 auto; padding: 60px 24px; text-align: center; }
+.landing-demo-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin: 0 0 12px;
+}
+.landing-demo-body { font-size: 16px; line-height: 1.6; color: var(--color-neutral-700); margin: 0 0 32px; }
+.landing-demo-video-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--landing-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.landing-demo-video-placeholder p { color: var(--color-neutral-700); font-size: 14px; margin: 0; }
 
 /* — Section 5: founding funders — a real section, not a thin banner, hence the generous
    vertical padding and the same gold-tint treatment already established on the Wellness
