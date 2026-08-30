@@ -7,9 +7,10 @@ export const metadata: Metadata = {
   title: "Special Tests",
 };
 
-export default async function ProSpecialTestsPage() {
+export default async function ProSpecialTestsPage({ searchParams }: { searchParams: Promise<{ region?: string }> }) {
   const user = await getCurrentUser();
   if (!user) return null;
+  const { region } = await searchParams;
 
   return (
     <div className="screen-pad">
@@ -18,7 +19,7 @@ export default async function ProSpecialTestsPage() {
         Organized by body region, with performance technique, positive finding, and diagnostic accuracy.
       </p>
 
-      {!hasClinicalReferenceAccess(user) ? <ProGate toolName="Special Tests Library" /> : <SpecialTestsLibrary />}
+      {!hasClinicalReferenceAccess(user) ? <ProGate toolName="Special Tests Library" /> : <SpecialTestsLibrary initialRegionId={region ?? null} />}
     </div>
   );
 }

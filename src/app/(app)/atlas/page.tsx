@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getCurrentUser, hasClinicalReferenceAccess } from "@/lib/session";
+import { getCurrentUser, hasClinicalReferenceAccess, hasStudentAccess } from "@/lib/session";
+import { stripeEnabled } from "@/lib/stripe";
 import { AtlasClient } from "@/components/atlas/AtlasClient";
 
 export const metadata: Metadata = {
@@ -27,7 +28,12 @@ export default async function AtlasPage() {
       </p>
       <p className="atlas-page-note">Free users see preview content. Full access with Limbic Student or LimbicPRO.</p>
 
-      <AtlasClient hasFullAccess={hasClinicalReferenceAccess(user)} />
+      <AtlasClient
+        hasFullAccess={hasClinicalReferenceAccess(user)}
+        isPro={user.isPro}
+        canBuyStudent={hasStudentAccess(user)}
+        billingEnabled={stripeEnabled()}
+      />
     </div>
   );
 }

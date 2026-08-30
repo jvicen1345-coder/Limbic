@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRightIcon, FilmIcon } from "@/components/icons";
+import { ChevronRightIcon, FilmIcon, XIcon } from "@/components/icons";
 import { getSpecialTestVideoAction } from "@/app/actions/special-tests";
 import type { SpecialTestVideo } from "@/lib/special-test-videos";
+import { bodyRegionsForTest } from "@/lib/atlas-special-test-regions";
+import { ATLAS_CONTENT } from "@/lib/atlas-content";
 
 interface SpecialTest {
   name: string;
@@ -645,12 +647,38 @@ function TestCard({ test }: { test: SpecialTest }) {
   );
 }
 
-export function SpecialTestsLibrary() {
+export function SpecialTestsLibrary({ initialRegionId = null }: { initialRegionId?: string | null }) {
   const [region, setRegion] = useState<(typeof REGIONS)[number]>("All");
-  const filtered = region === "All" ? TESTS : TESTS.filter((t) => t.region === region);
+  const [atlasRegionId, setAtlasRegionId] = useState<string | null>(initialRegionId);
+
+  const chipFiltered = region === "All" ? TESTS : TESTS.filter((t) => t.region === region);
+  const atlasRegionName = atlasRegionId ? ATLAS_CONTENT[atlasRegionId]?.name ?? atlasRegionId : null;
+  const regionTagged = atlasRegionId ? chipFiltered.filter((t) => bodyRegionsForTest(t.name, t.region).includes(atlasRegionId)) : chipFiltered;
+  const noTaggedMatches = atlasRegionId !== null && regionTagged.length === 0;
+  const filtered = noTaggedMatches ? chipFiltered : regionTagged;
 
   return (
     <>
+      {atlasRegionId && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+          <span className="tag tag-accent" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            Filtered by: {atlasRegionName}
+            <button
+              type="button"
+              onClick={() => setAtlasRegionId(null)}
+              aria-label="Clear region filter"
+              style={{ display: "inline-flex", background: "none", border: "none", cursor: "pointer", padding: 0, color: "inherit" }}
+            >
+              <XIcon size={12} />
+            </button>
+          </span>
+        </div>
+      )}
+      {noTaggedMatches && (
+        <p style={{ fontSize: 12.5, color: "var(--color-neutral-700)", margin: "0 0 10px" }}>
+          No tests tagged for this region yet — showing all special tests.
+        </p>
+      )}
       <div className="pro-filter-bar">
         {REGIONS.map((r) => (
           <button key={r} type="button" className={`pro-filter-chip${region === r ? " active" : ""}`} onClick={() => setRegion(r)}>

@@ -7762,21 +7762,34 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
    a left region list, a center anterior/posterior SVG, and a right clinical-detail panel.
    Wide wrapper (like .home-pad) rather than .screen-pad's 900px cap, since the three-column
    layout below needs real room. */
-.atlas-page { width: 100%; padding: 36px 44px 60px; max-width: 1300px; margin: 0 auto; box-sizing: border-box; }
+.atlas-page {
+  width: 100%;
+  padding: 36px 44px 60px;
+  max-width: 1300px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 .atlas-page-title { font-size: 24px; margin: 0 0 4px; }
 .atlas-page-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 4px; }
 .atlas-page-note { font-size: 12px; color: var(--color-neutral-600); margin: 0 0 20px; }
 
+/* Independent-scroll 3-pane layout: the page itself never scrolls (see .atlas-page above),
+   so each of the three columns below owns its own scroll region within the viewport height
+   that remains after the title/subtitle/note text. */
 .atlas-layout {
-  display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) 320px;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
   gap: 24px;
-  align-items: start;
 }
 
 /* Region nav — desktop list, grouped and collapsible (reuses .pro-accordion-summary's
    chevron-rotate mechanics from components/pro/SpecialTestsLibrary.tsx). */
-.atlas-region-nav { display: flex; flex-direction: column; gap: 4px; }
+.atlas-region-nav { flex: 0 0 220px; height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
 .atlas-region-group { border-bottom: 1px solid var(--color-divider); padding-bottom: 8px; }
 .atlas-region-group-summary { padding: 8px 2px; font-size: 12.5px; font-weight: 600; }
 .atlas-region-list { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
@@ -7801,7 +7814,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
    (see the layout collapse below). */
 .atlas-mobile-nav { display: none; }
 
-.atlas-map-col { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.atlas-map-col { flex: 1 1 auto; min-width: 0; height: 100%; overflow: hidden; display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .atlas-view-toggle { display: flex; gap: 24px; border-bottom: 1px solid var(--color-divider); width: 100%; justify-content: center; }
 .atlas-view-btn {
   background: none;
@@ -7850,9 +7863,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   border-radius: var(--radius-lg);
   padding: 18px;
   min-width: 0;
-  position: sticky;
-  top: 20px;
-  max-height: calc(100vh - 40px);
+  flex: 0 0 320px;
+  height: 100%;
   overflow-y: auto;
 }
 .atlas-panel-empty { font-size: 13px; color: var(--color-neutral-700); }
@@ -7863,27 +7875,92 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .atlas-muscle-name, .atlas-list-entry-name { font-weight: 600; color: var(--color-text); margin-bottom: 2px; }
 .atlas-pearls-list { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.6; display: flex; flex-direction: column; gap: 6px; }
 
-/* Free-tier preview — same blur + fade-to-surface + centered upgrade card recipe as
-   .nutrition-paywall on app/(app)/wellness/nutrition/page.tsx. */
-.atlas-paywall { position: relative; overflow: hidden; border-radius: var(--radius-lg); margin-top: 16px; }
-.atlas-paywall-content { filter: blur(5px); pointer-events: none; user-select: none; }
-.atlas-paywall-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Free-tier preview — a plain, non-blurred upgrade card in place of the rest of the panel's
+   gated content, rather than the old blur-and-overlay recipe. */
+.atlas-gate-card {
+  background: var(--color-card-surface);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-sm);
   padding: 20px;
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--color-surface) 55%, transparent) 0%, var(--color-surface) 85%);
+  margin-top: 16px;
 }
-.atlas-paywall-card { text-align: center; max-width: 280px; }
-.atlas-paywall-card p { font-size: 12.5px; color: var(--color-neutral-700); margin: 6px 0 14px; }
+.atlas-gate-card-title { font-size: 15px; margin: 0 0 10px; }
+.atlas-gate-card-bullets { margin: 0 0 14px; padding-left: 18px; font-size: 12.5px; line-height: 1.6; color: var(--color-neutral-700); display: flex; flex-direction: column; gap: 4px; }
+.atlas-gate-card-btn { width: 100%; justify-content: center; margin-top: 8px; }
+.atlas-gate-card-note { font-size: 11.5px; color: var(--color-neutral-700); margin: 10px 0 0; }
+
+/* Search bar (above the region list) + its results, swapped in for the region list once the
+   query is 2+ characters — see components/atlas/AtlasClient.tsx. */
+.atlas-search-bar { position: relative; margin-bottom: 10px; }
+.atlas-search-input { width: 100%; padding-right: 28px; box-sizing: border-box; }
+.atlas-search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-neutral-700);
+  display: flex;
+  padding: 2px;
+}
+.atlas-search-results { display: flex; flex-direction: column; gap: 2px; }
+.atlas-search-result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 7px 8px;
+  cursor: pointer;
+}
+.atlas-search-result:hover { background: var(--color-neutral-100); }
+.atlas-search-result-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.atlas-search-result-pill { font-size: 10px; font-weight: 600; text-transform: uppercase; padding: 2px 6px; border-radius: 999px; line-height: 1.4; }
+.atlas-search-result-label { font-size: 12.5px; font-weight: 600; color: var(--color-text); }
+.atlas-search-highlight { background: var(--color-accent-100); color: var(--color-accent-700); border-radius: 2px; }
+.atlas-search-result-region { font-size: 11px; color: var(--color-neutral-700); }
+.atlas-search-no-results, .atlas-search-overflow-note { font-size: 12px; color: var(--color-neutral-700); text-align: center; margin: 10px 0; }
+
+/* Explore Further connection cards — always visible, ungated (see ExploreFurtherSection). */
+.atlas-connections-grid { display: flex; flex-direction: column; gap: 8px; }
+.atlas-connection-card {
+  display: block;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+.atlas-connection-card:hover { border-color: var(--color-accent); }
+.atlas-connection-card--locked { opacity: 0.5; cursor: default; }
+.atlas-connection-card-title { font-size: 12.5px; font-weight: 600; color: var(--color-text); }
+.atlas-connection-card-desc { font-size: 11.5px; color: var(--color-neutral-700); margin: 2px 0 0; }
+.atlas-connection-lock-pill {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-accent-700);
+  background: var(--color-accent-100);
+  padding: 2px 7px;
+  border-radius: 999px;
+}
 
 @media (max-width: 900px) {
-  .atlas-layout { grid-template-columns: 1fr; }
+  /* Mobile is unchanged from before the independent-scroll rework above: the page (and
+     each column) flows and scrolls normally rather than being clipped to the viewport. */
+  .atlas-page { height: auto; overflow: visible; display: block; }
+  .atlas-layout { display: block; }
   .atlas-region-nav { display: none; }
   .atlas-mobile-nav { display: block; order: -1; }
-  .atlas-content-panel { position: static; max-height: none; }
+  .atlas-map-col { height: auto; overflow: visible; }
+  .atlas-content-panel { height: auto; overflow-y: visible; }
   .atlas-body-stage { max-width: 340px; }
 }
 

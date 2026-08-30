@@ -1800,3 +1800,21 @@ model Suggestion {
   body      String
   createdAt DateTime @default(now())
 }
+
+// Admin-assigned region tags for Limbic Boards questions (see lib/board-content.ts's static
+// BOARD_QUESTIONS — there is no BoardsQuestion table; each question only has a stable string
+// `id` like "q1", which `questionId` below references). Powers Limbic Atlas's "Board
+// Questions" section (see app/actions/boards-tagging.ts getQuestionsForRegion, called with
+// the active zone id) and the admin tagging UI at app/(app)/admin/boards-tagging. SQLite has
+// no native array/list column type, so bodyRegions/muscleGroups are stored as JSON-encoded
+// string arrays (same pattern as ConnexionSafetyAssessment's criticalFindings/equipment/
+// caregiverSkills fields above) rather than a relation table, since a question's tag set is
+// small and only ever read/written as a whole.
+model BoardsQuestionTag {
+  id           String   @id @default(cuid())
+  questionId   String   @unique
+  bodyRegions  String   @default("[]")
+  muscleGroups String   @default("[]")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
