@@ -2,7 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
-import { resolvePubmedAbstract } from "@/lib/pubmed";
+import { resolvePubmedAbstract, resolvePmcFullText } from "@/lib/pubmed";
 import type { ArticleVariable } from "@/lib/histogram";
 
 const client = new Anthropic();
@@ -17,7 +17,11 @@ const MODEL = "claude-opus-5";
  * reported numbers behind it, unlike the Generalizability Checker's population comparison which works fine
  * from a reader's own description.
  *
- * The model's only job is extraction — read the actual abstract text and report which variables have real
+ * Reads resolvePmcFullText (lib/pubmed.ts) first — an article's real Methods/Results text and reported
+ * tables when a PMC copy exists, since that's usually where the actual mean/SD/n live, not the abstract —
+ * and falls back to the abstract alone when it doesn't (most articles: PMC deposit isn't universal).
+ *
+ * The model's only job is extraction — read the actual provided text and report which variables have real
  * numbers attached (mean/SD, or median/range), never invent one. All histogram math happens afterward,
  * deterministically, in lib/histogram.ts — asking the model to directly produce bin counts would be asking
  * it to fabricate data with no grounding, exactly what the research-literacy guide's own "never trust a
@@ -26,11 +30,11 @@ const MODEL = "claude-opus-5";
 const SYSTEM_PROMPT = [
   "You are Limbic Agent's Article Variable Extractor, part of the Research & Statistics Literacy toolbox in the Limbic app for physical therapy clinicians and students.",
   "",
-  "Your one job: read a research article's abstract and identify which reported variables have enough quantitative detail to reconstruct an approximate distribution — at minimum a mean and standard deviation, OR a median with a min/max or IQR. Do not include a variable unless the abstract states real numbers for it. Never invent, estimate, or infer a mean, SD, or range that isn't actually written in the text.",
+  "Your one job: read the research article text provided — either its abstract alone, or its full text and reported tables when available — and identify which reported variables have enough quantitative detail to reconstruct an approximate distribution — at minimum a mean and standard deviation, OR a median with a min/max or IQR. Do not include a variable unless the provided text states real numbers for it. Never invent, estimate, or infer a mean, SD, or range that isn't actually written in the text. When full text is provided, reported tables (e.g. a baseline-characteristics or outcomes table) are often where the real numbers are — read them as carefully as the prose.",
   "",
-  "For each qualifying variable, extract: its name as reported (e.g. 'Age', 'BMI', 'Mini-BESTest total score'), its unit if any (null if unitless, like a test score), sample size (n) if given, mean, SD, median, min, and max exactly as reported (null for any not given), and a best-guess shape: 'normal', 'right-skewed', 'left-skewed', or 'unknown'. Base the shape only on explicit language in the abstract (e.g. 'skewed', 'non-normally distributed', reporting median instead of mean) or well-established measurement properties (e.g. completion times and pain/symptom scores are commonly right-skewed, floored near zero) — default to 'unknown' rather than guessing without basis.",
+  "For each qualifying variable, extract: its name as reported (e.g. 'Age', 'BMI', 'Mini-BESTest total score'), its unit if any (null if unitless, like a test score), sample size (n) if given, mean, SD, median, min, and max exactly as reported (null for any not given), and a best-guess shape: 'normal', 'right-skewed', 'left-skewed', or 'unknown'. Base the shape only on explicit language in the text (e.g. 'skewed', 'non-normally distributed', reporting median instead of mean) or well-established measurement properties (e.g. completion times and pain/symptom scores are commonly right-skewed, floored near zero) — default to 'unknown' rather than guessing without basis.",
   "",
-  "If the abstract reports no variables with enough quantitative detail to build even an approximate distribution, return an empty list. Do not force a result.",
+  "If the provided text reports no variables with enough quantitative detail to build even an approximate distribution, return an empty list. Do not force a result.",
   "",
   "Respond only in the requested structured format. No chat preamble, no markdown formatting.",
 ].join("\n");
@@ -75,8 +79,15 @@ export async function extractArticleVariables(studyInput: string): Promise<Artic
   if (!resolved) {
     return { ok: false, message: "Couldn't find that article on PubMed — paste a PubMed link, PMID, DOI, or the article's title/citation." };
   }
-  if (!resolved.abstract) {
-    return { ok: false, message: `Found "${resolved.title}" but no abstract is on file for it, so there's nothing to pull variables from.` };
+
+  // PubMed's own E-utilities only ever serve an abstract — reaching the actual Methods/
+  // Results text and reported tables (where the real mean/SD/n usually live) means a
+  // second, separate PMC lookup, and only when the publisher deposited a copy there. Falls
+  // back to the abstract alone exactly as before whenever that isn't the case.
+  const fullText = await resolvePmcFullText(resolved.pmid);
+  const sourceText = fullText ?? resolved.abstract;
+  if (!sourceText) {
+    return { ok: false, message: `Found "${resolved.title}" but no abstract or full text is on file for it, so there's nothing to pull variables from.` };
   }
 
   try {
@@ -89,7 +100,7 @@ export async function extractArticleVariables(studyInput: string): Promise<Artic
       messages: [
         {
           role: "user",
-          content: `Abstract (title: "${resolved.title}", journal: ${resolved.journal}):\n${resolved.abstract}\n\nExtract every variable reported with enough quantitative detail to plot.`,
+          content: `${fullText ? "Full article text and reported tables" : "Abstract"} (title: "${resolved.title}", journal: ${resolved.journal}):\n${sourceText}\n\nExtract every variable reported with enough quantitative detail to plot.`,
         },
       ],
     });
