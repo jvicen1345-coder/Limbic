@@ -416,7 +416,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             <NavLink href="/wellness/nutrition" icon={<AppleIcon />} label="Nutrition" bold={false} onNavigate={onNavigate} />
             <NavLink href="/wellness/assess" icon={<CheckCircleIcon />} label="Assess Yourself" bold={false} onNavigate={onNavigate} />
             <NavLink href="/wellness/exercises" icon={<DumbbellIcon />} label="Exercise Library" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" bold={false} onNavigate={onNavigate} />
           </>
         )}
       </>
@@ -501,6 +500,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
       <NavLink href="/calendar" icon={<CalendarIcon />} label="Limbic Calendar" onNavigate={onNavigate} />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
+      <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" onNavigate={onNavigate} />
       <NavLink href="/atlas" icon={<BodyIcon />} label="Limbic Atlas" onNavigate={onNavigate} />
 
       {zoneTwoOrder.map((key) => (

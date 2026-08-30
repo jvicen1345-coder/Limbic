@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { getCurrentUser, hasStudentAccess, hasLicenseAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { GraduationCapIcon, ZapIcon } from "@/components/icons";
@@ -9,6 +8,7 @@ export const metadata: Metadata = {
 };
 import { BoardQuestionCard } from "@/components/BoardQuestionCard";
 import { BoardsTabs } from "@/components/BoardsTabs";
+import { DailyGamesSection } from "@/components/DailyGamesSection";
 import { LimbicStudentGate } from "@/components/student/LimbicStudentGate";
 import { questionForDate, termForDate, todayDateKey, NPTE_THREE_QUESTION_BENCHMARK_SECONDS } from "@/lib/board-content";
 import { dayIndexForDateKey, caseForDayIndex } from "@/lib/cases-static";
@@ -25,14 +25,38 @@ import { computeBestStreak, last7DateKeys } from "@/lib/games";
  *  clinician account only ever gets today's question — not the rest of Limbic Boards,
  *  which stays a student-only product, gated below on the paid LimbicStudent tier (see
  *  components/student/LimbicStudentGate.tsx) rather than just a .edu sign-in — same
- *  "purchasable inside Boards" line drawn in app/(app)/student/page.tsx's own comment. */
+ *  "purchasable inside Boards" line drawn in app/(app)/student/page.tsx's own comment.
+ *  Every branch below also renders DailyGamesSection — the three clinical-knowledge daily
+ *  games that used to live on /games — since those were never gated by tier and moved
+ *  here unchanged in that respect; only the NPTE prep tools stay behind the tier gate. */
 export default async function BoardsHubPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
   const isStudent = hasStudentAccess(user);
   const isClinician = hasLicenseAccess(user);
-  if (!isStudent && !isClinician) redirect("/pro");
+
+  // Limbic Boards' own NPTE prep tools (Daily Sharpening, breakdown, etc.) are a student/
+  // clinician product, gated below — but the daily games that moved here from /games (see
+  // DailyGamesSection's own comment) were never gated by tier and stay that way, so a
+  // visitor with neither access gets a real page instead of the redirect this branch used
+  // to send everyone else here to /pro.
+  if (!isStudent && !isClinician) {
+    return (
+      <div className="screen-pad boards-question-pad page-enter" style={{ maxWidth: 760, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+          <GraduationCapIcon size={22} style={{ color: "var(--color-accent)" }} />
+          <h1 style={{ fontSize: 24, margin: 0 }}>Limbic Boards</h1>
+        </div>
+        <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
+          Limbic Boards&rsquo; NPTE prep tools are available to PT students and licensed clinicians. Everyone can still play
+          today&rsquo;s clinical games below.
+        </p>
+        <h2 style={{ fontSize: 19, margin: "0 0 12px" }}>Daily Games</h2>
+        <DailyGamesSection />
+      </div>
+    );
+  }
 
   const dateKey = todayDateKey();
   const question = questionForDate(dateKey);
@@ -54,6 +78,8 @@ export default async function BoardsHubPage() {
           initialElapsedSeconds={questionCompletion?.elapsedSeconds ?? null}
           nexusOptIn={user.nexusOptIn}
         />
+        <h2 style={{ fontSize: 19, margin: "28px 0 12px" }}>Daily Games</h2>
+        <DailyGamesSection />
       </div>
     );
   }
@@ -69,6 +95,8 @@ export default async function BoardsHubPage() {
           Your NPTE prep hub, a board-style question and a term to lock in every day, building toward exam day.
         </p>
         <LimbicStudentGate toolName="Limbic Boards" />
+        <h2 style={{ fontSize: 19, margin: "28px 0 12px" }}>Daily Games</h2>
+        <DailyGamesSection />
       </div>
     );
   }
@@ -123,6 +151,9 @@ export default async function BoardsHubPage() {
         longestStreak={longestStreak}
         weekDays={weekDays}
       />
+
+      <h2 style={{ fontSize: 19, margin: "28px 0 12px" }}>Daily Games</h2>
+      <DailyGamesSection />
     </div>
   );
 }

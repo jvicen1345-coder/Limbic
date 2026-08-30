@@ -184,7 +184,7 @@ function DifferentialStatsSection({ stats }: { stats: DifferentialStats }) {
         </div>
       </div>
       <div className="differential-back-link">
-        <Link href="/games">Back to Games</Link>
+        <Link href="/boards">Back to Boards</Link>
       </div>
     </div>
   );
