@@ -7766,7 +7766,7 @@ select.connexion-visit-input { color-scheme: dark; }
 /* — Generic 2-column responsive card grid — calculators, decision rules,
    special tests, medications, documentation, guidelines all reuse this same
    grid shape, single column under 860px. */
-.pro-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.pro-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-items: start; }
 @media (min-width: 860px) {
   .pro-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
