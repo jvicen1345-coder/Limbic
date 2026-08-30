@@ -328,7 +328,19 @@ Never use abbreviations. Never use clinical jargon. Write to the patient directl
  *  Lab (90/85 — see getLSIStatus in lib/force-lab-units.ts, whose own boundary is 90/80; 85
  *  matches this feature's own "Needs Attention" cutoff instead since that's the line the
  *  patient report's own Focus Areas section uses). */
-export async function generatePatientStrengthSummary(assessment: PatientStrengthSummaryInput): Promise<string | null> {
+export type PatientStrengthSummaryResult = { ok: true; summary: string } | { ok: false; error: string };
+
+/** Formats a caught error into something a clinician can actually act on and, just as
+ *  importantly, something that's visible without server log access — an Anthropic
+ *  APIError's status (401 bad key, 429 rate limited, 529 overloaded, etc.) narrows the
+ *  cause immediately, which a bare "Could not generate" never could. */
+function describeGenerationError(error: unknown): string {
+  if (error instanceof Anthropic.APIError) return `AI request failed (${error.status ?? "unknown status"}): ${error.message}`;
+  if (error instanceof Error) return `AI request failed: ${error.message}`;
+  return "AI request failed for an unknown reason.";
+}
+
+export async function generatePatientStrengthSummary(assessment: PatientStrengthSummaryInput): Promise<PatientStrengthSummaryResult> {
   try {
     const concernGroups = assessment.muscleGroups
       .filter((m) => m.lsi !== undefined && m.lsi < 85)
@@ -361,10 +373,10 @@ Return only the 3 paragraph summary.`,
     });
 
     const content = message.content[0];
-    if (content.type !== "text") return null;
-    return content.text.trim();
+    if (content.type !== "text") return { ok: false, error: `Model returned an unexpected response type ("${content.type}") instead of text.` };
+    return { ok: true, summary: content.text.trim() };
   } catch (error) {
     console.error("Patient summary generation failed:", error);
-    return null;
+    return { ok: false, error: describeGenerationError(error) };
   }
 }
