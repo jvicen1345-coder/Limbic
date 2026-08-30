@@ -136,6 +136,7 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
       <div className="hero-card-media">
         <ArticleImage key={article.id} src={article.image} fill />
         <div className="hero-card-topleft">
+          <span className={article.typeTagClass}>{article.specialtyLabel}</span>
           {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
           <OpenAccessPill doi={article.doi} />
         </div>
