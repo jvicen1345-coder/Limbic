@@ -888,11 +888,15 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 
 /* The Founding Funders sidebar link (see AppShell.tsx FoundingFundersNavLink) — a fixed
-   gold, not var(--color-accent), so it stands out from every other (blue) nav item. */
+   gold, not var(--color-accent), so it stands out from every other (blue) nav item. No
+   vertical margin on the separator itself — .app-sidebar's own `gap` between flex children
+   already gives it the same spacing as any other two adjacent nav items; a margin here on
+   top of that gap was what opened up an oversized gap before Admin's last item and Founding
+   Funders. */
 .nav-founding-separator {
   border: none;
   border-top: 1px solid var(--color-neutral-200);
-  margin: 10px 12px;
+  margin: 0 12px;
 }
 .nav-founding-link {
   display: flex;
@@ -1059,177 +1063,6 @@ html[data-theme="dark"] .nav-founding-link-active {
 @media (min-width: 800px) {
   .app-mobile-drawer, .app-mobile-drawer-backdrop { display: none; }
 }
-
-/* — Nav items (NavLink/NavToggle, see components/AppShell.tsx) — base rules. These are
-   what the mobile .app-mobile-drawer renders (nothing below scopes them out of it), byte-
-   for-byte the same look this sidebar always had before the desktop redesign further down
-   this file replaced the old inline styles with these classes. Previously
-   sidebarNavStyle(active, bold) computed this look inline per-render; NavToggle's own
-   permanent background wash (unconditional, not tied to `expanded`) is preserved here too. */
-.nav-link, .nav-toggle {
-  display: flex; align-items: center; gap: 10px;
-  border: none; border-left: 3px solid transparent;
-  background: none; cursor: pointer;
-  font: 600 14px var(--font-body);
-  padding: 13px 12px;
-  border-radius: var(--radius-lg);
-  text-align: left; width: 100%; box-sizing: border-box;
-  color: var(--color-text);
-  text-decoration: none;
-  transition: background 150ms ease, border-color 150ms ease;
-}
-.nav-link--sub { font-weight: 400; }
-.nav-link--active { border-left-color: var(--color-accent); background: var(--color-accent-100); color: var(--color-accent-700); }
-.nav-toggle { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
-.nav-toggle-chevron { margin-left: auto; flex-shrink: 0; transition: transform 150ms ease; }
-.nav-toggle--expanded .nav-toggle-chevron { transform: rotate(90deg); }
-.nav-pro-pill { display: none; }
-.nav-zone-divider { display: none; }
-
-/* ============================================================================
-   Sidebar redesign (desktop only) — components/AppShell.tsx. NavLink/NavToggle/
-   FoundingFundersNavLink share one JSX tree between the real .app-sidebar and the mobile
-   .app-mobile-drawer; the base rules just above are what the mobile drawer keeps
-   rendering. Every rule below, scoped under .app-sidebar, is what changes only the desktop
-   sidebar — .app-mobile-drawer never matches any of these selectors, so nothing here can
-   touch it. The footer is the one exception to "one tree, two looks": NavContent's
-   `variant` prop renders genuinely different markup there for "desktop" vs "mobile" (a
-   real new avatar element the mobile footer never had), not the same tree styled two ways.
-
-   Token mapping from the design spec's vocabulary (var(--border)/--text-primary/
-   --text-secondary/--card/--brand) onto this app's actual --color-* tokens, since none of
-   those names exist here: --border -> --color-neutral-200 (the same border this sidebar
-   already uses for its own border-right and .nav-footer's border-top); --text-primary ->
-   --color-text; --text-secondary -> --color-neutral-700; --brand -> --color-accent;
-   --card, wherever the spec means "a neutral hover/expanded wash" (not a literal solid
-   swatch) -> color-mix(in srgb, var(--color-text) N%, transparent), the same theme-
-   adaptive technique the old NavToggle wash above already used — a precomputed swatch
-   token doesn't survive contrast against this sidebar's own non-white
-   --color-surface-secondary background the way a text-mixed tint does, and doesn't need a
-   separate dark-mode override either. Where --card instead means a literal bordered
-   surface (the theme-toggle button), --color-surface is the closer real match — the same
-   token every card/input in this app already sits on.
-   ============================================================================ */
-
-.app-sidebar { gap: 2px; padding: 16px 12px; }
-
-.app-sidebar .nav-link, .app-sidebar .nav-toggle, .app-sidebar .nav-founding-link {
-  height: 36px; padding: 0 12px; gap: 8px;
-  border-radius: 6px;
-  font-size: 13px;
-}
-.app-sidebar .nav-link, .app-sidebar .nav-toggle {
-  font-weight: 500;
-  background: transparent;
-  color: var(--color-text);
-  border-left: 2px solid transparent;
-  transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease;
-}
-.app-sidebar .nav-link .nav-icon, .app-sidebar .nav-toggle .nav-icon {
-  display: inline-flex; flex-shrink: 0;
-  color: var(--color-neutral-700);
-}
-.app-sidebar .nav-link .nav-icon svg, .app-sidebar .nav-toggle .nav-icon svg { width: 16px; height: 16px; }
-.app-sidebar .nav-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-.app-sidebar .nav-link:hover, .app-sidebar .nav-toggle:hover {
-  background: color-mix(in srgb, var(--color-text) 8%, transparent);
-  color: var(--color-text);
-}
-.app-sidebar .nav-link:hover .nav-icon, .app-sidebar .nav-toggle:hover .nav-icon { color: var(--color-text); }
-
-.app-sidebar .nav-link.nav-link--active {
-  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
-  border-left-color: var(--color-accent);
-  border-radius: 0 6px 6px 0;
-  color: var(--color-accent);
-}
-.app-sidebar .nav-link.nav-link--active .nav-icon { color: var(--color-accent); }
-
-.app-sidebar .nav-link.nav-link--sub { margin-left: 24px; width: calc(100% - 24px); font-size: 12px; }
-
-.app-sidebar .nav-toggle.nav-toggle--expanded {
-  background: color-mix(in srgb, var(--color-text) 5%, transparent);
-  color: var(--color-text);
-}
-.app-sidebar .nav-toggle-chevron { margin-left: auto; flex-shrink: 0; transition: transform 0.1s ease; }
-.app-sidebar .nav-toggle--expanded .nav-toggle-chevron { transform: rotate(180deg); }
-
-.app-sidebar .nav-pro-pill {
-  display: inline-flex; align-items: center; flex-shrink: 0;
-  font-size: 10px; font-weight: 700;
-  color: var(--color-accent);
-  background: color-mix(in srgb, var(--color-accent) 15%, transparent);
-  border-radius: 4px;
-  padding: 1px 5px;
-}
-.app-sidebar .nav-pro-pill + .nav-toggle-chevron { margin-left: 6px; }
-
-/* Founding Funders keeps its own amber color untouched (see .nav-founding-link's base
-   rule above this block) — only its size/spacing changes to match every other item here.
-   Its old .nav-founding-separator still renders for the mobile drawer, unchanged; hidden
-   here since the redesign's own zone divider below already opens Zone 3. */
-.app-sidebar .nav-founding-link { color: #c9933a; }
-html[data-theme="dark"] .app-sidebar .nav-founding-link { color: #d9a94d; }
-.app-sidebar .nav-founding-separator { display: none; }
-.app-sidebar .nav-zone-divider { display: block; border: none; border-top: 1px solid var(--color-neutral-200); margin: 8px 0; }
-
-/* — Footer (desktop-only markup — see NavContent's variant="desktop" branch in
-   AppShell.tsx; the mobile drawer renders a separate, untouched .nav-footer tree that
-   never uses any of these classes) — */
-.app-sidebar .nav-footer--desktop {
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid var(--color-neutral-200);
-  display: flex; flex-direction: column; gap: 8px;
-}
-.app-sidebar .nav-footer-user {
-  display: flex; align-items: center; gap: 8px;
-  text-decoration: none;
-  border-radius: 6px;
-  padding: 4px; margin: -4px;
-  transition: background 0.1s ease;
-}
-.app-sidebar .nav-footer-user:hover { background: color-mix(in srgb, var(--color-text) 8%, transparent); }
-.app-sidebar .nav-footer-avatar {
-  width: 24px; height: 24px; flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--color-accent);
-  color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700;
-}
-.app-sidebar .nav-footer-user-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.app-sidebar .nav-footer-name-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
-.app-sidebar .nav-footer-name {
-  font-size: 13px; font-weight: 600; color: var(--color-text);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
-}
-.app-sidebar .nav-footer-role {
-  font-size: 11px; color: var(--color-neutral-700);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.app-sidebar .nav-footer--desktop .nav-footer-clinic-pill { margin-top: 2px; align-self: flex-start; }
-.app-sidebar .nav-footer-theme-btn {
-  width: 100%; height: 32px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-neutral-200);
-  border-radius: 6px;
-  font-size: 12px;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  cursor: pointer;
-  color: var(--color-text);
-}
-.app-sidebar .nav-footer-signout {
-  background: none; border: none;
-  padding: 0 0 8px;
-  font-size: 12px;
-  color: var(--color-neutral-700);
-  text-align: center;
-  cursor: pointer;
-  width: 100%;
-}
-.app-sidebar .nav-footer-signout:hover { color: var(--color-text); }
 
 /* — Clips: a full-bleed, TikTok-style vertical feed — */
 .clips-feed-wrap { position: relative; }
