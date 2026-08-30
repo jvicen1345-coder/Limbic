@@ -9196,13 +9196,13 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .pbrief-patient-title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 4px; }
 .pbrief-patient-title { font-size: 22px; margin: 0; }
 .pbrief-patient-title-date { font-size: 13px; color: #666; white-space: nowrap; }
-.pbrief-patient-prepared-by { font-size: 13px; color: #666; margin: 6px 0 0; }
-.pbrief-patient-name-line { font-size: 13px; margin: 18px 0 0; }
-.pbrief-patient-rule { border: none; border-top: 1px solid #ddd; margin: 18px 0; }
+.pbrief-patient-prepared-by { font-size: 13px; color: #666; margin: 4px 0 0; }
+.pbrief-patient-name-line { font-size: 13px; margin: 12px 0 0; }
+.pbrief-patient-rule { border: none; border-top: 1px solid #ddd; margin: 12px 0; }
 
 .pbrief-patient-section { break-inside: avoid; page-break-inside: avoid; }
 .pbrief-patient-section-title { font-size: 15px; font-weight: 700; color: #3b6fe0; margin: 0 0 8px; }
-.pbrief-patient-subtitle { font-size: 12.5px; color: #666; line-height: 1.6; margin: 0 0 14px; }
+.pbrief-patient-subtitle { font-size: 12.5px; color: #666; line-height: 1.6; margin: 0 0 10px; }
 .pbrief-patient-summary-text { font-size: 13px; line-height: 1.7; margin: 0; white-space: pre-wrap; }
 .pbrief-patient-summary-placeholder {
   font-size: 12.5px;
@@ -9214,37 +9214,77 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   margin: 0;
 }
 
-.pbrief-muscle-card { break-inside: avoid; page-break-inside: avoid; padding: 10px 0; }
+.pbrief-muscle-card { break-inside: avoid; page-break-inside: avoid; padding: 8px 0; }
 .pbrief-muscle-card-name { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
 .pbrief-muscle-card-rule { border: none; border-top: 1px solid rgba(221, 221, 221, 0.4); margin: 0; }
 
 .pbrief-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 12px; }
 .pbrief-bar-label { width: 40px; flex-shrink: 0; color: #666; }
-.pbrief-bar-track { flex: 1; background: #eee; border-radius: 6px; height: 12px; overflow: hidden; }
-.pbrief-bar-fill { display: block; height: 12px; border-radius: 6px; }
-.pbrief-bar-fill--right { background: #3b6fe0; }
-.pbrief-bar-fill--left { background: #c9853a; }
+.pbrief-bar-track { flex: 1; background: #eee; border-radius: 5px; height: 10px; overflow: hidden; }
+.pbrief-bar-fill { display: block; height: 10px; border-radius: 5px; }
+.pbrief-bar-fill--left { background: #3b6fe0; }
+.pbrief-bar-fill--right { background: #c9853a; }
 .pbrief-bar-value { width: 48px; flex-shrink: 0; text-align: right; font-size: 12px; }
 
 .pbrief-symmetry-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
 .pbrief-symmetry-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; font-size: 11.5px; font-weight: 700; }
 .pbrief-patient-norm { font-size: 11.5px; color: #666; }
 
-.pbrief-focus-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px solid #eee; font-size: 13px; }
-.pbrief-focus-muscle { font-weight: 700; }
-.pbrief-focus-label { color: #666; text-align: right; }
+/* — Overall Strength Summary card (between the header and Your Results at a Glance) — a
+   quick three-bucket roll-up, coarser than the per-muscle-group pill's five-tier scale
+   (see plainLSILabel): Excellent/Good both read green here, anything under the Areas to
+   Work On threshold reads red as "Needs attention", so the patient gets one glance at the
+   overall picture before the per-muscle-group detail below. */
+.pbrief-overview-card { background: #f5f5f3; border-radius: 8px; padding: 14px 18px; }
+.pbrief-overview-title { font-size: 13px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 8px; }
+.pbrief-overview-tested { font-size: 12.5px; color: #555; margin-bottom: 8px; }
+.pbrief-overview-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 2px 0; }
+.pbrief-overview-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.pbrief-overview-dot--green { background: #16a34a; }
+.pbrief-overview-dot--red { background: #dc2626; }
+.pbrief-overview-count { font-weight: 700; }
 
-.pbrief-patient-bullets { font-size: 12.5px; line-height: 1.7; margin: 0; padding-left: 20px; }
-.pbrief-patient-note-space { height: 60px; border-bottom: 1px dashed #ccc; margin-top: 10px; }
+.pbrief-focus-item { padding: 7px 0; border-bottom: 1px solid #eee; }
+.pbrief-focus-muscle { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+.pbrief-focus-sentence { font-size: 12.5px; color: #444; line-height: 1.55; margin: 0; }
 
-.pbrief-patient-footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 32px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 10px; color: #777; }
+.pbrief-patient-bullets { font-size: 12.5px; line-height: 1.6; margin: 0 0 12px; padding-left: 20px; }
+.pbrief-next-steps-title { font-size: 13px; font-weight: 700; margin: 12px 0 6px; }
+.pbrief-patient-contact { font-size: 12.5px; margin: 0 0 2px; }
+.pbrief-patient-summary-recap { background: #f5f5f3; border-radius: 6px; padding: 12px 14px; margin-bottom: 4px; }
+
+.pbrief-patient-footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 20px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 10px; color: #777; }
+
+/* — Screen-only "summary not generated" gate above the Patient Report (see
+   ForceLabAssessmentPrintView.tsx) — same amber as FORCE_LAB_AMBER used throughout this
+   report's bars/pills, literal hex like every other rule in this print-document family. */
+.pbrief-summary-warning {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 750px;
+  margin: 14px auto 0;
+  padding: 12px 16px;
+  background: #fdf1e0;
+  border: 1px solid #e8b567;
+  border-left: 4px solid #c9853a;
+  border-radius: 6px;
+  color: #7a4a1a;
+}
+.pbrief-summary-warning-icon { flex-shrink: 0; color: #c9853a; }
+.pbrief-summary-warning-text { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; line-height: 1.5; }
+.pbrief-summary-warning-title { font-weight: 700; font-size: 13px; }
+.pbrief-summary-warning button { flex-shrink: 0; }
 
 @media (max-width: 600px) {
   .pbrief-patient-title-row { flex-direction: column; align-items: flex-start; gap: 4px; }
   .pbrief-bar-label { width: 36px; }
   .pbrief-patient-footer { flex-direction: column; gap: 4px; }
-  .pbrief-focus-row { flex-direction: column; align-items: flex-start; gap: 2px; }
-  .pbrief-focus-label { text-align: left; }
+  .pbrief-summary-warning { flex-direction: column; align-items: flex-start; }
+}
+
+@media print {
+  .pbrief-summary-warning { display: none !important; }
 }
 
 @media print {

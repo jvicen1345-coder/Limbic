@@ -56,6 +56,7 @@ export default async function ForceLabAssessmentPrintPage({ params }: { params: 
         clinicianName={clinicianName}
         clinicianCredential={clinicianCredential}
         clinicianClinicName={user.clinicName ?? ""}
+        clinicianEmail={user.email}
         generatedOn={generatedOn}
         initialPatientSummary={assessment.patientSummary}
       />

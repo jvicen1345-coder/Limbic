@@ -1,11 +1,17 @@
-import { plainNormativeComparison, plainLSILabel, plainLSIColor, plainMuscleGroupName } from "@/lib/force-lab-plain-language";
+import { plainNormativeComparison, plainLSILabel, plainLSIColor, plainMuscleGroupName, plainFocusAreaSentence } from "@/lib/force-lab-plain-language";
 import type { ForceLabAssessmentWithSessions } from "@/app/actions/force-lab";
 
-const GENERIC_MEANING_BULLETS = [
-  "Your strength results help guide your treatment plan",
-  "Improving symmetry between sides reduces injury risk and improves function",
-  "Ask your therapist what these results mean for your specific goals",
+const NEXT_STEPS = [
+  "Continue your home exercise program as prescribed",
+  "Attend your scheduled therapy sessions",
+  "Contact your therapist if you notice any changes in your symptoms",
 ];
+
+// Same floor the Areas to Work On section itself filters on below — an LSI under this is
+// worth a patient's attention, so it also counts toward "Needs attention" in the overview
+// card instead of getting split further into the pill's own five-tier scale.
+const NEEDS_ATTENTION_LSI = 80;
+const EXCELLENT_LSI = 95;
 
 /** Small inline mark rather than an image asset — this codebase has no existing Limbic
  *  logo file to reuse (the app's own sidebar renders its wordmark as plain text), so this is
@@ -31,6 +37,7 @@ export function ForceLabPatientReportBody({
   clinicianName,
   clinicianCredential,
   clinicianClinicName,
+  clinicianEmail,
   summary,
 }: {
   assessment: ForceLabAssessmentWithSessions;
@@ -38,14 +45,22 @@ export function ForceLabPatientReportBody({
   clinicianName: string;
   clinicianCredential: string;
   clinicianClinicName: string;
+  clinicianEmail: string | null;
   summary: string | null;
 }) {
   const maxValue = Math.max(1, ...assessment.sessions.flatMap((s) => [s.leftPeak ?? 0, s.rightPeak ?? 0]));
 
+  // Every muscle group below 80% LSI, not just the single lowest — ordered ascending so the
+  // most-affected side leads the section (e.g. a 34.7% result reads before a 56.8% one).
   const focusAreas = assessment.sessions
-    .filter((s) => s.lsi != null && s.lsi < 85)
+    .filter((s) => s.lsi != null && s.lsi < NEEDS_ATTENTION_LSI)
     .slice()
     .sort((a, b) => a.lsi! - b.lsi!);
+
+  const bilateralLsis = assessment.sessions.map((s) => s.lsi).filter((lsi): lsi is number => lsi != null);
+  const excellentCount = bilateralLsis.filter((lsi) => lsi >= EXCELLENT_LSI).length;
+  const goodCount = bilateralLsis.filter((lsi) => lsi >= NEEDS_ATTENTION_LSI && lsi < EXCELLENT_LSI).length;
+  const needsAttentionCount = bilateralLsis.filter((lsi) => lsi < NEEDS_ATTENTION_LSI).length;
 
   return (
     <div className="patient-brief-doc pbrief-patient-doc">
@@ -67,6 +82,24 @@ export function ForceLabPatientReportBody({
       </p>
       {clinicianClinicName && <p className="pbrief-patient-prepared-by">Practice: {clinicianClinicName}</p>}
       <p className="pbrief-patient-name-line">Name: ________________________</p>
+      <hr className="pbrief-patient-rule" />
+
+      <div className="pbrief-overview-card">
+        <div className="pbrief-overview-title">Overall Strength Summary</div>
+        <div className="pbrief-overview-tested">{assessment.sessions.length} muscle groups tested</div>
+        <div className="pbrief-overview-row">
+          <span className="pbrief-overview-dot pbrief-overview-dot--green" />
+          <span className="pbrief-overview-count">{excellentCount}</span> Excellent symmetry
+        </div>
+        <div className="pbrief-overview-row">
+          <span className="pbrief-overview-dot pbrief-overview-dot--green" />
+          <span className="pbrief-overview-count">{goodCount}</span> Good symmetry
+        </div>
+        <div className="pbrief-overview-row">
+          <span className="pbrief-overview-dot pbrief-overview-dot--red" />
+          <span className="pbrief-overview-count">{needsAttentionCount}</span> Needs attention
+        </div>
+      </div>
       <hr className="pbrief-patient-rule" />
 
       <div className="pbrief-patient-section">
@@ -128,7 +161,7 @@ export function ForceLabPatientReportBody({
                     </div>
                     <div className="pbrief-symmetry-row">
                       <span className="pbrief-symmetry-pill" style={{ color: plainLSIColor(s.lsi!), borderColor: plainLSIColor(s.lsi!) }}>
-                        {s.lsi}% — {plainLSILabel(s.lsi!)}
+                        {plainLSILabel(s.lsi!)}
                       </span>
                       {normStatus && <span className="pbrief-patient-norm">{plainNormativeComparison(normStatus)}</span>}
                     </div>
@@ -150,9 +183,9 @@ export function ForceLabPatientReportBody({
             </div>
             <p className="pbrief-patient-subtitle">Your therapist will focus on these areas in your upcoming sessions.</p>
             {focusAreas.map((s) => (
-              <div className="pbrief-focus-row" key={s.id}>
-                <span className="pbrief-focus-muscle">{plainMuscleGroupName(s.muscleGroup)}</span>
-                <span className="pbrief-focus-label">{plainLSILabel(s.lsi!)}</span>
+              <div className="pbrief-focus-item" key={s.id}>
+                <div className="pbrief-focus-muscle">{plainMuscleGroupName(s.muscleGroup)}</div>
+                <p className="pbrief-focus-sentence">{plainFocusAreaSentence(s.muscleGroup, s.leftPeak, s.rightPeak, s.lsi!)}</p>
               </div>
             ))}
           </div>
@@ -162,12 +195,18 @@ export function ForceLabPatientReportBody({
       <hr className="pbrief-patient-rule" />
       <div className="pbrief-patient-section">
         <div className="pbrief-patient-section-title">What This Means For You</div>
+        {summary && <p className="pbrief-patient-summary-text pbrief-patient-summary-recap">{summary}</p>}
+
+        <div className="pbrief-next-steps-title">Your Next Steps</div>
         <ul className="pbrief-patient-bullets">
-          {GENERIC_MEANING_BULLETS.map((b) => (
+          {NEXT_STEPS.map((b) => (
             <li key={b}>{b}</li>
           ))}
         </ul>
-        <div className="pbrief-patient-note-space" />
+
+        <div className="pbrief-next-steps-title">Questions About Your Results?</div>
+        {clinicianEmail && <p className="pbrief-patient-contact">Contact: {clinicianEmail}</p>}
+        {clinicianClinicName && <p className="pbrief-patient-contact">{clinicianClinicName}</p>}
       </div>
 
       <div className="pbrief-patient-footer">
