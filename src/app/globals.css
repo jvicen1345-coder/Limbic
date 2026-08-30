@@ -3828,7 +3828,9 @@ html[data-theme="dark"] .nav-founding-link-active {
   border-radius: 50%;
   background: color-mix(in srgb, var(--game-accent, var(--color-accent)) 16%, transparent);
 }
-.game-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 19px; margin: 0 0 6px; }
+/* No font-family override — inherits the ambient body font (var(--font-body)) instead of
+   the display heading font, which rendered too heavy for a card title at this size. */
+.game-card-title { font-weight: var(--font-heading-weight); font-size: 19px; margin: 0 0 6px; }
 .game-card-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.45; margin: 0 0 14px; flex: 1; }
 
 .game-card-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 12px; color: var(--color-neutral-700); }
@@ -3901,6 +3903,58 @@ html[data-theme="dark"] .nav-founding-link-active {
 @keyframes games-pulse {
   0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent); }
   50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-accent) 0%, transparent); }
+}
+
+/* — Daily Games context bar (components/DailyGamesSection.tsx) — plain text strip above
+   the three standalone game cards on /boards, no card shell of its own. */
+.daily-games-context-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.daily-games-context-date { font-size: 13px; color: var(--color-neutral-700); }
+.daily-games-context-status { font-size: 13px; }
+.daily-games-context-status--complete { color: #16a34a; }
+.daily-games-context-status--partial { color: #c9853a; }
+.daily-games-context-status--none { color: var(--color-neutral-700); }
+
+/* — Daily Games three-state card treatment — scoped to .game-card-standalone (rather than
+   the bare .game-card-completed/.game-card-fresh/.game-card-progress classes above) so the
+   /games hub's own Wordle/Crossword/Trivia cards, which share those same base classes,
+   keep their existing tokenized (--color-games-completed) styling untouched. Only
+   not-started and completed are implemented — these three games have no in-progress
+   signal in the data (see DailyGamesSection.tsx's own comment), so there's nothing to
+   detect an "in progress" state from. */
+.game-card-standalone.game-card-not-started {
+  background: var(--color-card-surface);
+}
+.game-card-standalone.game-card-completed {
+  background: color-mix(in srgb, var(--color-card-surface) 60%, transparent);
+  border-color: color-mix(in srgb, var(--color-divider) 40%, transparent);
+  opacity: 1;
+}
+.game-card-standalone.game-card-completed .game-card-title { color: var(--color-neutral-700); }
+.game-card-standalone.game-card-completed .game-card-desc.game-card-desc--clamp {
+  color: var(--color-neutral-700);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+.game-card-standalone.game-card-completed .game-card-daily-badge {
+  background: color-mix(in srgb, var(--color-neutral-700) 20%, transparent);
+  color: var(--color-neutral-700);
+}
+.game-card-standalone-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #16a34a;
 }
 
 /* — Your Stats section — */
@@ -3985,8 +4039,19 @@ html[data-theme="dark"] .nav-founding-link-active {
   border-radius: 999px;
   padding: 4px 10px;
 }
-.sharpen-dose-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 14px; border-top: 1px solid var(--color-divider); }
-.sharpen-dose-target { font-size: 12.5px; color: var(--color-neutral-700); }
+/* Today's Challenge card — replaces the old plain "Beat your time: X" line, only shown
+   once a personal target exists (see DailySharpeningSession.tsx's hasPersonalBest). Sits
+   between the pill row and the "Tap to begin" hint, so there's no divider needed between
+   them any more — the card itself is the visual break. */
+.sharpen-challenge-card {
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+.sharpen-challenge-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-700); margin-bottom: 2px; }
+.sharpen-challenge-value { font-size: 15px; font-weight: 700; color: var(--color-text); }
 .sharpen-intro-card-hint { font-size: 12.5px; color: var(--color-accent-700); font-weight: 600; white-space: nowrap; flex-shrink: 0; }
 
 .sharpen-done-card { text-align: center; padding: 28px 20px; }
@@ -6508,7 +6573,7 @@ html[data-theme="dark"] .app-root--atrium {
   min-width: 0;
   text-align: center;
   padding: 12px 10px;
-  font: 600 13.5px var(--font-body);
+  font: 400 13.5px var(--font-body);
   color: var(--color-neutral-700);
   background: none;
   border: none;
@@ -6519,7 +6584,8 @@ html[data-theme="dark"] .app-root--atrium {
   text-overflow: ellipsis;
   transition: color 150ms ease, border-color 150ms ease;
 }
-.boards-tab.active { color: var(--color-accent-700); font-weight: 700; border-bottom-color: var(--color-accent); }
+.boards-tab:hover:not(.active) { color: var(--color-text); }
+.boards-tab.active { color: var(--color-accent); font-weight: 600; border-bottom-color: var(--color-accent); }
 /* Shrinks the label instead of letting 3 equal-width tabs force a scrollbar — every tab
    stays visible and legible even at the narrowest supported phone width. */
 @media (max-width: 480px) {
@@ -6527,18 +6593,53 @@ html[data-theme="dark"] .app-root--atrium {
 }
 
 /* — Daily Sharpening tab's streak section (below the Daily Dose card, see
-   components/BoardsTabs.tsx) — same two-stat-tile + weekly-dots shape as Limbic Games' own
-   stats section (.games-stats-grid/.games-week-bar), but its own boards-scoped classes
-   since the "filled dot" color here is brand blue (matching .boards-header-streak) rather
-   than Games' green --color-games-completed, which means a different thing on this page. */
-.boards-streak-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 12px 0 16px; }
+   components/BoardsTabs.tsx) — a header row (label + personal best), a 7-day dot grid for
+   the current calendar week, two large stat tiles, and a motivational line that reacts to
+   the current streak length. */
+.boards-streak-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.boards-streak-best { font-size: 12px; color: var(--color-neutral-700); }
+
+.boards-streak-days { display: flex; justify-content: space-between; gap: 4px; margin: 4px 0 16px; }
+.boards-streak-day { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; min-width: 0; }
+.boards-streak-day-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-divider);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.boards-streak-day-dot--completed { background: #16a34a; }
+.boards-streak-day-dot--today {
+  background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  animation: boards-streak-pulse 1.8s ease-in-out infinite;
+}
+.boards-streak-day-check { font-size: 8px; color: #fff; }
+.boards-streak-day-label { font-size: 10px; color: var(--color-neutral-700); }
+
+@keyframes boards-streak-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 480px) {
+  .boards-streak-day-dot { width: 10px; height: 10px; }
+  .boards-streak-day-check { display: none; }
+}
+
+.boards-streak-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 0 0 12px; }
 .boards-streak-stat { text-align: center; padding: 14px 8px; }
-.boards-streak-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; color: var(--color-accent-700); }
+.boards-streak-stat-value { font-family: var(--font-heading); font-weight: 700; font-size: 28px; color: var(--color-text); }
 .boards-streak-stat-label { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
-.boards-streak-week { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.boards-streak-week-dot { width: 22px; height: 22px; border-radius: 999px; background: var(--color-neutral-200); flex-shrink: 0; }
-.boards-streak-week-dot-active { background: var(--color-accent); }
-.boards-streak-week-label { font-size: 12.5px; color: var(--color-neutral-700); margin-left: 6px; }
+
+.boards-streak-message { font-size: 13px; margin: 0; text-align: center; }
+.boards-streak-message--muted { color: var(--color-neutral-700); }
+.boards-streak-message--primary { color: var(--color-text); }
+.boards-streak-message--brand { color: var(--color-accent); }
+.boards-streak-message--success { color: #16a34a; }
 
 /* — FSBPT/NPTE resource links (app/(app)/student/resources/page.tsx) — kept the
    "boards-"-prefixed class names even after these two cards moved out of Limbic Boards'

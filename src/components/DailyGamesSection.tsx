@@ -15,10 +15,14 @@ import { CheckCircleIcon } from "@/components/icons";
  *  Each game has its own dedicated Prisma model (DifferentialResult/AnatomyConnectResult/
  *  RehabSequenceResult) rather than the shared DailyCompletion kind the /games hub's cards
  *  use — see lib/games.ts — and a "first finish wins" model with no in-progress state: a
- *  row for today's dateKey means completed, no row means not started. dateKey here
- *  (board-content.ts todayDateKey) is the same `new Date().toISOString().slice(0, 10)`
- *  format each game's own getDateKey() uses, so the lookups below always agree with what
- *  the game page itself considers "today". */
+ *  row for today's dateKey means completed, no row means not started. There is no
+ *  in-between "started but not finished" signal recorded anywhere for these three games,
+ *  so the card only ever renders as not-started or completed — an "in progress" visual
+ *  state isn't derivable from the data these models track without adding new tracking,
+ *  which is out of scope for a visual-only pass. dateKey here (board-content.ts
+ *  todayDateKey) is the same `new Date().toISOString().slice(0, 10)` format each game's
+ *  own getDateKey() uses, so the lookups below always agree with what the game page itself
+ *  considers "today". */
 export async function DailyGamesSection() {
   const user = await getCurrentUser();
   const dateKey = todayDateKey();
@@ -52,25 +56,63 @@ export async function DailyGamesSection() {
     },
   ];
 
+  const completedCount = games.filter((g) => g.done).length;
+
   return (
-    <div className="games-grid">
-      {games.map((game) => (
-        <Link
-          key={game.href}
-          href={game.href}
-          className={`game-card game-card-standalone game-card-${game.done ? "completed" : "not-started"}`}
-        >
-          {game.done && (
-            <span className="game-card-check-badge">
-              <CheckCircleIcon size={18} />
-            </span>
-          )}
-          <span className="game-card-daily-badge">Daily</span>
-          <div className="game-card-title">{game.title}</div>
-          <p className="game-card-desc">{game.desc}</p>
-          <span className="game-card-btn">{game.done ? "Completed ✓" : "Play Today"}</span>
-        </Link>
-      ))}
-    </div>
+    <>
+      <div className="daily-games-context-bar">
+        <span className="daily-games-context-date">{formatTodayLong(dateKey)}</span>
+        {completedCount === 3 ? (
+          <span className="daily-games-context-status daily-games-context-status--complete">All games complete ✓</span>
+        ) : completedCount > 0 ? (
+          <span className="daily-games-context-status daily-games-context-status--partial">
+            {completedCount} of 3 complete — keep going
+          </span>
+        ) : (
+          <span className="daily-games-context-status daily-games-context-status--none">
+            Complete all three to keep your streak alive
+          </span>
+        )}
+      </div>
+      <div className="games-grid">
+        {games.map((game) => (
+          <Link
+            key={game.href}
+            href={game.href}
+            className={`game-card game-card-standalone game-card-${game.done ? "completed" : "not-started"}`}
+          >
+            <span className="game-card-daily-badge">Daily</span>
+            <div className="game-card-title">{game.title}</div>
+            {game.done ? (
+              <>
+                <p className="game-card-desc game-card-desc--clamp">{game.desc}</p>
+                <span className="game-card-standalone-done">
+                  <CheckCircleIcon size={16} />
+                  Done for today
+                </span>
+              </>
+            ) : (
+              <>
+                <p className="game-card-desc">{game.desc}</p>
+                <span className="game-card-btn">Play Today</span>
+              </>
+            )}
+          </Link>
+        ))}
+      </div>
+    </>
   );
+}
+
+/** "Monday, September 1, 2026" — the T00:00:00 (local, not Z) suffix parses dateKey as
+ *  local midnight rather than UTC midnight, same fix as AtriumThisWeekCard's formatDueDate
+ *  for the same reason: a bare `new Date(dateKey)` reads a date-only string as UTC
+ *  midnight, which renders as the previous day in any timezone west of UTC. */
+function formatTodayLong(dateKey: string): string {
+  return new Date(`${dateKey}T00:00:00`).toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }

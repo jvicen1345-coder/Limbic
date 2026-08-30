@@ -72,6 +72,59 @@ const STRATEGY_STEPS = [
 
 const COMING_SOON_ITEMS = ["Flashcard decks by system", "Full practice question bank", "Study schedule generator"] as const;
 
+const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function addDaysToDateKey(base: string, delta: number): string {
+  const d = new Date(`${base}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + delta);
+  return d.toISOString().slice(0, 10);
+}
+
+interface WeekDot {
+  dateKey: string;
+  label: string;
+  completed: boolean;
+  isToday: boolean;
+}
+
+/** Reshapes the already-fetched rolling 7-day `weekDays` window (see
+ *  app/(app)/boards/page.tsx — last7DateKeys, ending today) into a true Monday-through-
+ *  Sunday calendar week, with no new data fetching: the calendar week's Monday-through-
+ *  today portion is always a subset of that rolling window (today's offset from Monday is
+ *  always 0-6 days, and the window already reaches back 6 days), so every day up to today
+ *  is a plain lookup. Any day after today this week hasn't happened yet, so it's always
+ *  "not completed" by definition — no lookup needed for those either. */
+function buildWeekDots(todayKey: string, weekDays: { dateKey: string; completed: boolean }[]): WeekDot[] {
+  const completedByDate = new Map(weekDays.map((d) => [d.dateKey, d.completed]));
+  const todayDow = new Date(`${todayKey}T00:00:00Z`).getUTCDay();
+  const mondayOffset = todayDow === 0 ? -6 : 1 - todayDow;
+  const mondayKey = addDaysToDateKey(todayKey, mondayOffset);
+  return Array.from({ length: 7 }, (_, i) => {
+    const dk = addDaysToDateKey(mondayKey, i);
+    return {
+      dateKey: dk,
+      label: WEEKDAY_LABELS[new Date(`${dk}T00:00:00Z`).getUTCDay()],
+      completed: completedByDate.get(dk) ?? false,
+      isToday: dk === todayKey,
+    };
+  });
+}
+
+function streakMessage(days: number): string {
+  if (days === 0) return "Start your streak today — one session builds the habit";
+  if (days < 7) return `Day ${days} — keep showing up`;
+  if (days < 14) return `${days} day streak — one week strong`;
+  if (days < 30) return `${days} days — you are building something real`;
+  return `${days} day streak — elite consistency`;
+}
+
+function streakMessageClass(days: number): string {
+  if (days === 0) return "boards-streak-message--muted";
+  if (days < 7) return "boards-streak-message--primary";
+  if (days < 14) return "boards-streak-message--brand";
+  return "boards-streak-message--success";
+}
+
 type BoardsTab = "sharpening" | "breakdown" | "research" | "resources";
 
 const TABS: { id: BoardsTab; label: string }[] = [
@@ -120,7 +173,7 @@ export function BoardsTabs({
   const [activeTab, setActiveTab] = useState<BoardsTab>(
     TABS.some((t) => t.id === requestedTab) ? (requestedTab as BoardsTab) : "sharpening"
   );
-  const completedThisWeek = weekDays.filter((d) => d.completed).length;
+  const weekDots = buildWeekDots(dateKey, weekDays);
 
   return (
     <>
@@ -152,7 +205,28 @@ export function BoardsTabs({
           />
 
           <div className="card elev-sm">
-            <div className="card-kicker">Your Streak</div>
+            <div className="boards-streak-header">
+              <div className="card-kicker">Your Streak</div>
+              <div className="boards-streak-best">Best: {longestStreak} day{longestStreak === 1 ? "" : "s"}</div>
+            </div>
+            <div className="boards-streak-days">
+              {weekDots.map((d) => (
+                <div className="boards-streak-day" key={d.dateKey}>
+                  <span
+                    className={
+                      d.completed
+                        ? "boards-streak-day-dot boards-streak-day-dot--completed"
+                        : d.isToday
+                          ? "boards-streak-day-dot boards-streak-day-dot--today"
+                          : "boards-streak-day-dot"
+                    }
+                  >
+                    {d.isToday && d.completed && <span className="boards-streak-day-check">✓</span>}
+                  </span>
+                  <span className="boards-streak-day-label">{d.label}</span>
+                </div>
+              ))}
+            </div>
             <div className="boards-streak-stats">
               <div className="boards-streak-stat">
                 <div className="boards-streak-stat-value">{currentStreak}</div>
@@ -163,12 +237,7 @@ export function BoardsTabs({
                 <div className="boards-streak-stat-label">Longest Streak</div>
               </div>
             </div>
-            <div className="boards-streak-week">
-              {weekDays.map((d) => (
-                <span key={d.dateKey} className={d.completed ? "boards-streak-week-dot boards-streak-week-dot-active" : "boards-streak-week-dot"} />
-              ))}
-              <span className="boards-streak-week-label">{completedThisWeek} out of 7 days</span>
-            </div>
+            <p className={`boards-streak-message ${streakMessageClass(currentStreak)}`}>{streakMessage(currentStreak)}</p>
           </div>
         </div>
       )}

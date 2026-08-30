@@ -150,6 +150,12 @@ export function DailySharpeningSession({
         </div>
       );
     }
+    // A personal target only exists once a previous session ran over the NPTE benchmark
+    // (see recordSharpeningTargetAction, app/actions/daily-completion.ts — it resets
+    // boardsSharpeningTargetSeconds back to null the moment a session beats the real
+    // benchmark). So targetSeconds differing from the benchmark is exactly "this reader
+    // has a personal best on record to beat" — no separate fetch needed for that signal.
+    const hasPersonalBest = targetSeconds !== NPTE_THREE_QUESTION_BENCHMARK_SECONDS;
     return (
       <button type="button" className="card elev-sm sharpen-dose-card" onClick={() => setSessionState("preview")}>
         <div className="card-kicker">Daily Dose</div>
@@ -159,10 +165,13 @@ export function DailySharpeningSession({
           <span>Term of the Day</span>
           <span>Case of the Day</span>
         </div>
-        <div className="sharpen-dose-footer">
-          <span className="sharpen-dose-target">Beat your time: {formatElapsed(targetSeconds)}</span>
-          <span className="sharpen-intro-card-hint">Tap to begin →</span>
-        </div>
+        {hasPersonalBest && (
+          <div className="sharpen-challenge-card">
+            <div className="sharpen-challenge-label">Today&rsquo;s Challenge</div>
+            <div className="sharpen-challenge-value">Beat your best time — {formatElapsed(targetSeconds)}</div>
+          </div>
+        )}
+        <span className="sharpen-intro-card-hint">Tap to begin →</span>
       </button>
     );
   }
