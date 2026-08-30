@@ -159,7 +159,7 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
         </div>
       </div>
       <div style={{ padding: "10px 20px 18px", textAlign: "center" }}>
-        <p className="card-body" style={{ fontSize: 15, margin: 0 }}>
+        <p className="card-body" style={{ fontSize: 15, margin: "0 auto" }}>
           {article.summary}
         </p>
         <div style={{ marginTop: 8, display: "flex", justifyContent: "center" }}>
