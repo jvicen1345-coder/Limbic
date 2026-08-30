@@ -27,6 +27,7 @@ import { ThemeSection } from "@/components/ThemeSection";
 import { ReplayTourButton } from "@/components/ReplayTourButton";
 import { ProgramTimelineSection } from "@/components/ProgramTimelineSection";
 import { dateToLocalIso } from "@/lib/limbic-calendar";
+import { getUserProgram } from "@/app/actions/dpt-programs";
 
 // The long tail of keyword topics not already covered by SUGGESTED_TOPICS — comes from a
 // fixed vocabulary rather than whatever's currently loaded (see allKnownKeywordTopics).
@@ -54,6 +55,7 @@ export default async function ProfilePage() {
   // "coming soon" state for everyone else, or "Go to Nexus"/"you're part of Nexus" would
   // be a lie the moment they click through.
   const isAdminUser = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
+  const userProgram = isStudent ? await getUserProgram() : null;
 
   return (
     <div className="screen-pad page-enter">
@@ -85,6 +87,7 @@ export default async function ProfilePage() {
 
       {isStudent && (
         <ProgramTimelineSection
+          userProgram={userProgram}
           dptProgramStart={user.dptProgramStart ?? ""}
           dptGraduation={user.dptGraduation ?? ""}
           npteExamDate={user.npteExamDate ? dateToLocalIso(user.npteExamDate) : ""}

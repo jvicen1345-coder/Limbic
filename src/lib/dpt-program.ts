@@ -273,18 +273,38 @@ export function getCurrentProgramPhase(today: Date = new Date()): ProgramPhase {
   };
 }
 
-export function getProgramPhaseLabel(phase: ProgramPhase): string {
+// Display word for a generic-program phase label (see getGenericProgramPhase below) — the
+// exact calendarType string stored on DPTProgram (see prisma/dpt-programs-data.json) doubles
+// as the label word for the three values that actually appear as a term unit; anything else
+// ("Hybrid", etc.) just prints as given rather than guessing a term-length noun for it.
+const CALENDAR_LABEL_WORD: Record<string, string> = {
+  Trimester: "Trimester",
+  Semester: "Semester",
+  Quarter: "Quarter",
+};
+
+export function getProgramPhaseLabel(phase: ProgramPhase, calendarType?: string | null): string {
   if (phase.type === "complete") {
-    return "DPT — Chapman University — Class of 2028";
+    return calendarType ? "DPT Program — Complete" : "DPT — Chapman University — Class of 2028";
   }
 
   if (phase.type === "break") {
     const next = phase.nextPhase;
-    if (!next) return "Program Break";
+    if (!next) return calendarType ? "DPT Student" : "Program Break";
     if (next.type === "clinical") {
       return `Rotation ${next.clinicalNumber} begins in ${phase.daysUntilNextPhase} days`;
     }
     return `${next.name} begins in ${phase.daysUntilNextPhase} days`;
+  }
+
+  // Generic (non-Chapman) path — see getGenericProgramPhase, called with a real DPTProgram's
+  // calendarType (Trimester/Semester/Quarter) but no per-term start/end calendar to name a
+  // specific term ("Fall 2026") or a clinical rotation schedule to report a "Rotation N in X
+  // days" clause from — this app only knows any other program's total program length and its
+  // calendar type, not its actual term/rotation dates, so the label stops at the term count.
+  if (calendarType && !phase.trimester) {
+    const word = CALENDAR_LABEL_WORD[calendarType] ?? calendarType;
+    return `Year ${phase.year} — ${word} ${phase.trimesterNumber}`;
   }
 
   if (phase.type === "clinical" && phase.trimester) {
@@ -300,4 +320,89 @@ export function getProgramPhaseLabel(phase: ProgramPhase): string {
   }
 
   return "DPT Student";
+}
+
+// Term length/count assumptions for a generic (non-Chapman) program — this app only knows a
+// DPTProgram's calendarType and total program length, not its real per-term calendar, so
+// "which term number is this" is a best-effort proportional estimate, not an authoritative
+// one. Reasonable typical lengths for each calendar type; anything else falls back to the
+// Trimester assumption (matches this app's own 3-year/9-trimester default shape).
+const GENERIC_TERM_SHAPE: Record<string, { weeks: number; perYear: number }> = {
+  Trimester: { weeks: 15, perYear: 3 },
+  Semester: { weeks: 16, perYear: 2 },
+  Quarter: { weeks: 11, perYear: 3 },
+};
+const DEFAULT_TERM_SHAPE = { weeks: 15, perYear: 3 };
+
+/** The generic counterpart to getCurrentProgramPhase above — for any student who picked a
+ *  real institution from the national DPT program directory (see app/actions/
+ *  dpt-programs.ts getUserProgram) rather than being the app's own hardcoded Chapman
+ *  account. Computed from just a start date, a graduation date, and a calendar type — no
+ *  fixed per-trimester calendar exists for an arbitrary program, so phase.trimester and
+ *  phase.nextPhase are always null here (no rotation-banner or break-transition-card detail
+ *  is possible without that data — see app/(app)/student/page.tsx's own guards, which
+ *  already require phase.trimester non-null before rendering either). Returns null when
+ *  either date is missing — the caller shows an "add your start date" prompt instead. */
+export function getGenericProgramPhase(
+  programStart: Date | null | undefined,
+  programGraduation: Date | null | undefined,
+  calendarType: string | null | undefined,
+  today: Date = new Date()
+): ProgramPhase | null {
+  if (!programStart || !programGraduation) return null;
+
+  const totalProgramDays = Math.floor((programGraduation.getTime() - programStart.getTime()) / (1000 * 60 * 60 * 24));
+  if (totalProgramDays <= 0) return null;
+
+  const daysCompleted = Math.floor((today.getTime() - programStart.getTime()) / (1000 * 60 * 60 * 24));
+  const percentComplete = Math.min(100, Math.max(0, Math.round((daysCompleted / totalProgramDays) * 100)));
+  const daysUntilGraduation = Math.max(0, Math.floor((programGraduation.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)));
+
+  if (today > programGraduation) {
+    return {
+      type: "complete",
+      trimester: null,
+      year: Math.max(1, Math.ceil(totalProgramDays / 7 / DEFAULT_TERM_SHAPE.weeks / DEFAULT_TERM_SHAPE.perYear)),
+      trimesterNumber: 0,
+      weekInTrimester: 0,
+      totalWeeksInTrimester: 0,
+      daysUntilNextPhase: 0,
+      nextPhase: null,
+      daysUntilGraduation: 0,
+      percentComplete: 100,
+    };
+  }
+
+  if (today < programStart) {
+    return {
+      type: "break",
+      trimester: null,
+      year: 1,
+      trimesterNumber: 0,
+      weekInTrimester: 0,
+      totalWeeksInTrimester: 0,
+      daysUntilNextPhase: Math.floor((programStart.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)),
+      nextPhase: null,
+      daysUntilGraduation,
+      percentComplete: 0,
+    };
+  }
+
+  const { weeks: termWeeks, perYear: termsPerYear } = (calendarType && GENERIC_TERM_SHAPE[calendarType]) || DEFAULT_TERM_SHAPE;
+  const weeksElapsed = daysCompleted / 7;
+  const termIndex = Math.floor(weeksElapsed / termWeeks);
+  const weekInTrimester = Math.floor(weeksElapsed % termWeeks) + 1;
+
+  return {
+    type: "didactic",
+    trimester: null,
+    year: Math.floor(termIndex / termsPerYear) + 1,
+    trimesterNumber: termIndex + 1,
+    weekInTrimester,
+    totalWeeksInTrimester: termWeeks,
+    daysUntilNextPhase: 0,
+    nextPhase: null,
+    daysUntilGraduation,
+    percentComplete,
+  };
 }

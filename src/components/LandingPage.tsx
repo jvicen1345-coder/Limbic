@@ -47,6 +47,10 @@ const FOOTER_LINKS = [
   { href: "/privacy", label: "Privacy" },
   { href: "/sign-in", label: "Sign In" },
   { href: "/founding-funders", label: "Founding Funders" },
+  // A crawlable internal link from the homepage to the public program directory (see
+  // app/programs/page.tsx) — both are already allow-listed in robots.ts, but Google still
+  // needs a real link to actually find and follow, not just a permission to crawl it.
+  { href: "/programs", label: "DPT Programs" },
 ];
 
 /** The public marketing page at "/" — see app/page.tsx, which only renders this for a

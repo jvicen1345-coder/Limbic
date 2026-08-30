@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import { updateProgramTimelineAction, type ProgramTimelineInput } from "@/app/actions/profile";
 import { ChevronRightIcon } from "@/components/icons";
+import { ProgramSearch } from "@/components/programs/ProgramSearch";
+import type { DPTProgram } from "@/generated/prisma/client";
 
 const ROTATION_SETTINGS = [
   "Outpatient Orthopedic",
@@ -109,6 +111,7 @@ export function ProgramTimelineSection({
   rotation1,
   rotation2,
   rotation3,
+  userProgram,
 }: {
   dptProgramStart: string;
   dptGraduation: string;
@@ -116,6 +119,7 @@ export function ProgramTimelineSection({
   rotation1: RotationValues;
   rotation2: RotationValues;
   rotation3: RotationValues;
+  userProgram: DPTProgram | null;
 }) {
   const [programStart, setProgramStart] = useState(dptProgramStart || "2025-08-25");
   const [graduation, setGraduation] = useState(dptGraduation || "2028-08-05");
@@ -125,6 +129,8 @@ export function ProgramTimelineSection({
   const [r3, setR3] = useState(rotation3);
   const [pending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
+  const [program, setProgram] = useState(userProgram);
+  const [changingProgram, setChangingProgram] = useState(false);
 
   function handleSave() {
     const payload: ProgramTimelineInput = {
@@ -164,7 +170,30 @@ export function ProgramTimelineSection({
         Your DPT journey — used to personalize your Atrium experience
       </p>
 
-      <div className="program-timeline-academic">
+      <div className="card-kicker" style={{ marginTop: 14 }}>
+        DPT Program
+      </div>
+      {program && !changingProgram ? (
+        <div className="program-search-confirm program-search-confirm--compact">
+          <p className="program-search-confirm-name">{program.institution}</p>
+          <p className="program-search-confirm-meta">
+            {program.stateName} · {program.calendarType ?? "Not published"}
+          </p>
+          <button type="button" className="program-search-change-link" onClick={() => setChangingProgram(true)}>
+            Change Program
+          </button>
+        </div>
+      ) : (
+        <ProgramSearch
+          placeholder="Search for your program..."
+          onSelected={(p) => {
+            setProgram(p);
+            setChangingProgram(false);
+          }}
+        />
+      )}
+
+      <div className="program-timeline-academic" style={{ marginTop: 20 }}>
         <div className="field">
           <label htmlFor="pt-program-start">Program Start Date</label>
           <input
