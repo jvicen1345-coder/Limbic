@@ -12,6 +12,7 @@ import { getClinicMembershipInfo } from "@/app/actions/clinic-pro";
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
+  if (!user.hasSetName) redirect("/onboarding/name");
   if (!user.hasOnboarded) redirect("/onboarding");
   // "Before they reach /home" — blocks every route in the app, not just Home, since Home is
   // simply the first one a new account would otherwise land on. No sidebar, no AppShell at

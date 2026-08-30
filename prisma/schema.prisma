@@ -194,6 +194,16 @@ model User {
   // branch, never in an `update` branch, so a returning user is never affected.
   hasOnboarded Boolean @default(true)
 
+  // Gates the one-time "What's your name?" screen at app/onboarding/name (see
+  // app/(app)/layout.tsx) — runs before hasOnboarded/hasCompletedOnboarding below, so a
+  // brand-new account has a real first-and-last name on file before it ever reaches the
+  // topic picker, the role modal, or Home. Same @default(true)-not-false rollout reasoning
+  // as hasOnboarded: every real account-creation path (lib/session.ts
+  // signUpWithPassword/signInWithGoogle/signInAsGuest) sets this false only in its own
+  // `create` branch, never in an `update`, so an existing account is never sent back
+  // through it.
+  hasSetName Boolean @default(true)
+
   // "pt" | "pts" | "general" — set from the one-time "How are you using Limbic?" modal
   // (see components/OnboardingRoleModal.tsx, app/(app)/layout.tsx) and editable anytime
   // from Profile's Role section. Drives the reorder-only-never-hide logic in
