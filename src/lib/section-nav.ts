@@ -23,6 +23,7 @@ export const PROFILE_TABS: SubTab[] = [
   { href: "/profile", label: "Profile" },
   { href: "/profile/credentials", label: "Credentials" },
   { href: "/profile/membership", label: "Membership" },
+  { href: "/calendar", label: "Calendar" },
 ];
 
 export const NEWS_TABS: SubTab[] = [
