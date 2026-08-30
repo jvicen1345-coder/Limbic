@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { updateVisitRequestStatusAction, type ConnexionVisitStatus } from "@/app/actions/connexion";
 
 export interface VisitRequestRow {
@@ -52,7 +53,8 @@ export function VisitRequestsAdminList({ rows }: { rows: VisitRequestRow[] }) {
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Preferred</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Reason for Visit</th>
             <th style={{ padding: "4px 10px", fontWeight: 600 }}>Submitted</th>
-            <th style={{ padding: "4px 0 4px 10px", fontWeight: 600 }}>Status</th>
+            <th style={{ padding: "4px 10px", fontWeight: 600 }}>Status</th>
+            <th style={{ padding: "4px 0 4px 10px", fontWeight: 600 }}></th>
           </tr>
         </thead>
         <tbody>
@@ -71,7 +73,7 @@ export function VisitRequestsAdminList({ rows }: { rows: VisitRequestRow[] }) {
               <td style={{ padding: "8px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
                 {new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </td>
-              <td style={{ padding: "8px 0 8px 10px", whiteSpace: "nowrap" }}>
+              <td style={{ padding: "8px 10px", whiteSpace: "nowrap" }}>
                 <select
                   className="input"
                   style={{ minHeight: 30, padding: "4px 10px", fontSize: 12.5 }}
@@ -85,6 +87,11 @@ export function VisitRequestsAdminList({ rows }: { rows: VisitRequestRow[] }) {
                     </option>
                   ))}
                 </select>
+              </td>
+              <td style={{ padding: "8px 0 8px 10px", whiteSpace: "nowrap" }}>
+                <Link href={`/admin/connexion-safety-score/new?visitRequestId=${r.id}`} className="btn btn-secondary" style={{ fontSize: 12, padding: "5px 10px" }}>
+                  Start Safety Score
+                </Link>
               </td>
             </tr>
           ))}
