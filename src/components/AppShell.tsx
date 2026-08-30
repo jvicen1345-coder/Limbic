@@ -207,6 +207,9 @@ function BottomNavLink({ href, icon, label }: { href: string; icon: React.ReactN
   );
 }
 
+/** The eight expandable sidebar sections — see the accordion state in NavContent below. */
+type SidebarSection = "nexus" | "pro" | "connexion" | "student" | "wellness" | "saved" | "articles" | "admin";
+
 interface NavContentProps {
   profileName: string;
   specialtyLabel: string;
@@ -261,35 +264,33 @@ interface NavContentProps {
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
 function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, isAdmin, aptaCount, nexusRequestCount, zoneTwoOrder, clinicMembership, onNavigate }: NavContentProps) {
   const pathname = usePathname();
-  // Collapsed by default unless already somewhere under /nexus (so landing on, say,
-  // /nexus/messages via a direct link or a widget elsewhere in the app doesn't hide the
-  // very section that link belongs to) — collapsing is purely a sidebar decluttering
-  // preference from here on, not tied to route changes, so a manual toggle isn't fought by
-  // navigating between the four Nexus sub-pages themselves.
-  const [nexusExpanded, setNexusExpanded] = useState(pathname.startsWith("/nexus"));
-  // Same collapsed-unless-already-there reasoning as Nexus above — this section grew to 12
-  // links once the LimbicPRO clinical toolbox shipped (see app/(app)/pro/*), which is too
-  // long to sit permanently expanded in a sidebar that still has six more sections below
-  // it. /agent and /hep aren't nested under /pro but only ever show up as links from this
-  // section, so they count as "already there" too.
-  const [proExpanded, setProExpanded] = useState(
-    pathname.startsWith("/pro") || pathname.startsWith("/hep") || pathname.startsWith("/agent")
-  );
-  // Every remaining section below follows the exact same collapsed-unless-already-there
-  // pattern as Nexus/LimbicPRO above, so the whole sidebar stays short by default regardless
-  // of how many sections/links get added to any one of them over time.
-  const [connexionExpanded, setConnexionExpanded] = useState(pathname.startsWith("/connexion"));
-  const [studentExpanded, setStudentExpanded] = useState(
-    pathname.startsWith("/student") || pathname.startsWith("/boards")
-  );
-  const [wellnessExpanded, setWellnessExpanded] = useState(
-    pathname.startsWith("/wellness") || pathname.startsWith("/games")
-  );
-  const [savedExpanded, setSavedExpanded] = useState(pathname.startsWith("/saved"));
-  const [articlesExpanded, setArticlesExpanded] = useState(
-    pathname.startsWith("/news") || pathname.startsWith("/under-review")
-  );
-  const [adminExpanded, setAdminExpanded] = useState(pathname.startsWith("/admin"));
+  // Accordion behavior — at most one of the eight expandable sections open at a time, so
+  // opening one always collapses whatever else was open, rather than letting the list grow
+  // without bound. Starts on whichever section the current route already belongs to (so
+  // landing on, say, /nexus/messages via a direct link or a widget elsewhere in the app
+  // doesn't hide the very section that link belongs to), or none expanded otherwise. The
+  // route-prefix checks are mutually exclusive by construction (no two sections share a
+  // route), so at most one ever matches here.
+  const [expandedSection, setExpandedSection] = useState<SidebarSection | null>(() => {
+    if (pathname.startsWith("/nexus")) return "nexus";
+    if (pathname.startsWith("/pro") || pathname.startsWith("/hep") || pathname.startsWith("/agent")) return "pro";
+    if (pathname.startsWith("/connexion")) return "connexion";
+    if (pathname.startsWith("/student") || pathname.startsWith("/boards")) return "student";
+    if (pathname.startsWith("/wellness") || pathname.startsWith("/games")) return "wellness";
+    if (pathname.startsWith("/saved")) return "saved";
+    if (pathname.startsWith("/news") || pathname.startsWith("/under-review")) return "articles";
+    if (pathname.startsWith("/admin")) return "admin";
+    return null;
+  });
+  const toggleSection = (key: SidebarSection) => setExpandedSection((cur) => (cur === key ? null : key));
+  const nexusExpanded = expandedSection === "nexus";
+  const proExpanded = expandedSection === "pro";
+  const connexionExpanded = expandedSection === "connexion";
+  const studentExpanded = expandedSection === "student";
+  const wellnessExpanded = expandedSection === "wellness";
+  const savedExpanded = expandedSection === "saved";
+  const articlesExpanded = expandedSection === "articles";
+  const adminExpanded = expandedSection === "admin";
 
   // One ReactNode per zoneTwoOrder key (see lib/user-role.ts) — each is the exact same
   // section markup this sidebar always had, just named so zoneTwoOrder.map() below can
@@ -302,7 +303,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           icon={<ShieldIcon />}
           label="Connexion Method"
           expanded={connexionExpanded}
-          onClick={() => setConnexionExpanded((v) => !v)}
+          onClick={() => toggleSection("connexion")}
         />
         {connexionExpanded && (
           <>
@@ -322,7 +323,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           icon={<GraduationCapIcon />}
           label="Limbic Student"
           expanded={studentExpanded}
-          onClick={() => setStudentExpanded((v) => !v)}
+          onClick={() => toggleSection("student")}
         />
         {studentExpanded && (
           <>
@@ -340,7 +341,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
     ),
     pro: (
       <>
-        <NavToggle icon={<CrownIcon />} label="LimbicPRO" expanded={proExpanded} onClick={() => setProExpanded((v) => !v)} />
+        <NavToggle icon={<CrownIcon />} label="LimbicPRO" expanded={proExpanded} onClick={() => toggleSection("pro")} />
         {proExpanded && (
           <>
             {isPro && (
@@ -374,7 +375,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           icon={<WellnessIcon />}
           label="Health & Wellness"
           expanded={wellnessExpanded}
-          onClick={() => setWellnessExpanded((v) => !v)}
+          onClick={() => toggleSection("wellness")}
         />
         {wellnessExpanded && (
           <>
@@ -394,7 +395,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           icon={<UsersIcon />}
           label="Nexus"
           expanded={nexusExpanded}
-          onClick={() => setNexusExpanded((v) => !v)}
+          onClick={() => toggleSection("nexus")}
         />
         {nexusExpanded && (
           <>
@@ -432,7 +433,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           icon={<BookmarkIcon />}
           label="Saved"
           expanded={savedExpanded}
-          onClick={() => setSavedExpanded((v) => !v)}
+          onClick={() => toggleSection("saved")}
         />
         {savedExpanded && (
           <>
@@ -450,7 +451,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           icon={<FileTextIcon />}
           label="Articles"
           expanded={articlesExpanded}
-          onClick={() => setArticlesExpanded((v) => !v)}
+          onClick={() => toggleSection("articles")}
         />
         {articlesExpanded && (
           <>
@@ -481,7 +482,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             icon={<LockIcon />}
             label="Admin"
             expanded={adminExpanded}
-            onClick={() => setAdminExpanded((v) => !v)}
+            onClick={() => toggleSection("admin")}
           />
           {adminExpanded && (
             <>
