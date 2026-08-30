@@ -14,9 +14,29 @@ import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumPro
 import { AtriumThisWeekCard } from "@/components/AtriumThisWeekCard";
 import { StudentGate } from "@/components/student/StudentGate";
 import { FileTextIcon, UsersIcon, PencilIcon, GraduationCapIcon, HeartIcon, ChevronRightIcon, ZapIcon } from "@/components/icons";
-import { getCurrentProgramPhase, getProgramPhaseLabel, CHAPMAN_DPT_PROGRAM } from "@/lib/dpt-program";
+import { getCurrentProgramPhase, getGenericProgramPhase, getProgramPhaseLabel, CHAPMAN_DPT_PROGRAM, type ProgramPhase } from "@/lib/dpt-program";
 import { getThisWeekAssignments } from "@/app/actions/syllabus";
 import { getWeekRecommendations, getThisWeekDateRange } from "@/lib/atrium-recommendations";
+import { getUserProgram } from "@/app/actions/dpt-programs";
+
+// A safe all-zero phase for a reader who's picked a real program (see getUserProgram) but
+// hasn't set a start date yet — getGenericProgramPhase returns null in that case (it needs
+// both dates to compute anything), and falling back to getCurrentProgramPhase's Chapman
+// numbers here would misattribute the app's own hardcoded account's progress to a different
+// real student. The header hides the progress bar/NPTE-adjacent countdown entirely for this
+// phase (see the JSX below) rather than rendering these zeros directly.
+const EMPTY_GENERIC_PHASE: ProgramPhase = {
+  type: "didactic",
+  trimester: null,
+  year: 1,
+  trimesterNumber: 0,
+  weekInTrimester: 0,
+  totalWeeksInTrimester: 0,
+  daysUntilNextPhase: 0,
+  nextPhase: null,
+  daysUntilGraduation: 0,
+  percentComplete: 0,
+};
 
 const PATHS = [
   {
@@ -129,12 +149,25 @@ export default async function StudentAtriumPage() {
   const now = new Date();
   const greeting = `${timeOfDayGreeting(now.getHours())}, ${firstName(user.name)}`;
 
-  // Phase-aware header (see lib/dpt-program.ts) — reads a fixed Chapman University
-  // trimester calendar, not any per-user field, so this is the same for every LimbicStudent
-  // reader for now (the Program Timeline section on Profile stores dptProgramStart/
-  // dptGraduation for display, but getCurrentProgramPhase doesn't take them as input).
-  const phase = getCurrentProgramPhase(now);
-  const phaseLabel = getProgramPhaseLabel(phase);
+  // Phase-aware header (see lib/dpt-program.ts). Two paths: the app's own account (no
+  // dptProgramId ever set — see getUserProgram) keeps reading the fixed Chapman University
+  // trimester calendar exactly as before; any other reader who picked a real institution
+  // from the national program directory (see app/actions/dpt-programs.ts) gets a generic
+  // phase computed from their own start/graduation dates and that program's calendar type,
+  // with no fixed per-term calendar to name a specific term or rotation from.
+  const userProgram = await getUserProgram();
+  const genericPhase = userProgram
+    ? getGenericProgramPhase(
+        user.dptProgramStart ? new Date(`${user.dptProgramStart}T00:00:00`) : null,
+        user.dptGraduation ? new Date(`${user.dptGraduation}T00:00:00`) : null,
+        userProgram.calendarType,
+        now
+      )
+    : null;
+  const phase = userProgram ? (genericPhase ?? EMPTY_GENERIC_PHASE) : getCurrentProgramPhase(now);
+  const phaseLabel = userProgram
+    ? (genericPhase ? getProgramPhaseLabel(genericPhase, userProgram.calendarType) : userProgram.institution)
+    : getProgramPhaseLabel(phase);
 
   // Which of the three rotation blocks (see Profile's Program Timeline section) matches the
   // phase engine's current clinical trimester, if any — used by the rotation banner and the
@@ -243,15 +276,23 @@ export default async function StudentAtriumPage() {
       <div className="atrium-header">
         <h1 className="atrium-greeting">{greeting}</h1>
         <p className="atrium-header-meta">{phaseLabel}</p>
+        {userProgram && !genericPhase && (
+          <p className="atrium-program-start-prompt">
+            Add your start date to unlock your full program timeline →{" "}
+            <Link href="/profile#program-timeline">Profile Settings</Link>
+          </p>
+        )}
 
-        <div className="atrium-program-progress">
-          <div className="atrium-program-progress-track">
-            <div className="atrium-program-progress-fill" style={{ width: `${phase.percentComplete}%` }} />
+        {(!userProgram || genericPhase) && (
+          <div className="atrium-program-progress">
+            <div className="atrium-program-progress-track">
+              <div className="atrium-program-progress-fill" style={{ width: `${phase.percentComplete}%` }} />
+            </div>
+            <span className="atrium-program-progress-label">
+              {phase.percentComplete}% complete · {phase.daysUntilGraduation} days to graduation
+            </span>
           </div>
-          <span className="atrium-program-progress-label">
-            {phase.percentComplete}% complete · {phase.daysUntilGraduation} days to graduation
-          </span>
-        </div>
+        )}
 
         {npteDays !== null && npteDays >= 0 ? (
           <div className="atrium-countdown">

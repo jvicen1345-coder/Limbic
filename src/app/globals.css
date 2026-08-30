@@ -9698,3 +9698,237 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   padding: 0;
 }
 .syllabi-delete-btn:hover { color: var(--color-danger); }
+
+/* ============================================================
+   DPT Program Directory (app/programs/page.tsx) — fully public,
+   standard site tokens (--color-text/--color-neutral-700/
+   --color-card-surface/--color-divider), not the Atrium's own
+   --atrium-* mapping, since this page sits outside the Atrium.
+   ============================================================ */
+.programs-page { min-height: 100vh; background: var(--color-bg); color: var(--color-text); }
+.programs-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--color-divider);
+}
+.programs-page-logo { display: flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; color: var(--color-text); text-decoration: none; }
+.programs-page-home-link { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-neutral-700); text-decoration: none; }
+.programs-page-home-link:hover { color: var(--color-accent); }
+.programs-page-content { max-width: 1180px; margin: 0 auto; padding: 32px 24px 64px; }
+.programs-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; margin: 0 0 6px; }
+.programs-subtitle { font-size: 14.5px; color: var(--color-neutral-700); margin: 0 0 10px; }
+.programs-data-note { font-size: 12px; color: var(--color-neutral-600); margin: 0 0 24px; max-width: 720px; line-height: 1.5; }
+
+.programs-filter-bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin-bottom: 10px; }
+.programs-search-input { flex: 1 1 260px; min-width: 220px; }
+.programs-filter-selects { display: flex; flex-wrap: wrap; gap: 12px; }
+.programs-filter-selects .field { min-width: 150px; }
+.programs-filter-mobile-btn { display: none; }
+.programs-results-count { font-size: 12.5px; color: var(--color-neutral-700); margin: 0 0 14px; }
+
+.programs-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+}
+.programs-drawer {
+  background: var(--color-card-surface);
+  width: 100%;
+  border-radius: 16px 16px 0 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.programs-drawer-title { font-family: var(--font-heading); font-size: 16px; margin: 0; }
+
+.programs-table-wrap { overflow-x: auto; border: 1px solid var(--color-divider); border-radius: var(--radius-lg); }
+.programs-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.programs-table th { text-align: left; padding: 10px 12px; background: var(--color-card-surface); border-bottom: 1px solid var(--color-divider); white-space: nowrap; }
+.programs-table td { padding: 10px 12px; border-bottom: 1px solid var(--color-divider); vertical-align: top; }
+.programs-th-sort { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; padding: 0; font: inherit; font-weight: 600; color: var(--color-neutral-700); cursor: pointer; }
+.programs-th-sort:hover { color: var(--color-text); }
+.programs-sort-arrow { color: var(--color-accent); }
+.programs-table-row { cursor: pointer; transition: background 100ms ease; }
+.programs-table-row:hover { background: color-mix(in srgb, var(--color-accent) 5%, transparent); }
+.programs-institution-cell { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 700; }
+.programs-state-pill-inline {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  background: var(--color-divider);
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+.programs-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--color-divider);
+  color: var(--color-neutral-700);
+}
+.programs-pill--warn { background: color-mix(in srgb, var(--color-warn) 20%, transparent); color: #92600f; }
+.programs-pill--tiny { font-size: 10px; padding: 2px 7px; }
+
+.programs-detail-row td { padding: 0; border-bottom: 1px solid var(--color-divider); }
+.programs-detail { padding: 18px 20px; background: color-mix(in srgb, var(--color-accent) 3%, transparent); }
+.programs-detail-institution { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; margin: 0 0 8px; }
+.programs-detail-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.programs-detail-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.programs-detail-field { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.programs-detail-label { font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-600); }
+.programs-detail-notes { font-size: 12.5px; color: var(--color-neutral-700); font-style: italic; margin: 0 0 12px; }
+.programs-detail-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.programs-detail-source { font-size: 12px; color: var(--color-neutral-600); text-decoration: none; }
+.programs-detail-source:hover { text-decoration: underline; }
+.programs-detail-ptcas { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; font-weight: 600; color: var(--color-accent); text-decoration: none; }
+.programs-detail-ptcas:hover { text-decoration: underline; }
+.programs-your-program-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 700; color: var(--color-success); }
+
+.programs-card-list { display: none; flex-direction: column; gap: 10px; }
+.programs-card { border: 1px solid var(--color-divider); border-radius: var(--radius-lg); background: var(--color-card-surface); overflow: hidden; }
+.programs-card-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.programs-card-institution { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 700; font-size: 14px; }
+.programs-card-meta { font-size: 12px; color: var(--color-neutral-700); }
+.programs-card .programs-detail { border-top: 1px solid var(--color-divider); }
+
+.programs-signin-hint { font-size: 12.5px; color: var(--color-neutral-700); margin-top: 16px; }
+.programs-signin-hint a { color: var(--color-accent); font-weight: 600; text-decoration: none; }
+.programs-signin-hint a:hover { text-decoration: underline; }
+
+.programs-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+
+@media (max-width: 900px) {
+  .programs-filter-selects { display: none; }
+  .programs-filter-mobile-btn { display: inline-flex; }
+  .programs-table-wrap { display: none; }
+  .programs-card-list { display: flex; }
+}
+@media (max-width: 520px) {
+  .programs-form-grid { grid-template-columns: minmax(0, 1fr); }
+  .programs-detail-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Shared program-picker search box (components/programs/ProgramSearch.tsx) — onboarding
+   Step 2 and Profile's "Your Program" section both render this. */
+.program-search { position: relative; }
+.program-search-results {
+  margin-top: 8px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  max-height: 260px;
+  overflow-y: auto;
+}
+.program-search-result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  background: var(--color-card-surface);
+  border: none;
+  border-top: 1px solid var(--color-divider);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.program-search-result:first-child { border-top: none; }
+.program-search-result:hover { background: color-mix(in srgb, var(--color-accent) 6%, transparent); }
+.program-search-result-name { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 13.5px; }
+.program-search-result-meta { font-size: 12px; color: var(--color-neutral-700); }
+
+.program-search-confirm {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+.program-search-confirm--compact { padding: 12px 14px; margin-bottom: 4px; }
+.program-search-confirm-name { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; margin: 0 0 2px; }
+.program-search-confirm-meta { font-size: 12.5px; color: var(--color-neutral-700); margin: 0; }
+.program-search-change-link {
+  margin-top: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-accent);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.program-search-change-link:hover { text-decoration: underline; }
+
+/* Onboarding Step 2's "Skip for now" (components/OnboardingRoleModal.tsx) — same muted,
+   below-the-button treatment as every other "skip this" link in the app. */
+.onboarding-skip-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--color-neutral-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.onboarding-skip-link:hover { color: var(--color-neutral-700); text-decoration: underline; }
+
+/* Atrium header — "add your start date" prompt for a reader who picked a real program (see
+   app/(app)/student/page.tsx) but hasn't set dptProgramStart yet, so getGenericProgramPhase
+   has nothing to compute from. */
+.atrium-program-start-prompt { font-size: 12.5px; color: var(--color-neutral-700); margin: 4px 0 0; }
+.atrium-program-start-prompt a { color: var(--color-accent); font-weight: 600; text-decoration: none; }
+.atrium-program-start-prompt a:hover { text-decoration: underline; }
+
+/* Admin Institutional Targets (app/(app)/admin/programs/page.tsx) — reuses .programs-table/
+   .programs-table-wrap above for the table shell. */
+.outreach-stats-bar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 20px; }
+@media (max-width: 700px) {
+  .outreach-stats-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.outreach-stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+}
+.outreach-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; }
+.outreach-stat-label { font-size: 12px; color: var(--color-neutral-700); }
+
+.outreach-filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; }
+
+.outreach-pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.outreach-pill--not_contacted { background: var(--color-divider); color: var(--color-neutral-700); }
+.outreach-pill--contacted { background: color-mix(in srgb, var(--color-accent) 16%, transparent); color: var(--color-accent); }
+.outreach-pill--in_discussion { background: color-mix(in srgb, #c9853a 18%, transparent); color: #8a5a20; }
+.outreach-pill--agreement { background: color-mix(in srgb, #16a34a 18%, transparent); color: #16a34a; }
+.outreach-pill--not_interested { background: color-mix(in srgb, #dc2626 16%, transparent); color: #dc2626; }
+
+.outreach-update-form { padding: 16px 18px; background: color-mix(in srgb, var(--color-accent) 3%, transparent); }

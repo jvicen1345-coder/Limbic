@@ -511,6 +511,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
               <NavLink href="/admin/connexion-safety-score" icon={<ShieldIcon />} label="Connexion Safety Score" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/boards-tagging" icon={<GraduationCapIcon />} label="Boards Question Tagging" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/accounts" icon={<UsersIcon />} label="Accounts" bold={false} onNavigate={onNavigate} />
+              <NavLink href="/admin/programs" icon={<GraduationCapIcon />} label="Programs" bold={false} onNavigate={onNavigate} />
             </>
           )}
         </>
