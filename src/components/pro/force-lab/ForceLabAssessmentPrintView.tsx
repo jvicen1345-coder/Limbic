@@ -54,17 +54,17 @@ export function ForceLabAssessmentPrintView({
 }) {
   const [reportType, setReportType] = useState<ForceLabReportType>("clinical");
   const [summary, setSummary] = useState(initialPatientSummary);
-  const [generateError, setGenerateError] = useState(false);
+  const [generateError, setGenerateError] = useState<string | null>(null);
   const [generating, startGenerating] = useTransition();
 
   const handleGenerateSummary = () => {
-    setGenerateError(false);
+    setGenerateError(null);
     startGenerating(async () => {
       const result = await generatePatientReportSummary(assessment.id);
       if (result.ok) {
         setSummary(result.summary);
       } else {
-        setGenerateError(true);
+        setGenerateError(result.error);
       }
     });
   };
@@ -80,7 +80,7 @@ export function ForceLabAssessmentPrintView({
         generatingSummary={generating}
         hasSummary={summary != null}
       />
-      {generateError && <p className="pbrief-patient-generate-error">Could not generate a patient summary. Please try again.</p>}
+      {generateError && <p className="pbrief-patient-generate-error">{generateError}</p>}
 
       {reportType === "patient" && summary == null && (
         <div className="pbrief-summary-warning">
