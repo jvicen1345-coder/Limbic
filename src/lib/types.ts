@@ -45,6 +45,13 @@ export interface Article {
    *  normalization pass / lib/saved-snapshot.ts), but kept optional on the type itself so
    *  UI code guards for its absence rather than assuming a source can never omit it. */
   evidenceLevel?: EvidenceLevel;
+  /** The article's DOI — populated for PubMed articles only. Used for Unpaywall lookup
+   *  (see lib/unpaywall.ts, lib/article-view.ts). */
+  doi?: string;
+  /** Full untruncated abstract — populated for PubMed articles only. Shown on the article
+   *  detail page in place of the 320-char summary. Feed cards always use summary — unchanged
+   *  (see components/ArticleReadingPane.tsx). */
+  fullAbstract?: string;
 }
 
 export interface WellnessArticle {

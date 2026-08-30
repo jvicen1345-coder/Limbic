@@ -8,6 +8,7 @@ import { ArticleImage } from "@/components/ArticleImage";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { EVIDENCE_LEVEL_META } from "@/lib/evidence";
 import { slugifyTopic } from "@/lib/topic-slug";
+import { getOaStatusLabel, type UnpaywallResult } from "@/lib/unpaywall-shared";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { EvidenceLevel } from "@/lib/types";
 
@@ -38,7 +39,15 @@ function relatedBorderClass(level: EvidenceLevel | undefined): string {
  *  Threads (see components/ArticleThreadsSplitView.tsx, which renders this keyed by
  *  article id so SaveButton's optimistic state and this pane both reset cleanly on
  *  every swap rather than carrying over stale state from the previous article). */
-export function ArticleReadingPane({ article, related }: { article: DecoratedArticle; related: DecoratedArticle[] }) {
+export function ArticleReadingPane({
+  article,
+  related,
+  unpaywallResult,
+}: {
+  article: DecoratedArticle;
+  related: DecoratedArticle[];
+  unpaywallResult: UnpaywallResult | null;
+}) {
   const evidenceMeta = article.evidenceLevel ? EVIDENCE_LEVEL_META[article.evidenceLevel] : null;
 
   return (
@@ -49,6 +58,24 @@ export function ArticleReadingPane({ article, related }: { article: DecoratedArt
         {evidenceMeta && article.evidenceLevel && (
           <>
             <EvidenceBadge level={article.evidenceLevel} size="xl" />
+            {unpaywallResult?.isOpenAccess && (
+              <span
+                style={{
+                  display: "inline-block",
+                  padding: "3px 10px",
+                  background: "rgba(22, 163, 74, 0.12)",
+                  border: "1px solid rgba(22, 163, 74, 0.3)",
+                  borderRadius: "999px",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  color: "#16a34a",
+                  marginLeft: "8px",
+                  verticalAlign: "middle",
+                }}
+              >
+                Open Access
+              </span>
+            )}
             {evidenceMeta.description && <p className="article-evidence-caption">{evidenceMeta.description}</p>}
           </>
         )}
@@ -68,7 +95,17 @@ export function ArticleReadingPane({ article, related }: { article: DecoratedArt
       <hr className="article-hero-divider" />
 
       <div className="article-prose">
-        {article.body && article.body.length > 0 ? (
+        {article.fullAbstract ? (
+          article.fullAbstract
+            .split("\n")
+            .map((p) => p.trim())
+            .filter((p) => p.length > 0)
+            .map((para, i) => (
+              <p key={i} className={i === 0 ? "article-lede" : undefined}>
+                {para}
+              </p>
+            ))
+        ) : article.body && article.body.length > 0 ? (
           article.body.map((para, i) => (
             <p key={i} className={i === 0 ? "article-lede" : undefined}>
               {para}
@@ -92,14 +129,54 @@ export function ArticleReadingPane({ article, related }: { article: DecoratedArt
 
       {article.sourceUrl && (
         <div className="article-actions">
-          <a
-            href={article.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-primary article-actions-primary"
-          >
-            Read the full story at {article.source} →
-          </a>
+          {unpaywallResult?.isOpenAccess && unpaywallResult.bestOaLocation ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <a
+                href={unpaywallResult.bestOaLocation.urlForPdf ?? unpaywallResult.bestOaLocation.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary article-actions-primary"
+                style={{ background: "#16a34a" }}
+              >
+                {unpaywallResult.bestOaLocation.urlForPdf ? "Download Free PDF" : "Read Free Full Text"} —{" "}
+                {getOaStatusLabel(unpaywallResult.oaStatus)}
+              </a>
+              <a
+                href={article.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary article-actions-primary"
+              >
+                View on publisher site →
+              </a>
+              <p style={{ fontSize: "11px", color: "var(--color-neutral-700)", textAlign: "center", margin: 0 }}>
+                Free version provided by Unpaywall — legal open access
+              </p>
+            </div>
+          ) : unpaywallResult?.oaStatus === "bronze" ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <a
+                href={article.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary article-actions-primary"
+              >
+                Read Free at Publisher →
+              </a>
+              <p style={{ fontSize: "11px", color: "var(--color-neutral-700)", textAlign: "center", margin: 0 }}>
+                This article is free to read on the publisher site
+              </p>
+            </div>
+          ) : (
+            <a
+              href={article.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary article-actions-primary"
+            >
+              Read the full story at {article.source} →
+            </a>
+          )}
           <div className="article-actions-secondary">
             <SaveButton articleId={article.id} saved={article.saved} article={article} label="Save Article" />
             <ShareButton />

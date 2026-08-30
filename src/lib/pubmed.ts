@@ -114,6 +114,7 @@ interface EsummaryEntry {
   source?: string;
   pubdate?: string;
   elocationid?: string;
+  articleids?: { idtype: string; value: string }[];
 }
 
 /** A <PublicationType> entry parses as a plain string when it has no attributes, or as
@@ -201,6 +202,7 @@ async function buildArticlesFromIds(ids: string[]): Promise<Article[]> {
     const { specialty, matchedKeywords } = classify(`${entry.title} ${abstract}`, "research");
     const journal = entry.fulljournalname || entry.source || "PubMed";
     const tags = Array.from(new Set([SPECIALTY_META[specialty], TYPE_META.research.label, ...matchedKeywords]));
+    const doi = entry.articleids?.find((id) => id.idtype === "doi")?.value ?? undefined;
 
     articles.push({
       id: stableId(pmid),
@@ -215,6 +217,8 @@ async function buildArticlesFromIds(ids: string[]): Promise<Article[]> {
       tags,
       live: true,
       evidenceLevel: meta?.evidenceLevel ?? "Research",
+      doi,
+      fullAbstract: abstract || undefined,
     });
   }
   return articles;

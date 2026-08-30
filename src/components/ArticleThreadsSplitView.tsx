@@ -66,7 +66,12 @@ export function ArticleThreadsSplitView({
       <ReadingProgressTracker articleId={view.article.id} />
       <div className="article-split">
         <div className="article-split-reading">
-          <ArticleReadingPane key={view.article.id} article={view.article} related={view.related} />
+          <ArticleReadingPane
+            key={view.article.id}
+            article={view.article}
+            related={view.related}
+            unpaywallResult={view.unpaywallResult}
+          />
           {swapError && (
             <p style={{ fontSize: 13, color: "var(--color-neutral-700)", marginTop: 12 }}>{swapError}</p>
           )}
