@@ -66,7 +66,11 @@ export function AtriumProgressChart({
         </svg>
         <div className="atrium-progress-ring-center">
           <div className="atrium-progress-ring-number">{daysCompletedThisWeek}</div>
-          <div className="atrium-progress-ring-label">of 7 days</div>
+          {daysCompletedThisWeek > 0 ? (
+            <div className="atrium-progress-ring-label">of 7 days</div>
+          ) : (
+            <div className="atrium-progress-ring-label atrium-progress-ring-label--empty">Start your streak today</div>
+          )}
         </div>
       </div>
 
