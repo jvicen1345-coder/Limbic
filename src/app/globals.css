@@ -5026,7 +5026,7 @@ html[data-theme="dark"] .app-root--atrium {
    3-line greeting card with plain muted text, no card/background of its own. */
 .atrium-motivation-line {
   margin: 14px 2px 0;
-  font-size: 13.5px;
+  font-size: 13px;
   line-height: 1.6;
   color: var(--color-neutral-700);
 }
@@ -5056,7 +5056,9 @@ html[data-theme="dark"] .app-root--atrium {
   cursor: default;
 }
 .atrium-primary-title {
-  font-family: var(--font-heading);
+  /* --font-body, not --font-heading (Caprasimo) — this heading reads as body copy at this
+     size, not a display headline. Font family only: weight/size/color unchanged. */
+  font-family: var(--font-body);
   font-weight: var(--font-heading-weight);
   font-size: 22px;
   margin: 0;
@@ -5165,6 +5167,7 @@ html[data-theme="dark"] .app-root--atrium {
 }
 .atrium-progress-ring-number { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; line-height: 1; }
 .atrium-progress-ring-label { font-size: 10.5px; color: var(--color-neutral-700); margin-top: 3px; text-align: center; }
+.atrium-progress-ring-label--empty { font-size: 12px; }
 .atrium-progress-details { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
 .atrium-progress-streak {
   display: flex;

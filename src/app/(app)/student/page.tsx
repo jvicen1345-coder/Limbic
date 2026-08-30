@@ -166,7 +166,7 @@ export default async function StudentAtriumPage() {
   // Upcoming were Quick Links entries the dashboard redesign removed — see
   // atrium-supporting-row below — but nothing about the fetch itself changed, this just
   // stops binding results neither the redesigned page nor anything else here reads).
-  const [boardsToday, , weekCompletions, boardActivityRows, , allArticles] = await Promise.all([
+  const [, , weekCompletions, boardActivityRows, , allArticles] = await Promise.all([
     prisma.dailyCompletion.findFirst({
       where: { userId: user.id, dateKey: todayKey, kind: { in: ["boardQuestion", "boardTerm"] } },
     }),
@@ -193,9 +193,7 @@ export default async function StudentAtriumPage() {
 
   // Per-domain accuracy this week — every domain always present (0/0 for one never touched
   // yet) so the chart's legend has a constant shape rather than reflowing as domains get
-  // answered. weakestDomain (most wrong answers, not lowest accuracy — same definition the
-  // greeting card's focusLine below already used before this chart existed) still drives
-  // that one line of copy, just computed from the same pass instead of a separate map.
+  // answered.
   const domainStats = new Map<string, { correct: number; total: number }>();
   for (const domain of Object.keys(DOMAIN_COLORS)) domainStats.set(domain, { correct: 0, total: 0 });
   for (const c of weekCompletions) {
@@ -205,15 +203,6 @@ export default async function StudentAtriumPage() {
     stat.total += 1;
     if (c.selectedIndex === q.correctIndex) stat.correct += 1;
     domainStats.set(q.domain, stat);
-  }
-  let weakestDomain: string | null = null;
-  let weakestWrongCount = 0;
-  for (const [domain, stat] of domainStats) {
-    const wrong = stat.total - stat.correct;
-    if (wrong > weakestWrongCount) {
-      weakestDomain = domain;
-      weakestWrongCount = wrong;
-    }
   }
   const domainAccuracy: DomainAccuracy[] = Object.keys(DOMAIN_COLORS).map((domain) => ({
     domain,
@@ -235,17 +224,6 @@ export default async function StudentAtriumPage() {
           3
         )
       : [];
-
-  // Greeting card, line 2 — today's focus. Falls back to a general nudge when there isn't
-  // enough of this week's Boards activity yet to point at a specific weak domain.
-  const focusLine = weakestDomain
-    ? `Today's focus: ${weakestDomain}. A little extra attention here goes a long way.`
-    : "Every question you answer today moves you closer to exam-ready.";
-
-  // Greeting card, line 3 — one actionable nudge, never a guilt trip about a missed day.
-  const momentumLine = boardsToday
-    ? "You are on track today. Keep the momentum."
-    : "Your daily sharpening is waiting, 5 minutes keeps your streak alive.";
 
   return (
     <div className="screen-pad atrium-page" style={{ maxWidth: 1120 }}>
@@ -318,9 +296,7 @@ export default async function StudentAtriumPage() {
             currentStreak={user.boardsStreakDays}
             domains={domainAccuracy}
           />
-          <p className="atrium-motivation-line">
-            {focusLine} {momentumLine}
-          </p>
+          <p className="atrium-motivation-line">Your daily sharpening is waiting — 5 minutes keeps your streak alive.</p>
         </div>
 
         <aside className="atrium-roundup-panel atrium-zone-roundup">
@@ -423,10 +399,6 @@ export default async function StudentAtriumPage() {
                Student section links to (see AppShell.tsx), so this grid and the sidebar
                never point at two different pages for the same label. */
             <div className="atrium-resource-grid">
-              <Link href="/student/clinical-sharpening" className="atrium-resource-card atrium-resource-card--primary">
-                <p className="atrium-resource-title">Daily Sharpening</p>
-                <p className="atrium-resource-desc">One question, one term, one case. Five minutes keeps your streak alive.</p>
-              </Link>
               <Link href="/boards" className="atrium-resource-card">
                 <p className="atrium-resource-title">Boards</p>
                 <p className="atrium-resource-desc">NPTE prep built into your daily routine. Questions, terms, and cases by system.</p>
@@ -454,6 +426,12 @@ export default async function StudentAtriumPage() {
               <Link href="/student/wellness" className="atrium-resource-card">
                 <p className="atrium-resource-title">Mental Wellness</p>
                 <p className="atrium-resource-desc">Resources and support for the mental demands of the DPT journey.</p>
+              </Link>
+              <Link href="/atlas" className="atrium-resource-card">
+                <p className="atrium-resource-title">Limbic Atlas</p>
+                <p className="atrium-resource-desc">
+                  Interactive clinical anatomy — muscles, conditions, special tests, and board pearls organized by body region.
+                </p>
               </Link>
             </div>
           ) : (
