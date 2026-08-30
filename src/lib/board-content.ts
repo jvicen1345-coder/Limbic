@@ -1,3 +1,5 @@
+import { todayKeyInZone } from "@/lib/day";
+
 /**
  * Limbic Boards content bank — NPTE-style board-prep questions and terms, curated by
  * hand from standard PT curriculum/textbook material (MMT grading, special orthopedic
@@ -590,9 +592,13 @@ export function pickDailyTerm(dateKey: string, userId: string, recentIds: readon
  *  and the fallback above would run constantly, throwing away the whole point. */
 export const RECENT_CONTENT_WINDOW_DAYS = 10;
 
-/** YYYY-MM-DD for "today" — the unit both the question and term rotate on. */
-export function todayDateKey(): string {
-  return new Date().toISOString().slice(0, 10);
+/** YYYY-MM-DD for "today" in the reader's own time zone — the unit both the question and
+ *  term rotate on. Takes the zone explicitly (see lib/user-time-zone.ts for where a request
+ *  gets one) rather than reading the server's clock: this ran off UTC on a UTC server, so
+ *  the day rolled over mid-evening for every reader in the Americas, handing them tomorrow's
+ *  question and filing their answer under tomorrow's key — see lib/day.ts. */
+export function todayDateKey(timeZone: string): string {
+  return todayKeyInZone(timeZone);
 }
 
 /** The NPTE's own per-question pace (~1.4 min, see /boards/npte-breakdown) times 3 —

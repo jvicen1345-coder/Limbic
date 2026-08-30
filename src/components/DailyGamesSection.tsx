@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { todayDateKey } from "@/lib/board-content";
 import { CheckCircleIcon } from "@/components/icons";
+import { getTimeZone } from "@/lib/user-time-zone";
 
 /** The three clinical-knowledge daily games — Differential, Anatomy Connect, Rehab
  *  Sequence — moved here from the general /games hub (app/(app)/games/page.tsx used to
@@ -20,12 +21,13 @@ import { CheckCircleIcon } from "@/components/icons";
  *  so the card only ever renders as not-started or completed — an "in progress" visual
  *  state isn't derivable from the data these models track without adding new tracking,
  *  which is out of scope for a visual-only pass. dateKey here (board-content.ts
- *  todayDateKey) is the same `new Date().toISOString().slice(0, 10)` format each game's
- *  own getDateKey() uses, so the lookups below always agree with what the game page itself
- *  considers "today". */
+ *  todayDateKey) is resolved in the reader's own time zone, the same way each game's own
+ *  getDateKey() resolves it (see lib/day.ts), so the lookups below always agree with what
+ *  the game page itself considers "today" — including in the evening in the Americas,
+ *  where both used to have already rolled over to tomorrow. */
 export async function DailyGamesSection() {
   const user = await getCurrentUser();
-  const dateKey = todayDateKey();
+  const dateKey = todayDateKey(await getTimeZone(user));
 
   const [differential, anatomyConnect, rehabSequence] = user
     ? await Promise.all([

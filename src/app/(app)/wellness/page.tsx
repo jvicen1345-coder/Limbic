@@ -19,6 +19,7 @@ import {
   ZapIcon,
   BandageIcon,
 } from "@/components/icons";
+import { getTimeZone } from "@/lib/user-time-zone";
 
 const EXPLORE_CARDS = [
   { title: "Metrics", href: "/wellness/metrics", icon: ActivityIcon, accent: "blue", description: "Calculators for the numbers that matter." },
@@ -58,7 +59,7 @@ export default async function WellnessOverviewPage() {
   const lastActiveMs = Math.max(latestVitalsLog?.createdAt.getTime() ?? 0, latestMetricsLog?.loggedAt.getTime() ?? 0);
   const lastActiveDate = lastActiveMs > 0 ? new Date(lastActiveMs) : null;
 
-  const dailyTip = wellnessTipForDate(todayDateKey());
+  const dailyTip = wellnessTipForDate(todayDateKey(await getTimeZone(user)));
 
   // Latest 3 for the Overview preview — same rotation pool as the full feed (see
   // app/(app)/wellness/articles/page.tsx), just capped rather than recomputed separately.

@@ -32,6 +32,7 @@ import { getCurrentProgramPhase, getGenericProgramPhase, getProgramPhaseLabel, t
 import { getThisWeekAssignments, getMonthAssignments } from "@/app/actions/syllabus";
 import { getWeekRecommendations, getThisWeekDateRange } from "@/lib/atrium-recommendations";
 import { getUserProgram } from "@/app/actions/dpt-programs";
+import { getTimeZone } from "@/lib/user-time-zone";
 
 // A safe all-zero phase for a reader who's picked a real program (see getUserProgram) but
 // hasn't set a start date yet — getGenericProgramPhase returns null in that case (it needs
@@ -207,7 +208,7 @@ export default async function StudentAtriumPage() {
   const cardGridType: "didactic" | "clinical" =
     phase.type === "clinical" || (phase.type === "break" && phase.nextPhase?.type === "clinical") ? "clinical" : "didactic";
 
-  const todayKey = todayDateKey();
+  const todayKey = todayDateKey(await getTimeZone(user));
   const weekDateKeys = last7DateKeys(todayKey);
 
   // connectionIds and nextCalendarEvent are still fetched here, unchanged (Study Group and

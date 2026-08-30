@@ -5,11 +5,19 @@ import { nextStreak } from "@/lib/streak";
 /** Marks an article as read for streak/"saved but still unread" purposes. Called from the
  *  article detail page on every view — cheap enough for this app's scale, and idempotent
  *  from the reader's perspective (re-reading the same day doesn't inflate the streak,
- *  reading the same article twice doesn't duplicate the ReadArticle row). */
-export async function recordArticleRead(userId: string, articleId: string) {
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { lastReadAt: true, streakDays: true } });
+ *  reading the same article twice doesn't duplicate the ReadArticle row).
+ *
+ *  "The same day" is the reader's own calendar day (see lib/day.ts). Their zone comes off
+ *  the row this already loads rather than from the caller, so the account zone wins even
+ *  where the request has no cookie to read it from; `requestTimeZone` is the fallback for
+ *  an account that has never had one reported (see lib/user-time-zone.ts). */
+export async function recordArticleRead(userId: string, articleId: string, requestTimeZone: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { lastReadAt: true, streakDays: true, timeZone: true },
+  });
   if (!user) return;
-  const streakDays = nextStreak(user.lastReadAt, user.streakDays);
+  const streakDays = nextStreak(user.lastReadAt, user.streakDays, user.timeZone ?? requestTimeZone);
   await Promise.all([
     prisma.user.update({ where: { id: userId }, data: { lastReadAt: new Date(), streakDays } }),
     // `update: {}` still bumps updatedAt (see schema.prisma's @updatedAt on ReadArticle) —

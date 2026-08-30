@@ -24,6 +24,7 @@ import { getFoundingFunderStatus } from "@/lib/founding-funders";
 import { visitorHourOfDay } from "@/lib/timezone";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import type { Article, CeCategory, Specialty } from "@/lib/types";
+import { getTimeZone } from "@/lib/user-time-zone";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -167,7 +168,7 @@ export default async function HomePage() {
   // — distinct from Limbic Boards' student-facing daily question, which stays on
   // app/(app)/boards/sharpening/page.tsx. Same todayDateKey() rotation + DailyCompletion
   // persistence pattern as every other daily game in this app.
-  const homeQuestionDateKey = todayDateKey();
+  const homeQuestionDateKey = todayDateKey(await getTimeZone(user));
   const homeQuestion = homeQuestionForDate(homeQuestionDateKey);
   const homeQuestionCompletionPromise = prisma.dailyCompletion.findUnique({
     where: { userId_kind_dateKey: { userId: user.id, kind: "homeQuestion", dateKey: homeQuestionDateKey } },
