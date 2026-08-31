@@ -24,7 +24,24 @@ import { getTimeZone } from "@/lib/user-time-zone";
  *  (no access / clinician / student on the free tier / paid LimbicStudent) differ only in
  *  what they render *under* it, and each used to carry its own copy of this markup, which
  *  is how the clinician branch quietly ended up without the section's icon. */
-function BoardsFrame({ title, badges, children }: { title: string; badges?: ReactNode; children: ReactNode }) {
+function BoardsFrame({
+  title,
+  badges,
+  children,
+  gamesSection = true,
+}: {
+  title: string;
+  badges?: ReactNode;
+  children: ReactNode;
+  /** The three branches below that never render BoardsTabs keep Daily Games right under the
+   *  header, same as always. The full LimbicStudent branch passes false here and renders its
+   *  own Daily Games heading/section after BoardsTabs instead — see that branch's own
+   *  comment for why: the tab bar (Daily Sharpening/NPTE Breakdown/Research & Stats/
+   *  Resources) is Boards' primary navigation and reads oddly sitting below an unrelated
+   *  section, so it needed to move above Daily Games rather than Daily Games moving below it
+   *  changing meaning for every branch. */
+  gamesSection?: boolean;
+}) {
   return (
     <div className="screen-pad boards-question-pad page-enter" style={{ maxWidth: 760, margin: "0 auto" }}>
       <div className="boards-page-header">
@@ -34,15 +51,19 @@ function BoardsFrame({ title, badges, children }: { title: string; badges?: Reac
         </div>
         {badges}
       </div>
-      <h2 style={{ fontSize: 19, margin: "16px 0 12px" }}>Daily Games</h2>
-      {/* This page's column is deliberately narrow for reading the Question of the Day, but
-          the Daily Games row is a card grid, not prose. Left to inherit that measure it sat
-          in a third of the page with the rest empty, and the cards were narrow enough to
-          break their own names across two lines ("Anatomy / Connect"). See
-          .boards-daily-games in globals.css, which widens it back out symmetrically. */}
-      <div className="boards-daily-games">
-        <DailyGamesSection />
-      </div>
+      {gamesSection && (
+        <>
+          <h2 style={{ fontSize: 19, margin: "16px 0 12px" }}>Daily Games</h2>
+          {/* This page's column is deliberately narrow for reading the Question of the Day, but
+              the Daily Games row is a card grid, not prose. Left to inherit that measure it sat
+              in a third of the page with the rest empty, and the cards were narrow enough to
+              break their own names across two lines ("Anatomy / Connect"). See
+              .boards-daily-games in globals.css, which widens it back out symmetrically. */}
+          <div className="boards-daily-games">
+            <DailyGamesSection />
+          </div>
+        </>
+      )}
       {children}
     </div>
   );
@@ -175,6 +196,7 @@ export default async function BoardsHubPage() {
   return (
     <BoardsFrame
       title="Limbic Boards"
+      gamesSection={false}
       badges={
         <div className="boards-header-badges">
           {examDays !== null && examDays >= 0 && (
@@ -189,7 +211,7 @@ export default async function BoardsHubPage() {
         </div>
       }
     >
-      <div style={{ marginTop: 24 }}>
+      <div style={{ marginTop: 16 }}>
         {/* BoardsTabs reads ?tab= to deep-link straight into a panel, so it needs a
             Suspense boundary of its own — useSearchParams opts everything above it out of
             prerendering otherwise. */}
@@ -211,6 +233,11 @@ export default async function BoardsHubPage() {
             hasExamDate={user.npteExamDate != null}
           />
         </Suspense>
+      </div>
+
+      <h2 style={{ fontSize: 19, margin: "28px 0 12px" }}>Daily Games</h2>
+      <div className="boards-daily-games">
+        <DailyGamesSection />
       </div>
     </BoardsFrame>
   );
