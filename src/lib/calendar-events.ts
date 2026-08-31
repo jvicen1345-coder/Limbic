@@ -45,9 +45,11 @@ export type UserEventType = (typeof USER_EVENT_TYPES)[number];
 /** Short day-of-week codes for Syllabus.meetingDays (see prisma/schema.prisma and
  *  lib/syllabus-parser.ts) — whitelisted here and in app/actions/syllabus.ts for the same
  *  "no DB-level enum, whitelist enforced server-side" reasoning as USER_EVENT_TYPES above.
- *  Date.prototype.getDay()'s own order (Sunday first), so a lookup by day-index doesn't need
- *  a separate reordering table anywhere this is consumed. */
-export const MEETING_DAY_CODES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+ *  Weekdays only — classes don't meet Sat/Sun, so the day picker (and what the AI parser is
+ *  allowed to extract) is scoped to Mon-Fri from the start rather than offering choices that
+ *  would never be real. Mon-first order throughout — the app's week always starts Monday
+ *  (see getThisWeekDateRange), so this doubles as the display order everywhere it's rendered. */
+export const MEETING_DAY_CODES = ["Mon", "Tue", "Wed", "Thu", "Fri"] as const;
 export type MeetingDayCode = (typeof MEETING_DAY_CODES)[number];
 
 interface BaseCalendarEvent {

@@ -33,7 +33,7 @@ import { getWeekRecommendations, getThisWeekDateRange } from "@/lib/atrium-recom
 import { getUserProgram } from "@/app/actions/dpt-programs";
 import { getTimeZone } from "@/lib/user-time-zone";
 import { dateToLocalIso } from "@/lib/limbic-calendar";
-import { parseMeetingTimesColumn } from "@/lib/syllabus-meeting-times";
+import { parseMeetingTimesColumn, formatMeetingDayTime } from "@/lib/syllabus-meeting-times";
 import { AtriumWeekSchedule } from "@/components/AtriumWeekSchedule";
 
 // A safe all-zero phase for a reader who's picked a real program (see getUserProgram) but
@@ -301,7 +301,7 @@ export default async function StudentAtriumPage() {
     const syllabusEvents = weekSyllabiMeetings
       .filter((s) => s.meetingDays!.split(",").includes(weekday))
       .map((s) => {
-        const time = parseMeetingTimesColumn(s.meetingTimes)?.[weekday];
+        const time = formatMeetingDayTime(parseMeetingTimesColumn(s.meetingTimes)?.[weekday]);
         return {
           id: `syllabus-${s.id}-${dateKey}`,
           title: s.courseCode,
