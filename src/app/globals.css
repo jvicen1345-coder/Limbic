@@ -12303,3 +12303,52 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   white-space: nowrap;
 }
 .trm-next-level { font-size: var(--fs-10-5); color: var(--color-neutral-700); white-space: nowrap; }
+
+/* Home Exercise Program's "current HEP" display (HEPSection.tsx) — the most recent
+   PatientHEPAssignment, shown with its exercise list, above the collapsed .clindash-hep-item
+   history list that already existed. */
+.clindash-hep-current {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+}
+.clindash-hep-current-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.clindash-hep-current-name { font-size: 14px; font-weight: 700; }
+.clindash-hep-history { margin-top: 10px; font-size: 12.5px; }
+.clindash-hep-history summary { cursor: pointer; color: var(--color-neutral-700); font-weight: 600; }
+.clindash-hep-history summary::marker { color: var(--color-neutral-700); }
+
+/* Session Exercises (SessionExerciseSection.tsx) — one entry per logged visit, same
+   border-top divider rhythm as .clindash-note-item. */
+.clindash-session-exercise-item { padding: 10px 0; border-top: 1px solid var(--color-divider); }
+.clindash-session-exercise-item:first-child { border-top: none; }
+
+/* Exercise list editor/display shared by HEPSection.tsx and SessionExerciseSection.tsx (see
+   components/pro/dashboard/HepExerciseList.tsx) — a compact sibling of HepBuilder's own
+   exercise rows (see components/HepBuilder.tsx), scoped to name/sets/reps/notes only. */
+.hep-exercise-editor { display: flex; flex-direction: column; gap: 8px; }
+.hep-exercise-editor-row {
+  display: grid;
+  grid-template-columns: 2fr 70px 70px 2fr auto;
+  gap: 6px;
+  align-items: center;
+}
+.hep-exercise-editor-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-neutral-700);
+  display: flex;
+  padding: 4px;
+}
+.hep-exercise-editor-remove:hover { color: var(--color-danger); }
+.hep-exercise-display { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.hep-exercise-display li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; font-size: 12.5px; }
+.hep-exercise-display-name { font-weight: 600; }
+.hep-exercise-display-dosage { color: var(--color-accent); font-size: var(--fs-11-5); }
+.hep-exercise-display-notes { color: var(--color-neutral-700); font-size: var(--fs-11-5); }
+.hep-exercise-display-empty { font-size: 12px; color: var(--color-neutral-700); margin: 0; }
+@media (max-width: 700px) {
+  .hep-exercise-editor-row { grid-template-columns: 1fr 1fr; }
+}

@@ -437,6 +437,7 @@ model User {
   forceLabComparisons ForceLabComparison[]
   connexionSafetyAssessments ConnexionSafetyAssessment[]
   threeRepMaxTests    ThreeRepMaxTest[]
+  sessionExerciseLogs SessionExerciseLog[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -1196,6 +1197,7 @@ model ClinicalPatient {
   forceLabSessions    ForceLabSession[]
   forceLabAssessments ForceLabAssessment[]
   threeRepMaxTests    ThreeRepMaxTest[]
+  sessionExerciseLogs SessionExerciseLog[]
 
   // A clinician's own patient codes must be unique to them (not globally — two different
   // clinicians can each have their own "PT-001") — enforced here, not just checked in
@@ -1250,6 +1252,25 @@ model ClinicalNote {
   content     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+// Structured record of what a clinician actually did with a patient in one clinic visit —
+// distinct from both PatientHEPAssignment above (what the patient does on their own between
+// visits) and ClinicalNote above (free-text visit documentation). One row per visit;
+// exercises deliberately reuses the same HepTemplateExercise[] JSON shape as
+// PatientHEPAssignment.exercises/HEPTemplate.exercises so the dashboard can share one
+// display/edit component across all three rather than inventing a second exercise shape
+// (see components/pro/dashboard/HepExerciseList.tsx).
+model SessionExerciseLog {
+  id          String   @id @default(cuid())
+  userId      String
+  patientId   String
+  visitNumber Int
+  exercises   Json
+  loggedAt    DateTime @default(now())
 
   user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   patient ClinicalPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)

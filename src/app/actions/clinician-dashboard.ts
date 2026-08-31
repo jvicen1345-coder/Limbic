@@ -16,7 +16,8 @@ import { mcidValues } from "@/lib/outcome-benchmarks";
 import { detectRedFlags } from "@/lib/red-flag-detector";
 import { goalBank } from "@/lib/goal-bank";
 import { getWeeklyResearchDigest as getWeeklyResearchDigestFeed, type WeeklyResearchDigest } from "@/lib/dashboard-research";
-import type { ClinicalPatient, OutcomeMeasureEntry, PatientHEPAssignment, ClinicalNote, RedFlagAlert } from "@/generated/prisma/client";
+import type { ClinicalPatient, OutcomeMeasureEntry, PatientHEPAssignment, ClinicalNote, RedFlagAlert, SessionExerciseLog } from "@/generated/prisma/client";
+import { parseHepExercises, type HepTemplateExercise } from "@/lib/hep-templates";
 
 // Type-only re-export so callers (ResearchFeedPanel.tsx, ClinicianDashboard.tsx) can import
 // WeeklyResearchDigest from this action file instead of reaching into lib/dashboard-research
@@ -337,6 +338,7 @@ export interface PatientDetail extends PatientListEntry {
   outcomes: OutcomeMeasureEntry[];
   hepAssignments: PatientHEPAssignment[];
   clinicalNotes: ClinicalNote[];
+  sessionExerciseLogs: SessionExerciseLog[];
   /** Every generated brief for this patient, most recent first — the client finds
    *  "today's" clinical brief (patientFacing: false) by filtering on generatedAt itself
    *  rather than a second round-trip, since this is already loaded. */
@@ -363,6 +365,7 @@ export async function getPatientDetail(patientId: string): Promise<PatientDetail
       outcomes: { orderBy: { recordedAt: "asc" } },
       hepAssignments: { orderBy: { assignedAt: "desc" } },
       clinicalNotes: { orderBy: { visitNumber: "desc" } },
+      sessionExerciseLogs: { orderBy: { loggedAt: "desc" } },
       preBriefs: { orderBy: { generatedAt: "desc" } },
       goals: { orderBy: { createdAt: "desc" } },
       dischargeSummary: { where: { confirmed: true }, orderBy: { confirmedAt: "desc" }, take: 1 },
@@ -395,6 +398,7 @@ export async function getPatientDetail(patientId: string): Promise<PatientDetail
     outcomes: patient.outcomes,
     hepAssignments: patient.hepAssignments,
     clinicalNotes: patient.clinicalNotes,
+    sessionExerciseLogs: patient.sessionExerciseLogs,
     preBriefs: patient.preBriefs,
     benchmarks,
     goals: patient.goals,
@@ -465,6 +469,31 @@ export async function assignHEP(
 
   revalidatePath("/pro/dashboard");
   return { ok: true, assignment };
+}
+
+/** Log what was actually done with the patient in one clinic visit (see
+ *  SessionExerciseSection.tsx) — separate from assignHEP above, which is what the patient
+ *  does on their own between visits. Same visitNumber convention as addClinicalNote. */
+export async function addSessionExerciseLog(
+  patientId: string,
+  visitNumber: number,
+  exercises: HepTemplateExercise[]
+): Promise<ClinicianDashboardResult<{ log: SessionExerciseLog }>> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const patient = await requireOwnedPatient(user.id, patientId);
+  if (!patient) return { ok: false, error: "Patient not found." };
+
+  if (!Number.isFinite(visitNumber) || visitNumber <= 0) return { ok: false, error: "A visit number is required." };
+  const cleaned = exercises.filter((ex) => ex.name.trim().length > 0);
+  if (cleaned.length === 0) return { ok: false, error: "Add at least one exercise." };
+
+  const log = await prisma.sessionExerciseLog.create({
+    data: { userId: user.id, patientId, visitNumber: Math.round(visitNumber), exercises: cleaned as object },
+  });
+
+  revalidatePath("/pro/dashboard");
+  return { ok: true, log };
 }
 
 /** Active patients where visitCount is a multiple of REASSESSMENT_INTERVAL_VISITS (and
@@ -559,6 +588,11 @@ export interface AvailableHEP {
   id: string;
   name: string;
   bodyPart: string;
+  // The template's saved exercises (see HEPTemplate.exercises in schema.prisma) — carried
+  // along so HEPSection can snapshot them straight into the PatientHEPAssignment it creates
+  // (see assignHEP below) rather than assigning a name with no exercise content, which is
+  // what the picker used to do.
+  exercises: HepTemplateExercise[];
 }
 
 /** The "Assign HEP" form's searchable dropdown (see components/pro/AssignHEPForm.tsx) —
@@ -569,10 +603,10 @@ export async function getAvailableHEPs(): Promise<AvailableHEP[]> {
   if (!user) return [];
   const templates = await prisma.hEPTemplate.findMany({
     where: { userId: user.id },
-    select: { id: true, name: true, bodyPart: true },
+    select: { id: true, name: true, bodyPart: true, exercises: true },
     orderBy: { name: "asc" },
   });
-  return templates;
+  return templates.map((t) => ({ id: t.id, name: t.name, bodyPart: t.bodyPart, exercises: parseHepExercises(t.exercises) }));
 }
 
 /* ============================================================================
