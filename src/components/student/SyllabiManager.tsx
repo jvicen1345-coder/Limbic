@@ -609,15 +609,17 @@ export function SyllabiManager({
                   <div className="syllabi-card-meta">
                     Trimester {s.trimester} · {s.year} · {s.assignmentCount} assignment{s.assignmentCount === 1 ? "" : "s"}
                   </div>
-                  <div className="syllabi-card-meeting">
-                    {s.meetingDays && s.meetingDays.length > 0 ? (
-                      <>
-                        Meets {MEETING_DAYS_DISPLAY_ORDER.filter((d) => s.meetingDays!.includes(d)).join(", ")}
-                        {s.meetingTime ? ` · ${s.meetingTime}` : ""}
-                      </>
-                    ) : (
-                      "No class meeting time set"
-                    )}{" "}
+                  <div className={s.meetingDays && s.meetingDays.length > 0 ? "syllabi-card-meeting" : "syllabi-card-meeting syllabi-card-meeting--unset"}>
+                    <span>
+                      {s.meetingDays && s.meetingDays.length > 0 ? (
+                        <>
+                          Meets {MEETING_DAYS_DISPLAY_ORDER.filter((d) => s.meetingDays!.includes(d)).join(", ")}
+                          {s.meetingTime ? ` · ${s.meetingTime}` : ""}
+                        </>
+                      ) : (
+                        "No class meeting time set"
+                      )}
+                    </span>
                     <button
                       type="button"
                       className="syllabi-meeting-edit-link"
@@ -629,7 +631,7 @@ export function SyllabiManager({
                         openMeetingEditor(s);
                       }}
                     >
-                      Edit
+                      {s.meetingDays && s.meetingDays.length > 0 ? "Edit" : "+ Set schedule"}
                     </button>
                   </div>
                 </div>
