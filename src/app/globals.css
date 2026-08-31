@@ -11308,6 +11308,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   .ff-modal-input,
   .ppm-textarea,
   .clindash-goal-status-select,
+  .clinref-search-input,
   /* …and fields that override .input later or more specifically. */
   .forcelab-filter-row .input,
   .forcelab-paste-textarea,
@@ -11317,6 +11318,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   /* These two also shrank their own box below the 44px touch floor. */
   .syllabi-review-table .input { min-height: 44px; }
   .clindash-goal-status-select { min-height: 44px; }
+  .clinref-search-input { min-height: 44px; }
 
   /* Rehab Sequence is the app's only drag-and-drop screen, and HTML5 drag events never
      fire on a touchscreen — so on a phone these two arrows are not a fallback, they are
