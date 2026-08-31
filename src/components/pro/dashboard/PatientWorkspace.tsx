@@ -15,6 +15,7 @@ import { TreatmentIdeasCard } from "./TreatmentIdeasCard";
 import { ClinicalAlertBanner } from "./ClinicalAlertBanner";
 import { PatientGoalsSection } from "./PatientGoalsSection";
 import { ForceLabSummary } from "./ForceLabSummary";
+import { ThreeRepMaxCard } from "./ThreeRepMaxCard";
 import { EditPatientForm } from "./EditPatientForm";
 
 // A patient is offered early access to "Generate Discharge Summary" once they're this
@@ -159,6 +160,7 @@ function ActiveWorkspace({
       />
       <HEPSection patient={patient} availableHEPs={availableHEPs} onChanged={onChanged} />
       <ForceLabSummary patientId={patient.id} patientCode={patient.patientCode} forceUnit={forceUnit} />
+      <ThreeRepMaxCard patientId={patient.id} patientCode={patient.patientCode} />
       <ClinicalNotesSection patient={patient} onChanged={onChanged} />
     </div>
   );
