@@ -29,9 +29,8 @@ export default function PrivacyPage() {
           information — see Section 2 below for what this can include and who is responsible for it.
         </li>
         <li>
-          Education data: if you are a PT student, syllabus text you upload or paste, assignments extracted from
-          it, and — if you connect a Canvas LMS account — the access token you provide and the assignments Limbic
-          syncs from your school&rsquo;s Canvas instance on your behalf.
+          Education data: if you are a PT student, syllabus text you upload or paste and the assignments extracted
+          from it.
         </li>
         <li>
           Usage data: articles read, searches performed, content saved, streak activity, game completions, and
@@ -89,11 +88,6 @@ export default function PrivacyPage() {
         <li>Resend: delivers account emails such as password resets.</li>
         <li>Google: if you sign in with Google or connect a Google Health account, Google processes the associated authentication or health data. See Google&rsquo;s privacy policy at policies.google.com/privacy.</li>
         <li>Strava and Fitbit: if you connect one of these accounts from your Activity Log, Limbic receives your recent activity data from that provider to sync into your Limbic Vitals log.</li>
-        <li>
-          Canvas LMS: if you connect a Canvas account, Limbic sends the access token you provide to the Canvas
-          domain you specify, in order to read your course assignments. Limbic does not control, and is not
-          responsible for, the school&rsquo;s own Canvas instance or its privacy practices.
-        </li>
         <li>PubMed and Unpaywall: research articles and full-text links are sourced from these public research APIs. No account data is sent to them.</li>
         <li>YouTube and Pexels: power the Clips and article-image features respectively. No account data is sent to them.</li>
       </ul>

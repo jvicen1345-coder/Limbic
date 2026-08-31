@@ -229,7 +229,6 @@ export default async function StudentAtriumPage() {
     thisWeekAssignments,
     syllabusCount,
     monthAssignments,
-    canvasConnection,
   ] = await Promise.all([
     prisma.dailyCompletion.findFirst({
       where: { userId: user.id, dateKey: todayKey, kind: { in: ["boardQuestion", "boardTerm"] } },
@@ -273,13 +272,8 @@ export default async function StudentAtriumPage() {
     // month, complete or not; the calendar's own month navigation re-fetches via
     // app/api/assignments/route.ts rather than re-running this page.
     getMonthAssignments(user.id, now.getFullYear(), now.getMonth() + 1),
-    // Whether Canvas is connected — "no syllabi uploaded" alone used to gate the This Week
-    // card's and calendar's empty states (see hasSyllabi/syllabusCount below), but a student
-    // who's only connected Canvas has real assignments without ever touching the syllabus
-    // tracker, so those empty states now check this too.
-    prisma.canvasConnection.findUnique({ where: { userId: user.id }, select: { id: true } }),
   ]);
-  const hasAssignmentSource = syllabusCount > 0 || canvasConnection != null;
+  const hasAssignmentSource = syllabusCount > 0;
 
   // Weekly schedule strip's 7 day columns (see components/AtriumWeekSchedule.tsx) — built
   // from weekStart/weekCalendarEvents above, plus weekSyllabiMeetings expanded onto every
@@ -497,7 +491,7 @@ export default async function StudentAtriumPage() {
                 }}
               >
                 <p style={{ color: "var(--color-neutral-700)", fontSize: "14px", marginBottom: "12px" }}>
-                  Connect Canvas or upload a syllabus to see your academic calendar here.
+                  Upload a syllabus to see your academic calendar here.
                 </p>
                 <Link
                   href="/student/assignments"

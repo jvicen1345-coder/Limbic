@@ -67,11 +67,10 @@ export default function TermsPage() {
 
       <h2 className="legal-section-title">7. Third Party Integrations</h2>
       <p className="legal-body">
-        Limbic lets you optionally connect third party accounts and services, including Google, Strava, Fitbit,
-        and your school&rsquo;s Canvas LMS. Connecting one of these is subject to that provider&rsquo;s own terms
-        and privacy policy, and to whatever access permissions your school or that provider grants you (for
-        example, some schools restrict a student&rsquo;s ability to generate a Canvas access token). Limbic does
-        not control, and is not responsible for the availability, accuracy, or content of, any third party service.
+        Limbic lets you optionally connect third party accounts and services, including Google, Strava, and Fitbit.
+        Connecting one of these is subject to that provider&rsquo;s own terms and privacy policy, and to whatever
+        access permissions that provider grants you. Limbic does not control, and is not responsible for the
+        availability, accuracy, or content of, any third party service.
       </p>
 
       <h2 className="legal-section-title">8. Platform Liability</h2>

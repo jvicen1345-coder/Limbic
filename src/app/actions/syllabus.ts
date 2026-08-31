@@ -122,8 +122,7 @@ export async function deleteSyllabus(syllabusId: string) {
   if (!syllabus) return { error: "Syllabus not found." };
 
   // Assignment.syllabus has onDelete: Cascade — deleting the syllabus deletes every
-  // syllabus-sourced assignment it owns in the same statement (Canvas-sourced rows have no
-  // syllabusId and are never affected).
+  // assignment it owns in the same statement.
   await prisma.syllabus.delete({ where: { id: syllabusId } });
 
   revalidatePath("/student/assignments");
