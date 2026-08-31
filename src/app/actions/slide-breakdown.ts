@@ -43,16 +43,21 @@ async function writeSlideBreakdown(userId: string, syllabus: Syllabus, parsed: P
           }),
         ]
       : []),
-    ...(notesUpdated
-      ? [
-          prisma.syllabus.update({
-            where: { id: syllabus.id },
-            data: {
-              studyNotes: syllabus.studyNotes ? `${syllabus.studyNotes}\n\n${parsed.notesSummary}` : parsed.notesSummary,
-            },
-          }),
-        ]
-      : []),
+    // Always runs, even when this pass only added flashcards and left notesSummary empty —
+    // studyContentUpdatedAt (see its own comment in prisma/schema.prisma) marks "Study Guide
+    // Creator generated content," not "notes changed." studyNotes stays undefined in that
+    // case so Prisma leaves the existing value alone rather than clearing it.
+    prisma.syllabus.update({
+      where: { id: syllabus.id },
+      data: {
+        studyNotes: notesUpdated
+          ? syllabus.studyNotes
+            ? `${syllabus.studyNotes}\n\n${parsed.notesSummary}`
+            : parsed.notesSummary
+          : undefined,
+        studyContentUpdatedAt: new Date(),
+      },
+    }),
   ]);
 
   revalidatePath("/student/study-guide");

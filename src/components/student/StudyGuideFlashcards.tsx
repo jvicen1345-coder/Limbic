@@ -1,16 +1,24 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateStudyCard, deleteStudyCard, type StudyCardData } from "@/app/actions/study-guide";
+import { createStudyCard, updateStudyCard, deleteStudyCard, type StudyCardData } from "@/app/actions/study-guide";
 import { TrashIcon } from "@/components/icons";
 
 /** Flashcards page for one course (see
  *  app/(app)/student/study-guide/[syllabusId]/flashcards/page.tsx) — a flip-through study
- *  session plus Edit/Delete on each existing card. No "add a card" form: "I want to get rid
- *  of the ability to create in the study guide page for now" — new cards only come from
- *  Study Guide Creator (/student/slides, app/actions/slide-breakdown.ts) now. Edit/Delete
- *  stayed, since those manage content that already exists rather than create new content. */
-export function StudyGuideFlashcards({ courseCode, initialCards }: { courseCode: string; initialCards: StudyCardData[] }) {
+ *  session, Edit/Delete on each existing card, and a small "+ Add card" row for a quick
+ *  one-off fix (see createStudyCard in app/actions/study-guide.ts for why that stays scoped
+ *  rather than becoming a full recreate-everything flow — Study Guide Creator is still the
+ *  way to generate a whole deck). */
+export function StudyGuideFlashcards({
+  syllabusId,
+  courseCode,
+  initialCards,
+}: {
+  syllabusId: string;
+  courseCode: string;
+  initialCards: StudyCardData[];
+}) {
   const [cards, setCards] = useState(initialCards);
   const [pending, startTransition] = useTransition();
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -18,6 +26,9 @@ export function StudyGuideFlashcards({ courseCode, initialCards }: { courseCode:
   const [editBack, setEditBack] = useState("");
   const [studyIndex, setStudyIndex] = useState<number | null>(null);
   const [flipped, setFlipped] = useState(false);
+  const [newFront, setNewFront] = useState("");
+  const [newBack, setNewBack] = useState("");
+  const [addPending, startAddTransition] = useTransition();
 
   function startEdit(card: StudyCardData) {
     setEditingId(card.id);
@@ -42,6 +53,17 @@ export function StudyGuideFlashcards({ courseCode, initialCards }: { courseCode:
       const result = await deleteStudyCard(cardId);
       if ("error" in result) return;
       setCards((prev) => prev.filter((c) => c.id !== cardId));
+    });
+  }
+
+  function handleAdd() {
+    if (!newFront.trim() || !newBack.trim()) return;
+    startAddTransition(async () => {
+      const result = await createStudyCard(syllabusId, newFront, newBack);
+      if ("error" in result) return;
+      setCards((prev) => [...prev, result.card]);
+      setNewFront("");
+      setNewBack("");
     });
   }
 
@@ -97,7 +119,7 @@ export function StudyGuideFlashcards({ courseCode, initialCards }: { courseCode:
     <div>
       {cards.length === 0 ? (
         <p className="atrium-dashboard-empty">
-          No flashcards yet for {courseCode} — generate some from your slides in Study Guide Creator.
+          No flashcards yet for {courseCode} — add one below, or generate a deck from your slides in Study Guide Creator.
         </p>
       ) : (
         <>
@@ -146,6 +168,14 @@ export function StudyGuideFlashcards({ courseCode, initialCards }: { courseCode:
           </div>
         </>
       )}
+
+      <div className="study-guide-add-card">
+        <input className="input" value={newFront} onChange={(e) => setNewFront(e.target.value)} placeholder="Front" />
+        <input className="input" value={newBack} onChange={(e) => setNewBack(e.target.value)} placeholder="Back" />
+        <button type="button" className="btn btn-secondary" disabled={addPending || !newFront.trim() || !newBack.trim()} onClick={handleAdd}>
+          + Add card
+        </button>
+      </div>
     </div>
   );
 }

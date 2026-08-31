@@ -51,7 +51,14 @@ export interface StudyGuideCourseSummary {
   courseCode: string;
   courseName: string;
   cardCount: number;
+  /** Cards whose lastResult is "correct" (see StudyCardData below) — the index's "8/12
+   *  known" line. Only meaningful when cardCount > 0; a course with no cards has nothing to
+   *  have gotten right yet, so the index skips this line rather than showing "0/0 known". */
+  knownCount: number;
   hasNotes: boolean;
+  /** See Syllabus.studyContentUpdatedAt's own comment in prisma/schema.prisma — null until
+   *  Study Guide Creator has generated content for this course at least once. */
+  lastUpdated: Date | null;
 }
 
 export interface StudyGuideCourse {
@@ -71,19 +78,33 @@ export async function getStudyGuideCourses(): Promise<StudyGuideCourseSummary[]>
   const user = await requireStudentUser();
   if (!user) return [];
 
-  const syllabi = await prisma.syllabus.findMany({
-    where: { userId: user.id },
-    orderBy: { uploadedAt: "desc" },
-    include: { _count: { select: { studyCards: true } } },
-  });
+  const [syllabi, cards] = await Promise.all([
+    prisma.syllabus.findMany({ where: { userId: user.id }, orderBy: { uploadedAt: "desc" } }),
+    // Just enough per card to aggregate below — same "don't pull front/back for a page that
+    // doesn't show them" reasoning as this function's own doc comment.
+    prisma.studyCard.findMany({ where: { userId: user.id }, select: { syllabusId: true, lastResult: true } }),
+  ]);
 
-  return syllabi.map((s) => ({
-    id: s.id,
-    courseCode: s.courseCode,
-    courseName: s.courseName,
-    cardCount: s._count.studyCards,
-    hasNotes: Boolean(s.studyNotes),
-  }));
+  const statsBySyllabus = new Map<string, { total: number; known: number }>();
+  for (const c of cards) {
+    const stats = statsBySyllabus.get(c.syllabusId) ?? { total: 0, known: 0 };
+    stats.total += 1;
+    if (c.lastResult === "correct") stats.known += 1;
+    statsBySyllabus.set(c.syllabusId, stats);
+  }
+
+  return syllabi.map((s) => {
+    const stats = statsBySyllabus.get(s.id) ?? { total: 0, known: 0 };
+    return {
+      id: s.id,
+      courseCode: s.courseCode,
+      courseName: s.courseName,
+      cardCount: stats.total,
+      knownCount: stats.known,
+      hasNotes: Boolean(s.studyNotes),
+      lastUpdated: s.studyContentUpdatedAt,
+    };
+  });
 }
 
 /** Powers each of a course's three content pages (see
@@ -110,9 +131,31 @@ export async function getStudyGuideCourse(syllabusId: string): Promise<StudyGuid
   };
 }
 
-/** Edit on the Flashcards page — see that page's own doc comment for why there's no matching
- *  "create" action here anymore: new cards only come from Study Guide Creator
- *  (app/actions/slide-breakdown.ts) now. */
+/** Flashcards page's "+ Add card" — a quick one-off fix (a term the AI extraction missed, a
+ *  correction) without a full re-upload through Study Guide Creator, which stays the way to
+ *  generate a whole deck. Deliberately doesn't touch Syllabus.studyContentUpdatedAt — see
+ *  that field's own comment in prisma/schema.prisma for why a manual add shouldn't read as
+ *  "Study Guide Creator just ran". */
+export async function createStudyCard(
+  syllabusId: string,
+  front: string,
+  back: string
+): Promise<ActionError | { success: true; card: StudyCardData }> {
+  const user = await requireStudentUser();
+  if (!user) return { error: "Unauthorized" };
+  if (!front.trim() || !back.trim()) return { error: "Both sides of the card are required." };
+
+  const syllabus = await requireOwnedSyllabus(user.id, syllabusId);
+  if (!syllabus) return { error: "Course not found." };
+
+  const card = await prisma.studyCard.create({
+    data: { userId: user.id, syllabusId, front: front.trim(), back: back.trim() },
+  });
+
+  revalidateCourse(syllabusId);
+  return { success: true, card: { id: card.id, front: card.front, back: card.back, reviewCount: card.reviewCount, lastResult: card.lastResult } };
+}
+
 export async function updateStudyCard(cardId: string, front: string, back: string): Promise<ActionError | { success: true }> {
   const user = await requireStudentUser();
   if (!user) return { error: "Unauthorized" };

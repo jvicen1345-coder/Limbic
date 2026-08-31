@@ -13,8 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ syllabusI
 
 /** One of a course's three Study Guide content pages (see
  *  app/(app)/student/study-guide/page.tsx, the index this links from, for why these are
- *  separate pages rather than tabs on one). No "add a card" form here — see
- *  components/student/StudyGuideFlashcards.tsx's own doc comment. */
+ *  separate pages rather than tabs on one). */
 export default async function StudyGuideFlashcardsPage({ params }: { params: Promise<{ syllabusId: string }> }) {
   const user = await getCurrentUser();
   if (!user || !hasStudentAccess(user)) notFound();
@@ -33,7 +32,7 @@ export default async function StudyGuideFlashcardsPage({ params }: { params: Pro
       </h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>Flashcards</p>
 
-      <StudyGuideFlashcards courseCode={course.courseCode} initialCards={course.cards} />
+      <StudyGuideFlashcards syllabusId={course.id} courseCode={course.courseCode} initialCards={course.cards} />
     </div>
   );
 }

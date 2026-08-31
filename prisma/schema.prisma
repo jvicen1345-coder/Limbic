@@ -1960,12 +1960,19 @@ model Syllabus {
   meetingDays  String?
   meetingTimes String?
   location     String?
-  // Visual Aids tab on /student/study-guide (see components/student/StudyGuideManager.tsx) —
-  // free text the student writes/pastes for this course (can include a simple pipe-delimited
-  // table, rendered by lib/study-notes-markdown.ts). One shared note per course, not a list —
-  // "charts, tables, visuals" as one running study document per class, same reasoning as
-  // location above being one shared value rather than per-day.
+  // Visual Aids page for this course (see components/student/StudyGuideNotes.tsx) — free
+  // text the student writes/pastes (can include a simple pipe-delimited table, rendered by
+  // lib/study-notes-markdown.ts). One shared note per course, not a list — "charts, tables,
+  // visuals" as one running study document per class, same reasoning as location above
+  // being one shared value rather than per-day.
   studyNotes String?
+  // Stamped only by Study Guide Creator's write (see writeSlideBreakdown in
+  // app/actions/slide-breakdown.ts) — never by a manual edit on the Study Guide pages
+  // themselves (updateStudyCard/createStudyCard/updateStudyNotes in
+  // app/actions/study-guide.ts leave it alone). Powers the "Updated Xh ago" line on the
+  // Study Guide index (see getStudyGuideCourses) — a signal that a slide upload actually
+  // landed content, deliberately not muddied by "I fixed a typo on one card" edits.
+  studyContentUpdatedAt DateTime?
 
   user        User         @relation(fields: [userId], references: [id])
   assignments Assignment[]
