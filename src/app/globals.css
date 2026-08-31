@@ -11342,15 +11342,30 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 /* The standalone /pro/calculators page specifically — unlike the four pages above, its
    CalculatorProfilesPanel shares the row with the card grid (see .pro-calc-layout in
    CalculatorWorkspace.tsx), the same 320px panel .clinref-page's own calculator tab has, so
-   it needs the same wider viewport before a third column helps, not the 1240px threshold
-   above. Numbers match .clinref-page's calculator-grid rules exactly, just under this page's
-   own class instead of reusing that Clinical-Reference-specific one. */
+   it needs the same wider viewport before extra columns help, not the 1240px threshold
+   above. */
 .pro-calc-wide-page { max-width: 1500px; }
-@media (min-width: 1560px) {
-  .pro-calc-wide-page .pro-grid-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* Each Outcome Measures region (see .pro-calc-region in that page) holds a different number
+   of cards — 1 (Spine), 2 (Lower Extremity), 5 (Balance/Gait/Neuro) — so a fixed 3-up track
+   count (what this used to be, matching the other .pro-calc-wide-page pages above) left the
+   1- and 2-card regions with one narrow card next to 1-2 empty tracks, visibly out of step
+   with the fully-populated rows elsewhere on the page. `grid-template-columns: repeat(auto-fit,
+   minmax(...))` was tried first, but it only collapses a track that is empty across the WHOLE
+   grid — the 5-card Balance/Gait/Neuro region still computes 3 columns (5 items fill more than
+   2), so its wrapped second row of 2 cards only occupies 2 of those 3 tracks and leaves the
+   same dead space on the right. Flexbox wrapping doesn't have that limitation: flex-grow
+   redistributes each row's leftover width across only the items actually on that row, so a
+   trailing partial row fills edge to edge same as a full one. Specific enough
+   (.pro-calc-wide-page .pro-calc-region .pro-grid-2, 3 classes) to beat the plain .pro-grid-2
+   base rule's `display: grid` without touching it, and needs no breakpoints of its own — it
+   adapts continuously as the page (and its 320px profile panel) resize. */
+.pro-calc-wide-page .pro-calc-region .pro-grid-2 {
+  display: flex;
+  flex-wrap: wrap;
 }
-@media (min-width: 2000px) {
-  .pro-calc-wide-page .pro-grid-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pro-calc-wide-page .pro-calc-region .pro-grid-2 > * {
+  flex: 1 1 280px;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
