@@ -18,6 +18,32 @@ async function signUp(page: import("@playwright/test").Page, email: string) {
   await page.getByRole("button", { name: "Create account" }).click();
 }
 
+/** Walks the three one-time gates a brand-new account passes before it can reach anything
+ *  else, in the order app/(app)/layout.tsx redirects through them: name (app/onboarding/
+ *  name), then pick-topics (app/onboarding), then the "How are you using Limbic?" role
+ *  modal (components/OnboardingRoleModal.tsx, which renders in place of the whole app).
+ *
+ *  Every step is driven off its own control rather than off a URL. The gates hand off via
+ *  server-action redirects, so the URL is briefly ambiguous between two of them mid-flight;
+ *  waiting on an element instead lets Playwright's auto-waiting ride that out, where
+ *  asserting a URL first would race it. */
+async function completeOnboarding(page: import("@playwright/test").Page) {
+  // Both name fields are `required`, and only the first is prefilled (from an email-derived
+  // guess), so a last name has to be typed for this step to submit at all.
+  await page.getByLabel("First name").fill("Jamie");
+  await page.getByLabel("Last name").fill("Rivera");
+  await page.getByRole("button", { name: "Continue to Limbic" }).click();
+
+  await page.getByRole("button", { name: "Skip for now" }).click();
+
+  // The role picker's options are buttons whose accessible name combines title and subtitle
+  // ("Physical Therapist Licensed clinician"), hence the regex rather than a literal. Its
+  // Continue takes exact: true because accessible-name matching is substring by default,
+  // which would otherwise also match the topic step's "Continue to Limbic".
+  await page.getByRole("button", { name: /Physical Therapist/ }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+}
+
 test.describe("landing + auth", () => {
   test("landing page renders for a signed-out visitor", async ({ page }) => {
     await page.goto("/");
@@ -35,13 +61,7 @@ test.describe("landing + auth", () => {
     await signUp(page, email);
     await expect(page).toHaveURL(/\/onboarding/);
 
-    // A brand-new signup always goes through both onboarding steps in order: pick-topics,
-    // then "How are you using Limbic?" — .click() auto-waits for each element rather than
-    // needing manual visibility polling. The role picker's options are buttons whose
-    // accessible name combines title and subtitle ("Physical Therapist Licensed clinician").
-    await page.getByText("Skip for now").click();
-    await page.getByRole("button", { name: /Physical Therapist/ }).click();
-    await page.getByRole("button", { name: "Continue" }).click();
+    await completeOnboarding(page);
 
     await expect(page).toHaveURL(/\/home/);
     await expect(page.getByText(/Good (morning|afternoon|evening)/)).toBeVisible();
