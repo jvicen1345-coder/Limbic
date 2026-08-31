@@ -224,6 +224,7 @@ export default async function StudentAtriumPage() {
     weekCompletions,
     boardActivityRows,
     weekCalendarEvents,
+    weekSyllabiMeetings,
     thisWeekAssignments,
     syllabusCount,
     monthAssignments,
@@ -250,6 +251,16 @@ export default async function StudentAtriumPage() {
       where: { userId: user.id, type: "Class", date: { gte: weekStart, lte: weekEnd } },
       orderBy: { date: "asc" },
     }),
+    // Also feeds the Class Schedule strip — recurring weekly meetings parsed straight off a
+    // student's own syllabi (see lib/syllabus-parser.ts and Syllabus.meetingDays/meetingTime
+    // in prisma/schema.prisma), or set by hand on the syllabus card when the AI parse can't
+    // find one (see updateSyllabusMeetingPattern in app/actions/syllabus.ts). "use the
+    // information from the syllabi to create a class schedule" — this is that: additive to
+    // the manual Class-type calendar events above, not a replacement for them.
+    prisma.syllabus.findMany({
+      where: { userId: user.id, meetingDays: { not: null } },
+      select: { id: true, courseCode: true, courseName: true, meetingDays: true, meetingTime: true },
+    }),
     // This Week card (see components/AtriumThisWeekCard.tsx, replacing the old Weekly
     // Roundup panel here) — every syllabus assignment due this calendar week, plus a plain
     // count of uploaded syllabi to tell "no assignments this week" apart from "never
@@ -270,9 +281,10 @@ export default async function StudentAtriumPage() {
   const hasAssignmentSource = syllabusCount > 0 || canvasConnection != null;
 
   // Weekly schedule strip's 7 day columns (see components/AtriumWeekSchedule.tsx) — built
-  // from weekStart/weekCalendarEvents above. dateToLocalIso, not toISOString, for the same
-  // reason every other day-key in this app avoids it (see AtriumCalendar's own toDateKey
-  // comment): a DateTime read back with a UTC-based key can land on the wrong local day.
+  // from weekStart/weekCalendarEvents above, plus weekSyllabiMeetings expanded onto every
+  // matching weekday below. dateToLocalIso, not toISOString, for the same reason every other
+  // day-key in this app avoids it (see AtriumCalendar's own toDateKey comment): a DateTime
+  // read back with a UTC-based key can land on the wrong local day.
   const eventsByDateKey = new Map<string, { id: string; title: string; type: string }[]>();
   for (const event of weekCalendarEvents) {
     const key = dateToLocalIso(event.date);
@@ -284,12 +296,24 @@ export default async function StudentAtriumPage() {
     const date = new Date(weekStart);
     date.setDate(weekStart.getDate() + i);
     const dateKey = dateToLocalIso(date);
+    const weekday = date.toLocaleDateString("en-US", { weekday: "short" });
+    // Every uploaded syllabus whose meetingDays includes this weekday (see the
+    // prisma.syllabus.findMany query above) contributes one entry here — title is the short
+    // course code so it fits the day cell, and the tooltip (WeekScheduleEvent.type, rendered
+    // as the card's title attribute) carries the full course name and meeting time instead.
+    const syllabusEvents = weekSyllabiMeetings
+      .filter((s) => s.meetingDays!.split(",").includes(weekday))
+      .map((s) => ({
+        id: `syllabus-${s.id}-${dateKey}`,
+        title: s.courseCode,
+        type: s.meetingTime ? `${s.courseName} · ${s.meetingTime}` : s.courseName,
+      }));
     return {
       dateKey,
-      label: date.toLocaleDateString("en-US", { weekday: "short" }),
+      label: weekday,
       dayNumber: date.getDate(),
       isToday: dateKey === todayKey,
-      events: eventsByDateKey.get(dateKey) ?? [],
+      events: [...(eventsByDateKey.get(dateKey) ?? []), ...syllabusEvents],
     };
   });
 

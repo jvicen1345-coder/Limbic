@@ -11937,3 +11937,51 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 @media (max-width: 700px) {
   .atrium-week-schedule-grid { grid-template-columns: repeat(7, 84px); overflow-x: auto; padding-bottom: 2px; }
 }
+
+/* Syllabus meeting-pattern editor (components/student/SyllabiManager.tsx) — the fallback UI
+   for setting/correcting the recurring class time parseSyllabusFromText tries to extract
+   automatically (see prisma/schema.prisma Syllabus.meetingDays/meetingTime and
+   lib/syllabus-parser.ts). Feeds the Atrium's Class Schedule strip; see
+   app/(app)/student/page.tsx and components/AtriumWeekSchedule.tsx. */
+.syllabi-card-meeting { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+.syllabi-meeting-edit-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--atrium-tint);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.syllabi-meeting-edit-link:hover { text-decoration: underline; }
+.syllabi-review-meeting {
+  font-size: 12.5px;
+  color: var(--atrium-tint);
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: -4px 0 14px;
+}
+.syllabi-meeting-form {
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.syllabi-meeting-days { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.syllabi-meeting-day {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--atrium-border);
+  cursor: pointer;
+  user-select: none;
+}
+.syllabi-meeting-day--on { border-color: var(--atrium-tint); color: var(--atrium-tint); font-weight: 600; }
+.syllabi-meeting-time-input { max-width: 320px; }
+.syllabi-meeting-form-actions { display: flex; gap: 10px; margin-top: 12px; }
