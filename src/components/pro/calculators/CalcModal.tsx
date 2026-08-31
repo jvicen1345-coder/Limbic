@@ -104,12 +104,26 @@ export function CalcModal({
   );
 }
 
+/** "Patient-Reported" — the patient fills this out themselves (a PROM) — vs
+ *  "Clinician-Administered" — the PT times, counts, or scores it. Shown as a badge on every
+ *  card (see CalcCardShell below) alongside the region-based grouping on
+ *  app/(app)/pro/calculators/page.tsx, so a reader can tell at a glance which of the two
+ *  ways of gathering the measure it is, independent of which body region it's grouped
+ *  under. */
+export type CalcAdministration = "Patient-Reported" | "Clinician-Administered";
+
+const ADMINISTRATION_BADGE_CLASS: Record<CalcAdministration, string> = {
+  "Patient-Reported": "pro-calc-admin-badge--patient",
+  "Clinician-Administered": "pro-calc-admin-badge--clinician",
+};
+
 export function CalcCardShell({
   name,
   fullName,
   measures,
   population,
   itemCount,
+  administration,
   onOpen,
 }: {
   name: string;
@@ -117,22 +131,19 @@ export function CalcCardShell({
   measures: string;
   population: string;
   itemCount: string;
+  administration: CalcAdministration;
   onOpen: () => void;
 }) {
   return (
     <div className="card elev-sm pro-calc-card">
+      <span className={`pro-calc-admin-badge ${ADMINISTRATION_BADGE_CLASS[administration]}`}>{administration}</span>
       <div className="pro-calc-title">{name}</div>
       <p className="pro-calc-fullname">{fullName}</p>
       <p className="pro-calc-desc">{measures}</p>
       <p className="pro-calc-meta">
         {population} &middot; {itemCount}
       </p>
-      {/* marginTop: auto pins Calculate to the bottom of the card. Grid rows already
-          stretch every card to the tallest in the row, so without this the button just
-          trailed whatever length that card's own description and metadata happened to be —
-          leaving one card's button floating mid-card with a visible gap beneath it while
-          its neighbour's sat low, on the same row. */}
-      <button type="button" className="btn btn-primary" style={{ alignSelf: "flex-start", marginTop: "auto" }} onClick={onOpen}>
+      <button type="button" className="btn btn-primary" style={{ alignSelf: "flex-start" }} onClick={onOpen}>
         Calculate
       </button>
     </div>

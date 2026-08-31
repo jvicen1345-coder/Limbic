@@ -1,3 +1,4 @@
+import { todayKeyInZone } from "@/lib/day";
 /**
  * Differential's static case bank (see app/games/differential/page.tsx,
  * app/actions/differential.ts) — one clinical vignette per case, revealed as 5
@@ -867,16 +868,19 @@ function dayIndexForDateKey(dateKey: string): number {
 }
 
 /** Today's case — a fixed cyclic index over differentialCases, stable for every reader on
- *  a given calendar day and stable as the bank grows. */
-export function getTodaysCase(): DifferentialCaseEntry {
-  const dateKey = getDateKey();
+ *  a given calendar day and stable as the bank grows. "A given calendar day" is now the
+ *  reader's own (see lib/day.ts), so the zone has to come in from the caller. */
+export function getTodaysCase(timeZone: string): DifferentialCaseEntry {
+  const dateKey = getDateKey(timeZone);
   const dayIndex = dayIndexForDateKey(dateKey);
   const total = differentialCases.length;
   const index = ((dayIndex % total) + total) % total;
   return differentialCases[index];
 }
 
-/** YYYY-MM-DD for "today" — the unit the daily case rotates on. */
-export function getDateKey(): string {
-  return new Date().toISOString().slice(0, 10);
+/** YYYY-MM-DD for "today" in the reader's own time zone — the unit the daily case rotates
+ *  on. Takes the zone explicitly (see lib/user-time-zone.ts) rather than reading the
+ *  server's clock, which ran off UTC and rolled the day over mid-evening in the Americas. */
+export function getDateKey(timeZone: string): string {
+  return todayKeyInZone(timeZone);
 }

@@ -58,6 +58,18 @@ const DASH_ITEMS: { text: string; scale: DashScale }[] = [
   { text: "I feel less capable, less confident, or less useful because of my arm, shoulder, or hand problem", scale: "agreement" },
 ];
 
+/** Card copy for this measure, lifted out of the JSX so the Clinical Reference
+ *  search box can match against it (see lib/reference-search.ts) without the text
+ *  being written twice. Spread straight into CalcCardShell below. */
+export const DASH_MEASURE = {
+  name: "DASH",
+  fullName: "Disabilities of Arm, Shoulder, and Hand",
+  measures: "Patient-reported upper extremity disability and symptoms.",
+  population: "Any upper extremity condition",
+  itemCount: "30 items",
+  administration: "Patient-Reported",
+} as const;
+
 export function DashCalculator() {
   const [open, setOpen] = useState(false);
   const [scores, setScores] = useState<number[]>(Array(DASH_ITEMS.length).fill(1));
@@ -67,14 +79,7 @@ export function DashCalculator() {
 
   return (
     <>
-      <CalcCardShell
-        name="DASH"
-        fullName="Disabilities of Arm, Shoulder, and Hand"
-        measures="Patient-reported upper extremity disability and symptoms."
-        population="Any upper extremity condition"
-        itemCount="30 items"
-        onOpen={() => setOpen(true)}
-      />
+      <CalcCardShell {...DASH_MEASURE} onOpen={() => setOpen(true)} />
       <CalcModal
         open={open}
         title="DASH, Disabilities of Arm, Shoulder, and Hand"

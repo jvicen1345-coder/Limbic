@@ -1,3 +1,5 @@
+import { todayKeyInZone } from "@/lib/day";
+
 /**
  * Body Connections' static match bank (see app/(app)/games/body/page.tsx,
  * components/BodyConnectionsGame.tsx) — ten canonical body-part/function pairs, matching
@@ -57,7 +59,10 @@ export function bodyMatchSetForDate(dateKey: string): BodyMatchSet {
   return BODY_MATCH_SETS[index];
 }
 
-/** YYYY-MM-DD for "today" — the unit the daily match set rotates on. */
-export function todayDateKey(): string {
-  return new Date().toISOString().slice(0, 10);
+/** YYYY-MM-DD for "today" in the reader's own time zone — the unit the daily match set rotates on.
+ *  Takes the zone explicitly (see lib/user-time-zone.ts for where a request gets one)
+ *  rather than reading the server's clock: this ran off UTC on a UTC server, so the day
+ *  rolled over mid-evening for every reader in the Americas — see lib/day.ts. */
+export function todayDateKey(timeZone: string): string {
+  return todayKeyInZone(timeZone);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { matchesSearch, searchTerms } from "@/lib/reference-search";
 
 interface TermRow {
   abbrev: string;
@@ -85,9 +86,21 @@ const ROWS: TermRow[] = [
  *  from the two lab-value/pharmacology references already here. Same filterable-table
  *  pattern as LabValuesReference.tsx, reusing its pro-filter-bar/pro-table CSS rather than
  *  introducing new classes. */
-export function MedicalTerminologyReference() {
+function rowMatches(terms: string[], row: TermRow): boolean {
+  return matchesSearch(terms, row.abbrev, row.meaning, row.context, row.tags);
+}
+
+/** Match count for this tab's label in the Clinical Reference search — see
+ *  countLabValueMatches in LabValuesReference.tsx for the shape and why. */
+export function countTerminologyMatches(query: string): number {
+  const terms = searchTerms(query);
+  return ROWS.filter((r) => rowMatches(terms, r)).length;
+}
+
+export function MedicalTerminologyReference({ query = "" }: { query?: string }) {
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("All");
-  const filtered = category === "All" ? ROWS : ROWS.filter((r) => r.tags.includes(category));
+  const terms = searchTerms(query);
+  const filtered = ROWS.filter((r) => (category === "All" || r.tags.includes(category)) && rowMatches(terms, r));
 
   return (
     <>
@@ -102,26 +115,30 @@ export function MedicalTerminologyReference() {
           </button>
         ))}
       </div>
-      <div className="pro-table-wrap">
-        <table className="pro-table">
-          <thead>
-            <tr>
-              <th>Abbreviation</th>
-              <th>Meaning</th>
-              <th>Context</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((row) => (
-              <tr key={row.abbrev}>
-                <td>{row.abbrev}</td>
-                <td>{row.meaning}</td>
-                <td>{row.context}</td>
+      {filtered.length > 0 ? (
+        <div className="pro-table-wrap">
+          <table className="pro-table">
+            <thead>
+              <tr>
+                <th>Abbreviation</th>
+                <th>Meaning</th>
+                <th>Context</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {filtered.map((row) => (
+                <tr key={row.abbrev}>
+                  <td>{row.abbrev}</td>
+                  <td>{row.meaning}</td>
+                  <td>{row.context}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="clinref-empty">No abbreviations match this search.</p>
+      )}
     </>
   );
 }

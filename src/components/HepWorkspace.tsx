@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { HepBuilder, type HepBuilderHandle } from "@/components/HepBuilder";
+import { HepBuilder, type HepBuilderHandle, type HepInitialDraft } from "@/components/HepBuilder";
 import { HepTemplateLibrary } from "@/components/HepTemplateLibrary";
 import { loadHepTemplateAction, saveHepTemplateAction } from "@/app/actions/hep";
 import type { HepTemplateBodyPart, HepTemplateExercise } from "@/lib/hep-templates";
@@ -18,10 +18,14 @@ import type { HepTemplateSummary } from "@/app/actions/hep";
 export function HepWorkspace({
   isPro,
   templatesByBodyPart,
+  initialDraft,
   children,
 }: {
   isPro: boolean;
   templatesByBodyPart: Record<HepTemplateBodyPart, HepTemplateSummary[]>;
+  /** A draft resolved server-side from the Movement Lab deep-link params — passed straight
+   *  through to the builder's initial state. See app/(app)/hep/page.tsx. */
+  initialDraft?: HepInitialDraft | null;
   /** The saved-programs list below the builder — stays a plain Server Component tree in
    *  app/(app)/hep/page.tsx, passed through here just so it renders inside the middle
    *  column instead of full page width. */
@@ -55,7 +59,7 @@ export function HepWorkspace({
   return (
     <div className="hep-layout">
       <div className="hep-builder-col">
-        <HepBuilder ref={builderRef} isPro={isPro} />
+        <HepBuilder ref={builderRef} isPro={isPro} initialDraft={initialDraft} />
         {children}
       </div>
       <HepTemplateLibrary

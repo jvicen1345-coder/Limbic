@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { RuleAccordion } from "./RuleAccordion";
 
-export function OttawaAnkleRule() {
+export function OttawaAnkleRule({ open }: { open?: boolean }) {
   const [ankle, setAnkle] = useState({ lateral: false, medial: false });
   const [foot, setFoot] = useState({ fifthMT: false, navicular: false });
   const [unableToBearWeight, setUnableToBearWeight] = useState(false);
@@ -12,7 +12,7 @@ export function OttawaAnkleRule() {
   const footIndicated = foot.fifthMT || foot.navicular || unableToBearWeight;
 
   return (
-    <RuleAccordion title="Ottawa Ankle Rules" summary="Ankle fracture screening, sensitivity ~96%">
+    <RuleAccordion title="Ottawa Ankle Rules" summary="Ankle fracture screening, sensitivity ~96%" open={open}>
       <div>
         <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>Ankle series, bone tenderness at:</div>
         <label className="pro-check-row">

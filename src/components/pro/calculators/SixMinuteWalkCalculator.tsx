@@ -19,6 +19,18 @@ function lowerLimitOfNormalMeters(predicted: number, sex: "male" | "female"): nu
   return Math.max(0, Math.round(predicted - (sex === "male" ? 153 : 139)));
 }
 
+/** Card copy for this measure, lifted out of the JSX so the Clinical Reference
+ *  search box can match against it (see lib/reference-search.ts) without the text
+ *  being written twice. Spread straight into CalcCardShell below. */
+export const SIX_MINUTE_WALK_MEASURE = {
+  name: "6 Minute Walk Test",
+  fullName: "6MWT",
+  measures: "Sub-maximal aerobic capacity and functional exercise tolerance.",
+  population: "Cardiopulmonary, general deconditioning",
+  itemCount: "1 item",
+  administration: "Clinician-Administered",
+} as const;
+
 /** Fully functional — unit conversion (m/ft), the built-in 6-minute countdown (see
  *  CalcTimer), and the real validated Enright & Sherrill predicted-distance regression
  *  equation with its lower limit of normal are all live. Age/sex pre-fill from the active
@@ -64,14 +76,7 @@ export function SixMinuteWalkCalculator() {
 
   return (
     <>
-      <CalcCardShell
-        name="6 Minute Walk Test"
-        fullName="6MWT"
-        measures="Sub-maximal aerobic capacity and functional exercise tolerance."
-        population="Cardiopulmonary, general deconditioning"
-        itemCount="1 item"
-        onOpen={() => setOpen(true)}
-      />
+      <CalcCardShell {...SIX_MINUTE_WALK_MEASURE} onOpen={() => setOpen(true)} />
       <CalcModal
         open={open}
         title="6 Minute Walk Test"

@@ -7,13 +7,13 @@ import { nextStreak } from "@/lib/streak";
  *  lib/reading.ts recordArticleRead does for the reading streak. Idempotent per calendar
  *  day: revealing the term and then answering the question the same day only advances the
  *  streak once, since nextStreak() no-ops on a same-day repeat. */
-export async function recordBoardActivity(userId: string, dateKey: string) {
+export async function recordBoardActivity(userId: string, dateKey: string, timeZone: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { lastBoardsActivityAt: true, boardsStreakDays: true },
   });
   if (!user) return;
-  const boardsStreakDays = nextStreak(user.lastBoardsActivityAt, user.boardsStreakDays);
+  const boardsStreakDays = nextStreak(user.lastBoardsActivityAt, user.boardsStreakDays, timeZone, dateKey);
   await Promise.all([
     prisma.user.update({ where: { id: userId }, data: { lastBoardsActivityAt: new Date(), boardsStreakDays } }),
     prisma.boardActivity.upsert({

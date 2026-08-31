@@ -230,6 +230,15 @@ model User {
   hasCompletedTour Boolean   @default(true)
   tourCompletedAt  DateTime?
 
+  // The reader's IANA time zone (e.g. "America/Denver"), reported by their browser and
+  // refreshed whenever it changes — see components/TimeZoneSync.tsx, lib/user-time-zone.ts.
+  // Every daily-rotating thing in the app is keyed on a calendar date, and those dates used
+  // to be read off UTC on a server that runs in UTC, so the day rolled over mid-evening for
+  // anyone in the Americas. Null until a browser has reported one (and for any account that
+  // predates this field), which lib/user-time-zone.ts treats as "fall back to the request
+  // header, then UTC" — i.e. exactly the old behavior.
+  timeZone String?
+
   // Limbic Boards (student daily-habit tools) streak — same nextStreak() logic as the
   // reading streak above, driven off BoardActivity rows instead of ReadArticle ones.
   lastBoardsActivityAt DateTime?
@@ -821,6 +830,16 @@ model DailyCompletion {
 
   // boardQuestion-specific.
   selectedIndex Int?
+
+  // Which piece of content this row's answer was actually about — a BOARD_QUESTIONS id for
+  // kind "boardQuestion", a BOARD_TERMS id for "boardTerm" (see lib/board-content.ts).
+  // Needed because the daily pick stopped being a pure function of the date: it's now
+  // weighted by NPTE domain and skips what this reader has recently seen (see
+  // pickDailyQuestion), so two students can get different questions on the same day and
+  // questionForDate(dateKey) can no longer tell you what a past row was answering. Null on
+  // every row written before that change, which is exactly what the readers key off — they
+  // fall back to the old date-only rotation for those (see boardQuestionForCompletion).
+  contentId String?
 
   // crossword-specific — the full 5x5 grid of what the reader has typed so far ("" for a
   // black cell or one they haven't filled in yet), so an in-progress solve survives a

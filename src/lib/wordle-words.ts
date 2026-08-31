@@ -1,3 +1,5 @@
+import { todayKeyInZone } from "@/lib/day";
+
 // Curated bank of real 5-letter health/medical/wellness words — anatomy, symptoms,
 // treatment, and wellness terms a PT, OT, or health-minded reader would recognize. All
 // real dictionary words (some informal-but-standard clinical shorthand like "QUADS" or
@@ -31,7 +33,10 @@ export function wordForDate(dateKey: string): string {
   return WORDLE_ANSWERS[index];
 }
 
-/** YYYY-MM-DD for "today" — the unit the daily word rotates on. */
-export function todayDateKey(): string {
-  return new Date().toISOString().slice(0, 10);
+/** YYYY-MM-DD for "today" in the reader's own time zone — the unit the daily word rotates on.
+ *  Takes the zone explicitly (see lib/user-time-zone.ts for where a request gets one)
+ *  rather than reading the server's clock: this ran off UTC on a UTC server, so the day
+ *  rolled over mid-evening for every reader in the Americas — see lib/day.ts. */
+export function todayDateKey(timeZone: string): string {
+  return todayKeyInZone(timeZone);
 }

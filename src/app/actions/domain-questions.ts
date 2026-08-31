@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { getTimeZone } from "@/lib/user-time-zone";
 import { todayDateKey } from "@/lib/board-content";
 
 export interface DomainAnswerView {
@@ -20,7 +21,7 @@ export async function getDomainAnswers(domain: string): Promise<DomainAnswerView
   if (!user) return [];
 
   return prisma.domainQuestionAnswer.findMany({
-    where: { userId: user.id, domain, dateKey: todayDateKey() },
+    where: { userId: user.id, domain, dateKey: todayDateKey(await getTimeZone(user)) },
     select: { questionIndex: true, selectedAnswer: true, isCorrect: true },
   });
 }
@@ -42,7 +43,7 @@ export async function saveDomainAnswer(
   const user = await getCurrentUser();
   if (!user) return { ok: false, error: "Not authorized." };
 
-  const dateKey = todayDateKey();
+  const dateKey = todayDateKey(await getTimeZone(user));
   await prisma.domainQuestionAnswer.upsert({
     where: { userId_domain_questionIndex_dateKey: { userId: user.id, domain, questionIndex, dateKey } },
     create: { userId: user.id, domain, questionIndex, selectedAnswer, isCorrect, dateKey },

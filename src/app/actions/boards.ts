@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
+import { getTimeZone } from "@/lib/user-time-zone";
 import { recordBoardActivity } from "@/lib/board-activity";
 
 /** Called whenever a student engages with today's Limbic Boards content — answering the
@@ -13,6 +14,6 @@ export async function recordBoardsActivityAction(dateKey: string) {
   // callable endpoint regardless of which page's UI happens to call it (same reasoning as
   // every other gated write in this app, see app/actions/agent.ts requireProUser).
   if (!user || !hasStudentAccess(user)) return;
-  await recordBoardActivity(user.id, dateKey);
+  await recordBoardActivity(user.id, dateKey, await getTimeZone(user));
   revalidatePath("/boards");
 }

@@ -6,9 +6,9 @@ export interface CourseworkHepExercise {
   name: string;
   /** General/typical dosage language ("2–3 sets of 10–15 reps, progressing as tolerated")
    *  rather than one invented precise number — same "don't state a specific clinical figure
-   *  you can't back with a source" discipline as
-   *  therapeutic-exercises-static.ts/board-content.ts, just applied to a program-design
-   *  teaching example instead of a single exercise entry. */
+   *  you can't back with a source" discipline as lib/movement-lab and
+   *  lib/board-content.ts, just applied to a program-design teaching example instead of a
+   *  single exercise entry. */
   dosage: string;
   note: string;
 }
@@ -32,7 +32,9 @@ export interface CourseworkHepTemplate {
  * lib/pathologies-static.ts's condition explanations and lib/board-content.ts's questions
  * hold to), not a specific patient's real prescription — see the disclaimer rendered above
  * this content in app/(app)/student/hep-templates/page.tsx. Grows one real entry at a time,
- * same discipline as THERAPEUTIC_EXERCISES in therapeutic-exercises-static.ts.
+ * same discipline as the exercise bank in lib/movement-lab. (Kept separate from that bank's
+ * own MOVEMENT_PROTOCOLS: these are teaching examples for a DPT course, written inline,
+ * whereas a MovementProtocol references real bank entries and is meant for clinical use.)
  */
 export const COURSEWORK_HEP_TEMPLATES: CourseworkHepTemplate[] = [
   {

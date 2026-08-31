@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { getTimeZone } from "@/lib/user-time-zone";
 import {
   getTodaysPuzzle,
   getDateKey,
@@ -26,7 +27,7 @@ export async function getTodaysAnatomyConnectResult(): Promise<AnatomyConnectRes
   if (!user) return null;
 
   const row = await prisma.anatomyConnectResult.findUnique({
-    where: { userId_dateKey: { userId: user.id, dateKey: getDateKey() } },
+    where: { userId_dateKey: { userId: user.id, dateKey: getDateKey(await getTimeZone(user)) } },
   });
   if (!row || !row.solved) return null;
   return { attempts: row.attempts, timeSeconds: row.timeSeconds };
@@ -51,11 +52,12 @@ export async function submitAnatomyConnectAttempt(
   const user = await getCurrentUser();
   if (!user) return { ok: false, results: [], solved: false };
 
-  const todaysPuzzle = getTodaysPuzzle();
+  const timeZone = await getTimeZone(user);
+  const todaysPuzzle = getTodaysPuzzle(timeZone);
   const validation = validateSolution(todaysPuzzle.id, userConnections);
 
   if (validation.solved) {
-    const dateKey = getDateKey();
+    const dateKey = getDateKey(timeZone);
     await prisma.anatomyConnectResult.upsert({
       where: { userId_dateKey: { userId: user.id, dateKey } },
       create: { userId: user.id, dateKey, solved: true, attempts, timeSeconds },
@@ -98,7 +100,7 @@ export async function getAnatomyConnectStats(): Promise<AnatomyConnectStats> {
   let solveRate = 0;
   if (totalSolved > 0) {
     const firstMs = Math.min(...rows.map((r) => dateKeyToUtcMs(r.dateKey)));
-    const todayMs = dateKeyToUtcMs(getDateKey());
+    const todayMs = dateKeyToUtcMs(getDateKey(await getTimeZone(user)));
     const daysSinceFirst = Math.round((todayMs - firstMs) / DAY_MS) + 1;
     solveRate = Math.round((totalSolved / daysSinceFirst) * 100);
   }

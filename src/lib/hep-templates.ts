@@ -1,10 +1,11 @@
 /**
  * The fixed body-part categories the /hep template library panel groups saved templates
  * under (see components/HepTemplateLibrary.tsx). A separate, purpose-built list from
- * therapeutic-exercises-static.ts's REGIONS — that one drives the exercise library picker
- * and doesn't line up with what a clinician actually organizes whole HEP templates by
- * (e.g. "Post-Surgical" and "General Conditioning" aren't exercise regions, they're
- * program categories).
+ * lib/movement-lab's MOVEMENT_REGIONS — that one drives the exercise bank's own filters and
+ * doesn't line up with what a clinician actually organizes whole HEP templates by (e.g.
+ * "Post-Surgical" and "General Conditioning" aren't exercise regions, they're program
+ * categories). MovementProtocol maps itself onto this list, via its `bodyPart` field, for
+ * exactly that reason — see lib/movement-lab/protocols.ts.
  */
 export const HEP_TEMPLATE_BODY_PARTS = [
   "Spine",

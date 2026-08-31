@@ -2,12 +2,14 @@
 
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { getTimeZone } from "@/lib/user-time-zone";
 import { todayDateKey } from "@/lib/board-content";
 
 /** YYYY-MM-DD for "today" — re-exported here so callers of this file don't need to also
- *  import lib/board-content.ts just for the date the rest of these actions key off of. */
+ *  import lib/board-content.ts just for the date the rest of these actions key off of, nor
+ *  resolve the reader's own time zone themselves (see lib/user-time-zone.ts). */
 export async function getTodayDateKey(): Promise<string> {
-  return todayDateKey();
+  return todayDateKey(await getTimeZone(await getCurrentUser()));
 }
 
 export interface SpecialtyAnswerView {

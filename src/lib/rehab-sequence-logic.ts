@@ -1,4 +1,5 @@
 import { rehabSequenceCases, type RehabSequenceCaseEntry } from "@/lib/rehab-sequence-cases";
+import { todayKeyInZone } from "@/lib/day";
 
 const DAY_MS = 86400000;
 // Same fixed, arbitrary epoch as lib/differential-cases.ts/lib/anatomy-connect-logic.ts —
@@ -11,9 +12,12 @@ function dayIndexForDateKey(dateKey: string): number {
   return Math.floor((ms - EPOCH_MS) / DAY_MS);
 }
 
-/** YYYY-MM-DD for "today" — the unit the daily case rotates on. */
-export function getDateKey(): string {
-  return new Date().toISOString().slice(0, 10);
+/** YYYY-MM-DD for "today" in the reader's own time zone — the unit the daily case rotates on.
+ *  Takes the zone explicitly (see lib/user-time-zone.ts for where a request gets one)
+ *  rather than reading the server's clock: this ran off UTC on a UTC server, so the day
+ *  rolled over mid-evening for every reader in the Americas — see lib/day.ts. */
+export function getDateKey(timeZone: string): string {
+  return todayKeyInZone(timeZone);
 }
 
 /** The case for any given calendar day — a fixed cyclic index over rehabSequenceCases.
@@ -31,8 +35,8 @@ export function getRehabCaseForDate(dateKey: string): RehabSequenceCaseEntry {
 
 /** Today's case, stable for every reader on a given calendar day and stable as the bank
  *  grows. */
-export function getTodaysRehabCase(): RehabSequenceCaseEntry {
-  return getRehabCaseForDate(getDateKey());
+export function getTodaysRehabCase(timeZone: string): RehabSequenceCaseEntry {
+  return getRehabCaseForDate(getDateKey(timeZone));
 }
 
 export interface RehabSequenceValidation {

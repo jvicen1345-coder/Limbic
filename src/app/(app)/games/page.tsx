@@ -14,6 +14,7 @@ import {
   type CardCompletionState,
 } from "@/lib/games";
 import { DailyTermIcon, MiniCrosswordIcon, HealthTriviaIcon, BodyConnectionsIcon, CheckCircleIcon } from "@/components/icons";
+import { getTimeZone } from "@/lib/user-time-zone";
 
 const GAME_ICON: Record<GameKind, (props: { size?: number }) => React.ReactNode> = {
   wordle: DailyTermIcon,
@@ -32,7 +33,7 @@ export default async function GamesPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const dateKey = todayDateKey();
+  const dateKey = todayDateKey(await getTimeZone(user));
 
   const [todayRows, finishedRows, activityRows] = await Promise.all([
     prisma.dailyCompletion.findMany({

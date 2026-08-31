@@ -99,6 +99,18 @@ const FGA_ITEMS: { name: string; criteria: string[] }[] = [
   },
 ];
 
+/** Card copy for this measure, lifted out of the JSX so the Clinical Reference
+ *  search box can match against it (see lib/reference-search.ts) without the text
+ *  being written twice. Spread straight into CalcCardShell below. */
+export const FGA_MEASURE = {
+  name: "Functional Gait Assessment",
+  fullName: "FGA",
+  measures: "Gait-based dynamic balance across 10 walking tasks.",
+  population: "Vestibular and balance-impaired patients",
+  itemCount: "10 items",
+  administration: "Clinician-Administered",
+} as const;
+
 export function FgaCalculator() {
   const [open, setOpen] = useState(false);
   const [scores, setScores] = useState<number[]>(Array(FGA_ITEMS.length).fill(3));
@@ -108,14 +120,7 @@ export function FgaCalculator() {
 
   return (
     <>
-      <CalcCardShell
-        name="Functional Gait Assessment"
-        fullName="FGA"
-        measures="Gait-based dynamic balance across 10 walking tasks."
-        population="Vestibular and balance-impaired patients"
-        itemCount="10 items"
-        onOpen={() => setOpen(true)}
-      />
+      <CalcCardShell {...FGA_MEASURE} onOpen={() => setOpen(true)} />
       <CalcModal
         open={open}
         title="Functional Gait Assessment"

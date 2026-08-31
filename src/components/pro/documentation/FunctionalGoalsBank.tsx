@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronRightIcon } from "@/components/icons";
 
 // Real, standard SMART-format (specific, measurable, functional, time-bound) goal examples,
 // following the style used in real PT documentation, organized by category.
@@ -68,7 +69,13 @@ const CATEGORIES: { name: string; goals: string[] }[] = [
 ];
 
 /** Not a copy template like the other six documentation cards, a searchable reference bank
- *  of pre-written goal examples organized by body region/function. */
+ *  of pre-written goal examples organized by body region/function — six categories of five
+ *  goals each is a lot of text, easily the tallest card on the page (see the .pro-grid-2
+ *  row-stretch fix in globals.css this used to trigger). Collapsed by default via the same
+ *  <details>/.pro-accordion-* shell every other reference-library entry in this app uses
+ *  (TestCard in SpecialTestsLibrary.tsx, the decision-rule/red-flag cards) — closed, its
+ *  height matches its row neighbors; a reader who wants it clicks to open, same as any other
+ *  accordion card. */
 export function FunctionalGoalsBank() {
   const [query, setQuery] = useState("");
   const q = query.trim().toLowerCase();
@@ -78,31 +85,40 @@ export function FunctionalGoalsBank() {
   })).filter((cat) => cat.goals.length > 0);
 
   return (
-    <div className="card elev-sm">
-      <div className="pro-calc-title">Functional Goals Bank</div>
-      <p className="pro-calc-desc">Searchable reference bank of pre-written goal examples, organized by body region and function.</p>
-      <input
-        className="input"
-        style={{ marginTop: 10, marginBottom: 12 }}
-        placeholder="Search goals..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        {filtered.map((cat) => (
-          <div key={cat.name}>
-            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{cat.name}</div>
-            <ul style={{ margin: 0, paddingLeft: 18, display: "flex", flexDirection: "column", gap: 3 }}>
-              {cat.goals.map((g) => (
-                <li key={g} style={{ fontSize: 12.5, color: "var(--color-neutral-700)" }}>
-                  {g}
-                </li>
-              ))}
-            </ul>
+    <details className="card elev-sm">
+      <summary className="pro-accordion-summary">
+        <div>
+          <div>Functional Goals Bank</div>
+          <div className="pro-accordion-summary-sub">
+            Searchable reference bank of pre-written goal examples, organized by body region and function.
           </div>
-        ))}
-        {filtered.length === 0 && <p style={{ fontSize: 13, color: "var(--color-neutral-700)" }}>No goals match &ldquo;{query}&rdquo;.</p>}
+        </div>
+        <ChevronRightIcon size={16} className="pro-accordion-chevron" />
+      </summary>
+      <div className="pro-accordion-content">
+        <input
+          className="input"
+          style={{ marginBottom: 12 }}
+          placeholder="Search goals..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {filtered.map((cat) => (
+            <div key={cat.name}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{cat.name}</div>
+              <ul style={{ margin: 0, paddingLeft: 18, display: "flex", flexDirection: "column", gap: 3 }}>
+                {cat.goals.map((g) => (
+                  <li key={g} style={{ fontSize: 12.5, color: "var(--color-neutral-700)" }}>
+                    {g}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          {filtered.length === 0 && <p style={{ fontSize: 13, color: "var(--color-neutral-700)" }}>No goals match &ldquo;{query}&rdquo;.</p>}
+        </div>
       </div>
-    </div>
+    </details>
   );
 }

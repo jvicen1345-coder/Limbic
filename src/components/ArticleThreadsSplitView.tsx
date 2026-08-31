@@ -25,9 +25,11 @@ import type { ArticleViewData } from "@/lib/article-view";
 export function ArticleThreadsSplitView({
   initialView,
   isPro,
+  hasResearchAccess,
 }: {
   initialView: ArticleViewData;
   isPro: boolean;
+  hasResearchAccess: boolean;
 }) {
   const [view, setView] = useState(initialView);
   const [swapError, setSwapError] = useState<string | null>(null);
@@ -71,6 +73,7 @@ export function ArticleThreadsSplitView({
             article={view.article}
             related={view.related}
             unpaywallResult={view.unpaywallResult}
+            hasResearchAccess={hasResearchAccess}
           />
           {swapError && (
             <p style={{ fontSize: 13, color: "var(--color-neutral-700)", marginTop: 12 }}>{swapError}</p>
