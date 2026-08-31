@@ -1,8 +1,10 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { getTimeZone } from "@/lib/user-time-zone";
+import { recordBoardActivity } from "@/lib/board-activity";
 import {
   getTodaysPuzzle,
   getDateKey,
@@ -58,11 +60,18 @@ export async function submitAnatomyConnectAttempt(
 
   if (validation.solved) {
     const dateKey = getDateKey(timeZone);
-    await prisma.anatomyConnectResult.upsert({
-      where: { userId_dateKey: { userId: user.id, dateKey } },
-      create: { userId: user.id, dateKey, solved: true, attempts, timeSeconds },
-      update: { solved: true, attempts, timeSeconds },
-    });
+    await Promise.all([
+      prisma.anatomyConnectResult.upsert({
+        where: { userId_dateKey: { userId: user.id, dateKey } },
+        create: { userId: user.id, dateKey, solved: true, attempts, timeSeconds },
+        update: { solved: true, attempts, timeSeconds },
+      }),
+      // See app/actions/differential.ts's identical call for why Daily Games count toward
+      // the Boards streak now.
+      recordBoardActivity(user.id, dateKey, timeZone),
+    ]);
+    revalidatePath("/boards");
+    revalidatePath("/student");
   }
 
   return { ok: true, ...validation };

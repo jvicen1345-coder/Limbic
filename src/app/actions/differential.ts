@@ -1,8 +1,10 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { getTimeZone } from "@/lib/user-time-zone";
+import { recordBoardActivity } from "@/lib/board-activity";
 import { getTodaysCase, getDateKey, type DifferentialCaseEntry } from "@/lib/differential-cases";
 
 /** Lowercases and strips apostrophes/hyphens/periods so "Guillain-Barre", "Guillain
@@ -97,11 +99,22 @@ export async function submitDifferentialGuess(
   const isFinal = correct || clampedCluesUsed >= 5;
 
   if (isFinal) {
-    await prisma.differentialResult.upsert({
-      where: { userId_dateKey: { userId: user.id, dateKey } },
-      create: { userId: user.id, dateKey, cluesUsed: clampedCluesUsed, correct, guesses: [...priorGuesses, guess] },
-      update: { cluesUsed: clampedCluesUsed, correct, guesses: [...priorGuesses, guess] },
-    });
+    await Promise.all([
+      prisma.differentialResult.upsert({
+        where: { userId_dateKey: { userId: user.id, dateKey } },
+        create: { userId: user.id, dateKey, cluesUsed: clampedCluesUsed, correct, guesses: [...priorGuesses, guess] },
+        update: { cluesUsed: clampedCluesUsed, correct, guesses: [...priorGuesses, guess] },
+      }),
+      // Counts toward the Boards streak the same way finishing Daily Sharpening's own three
+      // steps does (see app/actions/daily-completion.ts) — Daily Games moved inside the
+      // Daily Sharpening tab (see components/BoardsTabs.tsx) specifically because it's a
+      // daily task like the rest of that tab, so it should be able to carry the streak on
+      // its own rather than only ever supplementing a day the reader already kept alive some
+      // other way.
+      recordBoardActivity(user.id, dateKey, timeZone),
+    ]);
+    revalidatePath("/boards");
+    revalidatePath("/student");
   }
 
   return { ok: true, correct, condition: isFinal ? todaysCase.condition : "" };
