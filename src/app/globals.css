@@ -11631,3 +11631,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   padding: 8px 4px;
 }
 .canvas-connect-disconnect:disabled { opacity: 0.6; cursor: default; }
+/* Second, subtler paragraph in the disconnected CanvasConnectPanel (see that component) —
+   points a student whose school has disabled self-service Canvas access tokens at their
+   Canvas admin instead of leaving them stuck on a "New Access Token" button that doesn't
+   exist for them. Reuses .canvas-connect-desc's sizing/line-height, just quieter. */
+.canvas-connect-desc--muted { color: var(--color-neutral-700); font-size: 12.5px; margin-top: -8px; }
