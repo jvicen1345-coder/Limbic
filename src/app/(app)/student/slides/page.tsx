@@ -9,15 +9,15 @@ export const metadata: Metadata = {
   title: "Slides",
 };
 
-const SUBTITLE = "Paste your lecture slide text and Limbic AI turns it into flashcards and Visual Aids notes in your Study Guide.";
+const SUBTITLE = "Upload your lecture slides as a PDF and Limbic AI turns them into flashcards and Visual Aids notes in your Study Guide.";
 
 /** "So if I add my slides from class will these populate [the Study Guide]?" -> "no, not yet"
- *  -> this: no longer the "Coming soon" placeholder. Same "paste text, not a real file
- *  upload" shape as Assignments' own "Upload Syllabus Text" tab (see
- *  components/student/SyllabiManager.tsx) — this app has no PDF/PPTX parsing, and a student
- *  can already copy slide text out of whatever they're viewing it in. See
- *  app/actions/slide-breakdown.ts for the AI extraction + Study Guide write, and
- *  components/student/SlideBreakdownManager.tsx for the form. */
+ *  -> real (but paste-text-only) Slide Breakdown -> "The input for slide breakdown needs to
+ *  be pdf" -> this: a real PDF upload (see lib/pdf-text.ts, generateSlideBreakdownFromPdf in
+ *  app/actions/slide-breakdown.ts), same FormData/File shape as the Apple Health export
+ *  upload (components/vitals/AppleHealthUploadCard.tsx). Pasting text is still available as
+ *  a fallback behind a toggle in components/student/SlideBreakdownManager.tsx, for a
+ *  scanned/image-only PDF this app can't OCR. */
 export default async function SlidesPage() {
   const user = await getCurrentUser();
   if (!user) return null;
