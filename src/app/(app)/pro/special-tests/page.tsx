@@ -13,7 +13,7 @@ export default async function ProSpecialTestsPage({ searchParams }: { searchPara
   const { region } = await searchParams;
 
   return (
-    <div className="screen-pad">
+    <div className="screen-pad pro-wide-page">
       <FreeToolBanner isPro={user.isPro} />
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Special Tests Library</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>

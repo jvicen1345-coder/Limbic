@@ -325,3 +325,102 @@ export async function resolvePubmedAbstract(input: string): Promise<PubmedAbstra
     abstract: meta.get(pmid)?.abstract ?? "",
   };
 }
+
+// A dense narrative-review article's full JATS body can run past 100k characters once
+// tables are included — far more than a "low effort" structured-extraction call needs to
+// read. Tables are placed first in the combined text below specifically so a simple slice
+// to this cap keeps every table intact (they're rarely more than a few thousand characters
+// combined) and only truncates the prose tail, which is the lower-value content for a tool
+// whose whole job is pulling reported summary statistics.
+const PMC_MAX_FULL_TEXT_CHARS = 30000;
+
+/** Finds the PMC record directly holding this PubMed record's own full text, if any — most
+ *  PubMed articles have none at all (paywalled, or never deposited in PMC), so returning
+ *  null here is the common case, not a failure. linkname=pubmed_pmc is specifically "this
+ *  record's own full text" — left unset, elink also returns pubmed_pmc_refs (PMC articles
+ *  that *cite* this one) and other link types in the same response, which would silently
+ *  resolve to the wrong article's text. */
+async function findPmcId(pmid: string): Promise<string | null> {
+  const json = (await fetchJson(`${EUTILS}/elink.fcgi?dbfrom=pubmed&db=pmc&linkname=pubmed_pmc&id=${pmid}&retmode=json`)) as {
+    linksets?: { linksetdbs?: { links?: string[] }[] }[];
+  } | null;
+  return json?.linksets?.[0]?.linksetdbs?.[0]?.links?.[0] ?? null;
+}
+
+/** Pulls every reported statistics table out of a PMC article's <body> as plain text — the
+ *  single highest-value content this whole function exists to reach, since a study's actual
+ *  mean/SD/n per variable overwhelmingly lives in a Table 1/2 (baseline characteristics,
+ *  outcome measures), not in abstract prose or even the Results section's running text.
+ *  Regex-based rather than a full JATS object parse: a table cell's inner markup (nested
+ *  <italic>/<sup>/<xref>/etc.) varies too much to model cleanly, and all this needs is the
+ *  cell's visible text, which stripHtml already gets right for exactly that kind of mixed
+ *  inline content. */
+function extractPmcTables(bodyXml: string): string[] {
+  const tables: string[] = [];
+  for (const wrap of bodyXml.match(/<table-wrap[\s\S]*?<\/table-wrap>/g) ?? []) {
+    const captionMatch = /<caption>([\s\S]*?)<\/caption>/.exec(wrap);
+    const caption = captionMatch ? stripHtml(captionMatch[1]) : "";
+    const rows: string[] = [];
+    for (const row of wrap.match(/<tr[^>]*>([\s\S]*?)<\/tr>/g) ?? []) {
+      const cells = (row.match(/<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/g) ?? []).map((cell) =>
+        stripHtml(cell.replace(/^<t[hd][^>]*>/, "").replace(/<\/t[hd]>$/, ""))
+      );
+      if (cells.some((c) => c.length > 0)) rows.push(cells.join(" | "));
+    }
+    if (rows.length > 0) tables.push([caption, ...rows].filter(Boolean).join("\n"));
+  }
+  return tables;
+}
+
+/** Pulls section headings + paragraph text out of a PMC article's <body>, in document
+ *  order — <sec> nesting is deliberately not modeled (a flat reading order is all an LLM
+ *  extraction call needs, and reliably matching nested <sec>...</sec> pairs by regex isn't),
+ *  so this just scans for every <title>/<p> in sequence regardless of depth. Expects
+ *  table-wraps, figs, and xrefs already stripped from bodyXml (see resolvePmcFullText) —
+ *  otherwise a table caption's own <title> would be double-counted alongside
+ *  extractPmcTables, and citation-marker numbers would litter the prose. */
+function extractPmcSectionText(bodyXml: string): string {
+  const parts: string[] = [];
+  const blockRe = /<title>([\s\S]*?)<\/title>|<p>([\s\S]*?)<\/p>/g;
+  let m: RegExpExecArray | null;
+  while ((m = blockRe.exec(bodyXml))) {
+    if (m[1] !== undefined) {
+      const heading = stripHtml(m[1]);
+      if (heading) parts.push(`## ${heading}`);
+    } else {
+      const para = stripHtml(m[2]);
+      if (para) parts.push(para);
+    }
+  }
+  return parts.join("\n\n");
+}
+
+/** The fuller counterpart to resolvePubmedAbstract's abstract-only text — an abstract is
+ *  all PubMed's own E-utilities ever serve (PubMed is a citation/abstract index, not a
+ *  full-text repository), so reaching an article's actual Methods/Results text and its
+ *  reported tables means a second, separate lookup against PMC specifically, and only when
+ *  the publisher deposited a copy there. Returns null whenever that isn't the case (no PMC
+ *  link, PMC record fetch fails, or nothing extractable comes out of it) — callers fall
+ *  back to the abstract alone exactly as before this existed. Never throws. */
+export async function resolvePmcFullText(pmid: string): Promise<string | null> {
+  const pmcId = await findPmcId(pmid);
+  if (!pmcId) return null;
+
+  const xml = await fetchText(`${EUTILS}/efetch.fcgi?db=pmc&id=${pmcId}&rettype=full&retmode=xml`);
+  if (!xml) return null;
+
+  const bodyMatch = /<body[^>]*>([\s\S]*?)<\/body>/.exec(xml);
+  if (!bodyMatch) return null;
+
+  const tables = extractPmcTables(bodyMatch[1]);
+  const proseSource = bodyMatch[1]
+    .replace(/<table-wrap[\s\S]*?<\/table-wrap>/g, "")
+    .replace(/<fig[\s\S]*?<\/fig>/g, "")
+    .replace(/<xref[^>]*>[\s\S]*?<\/xref>/g, "");
+  const prose = extractPmcSectionText(proseSource);
+
+  const combined = [tables.length > 0 ? `Reported tables:\n\n${tables.join("\n\n")}` : "", prose].filter(Boolean).join("\n\n---\n\n");
+  if (!combined.trim()) return null;
+
+  return combined.length > PMC_MAX_FULL_TEXT_CHARS ? combined.slice(0, PMC_MAX_FULL_TEXT_CHARS) + "…" : combined;
+}

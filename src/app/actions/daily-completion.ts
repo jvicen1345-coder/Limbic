@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { getTimeZone } from "@/lib/user-time-zone";
 import { recordBoardActivity } from "@/lib/board-activity";
 import { recordGameActivity } from "@/lib/game-activity";
 import { NPTE_THREE_QUESTION_BENCHMARK_SECONDS } from "@/lib/board-content";
@@ -25,7 +26,7 @@ export async function recordWordleCompletionAction(
       create: { userId: user.id, kind: "wordle", dateKey, guesses, status, elapsedSeconds },
       update: { guesses, status, elapsedSeconds },
     }),
-    status !== "playing" ? recordGameActivity(user.id, dateKey) : Promise.resolve(),
+    status !== "playing" ? recordGameActivity(user.id, dateKey, await getTimeZone(user)) : Promise.resolve(),
   ]);
   revalidatePath("/wordle");
   revalidatePath("/games");
@@ -49,35 +50,44 @@ export async function recordHomeQuestionAction(dateKey: string, selectedIndex: n
 }
 
 /** Persists a Limbic Boards question answer — same per-user fix as the Wordle action
- *  above, plus still advances the Boards streak the same way it always did. */
-export async function recordBoardQuestionAction(dateKey: string, selectedIndex: number, elapsedSeconds?: number) {
+ *  above, plus still advances the Boards streak the same way it always did. `questionId`
+ *  is the BOARD_QUESTIONS id this answer was against: the daily pick is per-reader now
+ *  (see lib/board-content.ts pickDailyQuestion), so the date alone no longer identifies
+ *  what was asked and anything reading this row back needs the id stored on it. */
+export async function recordBoardQuestionAction(
+  dateKey: string,
+  selectedIndex: number,
+  elapsedSeconds?: number,
+  questionId?: string
+) {
   const user = await getCurrentUser();
   if (!user) return;
   await Promise.all([
     prisma.dailyCompletion.upsert({
       where: { userId_kind_dateKey: { userId: user.id, kind: "boardQuestion", dateKey } },
-      create: { userId: user.id, kind: "boardQuestion", dateKey, selectedIndex, elapsedSeconds },
-      update: { selectedIndex, elapsedSeconds },
+      create: { userId: user.id, kind: "boardQuestion", dateKey, selectedIndex, elapsedSeconds, contentId: questionId },
+      update: { selectedIndex, elapsedSeconds, contentId: questionId },
     }),
-    recordBoardActivity(user.id, dateKey),
+    recordBoardActivity(user.id, dateKey, await getTimeZone(user)),
   ]);
-  revalidatePath("/boards/sharpening");
+  revalidatePath("/boards");
   revalidatePath("/student");
 }
 
-/** Persists a Limbic Boards term-of-the-day reveal — same pattern as the question action. */
-export async function recordBoardTermRevealAction(dateKey: string, elapsedSeconds?: number) {
+/** Persists a Limbic Boards term-of-the-day reveal — same pattern as the question action,
+ *  `termId` included for the same reason. */
+export async function recordBoardTermRevealAction(dateKey: string, elapsedSeconds?: number, termId?: string) {
   const user = await getCurrentUser();
   if (!user) return;
   await Promise.all([
     prisma.dailyCompletion.upsert({
       where: { userId_kind_dateKey: { userId: user.id, kind: "boardTerm", dateKey } },
-      create: { userId: user.id, kind: "boardTerm", dateKey, elapsedSeconds },
-      update: { elapsedSeconds },
+      create: { userId: user.id, kind: "boardTerm", dateKey, elapsedSeconds, contentId: termId },
+      update: { elapsedSeconds, contentId: termId },
     }),
-    recordBoardActivity(user.id, dateKey),
+    recordBoardActivity(user.id, dateKey, await getTimeZone(user)),
   ]);
-  revalidatePath("/boards/sharpening");
+  revalidatePath("/boards");
   revalidatePath("/student");
 }
 
@@ -98,7 +108,7 @@ export async function recordCrosswordCompletionAction(
       create: { userId: user.id, kind: "crossword", dateKey, crosswordCells: cells, status, elapsedSeconds },
       update: { crosswordCells: cells, status, elapsedSeconds },
     }),
-    status === "won" ? recordGameActivity(user.id, dateKey) : Promise.resolve(),
+    status === "won" ? recordGameActivity(user.id, dateKey, await getTimeZone(user)) : Promise.resolve(),
   ]);
   revalidatePath("/crossword");
   revalidatePath("/games");
@@ -120,7 +130,7 @@ export async function recordHealthTriviaAction(dateKey: string, answers: number[
       create: { userId: user.id, kind: "healthTrivia", dateKey, guesses, status },
       update: { guesses, status },
     }),
-    status === "won" ? recordGameActivity(user.id, dateKey) : Promise.resolve(),
+    status === "won" ? recordGameActivity(user.id, dateKey, await getTimeZone(user)) : Promise.resolve(),
   ]);
   revalidatePath("/games/trivia");
   revalidatePath("/games");
@@ -140,7 +150,7 @@ export async function recordBodyConnectionsAction(dateKey: string, matchedRegion
       create: { userId: user.id, kind: "bodyConnections", dateKey, guesses: matchedRegions, status },
       update: { guesses: matchedRegions, status },
     }),
-    status === "won" ? recordGameActivity(user.id, dateKey) : Promise.resolve(),
+    status === "won" ? recordGameActivity(user.id, dateKey, await getTimeZone(user)) : Promise.resolve(),
   ]);
   revalidatePath("/games/body");
   revalidatePath("/games");
@@ -169,9 +179,9 @@ export async function recordCaseOfDayAction(
       create: { userId: user.id, kind: "caseOfDay", dateKey, guesses, selectedIndex, status, elapsedSeconds },
       update: { guesses, selectedIndex, status, elapsedSeconds },
     }),
-    status !== "playing" ? recordBoardActivity(user.id, dateKey) : Promise.resolve(),
+    status !== "playing" ? recordBoardActivity(user.id, dateKey, await getTimeZone(user)) : Promise.resolve(),
   ]);
-  revalidatePath("/boards/sharpening");
+  revalidatePath("/boards");
   revalidatePath("/student");
 }
 

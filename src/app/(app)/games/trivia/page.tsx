@@ -2,12 +2,13 @@ import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { todayDateKey, triviaQuestionsForDate } from "@/lib/trivia-static";
 import { HealthTriviaGame } from "@/components/HealthTriviaGame";
+import { getTimeZone } from "@/lib/user-time-zone";
 
 export default async function HealthTriviaPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const dateKey = todayDateKey();
+  const dateKey = todayDateKey(await getTimeZone(user));
   const questions = triviaQuestionsForDate(dateKey);
 
   const row = await prisma.dailyCompletion.findUnique({

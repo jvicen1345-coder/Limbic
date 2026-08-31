@@ -28,6 +28,18 @@ const LEFS_ITEMS = [
 
 const SCORE_LABELS = ["0, extreme difficulty/unable", "1, quite a bit of difficulty", "2, moderate difficulty", "3, a little bit of difficulty", "4, no difficulty"];
 
+/** Card copy for this measure, lifted out of the JSX so the Clinical Reference
+ *  search box can match against it (see lib/reference-search.ts) without the text
+ *  being written twice. Spread straight into CalcCardShell below. */
+export const LEFS_MEASURE = {
+  name: "LEFS",
+  fullName: "Lower Extremity Functional Scale",
+  measures: "Patient-reported difficulty across 20 lower-extremity functional activities.",
+  population: "Any lower extremity orthopedic condition",
+  itemCount: "20 items",
+  administration: "Patient-Reported",
+} as const;
+
 /** Fully functional — all 20 items, each scored 0-4, summed in real time out of 80. Higher
  *  is better function; 80 is full function. */
 export function LefsCalculator() {
@@ -38,14 +50,7 @@ export function LefsCalculator() {
 
   return (
     <>
-      <CalcCardShell
-        name="LEFS"
-        fullName="Lower Extremity Functional Scale"
-        measures="Patient-reported difficulty across 20 lower-extremity functional activities."
-        population="Any lower extremity orthopedic condition"
-        itemCount="20 items"
-        onOpen={() => setOpen(true)}
-      />
+      <CalcCardShell {...LEFS_MEASURE} onOpen={() => setOpen(true)} />
       <CalcModal
         open={open}
         title="LEFS, Lower Extremity Functional Scale"

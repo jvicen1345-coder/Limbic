@@ -3877,7 +3877,9 @@ html[data-theme="dark"] .nav-founding-link-active {
   border-radius: 50%;
   background: color-mix(in srgb, var(--game-accent, var(--color-accent)) 16%, transparent);
 }
-.game-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 19px; margin: 0 0 6px; }
+/* No font-family override — inherits the ambient body font (var(--font-body)) instead of
+   the display heading font, which rendered too heavy for a card title at this size. */
+.game-card-title { font-weight: var(--font-heading-weight); font-size: 19px; margin: 0 0 6px; }
 .game-card-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.45; margin: 0 0 14px; flex: 1; }
 
 .game-card-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 12px; color: var(--color-neutral-700); }
@@ -3950,6 +3952,58 @@ html[data-theme="dark"] .nav-founding-link-active {
 @keyframes games-pulse {
   0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent); }
   50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-accent) 0%, transparent); }
+}
+
+/* — Daily Games context bar (components/DailyGamesSection.tsx) — plain text strip above
+   the three standalone game cards on /boards, no card shell of its own. */
+.daily-games-context-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.daily-games-context-date { font-size: 13px; color: var(--color-neutral-700); }
+.daily-games-context-status { font-size: 13px; }
+.daily-games-context-status--complete { color: #16a34a; }
+.daily-games-context-status--partial { color: #c9853a; }
+.daily-games-context-status--none { color: var(--color-neutral-700); }
+
+/* — Daily Games three-state card treatment — scoped to .game-card-standalone (rather than
+   the bare .game-card-completed/.game-card-fresh/.game-card-progress classes above) so the
+   /games hub's own Wordle/Crossword/Trivia cards, which share those same base classes,
+   keep their existing tokenized (--color-games-completed) styling untouched. Only
+   not-started and completed are implemented — these three games have no in-progress
+   signal in the data (see DailyGamesSection.tsx's own comment), so there's nothing to
+   detect an "in progress" state from. */
+.game-card-standalone.game-card-not-started {
+  background: var(--color-card-surface);
+}
+.game-card-standalone.game-card-completed {
+  background: color-mix(in srgb, var(--color-card-surface) 60%, transparent);
+  border-color: color-mix(in srgb, var(--color-divider) 40%, transparent);
+  opacity: 1;
+}
+.game-card-standalone.game-card-completed .game-card-title { color: var(--color-neutral-700); }
+.game-card-standalone.game-card-completed .game-card-desc.game-card-desc--clamp {
+  color: var(--color-neutral-700);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+.game-card-standalone.game-card-completed .game-card-daily-badge {
+  background: color-mix(in srgb, var(--color-neutral-700) 20%, transparent);
+  color: var(--color-neutral-700);
+}
+.game-card-standalone-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #16a34a;
 }
 
 /* — Your Stats section — */
@@ -4034,8 +4088,19 @@ html[data-theme="dark"] .nav-founding-link-active {
   border-radius: 999px;
   padding: 4px 10px;
 }
-.sharpen-dose-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 14px; border-top: 1px solid var(--color-divider); }
-.sharpen-dose-target { font-size: 12.5px; color: var(--color-neutral-700); }
+/* Today's Challenge card — replaces the old plain "Beat your time: X" line, only shown
+   once a personal target exists (see DailySharpeningSession.tsx's hasPersonalBest). Sits
+   between the pill row and the "Tap to begin" hint, so there's no divider needed between
+   them any more — the card itself is the visual break. */
+.sharpen-challenge-card {
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+.sharpen-challenge-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-700); margin-bottom: 2px; }
+.sharpen-challenge-value { font-size: 15px; font-weight: 700; color: var(--color-text); }
 .sharpen-intro-card-hint { font-size: 12.5px; color: var(--color-accent-700); font-weight: 600; white-space: nowrap; flex-shrink: 0; }
 
 .sharpen-done-card { text-align: center; padding: 28px 20px; }
@@ -6563,7 +6628,7 @@ html[data-theme="dark"] .app-root--atrium {
   min-width: 0;
   text-align: center;
   padding: 12px 10px;
-  font: 600 13.5px var(--font-body);
+  font: 400 13.5px var(--font-body);
   color: var(--color-neutral-700);
   background: none;
   border: none;
@@ -6574,7 +6639,8 @@ html[data-theme="dark"] .app-root--atrium {
   text-overflow: ellipsis;
   transition: color 150ms ease, border-color 150ms ease;
 }
-.boards-tab.active { color: var(--color-accent-700); font-weight: 700; border-bottom-color: var(--color-accent); }
+.boards-tab:hover:not(.active) { color: var(--color-text); }
+.boards-tab.active { color: var(--color-accent); font-weight: 600; border-bottom-color: var(--color-accent); }
 /* Shrinks the label instead of letting 3 equal-width tabs force a scrollbar — every tab
    stays visible and legible even at the narrowest supported phone width. */
 @media (max-width: 480px) {
@@ -6582,18 +6648,326 @@ html[data-theme="dark"] .app-root--atrium {
 }
 
 /* — Daily Sharpening tab's streak section (below the Daily Dose card, see
-   components/BoardsTabs.tsx) — same two-stat-tile + weekly-dots shape as Limbic Games' own
-   stats section (.games-stats-grid/.games-week-bar), but its own boards-scoped classes
-   since the "filled dot" color here is brand blue (matching .boards-header-streak) rather
-   than Games' green --color-games-completed, which means a different thing on this page. */
-.boards-streak-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 12px 0 16px; }
+   components/BoardsTabs.tsx) — a header row (label + personal best), a 7-day dot grid for
+   the current calendar week, two large stat tiles, and a motivational line that reacts to
+   the current streak length. */
+.boards-streak-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.boards-streak-best { font-size: 12px; color: var(--color-neutral-700); }
+
+.boards-streak-days { display: flex; justify-content: space-between; gap: 4px; margin: 4px 0 16px; }
+.boards-streak-day { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; min-width: 0; }
+.boards-streak-day-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-divider);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.boards-streak-day-dot--completed { background: #16a34a; }
+.boards-streak-day-dot--today {
+  background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  animation: boards-streak-pulse 1.8s ease-in-out infinite;
+}
+.boards-streak-day-check { font-size: 8px; color: #fff; }
+.boards-streak-day-label { font-size: 10px; color: var(--color-neutral-700); }
+
+@keyframes boards-streak-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 480px) {
+  .boards-streak-day-dot { width: 10px; height: 10px; }
+  .boards-streak-day-check { display: none; }
+}
+
+.boards-streak-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 0 0 12px; }
 .boards-streak-stat { text-align: center; padding: 14px 8px; }
-.boards-streak-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; color: var(--color-accent-700); }
+.boards-streak-stat-value { font-family: var(--font-heading); font-weight: 700; font-size: 28px; color: var(--color-text); }
 .boards-streak-stat-label { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
-.boards-streak-week { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.boards-streak-week-dot { width: 22px; height: 22px; border-radius: 999px; background: var(--color-neutral-200); flex-shrink: 0; }
-.boards-streak-week-dot-active { background: var(--color-accent); }
-.boards-streak-week-label { font-size: 12.5px; color: var(--color-neutral-700); margin-left: 6px; }
+
+.boards-streak-message { font-size: 13px; margin: 0; text-align: center; }
+.boards-streak-message--muted { color: var(--color-neutral-700); }
+.boards-streak-message--primary { color: var(--color-text); }
+.boards-streak-message--brand { color: var(--color-accent); }
+.boards-streak-message--success { color: #16a34a; }
+
+/* — Research & Stats tab (components/BoardsTabs.tsx "research" panel) — three new
+   components (components/boards/PaperAnatomyDiagram.tsx, StatisticsCardGrid.tsx,
+   EvidenceHierarchyPyramid.tsx) replacing what used to be a plain link-out card to
+   /pro/research-literacy. That guide page and its own accordion component
+   (ResearchLiteracyGuide.tsx) are untouched — these are new, Boards-only components. */
+.boards-research-section-title { font-size: 16px; font-weight: 700; margin: 0 0 12px; }
+.boards-research-guide-link { font-size: 12.5px; color: var(--color-neutral-700); margin: 28px 0 0; text-align: center; }
+.boards-research-guide-link a { color: var(--color-accent); font-weight: 600; }
+
+/* — Component 1: Paper Anatomy Diagram — */
+.paper-anatomy-reading-order { font-size: 12px; color: var(--color-neutral-700); margin: 0 0 12px; }
+
+.paper-anatomy-layout { display: grid; grid-template-columns: 45% 55%; gap: 24px; align-items: start; }
+@media (max-width: 860px) {
+  .paper-anatomy-layout { grid-template-columns: 1fr; }
+}
+
+.paper-anatomy-diagram { position: relative; display: flex; flex-direction: column; gap: 6px; padding-left: 12px; }
+.paper-anatomy-spine { position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: var(--color-divider); }
+
+.paper-anatomy-block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 64px;
+  width: 100%;
+  border-radius: 6px;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  border-left-width: 1px;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: var(--color-text);
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+.paper-anatomy-block:hover { border-color: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+.paper-anatomy-block--active {
+  border-left: 3px solid var(--color-accent);
+  background-color: color-mix(in srgb, var(--color-text) 4%, transparent);
+}
+.paper-anatomy-block-badge {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 10px;
+  color: var(--color-neutral-700);
+  background: var(--color-card-surface);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.paper-anatomy-block-label { font-size: 14px; font-weight: 700; }
+.paper-anatomy-block-sublabel { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+.paper-anatomy-block-pill {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.paper-anatomy-block-pill--critical { background: rgba(220, 38, 38, 0.15); color: #dc2626; }
+.paper-anatomy-block-pill--skip { background: rgba(201, 133, 58, 0.18); color: #c9853a; }
+
+.paper-anatomy-detail { padding: 4px 0; }
+.paper-anatomy-detail-title { font-size: 18px; font-weight: 700; margin: 0 0 10px; }
+.paper-anatomy-detail-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-neutral-700); margin: 14px 0 4px; }
+.paper-anatomy-detail-label:first-of-type { margin-top: 0; }
+.paper-anatomy-detail-text { font-size: 14px; line-height: 1.7; color: var(--color-text); margin: 0; }
+.paper-anatomy-detail-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
+.paper-anatomy-detail-list li { font-size: 14px; line-height: 1.5; color: var(--color-text); }
+
+/* — Component 2: Statistics Card Grid — */
+.stats-card-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 4px; }
+@media (max-width: 720px) {
+  .stats-card-grid { grid-template-columns: 1fr; }
+}
+
+.stats-card {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 10px;
+  padding: 20px;
+  transition: border-color 150ms ease;
+}
+.stats-card:hover { border-color: color-mix(in srgb, var(--color-accent) 40%, transparent); }
+.stats-card--wide { margin-top: 16px; }
+
+.stats-card-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.stats-card-name { font-size: 16px; font-weight: 700; }
+.stats-formula-pill { font-size: 12px; border-radius: 4px; padding: 3px 9px; font-weight: 600; white-space: nowrap; }
+.stats-formula-pill--brand { background: color-mix(in srgb, var(--color-accent) 15%, transparent); color: var(--color-accent); }
+.stats-formula-pill--purple { background: rgba(124, 58, 237, 0.15); color: #7c3aed; }
+
+.stats-card-def { font-size: 13px; line-height: 1.6; color: var(--color-text); margin: 0 0 12px; }
+.stats-card-subhead { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-neutral-700); margin: 14px 0 6px; }
+
+.stats-callout { border-radius: 6px; padding: 10px 12px; margin-top: 10px; }
+.stats-callout-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 3px; }
+.stats-callout-text { font-size: 12px; line-height: 1.55; color: var(--color-neutral-700); margin: 0; }
+.stats-callout--amber { background: rgba(201, 133, 58, 0.08); border-left: 3px solid #c9853a; }
+.stats-callout-label--amber { color: #c9853a; }
+.stats-callout--green { background: rgba(22, 163, 74, 0.08); border-left: 3px solid #16a34a; }
+.stats-callout-label--green { color: #16a34a; }
+.stats-callout--brand { background: color-mix(in srgb, var(--color-accent) 8%, transparent); border-left: 3px solid var(--color-accent); }
+.stats-callout-label--brand { color: var(--color-accent); }
+.stats-callout--red { background: rgba(220, 38, 38, 0.08); border-left: 3px solid #dc2626; }
+.stats-callout-label--red { color: #dc2626; }
+
+.stats-compare { display: flex; gap: 16px; align-items: stretch; margin: 10px 0; }
+.stats-compare-col { flex: 1; min-width: 0; }
+.stats-compare-col-title { font-size: 12.5px; font-weight: 700; margin-bottom: 8px; }
+.stats-compare-list { margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 5px; }
+.stats-compare-list li { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.4; }
+.stats-compare-divider { width: 1px; background: var(--color-divider); flex-shrink: 0; }
+@media (max-width: 480px) {
+  .stats-compare { flex-direction: column; }
+  .stats-compare-divider { width: 100%; height: 1px; }
+}
+
+.stats-memory-boxes { display: flex; gap: 12px; margin-bottom: 12px; }
+@media (max-width: 480px) {
+  .stats-memory-boxes { flex-direction: column; }
+}
+.stats-memory-box { flex: 1; min-width: 0; background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: 8px; padding: 12px; }
+.stats-memory-box-title { font-size: 14px; margin-bottom: 4px; }
+.stats-memory-box-text { font-size: 12px; color: var(--color-text); margin: 0 0 6px; line-height: 1.4; }
+.stats-memory-box-example { font-size: 11.5px; color: var(--color-neutral-700); margin: 0; line-height: 1.4; }
+
+.stats-lr-card { background: var(--color-neutral-100); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+.stats-lr-row { font-size: 12px; color: var(--color-neutral-700); }
+
+.stats-nnt-scale { display: flex; align-items: center; gap: 4px; margin: 10px 0 12px; flex-wrap: wrap; }
+.stats-nnt-segment { flex: 1; min-width: 72px; display: flex; flex-direction: column; align-items: center; text-align: center; border-radius: 6px; padding: 8px 4px; }
+.stats-nnt-segment--good { background: rgba(22, 163, 74, 0.15); }
+.stats-nnt-segment--mid { background: rgba(201, 133, 58, 0.15); }
+.stats-nnt-segment--poor { background: rgba(220, 38, 38, 0.15); }
+.stats-nnt-segment-value { font-size: 11.5px; font-weight: 700; }
+.stats-nnt-segment-label { font-size: 10.5px; color: var(--color-neutral-700); margin-top: 2px; }
+.stats-nnt-arrow { font-size: 13px; color: var(--color-neutral-700); flex-shrink: 0; }
+
+.stats-causation-flow { display: flex; align-items: center; gap: 4px; margin: 10px 0 14px; }
+.stats-causation-step { flex: 1; min-width: 0; border-radius: 6px; padding: 10px 8px; text-align: center; border: 1px solid; }
+.stats-causation-step--brand { background: color-mix(in srgb, var(--color-accent) 8%, transparent); border-color: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+.stats-causation-step--amber { background: rgba(201, 133, 58, 0.08); border-color: rgba(201, 133, 58, 0.3); }
+.stats-causation-step--green { background: rgba(22, 163, 74, 0.08); border-color: rgba(22, 163, 74, 0.3); }
+.stats-causation-step-title { font-size: 12px; font-weight: 600; color: var(--color-text); }
+.stats-causation-step-sub { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
+
+.stats-causation-arrow { position: relative; width: 18px; height: 2px; flex-shrink: 0; background: var(--color-divider); }
+.stats-causation-arrow::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-style: solid;
+  border-width: 4px 0 4px 6px;
+  border-color: transparent transparent transparent var(--color-divider);
+}
+.stats-causation-arrow--brand { background: var(--color-accent); }
+.stats-causation-arrow--brand::after { border-left-color: var(--color-accent); }
+.stats-causation-arrow--amber { background: #c9853a; }
+.stats-causation-arrow--amber::after { border-left-color: #c9853a; }
+
+@media (max-width: 480px) {
+  .stats-causation-flow { flex-direction: column; align-items: stretch; }
+  .stats-causation-arrow { width: 2px; height: 18px; align-self: center; }
+  .stats-causation-arrow::after {
+    right: 50%;
+    top: auto;
+    bottom: -1px;
+    transform: translateX(50%);
+    border-width: 6px 4px 0 4px;
+    border-color: var(--color-divider) transparent transparent transparent;
+  }
+  .stats-causation-arrow--brand::after { border-top-color: var(--color-accent); border-left-color: transparent; }
+  .stats-causation-arrow--amber::after { border-top-color: #c9853a; border-left-color: transparent; }
+}
+
+.stats-confounder-list { margin: 0 0 4px; padding-left: 16px; display: flex; flex-direction: column; gap: 5px; }
+.stats-confounder-list li { font-size: 12px; color: var(--color-neutral-700); line-height: 1.5; }
+
+.stats-table-wrap { overflow-x: auto; margin-top: 8px; }
+.stats-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.stats-table th { text-align: left; background: color-mix(in srgb, var(--color-accent) 10%, transparent); color: var(--color-accent); font-weight: 700; padding: 10px 12px; white-space: nowrap; }
+.stats-table td { padding: 10px 12px; color: var(--color-text); }
+.stats-table tbody tr:nth-child(even) td { background: var(--color-card-surface); }
+
+/* — Component 3: Evidence Hierarchy Pyramid — */
+.evidence-pyramid-title { font-size: 18px; font-weight: 700; margin: 0 0 4px; }
+.evidence-pyramid-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 20px; }
+
+.evidence-pyramid-row { display: flex; justify-content: center; margin-bottom: 4px; }
+.evidence-pyramid { position: relative; width: 100%; max-width: 560px; display: flex; flex-direction: column; }
+
+.evidence-pyramid-level {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  padding: 4px 16px;
+  transition: filter 150ms ease;
+}
+/* Constrained per-level (see visibleWidthPercent in EvidenceHierarchyPyramid.tsx) to the
+   trapezoid's own narrower edge — clip-path only affects rendering, not layout, so without
+   this the text would wrap against the button's full unclipped width and overflow past
+   what's actually visible at the narrower levels. */
+.evidence-pyramid-level-inner { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.evidence-pyramid-level:hover { filter: brightness(1.06); }
+.evidence-pyramid-level--active { filter: brightness(1.12); }
+.evidence-pyramid-level--bordered { border-top: 1px solid var(--color-divider); border-bottom: 1px solid var(--color-divider); }
+.evidence-pyramid-badge {
+  font-size: 9px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  padding: 1px 8px;
+  letter-spacing: 0.04em;
+}
+
+/* The narrower top levels don't have much visible width once clipped — shrink the label
+   and give it more height to wrap into on small screens, rather than letting long labels
+   like "Systematic Reviews and Meta-Analyses" get cut off by the clip-path. */
+@media (max-width: 480px) {
+  .evidence-pyramid-level { font-size: 9.5px; line-height: 1.25; height: 68px; padding: 4px 8px; }
+  .evidence-pyramid-badge { font-size: 8px; padding: 1px 6px; }
+}
+
+.evidence-pyramid-side-label {
+  position: absolute;
+  right: -8px;
+  transform: translateX(100%);
+  font-size: 11px;
+  color: var(--color-neutral-700);
+  white-space: nowrap;
+  padding-left: 14px;
+}
+.evidence-pyramid-side-label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 12px;
+  border-top: 1px dashed var(--color-divider);
+}
+.evidence-pyramid-side-label--top { top: 20px; }
+.evidence-pyramid-side-label--bottom { bottom: 20px; }
+
+@media (max-width: 620px) {
+  .evidence-pyramid-side-label { display: none; }
+}
+
+.evidence-pyramid-detail { background: var(--color-card-surface); border: 1px solid var(--color-divider); border-radius: 10px; padding: 20px; margin-top: 24px; }
+.evidence-pyramid-detail-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+.evidence-pyramid-detail-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-neutral-700); margin: 12px 0 4px; }
+.evidence-pyramid-detail-label:first-of-type { margin-top: 0; }
+.evidence-pyramid-detail-text { font-size: 13.5px; line-height: 1.6; color: var(--color-text); margin: 0; }
+.evidence-pyramid-detail-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.evidence-pyramid-detail-list li { font-size: 13.5px; line-height: 1.5; color: var(--color-text); }
+
+.evidence-pyramid-note { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.6; margin: 16px 0 0; font-style: italic; }
 
 /* — FSBPT/NPTE resource links (app/(app)/student/resources/page.tsx) — kept the
    "boards-"-prefixed class names even after these two cards moved out of Limbic Boards'
@@ -7455,7 +7829,7 @@ select.connexion-visit-input { color-scheme: dark; }
 /* — Generic 2-column responsive card grid — calculators, decision rules,
    special tests, medications, documentation, guidelines all reuse this same
    grid shape, single column under 860px. */
-.pro-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.pro-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-items: start; }
 @media (min-width: 860px) {
   .pro-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -9957,6 +10331,964 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .outreach-pill--not_interested { background: color-mix(in srgb, #dc2626 16%, transparent); color: #dc2626; }
 
 .outreach-update-form { padding: 16px 18px; background: color-mix(in srgb, var(--color-accent) 3%, transparent); }
+
+/* ============================================================================
+   Limbic Movement Lab — /movement-lab and the HEP Builder's picker
+   (components/movement-lab/*, lib/movement-lab/*)
+
+   Deliberately thin: the browse list reuses .card, the .pro-accordion family and the
+   .pro-filter family wholesale, because a second visual language for what is structurally
+   the same accordion-of-cards as Special Tests and Guidelines would just be inconsistency.
+
+   .btn-sm is the one genuinely general-purpose class in this block. It belongs up with the
+   rest of the .btn family, but COORDINATION.md asks features to append new classes at the
+   end of this file rather than edit existing rules to make room, so it lives here until
+   someone doing a deliberate CSS pass moves it.
+
+   The rest is only what those existing classes don't cover — the difficulty pips, the dense label/body pairs inside an
+   expanded card, the precautions callout, and the selection tray.
+   ============================================================================ */
+
+/* Compact modifier for buttons that sit inline with body text rather than terminating a
+   form — the Movement Lab's filter toggles, tray actions and per-phase "Open in HEP
+   Builder" links, where a full-size .btn would dominate the row it sits in. */
+.btn-sm { font-size: 12.5px; padding: 6px 13px; }
+.btn-sm.btn-icon { width: 30px; height: 30px; padding: 0; }
+
+.ml-pips { display: inline-flex; gap: 3px; vertical-align: middle; }
+.ml-pip {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--color-divider);
+}
+.ml-pip--on { background: var(--color-accent); }
+
+/* Two columns on anything wider than a phone, one below — these are short label/value pairs
+   (position, equipment, phase), so a single column wastes most of the row. */
+.ml-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 560px) {
+  .ml-detail-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.ml-detail-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin-bottom: 3px;
+}
+.ml-detail-body { font-size: 12.5px; color: var(--color-text); line-height: 1.55; }
+.ml-muted { font-size: 12px; color: var(--color-neutral-700); margin-top: 4px; line-height: 1.5; }
+
+.ml-ol, .ml-ul { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.55; }
+.ml-ol > li, .ml-ul > li { margin-bottom: 3px; }
+
+/* Precautions get their own tinted block rather than being one more label/body pair. Every
+   entry in the bank has at least one, and the whole reason they're mandatory is that they
+   should be hard to skim past. */
+.ml-precautions {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #c9853a 10%, transparent);
+  border-left: 3px solid #c9853a;
+}
+.ml-precautions .ml-detail-label { color: #8a5a20; }
+.ml-precautions .ml-ul, .ml-precautions .ml-detail-body { color: var(--color-text); }
+
+.ml-filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.ml-filter-row .ml-muted { margin-top: 0; }
+
+.ml-filter-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ml-phase {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+}
+.ml-phase-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.ml-phase-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 14.5px; }
+.ml-phase-head .ml-muted { margin-top: 2px; }
+
+.ml-step-list { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.55; }
+.ml-step-list > li { margin-bottom: 6px; }
+.ml-step-name { font-weight: 600; }
+
+/* Fixed rather than sticky so it stays reachable while scrolling a long result list — the
+   selection it holds is a half-built program, and having to scroll back to the bottom of
+   160 cards to find the button would be the thing that loses it. */
+.ml-tray {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px 10px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 18%);
+  max-width: calc(100vw - 24px);
+}
+.ml-tray-actions { display: flex; align-items: center; gap: 6px; }
+@media (max-width: 640px) {
+  /* Clears the mobile bottom nav so the tray doesn't sit on top of it. */
+  .ml-tray { bottom: 76px; }
+}
+
+/* The picker inside the HEP Builder (components/movement-lab/MovementLabPicker.tsx) — a
+   scrolling result list rather than the browse page's full accordion, since the clinician
+   here has already decided what they're looking for and just needs to click it. */
+.ml-picker { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.ml-picker-results {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+}
+.ml-picker-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-divider);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--color-text);
+}
+.ml-picker-row:last-child { border-bottom: none; }
+.ml-picker-row:hover { background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
+.ml-picker-row-name { display: block; font-size: 13px; font-weight: 600; }
+.ml-picker-row-sub { display: block; font-size: 11.5px; color: var(--color-neutral-700); margin-top: 2px; }
+
+/* Atrium monthly calendar (see components/AtriumCalendar.tsx, app/(app)/student/page.tsx) —
+   two-column layout: a fixed-width month grid on the left, an assignment detail panel that
+   fills the rest on the right. Stacks to one column under 768px. */
+.atrium-calendar {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.atrium-calendar-left {
+  flex: 0 0 340px;
+  min-width: 0;
+}
+.atrium-calendar-right {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 10px;
+  padding: 18px;
+}
+@media (max-width: 768px) {
+  .atrium-calendar {
+    flex-direction: column;
+  }
+  .atrium-calendar-left {
+    flex-basis: auto;
+    width: 100%;
+  }
+  .atrium-calendar-right {
+    width: 100%;
+  }
+}
+
+.atrium-calendar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.atrium-calendar-nav-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--color-divider);
+  border-radius: 6px;
+  background: var(--color-card-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+}
+.atrium-calendar-nav-btn:hover { background: var(--color-divider); }
+.atrium-calendar-month-label {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+.atrium-calendar-today-btn {
+  border: 1px solid var(--color-divider);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-neutral-700);
+  font-size: 11px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.atrium-calendar-today-btn:hover { background: var(--color-card-surface); }
+
+.atrium-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+.atrium-calendar-weekdays span {
+  font-size: 11px;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--color-neutral-700);
+}
+
+/* .calendar-grid / .calendar-cell / .category-dots / .category-dot are the calendar's core
+   grid primitives — kept as their own flat classes (not atrium-calendar-* prefixed) since
+   they describe the grid shape itself, independent of where a calendar ends up embedded. */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendar-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px 2px;
+  border-radius: 6px;
+  cursor: pointer;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  position: relative;
+  transition: background 0.1s;
+}
+.calendar-cell--empty {
+  cursor: default;
+  min-height: 44px;
+}
+
+.calendar-cell:hover {
+  background: var(--color-card-surface);
+}
+
+.calendar-cell-number {
+  font-size: 14px;
+  color: var(--color-neutral-700);
+}
+.calendar-cell.has-assignments .calendar-cell-number {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.calendar-cell.today {
+  background: var(--color-accent);
+}
+.calendar-cell.today .calendar-cell-number {
+  color: #fff;
+  font-weight: 700;
+}
+.calendar-cell.today.has-assignments:not(.selected) .category-dots {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+  padding: 1px 4px;
+}
+
+.calendar-cell.selected {
+  border: 2px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  padding: 2px 0;
+}
+.calendar-cell.selected .calendar-cell-number {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.calendar-cell.all-complete::after {
+  content: "✓";
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  font-size: 8px;
+  color: #16a34a;
+}
+
+.category-dots {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+  align-items: center;
+}
+
+.category-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.calendar-cell-more {
+  font-size: 9px;
+  color: var(--color-neutral-700);
+  margin-left: 1px;
+}
+
+.atrium-calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+.atrium-calendar-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--color-neutral-700);
+}
+
+.atrium-calendar-detail-empty {
+  text-align: center;
+  color: var(--color-neutral-700);
+  padding: 24px 0;
+}
+.atrium-calendar-month-mini-summary {
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.atrium-calendar-detail-header {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.atrium-calendar-detail-nothing {
+  text-align: center;
+  color: var(--color-neutral-700);
+  padding: 16px 0;
+}
+.atrium-calendar-add-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+
+.atrium-calendar-assignment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.atrium-calendar-assignment-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-divider);
+  cursor: pointer;
+}
+.atrium-calendar-assignment-row:last-child { border-bottom: none; }
+.atrium-calendar-assignment-dot {
+  width: 8px;
+  height: 8px;
+}
+.atrium-calendar-assignment-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.atrium-calendar-assignment-row--done .atrium-calendar-assignment-title {
+  font-weight: 400;
+  text-decoration: line-through;
+  color: var(--color-neutral-700);
+}
+.atrium-calendar-assignment-course {
+  font-size: 11px;
+  color: var(--color-neutral-700);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.atrium-calendar-assignment-category {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  text-align: right;
+  white-space: nowrap;
+}
+.atrium-calendar-assignment-urgency {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.atrium-calendar-complete-count {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  margin-top: 10px;
+}
+
+.atrium-calendar-complete-banner {
+  margin-top: 8px;
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  border-radius: 6px;
+  padding: 10px 14px;
+  text-align: center;
+  font-size: 13px;
+  color: #16a34a;
+}
+
+.atrium-calendar-month-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+.atrium-calendar-month-summary-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 10px;
+}
+.atrium-calendar-month-summary-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+.atrium-calendar-month-summary-label {
+  font-size: 11px;
+  color: var(--color-neutral-700);
+}
+@media (max-width: 480px) {
+  .atrium-calendar-month-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* "Analyze This Study" panel on the article detail page (see
+   components/ArticleResearchPanel.tsx, components/ArticleReadingPane.tsx) — collapsed by
+   default, expands in place (no overlay). Full width at every breakpoint, so nothing extra
+   is needed for mobile beyond the 44px tap targets already on .article-research-panel-toggle
+   and .article-research-panel-submit. */
+.article-research-panel {
+  margin: 20px 0;
+}
+
+.article-research-panel-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.article-research-panel-toggle:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+.article-research-panel-toggle[aria-expanded="true"] {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.article-research-panel-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.article-research-panel-zap {
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.article-research-panel-chevron {
+  color: var(--color-neutral-700);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.article-research-panel-body {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 20px;
+}
+
+.article-research-panel-section { display: flex; flex-direction: column; }
+
+.article-research-panel-kicker {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-neutral-700);
+  font-weight: 600;
+}
+
+.article-research-panel-desc {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 6px 0 0;
+}
+
+.article-research-panel-field {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.article-research-panel-field label {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+
+.article-research-panel-prefill-note {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--color-neutral-700);
+  margin: 0;
+}
+
+.article-research-panel-field-error {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  margin: 10px 0 0;
+}
+
+.article-research-panel-error {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 12px 0 0;
+}
+
+.article-research-panel-submit {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 14px;
+}
+
+.article-research-panel-disclaimer {
+  font-size: 11.5px;
+  color: var(--color-neutral-600);
+  margin-top: 14px;
+}
+
+.article-research-panel-divider {
+  border: none;
+  border-top: 1px solid var(--color-divider);
+  margin: 16px 0;
+}
+
+@keyframes article-research-panel-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
+}
+.article-research-panel-loading-placeholder {
+  margin-top: 14px;
+  height: 60px;
+  border-radius: 8px;
+  background: var(--color-divider);
+  animation: article-research-panel-pulse 1.4s ease-in-out infinite;
+}
+
+/* ============================================================================
+   Clinical Reference (/pro/lab-values, components/pro/ClinicalReferenceTabs.tsx)
+   — the six-tab hub. All appended, .clinref- prefixed, nothing above rewritten.
+   ============================================================================ */
+
+/* Overrides .screen-pad's 900px cap — same reasoning/pattern as .atlas-page and
+   .forcelab-page. At 900px this page was a two-column card grid with a 320px profiles
+   panel beside it, which left ~270px-wide calculator cards and turned every tab into a
+   long scroll on a desktop viewport that had a few hundred px of bare gutter either side.
+   .screen-pad still supplies the padding; this only lifts the width. */
+.clinref-page { max-width: 1500px; }
+
+/* The extra width goes into more columns rather than wider cards, which is what actually
+   shortens these tabs. Scoped to .clinref-page so the standalone /pro/calculators,
+   /pro/special-tests, and /pro/decision-rules pages keep the 2-up/1-up shape .pro-grid-2
+   and .pro-accordion give them everywhere else.
+
+   Accordion cards (special tests, decision rules, red flags, medication classes) go 2-up
+   first: they have the full page width to themselves, so ~900px of content is already two
+   comfortable columns and it halves the scroll on the longest tabs. align-items: start so
+   an expanded <details> grows its own cell instead of stretching the card beside it. */
+@media (min-width: 1240px) {
+  .clinref-page .pro-accordion {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+/* The calculator grid shares its row with the 320px profiles panel, so it needs a good deal
+   more viewport before a third column is an improvement rather than three cramped ones —
+   below this it stays 2-up and simply gets wider cards than the old 900px cap allowed. */
+@media (min-width: 1560px) {
+  .clinref-page .pro-grid-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Same reasoning one step up: on an ultrawide, three columns become three wide stripes. */
+@media (min-width: 2000px) {
+  .clinref-page .pro-grid-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Tabs and the search box share one row on desktop; the tab strip keeps its own horizontal
+   scroll (six labels, one of them long) so it can never squeeze the search box out. */
+.clinref-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+.clinref-toolbar-tabs { min-width: 0; }
+@media (min-width: 900px) {
+  .clinref-toolbar { flex-direction: row; align-items: flex-end; gap: 16px; }
+  .clinref-toolbar-tabs { flex: 1; }
+  .clinref-search { width: 260px; flex-shrink: 0; margin-bottom: 6px; }
+}
+
+.clinref-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.clinref-search-icon {
+  position: absolute;
+  left: 11px;
+  color: var(--color-neutral-600);
+  pointer-events: none;
+}
+.clinref-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 32px 9px 34px;
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 13px;
+}
+.clinref-search-input::placeholder { color: var(--color-neutral-600); text-overflow: ellipsis; }
+.clinref-search-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+/* The type="search" native clear affordance is hidden in favour of the button below, which
+   matches the rest of the app's icon buttons and stays visible in both themes. */
+.clinref-search-input::-webkit-search-cancel-button { display: none; }
+.clinref-search-clear {
+  position: absolute;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.clinref-search-clear:hover { color: var(--color-text); }
+
+/* "Nothing here, but it's on those tabs" line — only shown when the active tab has no
+   matches and another tab does. */
+.clinref-elsewhere {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  margin: 14px 0 0;
+}
+.clinref-elsewhere-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+.clinref-elsewhere-link:hover { text-decoration: underline; }
+
+/* Per-tab empty state. Full-width inside the 2-up accordion grid above, so it reads as one
+   message rather than a half-width orphan card. */
+.clinref-empty {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 14px 0 0;
+}
+
+/* Outcome Measures body-region grouping (see app/(app)/pro/calculators/page.tsx) — each
+   .pro-calc-region is a section header + its own .pro-grid-2 of cards, so nothing about the
+   existing .pro-grid-2 / .pro-calc-card rules above needed to change. */
+.pro-calc-region { margin-bottom: 28px; }
+.pro-calc-region:last-child { margin-bottom: 0; }
+.pro-calc-region-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+/* Patient-reported (a PROM the patient fills out) vs clinician-administered (the PT times,
+   counts, or scores it) — the other, independent axis every card shows regardless of which
+   region section it's grouped under (see CalcCardShell in calculators/CalcModal.tsx). An
+   eyebrow pill above the title, not beside it — several of these titles are already long
+   ("Functional Gait Assessment", "30 Second Sit to Stand") and a fixed-width badge sharing
+   a flex row with the title squeezed it down to one word per line. */
+.pro-calc-admin-badge {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  margin-bottom: 4px;
+}
+.pro-calc-admin-badge--patient {
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+.pro-calc-admin-badge--clinician {
+  color: #16a34a;
+  background: color-mix(in srgb, #16a34a 14%, transparent);
+}
+
+/* ————————————————————————————————————————————————————————————————
+   Limbic Boards — appended block (see COORDINATION.md: new scoped classes go at the end
+   of this file rather than beside related rules, so parallel sessions' diffs don't
+   collide). Covers the Boards page header, the shared board-question choice list, the
+   missed-question review, the per-system record on the NPTE Breakdown cards, and the
+   Resources tab's link lists.
+   ———————————————————————————————————————————————————————————————— */
+
+/* — page header: title on the left, streak badge and NPTE countdown on the right — */
+.boards-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.boards-page-title { display: flex; align-items: center; gap: 8px; }
+.boards-page-title h1 { font-size: 24px; margin: 0; }
+.boards-header-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.boards-header-countdown {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+  padding: 4px 12px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.boards-header-countdown strong {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  color: var(--color-accent-700);
+}
+
+/* — shared answer list for a board question (Daily Sharpening step 1 and the standalone
+     clinician Question of the Day card) — */
+.board-choice-list { display: flex; flex-direction: column; gap: 8px; }
+.board-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+}
+.board-choice--dimmed { opacity: 0.6; }
+.board-choice--wrong { border: 1.5px solid var(--color-accent-700); }
+.board-choice-mark { flex-shrink: 0; font-weight: 700; }
+
+/* — streak dots: a day still to come this week is not a day that was missed — */
+.boards-streak-day-dot--future { background: transparent; box-shadow: inset 0 0 0 1.5px var(--color-divider); }
+.boards-streak-day-label--future { opacity: 0.5; }
+/* Three stats now (current streak, longest streak, accuracy) rather than two. */
+.boards-streak-stats { grid-template-columns: repeat(3, 1fr); }
+
+/* — "where you're losing points" callout above the system grid — */
+.boards-weakest-card {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.boards-weakest-body { font-size: 13px; line-height: 1.6; color: var(--color-text); margin: 8px 0 12px; }
+.boards-weakest-link { display: inline-flex; text-decoration: none; }
+
+/* — NPTE Breakdown system cards, now links into that system's practice set — */
+.npte-system-card { text-decoration: none; color: inherit; transition: border-color 0.15s ease, transform 0.15s ease; }
+.npte-system-card:hover { border-color: var(--color-accent); transform: translateY(-1px); }
+.npte-system-record {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-divider);
+}
+.npte-system-record-value { font-family: var(--font-heading); font-weight: 700; font-size: 18px; color: var(--color-text); }
+.npte-system-record-label { font-size: 11.5px; color: var(--color-neutral-700); }
+.npte-system-record-cta { width: 100%; text-align: right; font-size: 11.5px; font-weight: 600; color: var(--color-accent-700); }
+
+/* — missed-question review (Daily Sharpening tab) — */
+.boards-review-empty, .boards-review-intro {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  line-height: 1.6;
+  margin: 8px 0 0;
+}
+.boards-review-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.boards-review-item { border: 1px solid var(--color-divider); border-radius: 10px; overflow: hidden; }
+.boards-review-toggle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+.boards-review-toggle:hover { background: var(--color-neutral-100); }
+.boards-review-question { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; line-height: 1.5; }
+.boards-review-domain { flex-shrink: 0; font-size: 10.5px; color: var(--color-neutral-700); white-space: nowrap; padding-top: 2px; }
+.boards-review-body { padding: 0 12px 12px; border-top: 1px solid var(--color-divider); }
+.boards-review-answer { display: flex; gap: 8px; font-size: 12.5px; line-height: 1.5; margin: 10px 0 0; }
+.boards-review-answer-label {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-success);
+  padding-top: 2px;
+  width: 74px;
+}
+.boards-review-answer--yours .boards-review-answer-label { color: var(--color-danger); }
+.boards-review-explanation { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.6; margin: 10px 0 0; }
+.boards-review-practice-link { display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 600; }
+
+/* — Resources tab: practice-by-system rows and the official-source list — */
+.boards-domain-links, .boards-official-links { display: flex; flex-direction: column; gap: 2px; margin-top: 12px; }
+.boards-domain-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+.boards-domain-link:hover { background: var(--color-neutral-100); }
+.boards-domain-link-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.boards-domain-link-name { font-size: 13px; font-weight: 600; }
+.boards-domain-link-meta { margin-left: auto; font-size: 11.5px; color: var(--color-neutral-700); }
+.boards-official-link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+.boards-official-link:hover { background: var(--color-neutral-100); }
+.boards-official-link-name { font-size: 13px; font-weight: 600; color: var(--color-accent-700); }
+.boards-official-link-desc { font-size: 11.5px; color: var(--color-neutral-700); line-height: 1.5; }
+
+@media (max-width: 480px) {
+  .boards-review-domain { display: none; }
+  .boards-domain-link-meta { font-size: 10.5px; }
+  .boards-streak-stat-value { font-size: 22px; }
+}
+
+/* Extends .clinref-page's wide-desktop treatment (see that class above) to the other
+   standalone .screen-pad pages that share its card-grid/accordion shapes — /pro/documentation,
+   /pro/special-tests, /pro/decision-rules, /pro/guidelines. .clinref-page's own comment
+   explicitly called these out as deliberately left at the narrower 900px/2-up shape when that
+   class shipped; this is that follow-up, not a change to .clinref-page itself. Same
+   .screen-pad-overriding-max-width pattern as .clinref-page/.atlas-page/.forcelab-page — the
+   padding still comes from .screen-pad, only the width changes. */
+.pro-wide-page { max-width: 1500px; }
+
+/* No side panel on any of these four pages, so the grid/accordion has the full page width to
+   itself — same 1240px threshold .clinref-page uses for its own accordion tabs, which are in
+   exactly that situation once the calculator tab's 320px profile panel is out of the picture. */
+@media (min-width: 1240px) {
+  .pro-wide-page .pro-accordion {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .pro-wide-page .pro-grid-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 2000px) {
+  .pro-wide-page .pro-grid-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* The standalone /pro/calculators page specifically — unlike the four pages above, its
+   CalculatorProfilesPanel shares the row with the card grid (see .pro-calc-layout in
+   CalculatorWorkspace.tsx), the same 320px panel .clinref-page's own calculator tab has, so
+   it needs the same wider viewport before a third column helps, not the 1240px threshold
+   above. Numbers match .clinref-page's calculator-grid rules exactly, just under this page's
+   own class instead of reusing that Clinical-Reference-specific one. */
+.pro-calc-wide-page { max-width: 1500px; }
+@media (min-width: 1560px) {
+  .pro-calc-wide-page .pro-grid-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 2000px) {
+  .pro-calc-wide-page .pro-grid-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Touch-device corrections, kept together at the end of the file on purpose.

@@ -8,6 +8,8 @@ import { AppShell } from "@/components/AppShell";
 import { OnboardingRoleModal } from "@/components/OnboardingRoleModal";
 import { zoneTwoOrder } from "@/lib/user-role";
 import { getClinicMembershipInfo } from "@/app/actions/clinic-pro";
+import { TimeZoneSync } from "@/components/TimeZoneSync";
+import { getTimeZone } from "@/lib/user-time-zone";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
@@ -19,12 +21,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // all until this resolves (see components/OnboardingRoleModal.tsx).
   if (!user.hasCompletedOnboarding) return <OnboardingRoleModal />;
 
-  const [aptaArticles, savedCount, nexusRequestCount, isAdmin, clinicMembership] = await Promise.all([
+  const [aptaArticles, savedCount, nexusRequestCount, isAdmin, clinicMembership, timeZone] = await Promise.all([
     getAptaNewsArticles(),
     prisma.savedArticle.count({ where: { userId: user.id } }),
     prisma.connection.count({ where: { recipientId: user.id, status: "pending" } }),
     isSiteAdmin(),
     getClinicMembershipInfo(),
+    // Resolved here as well as in each page that keys something on a calendar date, so
+    // TimeZoneSync below can tell whether the zone the server just rendered against is the
+    // one the reader is actually in (see components/TimeZoneSync.tsx).
+    getTimeZone(user),
   ]);
 
   const hasLicense = hasLicenseAccess(user);
@@ -53,6 +59,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       zoneTwoOrder={zoneTwoOrder(user.userRole)}
       clinicMembership={clinicMembership}
     >
+      <TimeZoneSync serverTimeZone={timeZone} />
       {children}
     </AppShell>
   );

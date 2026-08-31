@@ -35,11 +35,16 @@ const SECTIONS: { heading: string; items: string[] }[] = [
   },
 ];
 
+/** Every line of guidance in this card as flat text, so the Clinical Reference search can
+ *  match the card without this component having to filter itself — it renders whole or not
+ *  at all (see ScreeningDecisionTabs.tsx). */
+export const REFERRAL_TRIGGER_TEXT: string[] = SECTIONS.flatMap((s) => [s.heading, ...s.items]);
+
 /** Reference-only accordion, not interactive, unlike the other five red-flag categories
  *  (see RedFlagCategory.tsx) — this one is guidance text, not a checklist to score. */
-export function ReferralTriggersCategory() {
+export function ReferralTriggersCategory({ open }: { open?: boolean }) {
   return (
-    <details className="card elev-sm">
+    <details className="card elev-sm" open={open}>
       <summary className="pro-accordion-summary">
         <div>Referral Triggers</div>
         <ChevronRightIcon size={16} className="pro-accordion-chevron" />

@@ -15,6 +15,18 @@ function interpretTug(seconds: number) {
   return NORMS.find((n) => seconds <= n.max) ?? NORMS[NORMS.length - 1];
 }
 
+/** Card copy for this measure, lifted out of the JSX so the Clinical Reference
+ *  search box can match against it (see lib/reference-search.ts) without the text
+ *  being written twice. Spread straight into CalcCardShell below. */
+export const TUG_MEASURE = {
+  name: "Timed Up and Go",
+  fullName: "TUG",
+  measures: "Functional mobility and fall risk from a single timed sit-to-walk-to-sit trial.",
+  population: "Older adults, general mobility/fall-risk screening",
+  itemCount: "1 item",
+  administration: "Clinician-Administered",
+} as const;
+
 /** Fully functional — a single timed-seconds input compared against the standard TUG
  *  norms bands, either typed in directly or filled from the built-in stopwatch (see
  *  CalcTimer). */
@@ -27,14 +39,7 @@ export function TugCalculator() {
 
   return (
     <>
-      <CalcCardShell
-        name="Timed Up and Go"
-        fullName="TUG"
-        measures="Functional mobility and fall risk from a single timed sit-to-walk-to-sit trial."
-        population="Older adults, general mobility/fall-risk screening"
-        itemCount="1 item"
-        onOpen={() => setOpen(true)}
-      />
+      <CalcCardShell {...TUG_MEASURE} onOpen={() => setOpen(true)} />
       <CalcModal
         open={open}
         title="Timed Up and Go"

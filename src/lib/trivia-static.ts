@@ -1,3 +1,5 @@
+import { todayKeyInZone } from "@/lib/day";
+
 /**
  * Health Trivia's static question bank (see app/(app)/games/trivia/page.tsx,
  * components/HealthTriviaGame.tsx) — general-public health and wellness knowledge, no
@@ -329,7 +331,10 @@ export function triviaQuestionsForDate(dateKey: string): TriviaQuestion[] {
   return Array.from({ length: 5 }, (_, i) => TRIVIA_QUESTIONS[(start + i) % total]);
 }
 
-/** YYYY-MM-DD for "today" — the unit the daily 5-question set rotates on. */
-export function todayDateKey(): string {
-  return new Date().toISOString().slice(0, 10);
+/** YYYY-MM-DD for "today" in the reader's own time zone — the unit the daily 5-question set rotates on.
+ *  Takes the zone explicitly (see lib/user-time-zone.ts for where a request gets one)
+ *  rather than reading the server's clock: this ran off UTC on a UTC server, so the day
+ *  rolled over mid-evening for every reader in the Americas — see lib/day.ts. */
+export function todayDateKey(timeZone: string): string {
+  return todayKeyInZone(timeZone);
 }

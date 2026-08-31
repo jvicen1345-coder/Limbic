@@ -9,6 +9,18 @@ function interpret(value: number): { label: string; color: string } {
   return { label: "Severe", color: "#dc2626" };
 }
 
+/** Card copy for this measure, lifted out of the JSX so the Clinical Reference
+ *  search box can match against it (see lib/reference-search.ts) without the text
+ *  being written twice. Spread straight into CalcCardShell below. */
+export const NPRS_MEASURE = {
+  name: "NPRS",
+  fullName: "Numeric Pain Rating Scale",
+  measures: "Patient-reported pain intensity on a single 0-10 scale.",
+  population: "Any patient reporting pain",
+  itemCount: "1 item",
+  administration: "Patient-Reported",
+} as const;
+
 /** Fully functional — a single 0-10 slider with a real-time band label. */
 export function NprsCalculator() {
   const [open, setOpen] = useState(false);
@@ -17,14 +29,7 @@ export function NprsCalculator() {
 
   return (
     <>
-      <CalcCardShell
-        name="NPRS"
-        fullName="Numeric Pain Rating Scale"
-        measures="Patient-reported pain intensity on a single 0-10 scale."
-        population="Any patient reporting pain"
-        itemCount="1 item"
-        onOpen={() => setOpen(true)}
-      />
+      <CalcCardShell {...NPRS_MEASURE} onOpen={() => setOpen(true)} />
       <CalcModal
         open={open}
         title="NPRS, Numeric Pain Rating Scale"

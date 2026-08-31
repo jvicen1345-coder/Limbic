@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { getTimeZone } from "@/lib/user-time-zone";
 import { getTodaysCase, getDateKey, type DifferentialCaseEntry } from "@/lib/differential-cases";
 
 /** Lowercases and strips apostrophes/hyphens/periods so "Guillain-Barre", "Guillain
@@ -50,15 +51,16 @@ export async function getTodaysDifferentialResult(): Promise<DifferentialResultV
   const user = await getCurrentUser();
   if (!user) return null;
 
+  const timeZone = await getTimeZone(user);
   const row = await prisma.differentialResult.findUnique({
-    where: { userId_dateKey: { userId: user.id, dateKey: getDateKey() } },
+    where: { userId_dateKey: { userId: user.id, dateKey: getDateKey(timeZone) } },
   });
   if (!row) return null;
   return {
     cluesUsed: row.cluesUsed,
     correct: row.correct,
     guesses: row.guesses as string[],
-    condition: getTodaysCase().condition,
+    condition: getTodaysCase(timeZone).condition,
   };
 }
 
@@ -87,8 +89,9 @@ export async function submitDifferentialGuess(
   const user = await getCurrentUser();
   if (!user) return { ok: false, correct: false, condition: "", error: "Not signed in." };
 
-  const dateKey = getDateKey();
-  const todaysCase = getTodaysCase();
+  const timeZone = await getTimeZone(user);
+  const dateKey = getDateKey(timeZone);
+  const todaysCase = getTodaysCase(timeZone);
   const correct = matchesCase(guess, todaysCase);
   const clampedCluesUsed = Math.min(Math.max(cluesUsed, 1), 5);
   const isFinal = correct || clampedCluesUsed >= 5;
@@ -152,7 +155,7 @@ export async function getDifferentialStats(): Promise<DifferentialStats> {
   const averageCluesUsed = totalPlayed > 0 ? rows.reduce((sum, r) => sum + r.cluesUsed, 0) / totalPlayed : 0;
   const currentStreak = computeCurrentStreak(
     rows.filter((r) => r.correct).map((r) => r.dateKey),
-    getDateKey()
+    getDateKey(await getTimeZone(user))
   );
 
   return { totalPlayed, totalCorrect, averageCluesUsed, currentStreak };

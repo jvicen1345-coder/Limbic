@@ -7,6 +7,7 @@ import { buildThreadsWeb } from "@/lib/threads";
 import type { ThreadsNodeData } from "@/lib/threads-graph";
 import { extractDoiFromUrl, type UnpaywallResult } from "@/lib/unpaywall";
 import { getCachedUnpaywall } from "@/lib/unpaywall-cache";
+import { getTimeZone } from "@/lib/user-time-zone";
 
 export interface ArticleViewData {
   article: DecoratedArticle;
@@ -46,7 +47,7 @@ export async function buildArticleView(articleId: string, userId: string, isAdmi
   // Recorded here (not left to the caller) so it fires the same way regardless of which
   // path reached this article — a swap-in-place needs this exactly as much as a fresh
   // navigation does, since it's the only thing that drives reading history/streaks.
-  await recordArticleRead(userId, raw.id);
+  await recordArticleRead(userId, raw.id, await getTimeZone());
 
   const savedIds = savedRows.map((r) => r.articleId);
   const article = decorateArticle(raw, savedIds);

@@ -3,6 +3,18 @@
 import { useState } from "react";
 import { CalcModal, CalcCardShell } from "./CalcModal";
 
+/** Card copy for this measure, lifted out of the JSX so the Clinical Reference
+ *  search box can match against it (see lib/reference-search.ts) without the text
+ *  being written twice. Spread straight into CalcCardShell below. */
+export const PSFS_MEASURE = {
+  name: "PSFS",
+  fullName: "Patient Specific Functional Scale",
+  measures: "Patient-selected activities rated for current difficulty, tracked over time.",
+  population: "Any condition, any body region",
+  itemCount: "3 activities",
+  administration: "Patient-Reported",
+} as const;
+
 /** Fully functional — the patient names up to 3 of their own activities, each rated 0-10,
  *  averaged in real time. */
 export function PsfsCalculator() {
@@ -18,14 +30,7 @@ export function PsfsCalculator() {
 
   return (
     <>
-      <CalcCardShell
-        name="PSFS"
-        fullName="Patient Specific Functional Scale"
-        measures="Patient-selected activities rated for current difficulty, tracked over time."
-        population="Any condition, any body region"
-        itemCount="3 activities"
-        onOpen={() => setOpen(true)}
-      />
+      <CalcCardShell {...PSFS_MEASURE} onOpen={() => setOpen(true)} />
       <CalcModal
         open={open}
         title="PSFS, Patient Specific Functional Scale"

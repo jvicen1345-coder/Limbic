@@ -8,7 +8,9 @@ import {
   recordSharpeningTargetAction,
 } from "@/app/actions/daily-completion";
 import { ShareCompletionButton } from "@/components/ShareCompletionButton";
+import { BoardChoiceList } from "@/components/boards/BoardChoiceList";
 import { formatElapsed } from "@/lib/meta";
+import { nowMs } from "@/lib/clock";
 import { NPTE_THREE_QUESTION_BENCHMARK_SECONDS, type BoardQuestion, type BoardTerm } from "@/lib/board-content";
 import type { DailyCase } from "@/lib/cases-static";
 
@@ -23,23 +25,37 @@ interface StepResult {
 
 const STEP_COUNT = 3;
 
+/** What of today's session is already on file, from the three DailyCompletion rows (see
+ *  app/(app)/boards/page.tsx). Each step is written the moment it's answered, so a partly
+ *  filled shape here is the normal state of a session someone walked away from mid-way. */
+export interface SavedSharpeningProgress {
+  question: { selectedIndex: number; elapsedSeconds: number } | null;
+  term: { elapsedSeconds: number } | null;
+  dayCase: { selectedIndex: number; elapsedSeconds: number } | null;
+}
+
 /** Replaces the old three-independent-cards Daily Sharpening (Board Question, Term of the
  *  Day, Case of the Day each opening and completing on their own) with one unified,
- *  timed, forward-only session — see /boards/page.tsx. All three DailyCompletion rows
- *  (kinds "boardQuestion"/"boardTerm"/"caseOfDay") are still written through the same
- *  existing server actions as before, just batched on the summary screen's "Done" click
- *  rather than one at a time per card, matching "complete all three to mark today's
- *  sharpening as done." Term of the Day keeps its existing reveal-only mechanic (no new
- *  fill-in-the-blank grading) rather than becoming a multiple-choice question — a reveal
- *  always counts as "correct" for the session score, the same as it always counted as
- *  simply "done" before this redesign; only the question and case steps have a real wrong
- *  answer. */
+ *  timed, forward-only session — see /boards/page.tsx. Term of the Day keeps its existing
+ *  reveal-only mechanic (no new fill-in-the-blank grading) rather than becoming a
+ *  multiple-choice question — a reveal always counts as "correct" for the session score,
+ *  the same as it always counted as simply "done" before this redesign; only the question
+ *  and case steps have a real wrong answer.
+ *
+ *  Each step's DailyCompletion row is written as that step is answered. It used to be all
+ *  three at once on the summary screen's "Done" click, which meant answering everything
+ *  and then closing the tab — or losing the connection — recorded nothing at all: no
+ *  completion, no streak, no activity row for a session the reader had actually finished.
+ *  "Done" now only dismisses the summary; nothing depends on it being clicked. The same
+ *  change is what makes resuming possible, since a half-finished session is now readable
+ *  back off those rows (see SavedSharpeningProgress and resumeFrom below). */
 export function DailySharpeningSession({
   dateKey,
   question,
   term,
   dayCase,
   alreadyComplete,
+  saved,
   targetSeconds,
   nexusOptIn,
 }: {
@@ -51,6 +67,8 @@ export function DailySharpeningSession({
    *  render — the session still tracks its own `finishedNow` on top of this so clicking
    *  Done reflects the completed state immediately, without needing a full page reload. */
   alreadyComplete: boolean;
+  /** Today's partial progress, if any — see SavedSharpeningProgress. */
+  saved: SavedSharpeningProgress;
   /** Today's "beat the clock" pacing target in seconds — the standard NPTE 3-question
    *  benchmark unless a previous session ran over it, in which case that session's own time
    *  becomes the target until a session finally beats the real benchmark again (see
@@ -58,64 +76,139 @@ export function DailySharpeningSession({
   targetSeconds: number;
   nexusOptIn: boolean;
 }) {
-  const [sessionState, setSessionState] = useState<SessionState>("idle");
+  /** Rebuilds the in-memory session from whatever is already persisted for today, so a
+   *  refresh (or a phone locking mid-session) picks up at the next unanswered step with
+   *  the clock where it left off, instead of restarting a session the reader is partway
+   *  through and re-asking questions they already answered. Steps are strictly ordered, so
+   *  the resume point is just the first one with no row. */
+  function resumeFrom(): { results: StepResult[]; elapsedMs: number } | null {
+    const results: StepResult[] = [];
+    if (saved.question) {
+      results.push({
+        title: "Board Question",
+        correct: saved.question.selectedIndex === question.correctIndex,
+        correctAnswerText: question.choices[question.correctIndex],
+        elapsedSeconds: saved.question.elapsedSeconds,
+      });
+    }
+    if (saved.question && saved.term) {
+      results.push({ title: "Term of the Day", correct: true, correctAnswerText: term.definition, elapsedSeconds: saved.term.elapsedSeconds });
+    }
+    if (saved.question && saved.term && saved.dayCase) {
+      results.push({
+        title: "Case of the Day",
+        correct: saved.dayCase.selectedIndex === dayCase.correctIndex,
+        correctAnswerText: dayCase.options[dayCase.correctIndex],
+        elapsedSeconds: saved.dayCase.elapsedSeconds,
+      });
+    }
+    if (results.length === 0 || results.length === STEP_COUNT) return null;
+    return { results, elapsedMs: results.reduce((sum, r) => sum + r.elapsedSeconds, 0) * 1000 };
+  }
+
+  const [resumed] = useState(resumeFrom);
+
+  const [sessionState, setSessionState] = useState<SessionState>(resumed ? "active" : "idle");
   const [finishedNow, setFinishedNow] = useState(false);
   const [doneClicked, setDoneClicked] = useState(false);
   const [, startTransition] = useTransition();
 
-  const [stepIndex, setStepIndex] = useState(0);
+  const [stepIndex, setStepIndex] = useState(resumed?.results.length ?? 0);
   const [showingResult, setShowingResult] = useState(false);
-  const [results, setResults] = useState<StepResult[]>([]);
+  const [results, setResults] = useState<StepResult[]>(resumed?.results ?? []);
 
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [timerRunning, setTimerRunning] = useState(false);
-  const [stepStartElapsed, setStepStartElapsed] = useState(0);
+  // The clock is kept as two pieces rather than a counter incremented once a second: time
+  // banked from steps already finished, plus the wall-clock delta since the current step
+  // started. A per-tick counter drifts, and browsers throttle background-tab intervals to
+  // roughly once a minute, so a reader who switched tabs mid-question used to come back
+  // with a total far short of the time they'd actually taken — while that total is what
+  // gets compared against the NPTE benchmark and saved as tomorrow's target. Deriving from
+  // timestamps means a missed tick costs nothing: the next one computes the true elapsed.
+  const [accumulatedMs, setAccumulatedMs] = useState(resumed?.elapsedMs ?? 0);
+  // A resumed session's clock starts at mount — there's no "Begin" click to start it from,
+  // the reader is already mid-session. Same read-the-clock-once-on-mount initializer as
+  // BoardQuestionCard's own `startedAt`.
+  const [runStartMs, setRunStartMs] = useState<number | null>(() => (resumed ? nowMs() : null));
+  const [elapsedMs, setElapsedMs] = useState(resumed?.elapsedMs ?? 0);
+  const [stepStartMs, setStepStartMs] = useState(resumed?.elapsedMs ?? 0);
 
   const [questionSelected, setQuestionSelected] = useState<number | null>(null);
   const [termRevealed, setTermRevealed] = useState(false);
   const [caseSelected, setCaseSelected] = useState<number | null>(null);
 
+  const elapsedSeconds = Math.round(elapsedMs / 1000);
+
   useEffect(() => {
-    if (!timerRunning) return;
-    const id = window.setInterval(() => setElapsedSeconds((s) => s + 1), 1000);
+    if (runStartMs === null) return;
+    const id = window.setInterval(() => setElapsedMs(accumulatedMs + (Date.now() - runStartMs)), 250);
     return () => window.clearInterval(id);
-  }, [timerRunning]);
+  }, [runStartMs, accumulatedMs]);
+
+  /** Stops the clock and returns the true total in ms at this instant. The clock runs only
+   *  while a question is on screen: it's paused the moment an answer lands and restarted
+   *  on "Next", so reading an explanation doesn't count toward a total that's measured
+   *  against the NPTE's own answering pace. It used to keep running through explanations
+   *  for the first two steps but not the third (the timer stopped at the last answer),
+   *  which made the total neither answering time nor total time on the page. */
+  function pauseClock(): number {
+    const total = accumulatedMs + (runStartMs === null ? 0 : nowMs() - runStartMs);
+    setAccumulatedMs(total);
+    setElapsedMs(total);
+    setRunStartMs(null);
+    return total;
+  }
 
   function beginSession() {
     setStepIndex(0);
     setShowingResult(false);
     setResults([]);
-    setElapsedSeconds(0);
-    setStepStartElapsed(0);
-    setTimerRunning(true);
+    setAccumulatedMs(0);
+    setElapsedMs(0);
+    setStepStartMs(0);
+    setRunStartMs(nowMs());
     setQuestionSelected(null);
     setTermRevealed(false);
     setCaseSelected(null);
     setSessionState("active");
   }
 
-  function recordStepResult(title: string, correct: boolean, correctAnswerText: string) {
-    setResults((r) => [...r, { title, correct, correctAnswerText, elapsedSeconds: Math.max(0, elapsedSeconds - stepStartElapsed) }]);
+  /** Banks the step's time, records the result, and persists it. `persist` is the step's
+   *  own server action, called with the seconds that step took. */
+  function completeStep(title: string, correct: boolean, correctAnswerText: string, persist: (stepSeconds: number) => void) {
+    const totalMs = pauseClock();
+    const stepSeconds = Math.max(0, Math.round((totalMs - stepStartMs) / 1000));
+    const nextResults = [...results, { title, correct, correctAnswerText, elapsedSeconds: stepSeconds }];
+    setResults(nextResults);
     setShowingResult(true);
-    if (stepIndex === STEP_COUNT - 1) setTimerRunning(false);
+    startTransition(() => {
+      persist(stepSeconds);
+      // The last step ends the session for pacing purposes, so tomorrow's target is set
+      // here rather than on the summary screen's Done click — the reader who closes the
+      // tab on the summary has still finished, and their time should still count.
+      if (nextResults.length === STEP_COUNT) recordSharpeningTargetAction(Math.round(totalMs / 1000));
+    });
   }
 
   function answerQuestion(index: number) {
     if (questionSelected !== null) return;
     setQuestionSelected(index);
-    recordStepResult("Board Question", index === question.correctIndex, question.choices[question.correctIndex]);
+    completeStep("Board Question", index === question.correctIndex, question.choices[question.correctIndex], (s) =>
+      recordBoardQuestionAction(dateKey, index, s, question.id)
+    );
   }
 
   function revealTerm() {
     if (termRevealed) return;
     setTermRevealed(true);
-    recordStepResult("Term of the Day", true, term.definition);
+    completeStep("Term of the Day", true, term.definition, (s) => recordBoardTermRevealAction(dateKey, s, term.id));
   }
 
   function answerCase(index: number) {
     if (caseSelected !== null) return;
     setCaseSelected(index);
-    recordStepResult("Case of the Day", index === dayCase.correctIndex, dayCase.options[dayCase.correctIndex]);
+    completeStep("Case of the Day", index === dayCase.correctIndex, dayCase.options[dayCase.correctIndex], (s) =>
+      recordCaseOfDayAction(dateKey, [index], index, index === dayCase.correctIndex ? "correct-first" : "wrong", s)
+    );
   }
 
   function nextStep() {
@@ -123,21 +216,15 @@ export function DailySharpeningSession({
       setSessionState("complete");
       return;
     }
-    setStepStartElapsed(elapsedSeconds);
+    setStepStartMs(elapsedMs);
+    setRunStartMs(nowMs());
     setShowingResult(false);
     setStepIndex((i) => i + 1);
   }
 
   function handleDone() {
-    if (doneClicked || questionSelected === null || caseSelected === null || results.length < STEP_COUNT) return;
     setDoneClicked(true);
     setFinishedNow(true);
-    startTransition(() => {
-      recordBoardQuestionAction(dateKey, questionSelected, results[0].elapsedSeconds);
-      recordBoardTermRevealAction(dateKey, results[1].elapsedSeconds);
-      recordCaseOfDayAction(dateKey, [caseSelected], caseSelected, caseSelected === dayCase.correctIndex ? "correct-first" : "wrong", results[2].elapsedSeconds);
-      recordSharpeningTargetAction(elapsedSeconds);
-    });
   }
 
   // — idle —
@@ -150,6 +237,12 @@ export function DailySharpeningSession({
         </div>
       );
     }
+    // A personal target only exists once a previous session ran over the NPTE benchmark
+    // (see recordSharpeningTargetAction, app/actions/daily-completion.ts — it resets
+    // boardsSharpeningTargetSeconds back to null the moment a session beats the real
+    // benchmark). So targetSeconds differing from the benchmark is exactly "this reader
+    // has a personal best on record to beat" — no separate fetch needed for that signal.
+    const hasPersonalBest = targetSeconds !== NPTE_THREE_QUESTION_BENCHMARK_SECONDS;
     return (
       <button type="button" className="card elev-sm sharpen-dose-card" onClick={() => setSessionState("preview")}>
         <div className="card-kicker">Daily Dose</div>
@@ -159,10 +252,13 @@ export function DailySharpeningSession({
           <span>Term of the Day</span>
           <span>Case of the Day</span>
         </div>
-        <div className="sharpen-dose-footer">
-          <span className="sharpen-dose-target">Beat your time: {formatElapsed(targetSeconds)}</span>
-          <span className="sharpen-intro-card-hint">Tap to begin →</span>
-        </div>
+        {hasPersonalBest && (
+          <div className="sharpen-challenge-card">
+            <div className="sharpen-challenge-label">Today&rsquo;s Challenge</div>
+            <div className="sharpen-challenge-value">Beat your best time — {formatElapsed(targetSeconds)}</div>
+          </div>
+        )}
+        <span className="sharpen-intro-card-hint">Tap to begin →</span>
       </button>
     );
   }
@@ -190,14 +286,14 @@ export function DailySharpeningSession({
         </div>
         <p className="sharpen-preview-desc">
           Each session includes one board question, one clinical term, and one case scenario, mirroring the structure of the
-          NPTE. Your timer starts when you begin and keeps running the whole session, the NPTE&rsquo;s recommended pace for 3
-          questions is {formatElapsed(NPTE_THREE_QUESTION_BENCHMARK_SECONDS)}
+          NPTE. The timer runs while a question is on screen and pauses while you read the explanation, so it measures your
+          answering pace — the NPTE&rsquo;s recommended pace for 3 questions is {formatElapsed(NPTE_THREE_QUESTION_BENCHMARK_SECONDS)}
           {isPersonalTarget ? `, but today's target is ${formatElapsed(targetSeconds)}, your own time to beat from a slower day. Get under the real benchmark and it resets.` : "."}
         </p>
         <button type="button" className="btn btn-primary sharpen-begin-btn" onClick={beginSession}>
           Begin Session
         </button>
-        <p className="sharpen-preview-footnote">Complete all three to mark today&rsquo;s sharpening as done</p>
+        <p className="sharpen-preview-footnote">Each question is saved as you answer it — you can stop and pick up where you left off</p>
       </div>
     );
   }
@@ -211,7 +307,9 @@ export function DailySharpeningSession({
     return (
       <div>
         <div className="sharpen-active-header">
-          <div className={`sharpen-timer${overTime ? " sharpen-timer--over" : ""}`}>{formatElapsed(elapsedSeconds)}</div>
+          <div className={`sharpen-timer${overTime ? " sharpen-timer--over" : ""}`} role="timer" aria-live="off">
+            {formatElapsed(elapsedSeconds)}
+          </div>
           {overTime && <div className="sharpen-timer-over-label">Over time: target was {formatElapsed(targetSeconds)}</div>}
           <div className="sharpen-progress-row">
             <div className="sharpen-progress-label">
@@ -233,31 +331,12 @@ export function DailySharpeningSession({
             <>
               <div className="card-kicker">Question · {question.domain}</div>
               <p style={{ fontSize: 15, fontWeight: 600, margin: "6px 0 12px" }}>{question.question}</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {question.choices.map((choice, i) => {
-                  const isCorrect = i === question.correctIndex;
-                  const isSelected = i === questionSelected;
-                  let className = "btn btn-secondary";
-                  if (questionSelected !== null && isCorrect) className = "btn btn-primary";
-                  return (
-                    <button
-                      key={i}
-                      type="button"
-                      className={className}
-                      disabled={questionSelected !== null}
-                      onClick={() => answerQuestion(i)}
-                      style={{
-                        justifyContent: "flex-start",
-                        textAlign: "left",
-                        opacity: questionSelected !== null && !isCorrect && !isSelected ? 0.6 : 1,
-                        border: questionSelected !== null && isSelected && !isCorrect ? "1.5px solid var(--color-accent-700)" : undefined,
-                      }}
-                    >
-                      {choice}
-                    </button>
-                  );
-                })}
-              </div>
+              <BoardChoiceList
+                choices={question.choices}
+                correctIndex={question.correctIndex}
+                selectedIndex={questionSelected}
+                onSelect={answerQuestion}
+              />
             </>
           )}
 

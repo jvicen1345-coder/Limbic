@@ -1,3 +1,5 @@
+import { todayKeyInZone } from "@/lib/day";
+
 /**
  * Limbic Boards content bank — NPTE-style board-prep questions and terms, curated by
  * hand from standard PT curriculum/textbook material (MMT grading, special orthopedic
@@ -20,6 +22,14 @@ export interface BoardQuestion {
    *  that isn't specialty-specific (general safety, integumentary staging, etc.) — it still
    *  appears in the main Daily Sharpening rotation, just not on any specialty page. */
   specialtySlugs?: string[];
+  /** Which of the 5 NPTE_DOMAINS this question counts toward, when `domain` above isn't one
+   *  of them. `domain` is a teaching label and includes practice areas the NPTE doesn't
+   *  score separately ("Pediatrics", "Sports", "Geriatrics"); the exam only has the 5. Set
+   *  per-question rather than mapped from `domain` wholesale because the right NPTE domain
+   *  varies within a practice area — a Sports concussion question is Neuromuscular while a
+   *  Sports ACL-strength one is Musculoskeletal. Undefined when `domain` is already one of
+   *  the 5, which is the common case; read it through npteDomainOf() rather than directly. */
+  npteDomain?: NpteDomain;
 }
 
 export const BOARD_QUESTIONS: BoardQuestion[] = [
@@ -195,6 +205,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     correctIndex: 1,
     explanation: "Independent, unsupported sitting is a gross motor milestone typically achieved around 6 months of age.",
     specialtySlugs: ["pediatrics"],
+    npteDomain: "Neuromuscular",
   },
   {
     id: "q17",
@@ -204,6 +215,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     correctIndex: 1,
     explanation: "The GMFCS was developed specifically for cerebral palsy and classifies self-initiated movement across five levels based on functional mobility.",
     specialtySlugs: ["pediatrics"],
+    npteDomain: "Neuromuscular",
   },
   {
     id: "q18",
@@ -218,6 +230,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     correctIndex: 1,
     explanation: "Primitive reflexes like the ATNR should integrate in the first several months of life; persistence beyond roughly 4-6 months is a red flag for CNS involvement.",
     specialtySlugs: ["pediatrics"],
+    npteDomain: "Neuromuscular",
   },
   {
     id: "q19",
@@ -227,6 +240,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     correctIndex: 1,
     explanation: "A TUG time above roughly 12-13.5 seconds is a widely used cutoff associated with increased fall risk in community-dwelling older adults.",
     specialtySlugs: ["geriatrics"],
+    npteDomain: "Nonsystem / Safety",
   },
   {
     id: "q20",
@@ -236,6 +250,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     correctIndex: 0,
     explanation: "Weight-bearing and resistance exercise provide the mechanical loading stimulus most associated with maintaining or improving bone mineral density.",
     specialtySlugs: ["geriatrics"],
+    npteDomain: "Musculoskeletal",
   },
   {
     id: "q21",
@@ -245,6 +260,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     correctIndex: 1,
     explanation: "Graduated return-to-play protocols (e.g. the Berlin Consensus statement) recommend at least 24 hours between stages, with the athlete remaining symptom-free before progressing.",
     specialtySlugs: ["sports"],
+    npteDomain: "Neuromuscular",
   },
   {
     id: "q22",
@@ -254,6 +270,7 @@ export const BOARD_QUESTIONS: BoardQuestion[] = [
     correctIndex: 2,
     explanation: "A limb symmetry index of at least 90% on quadriceps strength testing is a commonly used return-to-sport criterion after ACL reconstruction.",
     specialtySlugs: ["sports"],
+    npteDomain: "Musculoskeletal",
   },
   {
     id: "q23",
@@ -333,6 +350,36 @@ export function questionsForSpecialty(slug: string): BoardQuestion[] {
  *  canonical domain identity rather than each guessing at spelling/casing independently. */
 export const NPTE_DOMAINS = ["Musculoskeletal", "Neuromuscular", "Cardiopulmonary", "Integumentary", "Nonsystem / Safety"] as const;
 
+export type NpteDomain = (typeof NPTE_DOMAINS)[number];
+
+/** Roughly how much of the real NPTE each domain is worth, per the FSBPT content outline —
+ *  the same figures the Boards NPTE Breakdown tab publishes (see components/BoardsTabs.tsx
+ *  NPTE_SYSTEMS). "Integumentary" carries the outline's whole "Other Body Systems" band
+ *  (integumentary, metabolic/endocrine, GI/GU, multi-system), which is what our
+ *  integumentary-tagged questions actually sample from; the two taxonomies differ only in
+ *  that one name. Used to weight the daily pick below so a student's practice mix drifts
+ *  toward the exam's own mix instead of the bank's — the bank is not evenly written across
+ *  domains, so a uniform pick over-samples whichever domain happens to have most entries. */
+export const NPTE_DOMAIN_WEIGHTS: Record<NpteDomain, number> = {
+  Musculoskeletal: 24,
+  Neuromuscular: 20,
+  Cardiopulmonary: 16,
+  Integumentary: 20,
+  "Nonsystem / Safety": 20,
+};
+
+/** Which of the 5 scored NPTE domains a question counts toward — its explicit npteDomain
+ *  when `domain` is a teaching label outside the 5 (see BoardQuestion.npteDomain), else
+ *  `domain` itself. Falls back to "Nonsystem / Safety" for a domain that is neither, which
+ *  is where the outline puts anything not tied to a body system anyway, so a future
+ *  question added with a new label still lands somewhere real instead of vanishing from
+ *  the weighting and the accuracy breakdown. */
+export function npteDomainOf(question: BoardQuestion): NpteDomain {
+  if (question.npteDomain) return question.npteDomain;
+  const direct = NPTE_DOMAINS.find((d) => d === question.domain);
+  return direct ?? "Nonsystem / Safety";
+}
+
 /** URL-safe slug for a domain name (e.g. "Nonsystem / Safety" -> "nonsystem-safety") — see
  *  app/(app)/student/domains/[slug]/page.tsx, linked to from AtriumProgressChart's domain
  *  rows. */
@@ -350,12 +397,15 @@ export function domainFromSlug(slug: string): (typeof NPTE_DOMAINS)[number] | nu
   return NPTE_DOMAINS.find((d) => domainSlug(d) === slug) ?? null;
 }
 
-/** Every question tagged with `domain` — same "fixed, non-rotating preview set" reasoning
- *  as questionsForSpecialty above, just filtered on BoardQuestion.domain instead of
- *  specialtySlugs. Powers the "practice this domain" page a reader reaches by clicking a
- *  row in AtriumProgressChart. */
+/** Every question the NPTE would score under `domain` — same "fixed, non-rotating preview
+ *  set" reasoning as questionsForSpecialty above, just filtered on the domain instead of
+ *  specialtySlugs. Powers the "practice this domain" page a reader reaches from
+ *  AtriumProgressChart or the Boards NPTE Breakdown tab. Matches on npteDomainOf() rather
+ *  than the raw `domain` label, so the questions written under a practice-area label
+ *  ("Pediatrics", "Sports", "Geriatrics") show up on the domain page that actually tests
+ *  them instead of being reachable from no practice page at all. */
 export function questionsForDomain(domain: string): BoardQuestion[] {
-  return BOARD_QUESTIONS.filter((q) => q.domain === domain);
+  return BOARD_QUESTIONS.filter((q) => npteDomainOf(q) === domain);
 }
 
 export interface BoardTerm {
@@ -466,9 +516,89 @@ export function termForDate(dateKey: string): BoardTerm {
   return BOARD_TERMS[index];
 }
 
-/** YYYY-MM-DD for "today" — the unit both the question and term rotate on. */
-export function todayDateKey(): string {
-  return new Date().toISOString().slice(0, 10);
+/** Look one piece of daily content back up by the id persisted on a DailyCompletion row
+ *  (see that model's contentId). Undefined for an id that has since been removed from the
+ *  bank, which every caller treats as "nothing to show for that row" rather than throwing. */
+export function questionById(id: string): BoardQuestion | undefined {
+  return BOARD_QUESTIONS.find((q) => q.id === id);
+}
+
+export function termById(id: string): BoardTerm | undefined {
+  return BOARD_TERMS.find((t) => t.id === id);
+}
+
+/** Deterministic weighted draw: walks `weights` in order against a hash of `seed`, so the
+ *  same seed always lands on the same entry and entries are hit in proportion to weight.
+ *  Returns 0 for an empty/zero-weight list, which callers guard against before calling. */
+function weightedIndex(weights: number[], seed: string): number {
+  const total = weights.reduce((a, b) => a + b, 0);
+  if (total <= 0) return 0;
+  // hashString is a 32-bit unsigned value; scaling it into [0, total) this way keeps the
+  // draw deterministic without floating-point modulo bias worth caring about at these sizes.
+  let roll = hashString(seed) % total;
+  for (let i = 0; i < weights.length; i++) {
+    roll -= weights[i];
+    if (roll < 0) return i;
+  }
+  return weights.length - 1;
+}
+
+/** Today's question for one specific reader. Two things this does that questionForDate()
+ *  above doesn't:
+ *
+ *  1. Weights the draw by NPTE domain (see NPTE_DOMAIN_WEIGHTS) instead of drawing
+ *     uniformly over the bank, so the practice mix tracks the exam's mix rather than
+ *     whichever domain happens to have the most questions written for it.
+ *  2. Skips `recentIds` — what this reader has already answered lately — so a 28-question
+ *     bank stops handing the same student the same question twice in a fortnight while
+ *     leaving others unseen for months, which is what a plain hash-modulo does.
+ *
+ *  Still fully deterministic given (dateKey, userId, recentIds): the reader who reloads
+ *  /boards without answering gets the same question back, since recentIds can't change
+ *  until they answer something. Once they do answer, the served id is persisted on the
+ *  DailyCompletion row and read back from there instead of recomputed (see
+ *  boardQuestionForCompletion), so today's question is stable even as recentIds moves on.
+ *
+ *  Falls back to ignoring recentIds when it would exclude everything — a reader who has
+ *  seen the whole bank still gets a question, just the least-recently-seen part of it. */
+export function pickDailyQuestion(dateKey: string, userId: string, recentIds: readonly string[] = []): BoardQuestion {
+  const recent = new Set(recentIds);
+  const eligible = BOARD_QUESTIONS.filter((q) => !recent.has(q.id));
+  const pool = eligible.length > 0 ? eligible : BOARD_QUESTIONS;
+  const seed = `q:${dateKey}:${userId}`;
+
+  // Only domains that still have an eligible question get weight, so an exhausted domain
+  // doesn't silently swallow its share of the draw and bias the result toward one entry.
+  const domains = NPTE_DOMAINS.filter((d) => pool.some((q) => npteDomainOf(q) === d));
+  if (domains.length === 0) return pool[hashString(seed) % pool.length];
+  const domain = domains[weightedIndex(domains.map((d) => NPTE_DOMAIN_WEIGHTS[d]), seed)];
+
+  const inDomain = pool.filter((q) => npteDomainOf(q) === domain);
+  return inDomain[hashString(`${seed}:${domain}`) % inDomain.length];
+}
+
+/** Today's term for one specific reader — same "don't repeat what they just saw" reasoning
+ *  as pickDailyQuestion above, minus the domain weighting, since terms carry no domain. */
+export function pickDailyTerm(dateKey: string, userId: string, recentIds: readonly string[] = []): BoardTerm {
+  const recent = new Set(recentIds);
+  const eligible = BOARD_TERMS.filter((t) => !recent.has(t.id));
+  const pool = eligible.length > 0 ? eligible : BOARD_TERMS;
+  return pool[hashString(`t:${dateKey}:${userId}`) % pool.length];
+}
+
+/** How many days back pickDailyQuestion/pickDailyTerm's `recentIds` window reaches. Sized
+ *  against the bank rather than picked arbitrarily: it has to stay comfortably under the
+ *  smaller of the two banks (BOARD_TERMS, 15) or every term would be excluded every day
+ *  and the fallback above would run constantly, throwing away the whole point. */
+export const RECENT_CONTENT_WINDOW_DAYS = 10;
+
+/** YYYY-MM-DD for "today" in the reader's own time zone — the unit both the question and
+ *  term rotate on. Takes the zone explicitly (see lib/user-time-zone.ts for where a request
+ *  gets one) rather than reading the server's clock: this ran off UTC on a UTC server, so
+ *  the day rolled over mid-evening for every reader in the Americas, handing them tomorrow's
+ *  question and filing their answer under tomorrow's key — see lib/day.ts. */
+export function todayDateKey(timeZone: string): string {
+  return todayKeyInZone(timeZone);
 }
 
 /** The NPTE's own per-question pace (~1.4 min, see /boards/npte-breakdown) times 3 —

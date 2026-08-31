@@ -12,7 +12,7 @@ export default async function ProGuidelinesPage() {
   if (!user) return null;
 
   return (
-    <div className="screen-pad">
+    <div className="screen-pad pro-wide-page">
       <FreeToolBanner isPro={user.isPro} />
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Clinical Practice Guidelines</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>

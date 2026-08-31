@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getCurrentUser, hasLicenseAccess } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { HepWorkspace } from "@/components/HepWorkspace";
@@ -5,8 +6,62 @@ import { DeleteHepButton } from "@/components/DeleteHepButton";
 import { sanitizeMediaUrl } from "@/lib/media-url";
 import { ExternalLinkIcon } from "@/components/icons";
 import { getHepTemplatesAction } from "@/app/actions/hep";
+import { getMovementExercise, getMovementProtocol, protocolPhaseToHepExercises } from "@/lib/movement-lab";
+import type { HepInitialDraft } from "@/components/HepBuilder";
 
-export default async function HepPage() {
+/**
+ * Resolves the Movement Lab's two deep-links into a builder draft, server-side:
+ *
+ *   /hep?exercises=id,id,id      — a selection made on the browse page
+ *   /hep?protocol=slug&phase=0   — one phase of a reference protocol
+ *
+ * Resolved here rather than on the client so the builder mounts already populated (no flash
+ * of an empty form), and so an unknown id or a phase index that doesn't exist just yields no
+ * draft rather than a broken row — a hand-edited URL should degrade to the ordinary empty
+ * builder, not to an error.
+ */
+function draftFromParams(params: { exercises?: string; protocol?: string; phase?: string }): HepInitialDraft | null {
+  if (params.protocol) {
+    const protocol = getMovementProtocol(params.protocol);
+    if (!protocol) return null;
+    const index = Number(params.phase ?? 0);
+    const phase = Number.isInteger(index) ? protocol.phases[index] : undefined;
+    if (!phase) return null;
+    return { programName: `${protocol.name} — ${phase.name}`, exercises: protocolPhaseToHepExercises(phase) };
+  }
+
+  if (params.exercises) {
+    const exercises = params.exercises
+      .split(",")
+      .map((id) => getMovementExercise(id.trim()))
+      .filter((ex) => ex != null)
+      .map((ex) => ({
+        name: ex.name,
+        sets: ex.dosage.sets,
+        reps: ex.dosage.reps,
+        // Same shape the picker builds (see addFromMovementLab in HepBuilder) — the
+        // frequency and hold the sets/reps fields can't carry, plus the patient-facing cue.
+        notes: [ex.dosage.hold ? `hold ${ex.dosage.hold}` : "", ex.dosage.frequency, ex.cue.replace(/^“|”$/g, "")]
+          .filter(Boolean)
+          .join(" — "),
+        imageUrl: "",
+        videoUrl: "",
+      }));
+    if (exercises.length === 0) return null;
+    // Left blank deliberately: the clinician names the program for the patient it's for, and
+    // a placeholder like "Movement Lab selection" is the kind of thing that gets saved by
+    // accident. `canSave` in the builder keeps Save disabled until they fill it in.
+    return { programName: "", exercises };
+  }
+
+  return null;
+}
+
+export default async function HepPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ exercises?: string; protocol?: string; phase?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!user) return null;
 
@@ -21,21 +76,32 @@ export default async function HepPage() {
     );
   }
 
-  const [programs, templatesByBodyPart] = await Promise.all([
+  const [programs, templatesByBodyPart, params] = await Promise.all([
     prisma.hepProgram.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
       include: { exercises: { orderBy: { order: "asc" } } },
     }),
     getHepTemplatesAction(),
+    searchParams,
   ]);
+  const initialDraft = draftFromParams(params);
 
   return (
     <div className="screen-pad hep-page-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Home Exercise Programs</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 22px" }}>
-        Build a home exercise program for a patient. Available to signed-in clinicians only.
+        Build a home exercise program for a patient. Available to signed-in clinicians only. Pull exercises and whole
+        protocol phases from the <Link href="/movement-lab">Limbic Movement Lab</Link>.
       </p>
+
+      {initialDraft && (
+        <div className="free-tool-banner" style={{ marginBottom: 22 }}>
+          Loaded {initialDraft.exercises.length} {initialDraft.exercises.length === 1 ? "exercise" : "exercises"} from
+          the Movement Lab. Adjust the dosage for this patient before saving — the numbers are typical starting ranges,
+          not a prescription.
+        </div>
+      )}
 
       {/* HEP Builder itself only requires a license on file (see hasLicenseAccess above) —
           LimbicPRO isn't a hard gate here, it just unlocks exercise media (see
@@ -49,7 +115,7 @@ export default async function HepPage() {
         </div>
       )}
 
-      <HepWorkspace isPro={user.isPro} templatesByBodyPart={templatesByBodyPart}>
+      <HepWorkspace isPro={user.isPro} templatesByBodyPart={templatesByBodyPart} initialDraft={initialDraft}>
         {programs.length > 0 && (
           <>
             <div

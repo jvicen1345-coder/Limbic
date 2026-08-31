@@ -9,7 +9,7 @@ const LOW_RISK = ["Simple rear-end motor vehicle collision", "Sitting position i
 /** Three-step interactive decision tree — a high-risk factor requires imaging outright; no
  *  low-risk factor also requires imaging (ROM can't be safely assessed); otherwise ROM
  *  itself decides. */
-export function CanadianCSpineRule() {
+export function CanadianCSpineRule({ open }: { open?: boolean }) {
   const [highRisk, setHighRisk] = useState<boolean[]>(Array(HIGH_RISK.length).fill(false));
   const [lowRisk, setLowRisk] = useState<boolean[]>(Array(LOW_RISK.length).fill(false));
   const [canRotate45, setCanRotate45] = useState<boolean | null>(null);
@@ -29,7 +29,7 @@ export function CanadianCSpineRule() {
   }
 
   return (
-    <RuleAccordion title="Canadian C-Spine Rules" summary="Cervical spine clearance after trauma">
+    <RuleAccordion title="Canadian C-Spine Rules" summary="Cervical spine clearance after trauma" open={open}>
       <div>
         <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>Step 1, any high risk factor present?</div>
         {HIGH_RISK.map((c, i) => (

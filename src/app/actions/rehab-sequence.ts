@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { getTimeZone } from "@/lib/user-time-zone";
 import { getTodaysRehabCase, getRehabCaseForDate, getDateKey, validateSequence } from "@/lib/rehab-sequence-logic";
 
 // Every action below derives the reader from the session, never a client-supplied id —
@@ -21,13 +22,14 @@ export async function getTodaysRehabResult(): Promise<RehabSequenceResultView | 
   const user = await getCurrentUser();
   if (!user) return null;
 
+  const timeZone = await getTimeZone(user);
   const row = await prisma.rehabSequenceResult.findUnique({
-    where: { userId_dateKey: { userId: user.id, dateKey: getDateKey() } },
+    where: { userId_dateKey: { userId: user.id, dateKey: getDateKey(timeZone) } },
   });
   if (!row) return null;
 
   const sequenceGiven = row.sequenceGiven as string[];
-  const { score } = validateSequence(getTodaysRehabCase().id, sequenceGiven);
+  const { score } = validateSequence(getTodaysRehabCase(timeZone).id, sequenceGiven);
   return { score, correct: row.correct, sequenceGiven };
 }
 
@@ -48,12 +50,13 @@ export async function submitRehabSequence(sequenceGiven: string[]): Promise<Subm
   const user = await getCurrentUser();
   if (!user) return { ok: false, score: 0, correct: false, correctPositions: [], correctSequence: [], rationale: [] };
 
-  const todaysCase = getTodaysRehabCase();
+  const timeZone = await getTimeZone(user);
+  const todaysCase = getTodaysRehabCase(timeZone);
   const validation = validateSequence(todaysCase.id, sequenceGiven);
 
   await prisma.rehabSequenceResult.upsert({
-    where: { userId_dateKey: { userId: user.id, dateKey: getDateKey() } },
-    create: { userId: user.id, dateKey: getDateKey(), correct: validation.correct, attempts: 1, sequenceGiven },
+    where: { userId_dateKey: { userId: user.id, dateKey: getDateKey(timeZone) } },
+    create: { userId: user.id, dateKey: getDateKey(timeZone), correct: validation.correct, attempts: 1, sequenceGiven },
     update: { correct: validation.correct, attempts: 1, sequenceGiven },
   });
 

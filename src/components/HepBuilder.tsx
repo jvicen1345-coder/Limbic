@@ -3,7 +3,8 @@
 import { useState, useTransition, useImperativeHandle, forwardRef } from "react";
 import { createHepAction } from "@/app/actions/hep";
 import { XIcon } from "@/components/icons";
-import { THERAPEUTIC_EXERCISES, parseDosage } from "@/lib/therapeutic-exercises-static";
+import { MovementLabPicker } from "@/components/movement-lab/MovementLabPicker";
+import type { MovementExercise } from "@/lib/movement-lab";
 import type { HepTemplateExercise } from "@/lib/hep-templates";
 
 interface DraftExercise {
@@ -31,9 +32,23 @@ export interface HepBuilderHandle {
   getDraft(): { programName: string; exercises: HepTemplateExercise[] } | null;
 }
 
-export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean }>(function HepBuilder({ isPro }, ref) {
-  const [programName, setProgramName] = useState("");
-  const [exercises, setExercises] = useState<DraftExercise[]>([]);
+/** A draft handed in by the page rather than built here — how a Movement Lab selection or a
+ *  protocol phase arrives (see app/(app)/hep/page.tsx, which reads ?exercises= and
+ *  ?protocol=&phase= and resolves them server-side). Consumed once, as the initial state:
+ *  the builder stays uncontrolled after mount, so a later navigation with different params
+ *  is a fresh page load and therefore a fresh mount, and nothing here has to reconcile a
+ *  changing prop against edits the clinician has already made to the draft. */
+export interface HepInitialDraft {
+  programName: string;
+  exercises: HepTemplateExercise[];
+}
+
+export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initialDraft?: HepInitialDraft | null }>(
+  function HepBuilder({ isPro, initialDraft }, ref) {
+  const [programName, setProgramName] = useState(initialDraft?.programName ?? "");
+  const [exercises, setExercises] = useState<DraftExercise[]>(() =>
+    (initialDraft?.exercises ?? []).map((ex) => ({ id: idSeq++, ...ex })),
+  );
   const [isPending, startTransition] = useTransition();
 
   useImperativeHandle(ref, () => ({
@@ -62,11 +77,17 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean }>(funct
   function addExercise(prefill?: Omit<DraftExercise, "id">) {
     setExercises((prev) => [...prev, { id: idSeq++, ...(prefill ?? EMPTY_DRAFT) }]);
   }
-  function addFromLibrary(exerciseName: string) {
-    const ex = THERAPEUTIC_EXERCISES.find((e) => e.name === exerciseName);
-    if (!ex) return;
-    const { reps, sets } = parseDosage(ex.dosage);
-    addExercise({ name: ex.name, sets, reps, notes: ex.cue, imageUrl: "", videoUrl: "" });
+  /** The Movement Lab stores sets, reps, hold and frequency as separate fields, so they drop
+   *  straight into the builder's own inputs — no parsing. (The old library stored one
+   *  "10 reps × 2–3 sets" string that had to be regexed apart, and silently produced empty
+   *  fields for any hold- or time-based dosage; see lib/movement-lab/types.ts.) `notes` gets
+   *  the frequency plus the patient-facing cue, since that's what a patient actually reads
+   *  off the printed program. */
+  function addFromMovementLab(ex: MovementExercise) {
+    const notes = [ex.dosage.hold ? `hold ${ex.dosage.hold}` : "", ex.dosage.frequency, ex.cue.replace(/^“|”$/g, "")]
+      .filter(Boolean)
+      .join(" — ");
+    addExercise({ name: ex.name, sets: ex.dosage.sets, reps: ex.dosage.reps, notes, imageUrl: "", videoUrl: "" });
   }
   function updateExercise(id: number, field: keyof Omit<DraftExercise, "id">, value: string) {
     setExercises((prev) => prev.map((ex) => (ex.id === id ? { ...ex, [field]: value } : ex)));
@@ -203,28 +224,11 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean }>(funct
           </p>
         )}
 
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-start" }}>
           <button type="button" className="btn btn-secondary" onClick={() => addExercise()}>
             + Add exercise
           </button>
-          <select
-            className="btn btn-secondary"
-            value=""
-            aria-label="Add from exercise library"
-            onChange={(e) => {
-              if (e.target.value) addFromLibrary(e.target.value);
-              e.target.value = "";
-            }}
-          >
-            <option value="" disabled>
-              + Add from library
-            </option>
-            {THERAPEUTIC_EXERCISES.map((ex) => (
-              <option key={ex.name} value={ex.name}>
-                {ex.name} ({ex.condition})
-              </option>
-            ))}
-          </select>
+          <MovementLabPicker onPick={addFromMovementLab} />
         </div>
 
         <div
