@@ -36,8 +36,8 @@ export function SlideBreakdownManager({ courses }: { courses: SlideBreakdownCour
   if (courses.length === 0) {
     return (
       <p className="atrium-dashboard-empty">
-        Add a course in <Link href="/student/assignments">Assignments</Link> first — Slide Breakdown adds flashcards and notes to an
-        existing course&rsquo;s Study Guide section.
+        Add a course in <Link href="/student/assignments">Assignments</Link> first — Study Guide Creator adds flashcards and notes to
+        an existing course&rsquo;s Study Guide.
       </p>
     );
   }

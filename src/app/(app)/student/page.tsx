@@ -58,8 +58,8 @@ const EMPTY_GENERIC_PHASE: ProgramPhase = {
 
 const PATHS = [
   {
-    title: "Break Down Slides",
-    description: "Summaries and practice questions from your slides.",
+    title: "Study Guide Creator",
+    description: "Turn your lecture slides into flashcards and notes.",
     href: "/student/slides",
     icon: FileTextIcon,
     accent: "amber",
@@ -551,8 +551,8 @@ export default async function StudentAtriumPage() {
               </Link>
               <Link href="/student/slides" className="atrium-resource-card">
                 <span className="atrium-resource-icon"><FileTextIcon size={18} /></span>
-                <p className="atrium-resource-title">Break Down Slides</p>
-                <p className="atrium-resource-desc">Upload your lecture slides and get summaries and practice questions.</p>
+                <p className="atrium-resource-title">Study Guide Creator</p>
+                <p className="atrium-resource-desc">Upload your lecture slides and get flashcards and notes in your Study Guide.</p>
               </Link>
               <Link href="/student/soap" className="atrium-resource-card">
                 <span className="atrium-resource-icon"><PencilIcon size={18} /></span>

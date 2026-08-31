@@ -1,5 +1,5 @@
-/** Minimal renderer for the Visual Aids tab's free-text notes (see Syllabus.studyNotes in
- *  prisma/schema.prisma, components/student/StudyGuideManager.tsx). Supports exactly one bit
+/** Minimal renderer for the Visual Aids page's free-text notes (see Syllabus.studyNotes in
+ *  prisma/schema.prisma, components/student/StudyGuideNotes.tsx). Supports exactly one bit
  *  of structure — a pipe-delimited table, one row per line, e.g.:
  *    | Term | Definition |
  *    | --- | --- |
