@@ -16,7 +16,7 @@ Extract two things from the syllabus text provided:
 
 Return a single JSON object with exactly these fields:
 - meetingDays: array of strings, each one of ${JSON.stringify(MEETING_DAY_CODES)} — every day the class meets each week, or null if no clear recurring pattern is stated
-- meetingTime: string — the meeting time range as written in the syllabus (e.g. "9:00 AM-9:50 AM") — or null if not stated, or if meetingDays is null
+- meetingTimes: an object whose keys are entries from meetingDays and whose values are that day's meeting time range as written (e.g. {"Mon": "10:00 AM-10:50 AM", "Fri": "8:30 AM-9:20 AM"}) — the same class can meet at a different time on different days, so give each day in meetingDays its own time if the text supports it. If every day shares one stated time, use that same value for every key. Omit a day's key if no time is stated for it specifically. Null if meetingDays is null or no time is stated for any day.
 - assignments: array of objects, each with exactly these fields:
   - title: string — the assignment or exam name
   - dueDate: string — the due date in YYYY-MM-DD format — if no year is specified assume the current academic year
@@ -55,9 +55,11 @@ export interface ParsedSyllabus {
   /** Short day codes from MEETING_DAY_CODES (lib/calendar-events.ts), or null if the
    *  syllabus text didn't state a clear recurring weekly meeting pattern. */
   meetingDays: string[] | null;
-  /** Free text as written in the syllabus (e.g. "9:00 AM-9:50 AM") — display only. Null
-   *  whenever meetingDays is null. */
-  meetingTime: string | null;
+  /** Maps a meetingDays entry to its own free-text time as written in the syllabus (e.g.
+   *  "9:00 AM-9:50 AM") — display only, and a day can be missing a key here even when
+   *  meetingDays isn't null (no time stated for that specific day). Null whenever
+   *  meetingDays is null. */
+  meetingTimes: Record<string, string> | null;
   assignments: ParsedAssignment[];
 }
 
@@ -77,6 +79,17 @@ function parseMeetingDays(value: unknown): string[] | null {
   if (!Array.isArray(value)) return null;
   const days = value.filter((d): d is string => typeof d === "string" && (MEETING_DAY_CODES as readonly string[]).includes(d));
   return days.length > 0 ? days : null;
+}
+
+/** Keeps only entries whose key is an actual meeting day and whose value is a string —
+ *  meetingDays is the source of truth for which days the class meets, so a stray key here
+ *  that isn't in it is dropped rather than trusted. */
+function parseMeetingTimes(value: unknown, meetingDays: string[]): Record<string, string> | null {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
+  const entries = Object.entries(value as Record<string, unknown>).filter(
+    (entry): entry is [string, string] => meetingDays.includes(entry[0]) && typeof entry[1] === "string"
+  );
+  return entries.length > 0 ? Object.fromEntries(entries) : null;
 }
 
 /** Extracts the recurring meeting pattern and assignments/exams from a pasted syllabus text
@@ -118,7 +131,7 @@ Extract the meeting pattern and all assignments, and return as a single JSON obj
     const meetingDays = parseMeetingDays(v.meetingDays);
     return {
       meetingDays,
-      meetingTime: meetingDays && typeof v.meetingTime === "string" ? v.meetingTime : null,
+      meetingTimes: meetingDays ? parseMeetingTimes(v.meetingTimes, meetingDays) : null,
       assignments: Array.isArray(v.assignments) ? v.assignments.filter(isParsedAssignment) : [],
     };
   } catch (error) {

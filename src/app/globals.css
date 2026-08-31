@@ -12136,3 +12136,12 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .syllabi-meeting-day--on { border-color: var(--atrium-tint); color: var(--atrium-tint); font-weight: 600; }
 .syllabi-meeting-time-input { max-width: 320px; }
 .syllabi-meeting-form-actions { display: flex; gap: 10px; margin-top: 12px; }
+
+/* One time input per selected meeting day (components/student/SyllabiManager.tsx's
+   MeetingTimeFields) — the same class can meet at a different time on different days (see
+   Syllabus.meetingTimes in prisma/schema.prisma), so this replaced a single shared time
+   field. Shares .syllabi-meeting-time-input's own max-width; only the day-label + row layout
+   is new here. */
+.syllabi-meeting-times { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.syllabi-meeting-time-row { display: flex; align-items: center; gap: 8px; }
+.syllabi-meeting-time-day { font-size: 12.5px; font-weight: 600; color: var(--color-neutral-700); width: 32px; flex-shrink: 0; }
