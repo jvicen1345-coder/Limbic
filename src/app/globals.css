@@ -11736,44 +11736,6 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   .wordle-key { min-width: 30px; padding: 0 4px; }
 }
 
-/* Canvas connect panel (components/student/CanvasConnectPanel.tsx), the top section of
-   app/(app)/student/assignments/page.tsx above the syllabus tracker — same card treatment as
-   .syllabi-add-section further up this file, kept as its own block since the two aren't
-   related components. */
-.canvas-connect-panel {
-  background: var(--atrium-surface);
-  border: 1px solid var(--atrium-border);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-}
-.canvas-connect-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; margin: 0 0 6px; }
-.canvas-connect-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; margin: 0 0 16px; max-width: 640px; }
-.canvas-connect-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-@media (max-width: 640px) {
-  .canvas-connect-form { grid-template-columns: minmax(0, 1fr); }
-}
-.canvas-connect-status { font-size: 12.5px; color: var(--color-success); margin: 10px 0 0; }
-
-.canvas-connect-panel--connected { display: flex; flex-direction: column; }
-.canvas-connect-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.canvas-connect-meta { font-size: 12.5px; color: var(--color-neutral-700); margin-top: 2px; }
-.canvas-connect-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
-.canvas-connect-disconnect {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--color-danger);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px 4px;
-}
-.canvas-connect-disconnect:disabled { opacity: 0.6; cursor: default; }
-/* Second, subtler paragraph in the disconnected CanvasConnectPanel (see that component) —
-   points a student whose school has disabled self-service Canvas access tokens at their
-   Canvas admin instead of leaving them stuck on a "New Access Token" button that doesn't
-   exist for them. Reuses .canvas-connect-desc's sizing/line-height, just quieter. */
-.canvas-connect-desc--muted { color: var(--color-neutral-700); font-size: 12.5px; margin-top: -8px; }
-
 /* ============================================================================
    Automatic generalizability score — the article detail panel's first tool (see
    components/ArticleResearchPanel.tsx, app/actions/research-literacy.ts). Appended,

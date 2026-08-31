@@ -91,7 +91,7 @@ export function AtriumThisWeekCard({
 
       {!hasAssignmentSource ? (
         <div className="atrium-week-empty-prompt">
-          <p>Connect Canvas or upload a syllabus to track assignments here.</p>
+          <p>Upload a syllabus to track assignments here.</p>
           <Link href="/student/assignments" className="btn btn-secondary atrium-week-empty-cta">
             Add Assignments
           </Link>

@@ -351,15 +351,10 @@ model User {
   rotation3Supervisor String?
 
   // Course syllabi this student has uploaded (see app/actions/syllabus.ts) and the
-  // assignments extracted or manually added from them, plus whatever's synced from a
-  // connected Canvas account (see canvasConnection below) — feeds the Atrium's This Week
+  // assignments extracted or manually added from them — feeds the Atrium's This Week
   // card, its monthly calendar, and app/(app)/student/assignments/page.tsx.
   syllabi     Syllabus[]
   assignments Assignment[]
-
-  // The student's connected Canvas LMS account, if any (see lib/canvas.ts, lib/canvas-sync.ts,
-  // app/actions/canvas.ts) — one per account, same as vitalsProfile/healthSyncToken above.
-  canvasConnection CanvasConnection?
 
   // Which of the 235 seeded DPTProgram rows this student picked (see app/actions/
   // dpt-programs.ts setUserProgram) — set during onboarding's Step 2 or from Profile's "Your
@@ -1968,21 +1963,16 @@ model Syllabus {
   assignments Assignment[]
 }
 
-// One graded item (exam, quiz, assignment, etc.) a student is tracking — either parsed from a
-// Syllabus (AI-extracted via parseSyllabusFromText, or added by hand via addManualAssignment)
-// or synced from a connected Canvas LMS account (see lib/canvas-sync.ts, CanvasConnection
-// below). `source` distinguishes the two ("syllabus" | "canvas", no DB-level enum, same
-// reasoning as FitnessConnection.provider); syllabusId is only ever set for the former,
-// canvasAssignmentId only for the latter — SQLite (like Postgres) allows any number of NULLs
-// in a unique index, so @@unique([userId, canvasAssignmentId]) below only actually constrains
-// the Canvas-sourced rows against each other. dueDate is a plain YYYY-MM-DD string, not
-// DateTime — same "no timezone, just a calendar date" reasoning as DailyCompletion.dateKey
-// elsewhere in this schema, since a due date has no time-of-day component that matters here.
-// Named SyllabusAssignment before Canvas sync existed; renamed once it stopped being only
-// syllabus-sourced.
+// One graded item (exam, quiz, assignment, etc.) a student is tracking — parsed from a
+// Syllabus (AI-extracted via parseSyllabusFromText) or added by hand via
+// addManualAssignment. dueDate is a plain YYYY-MM-DD string, not DateTime — same
+// "no timezone, just a calendar date" reasoning as DailyCompletion.dateKey elsewhere in this
+// schema, since a due date has no time-of-day component that matters here. Named
+// SyllabusAssignment before a since-removed Canvas LMS sync joined it as a second assignment
+// source; renamed once it stopped being only syllabus-sourced, and kept the name after Canvas
+// support was removed.
 model Assignment {
   id          String    @id @default(cuid())
-  source      String    @default("syllabus") // "syllabus" | "canvas"
   syllabusId  String?
   userId      String
   title       String
@@ -1994,41 +1984,8 @@ model Assignment {
   completedAt DateTime?
   createdAt   DateTime  @default(now())
 
-  // Canvas-sourced rows only — canvasAssignmentId is Canvas's own numeric assignment id
-  // (stringified), the key syncCanvasForUser upserts/prunes by; canvasHtmlUrl deep-links back
-  // to the assignment on the student's own Canvas site.
-  canvasAssignmentId String?
-  canvasCourseId     String?
-  canvasHtmlUrl      String?
-
   syllabus Syllabus? @relation(fields: [syllabusId], references: [id], onDelete: Cascade)
   user     User      @relation(fields: [userId], references: [id])
-
-  @@unique([userId, canvasAssignmentId])
-}
-
-// One row per student's connected Canvas LMS account (see lib/canvas.ts, lib/canvas-sync.ts,
-// app/actions/canvas.ts) — a Canvas Personal Access Token the student generates themselves
-// (Canvas → Account → Settings → New Access Token), not an OAuth2 "Connect" flow like
-// FitnessConnection above. Canvas has no single OAuth app a third party can register once:
-// each institution runs its own Canvas instance, and an OAuth developer key needs that
-// institution's own admin approval — unrealistic for a consumer tool a student signs up for
-// on their own. A personal access token is the standard way small third-party Canvas
-// integrations authenticate, and it works identically no matter which of the thousands of
-// Canvas instances the student's school runs. accessToken sits in a plaintext column, same
-// trust boundary as FitnessConnection.accessToken above — protected by DB access alone, not
-// field-level encryption. domain is the bare host (e.g. "canvas.instructure.com" or a school
-// subdomain) with no protocol or path.
-model CanvasConnection {
-  id           String    @id @default(cuid())
-  userId       String    @unique
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  domain       String
-  accessToken  String
-  canvasUserId String? // Canvas's own user id, for reference only
-  canvasName   String? // display name Canvas returned, shown on the connection card
-  lastSyncedAt DateTime?
-  createdAt    DateTime  @default(now())
 }
 
 // National reference table of CAPTE-accredited DPT programs (see prisma/seed-dpt-programs.ts,
