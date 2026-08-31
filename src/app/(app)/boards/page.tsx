@@ -17,6 +17,7 @@ import { getBoardsDailyContent, getBoardsProgress } from "@/lib/boards-progress"
 import { dayIndexForDateKey, caseForDayIndex } from "@/lib/cases-static";
 import { computeBestStreak, last7DateKeys } from "@/lib/games";
 import type { SavedSharpeningProgress } from "@/components/DailySharpeningSession";
+import { getTimeZone } from "@/lib/user-time-zone";
 
 /** The header every branch of this page shares — title, optional streak badge and exam
  *  countdown, then the daily games. Extracted because the four access branches below
@@ -86,7 +87,7 @@ export default async function BoardsHubPage() {
     );
   }
 
-  const dateKey = todayDateKey();
+  const dateKey = todayDateKey(await getTimeZone(user));
   // Today's question and term are picked for this reader specifically — weighted toward the
   // NPTE's own domain mix and skipping what they've seen recently — rather than by a hash
   // of the date alone, which handed a 28-question bank back to the same student twice a

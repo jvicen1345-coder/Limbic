@@ -230,6 +230,15 @@ model User {
   hasCompletedTour Boolean   @default(true)
   tourCompletedAt  DateTime?
 
+  // The reader's IANA time zone (e.g. "America/Denver"), reported by their browser and
+  // refreshed whenever it changes — see components/TimeZoneSync.tsx, lib/user-time-zone.ts.
+  // Every daily-rotating thing in the app is keyed on a calendar date, and those dates used
+  // to be read off UTC on a server that runs in UTC, so the day rolled over mid-evening for
+  // anyone in the Americas. Null until a browser has reported one (and for any account that
+  // predates this field), which lib/user-time-zone.ts treats as "fall back to the request
+  // header, then UTC" — i.e. exactly the old behavior.
+  timeZone String?
+
   // Limbic Boards (student daily-habit tools) streak — same nextStreak() logic as the
   // reading streak above, driven off BoardActivity rows instead of ReadArticle ones.
   lastBoardsActivityAt DateTime?

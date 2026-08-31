@@ -3,12 +3,13 @@ import { prisma } from "@/lib/db";
 import { todayDateKey } from "@/lib/wordle-words";
 import { puzzleForDate } from "@/lib/crossword-puzzles";
 import { CrosswordGame, type CrosswordInitialState } from "@/components/CrosswordGame";
+import { getTimeZone } from "@/lib/user-time-zone";
 
 export default async function CrosswordPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const dateKey = todayDateKey();
+  const dateKey = todayDateKey(await getTimeZone(user));
   const puzzle = puzzleForDate(dateKey);
   const row = await prisma.dailyCompletion.findUnique({
     where: { userId_kind_dateKey: { userId: user.id, kind: "crossword", dateKey } },

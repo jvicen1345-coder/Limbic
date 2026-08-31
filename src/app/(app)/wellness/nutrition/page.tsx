@@ -13,6 +13,7 @@ import { MacroCalculatorCard } from "@/components/metrics/MacroCalculatorCard";
 import { NutritionSyncCard } from "@/components/vitals/NutritionSyncCard";
 import { NUTRITION_SOURCES } from "@/lib/nutrition-macros";
 import type { WellnessProfile } from "@/lib/vitals";
+import { getTimeZone } from "@/lib/user-time-zone";
 
 const TODAY_NUTRITION_METRICS = ["caloriesConsumed", "proteinConsumedG", "carbsConsumedG", "fatConsumedG"] as const;
 
@@ -53,7 +54,7 @@ export default async function NutritionPage() {
   const isWellnessPlus = user.isPro || user.studentTier !== "none";
   const goal = profile?.wellnessGoal as WellnessGoal | undefined;
 
-  const dailyTip = nutritionTipForDate(todayDateKey());
+  const dailyTip = nutritionTipForDate(todayDateKey(await getTimeZone(user)));
 
   const wellnessProfile: WellnessProfile = {
     age: profile?.age ?? null,

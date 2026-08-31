@@ -1,4 +1,5 @@
 import { anatomyConnectPuzzles, type AnatomyConnectPuzzleEntry } from "@/lib/anatomy-connect-puzzles";
+import { todayKeyInZone } from "@/lib/day";
 
 const DAY_MS = 86400000;
 // Same fixed, arbitrary epoch as lib/differential-cases.ts/lib/trivia-static.ts — keeps
@@ -11,15 +12,18 @@ function dayIndexForDateKey(dateKey: string): number {
   return Math.floor((ms - EPOCH_MS) / DAY_MS);
 }
 
-/** YYYY-MM-DD for "today" — the unit the daily puzzle rotates on. */
-export function getDateKey(): string {
-  return new Date().toISOString().slice(0, 10);
+/** YYYY-MM-DD for "today" in the reader's own time zone — the unit the daily puzzle rotates on.
+ *  Takes the zone explicitly (see lib/user-time-zone.ts for where a request gets one)
+ *  rather than reading the server's clock: this ran off UTC on a UTC server, so the day
+ *  rolled over mid-evening for every reader in the Americas — see lib/day.ts. */
+export function getDateKey(timeZone: string): string {
+  return todayKeyInZone(timeZone);
 }
 
 /** Today's puzzle — a fixed cyclic index over anatomyConnectPuzzles, stable for every
  *  reader on a given calendar day and stable as the bank grows. */
-export function getTodaysPuzzle(): AnatomyConnectPuzzleEntry {
-  const dayIndex = dayIndexForDateKey(getDateKey());
+export function getTodaysPuzzle(timeZone: string): AnatomyConnectPuzzleEntry {
+  const dayIndex = dayIndexForDateKey(getDateKey(timeZone));
   const total = anatomyConnectPuzzles.length;
   const index = ((dayIndex % total) + total) % total;
   return anatomyConnectPuzzles[index];
