@@ -14,6 +14,7 @@ import { last7DateKeys } from "@/lib/games";
 import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumProgressChart";
 import { AtriumThisWeekCard } from "@/components/AtriumThisWeekCard";
 import { AtriumCalendar } from "@/components/AtriumCalendar";
+import { AtriumFriendsStrip } from "@/components/AtriumFriendsStrip";
 import { StudentGate } from "@/components/student/StudentGate";
 import {
   FileTextIcon,
@@ -211,11 +212,22 @@ export default async function StudentAtriumPage() {
   const todayKey = todayDateKey(await getTimeZone(user));
   const weekDateKeys = last7DateKeys(todayKey);
 
-  // connectionIds and nextCalendarEvent are still fetched here, unchanged (Study Group and
-  // Upcoming were Quick Links entries the dashboard redesign removed — see
-  // atrium-supporting-row below — but nothing about the fetch itself changed, this just
-  // stops binding results neither the redesigned page nor anything else here reads).
-  const [, , weekCompletions, boardActivityRows, , thisWeekAssignments, syllabusCount, monthAssignments, canvasConnection] = await Promise.all([
+  // nextCalendarEvent is still fetched here, unchanged (Study Group and Upcoming were Quick
+  // Links entries the dashboard redesign removed — see atrium-supporting-row below — but
+  // nothing about the fetch itself changed, this just stops binding a result neither the
+  // redesigned page nor anything else here reads). connectionIds, unlike that one, is read
+  // now — see the friends-strip fetch below.
+  const [
+    ,
+    connectionIds,
+    weekCompletions,
+    boardActivityRows,
+    ,
+    thisWeekAssignments,
+    syllabusCount,
+    monthAssignments,
+    canvasConnection,
+  ] = await Promise.all([
     prisma.dailyCompletion.findFirst({
       where: { userId: user.id, dateKey: todayKey, kind: { in: ["boardQuestion", "boardTerm"] } },
     }),
@@ -250,6 +262,13 @@ export default async function StudentAtriumPage() {
     prisma.canvasConnection.findUnique({ where: { userId: user.id }, select: { id: true } }),
   ]);
   const hasAssignmentSource = syllabusCount > 0 || canvasConnection != null;
+
+  // Your People (see components/AtriumFriendsStrip.tsx) — capped at 8 faces so the strip
+  // stays one row; the component's own "+N more" reads off connectionIds.length (the real,
+  // uncapped count) rather than the capped array it's handed, so it stays honest past 8.
+  const friends = connectionIds.length
+    ? await prisma.user.findMany({ where: { id: { in: connectionIds } }, select: { id: true, name: true }, take: 8 })
+    : [];
 
   const daysCompletedThisWeek = new Set(boardActivityRows.map((r) => r.dateKey)).size;
 
@@ -325,6 +344,8 @@ export default async function StudentAtriumPage() {
           </p>
         )}
       </div>
+
+      <AtriumFriendsStrip friends={friends} totalCount={connectionIds.length} />
 
       {phase.type === "clinical" && phase.trimester && (
         <div className="atrium-rotation-banner">

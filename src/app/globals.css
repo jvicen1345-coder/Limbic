@@ -11861,3 +11861,81 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   background: var(--color-danger);
   flex-shrink: 0;
 }
+
+/* Your People (components/AtriumFriendsStrip.tsx) — sits right under the Atrium's greeting,
+   before the rotation banner/stat grid (see app/(app)/student/page.tsx), so the reader sees
+   actual classmates before any numbers. Warm-pill treatment on --atrium-tint (the same gold
+   this page already tints its surfaces with, see .app-root--atrium above) rather than the
+   sitewide --color-accent, so it reads as part of the Atrium's own warmth, not a generic
+   "connections" widget dropped in from elsewhere. */
+.atrium-friends-strip {
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+.atrium-friends-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--atrium-tint);
+  margin-bottom: 10px;
+}
+.atrium-friends-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.atrium-friend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  width: 56px;
+  text-decoration: none;
+  color: var(--color-text);
+}
+.atrium-friend .avatar {
+  background: color-mix(in srgb, var(--atrium-tint) 22%, var(--atrium-surface-2));
+  color: color-mix(in srgb, var(--atrium-tint) 70%, var(--color-text));
+  border: 2px solid var(--atrium-surface);
+  box-shadow: 0 0 0 1px var(--atrium-border);
+  transition: transform 0.15s ease;
+}
+.atrium-friend:hover .avatar { transform: translateY(-2px); }
+.atrium-friend-name {
+  font-size: 11.5px;
+  color: var(--color-neutral-700);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.atrium-friend--more .atrium-friend-more-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--atrium-tint);
+  background: transparent;
+  border: 2px dashed var(--atrium-border);
+  transition: transform 0.15s ease;
+}
+.atrium-friend--more:hover .atrium-friend-more-circle { transform: translateY(-2px); }
+
+.atrium-friends-strip--empty { text-align: left; }
+.atrium-friends-empty-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; margin: 0 0 4px; }
+.atrium-friends-empty-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; margin: 0 0 12px; max-width: 480px; }
+.atrium-friends-empty-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.atrium-friends-empty-link { font-size: 13px; font-weight: 600; color: var(--atrium-tint); text-decoration: none; }
+.atrium-friends-empty-link:hover { text-decoration: underline; }
