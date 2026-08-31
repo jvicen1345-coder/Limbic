@@ -12035,8 +12035,24 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .atrium-week-schedule-event-title { display: block; font-weight: 600; }
 .atrium-week-schedule-event-time { display: block; font-size: 10px; color: var(--color-neutral-700); margin-top: 1px; }
+.atrium-week-schedule-event-location { display: block; font-size: 10px; color: var(--color-neutral-700); opacity: 0.8; margin-top: 1px; overflow-wrap: anywhere; }
 @media (max-width: 700px) {
-  .atrium-week-schedule-grid { grid-template-columns: repeat(5, 84px); overflow-x: auto; padding-bottom: 2px; }
+  /* Wider than the 84px this strip shipped with (still narrower than desktop's flexible
+     1fr columns, this is scroll-x, not squeeze-to-fit) — "make it look better on mobile"
+     after room numbers made a long location string (e.g. "Health Sciences Bldg, Rm 204")
+     wrap 4 lines deep at 84px, blowing each day column to a different, lopsided height. The
+     line-clamp rules below on -title/-location do the rest: long text degrades to an
+     ellipsis instead of stretching the card, so every column in a row stays the same
+     height regardless of which day happens to have the longest class name. */
+  .atrium-week-schedule-grid { grid-template-columns: repeat(5, 108px); overflow-x: auto; padding-bottom: 2px; scroll-snap-type: x proximity; }
+  .atrium-week-schedule-col { scroll-snap-align: start; }
+  .atrium-week-schedule-event-title,
+  .atrium-week-schedule-event-location {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
 /* Syllabus meeting-pattern editor (components/student/SyllabiManager.tsx) — the fallback UI
@@ -12109,3 +12125,4 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .syllabi-meeting-time-day { font-size: 12.5px; font-weight: 600; color: var(--color-neutral-700); width: 32px; flex-shrink: 0; }
 .syllabi-meeting-time-input { max-width: 130px; }
 .syllabi-meeting-time-sep { font-size: 12px; color: var(--color-neutral-700); }
+.syllabi-meeting-room { margin-top: 10px; max-width: 220px; }

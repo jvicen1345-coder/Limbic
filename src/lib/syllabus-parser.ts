@@ -18,6 +18,7 @@ Extract two things from the syllabus text provided:
 Return a single JSON object with exactly these fields:
 - meetingDays: array of strings, each one of ${JSON.stringify(MEETING_DAY_CODES)} — every day the class meets each week, or null if no clear recurring pattern is stated
 - meetingTimes: an object whose keys are entries from meetingDays and whose values are an object {"start": "HH:MM", "end": "HH:MM"} in 24-hour time (e.g. {"Mon": {"start": "10:00", "end": "10:50"}, "Fri": {"start": "08:30", "end": "09:20"}}) — the same class can meet at a different time on different days, so give each day in meetingDays its own start/end if the text supports it. If every day shares one stated time, use that same start/end for every key. Omit a day's key entirely if no time is stated for it specifically (do not guess). Null if meetingDays is null or no time is stated for any day.
+- location: string — the room, building, or location the class meets in, if stated alongside the meeting pattern (e.g. "Room 204", "Health Sciences Bldg 3rd Floor"). Null if meetingDays is null or no location is stated.
 - assignments: array of objects, each with exactly these fields:
   - title: string — the assignment or exam name
   - dueDate: string — the due date in YYYY-MM-DD format — if no year is specified assume the current academic year
@@ -61,6 +62,10 @@ export interface ParsedSyllabus {
    *  can be missing a key here even when meetingDays isn't null (no time stated for that
    *  specific day). Null whenever meetingDays is null. */
   meetingTimes: Record<string, MeetingDayTime> | null;
+  /** Room/building the class meets in, as stated alongside the meeting pattern — same
+   *  "display only, no guessing" reasoning as meetingTimes. Null whenever meetingDays is
+   *  null or no location was stated. */
+  location: string | null;
   assignments: ParsedAssignment[];
 }
 
@@ -150,6 +155,7 @@ Extract the meeting pattern and all assignments, and return as a single JSON obj
     return {
       meetingDays,
       meetingTimes: meetingDays ? parseMeetingTimes(v.meetingTimes, meetingDays) : null,
+      location: meetingDays && typeof v.location === "string" && v.location.trim() ? v.location.trim() : null,
       assignments: Array.isArray(v.assignments) ? v.assignments.filter(isParsedAssignment) : [],
     };
   } catch (error) {
