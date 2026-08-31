@@ -612,8 +612,13 @@ function GuidelineCard({ g }: { g: Guideline }) {
   const docType = g.docType ?? "CPG";
   return (
     <div className="card elev-sm">
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
-        <div className="pro-calc-title">{g.condition}</div>
+      {/* flexWrap lets the tag drop onto its own line instead of overflowing: some of these
+          labels are long ("Concussion in Sport Group Consensus Statement"), and with a
+          no-shrink tag on one line the card ran past the right edge of a phone — where nothing
+          scrolls sideways, so the label was cut off — while squeezing the title beside it down
+          to roughly one word per line. Wide screens are unchanged: the tag still sits right. */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+        <div className="pro-calc-title" style={{ minWidth: 0 }}>{g.condition}</div>
         <span className={`tag ${docType === "CPG" ? "tag-evidence-cpg" : "tag-evidence-review"}`} style={{ flexShrink: 0 }}>
           {g.org} {docType}
         </span>

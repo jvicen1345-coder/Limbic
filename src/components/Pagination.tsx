@@ -2,19 +2,12 @@
 
 import Link from "next/link";
 
+/* Only the state-dependent half stays inline. Size, spacing and shape moved to
+   `.pagination-link` in globals.css so the touch-target rules there can reach them — as inline
+   styles they were stuck at 32×32 with a 4px gap on every device, which is a lot of
+   mis-taps for a control whose whole job is picking one number out of a row of them. */
 const linkStyle = (active: boolean, disabled: boolean): React.CSSProperties => ({
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  minWidth: 32,
-  height: 32,
-  padding: "0 8px",
-  borderRadius: "var(--radius-md)",
-  border: "none",
-  font: "inherit",
-  fontSize: 13,
   fontWeight: active ? 700 : 500,
-  textDecoration: "none",
   background: active ? "var(--color-accent-100)" : "transparent",
   color: disabled ? "var(--color-neutral-500)" : active ? "var(--color-accent-700)" : "var(--color-text)",
   pointerEvents: disabled ? "none" : undefined,
@@ -43,7 +36,13 @@ export function Pagination({ page, totalPages, basePath, onPageChange }: Paginat
     const active = p === page;
     if (basePath) {
       return (
-        <Link key={key} href={`${basePath}?page=${p}`} aria-current={active ? "page" : undefined} style={linkStyle(active, disabled)}>
+        <Link
+          key={key}
+          href={`${basePath}?page=${p}`}
+          className="pagination-link"
+          aria-current={active ? "page" : undefined}
+          style={linkStyle(active, disabled)}
+        >
           {label}
         </Link>
       );
@@ -52,6 +51,7 @@ export function Pagination({ page, totalPages, basePath, onPageChange }: Paginat
       <button
         key={key}
         type="button"
+        className="pagination-link"
         disabled={disabled}
         aria-current={active ? "page" : undefined}
         onClick={() => onPageChange?.(p)}
@@ -63,7 +63,7 @@ export function Pagination({ page, totalPages, basePath, onPageChange }: Paginat
   };
 
   return (
-    <nav aria-label="Pagination" style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 22, flexWrap: "wrap" }}>
+    <nav aria-label="Pagination" className="pagination-nav">
       {item(Math.max(1, page - 1), "‹ Prev", "prev", page === 1)}
       {pages.map((p) => item(p, p, `page-${p}`))}
       {item(Math.min(totalPages, page + 1), "Next ›", "next", page === totalPages)}
