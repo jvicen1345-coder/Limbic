@@ -180,10 +180,19 @@ export function SyllabiManager({
   const [manualSyllabusId, setManualSyllabusId] = useState<string>(syllabi[0]?.id ?? NEW_COURSE);
   const [manualNewCode, setManualNewCode] = useState("");
   const [manualNewName, setManualNewName] = useState("");
+  // Optional — set right when a new course is created, instead of the extra "save, then find
+  // the card below, then click Edit" round trip that was the only way to do this before (see
+  // the per-card editor further down, still there for correcting/removing a pattern later).
+  const [manualMeetingDays, setManualMeetingDays] = useState<string[]>([]);
+  const [manualMeetingTime, setManualMeetingTime] = useState("");
   const [manualTitle, setManualTitle] = useState("");
   const [manualDueDate, setManualDueDate] = useState("");
   const [manualCategory, setManualCategory] = useState<string>(CATEGORIES[1]);
   const [manualError, setManualError] = useState<string | null>(null);
+
+  function toggleManualMeetingDay(day: string) {
+    setManualMeetingDays((prev) => (prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]));
+  }
 
   function handleManualSave() {
     setManualError(null);
@@ -208,6 +217,9 @@ export function SyllabiManager({
           return;
         }
         syllabusId = created.syllabus.id;
+        if (manualMeetingDays.length > 0) {
+          await updateSyllabusMeetingPattern(syllabusId, manualMeetingDays, manualMeetingTime);
+        }
       }
       const result = await addManualAssignment(syllabusId, manualTitle, manualDueDate, manualCategory);
       if ("error" in result) {
@@ -217,6 +229,8 @@ export function SyllabiManager({
       setManualTitle("");
       setManualDueDate("");
       setManualCategory(CATEGORIES[1]);
+      setManualMeetingDays([]);
+      setManualMeetingTime("");
       setManualSyllabusId(syllabusId);
       setManualNewCode("");
       setManualNewName("");
@@ -517,6 +531,30 @@ export function SyllabiManager({
                       value={manualNewName}
                       onChange={(e) => setManualNewName(e.target.value)}
                     />
+                  </div>
+                  <div className="field" style={{ gridColumn: "1 / -1" }}>
+                    <label>Class meets each week (optional)</label>
+                    <div className="syllabi-meeting-days">
+                      {MEETING_DAYS_DISPLAY_ORDER.map((day) => (
+                        <label
+                          key={day}
+                          className={manualMeetingDays.includes(day) ? "syllabi-meeting-day syllabi-meeting-day--on" : "syllabi-meeting-day"}
+                        >
+                          <input type="checkbox" checked={manualMeetingDays.includes(day)} onChange={() => toggleManualMeetingDay(day)} />
+                          {day}
+                        </label>
+                      ))}
+                    </div>
+                    {manualMeetingDays.length > 0 && (
+                      <input
+                        className="input syllabi-meeting-time-input"
+                        style={{ marginTop: 8 }}
+                        type="text"
+                        placeholder="Time (optional), e.g. 9:00-9:50 AM"
+                        value={manualMeetingTime}
+                        onChange={(e) => setManualMeetingTime(e.target.value)}
+                      />
+                    )}
                   </div>
                 </>
               )}
