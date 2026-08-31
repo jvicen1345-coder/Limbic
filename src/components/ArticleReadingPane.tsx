@@ -188,7 +188,13 @@ export function ArticleReadingPane({
       )}
 
       {hasResearchAccess && (article.doi || article.sourceUrl) && (
-        <ArticleResearchPanel articleDoi={article.doi ?? null} articleSourceUrl={article.sourceUrl ?? null} />
+        <ArticleResearchPanel
+          articleId={article.id}
+          articleDoi={article.doi ?? null}
+          articleSourceUrl={article.sourceUrl ?? null}
+          articleTitle={article.title}
+          articleSummary={article.summary}
+        />
       )}
 
       {article.tags.length > 0 && (
