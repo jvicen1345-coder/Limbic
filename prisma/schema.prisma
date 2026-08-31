@@ -2069,3 +2069,18 @@ model InstitutionalOutreach {
 
   program DPTProgram @relation(fields: [programId], references: [id])
 }
+
+// One cached generalizability score per article, for the automatic score the article
+// detail page's "Analyze This Study" panel generates the moment it's expanded (see
+// app/actions/research-literacy.ts scoreArticleGeneralizability,
+// components/ArticleResearchPanel.tsx). Keyed by the article's own id — articles are
+// static/feed content, not a Prisma model, so this is a plain unique string rather than a
+// relation. Never expires and is never invalidated: a published study's population,
+// setting, sample size and follow-up don't change, so the first score is the only score.
+// Second and later readers get it back with no Anthropic call and no loading state.
+model GeneralizabilityCache {
+  id        String   @id @default(cuid())
+  articleId String   @unique
+  scoreData Json
+  scoredAt  DateTime @default(now())
+}

@@ -11636,3 +11636,228 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
    Canvas admin instead of leaving them stuck on a "New Access Token" button that doesn't
    exist for them. Reuses .canvas-connect-desc's sizing/line-height, just quieter. */
 .canvas-connect-desc--muted { color: var(--color-neutral-700); font-size: 12.5px; margin-top: -8px; }
+
+/* ============================================================================
+   Automatic generalizability score — the article detail panel's first tool (see
+   components/ArticleResearchPanel.tsx, app/actions/research-literacy.ts). Appended,
+   .gen-score- prefixed; nothing above is rewritten. Replaces the patient-description form
+   that used to live in that panel, so no existing .article-research-panel-* rule changed —
+   the ones the removed form used (.article-research-panel-field etc.) are still in use by
+   the Article Histogram Explorer below it and by other panels.
+
+   Full width at every breakpoint like the rest of the panel, so it needs no mobile media
+   query of its own: the scale bar and the factor rows are flex/percentage-based, and the
+   one fixed-width element (the 60px mini bar) is inside a row that wraps its text below it.
+   ============================================================================ */
+
+.gen-score-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gen-score-cached-pill {
+  font-size: var(--fs-10);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-neutral-700);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+
+/* Loading — a shimmer bar standing in for the score that's being generated. */
+@keyframes gen-score-shimmer {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.4; }
+}
+.gen-score-loading {
+  margin-top: 14px;
+}
+.gen-score-shimmer-bar {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-divider);
+  animation: gen-score-shimmer 1.5s ease-in-out infinite;
+}
+.gen-score-loading-text {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--color-neutral-700);
+  margin: 8px 0 0;
+}
+
+.gen-score-error-wrap {
+  margin-top: 12px;
+}
+.gen-score-error {
+  font-size: 13px;
+  color: var(--color-danger);
+  margin: 0;
+}
+
+/* Shared link-styled button — "Try again" and "Show breakdown". */
+.gen-score-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.gen-score-link:hover {
+  color: var(--color-text);
+}
+.gen-score-breakdown-toggle {
+  align-self: flex-start;
+  margin-top: 14px;
+}
+
+.gen-score-result {
+  display: flex;
+  flex-direction: column;
+  margin-top: 14px;
+}
+
+.gen-score-headline {
+  text-align: center;
+}
+.gen-score-number {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.gen-score-label {
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* The 0-10 scale. The fill and the dot are positioned from the score, so both take their
+   width/left inline from the component; everything else lives here. */
+.gen-score-scale {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-divider);
+  margin-top: 14px;
+}
+.gen-score-scale-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+.gen-score-scale-dot {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--color-divider);
+  transform: translate(-50%, -50%);
+}
+.gen-score-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-10);
+  color: var(--color-neutral-700);
+  margin-top: 6px;
+}
+
+.gen-score-summary {
+  font-size: 13px;
+  line-height: 1.6;
+  font-style: italic;
+  color: var(--color-neutral-700);
+  margin: 12px 0 0;
+}
+
+.gen-score-factors {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-divider);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gen-score-factor-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gen-score-factor-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.gen-score-factor-bar {
+  width: 60px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-divider);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.gen-score-factor-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+}
+.gen-score-factor-value {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+
+/* One line by default so six factors stay scannable; the full sentence unfurls on hover
+   (and on keyboard focus of the row, so it isn't pointer-only). */
+.gen-score-factor-finding {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  margin: 4px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gen-score-factor:hover .gen-score-factor-finding,
+.gen-score-factor:focus-within .gen-score-factor-finding {
+  white-space: normal;
+  overflow: visible;
+}
+.gen-score-factor-impact {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--color-neutral-700);
+  margin: 2px 0 0;
+}
+
+.gen-score-limitations {
+  margin-top: 16px;
+}
+.gen-score-limitation-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.gen-score-limitation-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+.gen-score-limitation-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  flex-shrink: 0;
+}

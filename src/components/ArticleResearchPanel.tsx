@@ -1,19 +1,12 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
-import { checkGeneralizabilityAction } from "@/app/actions/generalizability";
-import type { GeneralizabilityResult } from "@/lib/generalizability";
+import { useCallback, useMemo, useState, useTransition } from "react";
+import { scoreArticleGeneralizability } from "@/app/actions/research-literacy";
+import type { GeneralizabilityScore } from "@/lib/generalizability-score";
 import { extractArticleVariablesAction } from "@/app/actions/article-variables";
 import type { ArticleVariablesResult } from "@/lib/article-variables";
 import { buildHistogramBins, type ArticleVariable } from "@/lib/histogram";
 import { ZapIcon, ChevronRightIcon, ExternalLinkIcon } from "@/components/icons";
-
-const CATEGORY_CLASS: Record<GeneralizabilityResult["category"], string> = {
-  Poor: "wellness-badge-poor",
-  Fair: "wellness-badge-fair",
-  Good: "wellness-badge-good",
-  Excellent: "wellness-badge-excellent",
-};
 
 const EMPTY_STUDY_MESSAGE = "Paste a PubMed link, DOI, or PMID to analyze.";
 const ANALYZE_ERROR_MESSAGE = "Could not analyze this study. Try editing the study field and checking again.";
@@ -36,27 +29,31 @@ function LoadingPlaceholder() {
 
 /** Collapsible "Analyze This Study" panel on the article detail page (see
  *  components/ArticleReadingPane.tsx, positioned between the read button section and the
- *  Topics pills) — reuses the exact same server actions, result types, and histogram-bin
- *  math as the standalone Generalizability Checker / Article Histogram Explorer on
- *  /pro/research-literacy (see components/pro/GeneralizabilityChecker.tsx,
- *  components/pro/ArticleHistogramExplorer.tsx, lib/histogram.ts) — no LLM-calling or
- *  scoring logic is duplicated here, only the two actions are called directly and their
- *  results rendered with the same shared .wellness-badge/.histogram-* classes those
- *  components already use. The surrounding shell (per-tool study fields, full-width 44px
- *  buttons, inline field validation) is its own layout, distinct from the standalone page's
- *  single-shared-field ArticleToolsPanel, since this is a compact inline panel rather than a
- *  dedicated page.
+ *  Topics pills). Two tools, which behave deliberately differently:
  *
- *  Both tools' Study fields are pre-filled independently from the same computed value (DOI
- *  preferred over sourceUrl) but are otherwise fully independent state — editing one never
- *  touches the other, matching the two tools' own independent studyInput on the standalone
- *  page. */
+ *  1. The generalizability score runs *automatically* the first time the panel is expanded —
+ *     no field, no button, no patient description. It scores this article against typical PT
+ *     practice across six fixed domains (see lib/generalizability-score.ts) and is cached
+ *     forever per article, so the second reader to open the same article sees the score
+ *     instantly with a "Cached" pill and no Anthropic call. It is a different tool from the
+ *     Generalizability Checker on /pro/research-literacy — that one compares a study against
+ *     a patient the reader describes, and is completely untouched by this panel.
+ *  2. The Article Histogram Explorer is unchanged: still an on-demand tool with its own
+ *     pre-filled Study field (DOI preferred over sourceUrl) and its own Find Variables
+ *     button, reusing the same server action, result type and histogram-bin math as the
+ *     standalone components/pro/ArticleHistogramExplorer.tsx. */
 export function ArticleResearchPanel({
+  articleId,
   articleDoi,
   articleSourceUrl,
+  articleTitle,
+  articleSummary,
 }: {
+  articleId: string;
   articleDoi: string | null;
   articleSourceUrl: string | null;
+  articleTitle: string;
+  articleSummary: string;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -65,13 +62,11 @@ export function ArticleResearchPanel({
     [articleDoi, articleSourceUrl]
   );
 
-  // Tool 1 — Generalizability Checker
-  const [genStudy, setGenStudy] = useState(studyDefault);
-  const [genPatient, setGenPatient] = useState("");
-  const [genResult, setGenResult] = useState<GeneralizabilityResult | null>(null);
-  const [genFieldError, setGenFieldError] = useState<string | null>(null);
-  const [genError, setGenError] = useState<string | null>(null);
-  const [genPending, startGenTransition] = useTransition();
+  // Tool 1 — automatic generalizability score
+  const [scoreResult, setScoreResult] = useState<GeneralizabilityScore | null>(null);
+  const [scoreLoading, setScoreLoading] = useState(false);
+  const [scoreError, setScoreError] = useState<string | null>(null);
+  const [breakdownOpen, setBreakdownOpen] = useState(false);
 
   // Tool 2 — Article Histogram Explorer
   const [histStudy, setHistStudy] = useState(studyDefault);
@@ -81,26 +76,30 @@ export function ArticleResearchPanel({
   const [histError, setHistError] = useState<string | null>(null);
   const [histPending, startHistTransition] = useTransition();
 
-  function handleCheckGeneralizability() {
-    setGenFieldError(null);
-    setGenError(null);
-    if (!genStudy.trim()) {
-      setGenFieldError(EMPTY_STUDY_MESSAGE);
-      return;
+  const runScore = useCallback(async () => {
+    setScoreLoading(true);
+    setScoreError(null);
+
+    const res = await scoreArticleGeneralizability(articleId, articleDoi, articleSourceUrl, articleTitle, articleSummary);
+
+    if (res.error) {
+      setScoreError(res.error);
+    } else if (res.result) {
+      setScoreResult(res.result);
     }
-    if (!genPatient.trim()) {
-      setGenFieldError("Describe your patient or population to check generalizability.");
-      return;
-    }
-    startGenTransition(async () => {
-      const res = await checkGeneralizabilityAction(genStudy, genPatient);
-      if (res.ok) {
-        setGenResult(res);
-      } else {
-        setGenResult(null);
-        setGenError(ANALYZE_ERROR_MESSAGE);
-      }
-    });
+
+    setScoreLoading(false);
+  }, [articleId, articleDoi, articleSourceUrl, articleTitle, articleSummary]);
+
+  /** Expanding the panel is what triggers the score — there's no button to press. Scored at
+   *  most once per mount: an already-scored article (or one still in flight) is never
+   *  re-requested when the reader collapses and re-opens the panel. A previous *failure* is
+   *  not retried automatically either; the error state offers a Try again link instead, so a
+   *  study whose abstract genuinely can't be scored doesn't re-call on every open. */
+  function handleExpand() {
+    setExpanded(true);
+    if (scoreResult || scoreLoading || scoreError) return;
+    void runScore();
   }
 
   function handleFindVariables() {
@@ -130,7 +129,7 @@ export function ArticleResearchPanel({
       <button
         type="button"
         className="article-research-panel-toggle"
-        onClick={() => setExpanded((v) => !v)}
+        onClick={() => (expanded ? setExpanded(false) : handleExpand())}
         aria-expanded={expanded}
       >
         <span className="article-research-panel-toggle-left">
@@ -147,99 +146,99 @@ export function ArticleResearchPanel({
       {expanded && (
         <div className="article-research-panel-body">
           <div className="article-research-panel-section">
-            <div className="article-research-panel-kicker">Generalizability Checker</div>
-            <p className="article-research-panel-desc">
-              Describe your patient below and check how well this study&rsquo;s findings likely transfer.
-            </p>
-
-            <div className="article-research-panel-field">
-              <label htmlFor="research-panel-gen-study">Study</label>
-              <textarea
-                id="research-panel-gen-study"
-                className="input"
-                rows={2}
-                value={genStudy}
-                onChange={(e) => setGenStudy(e.target.value)}
-              />
-              {studyDefault && <p className="article-research-panel-prefill-note">Loaded from this article — edit if needed</p>}
+            <div className="gen-score-header">
+              <div className="article-research-panel-kicker">Generalizability Score</div>
+              {scoreResult?.cached && <span className="gen-score-cached-pill">Cached</span>}
             </div>
 
-            <div className="article-research-panel-field">
-              <label htmlFor="research-panel-gen-patient">Your patient or population</label>
-              <textarea
-                id="research-panel-gen-patient"
-                className="input"
-                rows={3}
-                placeholder="e.g. 68-year-old with chronic low back pain, prior L4-L5 fusion"
-                value={genPatient}
-                onChange={(e) => setGenPatient(e.target.value)}
-              />
-            </div>
-
-            {genFieldError && <p className="article-research-panel-field-error">{genFieldError}</p>}
-
-            <button
-              type="button"
-              className="btn btn-primary article-research-panel-submit"
-              disabled={genPending}
-              onClick={handleCheckGeneralizability}
-            >
-              {genPending ? "Checking..." : "Check Generalizability"}
-            </button>
-
-            {genPending ? (
-              <LoadingPlaceholder />
-            ) : genError ? (
-              <p className="article-research-panel-error">{genError}</p>
-            ) : genResult ? (
-              <div className="wellness-calc-result">
-                {genResult.resolvedArticle && (
-                  <a
-                    href={genResult.resolvedArticle.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "var(--color-accent-700)", marginBottom: 10 }}
-                  >
-                    Found: {genResult.resolvedArticle.title} — {genResult.resolvedArticle.journal}
-                    <ExternalLinkIcon size={11} />
-                  </a>
-                )}
-
-                <div className="wellness-calc-result-row">
-                  <span className="wellness-calc-result-value">{genResult.score}/4</span>
-                  <span className={`wellness-badge ${CATEGORY_CLASS[genResult.category]}`}>{genResult.category}</span>
+            {scoreLoading ? (
+              <div className="gen-score-loading">
+                <div className="gen-score-shimmer-bar" aria-hidden="true" />
+                <p className="gen-score-loading-text">Analyzing study population, setting, and design...</p>
+              </div>
+            ) : scoreError ? (
+              <div className="gen-score-error-wrap">
+                <p className="gen-score-error">{scoreError}</p>
+                <button type="button" className="gen-score-link" onClick={() => void runScore()}>
+                  Try again
+                </button>
+              </div>
+            ) : scoreResult ? (
+              <div className="gen-score-result">
+                <div className="gen-score-headline">
+                  <div className="gen-score-number" style={{ color: scoreResult.color }}>
+                    {scoreResult.overallScore.toFixed(1)}
+                  </div>
+                  <div className="gen-score-label" style={{ color: scoreResult.color }}>
+                    {scoreResult.label}
+                  </div>
                 </div>
 
-                <p style={{ fontSize: 12.5, color: "var(--color-neutral-600)", margin: "10px 0 0", fontStyle: "italic" }}>
-                  {genResult.studyPopulationSummary}
-                </p>
-                <p style={{ fontSize: 13.5, color: "var(--color-neutral-700)", margin: "8px 0 0", lineHeight: 1.6 }}>
-                  {genResult.rationale}
-                </p>
+                <div className="gen-score-scale">
+                  <div
+                    className="gen-score-scale-fill"
+                    style={{ width: `${scoreResult.overallScore * 10}%`, background: scoreResult.color }}
+                  />
+                  <span
+                    className="gen-score-scale-dot"
+                    style={{ left: `${scoreResult.overallScore * 10}%`, borderColor: scoreResult.color }}
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="gen-score-scale-labels">
+                  <span>Less generalizable</span>
+                  <span>More generalizable</span>
+                </div>
 
-                {genResult.matches.length > 0 && (
-                  <div style={{ marginTop: 12 }}>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: "var(--color-vitals-mobility)" }}>What matches</div>
-                    <ul style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "4px 0 0", paddingLeft: 18 }}>
-                      {genResult.matches.map((m) => (
-                        <li key={m}>{m}</li>
+                <p className="gen-score-summary">{scoreResult.summary}</p>
+
+                {breakdownOpen && (
+                  <>
+                    <div className="gen-score-factors">
+                      {scoreResult.factors.map((f) => (
+                        <div key={f.name} className="gen-score-factor">
+                          <div className="gen-score-factor-top">
+                            <span className="gen-score-factor-name">{f.name}</span>
+                            <span className="gen-score-factor-bar">
+                              <span
+                                className="gen-score-factor-bar-fill"
+                                style={{ width: `${f.score * 10}%`, background: scoreResult.color }}
+                              />
+                            </span>
+                            <span className="gen-score-factor-value">{f.score}</span>
+                          </div>
+                          <p className="gen-score-factor-finding">{f.finding}</p>
+                          <p className="gen-score-factor-impact">{f.impact}</p>
+                        </div>
                       ))}
-                    </ul>
-                  </div>
+                    </div>
+
+                    <div className="gen-score-limitations">
+                      <div className="article-research-panel-kicker">Generalizability limitations</div>
+                      <ul className="gen-score-limitation-list">
+                        {scoreResult.limitations.map((l) => (
+                          <li key={l}>
+                            <span className="gen-score-limitation-dot" aria-hidden="true" />
+                            {l}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
                 )}
 
-                {genResult.mismatches.length > 0 && (
-                  <div style={{ marginTop: 12 }}>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: "var(--color-danger)" }}>What doesn&rsquo;t</div>
-                    <ul style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "4px 0 0", paddingLeft: 18 }}>
-                      {genResult.mismatches.map((m) => (
-                        <li key={m}>{m}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                <button
+                  type="button"
+                  className="gen-score-link gen-score-breakdown-toggle"
+                  onClick={() => setBreakdownOpen((v) => !v)}
+                  aria-expanded={breakdownOpen}
+                >
+                  {breakdownOpen ? "Hide breakdown" : "Show breakdown"}
+                </button>
 
-                <p className="article-research-panel-disclaimer">Support judgment only — not a substitute for your clinical reasoning</p>
+                <p className="article-research-panel-disclaimer">
+                  Scored from the available abstract. Read the full methods before applying to patient care.
+                </p>
               </div>
             ) : null}
           </div>
