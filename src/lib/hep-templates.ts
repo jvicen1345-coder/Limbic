@@ -32,7 +32,8 @@ export const HEP_TEMPLATE_BODY_PART_NOTE: Partial<Record<HepTemplateBodyPart, st
 };
 
 // Same shape as HepBuilder's DraftExercise, minus the client-only numeric `id` — what
-// actually gets persisted as HEPTemplate.exercises.
+// actually gets persisted as HEPTemplate.exercises, PatientHEPAssignment.exercises, and
+// SessionExerciseLog.exercises (see each model's own comment in schema.prisma).
 export interface HepTemplateExercise {
   name: string;
   sets: string;
@@ -40,4 +41,24 @@ export interface HepTemplateExercise {
   notes: string;
   imageUrl: string;
   videoUrl: string;
+}
+
+/** Safely turns one of the Json exercise columns above into HepTemplateExercise[] — same
+ *  defensive shape-coercion loadHepTemplateAction (app/actions/hep.ts) already used for
+ *  HEPTemplate.exercises, pulled out here so the Clinician Dashboard's HEP/Session Exercises
+ *  reads (a Json? field that can be null, and was never runtime-validated at write time) can
+ *  share it instead of re-deriving the same map/coalesce logic per call site. */
+export function parseHepExercises(raw: unknown): HepTemplateExercise[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((ex) => {
+    const e = ex as Partial<HepTemplateExercise>;
+    return {
+      name: e.name ?? "",
+      sets: e.sets ?? "",
+      reps: e.reps ?? "",
+      notes: e.notes ?? "",
+      imageUrl: e.imageUrl ?? "",
+      videoUrl: e.videoUrl ?? "",
+    };
+  });
 }

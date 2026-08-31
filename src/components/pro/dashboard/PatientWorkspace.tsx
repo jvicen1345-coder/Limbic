@@ -6,6 +6,7 @@ import { bodyRegionTagClass } from "@/lib/clinician-dashboard-types";
 import { PreVisitBriefSection } from "./PreVisitBriefSection";
 import { OutcomeMeasuresSection, type OutcomeMeasuresSectionHandle } from "./OutcomeMeasuresSection";
 import { HEPSection } from "./HEPSection";
+import { SessionExerciseSection } from "./SessionExerciseSection";
 import { ClinicalNotesSection } from "./ClinicalNotesSection";
 import { MorningRounds } from "./MorningRounds";
 import { VisitLogBanner } from "./VisitLogBanner";
@@ -159,6 +160,7 @@ function ActiveWorkspace({
         actionsRef={outcomeActionsRef}
       />
       <HEPSection patient={patient} availableHEPs={availableHEPs} onChanged={onChanged} />
+      <SessionExerciseSection patient={patient} onChanged={onChanged} />
       <ForceLabSummary patientId={patient.id} patientCode={patient.patientCode} forceUnit={forceUnit} />
       <ThreeRepMaxCard patientId={patient.id} patientCode={patient.patientCode} />
       <ClinicalNotesSection patient={patient} onChanged={onChanged} />
