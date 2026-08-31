@@ -34,6 +34,8 @@ import { getThisWeekAssignments, getMonthAssignments } from "@/app/actions/sylla
 import { getWeekRecommendations, getThisWeekDateRange } from "@/lib/atrium-recommendations";
 import { getUserProgram } from "@/app/actions/dpt-programs";
 import { getTimeZone } from "@/lib/user-time-zone";
+import { dateToLocalIso } from "@/lib/limbic-calendar";
+import { AtriumWeekSchedule } from "@/components/AtriumWeekSchedule";
 
 // A safe all-zero phase for a reader who's picked a real program (see getUserProgram) but
 // hasn't set a start date yet — getGenericProgramPhase returns null in that case (it needs
@@ -212,17 +214,19 @@ export default async function StudentAtriumPage() {
   const todayKey = todayDateKey(await getTimeZone(user));
   const weekDateKeys = last7DateKeys(todayKey);
 
-  // nextCalendarEvent is still fetched here, unchanged (Study Group and Upcoming were Quick
-  // Links entries the dashboard redesign removed — see atrium-supporting-row below — but
-  // nothing about the fetch itself changed, this just stops binding a result neither the
-  // redesigned page nor anything else here reads). connectionIds, unlike that one, is read
-  // now — see the friends-strip fetch below.
+  // Monday-Sunday range for both the This Week card below and the new weekly schedule strip
+  // (see components/AtriumWeekSchedule.tsx) — computed once so the two can't disagree about
+  // which week "this week" means.
+  const weekRange = getThisWeekDateRange();
+  const weekStart = new Date(`${weekRange.start}T00:00:00`);
+  const weekEnd = new Date(`${weekRange.end}T23:59:59`);
+
   const [
     ,
     connectionIds,
     weekCompletions,
     boardActivityRows,
-    ,
+    weekCalendarEvents,
     thisWeekAssignments,
     syllabusCount,
     monthAssignments,
@@ -240,8 +244,13 @@ export default async function StudentAtriumPage() {
     // weekCompletions above (boardQuestion answers only), matching what the streak itself
     // actually counts a day as "done" for.
     prisma.boardActivity.findMany({ where: { userId: user.id, dateKey: { in: weekDateKeys } }, select: { dateKey: true } }),
-    prisma.userCalendarEvent.findFirst({
-      where: { userId: user.id, date: { gte: now } },
+    // Weekly schedule strip (see components/AtriumWeekSchedule.tsx) — every personal
+    // calendar event (class, rotation, CE event, etc. — see app/(app)/calendar/page.tsx,
+    // where these are actually created) landing Monday-Sunday this week. This used to be a
+    // single "next upcoming event" lookup that nothing on this page ever rendered; now it's
+    // the class-schedule strip's real data source.
+    prisma.userCalendarEvent.findMany({
+      where: { userId: user.id, date: { gte: weekStart, lte: weekEnd } },
       orderBy: { date: "asc" },
     }),
     // This Week card (see components/AtriumThisWeekCard.tsx, replacing the old Weekly
@@ -269,6 +278,30 @@ export default async function StudentAtriumPage() {
   const friends = connectionIds.length
     ? await prisma.user.findMany({ where: { id: { in: connectionIds } }, select: { id: true, name: true }, take: 8 })
     : [];
+
+  // Weekly schedule strip's 7 day columns (see components/AtriumWeekSchedule.tsx) — built
+  // from weekStart/weekCalendarEvents above. dateToLocalIso, not toISOString, for the same
+  // reason every other day-key in this app avoids it (see AtriumCalendar's own toDateKey
+  // comment): a DateTime read back with a UTC-based key can land on the wrong local day.
+  const eventsByDateKey = new Map<string, { id: string; title: string; type: string }[]>();
+  for (const event of weekCalendarEvents) {
+    const key = dateToLocalIso(event.date);
+    const bucket = eventsByDateKey.get(key) ?? [];
+    bucket.push({ id: event.id, title: event.title, type: event.type });
+    eventsByDateKey.set(key, bucket);
+  }
+  const scheduleDays = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(weekStart);
+    date.setDate(weekStart.getDate() + i);
+    const dateKey = dateToLocalIso(date);
+    return {
+      dateKey,
+      label: date.toLocaleDateString("en-US", { weekday: "short" }),
+      dayNumber: date.getDate(),
+      isToday: dateKey === todayKey,
+      events: eventsByDateKey.get(dateKey) ?? [],
+    };
+  });
 
   const daysCompletedThisWeek = new Set(boardActivityRows.map((r) => r.dateKey)).size;
 
@@ -300,10 +333,12 @@ export default async function StudentAtriumPage() {
   }));
 
   // This Week card data (see components/AtriumThisWeekCard.tsx) — the week label matches
-  // getThisWeekAssignments' own Monday-Sunday window, and recommendations are keyed by the
-  // same trimesterNumber the phase header above already reads. No NPTE countdown here —
-  // that already renders once, in the header above (see .atrium-countdown below).
-  const weekLabel = getThisWeekDateRange().label;
+  // getThisWeekAssignments' own Monday-Sunday window (weekRange above, computed once and
+  // reused here rather than calling getThisWeekDateRange() a second time), and
+  // recommendations are keyed by the same trimesterNumber the phase header above already
+  // reads. No NPTE countdown here — that already renders once, in the header above (see
+  // .atrium-countdown below).
+  const weekLabel = weekRange.label;
   const recommendations = getWeekRecommendations(phase.trimesterNumber);
 
   return (
@@ -344,6 +379,8 @@ export default async function StudentAtriumPage() {
           </p>
         )}
       </div>
+
+      <AtriumWeekSchedule days={scheduleDays} weekLabel={weekLabel} />
 
       <AtriumFriendsStrip friends={friends} totalCount={connectionIds.length} />
 
