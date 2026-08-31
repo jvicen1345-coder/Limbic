@@ -104,6 +104,10 @@ export function CanvasConnectPanel({ initialConnection }: { initialConnection: C
         <strong>Canvas → Account → Settings → New Access Token</strong>, then paste your school&rsquo;s Canvas domain and the
         token below.
       </p>
+      <p className="canvas-connect-desc canvas-connect-desc--muted">
+        Don&rsquo;t see &ldquo;New Access Token&rdquo; on that page? Some schools disable self-service tokens for students —
+        ask your Canvas admin to generate one for you instead.
+      </p>
       <div className="canvas-connect-form">
         <div className="field">
           <label htmlFor="canvas-domain">Canvas Domain</label>
