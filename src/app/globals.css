@@ -12247,3 +12247,17 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .study-guide-notes-table th,
 .study-guide-notes-table td { border: 1px solid var(--atrium-border); padding: 6px 10px; text-align: left; }
 .study-guide-notes-table th { background: var(--atrium-surface-2); font-weight: 700; }
+
+/* Slide Breakdown (/student/slides, components/student/SlideBreakdownManager.tsx) result
+   banner — same "quiet success state" shape as .syllabi-review-meeting above. */
+.slide-breakdown-result {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  background: var(--atrium-surface-2);
+  border: 1px solid var(--atrium-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 14px;
+}
+.slide-breakdown-result a { color: var(--atrium-tint); font-weight: 600; text-decoration: none; }
+.slide-breakdown-result a:hover { text-decoration: underline; }
