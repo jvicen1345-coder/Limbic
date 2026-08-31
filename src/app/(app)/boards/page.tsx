@@ -34,12 +34,11 @@ function BoardsFrame({
   badges?: ReactNode;
   children: ReactNode;
   /** The three branches below that never render BoardsTabs keep Daily Games right under the
-   *  header, same as always. The full LimbicStudent branch passes false here and renders its
-   *  own Daily Games heading/section after BoardsTabs instead — see that branch's own
-   *  comment for why: the tab bar (Daily Sharpening/NPTE Breakdown/Research & Stats/
-   *  Resources) is Boards' primary navigation and reads oddly sitting below an unrelated
-   *  section, so it needed to move above Daily Games rather than Daily Games moving below it
-   *  changing meaning for every branch. */
+   *  header, same as always. The full LimbicStudent branch passes false here and instead
+   *  hands DailyGamesSection to BoardsTabs as its dailyGamesSection prop, which renders it
+   *  inside the Daily Sharpening tab panel — see that branch's own comment for why: Daily
+   *  Games is itself a daily task, so it belongs alongside the reader's other daily practice
+   *  rather than sitting below every tab regardless of which one is open. */
   gamesSection?: boolean;
 }) {
   return (
@@ -231,13 +230,13 @@ export default async function BoardsHubPage() {
             progress={progress}
             examDays={examDays}
             hasExamDate={user.npteExamDate != null}
+            dailyGamesSection={
+              <div className="boards-daily-games">
+                <DailyGamesSection />
+              </div>
+            }
           />
         </Suspense>
-      </div>
-
-      <h2 style={{ fontSize: 19, margin: "28px 0 12px" }}>Daily Games</h2>
-      <div className="boards-daily-games">
-        <DailyGamesSection />
       </div>
     </BoardsFrame>
   );

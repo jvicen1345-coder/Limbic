@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { DailySharpeningSession, type SavedSharpeningProgress } from "@/components/DailySharpeningSession";
@@ -172,6 +172,7 @@ export function BoardsTabs({
   progress,
   examDays,
   hasExamDate,
+  dailyGamesSection,
 }: {
   dateKey: string;
   question: BoardQuestion;
@@ -189,6 +190,11 @@ export function BoardsTabs({
   /** Days until this reader's NPTE, or null if they haven't set a date. */
   examDays: number | null;
   hasExamDate: boolean;
+  /** DailyGamesSection, already rendered by the server-component page above this one — a
+   *  Client Component can't import and render a Server Component itself, so it arrives here
+   *  as a plain ReactNode slot instead. Shown at the bottom of the Daily Sharpening panel
+   *  only (see that panel below), not on every tab. */
+  dailyGamesSection: ReactNode;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -318,6 +324,9 @@ export function BoardsTabs({
           </div>
 
           <MissedQuestionsReview missed={progress.missed} />
+
+          <h2 style={{ fontSize: 19, margin: "8px 0 0" }}>Daily Games</h2>
+          {dailyGamesSection}
         </div>
       )}
 
