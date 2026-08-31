@@ -244,13 +244,14 @@ export default async function StudentAtriumPage() {
     // weekCompletions above (boardQuestion answers only), matching what the streak itself
     // actually counts a day as "done" for.
     prisma.boardActivity.findMany({ where: { userId: user.id, dateKey: { in: weekDateKeys } }, select: { dateKey: true } }),
-    // Weekly schedule strip (see components/AtriumWeekSchedule.tsx) — every personal
-    // calendar event (class, rotation, CE event, etc. — see app/(app)/calendar/page.tsx,
-    // where these are actually created) landing Monday-Sunday this week. This used to be a
-    // single "next upcoming event" lookup that nothing on this page ever rendered; now it's
-    // the class-schedule strip's real data source.
+    // Weekly schedule strip (see components/AtriumWeekSchedule.tsx) — only "Class"-type
+    // calendar events (see app/(app)/calendar/page.tsx, where these are actually created,
+    // and lib/calendar-events.ts USER_EVENT_TYPES for the full type list) landing
+    // Monday-Sunday this week. Deliberately excludes Rotation/CE Event/Conference/Personal/
+    // Other — the user asked for "your class schedule and only your classes", not every
+    // personal calendar entry.
     prisma.userCalendarEvent.findMany({
-      where: { userId: user.id, date: { gte: weekStart, lte: weekEnd } },
+      where: { userId: user.id, type: "Class", date: { gte: weekStart, lte: weekEnd } },
       orderBy: { date: "asc" },
     }),
     // This Week card (see components/AtriumThisWeekCard.tsx, replacing the old Weekly
