@@ -355,6 +355,7 @@ model User {
   // card, its monthly calendar, and app/(app)/student/assignments/page.tsx.
   syllabi     Syllabus[]
   assignments Assignment[]
+  studyCards  StudyCard[]
 
   // Which of the 235 seeded DPTProgram rows this student picked (see app/actions/
   // dpt-programs.ts setUserProgram) — set during onboarding's Step 2 or from Profile's "Your
@@ -1959,9 +1960,36 @@ model Syllabus {
   meetingDays  String?
   meetingTimes String?
   location     String?
+  // Visual Aids tab on /student/study-guide (see components/student/StudyGuideManager.tsx) —
+  // free text the student writes/pastes for this course (can include a simple pipe-delimited
+  // table, rendered by lib/study-notes-markdown.ts). One shared note per course, not a list —
+  // "charts, tables, visuals" as one running study document per class, same reasoning as
+  // location above being one shared value rather than per-day.
+  studyNotes String?
 
   user        User         @relation(fields: [userId], references: [id])
   assignments Assignment[]
+  studyCards  StudyCard[]
+}
+
+// One flashcard/notecard for a course, powering both the Flashcards and Self-Quiz tabs on
+// /student/study-guide (see components/student/StudyGuideManager.tsx) — same underlying
+// content, two review modes: Flashcards is a plain flip-through, Self-Quiz is a timed
+// self-graded round that uses lastResult/reviewCount to resurface cards marked incorrect (or
+// never reviewed) before ones already known, a lightweight "review what you don't know first"
+// bias rather than a full spaced-repetition scheduler.
+model StudyCard {
+  id          String    @id @default(cuid())
+  userId      String
+  syllabusId  String
+  front       String
+  back        String
+  createdAt   DateTime  @default(now())
+  reviewCount Int       @default(0)
+  lastResult  String? // "correct" | "incorrect" | null (never self-quizzed)
+
+  user     User     @relation(fields: [userId], references: [id])
+  syllabus Syllabus @relation(fields: [syllabusId], references: [id], onDelete: Cascade)
 }
 
 // One graded item (exam, quiz, assignment, etc.) a student is tracking — parsed from a

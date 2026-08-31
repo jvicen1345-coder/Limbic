@@ -12152,3 +12152,98 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   background: var(--atrium-surface-2);
 }
 .atrium-calendar-important-title { font-weight: 600; }
+
+/* Study Guide (/student/study-guide, components/student/StudyGuideManager.tsx) — one
+   .study-guide-course-card per course, same shell as .syllabi-card above; the summary/content
+   split reuses .pro-accordion-summary/-content/-chevron. */
+.study-guide-course-card {
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.study-guide-course-summary { cursor: pointer; }
+.study-guide-course-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; }
+.study-guide-course-meta { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+
+.study-guide-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.study-guide-tab {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--atrium-border);
+  background: transparent;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.study-guide-tab--active { border-color: var(--atrium-tint); color: var(--atrium-tint); background: color-mix(in srgb, var(--atrium-tint) 12%, transparent); }
+
+/* Flashcards tab */
+.study-guide-card-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.study-guide-card-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--atrium-surface-2);
+  font-size: 13px;
+}
+.study-guide-card-row--editing { grid-template-columns: 1fr 1fr auto; }
+.study-guide-card-front { font-weight: 600; }
+.study-guide-card-back { color: var(--color-neutral-700); }
+.study-guide-card-row-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.study-guide-card-edit { font-size: 12px; color: var(--atrium-tint); background: none; border: none; cursor: pointer; padding: 0; font-weight: 600; }
+.study-guide-card-delete { color: var(--color-neutral-700); background: none; border: none; cursor: pointer; padding: 2px; display: flex; }
+.study-guide-card-delete:hover { color: var(--color-danger); }
+.study-guide-add-card { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; margin-top: 12px; align-items: center; }
+@media (max-width: 700px) {
+  .study-guide-card-row { grid-template-columns: 1fr; }
+  .study-guide-add-card { grid-template-columns: 1fr; }
+}
+
+/* Flip-through study session (Flashcards tab) and quiz session (Self-Quiz tab) share the
+   same card visual. */
+.study-guide-flip-progress { font-size: 12.5px; color: var(--color-neutral-700); margin-bottom: 10px; }
+.study-guide-flip-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 160px;
+  padding: 24px;
+  border-radius: 14px;
+  background: var(--atrium-surface-2);
+  border: 1px solid var(--atrium-border);
+  cursor: pointer;
+  text-align: center;
+}
+.study-guide-flip-card--quiz { cursor: default; }
+.study-guide-flip-card-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--atrium-tint); letter-spacing: 0.04em; }
+.study-guide-flip-card-text { font-size: 17px; font-weight: 600; line-height: 1.4; }
+.study-guide-flip-card-hint { font-size: 11.5px; color: var(--color-neutral-700); margin-top: 6px; }
+.study-guide-flip-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 14px; }
+.study-guide-flip-exit { display: block; margin: 10px auto 0; font-size: 12.5px; color: var(--color-neutral-700); background: none; border: none; cursor: pointer; }
+
+/* Self-Quiz tab */
+.study-guide-quiz-session { display: flex; flex-direction: column; }
+.study-guide-quiz-grade-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 14px; }
+.study-guide-quiz-summary { text-align: center; padding: 20px 0; }
+.study-guide-quiz-summary-score { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; margin-bottom: 14px; }
+
+/* Visual Aids tab */
+.study-guide-notes-hint { font-size: 12.5px; color: var(--color-neutral-700); margin: 0 0 8px; }
+.study-guide-notes-hint code { background: var(--atrium-surface-2); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+.study-guide-notes-textarea { min-height: 140px; width: 100%; font-family: var(--font-mono, monospace); font-size: 13px; }
+.study-guide-notes-preview { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--atrium-border); }
+.study-guide-notes-paragraph { font-size: 13.5px; line-height: 1.6; margin: 0 0 10px; }
+.study-guide-notes-table-wrap { overflow-x: auto; margin-bottom: 14px; }
+.study-guide-notes-table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.study-guide-notes-table th,
+.study-guide-notes-table td { border: 1px solid var(--atrium-border); padding: 6px 10px; text-align: left; }
+.study-guide-notes-table th { background: var(--atrium-surface-2); font-weight: 700; }
