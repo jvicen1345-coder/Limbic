@@ -109,7 +109,7 @@ export function ExerciseLibraryTabs({ goal }: { goal: WellnessGoal | null }) {
 
       {tab === "continuum" && (
         <div style={{ marginTop: 16 }}>
-          <p style={{ fontSize: 11.5, color: "var(--color-neutral-600)", margin: "0 0 20px" }}>
+          <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-600)", margin: "0 0 20px" }}>
             Based on guidelines from the National Strength and Conditioning Association (NSCA) and American College
             of Sports Medicine (ACSM).
           </p>
@@ -137,7 +137,7 @@ export function ExerciseLibraryTabs({ goal }: { goal: WellnessGoal | null }) {
                     </ul>
                   </div>
                 )}
-                <p style={{ fontSize: 11.5, color: "var(--color-neutral-600)", marginTop: 10 }}>
+                <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-600)", marginTop: 10 }}>
                   These are general guidelines. A licensed physical therapist or certified strength coach can help
                   you design a program specific to your needs and health history.
                 </p>

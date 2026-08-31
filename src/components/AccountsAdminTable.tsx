@@ -64,7 +64,7 @@ function GrantedAccessChips({ userId, grantedAccess }: { userId: string; granted
             onClick={() => toggle(area)}
             className="btn"
             style={{
-              fontSize: 11,
+              fontSize: "var(--fs-11)",
               padding: "2px 8px",
               borderRadius: 999,
               border: active ? "1px solid var(--color-accent)" : "1px solid var(--color-neutral-300)",
@@ -77,7 +77,7 @@ function GrantedAccessChips({ userId, grantedAccess }: { userId: string; granted
           </button>
         );
       })}
-      {error && <span style={{ fontSize: 11, color: "var(--color-danger)" }}>{error}</span>}
+      {error && <span style={{ fontSize: "var(--fs-11)", color: "var(--color-danger)" }}>{error}</span>}
     </span>
   );
 }
@@ -106,7 +106,7 @@ function DeleteButton({ userId, onDeleted }: { userId: string; onDeleted: () => 
         </button>
         {/* Stays visible after a rejected delete (e.g. trying to delete your own row) even
          *  once back in this collapsed state — cleared the moment "Delete" is clicked again. */}
-        {error && <span style={{ fontSize: 11.5, color: "var(--color-danger)" }}>{error}</span>}
+        {error && <span style={{ fontSize: "var(--fs-11-5)", color: "var(--color-danger)" }}>{error}</span>}
       </span>
     );
   }

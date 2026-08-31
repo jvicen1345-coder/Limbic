@@ -68,7 +68,7 @@ export function BodyMetricsCard({ initial, googleHealthSyncedAt }: { initial: We
         </div>
 
         {googleHealthSyncedAt && (
-          <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", margin: 0 }}>
+          <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", margin: 0 }}>
             Age, weight, and height synced from Google Health as of {googleHealthSyncedAt} — edit and save to override.
           </p>
         )}

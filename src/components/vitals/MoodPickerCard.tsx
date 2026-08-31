@@ -66,7 +66,7 @@ export function MoodPickerCard({ todayMood, recentDays }: { todayMood: number | 
 
       {recentDays.length > 0 && (
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14 }}>
-          <span style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>Last 7 days</span>
+          <span style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)" }}>Last 7 days</span>
           <div style={{ display: "flex", gap: 5 }}>
             {recentDays.map((d) => (
               <span key={d.date} title={d.date} style={{ fontSize: 15 }}>

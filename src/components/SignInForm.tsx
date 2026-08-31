@@ -152,7 +152,7 @@ export function SignInForm({
           </a>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <hr className="hr" style={{ flex: 1, margin: 0 }} />
-            <span style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>or</span>
+            <span style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)" }}>or</span>
             <hr className="hr" style={{ flex: 1, margin: 0 }} />
           </div>
         </>

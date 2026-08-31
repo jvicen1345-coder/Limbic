@@ -64,7 +64,7 @@ export function NprsCalculator() {
           </div>
           <div className="pro-calc-result-label">{result.label} pain, 0-3 Mild, 4-6 Moderate, 7-10 Severe</div>
         </div>
-        <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", marginTop: 12 }}>
+        <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", marginTop: 12 }}>
           Minimal clinically important difference: 2 points (general musculoskeletal pain populations). A single-item
           scale like this doesn&rsquo;t have a well-established minimal detectable change.
         </p>

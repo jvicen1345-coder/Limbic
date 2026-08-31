@@ -431,7 +431,7 @@ function AtlasContentPanel({
             {boardQuestions.slice(0, 3).map((q) => (
               <AtlasBoardQuestionCard question={q} key={q.id} />
             ))}
-            <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>
+            <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)" }}>
               <Link href="/boards" style={{ color: "inherit" }}>
                 Practice more on Limbic Boards
               </Link>

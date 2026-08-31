@@ -139,7 +139,7 @@ export function MacroCalculatorCard({ profile }: { profile: WellnessProfile }) {
         </div>
       )}
 
-      <p style={{ fontSize: 11.5, color: "var(--color-neutral-600)", marginTop: 14 }}>
+      <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-600)", marginTop: 14 }}>
         These are estimated general guidelines based on population averages. Individual needs vary. Consult a registered dietitian for
         personalized nutrition planning.
       </p>

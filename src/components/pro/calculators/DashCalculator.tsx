@@ -116,7 +116,7 @@ export function DashCalculator() {
           <div className="pro-calc-result-value">{dashScore} / 100</div>
           <div className="pro-calc-result-label">Formula: ((sum of items / 30) - 1) &times; 25, higher indicates more disability</div>
         </div>
-        <p style={{ fontSize: 11, color: "var(--color-neutral-700)", marginTop: 8 }}>
+        <p style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", marginTop: 8 }}>
           The full score requires at least 27 of 30 items answered per the published scoring manual, unanswered items
           here default to 1 (no difficulty/none). Minimal detectable change: ~11 points. Minimal clinically important
           difference: ~11 points (musculoskeletal disorders, pooled meta-analysis estimate).

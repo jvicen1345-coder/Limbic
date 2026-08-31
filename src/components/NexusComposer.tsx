@@ -166,7 +166,7 @@ export function NexusComposer({ authorName }: { authorName: string }) {
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    style={{ width: 84, height: 84, flexDirection: "column", gap: 4, fontSize: 11 }}
+                    style={{ width: 84, height: 84, flexDirection: "column", gap: 4, fontSize: "var(--fs-11)" }}
                     onClick={() => fileInputRef.current?.click()}
                     disabled={compressing}
                   >

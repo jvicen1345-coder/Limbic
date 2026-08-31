@@ -23,7 +23,7 @@ export function SavedUnreadCard({ articles }: { articles: DecoratedArticle[] }) 
               textDecoration: "none",
             }}
           >
-            <div style={{ fontSize: 10, color: "var(--color-accent-700)", marginBottom: 3 }}>
+            <div style={{ fontSize: "var(--fs-10)", color: "var(--color-accent-700)", marginBottom: 3 }}>
               {a.typeLabel} · {a.dateLabel}
             </div>
             <div style={{ fontFamily: "var(--font-heading)", fontSize: 12.5, lineHeight: 1.3 }}>{a.title}</div>

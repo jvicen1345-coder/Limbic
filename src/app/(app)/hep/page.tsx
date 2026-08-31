@@ -122,7 +122,7 @@ export default async function HepPage({
           <>
             <div
               style={{
-                fontSize: 11,
+                fontSize: "var(--fs-11)",
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
                 color: "var(--color-neutral-700)",

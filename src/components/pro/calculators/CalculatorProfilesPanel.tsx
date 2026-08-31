@@ -36,7 +36,7 @@ function CreateProfileForm({ onCreated, onCancel }: { onCreated: (p: CalculatorP
           onChange={(e) => setLabel(e.target.value)}
         />
       </div>
-      <p style={{ fontSize: 11, color: "var(--color-neutral-700)", margin: "4px 0 12px" }}>
+      <p style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", margin: "4px 0 12px" }}>
         Use a non-identifying label — initials, a room number, or a session code — not the patient&rsquo;s real name.
       </p>
 
@@ -54,7 +54,7 @@ function CreateProfileForm({ onCreated, onCancel }: { onCreated: (p: CalculatorP
           </select>
         </div>
       </div>
-      <p style={{ fontSize: 11, color: "var(--color-neutral-700)", margin: "-6px 0 12px" }}>
+      <p style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", margin: "-6px 0 12px" }}>
         Pre-fills age/sex-normed tests (30-Second Sit-to-Stand, 6MWT) so you don&rsquo;t retype them for every test.
       </p>
 
@@ -124,7 +124,7 @@ function DeleteProfileButton({ profileId, onDeleted }: { profileId: string; onDe
         type="button"
         className="btn"
         disabled={pending}
-        style={{ fontSize: 11, padding: "3px 8px", background: "var(--color-danger)", color: "#fff", border: "none" }}
+        style={{ fontSize: "var(--fs-11)", padding: "3px 8px", background: "var(--color-danger)", color: "#fff", border: "none" }}
         onClick={() =>
           startTransition(async () => {
             await deleteCalculatorProfileAction(profileId);
@@ -148,8 +148,8 @@ function ResultRow({ result, onDeleted }: { result: CalculatorProfileView["resul
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 12.5, fontWeight: 600 }}>{result.testName}</div>
         <div style={{ fontSize: 12 }}>{result.value}</div>
-        <div style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{result.interpretation}</div>
-        <div style={{ fontSize: 10.5, color: "var(--color-neutral-600)", marginTop: 2 }}>
+        <div style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}>{result.interpretation}</div>
+        <div style={{ fontSize: "var(--fs-10-5)", color: "var(--color-neutral-600)", marginTop: 2 }}>
           {new Date(result.completedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
         </div>
       </div>
@@ -192,7 +192,7 @@ function ClientDetailsEditor({ profile, onUpdated }: { profile: CalculatorProfil
   return (
     <div style={{ display: "flex", gap: 10, margin: "8px 0 12px" }}>
       <div className="field" style={{ flex: 1 }}>
-        <label htmlFor={`calc-profile-detail-age-${profile.id}`} style={{ fontSize: 11 }}>
+        <label htmlFor={`calc-profile-detail-age-${profile.id}`} style={{ fontSize: "var(--fs-11)" }}>
           Age
         </label>
         <input
@@ -208,7 +208,7 @@ function ClientDetailsEditor({ profile, onUpdated }: { profile: CalculatorProfil
         />
       </div>
       <div className="field" style={{ flex: 1 }}>
-        <label htmlFor={`calc-profile-detail-sex-${profile.id}`} style={{ fontSize: 11 }}>
+        <label htmlFor={`calc-profile-detail-sex-${profile.id}`} style={{ fontSize: "var(--fs-11)" }}>
           Sex
         </label>
         <select
@@ -277,7 +277,7 @@ export function CalculatorProfilesPanel({
             >
               <span style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
                 <span style={{ fontSize: 13, fontWeight: 600, display: "block" }}>{p.label}</span>
-                <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>
+                <span style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}>
                   {p.results.length} result{p.results.length === 1 ? "" : "s"} &middot;{" "}
                   {new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 </span>

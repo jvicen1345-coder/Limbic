@@ -58,7 +58,7 @@ export function LimbicAgentCard({ insights, isPro }: { insights: LimbicAgentInsi
           {insights.neglectedTopics.length > 0 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 6 }}>
               <div
-                style={{ fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-accent-700)" }}
+                style={{ fontSize: "var(--fs-10)", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-accent-700)" }}
               >
                 Topics you haven&rsquo;t touched
               </div>

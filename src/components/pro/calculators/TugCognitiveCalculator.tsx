@@ -96,7 +96,7 @@ export function TugCognitiveCalculator() {
             <div className="pro-calc-result-label">Dual-task cost vs standard TUG</div>
           </div>
         )}
-        <p style={{ fontSize: 11, color: "var(--color-neutral-700)", marginTop: 10 }}>
+        <p style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", marginTop: 10 }}>
           Unlike the standard TUG, the dual-task-cost literature hasn&rsquo;t converged on a single universally validated
           cutoff. As a general trend, a dual-task cost above roughly 20% is often considered clinically meaningful,
           and an absolute dual-task TUG time above ~15 seconds is more consistently associated with elevated fall

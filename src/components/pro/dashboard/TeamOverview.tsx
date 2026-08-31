@@ -113,7 +113,7 @@ export function TeamOverview() {
         <div className="card-kicker" style={{ margin: 0 }}>
           Team Members
         </div>
-        <button type="button" className="btn btn-ghost" style={{ fontSize: 11.5 }} onClick={() => setInviteOpen((v) => !v)}>
+        <button type="button" className="btn btn-ghost" style={{ fontSize: "var(--fs-11-5)" }} onClick={() => setInviteOpen((v) => !v)}>
           <PlusIcon size={12} />
           Invite Clinician
         </button>
@@ -128,7 +128,7 @@ export function TeamOverview() {
             value={inviteEmail}
             onChange={(e) => setInviteEmail(e.target.value)}
           />
-          {inviteError && <p style={{ fontSize: 11.5, color: "var(--color-danger)", margin: 0 }}>{inviteError}</p>}
+          {inviteError && <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-danger)", margin: 0 }}>{inviteError}</p>}
           <div className="clindash-inline-form-actions">
             <button type="button" className="btn btn-primary" style={{ fontSize: 12 }} disabled={pending} onClick={handleInvite}>
               Send Invite
@@ -181,7 +181,7 @@ export function TeamOverview() {
                     <tr className="clindash-team-row-detail">
                       <td colSpan={7}>
                         {m.patients.length === 0 ? (
-                          <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", margin: 0 }}>No active patients.</p>
+                          <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", margin: 0 }}>No active patients.</p>
                         ) : (
                           m.patients.map((p) => (
                             <div className="clindash-team-patient-row" key={p.patientCode}>
@@ -252,7 +252,7 @@ export function TeamOverview() {
             onChange={(e) => setTransferReason(e.target.value)}
           />
         </div>
-        {transferError && <p style={{ fontSize: 11.5, color: "var(--color-danger)", margin: "8px 0 0" }}>{transferError}</p>}
+        {transferError && <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-danger)", margin: "8px 0 0" }}>{transferError}</p>}
         <button type="button" className="btn btn-primary" style={{ fontSize: 12, marginTop: 10 }} disabled={pending} onClick={handleTransfer}>
           Transfer
         </button>

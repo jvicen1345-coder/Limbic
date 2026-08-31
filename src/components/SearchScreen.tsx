@@ -192,7 +192,7 @@ export function SearchScreen({
             />
           </div>
 
-          <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 8 }}>
+          <div style={{ fontSize: "var(--fs-11)", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 8 }}>
             Type
           </div>
           <div className="filter-row" style={{ marginBottom: 14 }}>
@@ -210,7 +210,7 @@ export function SearchScreen({
             ))}
           </div>
 
-          <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 8 }}>
+          <div style={{ fontSize: "var(--fs-11)", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 8 }}>
             Specialty
           </div>
           <div className="filter-row" style={{ marginBottom: 18 }}>

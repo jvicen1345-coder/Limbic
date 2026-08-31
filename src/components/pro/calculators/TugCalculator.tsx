@@ -69,7 +69,7 @@ export function TugCalculator() {
             <div className="pro-calc-result-label">{result.label}</div>
           </div>
         )}
-        <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", marginTop: 12 }}>
+        <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", marginTop: 12 }}>
           Norms: under 10s normal, 10-20s good mobility/low fall risk, 20-30s moderate fall risk, over 30s high fall
           risk/functional impairment. Age-adjusted norms vary by population, use clinical judgment alongside this
           general cutoff. Minimal detectable change: ~4 seconds (community-dwelling older adults); MCID varies

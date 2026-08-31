@@ -65,7 +65,7 @@ export default async function WellnessArticlesPage() {
         Everyday wellness reading and movement videos for patients and clinicians alike.
       </p>
 
-      <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 10 }}>
+      <div style={{ fontSize: "var(--fs-11)", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 10 }}>
         Articles
       </div>
       <div style={{ display: "flex", flexDirection: "column", marginBottom: 28 }}>
@@ -74,7 +74,7 @@ export default async function WellnessArticlesPage() {
         ))}
       </div>
 
-      <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 10 }}>
+      <div style={{ fontSize: "var(--fs-11)", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)", marginBottom: 10 }}>
         Video recommendations
       </div>
       <div className="video-grid">

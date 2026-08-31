@@ -94,7 +94,7 @@ export function ThemeSection({ initialTheme }: { initialTheme: ThemePreference }
 
       <ThemePreview theme={previewTheme} />
       {selected === "system" && (
-        <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", margin: "6px 0 0" }}>
+        <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", margin: "6px 0 0" }}>
           Matches your device setting
         </p>
       )}

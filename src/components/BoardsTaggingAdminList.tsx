@@ -38,7 +38,7 @@ function TagForm({ question, onSaved }: { question: TaggedBoardQuestion; onSaved
       <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 260, overflowY: "auto" }}>
         {ALL_GROUPS.map((g) => (
           <div key={g.label}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: "var(--color-neutral-700)", textTransform: "uppercase", marginBottom: 4 }}>
+            <div style={{ fontSize: "var(--fs-11)", fontWeight: 600, color: "var(--color-neutral-700)", textTransform: "uppercase", marginBottom: 4 }}>
               {g.label}
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -79,7 +79,7 @@ function QuestionRow({ question: initial }: { question: TaggedBoardQuestion }) {
       </p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
         {question.bodyRegions.length === 0 ? (
-          <span style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>No regions tagged</span>
+          <span style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)" }}>No regions tagged</span>
         ) : (
           question.bodyRegions.map((z) => (
             <span className="tag tag-accent" key={z}>

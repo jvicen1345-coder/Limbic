@@ -72,9 +72,9 @@ export function NexusPostCard({
             {post.author.isFoundingFunder && <FoundingFunderBadge />}
           </div>
           {post.author.headline && (
-            <div style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>{post.author.headline}</div>
+            <div style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)" }}>{post.author.headline}</div>
           )}
-          <div style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>
+          <div style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}>
             <TimeAgo date={post.createdAt} />
           </div>
         </div>

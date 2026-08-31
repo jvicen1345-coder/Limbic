@@ -18,7 +18,7 @@ export function FoundingFunderBadge({ number, numberOnly }: { number?: number | 
         padding: "3px 10px",
         color: "#c9853a",
         fontWeight: 600,
-        fontSize: 11,
+        fontSize: "var(--fs-11)",
         lineHeight: 1.4,
         whiteSpace: "nowrap",
       }}

@@ -25,7 +25,7 @@ export function ContinueReadingCard({ data }: { data: ContinueReadingData | null
       <div className="progress-bar progress-bar-fade-in">
         <div className="progress-bar-fill" style={{ width: `${Math.round(data.progress * 100)}%` }} />
       </div>
-      <div style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{data.remainingLabel}</div>
+      <div style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}>{data.remainingLabel}</div>
       <Link href={`/article/${data.articleId}`} className="btn btn-secondary" style={{ alignSelf: "flex-start", fontSize: 12.5 }}>
         Continue Reading
         <ChevronRightIcon size={14} />

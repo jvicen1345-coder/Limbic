@@ -145,7 +145,7 @@ export function GeneralizabilityChecker({ studyInput, submitRef }: { studyInput:
         </div>
       )}
 
-      <p style={{ fontSize: 11.5, color: "var(--color-neutral-600)", marginTop: 14 }}>
+      <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-600)", marginTop: 14 }}>
         A support judgment based only on the PubMed abstract or description given, not a substitute for reading the
         actual study and applying your own clinical reasoning.
       </p>

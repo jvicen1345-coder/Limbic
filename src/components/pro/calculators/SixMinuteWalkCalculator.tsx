@@ -150,7 +150,7 @@ export function SixMinuteWalkCalculator() {
             </div>
           </div>
         )}
-        <p style={{ fontSize: 11, color: "var(--color-neutral-700)", marginTop: 10 }}>
+        <p style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", marginTop: 10 }}>
           Source: Enright PL, Sherrill DL. Reference equations for the six-minute walk in healthy adults. Am J Respir
           Crit Care Med. 1998. Minimal detectable change: ~54 meters (community-dwelling older adults); MCID is
           highly condition-dependent, ranging from roughly 15 to 195 meters across published populations.
