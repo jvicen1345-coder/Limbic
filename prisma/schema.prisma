@@ -1958,6 +1958,7 @@ model Syllabus {
   parsedAt     DateTime?
   meetingDays  String?
   meetingTimes String?
+  location     String?
 
   user        User         @relation(fields: [userId], references: [id])
   assignments Assignment[]

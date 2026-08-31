@@ -52,6 +52,10 @@ export interface SyllabusWithCount {
   /** Maps a meetingDays entry to its own MeetingDayTime — see Syllabus.meetingTimes in
    *  prisma/schema.prisma for why this isn't a single shared string. */
   meetingTimes: Record<string, MeetingDayTime> | null;
+  /** Room/building the class meets in — one value for the whole recurring pattern, not
+   *  per-day (see Syllabus.location in prisma/schema.prisma; unlike meetingTimes, a class's
+   *  room doesn't usually change day to day, so this doesn't need the same per-day shape). */
+  location: string | null;
 }
 
 /** All syllabi for the signed-in student, most recently uploaded first — powers both the
@@ -77,6 +81,7 @@ export async function getSyllabi(): Promise<SyllabusWithCount[]> {
     assignmentCount: s._count.assignments,
     meetingDays: s.meetingDays ? s.meetingDays.split(",") : null,
     meetingTimes: parseMeetingTimesColumn(s.meetingTimes),
+    location: s.location,
   }));
 }
 
@@ -142,7 +147,13 @@ export async function parseSyllabusFromText(
   syllabusId: string,
   rawText: string
 ): Promise<
-  ActionError | { success: true; assignments: Assignment[]; meetingDays: string[] | null; meetingTimes: Record<string, MeetingDayTime> | null }
+  ActionError | {
+    success: true;
+    assignments: Assignment[];
+    meetingDays: string[] | null;
+    meetingTimes: Record<string, MeetingDayTime> | null;
+    location: string | null;
+  }
 > {
   const user = await requireStudentUser();
   if (!user) return { error: "Unauthorized" };
@@ -166,6 +177,7 @@ export async function parseSyllabusFromText(
         parsedAt: now,
         meetingDays: parsed.meetingDays?.join(",") ?? null,
         meetingTimes: parsed.meetingTimes ? JSON.stringify(parsed.meetingTimes) : null,
+        location: parsed.location,
       },
     }),
     ...parsed.assignments.map((a: ParsedAssignment) =>
@@ -187,7 +199,7 @@ export async function parseSyllabusFromText(
 
   revalidatePath("/student/assignments");
   revalidatePath("/student");
-  return { success: true, assignments, meetingDays: parsed.meetingDays, meetingTimes: parsed.meetingTimes };
+  return { success: true, assignments, meetingDays: parsed.meetingDays, meetingTimes: parsed.meetingTimes, location: parsed.location };
 }
 
 /** Sets or corrects a syllabus's recurring meeting pattern by hand — the fallback for when
@@ -200,11 +212,14 @@ export async function parseSyllabusFromText(
  *  no entry (or a blank one) in timesByDay just has no time — the same class can meet without
  *  a stated time on one day and a stated one on another. Passing an empty days array clears
  *  the pattern entirely (both fields become null), the same way a reader would use this to
- *  remove a wrong AI-extracted schedule. */
+ *  remove a wrong AI-extracted schedule. `location` is one shared room/building for the
+ *  whole pattern (see SyllabusWithCount.location above) — cleared to null the same way as
+ *  the other two fields whenever `days` comes in empty. */
 export async function updateSyllabusMeetingPattern(
   syllabusId: string,
   days: string[],
-  timesByDay: Record<string, MeetingDayTime>
+  timesByDay: Record<string, MeetingDayTime>,
+  location: string
 ): Promise<ActionError | { success: true }> {
   const user = await requireStudentUser();
   if (!user) return { error: "Unauthorized" };
@@ -226,6 +241,7 @@ export async function updateSyllabusMeetingPattern(
     data: {
       meetingDays: validDays.length > 0 ? validDays.join(",") : null,
       meetingTimes: validDays.length > 0 && Object.keys(trimmedTimes).length > 0 ? JSON.stringify(trimmedTimes) : null,
+      location: validDays.length > 0 && location.trim() ? location.trim() : null,
     },
   });
 

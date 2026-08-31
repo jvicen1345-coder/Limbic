@@ -10,6 +10,10 @@ export interface WeekScheduleEvent {
    *  calendar events, which have no time field to show (see UserCalendarEvent in
    *  prisma/schema.prisma). */
   time?: string;
+  /** Room/building for this class (see Syllabus.location in prisma/schema.prisma), when
+   *  known — rendered as a third line under the time. Undefined for manual Class-type
+   *  calendar events, same "no such field on UserCalendarEvent" reasoning as `time` above. */
+  location?: string;
 }
 
 export interface WeekScheduleDay {
@@ -38,12 +42,13 @@ export interface WeekScheduleDay {
  *  Sits right after the greeting, at the top of app/(app)/student/page.tsx, above the
  *  streak/roundup grid — the most time-sensitive "what does my week look like" question,
  *  first. "I want the schedule to be more effective" -> "show more detail per class, right
- *  in the cell" — a syllabus meeting's time (WeekScheduleEvent.time) now renders inline
- *  under the course code instead of being buried in the hover tooltip; the tooltip
- *  (WeekScheduleEvent.type) still carries the full course name. Manual Class-type calendar
- *  events have no `time` (UserCalendarEvent has no time field — see lib/calendar-data.ts
- *  buildCalendarEvents, which strips it before it ever reaches /calendar's own views either),
- *  so those cells show just the title, same as before. */
+ *  in the cell" — a syllabus meeting's time (WeekScheduleEvent.time) and, now, room
+ *  (WeekScheduleEvent.location) render inline under the course code instead of being buried
+ *  in the hover tooltip; the tooltip (WeekScheduleEvent.type) still carries the full course
+ *  name. Manual Class-type calendar events have neither field (UserCalendarEvent has no
+ *  time or location column — see lib/calendar-data.ts buildCalendarEvents, which strips
+ *  time before it ever reaches /calendar's own views either), so those cells show just the
+ *  title, same as before. */
 export function AtriumWeekSchedule({ days, weekLabel }: { days: WeekScheduleDay[]; weekLabel: string }) {
   const isEmpty = days.every((d) => d.events.length === 0);
 
@@ -78,6 +83,7 @@ export function AtriumWeekSchedule({ days, weekLabel }: { days: WeekScheduleDay[
                   <div key={e.id} className="atrium-week-schedule-event" title={e.type}>
                     <span className="atrium-week-schedule-event-title">{e.title}</span>
                     {e.time && <span className="atrium-week-schedule-event-time">{e.time}</span>}
+                    {e.location && <span className="atrium-week-schedule-event-location">{e.location}</span>}
                   </div>
                 ))
               )}

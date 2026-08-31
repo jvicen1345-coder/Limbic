@@ -259,7 +259,7 @@ export default async function StudentAtriumPage() {
     // the manual Class-type calendar events above, not a replacement for them.
     prisma.syllabus.findMany({
       where: { userId: user.id, meetingDays: { not: null } },
-      select: { id: true, courseCode: true, courseName: true, meetingDays: true, meetingTimes: true },
+      select: { id: true, courseCode: true, courseName: true, meetingDays: true, meetingTimes: true, location: true },
     }),
     // This Week card (see components/AtriumThisWeekCard.tsx, replacing the old Weekly
     // Roundup panel here) — every syllabus assignment due this calendar week, plus a plain
@@ -275,7 +275,7 @@ export default async function StudentAtriumPage() {
   ]);
   const hasAssignmentSource = syllabusCount > 0;
 
-  // Weekly schedule strip's 7 day columns (see components/AtriumWeekSchedule.tsx) — built
+  // Weekly schedule strip's 5 day columns (see components/AtriumWeekSchedule.tsx) — built
   // from weekStart/weekCalendarEvents above, plus weekSyllabiMeetings expanded onto every
   // matching weekday below. dateToLocalIso, not toISOString, for the same reason every other
   // day-key in this app avoids it (see AtriumCalendar's own toDateKey comment): a DateTime
@@ -307,6 +307,7 @@ export default async function StudentAtriumPage() {
           title: s.courseCode,
           type: s.courseName,
           time: time || undefined,
+          location: s.location ?? undefined,
         };
       });
     return {
