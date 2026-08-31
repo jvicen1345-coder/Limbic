@@ -12126,3 +12126,29 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .syllabi-meeting-time-input { max-width: 130px; }
 .syllabi-meeting-time-sep { font-size: 12px; color: var(--color-neutral-700); }
 .syllabi-meeting-room { margin-top: 10px; max-width: 220px; }
+
+/* "Important Date"-type calendar events on the Atrium's monthly calendar
+   (components/AtriumCalendar.tsx) — a second, read-only source alongside SyllabusAssignment
+   (see CalendarImportantDate, getMonthImportantDates in app/actions/calendar.ts). A star
+   marker in the cell's corner (independent of the category-dots row, which stays
+   assignment-only) and a plain list above the assignment list in the day detail panel. */
+.calendar-cell-important-marker {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--atrium-tint);
+}
+.atrium-calendar-legend-star { color: var(--atrium-tint); font-size: 12px; line-height: 1; }
+.atrium-calendar-important-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.atrium-calendar-important-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--atrium-surface-2);
+}
+.atrium-calendar-important-title { font-weight: 600; }

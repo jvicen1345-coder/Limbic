@@ -38,8 +38,11 @@ export const CALENDAR_VIEWS: { id: CalendarView; label: string }[] = [
 /** The Add Event modal's Event Type select — free-text on the UserCalendarEvent row (see
  *  prisma/schema.prisma), whitelisted here and in app/actions/calendar.ts rather than a DB
  *  enum, same "no DB-level constraint, whitelist enforced server-side" approach as every
- *  other free-text field in this schema. */
-export const USER_EVENT_TYPES = ["Class", "Personal", "CE Event", "Conference", "Rotation", "Other"] as const;
+ *  other free-text field in this schema. "Important Date" (first day of trimester, finals
+ *  week, add/drop deadline, breaks — non-graded academic dates) is read by the Atrium's
+ *  monthly calendar the same way "Class" is read by the Class Schedule strip above it — see
+ *  getMonthImportantDates in app/actions/calendar.ts and components/AtriumCalendar.tsx. */
+export const USER_EVENT_TYPES = ["Class", "Personal", "CE Event", "Conference", "Rotation", "Important Date", "Other"] as const;
 export type UserEventType = (typeof USER_EVENT_TYPES)[number];
 
 /** Short day-of-week codes for Syllabus.meetingDays (see prisma/schema.prisma and

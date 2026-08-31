@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { USER_EVENT_TYPES, type UserEventType } from "@/lib/calendar-events";
+import { dateToLocalIso } from "@/lib/limbic-calendar";
 
 function isUserEventType(value: string): value is UserEventType {
   return (USER_EVENT_TYPES as readonly string[]).includes(value);
@@ -97,4 +98,27 @@ export async function saveArticleToCalendarAction(input: { title: string; date: 
     },
   });
   revalidatePath("/calendar");
+}
+
+/** Every "Important Date"-type calendar event (see USER_EVENT_TYPES in lib/calendar-events.ts
+ *  — first day of trimester, finals week, add/drop deadline, breaks) within one calendar
+ *  month, for the Atrium's monthly calendar (see components/AtriumCalendar.tsx, which reads
+ *  this alongside getMonthAssignments in app/actions/syllabus.ts — same "additive, separate
+ *  source" shape as the Class Schedule strip's own syllabus + UserCalendarEvent split). userId
+ *  is accepted to match getMonthAssignments's own signature but, same as that function, is
+ *  never trusted on its own — a mismatch against the session account returns nothing. Gated on
+ *  hasStudentAccess, not just "signed in", since the Atrium is a Limbic Student surface. */
+export async function getMonthImportantDates(userId: string, year: number, month: number) {
+  const user = await getCurrentUser();
+  if (!user || user.id !== userId || !hasStudentAccess(user)) return [];
+
+  const monthStart = new Date(year, month - 1, 1);
+  const monthEnd = new Date(year, month, 0, 23, 59, 59);
+
+  const events = await prisma.userCalendarEvent.findMany({
+    where: { userId: user.id, type: "Important Date", date: { gte: monthStart, lte: monthEnd } },
+    orderBy: { date: "asc" },
+  });
+
+  return events.map((e) => ({ id: e.id, title: e.title, date: dateToLocalIso(e.date) }));
 }

@@ -13,6 +13,17 @@ export interface CalendarAssignment {
   completed: boolean;
 }
 
+/** An "Important Date"-type calendar event (see USER_EVENT_TYPES in lib/calendar-events.ts)
+ *  landing this month — first day of trimester, finals week, add/drop deadline, breaks.
+ *  Unlike CalendarAssignment there's no category/completion state; it's just a marked date. */
+export interface CalendarImportantDate {
+  id: string;
+  title: string;
+  /** "YYYY-MM-DD", same shape as CalendarAssignment.dueDate — see getMonthImportantDates in
+   *  app/actions/calendar.ts. */
+  date: string;
+}
+
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -56,20 +67,29 @@ function urgencyForDueDate(
  *  navigation is a plain client fetch against app/api/assignments/route.ts rather than
  *  calling getMonthAssignments directly, since a Server Action re-render would also have to
  *  re-run the whole Atrium page's data-fetching; the completion checkbox stays a direct
- *  Server Action call, same optimistic-then-revert shape as AtriumThisWeekCard's own. */
+ *  Server Action call, same optimistic-then-revert shape as AtriumThisWeekCard's own.
+ *  "Can the calendar have important dates as well" — CalendarImportantDate is that: a second,
+ *  read-only source (see getMonthImportantDates in app/actions/calendar.ts) shown alongside
+ *  assignments on the same grid — a star marker on the cell, and a plain list above the
+ *  assignment list in the day detail panel. There's no completion state or category to track,
+ *  so it doesn't join the total/completed/remaining month summary stats at the bottom, which
+ *  stay assignment-only. */
 export function AtriumCalendar({
   initialAssignments,
+  initialImportantDates,
   userId,
 }: {
   initialAssignments: CalendarAssignment[];
+  initialImportantDates: CalendarImportantDate[];
   userId: string;
 }) {
   const today = useMemo(() => new Date(), []);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date(today.getFullYear(), today.getMonth(), 1));
   const [assignments, setAssignments] = useState<CalendarAssignment[]>(initialAssignments);
+  const [importantDates, setImportantDates] = useState<CalendarImportantDate[]>(initialImportantDates);
   const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
     const todayKey = toDateKey(today);
-    return initialAssignments.some((a) => a.dueDate === todayKey)
+    return initialAssignments.some((a) => a.dueDate === todayKey) || initialImportantDates.some((d) => d.date === todayKey)
       ? new Date(today.getFullYear(), today.getMonth(), today.getDate())
       : null;
   });
@@ -91,12 +111,23 @@ export function AtriumCalendar({
     return map;
   }, [assignments]);
 
+  const importantDatesByDate = useMemo(() => {
+    const map = new Map<string, CalendarImportantDate[]>();
+    for (const d of importantDates) {
+      const list = map.get(d.date) ?? [];
+      list.push(d);
+      map.set(d.date, list);
+    }
+    return map;
+  }, [importantDates]);
+
   async function loadMonth(month: Date) {
     try {
       const result = await fetch(`/api/assignments?userId=${userId}&year=${month.getFullYear()}&month=${month.getMonth() + 1}`);
       if (!result.ok) return;
       const data = await result.json();
       setAssignments(Array.isArray(data.assignments) ? data.assignments : []);
+      setImportantDates(Array.isArray(data.importantDates) ? data.importantDates : []);
     } catch {
       // Network hiccup — the grid just keeps showing the previous month's data.
     }
@@ -156,6 +187,7 @@ export function AtriumCalendar({
   const remainingThisMonth = totalThisMonth - completedThisMonth;
 
   const dayList = selectedDate ? (assignmentsByDate.get(toDateKey(selectedDate)) ?? []) : [];
+  const dayImportantDatesList = selectedDate ? (importantDatesByDate.get(toDateKey(selectedDate)) ?? []) : [];
   const dayCompletedCount = dayList.filter((a) => a.completed).length;
   const dayAllComplete = dayList.length > 0 && dayCompletedCount === dayList.length;
 
@@ -189,7 +221,9 @@ export function AtriumCalendar({
               if (!cell) return <div key={`empty-${i}`} className="calendar-cell calendar-cell--empty" aria-hidden="true" />;
 
               const dayAssignments = assignmentsByDate.get(cell.key) ?? [];
+              const dayImportantDates = importantDatesByDate.get(cell.key) ?? [];
               const hasAssignments = dayAssignments.length > 0;
+              const hasImportantDate = dayImportantDates.length > 0;
               const isToday = cell.key === todayKey;
               const isSelected = cell.key === selectedKey;
               const allComplete = hasAssignments && dayAssignments.every((a) => a.completed);
@@ -210,6 +244,15 @@ export function AtriumCalendar({
                   onClick={() => selectDay(cell.date)}
                   aria-pressed={isSelected}
                 >
+                  {hasImportantDate && (
+                    <span
+                      className="calendar-cell-important-marker"
+                      title={dayImportantDates.map((d) => d.title).join(", ")}
+                      aria-hidden="true"
+                    >
+                      ★
+                    </span>
+                  )}
                   <span className="calendar-cell-number">{cell.day}</span>
                   {hasAssignments && (
                     <span className="category-dots">
@@ -236,13 +279,19 @@ export function AtriumCalendar({
                 {category}
               </span>
             ))}
+            <span className="atrium-calendar-legend-item">
+              <span className="atrium-calendar-legend-star" aria-hidden="true">
+                ★
+              </span>
+              Important Date
+            </span>
           </div>
         </div>
 
         <div className="atrium-calendar-right" ref={detailRef}>
           {!selectedDate ? (
             <div className="atrium-calendar-detail-empty">
-              <p>Select a date to see assignments</p>
+              <p>Select a date to see assignments and important dates</p>
               <p className="atrium-calendar-month-mini-summary">
                 {totalThisMonth} assignment{totalThisMonth === 1 ? "" : "s"} due this month · {completedThisMonth} completed
               </p>
@@ -253,9 +302,22 @@ export function AtriumCalendar({
                 {selectedDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
               </div>
 
+              {dayImportantDatesList.length > 0 && (
+                <div className="atrium-calendar-important-list">
+                  {dayImportantDatesList.map((d) => (
+                    <div key={d.id} className="atrium-calendar-important-row">
+                      <span className="atrium-calendar-legend-star" aria-hidden="true">
+                        ★
+                      </span>
+                      <span className="atrium-calendar-important-title">{d.title}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {dayList.length === 0 ? (
                 <div className="atrium-calendar-detail-nothing">
-                  <p>Nothing due</p>
+                  {dayImportantDatesList.length === 0 && <p>Nothing due</p>}
                   <Link href="/student/assignments" className="atrium-calendar-add-link">
                     Add assignment →
                   </Link>

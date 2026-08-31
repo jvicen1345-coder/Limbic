@@ -29,6 +29,7 @@ import {
 } from "@/components/icons";
 import { getCurrentProgramPhase, getGenericProgramPhase, getProgramPhaseLabel, type ProgramPhase } from "@/lib/dpt-program";
 import { getThisWeekAssignments, getMonthAssignments } from "@/app/actions/syllabus";
+import { getMonthImportantDates } from "@/app/actions/calendar";
 import { getWeekRecommendations, getThisWeekDateRange } from "@/lib/atrium-recommendations";
 import { getUserProgram } from "@/app/actions/dpt-programs";
 import { getTimeZone } from "@/lib/user-time-zone";
@@ -229,6 +230,7 @@ export default async function StudentAtriumPage() {
     thisWeekAssignments,
     syllabusCount,
     monthAssignments,
+    monthImportantDates,
   ] = await Promise.all([
     prisma.dailyCompletion.findFirst({
       where: { userId: user.id, dateKey: todayKey, kind: { in: ["boardQuestion", "boardTerm"] } },
@@ -272,6 +274,11 @@ export default async function StudentAtriumPage() {
     // month, complete or not; the calendar's own month navigation re-fetches via
     // app/api/assignments/route.ts rather than re-running this page.
     getMonthAssignments(user.id, now.getFullYear(), now.getMonth() + 1),
+    // Also feeds the Academic Calendar — every "Important Date"-type calendar event (first
+    // day of trimester, finals week, add/drop deadline, breaks) this month. "Can the
+    // calendar have important dates as well" — this is that: additive to the assignments
+    // above, same shape as getMonthAssignments (see app/actions/calendar.ts).
+    getMonthImportantDates(user.id, now.getFullYear(), now.getMonth() + 1),
   ]);
   const hasAssignmentSource = syllabusCount > 0;
 
@@ -482,7 +489,7 @@ export default async function StudentAtriumPage() {
               </Link>
             </div>
 
-            {monthAssignments.length === 0 && !hasAssignmentSource ? (
+            {monthAssignments.length === 0 && monthImportantDates.length === 0 && !hasAssignmentSource ? (
               <div
                 style={{
                   background: "var(--color-card-surface)",
@@ -493,7 +500,11 @@ export default async function StudentAtriumPage() {
                 }}
               >
                 <p style={{ color: "var(--color-neutral-700)", fontSize: "14px", marginBottom: "12px" }}>
-                  Upload a syllabus to see your academic calendar here.
+                  Upload a syllabus, or add an important date in{" "}
+                  <Link href="/calendar" style={{ color: "var(--atrium-tint)", fontWeight: 600 }}>
+                    Calendar
+                  </Link>
+                  , to see your academic calendar here.
                 </p>
                 <Link
                   href="/student/assignments"
@@ -521,6 +532,7 @@ export default async function StudentAtriumPage() {
                   courseCode: a.courseCode,
                   completed: a.completed,
                 }))}
+                initialImportantDates={monthImportantDates}
                 userId={user.id}
               />
             )}
