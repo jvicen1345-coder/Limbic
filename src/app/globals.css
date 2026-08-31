@@ -4433,10 +4433,14 @@ html[data-theme="dark"] .nav-founding-link-active {
 
 /* — Anatomy Connect (app/games/anatomy-connect/page.tsx, components/AnatomyConnectGame.tsx)
    — four accent colors for the four muscle-to-nerve/action/region rows, reused for both the
-   desktop columns and the mobile row list so a given row reads the same color either way. */
+   desktop columns and the mobile flow so a given row reads the same color either way.
+   Blue / purple / amber / green: four hues that stay distinguishable side by side, each a
+   named token rather than a literal hex so both themes track the palette (see the
+   --color-warn/--color-success comment near the top of this file for why nothing here
+   hard-codes a color). */
 .ac-color-0 { --ac-row-color: var(--color-accent); }
-.ac-color-1 { --ac-row-color: var(--color-accent-2); }
-.ac-color-2 { --ac-row-color: var(--color-vitals-mindfulness); }
+.ac-color-1 { --ac-row-color: var(--color-vitals-mindfulness); }
+.ac-color-2 { --ac-row-color: var(--color-warn); }
 .ac-color-3 { --ac-row-color: var(--color-vitals-mobility); }
 
 .anatomy-connect-page { max-width: 960px; margin: 0 auto; }
@@ -4461,14 +4465,65 @@ html[data-theme="dark"] .nav-founding-link-active {
   cursor: pointer;
   transition: border-color 150ms ease, background 150ms ease;
 }
-.anatomy-connect-card:hover:not(:disabled) { border-color: var(--color-accent); }
-.anatomy-connect-card-active { border-color: var(--color-accent); border-width: 2px; box-shadow: 0 0 0 1px var(--color-accent); }
-.anatomy-connect-card-disabled { opacity: 0.4; cursor: default; }
-.anatomy-connect-card[class*="ac-color-"] { border-color: var(--ac-row-color); background: color-mix(in srgb, var(--ac-row-color) 14%, var(--color-card-surface)); }
-.anatomy-connect-card-correct { border-color: var(--color-vitals-mobility) !important; background: color-mix(in srgb, var(--color-vitals-mobility) 20%, var(--color-card-surface)) !important; }
-.anatomy-connect-card-incorrect { border-color: var(--color-danger) !important; background: color-mix(in srgb, var(--color-danger) 16%, var(--color-card-surface)) !important; }
+.anatomy-connect-card:hover:not(:disabled) { border-color: color-mix(in srgb, var(--color-accent) 40%, transparent); }
+/* Graded cards stay at full strength once the board goes read-only — dimming a disabled
+   card would wash out the correct/incorrect colors that are the whole point of that state. */
+.anatomy-connect-card:disabled { cursor: default; }
+.anatomy-connect-card-active {
+  position: relative;
+  border-color: var(--color-accent);
+  border-width: 2px;
+  background: color-mix(in srgb, var(--color-accent) 20%, var(--color-card-surface));
+  color: var(--color-accent);
+  font-weight: 600;
+}
+.anatomy-connect-card[class*="ac-color-"] { border-width: 2px; border-color: var(--ac-row-color); background: color-mix(in srgb, var(--ac-row-color) 15%, var(--color-card-surface)); }
+.anatomy-connect-card-correct { border-color: var(--color-success) !important; background: color-mix(in srgb, var(--color-success) 8%, var(--color-card-surface)) !important; }
+.anatomy-connect-card-incorrect { border-color: var(--color-danger) !important; background: color-mix(in srgb, var(--color-danger) 8%, var(--color-card-surface)) !important; }
+.anatomy-connect-card-hinted { border-color: color-mix(in srgb, var(--color-success) 55%, transparent) !important; }
 
-.anatomy-connect-mobile-list { display: none; }
+.anatomy-connect-card-wrap { display: flex; flex-direction: column; gap: 3px; }
+.anatomy-connect-correct-note { font-size: var(--fs-10-5); color: color-mix(in srgb, var(--color-success) 80%, var(--color-neutral-700)); padding-left: 2px; }
+
+/* The active muscle's pulsing marker — plain CSS keyframes, no library. */
+@keyframes ac-active-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1); }
+}
+.anatomy-connect-active-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  animation: ac-active-pulse 1.2s ease-in-out infinite;
+}
+.anatomy-connect-hint-tag { display: block; font-size: var(--fs-10); margin-top: 3px; color: color-mix(in srgb, var(--color-success) 80%, var(--color-neutral-700)); }
+
+.anatomy-connect-instruction { text-align: center; font-size: 13px; font-style: italic; color: var(--color-neutral-700); margin: 0 0 14px; }
+
+.ac-timer-flash { margin-left: 8px; font-weight: 700; color: var(--color-warn); animation: ac-active-pulse 1s ease-out; }
+
+.anatomy-connect-hint-btn {
+  flex: 1;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid var(--color-divider);
+  color: var(--color-neutral-700);
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 150ms ease;
+}
+.anatomy-connect-hint-btn:hover:not(:disabled) { border-color: var(--color-warn); }
+.anatomy-connect-hint-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* Mobile flow is hidden on desktop and vice versa — the two are separate rendering paths
+   that share only the timer and hint budget, so exactly one is ever visible. */
+.anatomy-connect-mobile { display: none; }
 
 .anatomy-connect-actions { display: flex; gap: 10px; margin-bottom: 10px; }
 .anatomy-connect-actions .btn-secondary { flex: 1; }
@@ -4484,22 +4539,104 @@ html[data-theme="dark"] .nav-founding-link-active {
   border: 1px solid color-mix(in srgb, var(--color-vitals-mobility) 30%, transparent);
 }
 
-@media (max-width: 720px) {
-  .anatomy-connect-columns { display: none; }
-  .anatomy-connect-mobile-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-  .anatomy-connect-mobile-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding: 12px;
+/* Three-column board on the five puzzles whose rows all share one region — the Region
+   column is dropped rather than shown as four identical, unmissable cards. */
+.anatomy-connect-columns-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* Part 6 — "Your Stats" inherits the body face here instead of the Caprasimo display font
+   .games-stats-title sets globally. Scoped to this game rather than fixing the shared rule,
+   which also titles the games index, Differential and Rehab Sequence. Family only: size and
+   weight still come from .games-stats-title. */
+.anatomy-connect-page .games-stats-title,
+.ac-how-to-play .games-stats-title { font-family: inherit; }
+
+.ac-stats-empty { text-align: center; font-size: 14px; color: var(--color-neutral-700); margin: 6px 0 4px; }
+
+.ac-how-to-play {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+.ac-how-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ac-how-steps li { display: flex; align-items: baseline; gap: 8px; font-size: 13.5px; color: var(--color-text); }
+.ac-how-step-num { font-weight: 700; font-size: 14px; color: var(--color-accent); flex-shrink: 0; }
+.ac-how-tips-label { margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--color-neutral-700); }
+.ac-how-tips { margin: 6px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.ac-how-tips li { font-size: 13px; font-style: italic; color: var(--color-neutral-700); }
+
+@media (max-width: 767px) {
+  .anatomy-connect-desktop { display: none; }
+  .anatomy-connect-mobile { display: block; margin-bottom: 20px; }
+
+  .ac-progress-track { height: 4px; border-radius: 2px; background: var(--color-divider); overflow: hidden; margin-bottom: 16px; }
+  .ac-progress-fill { height: 100%; background: var(--color-accent); border-radius: 2px; transition: width 250ms ease; }
+
+  .ac-muscle-header {
+    background: var(--color-card-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .ac-muscle-header-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .ac-muscle-progress { font-size: 13px; color: var(--color-neutral-700); }
+  .ac-region-pill {
+    font-size: var(--fs-11);
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-accent) 14%, var(--color-card-surface));
+    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    color: var(--color-accent-700);
+  }
+  .ac-muscle-name { font-size: 22px; font-weight: 700; text-align: center; margin-top: 8px; color: var(--color-text); }
+
+  .ac-question-card { display: flex; flex-direction: column; gap: 8px; }
+  .ac-question-label { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; color: var(--color-neutral-700); }
+
+  .ac-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 14px;
     border-radius: var(--radius-md);
     border: 1px solid var(--color-divider);
     background: var(--color-card-surface);
+    color: var(--color-text);
+    font-size: 13.5px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 150ms ease, background 150ms ease;
   }
-  .anatomy-connect-mobile-row[class*="ac-color-"] { border-color: var(--ac-row-color); background: color-mix(in srgb, var(--ac-row-color) 12%, var(--color-card-surface)); }
-  .anatomy-connect-mobile-muscle { grid-column: 1 / -1; font-weight: 700; font-size: 13.5px; margin-bottom: 2px; }
-  .anatomy-connect-mobile-row select { grid-column: 1 / -1; }
-  .anatomy-connect-mobile-feedback { grid-column: 1 / -1; font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+  .ac-option:disabled { cursor: default; }
+  .ac-option-correct { border: 2px solid var(--color-success); background: color-mix(in srgb, var(--color-success) 8%, var(--color-card-surface)); }
+  .ac-option-incorrect { border: 2px solid var(--color-danger); background: color-mix(in srgb, var(--color-danger) 8%, var(--color-card-surface)); }
+  .ac-option-reveal { border: 2px solid var(--color-success); }
+  .ac-option-hinted { border: 2px solid color-mix(in srgb, var(--color-success) 55%, transparent); }
+  .ac-option-mark { font-weight: 700; flex-shrink: 0; }
+  .ac-option-correct .ac-option-mark { color: var(--color-success); }
+  .ac-option-incorrect .ac-option-mark { color: var(--color-danger); }
+  .ac-option-reveal-label { font-size: var(--fs-10); color: var(--color-neutral-700); flex-shrink: 0; }
+
+  .ac-next-btn, .ac-hint-mobile { margin-top: 8px; }
+  .ac-hint-mobile { width: 100%; }
+
+  .ac-muscle-result {
+    background: var(--color-card-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: center;
+  }
+  .ac-muscle-result-name { font-size: 16px; font-weight: 700; color: var(--color-text); }
+  .ac-muscle-result-score { font-size: 15px; font-weight: 700; margin: 6px 0 16px; }
+  .ac-score-all { color: var(--color-success); }
+  .ac-score-some { color: var(--color-warn); }
+  .ac-score-none { color: var(--color-danger); }
 }
 
 /* — Rehab Sequence (app/games/rehab-sequence/page.tsx, components/RehabSequenceGame.tsx) — */
