@@ -287,7 +287,7 @@ export default async function StudentAtriumPage() {
     bucket.push({ id: event.id, title: event.title, type: event.type });
     eventsByDateKey.set(key, bucket);
   }
-  const scheduleDays = Array.from({ length: 7 }, (_, i) => {
+  const scheduleDays = Array.from({ length: 5 }, (_, i) => {
     const date = new Date(weekStart);
     date.setDate(weekStart.getDate() + i);
     const dateKey = dateToLocalIso(date);

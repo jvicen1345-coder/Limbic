@@ -12001,7 +12001,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 
 .atrium-week-schedule-grid {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
 }
 .atrium-week-schedule-col {
@@ -12034,7 +12034,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   overflow-wrap: break-word;
 }
 @media (max-width: 700px) {
-  .atrium-week-schedule-grid { grid-template-columns: repeat(7, 84px); overflow-x: auto; padding-bottom: 2px; }
+  .atrium-week-schedule-grid { grid-template-columns: repeat(5, 84px); overflow-x: auto; padding-bottom: 2px; }
 }
 
 /* Syllabus meeting-pattern editor (components/student/SyllabiManager.tsx) — the fallback UI
