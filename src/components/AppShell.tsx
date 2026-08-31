@@ -701,8 +701,15 @@ export function AppShell({
         {children}
       </main>
 
+      {/* Home/Search/Profile are the only entries every account gets — Atrium and Dashboard
+          are conditional on the same isStudent/isPro flags the sidebar already gates its own
+          "/student" and "/pro/dashboard" links on (see NavContent above), so the bar only
+          grows for an account that actually has that destination; bottomNavStyle's flex: 1
+          on every item re-spaces the row automatically at 3, 4, or 5 entries. */}
       <nav className="app-bottomnav">
         <BottomNavLink href="/home" icon={<HomeIcon size={20} />} label="Home" />
+        {isStudent && <BottomNavLink href="/student" icon={<GraduationCapIcon size={20} />} label="Atrium" />}
+        {isPro && <BottomNavLink href="/pro/dashboard" icon={<LayoutDashboardIcon size={20} />} label="Dashboard" />}
         <BottomNavLink href="/search" icon={<SearchIcon size={20} />} label="Search" />
         <BottomNavLink href="/profile" icon={<ProfileIcon size={20} />} label="Profile" />
       </nav>
