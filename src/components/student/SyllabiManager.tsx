@@ -10,11 +10,16 @@ import {
   updateAssignment,
   deleteAssignment,
   getSyllabusAssignments,
+  updateSyllabusMeetingPattern,
   type SyllabusWithCount,
 } from "@/app/actions/syllabus";
 import { TrashIcon, ChevronRightIcon } from "@/components/icons";
 
 const CATEGORIES = ["Exam", "Quiz", "Assignment", "Lab Practical", "Paper", "Presentation", "Clinical", "Other"] as const;
+// Mon-first for display (this app's week always starts Monday, see getThisWeekDateRange) —
+// MEETING_DAY_CODES (lib/calendar-events.ts) itself stays Sunday-first to match
+// Date.getDay(), see that constant's own comment.
+const MEETING_DAYS_DISPLAY_ORDER = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 
 interface ReviewRow {
   id: string;
@@ -66,6 +71,7 @@ export function SyllabiManager({
   const [parseError, setParseError] = useState<string | null>(null);
   const [review, setReview] = useState<{ syllabusId: string; rows: ReviewRow[] } | null>(null);
   const [newRow, setNewRow] = useState({ title: "", dueDate: "", category: "Assignment" });
+  const [parsedMeeting, setParsedMeeting] = useState<{ days: string[]; time: string | null } | null>(null);
 
   function handleParse() {
     setParseError(null);
@@ -100,6 +106,7 @@ export function SyllabiManager({
           courseName: a.courseName,
         })),
       });
+      setParsedMeeting(parsed.meetingDays ? { days: parsed.meetingDays, time: parsed.meetingTime } : null);
       await refreshSyllabi();
     });
   }
@@ -149,6 +156,7 @@ export function SyllabiManager({
     startTransition(async () => {
       await Promise.all(review.rows.map((r) => updateAssignment(r.id, r.title, r.dueDate, r.category)));
       setReview(null);
+      setParsedMeeting(null);
       setCourseCode("");
       setCourseName("");
       setSyllabusText("");
@@ -162,6 +170,7 @@ export function SyllabiManager({
       await Promise.all(review.rows.map((r) => deleteAssignment(r.id)));
       await deleteSyllabus(review.syllabusId);
       setReview(null);
+      setParsedMeeting(null);
       await refreshSyllabi();
     });
   }
@@ -230,6 +239,33 @@ export function SyllabiManager({
         setAssignmentsById((prev) => ({ ...prev, [id]: rows }));
       });
     }
+  }
+
+  // --- Meeting pattern editor (powers the Atrium's Class Schedule strip — see
+  // AtriumWeekSchedule.tsx) — parseSyllabusFromText already sets this from the AI parse when
+  // it can find a clear pattern, but plenty of syllabi don't state one in a parseable line,
+  // and a manually-added course never runs the AI parse at all. This is the fallback: set or
+  // correct it by hand, right on the syllabus card.
+  const [editingMeetingId, setEditingMeetingId] = useState<string | null>(null);
+  const [meetingDaysDraft, setMeetingDaysDraft] = useState<string[]>([]);
+  const [meetingTimeDraft, setMeetingTimeDraft] = useState("");
+
+  function openMeetingEditor(s: SyllabusWithCount) {
+    setEditingMeetingId(s.id);
+    setMeetingDaysDraft(s.meetingDays ?? []);
+    setMeetingTimeDraft(s.meetingTime ?? "");
+  }
+
+  function toggleMeetingDay(day: string) {
+    setMeetingDaysDraft((prev) => (prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]));
+  }
+
+  function handleSaveMeetingPattern(syllabusId: string) {
+    startTransition(async () => {
+      await updateSyllabusMeetingPattern(syllabusId, meetingDaysDraft, meetingTimeDraft);
+      setEditingMeetingId(null);
+      await refreshSyllabi();
+    });
   }
 
   function handleDeleteSyllabus(id: string, label: string) {
@@ -331,6 +367,12 @@ export function SyllabiManager({
                 <p className="syllabi-review-title">
                   {review.rows.length} assignment{review.rows.length === 1 ? "" : "s"} found — review before saving
                 </p>
+                {parsedMeeting && (
+                  <p className="syllabi-review-meeting">
+                    Also found a class schedule: meets {MEETING_DAYS_DISPLAY_ORDER.filter((d) => parsedMeeting.days.includes(d)).join(", ")}
+                    {parsedMeeting.time ? ` · ${parsedMeeting.time}` : ""} — it&rsquo;ll show up on your Atrium&rsquo;s Class Schedule. Edit it below anytime.
+                  </p>
+                )}
                 <div className="syllabi-review-table-wrap">
                   <table className="syllabi-review-table">
                     <thead>
@@ -519,7 +561,8 @@ export function SyllabiManager({
           <p className="atrium-dashboard-empty">No syllabi uploaded yet — add one above to start tracking assignments.</p>
         ) : (
           syllabi.map((s) => (
-            <details key={s.id} className="syllabi-card" onToggle={(e) => handleToggle(s.id, e)}>
+            <div key={s.id}>
+            <details className="syllabi-card" onToggle={(e) => handleToggle(s.id, e)}>
               <summary className="pro-accordion-summary syllabi-card-summary">
                 <div>
                   <div className="syllabi-card-title">
@@ -527,6 +570,29 @@ export function SyllabiManager({
                   </div>
                   <div className="syllabi-card-meta">
                     Trimester {s.trimester} · {s.year} · {s.assignmentCount} assignment{s.assignmentCount === 1 ? "" : "s"}
+                  </div>
+                  <div className="syllabi-card-meeting">
+                    {s.meetingDays && s.meetingDays.length > 0 ? (
+                      <>
+                        Meets {MEETING_DAYS_DISPLAY_ORDER.filter((d) => s.meetingDays!.includes(d)).join(", ")}
+                        {s.meetingTime ? ` · ${s.meetingTime}` : ""}
+                      </>
+                    ) : (
+                      "No class meeting time set"
+                    )}{" "}
+                    <button
+                      type="button"
+                      className="syllabi-meeting-edit-link"
+                      onClick={(e) => {
+                        // Same preventDefault as the Delete button above — the editor renders
+                        // as a sibling of <details> below (not inside .pro-accordion-content),
+                        // so it doesn't need the accordion open to be visible.
+                        e.preventDefault();
+                        openMeetingEditor(s);
+                      }}
+                    >
+                      Edit
+                    </button>
                   </div>
                 </div>
                 <div className="syllabi-card-actions">
@@ -574,6 +640,37 @@ export function SyllabiManager({
                 )}
               </div>
             </details>
+            {editingMeetingId === s.id && (
+              <div className="syllabi-meeting-form">
+                <div className="syllabi-meeting-days">
+                  {MEETING_DAYS_DISPLAY_ORDER.map((day) => (
+                    <label
+                      key={day}
+                      className={meetingDaysDraft.includes(day) ? "syllabi-meeting-day syllabi-meeting-day--on" : "syllabi-meeting-day"}
+                    >
+                      <input type="checkbox" checked={meetingDaysDraft.includes(day)} onChange={() => toggleMeetingDay(day)} />
+                      {day}
+                    </label>
+                  ))}
+                </div>
+                <input
+                  className="input syllabi-meeting-time-input"
+                  type="text"
+                  placeholder="Time (optional), e.g. 9:00-9:50 AM"
+                  value={meetingTimeDraft}
+                  onChange={(e) => setMeetingTimeDraft(e.target.value)}
+                />
+                <div className="syllabi-meeting-form-actions">
+                  <button type="button" className="btn btn-primary" onClick={() => handleSaveMeetingPattern(s.id)} disabled={pending}>
+                    Save
+                  </button>
+                  <button type="button" className="btn btn-secondary" onClick={() => setEditingMeetingId(null)} disabled={pending}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+            </div>
           ))
         )}
       </div>

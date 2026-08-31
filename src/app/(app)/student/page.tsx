@@ -9,7 +9,6 @@ export const metadata: Metadata = {
 import { firstName, timeOfDayGreeting } from "@/lib/meta";
 import { npteDomainOf, todayDateKey } from "@/lib/board-content";
 import { boardQuestionForCompletion } from "@/lib/boards-progress";
-import { getAcceptedConnectionIds } from "@/lib/nexus";
 import { last7DateKeys } from "@/lib/games";
 import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumProgressChart";
 import { AtriumThisWeekCard } from "@/components/AtriumThisWeekCard";
@@ -33,6 +32,8 @@ import { getThisWeekAssignments, getMonthAssignments } from "@/app/actions/sylla
 import { getWeekRecommendations, getThisWeekDateRange } from "@/lib/atrium-recommendations";
 import { getUserProgram } from "@/app/actions/dpt-programs";
 import { getTimeZone } from "@/lib/user-time-zone";
+import { dateToLocalIso } from "@/lib/limbic-calendar";
+import { AtriumWeekSchedule } from "@/components/AtriumWeekSchedule";
 
 // A safe all-zero phase for a reader who's picked a real program (see getUserProgram) but
 // hasn't set a start date yet — getGenericProgramPhase returns null in that case (it needs
@@ -211,15 +212,27 @@ export default async function StudentAtriumPage() {
   const todayKey = todayDateKey(await getTimeZone(user));
   const weekDateKeys = last7DateKeys(todayKey);
 
-  // connectionIds and nextCalendarEvent are still fetched here, unchanged (Study Group and
-  // Upcoming were Quick Links entries the dashboard redesign removed — see
-  // atrium-supporting-row below — but nothing about the fetch itself changed, this just
-  // stops binding results neither the redesigned page nor anything else here reads).
-  const [, , weekCompletions, boardActivityRows, , thisWeekAssignments, syllabusCount, monthAssignments, canvasConnection] = await Promise.all([
+  // Monday-Sunday range for both the This Week card below and the new weekly schedule strip
+  // (see components/AtriumWeekSchedule.tsx) — computed once so the two can't disagree about
+  // which week "this week" means.
+  const weekRange = getThisWeekDateRange();
+  const weekStart = new Date(`${weekRange.start}T00:00:00`);
+  const weekEnd = new Date(`${weekRange.end}T23:59:59`);
+
+  const [
+    ,
+    weekCompletions,
+    boardActivityRows,
+    weekCalendarEvents,
+    weekSyllabiMeetings,
+    thisWeekAssignments,
+    syllabusCount,
+    monthAssignments,
+    canvasConnection,
+  ] = await Promise.all([
     prisma.dailyCompletion.findFirst({
       where: { userId: user.id, dateKey: todayKey, kind: { in: ["boardQuestion", "boardTerm"] } },
     }),
-    getAcceptedConnectionIds(user.id),
     prisma.dailyCompletion.findMany({
       where: { userId: user.id, kind: "boardQuestion", dateKey: { in: weekDateKeys } },
     }),
@@ -228,9 +241,25 @@ export default async function StudentAtriumPage() {
     // weekCompletions above (boardQuestion answers only), matching what the streak itself
     // actually counts a day as "done" for.
     prisma.boardActivity.findMany({ where: { userId: user.id, dateKey: { in: weekDateKeys } }, select: { dateKey: true } }),
-    prisma.userCalendarEvent.findFirst({
-      where: { userId: user.id, date: { gte: now } },
+    // Weekly schedule strip (see components/AtriumWeekSchedule.tsx) — only "Class"-type
+    // calendar events (see app/(app)/calendar/page.tsx, where these are actually created,
+    // and lib/calendar-events.ts USER_EVENT_TYPES for the full type list) landing
+    // Monday-Sunday this week. Deliberately excludes Rotation/CE Event/Conference/Personal/
+    // Other — the user asked for "your class schedule and only your classes", not every
+    // personal calendar entry.
+    prisma.userCalendarEvent.findMany({
+      where: { userId: user.id, type: "Class", date: { gte: weekStart, lte: weekEnd } },
       orderBy: { date: "asc" },
+    }),
+    // Also feeds the Class Schedule strip — recurring weekly meetings parsed straight off a
+    // student's own syllabi (see lib/syllabus-parser.ts and Syllabus.meetingDays/meetingTime
+    // in prisma/schema.prisma), or set by hand on the syllabus card when the AI parse can't
+    // find one (see updateSyllabusMeetingPattern in app/actions/syllabus.ts). "use the
+    // information from the syllabi to create a class schedule" — this is that: additive to
+    // the manual Class-type calendar events above, not a replacement for them.
+    prisma.syllabus.findMany({
+      where: { userId: user.id, meetingDays: { not: null } },
+      select: { id: true, courseCode: true, courseName: true, meetingDays: true, meetingTime: true },
     }),
     // This Week card (see components/AtriumThisWeekCard.tsx, replacing the old Weekly
     // Roundup panel here) — every syllabus assignment due this calendar week, plus a plain
@@ -250,6 +279,43 @@ export default async function StudentAtriumPage() {
     prisma.canvasConnection.findUnique({ where: { userId: user.id }, select: { id: true } }),
   ]);
   const hasAssignmentSource = syllabusCount > 0 || canvasConnection != null;
+
+  // Weekly schedule strip's 7 day columns (see components/AtriumWeekSchedule.tsx) — built
+  // from weekStart/weekCalendarEvents above, plus weekSyllabiMeetings expanded onto every
+  // matching weekday below. dateToLocalIso, not toISOString, for the same reason every other
+  // day-key in this app avoids it (see AtriumCalendar's own toDateKey comment): a DateTime
+  // read back with a UTC-based key can land on the wrong local day.
+  const eventsByDateKey = new Map<string, { id: string; title: string; type: string }[]>();
+  for (const event of weekCalendarEvents) {
+    const key = dateToLocalIso(event.date);
+    const bucket = eventsByDateKey.get(key) ?? [];
+    bucket.push({ id: event.id, title: event.title, type: event.type });
+    eventsByDateKey.set(key, bucket);
+  }
+  const scheduleDays = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(weekStart);
+    date.setDate(weekStart.getDate() + i);
+    const dateKey = dateToLocalIso(date);
+    const weekday = date.toLocaleDateString("en-US", { weekday: "short" });
+    // Every uploaded syllabus whose meetingDays includes this weekday (see the
+    // prisma.syllabus.findMany query above) contributes one entry here — title is the short
+    // course code so it fits the day cell, and the tooltip (WeekScheduleEvent.type, rendered
+    // as the card's title attribute) carries the full course name and meeting time instead.
+    const syllabusEvents = weekSyllabiMeetings
+      .filter((s) => s.meetingDays!.split(",").includes(weekday))
+      .map((s) => ({
+        id: `syllabus-${s.id}-${dateKey}`,
+        title: s.courseCode,
+        type: s.meetingTime ? `${s.courseName} · ${s.meetingTime}` : s.courseName,
+      }));
+    return {
+      dateKey,
+      label: weekday,
+      dayNumber: date.getDate(),
+      isToday: dateKey === todayKey,
+      events: [...(eventsByDateKey.get(dateKey) ?? []), ...syllabusEvents],
+    };
+  });
 
   const daysCompletedThisWeek = new Set(boardActivityRows.map((r) => r.dateKey)).size;
 
@@ -281,10 +347,12 @@ export default async function StudentAtriumPage() {
   }));
 
   // This Week card data (see components/AtriumThisWeekCard.tsx) — the week label matches
-  // getThisWeekAssignments' own Monday-Sunday window, and recommendations are keyed by the
-  // same trimesterNumber the phase header above already reads. No NPTE countdown here —
-  // that already renders once, in the header above (see .atrium-countdown below).
-  const weekLabel = getThisWeekDateRange().label;
+  // getThisWeekAssignments' own Monday-Sunday window (weekRange above, computed once and
+  // reused here rather than calling getThisWeekDateRange() a second time), and
+  // recommendations are keyed by the same trimesterNumber the phase header above already
+  // reads. No NPTE countdown here — that already renders once, in the header above (see
+  // .atrium-countdown below).
+  const weekLabel = weekRange.label;
   const recommendations = getWeekRecommendations(phase.trimesterNumber);
 
   return (
@@ -325,6 +393,8 @@ export default async function StudentAtriumPage() {
           </p>
         )}
       </div>
+
+      <AtriumWeekSchedule days={scheduleDays} weekLabel={weekLabel} />
 
       {phase.type === "clinical" && phase.trimester && (
         <div className="atrium-rotation-banner">

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { parseSyllabusText, type ParsedAssignment } from "@/lib/syllabus-parser";
 import { getThisWeekDateRange } from "@/lib/atrium-recommendations";
+import { MEETING_DAY_CODES } from "@/lib/calendar-events";
 import type { Syllabus, Assignment } from "@/generated/prisma/client";
 
 // Explicit discriminated-union return types for every mutation the client actually branches
@@ -46,6 +47,8 @@ export interface SyllabusWithCount {
   uploadedAt: Date;
   parsedAt: Date | null;
   assignmentCount: number;
+  meetingDays: string[] | null;
+  meetingTime: string | null;
 }
 
 /** All syllabi for the signed-in student, most recently uploaded first — powers both the
@@ -69,6 +72,8 @@ export async function getSyllabi(): Promise<SyllabusWithCount[]> {
     uploadedAt: s.uploadedAt,
     parsedAt: s.parsedAt,
     assignmentCount: s._count.assignments,
+    meetingDays: s.meetingDays ? s.meetingDays.split(",") : null,
+    meetingTime: s.meetingTime,
   }));
 }
 
@@ -124,15 +129,17 @@ export async function deleteSyllabus(syllabusId: string) {
 }
 
 /** Runs the raw syllabus text through Limbic AI (see lib/syllabus-parser.ts), saves the raw
- *  text + parsedAt on the syllabus, and creates one Assignment (source: "syllabus") per
- *  extracted item.
+ *  text + parsedAt + meeting pattern (if one was found) on the syllabus, and creates one
+ *  Assignment (source: "syllabus") per extracted item. A syllabus with no assignments but a
+ *  real meeting pattern still saves successfully — the Class Schedule strip only needs the
+ *  pattern, not any assignments.
  *  Returns the created rows so the review panel (see components/student/SyllabiManager.tsx)
  *  can show exactly what got saved — this app's UI never re-parses to display something
  *  it's already about to persist. */
 export async function parseSyllabusFromText(
   syllabusId: string,
   rawText: string
-): Promise<ActionError | { success: true; assignments: Assignment[] }> {
+): Promise<ActionError | { success: true; assignments: Assignment[]; meetingDays: string[] | null; meetingTime: string | null }> {
   const user = await requireStudentUser();
   if (!user) return { error: "Unauthorized" };
   if (!rawText.trim()) return { error: "Paste your syllabus text first." };
@@ -142,12 +149,17 @@ export async function parseSyllabusFromText(
 
   const parsed = await parseSyllabusText(rawText, syllabus.courseCode, syllabus.courseName);
   if (parsed === null) return { error: "Could not read that syllabus. Please try again or add assignments manually." };
-  if (parsed.length === 0) return { error: "No assignments with a clear due date were found in that text." };
+  if (parsed.assignments.length === 0 && parsed.meetingDays === null) {
+    return { error: "No assignments or a clear class meeting time were found in that text." };
+  }
 
   const now = new Date();
   await prisma.$transaction([
-    prisma.syllabus.update({ where: { id: syllabusId }, data: { rawText, parsedAt: now } }),
-    ...parsed.map((a: ParsedAssignment) =>
+    prisma.syllabus.update({
+      where: { id: syllabusId },
+      data: { rawText, parsedAt: now, meetingDays: parsed.meetingDays?.join(",") ?? null, meetingTime: parsed.meetingTime },
+    }),
+    ...parsed.assignments.map((a: ParsedAssignment) =>
       prisma.assignment.create({
         data: {
           syllabusId,
@@ -166,7 +178,41 @@ export async function parseSyllabusFromText(
 
   revalidatePath("/student/assignments");
   revalidatePath("/student");
-  return { success: true, assignments };
+  return { success: true, assignments, meetingDays: parsed.meetingDays, meetingTime: parsed.meetingTime };
+}
+
+/** Sets or corrects a syllabus's recurring meeting pattern by hand — the fallback for when
+ *  parseSyllabusFromText didn't find one (many syllabi don't state it in a clean parseable
+ *  line) or a manually-added course (see createSyllabus) that never ran the AI parse at all.
+ *  Same whitelist enforcement as every other free-text field in this schema — days is checked
+ *  against MEETING_DAY_CODES before being joined into the stored comma-separated string.
+ *  Passing an empty days array clears the pattern (both fields become null), the same way a
+ *  reader would use this to remove a wrong AI-extracted schedule. */
+export async function updateSyllabusMeetingPattern(
+  syllabusId: string,
+  days: string[],
+  time: string
+): Promise<ActionError | { success: true }> {
+  const user = await requireStudentUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const syllabus = await requireOwnedSyllabus(user.id, syllabusId);
+  if (!syllabus) return { error: "Syllabus not found." };
+
+  const validDays = days.filter((d) => (MEETING_DAY_CODES as readonly string[]).includes(d));
+  if (validDays.length !== days.length) return { error: "Invalid meeting day." };
+
+  await prisma.syllabus.update({
+    where: { id: syllabusId },
+    data: {
+      meetingDays: validDays.length > 0 ? validDays.join(",") : null,
+      meetingTime: validDays.length > 0 && time.trim() ? time.trim() : null,
+    },
+  });
+
+  revalidatePath("/student/assignments");
+  revalidatePath("/student");
+  return { success: true };
 }
 
 export async function addManualAssignment(

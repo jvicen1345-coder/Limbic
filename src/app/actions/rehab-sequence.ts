@@ -1,8 +1,10 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { getTimeZone } from "@/lib/user-time-zone";
+import { recordBoardActivity } from "@/lib/board-activity";
 import { getTodaysRehabCase, getRehabCaseForDate, getDateKey, validateSequence } from "@/lib/rehab-sequence-logic";
 
 // Every action below derives the reader from the session, never a client-supplied id —
@@ -54,11 +56,21 @@ export async function submitRehabSequence(sequenceGiven: string[]): Promise<Subm
   const todaysCase = getTodaysRehabCase(timeZone);
   const validation = validateSequence(todaysCase.id, sequenceGiven);
 
-  await prisma.rehabSequenceResult.upsert({
-    where: { userId_dateKey: { userId: user.id, dateKey: getDateKey(timeZone) } },
-    create: { userId: user.id, dateKey: getDateKey(timeZone), correct: validation.correct, attempts: 1, sequenceGiven },
-    update: { correct: validation.correct, attempts: 1, sequenceGiven },
-  });
+  const dateKey = getDateKey(timeZone);
+  await Promise.all([
+    prisma.rehabSequenceResult.upsert({
+      where: { userId_dateKey: { userId: user.id, dateKey } },
+      create: { userId: user.id, dateKey, correct: validation.correct, attempts: 1, sequenceGiven },
+      update: { correct: validation.correct, attempts: 1, sequenceGiven },
+    }),
+    // See app/actions/differential.ts's identical call for why Daily Games count toward the
+    // Boards streak now. Unlike Differential/Anatomy Connect there's no "solved" gate here —
+    // submitting is itself the day's one attempt (see this action's own docstring) — so this
+    // fires unconditionally, same as the upsert above.
+    recordBoardActivity(user.id, dateKey, timeZone),
+  ]);
+  revalidatePath("/boards");
+  revalidatePath("/student");
 
   return {
     ok: true,

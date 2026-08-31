@@ -50,5 +50,11 @@ next-env.d.ts
 # local sqlite dev database
 /dev.db
 /dev.db-journal
+# WAL sidecars. e2e/global-setup.ts puts the local database into WAL mode, which replaces the
+# single -journal file with these two alongside it.
+/dev.db-wal
+/dev.db-shm
 /prisma/dev.db
 /prisma/dev.db-journal
+/prisma/dev.db-wal
+/prisma/dev.db-shm

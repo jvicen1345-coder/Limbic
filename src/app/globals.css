@@ -11998,3 +11998,127 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   background: var(--color-danger);
   flex-shrink: 0;
 }
+
+/* Shared card chrome for the Atrium's own strip components (currently just
+   AtriumWeekSchedule) — warm-pill treatment on --atrium-tint (the same gold this page
+   already tints its surfaces with, see .app-root--atrium above) rather than the sitewide
+   --color-accent, so it reads as part of the Atrium's own warmth, not a generic widget
+   dropped in from elsewhere. Formerly also backed the Your People / friends strip, removed;
+   kept named .atrium-friends-* since AtriumWeekSchedule already depends on it. */
+.atrium-friends-strip {
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+.atrium-friends-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--atrium-tint);
+  margin-bottom: 10px;
+}
+
+/* Weekly Schedule (components/AtriumWeekSchedule.tsx) — the Atrium's class-schedule strip,
+   built from the reader's own UserCalendarEvent rows (see that component's own comment for
+   why this reads existing /calendar data rather than a new model). Shares
+   .atrium-friends-strip's card chrome (background/border/radius/padding) for the same warm
+   card language as the Your People strip just above it — only the header/grid layout below
+   is specific to this component. */
+.atrium-week-schedule-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.atrium-week-schedule-header .atrium-friends-label { margin-bottom: 0; }
+.atrium-week-schedule-range { font-size: 12px; color: var(--color-neutral-700); flex: 1; }
+.atrium-week-schedule-manage { font-size: 12.5px; font-weight: 600; color: var(--atrium-tint); text-decoration: none; }
+.atrium-week-schedule-manage:hover { text-decoration: underline; }
+.atrium-week-schedule-empty-all { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }
+.atrium-week-schedule-empty-all a { color: var(--atrium-tint); font-weight: 600; text-decoration: none; }
+.atrium-week-schedule-empty-all a:hover { text-decoration: underline; }
+
+.atrium-week-schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+.atrium-week-schedule-col {
+  min-width: 0;
+  border-radius: 10px;
+  padding: 8px 6px;
+  background: var(--atrium-surface-2);
+}
+.atrium-week-schedule-col--today { box-shadow: inset 0 0 0 1.5px var(--atrium-tint); }
+.atrium-week-schedule-col-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--atrium-border);
+}
+.atrium-week-schedule-weekday { font-size: 10.5px; font-weight: 700; color: var(--color-neutral-700); text-transform: uppercase; }
+.atrium-week-schedule-daynum { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; }
+.atrium-week-schedule-col--today .atrium-week-schedule-daynum { color: var(--atrium-tint); }
+.atrium-week-schedule-empty-day { display: block; text-align: center; font-size: 12px; color: var(--color-neutral-700); opacity: 0.5; }
+.atrium-week-schedule-event {
+  font-size: 11px;
+  line-height: 1.35;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: var(--atrium-surface);
+  border-left: 2px solid var(--atrium-tint);
+  margin-bottom: 4px;
+  overflow-wrap: break-word;
+}
+@media (max-width: 700px) {
+  .atrium-week-schedule-grid { grid-template-columns: repeat(7, 84px); overflow-x: auto; padding-bottom: 2px; }
+}
+
+/* Syllabus meeting-pattern editor (components/student/SyllabiManager.tsx) — the fallback UI
+   for setting/correcting the recurring class time parseSyllabusFromText tries to extract
+   automatically (see prisma/schema.prisma Syllabus.meetingDays/meetingTime and
+   lib/syllabus-parser.ts). Feeds the Atrium's Class Schedule strip; see
+   app/(app)/student/page.tsx and components/AtriumWeekSchedule.tsx. */
+.syllabi-card-meeting { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+.syllabi-meeting-edit-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--atrium-tint);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.syllabi-meeting-edit-link:hover { text-decoration: underline; }
+.syllabi-review-meeting {
+  font-size: 12.5px;
+  color: var(--atrium-tint);
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: -4px 0 14px;
+}
+.syllabi-meeting-form {
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.syllabi-meeting-days { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.syllabi-meeting-day {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--atrium-border);
+  cursor: pointer;
+  user-select: none;
+}
+.syllabi-meeting-day--on { border-color: var(--atrium-tint); color: var(--atrium-tint); font-weight: 600; }
+.syllabi-meeting-time-input { max-width: 320px; }
+.syllabi-meeting-form-actions { display: flex; gap: 10px; margin-top: 12px; }
