@@ -9,6 +9,8 @@ import {
   getTodaysPuzzle,
   getDateKey,
   validateSolution,
+  correctAnswerFor,
+  type AnatomyConnectField,
   type AnatomyConnectionInput,
   type AnatomyConnectValidation,
 } from "@/lib/anatomy-connect-logic";
@@ -75,6 +77,49 @@ export async function submitAnatomyConnectAttempt(
   }
 
   return { ok: true, ...validation };
+}
+
+/** Grades a single mobile multiple-choice answer and hands back the right answer alongside
+ *  the verdict, since the mobile flow shows both the moment the reader picks.
+ *
+ *  This exists because the client never holds the answer key (see the page's comment): the
+ *  four label columns it does hold say nothing about which nerve belongs to which muscle. So
+ *  every per-question verdict is a server round trip, the same way Submit already is. Note
+ *  the reader has, by calling this, already committed to an answer for that question — the
+ *  correctAnswer it returns is not a leak of anything still in play. */
+export async function gradeAnatomyConnectAnswer(
+  muscle: string,
+  field: AnatomyConnectField,
+  answer: string
+): Promise<{ ok: boolean; correct: boolean; correctAnswer: string }> {
+  const user = await getCurrentUser();
+  if (!user) return { ok: false, correct: false, correctAnswer: "" };
+
+  const puzzle = getTodaysPuzzle(await getTimeZone(user));
+  const correctAnswer = correctAnswerFor(puzzle, muscle, field);
+  if (correctAnswer === null) return { ok: false, correct: false, correctAnswer: "" };
+
+  return { ok: true, correct: correctAnswer === answer, correctAnswer };
+}
+
+/** Reveals one correct answer as a hint. The reader pays 30 seconds of clock for it (applied
+ *  client-side, then submitted as part of timeSeconds), and the two-hint cap is enforced in
+ *  component state per the spec — deliberately not a server-side limit, so this is a
+ *  self-imposed cost rather than a security boundary. That's the right shape for a
+ *  single-player daily puzzle: someone determined to call this repeatedly is only cheating
+ *  their own stats, and no other reader's score depends on it. */
+export async function revealAnatomyConnectHint(
+  muscle: string,
+  field: AnatomyConnectField
+): Promise<{ ok: boolean; answer: string }> {
+  const user = await getCurrentUser();
+  if (!user) return { ok: false, answer: "" };
+
+  const puzzle = getTodaysPuzzle(await getTimeZone(user));
+  const answer = correctAnswerFor(puzzle, muscle, field);
+  if (answer === null) return { ok: false, answer: "" };
+
+  return { ok: true, answer };
 }
 
 export interface AnatomyConnectStats {
