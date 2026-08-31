@@ -54,9 +54,12 @@ export function SaveButton({
   return (
     <button
       type="button"
-      className="btn btn-ghost btn-icon"
+      className="btn btn-ghost btn-icon icon-btn-sized"
       aria-label={optimisticSaved ? "Remove from saved" : "Save"}
-      style={{ width: dim, height: dim, flexShrink: 0 }}
+      // Size passed as a custom property rather than a literal width/height: an inline
+      // width beats any stylesheet rule, which left this button stuck below the touch
+      // target floor on phones. See .icon-btn-sized in globals.css.
+      style={{ "--icon-btn-dim": `${dim}px`, flexShrink: 0 } as React.CSSProperties}
       onClick={onClick}
     >
       <BookmarkIcon size={icon} filled={optimisticSaved} />

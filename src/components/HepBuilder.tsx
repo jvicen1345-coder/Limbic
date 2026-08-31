@@ -162,9 +162,9 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean }>(funct
                 </div>
                 <button
                   type="button"
-                  className="btn btn-ghost btn-icon"
+                  className="btn btn-ghost btn-icon icon-btn-sized"
                   aria-label="Remove exercise"
-                  style={{ width: 34, height: 34, flexShrink: 0 }}
+                  style={{ "--icon-btn-dim": "34px", flexShrink: 0 } as React.CSSProperties}
                   onClick={() => removeExercise(ex.id)}
                 >
                   <XIcon size={15} />

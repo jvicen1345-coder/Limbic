@@ -35,10 +35,17 @@ test.describe("landing + auth", () => {
     await signUp(page, email);
     await expect(page).toHaveURL(/\/onboarding/);
 
-    // A brand-new signup always goes through both onboarding steps in order: pick-topics,
-    // then "How are you using Limbic?" — .click() auto-waits for each element rather than
-    // needing manual visibility polling. The role picker's options are buttons whose
-    // accessible name combines title and subtitle ("Physical Therapist Licensed clinician").
+    // A brand-new signup goes through three gates in order (see app/(app)/layout.tsx, which
+    // redirects on hasSetName, then hasOnboarded, then hasCompletedOnboarding): the name
+    // screen, pick-topics, then "How are you using Limbic?" — .click() auto-waits for each
+    // element rather than needing manual visibility polling. The role picker's options are
+    // buttons whose accessible name combines title and subtitle ("Physical Therapist
+    // Licensed clinician").
+    await expect(page).toHaveURL(/\/onboarding\/name/);
+    await page.locator("#onb-first-name").fill("Test");
+    await page.locator("#onb-last-name").fill("Account");
+    await page.getByRole("button", { name: "Continue to Limbic" }).click();
+
     await page.getByText("Skip for now").click();
     await page.getByRole("button", { name: /Physical Therapist/ }).click();
     await page.getByRole("button", { name: "Continue" }).click();

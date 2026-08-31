@@ -208,7 +208,11 @@ function FoundingFundersNavLink({ onNavigate }: { onNavigate?: () => void }) {
 
 function BottomNavLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
   const pathname = usePathname();
-  const active = pathname === href;
+  // Match nested routes too, the way the sidebar's NavLink already can (see its `exact` prop).
+  // With an exact match, /profile/credentials and /profile/membership left every tab unlit —
+  // and since the bar only carries Home/Search/Profile, that was most of the app showing no
+  // "you are here" at all. "/" stays exact so Home doesn't light up on every route.
+  const active = href === "/" ? pathname === href : pathname === href || pathname.startsWith(href + "/");
   return (
     <Link href={href} style={bottomNavStyle(active)}>
       {icon}

@@ -25,8 +25,10 @@ export function ClipSaveButton({
   return (
     <button
       type="button"
-      className={variant === "overlay" ? "clip-action-btn" : "btn btn-ghost btn-icon"}
-      style={variant === "overlay" ? { padding: 0 } : { width: 30, height: 30 }}
+      className={variant === "overlay" ? "clip-action-btn" : "btn btn-ghost btn-icon clip-save-btn-ghost"}
+      // The ghost variant's 30×30 moved to .clip-save-btn-ghost in globals.css: as an inline
+      // style it beat the touch-target rules there and stayed 30px wide on phones.
+      style={variant === "overlay" ? { padding: 0 } : undefined}
       aria-label={optimisticSaved ? "Remove from saved" : "Save"}
       onClick={(e) => {
         e.stopPropagation();

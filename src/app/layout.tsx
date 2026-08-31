@@ -61,6 +61,12 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#092744",
+  // Without this, every env(safe-area-inset-*) in globals.css resolves to 0px — which quietly
+  // disabled all four of them, including the bottom nav's home-indicator clearance and
+  // .app-main's matching padding. It matters most in the installed-to-home-screen case:
+  // appleWebApp.statusBarStyle above is "black-translucent", which draws page content under
+  // the status bar, so the top inset has to be real for the mobile top bar to clear the clock.
+  viewportFit: "cover",
 };
 
 // Sets html[data-theme] before the first paint, so the page never flashes one theme and

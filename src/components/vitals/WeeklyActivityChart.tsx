@@ -44,7 +44,18 @@ export function WeeklyActivityChart({ thisWeek, lastWeek, weekStartIso }: { this
                   <div className="vitals-chart-bar" style={{ height: barHeight }}>
                     {VITALS_CATEGORIES.map((c) =>
                       day[c] > 0 ? (
-                        <div key={c} className={`vitals-chart-segment vitals-color-${c}`} style={{ height: (day[c] / maxDayTotal) * TRACK_HEIGHT_PX }}>
+                        // tabIndex/role make the segment actually focusable: the stylesheet
+                        // already tried to reveal the tooltip on :focus-visible, but a plain
+                        // <div> can never take focus, so on a touchscreen — where there is no
+                        // hover — these per-category minutes were unreachable entirely.
+                        <div
+                          key={c}
+                          className={`vitals-chart-segment vitals-color-${c}`}
+                          style={{ height: (day[c] / maxDayTotal) * TRACK_HEIGHT_PX }}
+                          tabIndex={0}
+                          role="img"
+                          aria-label={`${VITALS_CATEGORY_LABEL[c]}: ${day[c]} minutes`}
+                        >
                           <span className="vitals-chart-tooltip">
                             {VITALS_CATEGORY_LABEL[c]} · {day[c]} min
                           </span>

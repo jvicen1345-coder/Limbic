@@ -39,9 +39,10 @@ export function WellnessSaveButton({
   return (
     <button
       type="button"
-      className="btn btn-ghost btn-icon"
+      className="btn btn-ghost btn-icon icon-btn-sized"
       aria-label={optimisticSaved ? "Remove from saved" : "Save"}
-      style={{ width: dim, height: dim, flexShrink: 0 }}
+      // Custom property rather than a literal size — see SaveButton.tsx for why.
+      style={{ "--icon-btn-dim": `${dim}px`, flexShrink: 0 } as React.CSSProperties}
       onClick={(e) => {
         e.stopPropagation();
         e.preventDefault();

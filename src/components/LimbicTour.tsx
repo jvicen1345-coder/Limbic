@@ -128,10 +128,33 @@ export function LimbicTour() {
   const [currentStep, setCurrentStep] = useState(0);
   const [visible, setVisible] = useState(true);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+  const [steps, setSteps] = useState<TourStep[]>(TOUR_STEPS);
 
-  const step = TOUR_STEPS[currentStep];
+  // Five of the ten steps point at sidebar items, and the sidebar is display:none below 800px
+  // (see AppShell.tsx) — so on a phone the tour walked through "Your Navigation", "Limbic
+  // Student", "LimbicPRO", "Limbic Atlas" and "Founding Funders" describing things the reader
+  // could not see, with no highlight ring to look at either (globals.css hides it below
+  // 640px). Drop any step whose target isn't actually rendered and visible at this size.
+  // Filtered after mount rather than during render so SSR and hydration agree; the first step
+  // targets "body", so the list settles before anyone can reach a dropped one. The setState
+  // sits inside the timeout callback for the same reason the effect below does it that way —
+  // a synchronous one in the effect body is a cascading render (see react-hooks/set-state-in-effect).
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setSteps(
+        TOUR_STEPS.filter((s) => {
+          if (s.target === "body") return true;
+          const el = document.querySelector(s.target);
+          return el instanceof HTMLElement && el.offsetParent !== null;
+        }),
+      );
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  const step = steps[Math.min(currentStep, steps.length - 1)];
   const isFirst = currentStep === 0;
-  const isLast = currentStep === TOUR_STEPS.length - 1;
+  const isLast = currentStep >= steps.length - 1;
 
   // targetRect is cleared eagerly by goToStep below, in the same tick as the step change —
   // by the time this effect runs for the new step there's nothing stale to clear, so the
@@ -192,7 +215,7 @@ export function LimbicTour() {
 
       <div className="tour-tooltip" style={tooltipStyle}>
         <div className="tour-progress">
-          {TOUR_STEPS.map((s, i) => (
+          {steps.map((s, i) => (
             <div key={s.id} className={i <= currentStep ? "tour-progress-seg tour-progress-seg--done" : "tour-progress-seg"} />
           ))}
         </div>
