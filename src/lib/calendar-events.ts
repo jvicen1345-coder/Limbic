@@ -42,6 +42,14 @@ export const CALENDAR_VIEWS: { id: CalendarView; label: string }[] = [
 export const USER_EVENT_TYPES = ["Class", "Personal", "CE Event", "Conference", "Rotation", "Other"] as const;
 export type UserEventType = (typeof USER_EVENT_TYPES)[number];
 
+/** Short day-of-week codes for Syllabus.meetingDays (see prisma/schema.prisma and
+ *  lib/syllabus-parser.ts) — whitelisted here and in app/actions/syllabus.ts for the same
+ *  "no DB-level enum, whitelist enforced server-side" reasoning as USER_EVENT_TYPES above.
+ *  Date.prototype.getDay()'s own order (Sunday first), so a lookup by day-index doesn't need
+ *  a separate reordering table anywhere this is consumed. */
+export const MEETING_DAY_CODES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+export type MeetingDayCode = (typeof MEETING_DAY_CODES)[number];
+
 interface BaseCalendarEvent {
   id: string;
   /** ISO "YYYY-MM-DD". */

@@ -1,22 +1,31 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
+import { MEETING_DAY_CODES } from "@/lib/calendar-events";
 
 const client = new Anthropic();
 // Same MODEL constant convention as lib/pre-visit-brief.ts and lib/force-lab-import.ts —
 // claude-opus-5 is this app's one standing choice for every AI-powered feature.
 const MODEL = "claude-opus-5";
 
-const SYSTEM_PROMPT = `You are an academic assistant that extracts assignment and exam information from course syllabi. Extract every graded item, assignment, exam, quiz, practical, paper, and lab from the syllabus text provided.
+const SYSTEM_PROMPT = `You are an academic assistant that extracts information from course syllabi.
 
-Return a JSON array of objects with exactly these fields:
-- title: string — the assignment or exam name
-- dueDate: string — the due date in YYYY-MM-DD format — if no year is specified assume the current academic year
-- category: string — one of: "Exam", "Quiz", "Assignment", "Lab Practical", "Paper", "Presentation", "Clinical", "Other"
-- courseCode: string — the course code provided
-- courseName: string — the course name provided
+Extract two things from the syllabus text provided:
 
-If a date cannot be determined with reasonable confidence — omit that item entirely rather than guessing.
-Return only the JSON array. No explanation. No other text.`;
+1. The recurring weekly class meeting pattern, if one is clearly stated (e.g. "Lecture meets MWF 9:00-9:50 AM", "Tuesdays and Thursdays 1:00-2:15 PM in room 204"). Only extract this if a specific weekly pattern is actually stated — do not guess from an assignment due date or a one-time event.
+2. Every graded item, assignment, exam, quiz, practical, paper, and lab.
+
+Return a single JSON object with exactly these fields:
+- meetingDays: array of strings, each one of ${JSON.stringify(MEETING_DAY_CODES)} — every day the class meets each week, or null if no clear recurring pattern is stated
+- meetingTime: string — the meeting time range as written in the syllabus (e.g. "9:00 AM-9:50 AM") — or null if not stated, or if meetingDays is null
+- assignments: array of objects, each with exactly these fields:
+  - title: string — the assignment or exam name
+  - dueDate: string — the due date in YYYY-MM-DD format — if no year is specified assume the current academic year
+  - category: string — one of: "Exam", "Quiz", "Assignment", "Lab Practical", "Paper", "Presentation", "Clinical", "Other"
+  - courseCode: string — the course code provided
+  - courseName: string — the course name provided
+
+If an assignment's due date cannot be determined with reasonable confidence — omit that item entirely rather than guessing.
+Return only the JSON object. No explanation. No other text.`;
 
 /** Strips a ```json ... ``` (or bare ```) code fence — same defensive parse as
  *  lib/force-lab-import.ts's own stripCodeFence, duplicated here rather than shared per
@@ -42,6 +51,16 @@ export interface ParsedAssignment {
   courseName: string;
 }
 
+export interface ParsedSyllabus {
+  /** Short day codes from MEETING_DAY_CODES (lib/calendar-events.ts), or null if the
+   *  syllabus text didn't state a clear recurring weekly meeting pattern. */
+  meetingDays: string[] | null;
+  /** Free text as written in the syllabus (e.g. "9:00 AM-9:50 AM") — display only. Null
+   *  whenever meetingDays is null. */
+  meetingTime: string | null;
+  assignments: ParsedAssignment[];
+}
+
 function isParsedAssignment(value: unknown): value is ParsedAssignment {
   if (typeof value !== "object" || value === null) return false;
   const v = value as Record<string, unknown>;
@@ -54,17 +73,21 @@ function isParsedAssignment(value: unknown): value is ParsedAssignment {
   );
 }
 
-/** Extracts assignments/exams from a pasted syllabus text block (see parseSyllabusFromText
- *  in app/actions/syllabus.ts, the only caller) — returns null on any failure (rate limit, a
- *  non-JSON/non-array response, an item missing a required field) rather than throwing, same
- *  "don't crash the page, show a plain retry state" reasoning as every other AI call in this
- *  app. Filters out any array entry that doesn't match ParsedAssignment's shape instead of
- *  failing the whole batch over one malformed item. */
-export async function parseSyllabusText(
-  rawText: string,
-  courseCode: string,
-  courseName: string
-): Promise<ParsedAssignment[] | null> {
+function parseMeetingDays(value: unknown): string[] | null {
+  if (!Array.isArray(value)) return null;
+  const days = value.filter((d): d is string => typeof d === "string" && (MEETING_DAY_CODES as readonly string[]).includes(d));
+  return days.length > 0 ? days : null;
+}
+
+/** Extracts the recurring meeting pattern and assignments/exams from a pasted syllabus text
+ *  block (see parseSyllabusFromText in app/actions/syllabus.ts, the only caller) — returns
+ *  null on any failure (rate limit, a non-JSON/non-object response) rather than throwing,
+ *  same "don't crash the page, show a plain retry state" reasoning as every other AI call in
+ *  this app. Filters out any assignment entry that doesn't match ParsedAssignment's shape
+ *  instead of failing the whole batch over one malformed item; meetingDays is independently
+ *  re-validated against the same whitelist the server action enforces, since this is still
+ *  AI output. */
+export async function parseSyllabusText(rawText: string, courseCode: string, courseName: string): Promise<ParsedSyllabus | null> {
   try {
     const message = await client.messages.create({
       model: MODEL,
@@ -80,7 +103,7 @@ Course Name: ${courseName}
 Syllabus text:
 ${rawText}
 
-Extract all assignments and return as JSON array.`,
+Extract the meeting pattern and all assignments, and return as a single JSON object.`,
         },
       ],
     });
@@ -89,9 +112,15 @@ Extract all assignments and return as JSON array.`,
     if (text === null) return null;
 
     const parsed: unknown = JSON.parse(stripCodeFence(text));
-    if (!Array.isArray(parsed)) return null;
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
+    const v = parsed as Record<string, unknown>;
 
-    return parsed.filter(isParsedAssignment);
+    const meetingDays = parseMeetingDays(v.meetingDays);
+    return {
+      meetingDays,
+      meetingTime: meetingDays && typeof v.meetingTime === "string" ? v.meetingTime : null,
+      assignments: Array.isArray(v.assignments) ? v.assignments.filter(isParsedAssignment) : [],
+    };
   } catch (error) {
     console.error("Syllabus parse failed:", error);
     return null;
