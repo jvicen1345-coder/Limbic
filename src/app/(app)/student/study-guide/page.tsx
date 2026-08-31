@@ -4,6 +4,7 @@ import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { getStudyGuideCourses } from "@/app/actions/study-guide";
 import { StudentPlaceholderPage } from "@/components/StudentPlaceholderPage";
 import { StudentGate } from "@/components/student/StudentGate";
+import { timeAgo } from "@/lib/nexus-utils";
 
 export const metadata: Metadata = {
   title: "Study Guide",
@@ -54,8 +55,10 @@ export default async function StudyGuidePage() {
               </div>
               <div className="study-guide-index-meta">
                 {c.cardCount} card{c.cardCount === 1 ? "" : "s"}
+                {c.cardCount > 0 ? ` · ${c.knownCount}/${c.cardCount} known` : ""}
                 {c.hasNotes ? " · notes saved" : ""}
               </div>
+              {c.lastUpdated && <div className="study-guide-index-updated">Updated {timeAgo(c.lastUpdated)}</div>}
               <div className="study-guide-index-links">
                 <Link href={`/student/study-guide/${c.id}/flashcards`} className="study-guide-index-link">
                   Flashcards

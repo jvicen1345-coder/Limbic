@@ -12181,10 +12181,15 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .study-guide-index-creator-hint { font-size: 13px; color: var(--color-neutral-700); margin-top: 18px; }
 .study-guide-index-creator-hint a { color: var(--atrium-tint); font-weight: 600; text-decoration: none; }
 .study-guide-index-creator-hint a:hover { text-decoration: underline; }
+.study-guide-index-updated { font-size: 11.5px; color: var(--color-neutral-500); margin-top: 4px; }
 
-/* Flashcards page (StudyGuideFlashcards.tsx) — Edit/Delete on an existing card only, no
-   "add a card" row. */
+/* Flashcards page (StudyGuideFlashcards.tsx) — Edit/Delete on an existing card, plus a small
+   "+ Add card" row for one-off fixes (see createStudyCard in app/actions/study-guide.ts). */
 .study-guide-card-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.study-guide-add-card { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; margin-top: 12px; align-items: center; }
+@media (max-width: 700px) {
+  .study-guide-add-card { grid-template-columns: 1fr; }
+}
 .study-guide-card-row {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
