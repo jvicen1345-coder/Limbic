@@ -54,7 +54,7 @@ export default async function NexusMessageThreadPage({ params }: { params: Promi
         <Avatar name={other.name} size={36} />
         <div>
           <div style={{ fontFamily: "var(--font-heading)", fontSize: 15 }}>{other.name}</div>
-          {other.headline && <div style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>{other.headline}</div>}
+          {other.headline && <div style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)" }}>{other.headline}</div>}
         </div>
       </div>
 

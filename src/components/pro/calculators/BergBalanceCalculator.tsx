@@ -217,7 +217,7 @@ export function BergBalanceCalculator() {
           </div>
           <div className="pro-calc-result-label">{result.label}, 41-56 low, 21-40 medium, 0-20 high fall risk</div>
         </div>
-        <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", marginTop: 12 }}>
+        <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", marginTop: 12 }}>
           Minimal detectable change: ~6.5 points (community-dwelling older adults). Minimal clinically important
           difference varies by baseline score and population, commonly cited in the 4-8 point range.
         </p>

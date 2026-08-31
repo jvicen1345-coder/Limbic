@@ -14,7 +14,7 @@ function Legend() {
       {DOT_ORDER.map((kind) => (
         <div key={kind} style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <span className={`limbic-cal-dot limbic-cal-dot-${kind}`} />
-          <span style={{ fontSize: 9.5, color: "var(--color-neutral-700)" }}>
+          <span style={{ fontSize: "var(--fs-9-5)", color: "var(--color-neutral-700)" }}>
             {kind === "personal" ? "Personal" : kind === "platform" ? "PT Events" : "Limbic Events"}
           </span>
         </div>
@@ -97,7 +97,7 @@ export function LimbicCalendarWidgetClient({
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2, marginBottom: 2 }}>
         {WEEKDAY_LABELS.map((wd, i) => (
-          <div key={i} style={{ fontSize: 8.5, textAlign: "center", color: "var(--color-neutral-700)" }}>
+          <div key={i} style={{ fontSize: "var(--fs-8-5)", textAlign: "center", color: "var(--color-neutral-700)" }}>
             {wd}
           </div>
         ))}
@@ -124,7 +124,7 @@ export function LimbicCalendarWidgetClient({
                 borderRadius: 999,
                 width: "100%",
                 aspectRatio: "1",
-                fontSize: 10,
+                fontSize: "var(--fs-10)",
                 cursor: hasDots ? "pointer" : "default",
                 background: isSelected ? "var(--color-accent)" : hasDots ? "var(--color-neutral-100)" : "none",
                 color: isSelected ? "var(--color-bg)" : "var(--color-text)",
@@ -161,7 +161,7 @@ export function LimbicCalendarWidgetClient({
       </div>
 
       {!hasPersonalDates && (
-        <div style={{ fontSize: 10, color: "var(--color-neutral-700)", marginTop: 8 }}>
+        <div style={{ fontSize: "var(--fs-10)", color: "var(--color-neutral-700)", marginTop: 8 }}>
           <Link href="/profile/credentials#professional-dates" style={{ color: "var(--color-accent-700)" }}>
             Add your professional dates in Profile Settings
           </Link>
@@ -172,7 +172,7 @@ export function LimbicCalendarWidgetClient({
         <div style={{ borderTop: "1px solid var(--color-neutral-200)", marginTop: 10, paddingTop: 10 }}>
           <div
             style={{
-              fontSize: 9.5,
+              fontSize: "var(--fs-9-5)",
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               color: "var(--color-neutral-700)",
@@ -186,7 +186,7 @@ export function LimbicCalendarWidgetClient({
               <div key={d.id} style={{ padding: "8px 10px", borderRadius: "var(--radius-lg)", background: "var(--color-neutral-100)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 4 }}>
                   <span className={`limbic-cal-dot limbic-cal-dot-${d.kind}`} />
-                  <span style={{ fontSize: 9.5, color: "var(--color-neutral-700)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  <span style={{ fontSize: "var(--fs-9-5)", color: "var(--color-neutral-700)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                     {CAL_DOT_KIND_LABEL[d.kind]}
                   </span>
                 </div>
@@ -194,10 +194,10 @@ export function LimbicCalendarWidgetClient({
                   {d.title}
                 </div>
                 {d.description && (
-                  <div style={{ fontSize: 10.5, color: "var(--color-neutral-700)", marginBottom: d.href ? 6 : 0 }}>{d.description}</div>
+                  <div style={{ fontSize: "var(--fs-10-5)", color: "var(--color-neutral-700)", marginBottom: d.href ? 6 : 0 }}>{d.description}</div>
                 )}
                 {d.href && (
-                  <Link href={d.href} className="btn btn-primary" style={{ fontSize: 10.5, padding: "5px 10px", display: "inline-block" }}>
+                  <Link href={d.href} className="btn btn-primary" style={{ fontSize: "var(--fs-10-5)", padding: "5px 10px", display: "inline-block" }}>
                     View
                   </Link>
                 )}
@@ -208,7 +208,7 @@ export function LimbicCalendarWidgetClient({
       )}
 
       <div style={{ borderTop: "1px solid var(--color-neutral-200)", marginTop: 12, paddingTop: 10, textAlign: "right" }}>
-        <Link href="/calendar" style={{ fontSize: 10.5, color: "var(--color-accent-700)" }}>
+        <Link href="/calendar" style={{ fontSize: "var(--fs-10-5)", color: "var(--color-accent-700)" }}>
           → View full calendar
         </Link>
       </div>

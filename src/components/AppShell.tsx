@@ -216,7 +216,7 @@ function BottomNavLink({ href, icon, label }: { href: string; icon: React.ReactN
   return (
     <Link href={href} style={bottomNavStyle(active)}>
       {icon}
-      <span style={{ fontSize: 11 }}>{label}</span>
+      <span style={{ fontSize: "var(--fs-11)" }}>{label}</span>
     </Link>
   );
 }

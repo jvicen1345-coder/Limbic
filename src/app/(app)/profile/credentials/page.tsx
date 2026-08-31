@@ -98,11 +98,11 @@ export default async function ProfileCredentialsPage() {
               </div>
               <span className={license.statusClass}>{license.status}</span>
             </div>
-            <div style={{ fontSize: 11, color: "var(--color-neutral-700)", marginTop: 10 }}>{license.daysLeftLabel}</div>
+            <div style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", marginTop: 10 }}>{license.daysLeftLabel}</div>
 
             <div style={{ marginTop: 16 }}>
               <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
-                <span style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)" }}>
+                <span style={{ fontSize: "var(--fs-11)", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)" }}>
                   CE credits
                 </span>
                 <span style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
@@ -119,7 +119,7 @@ export default async function ProfileCredentialsPage() {
                 <div key={c.name}>
                   <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 4 }}>
                     <span style={{ fontSize: 12.5 }}>{c.name}</span>
-                    <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>
+                    <span style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}>
                       {c.completed} / {c.required} hrs
                     </span>
                   </div>

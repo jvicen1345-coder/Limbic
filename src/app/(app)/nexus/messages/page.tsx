@@ -86,7 +86,7 @@ export default async function NexusMessagesPage() {
                 </div>
               </div>
               {lastMessage && (
-                <span style={{ fontSize: 11, color: "var(--color-neutral-700)", flexShrink: 0 }}>
+                <span style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", flexShrink: 0 }}>
                   {timeAgo(lastMessage.createdAt)}
                 </span>
               )}

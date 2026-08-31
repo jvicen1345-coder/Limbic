@@ -36,7 +36,7 @@ export function SavedListRow({
           <span className={article.typeTagClass}>
             {badge === "type" ? article.typeLabel : article.specialtyLabel}
           </span>
-          <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{article.dateLabel}</span>
+          <span style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}>{article.dateLabel}</span>
         </div>
         <div style={{ fontFamily: "var(--font-heading)", fontSize: 17, lineHeight: 1.28 }}>{article.title}</div>
       </div>
@@ -76,7 +76,7 @@ export function NewsRow({
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
           <span className={badgeClassName ?? article.typeTagClass}>{badgeLabel ?? article.typeLabel}</span>
-          <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>
+          <span style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}>
             {article.source} · {article.dateLabel}
           </span>
         </div>
@@ -97,7 +97,7 @@ export function ReviewCard({ article }: { article: DecoratedArticle }) {
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <span className="tag tag-neutral">{article.reviewStatus || "Under review"}</span>
-        <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{article.dateLabel}</span>
+        <span style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}>{article.dateLabel}</span>
       </div>
       <div className="card-title" style={{ marginTop: 6 }}>
         {article.title}
@@ -156,7 +156,7 @@ export function WellnessListItem({
     >
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
-          <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{w.source}</span>
+          <span style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}>{w.source}</span>
           <span
             style={{
               width: 3,
@@ -166,10 +166,10 @@ export function WellnessListItem({
               flexShrink: 0,
             }}
           />
-          <span style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{formatDate(w.date)}</span>
+          <span style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}>{formatDate(w.date)}</span>
           {opened && (
             <span
-              style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 11, color: "var(--color-neutral-700)" }}
+              style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}
               aria-label="Already read"
               title="You've already read this"
             >

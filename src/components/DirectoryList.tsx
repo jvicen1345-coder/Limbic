@@ -68,7 +68,7 @@ export function DirectoryList({ people }: { people: DirectoryPerson[] }) {
                 <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
                   {p.headline || SPECIALTY_META[p.specialty as keyof typeof SPECIALTY_META]}
                 </div>
-                <div style={{ fontSize: 11, color: "var(--color-neutral-700)" }}>{p.practiceState}</div>
+                <div style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}>{p.practiceState}</div>
               </div>
             </Link>
             <ConnectButton userId={p.id} state={p.state} />

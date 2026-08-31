@@ -22,19 +22,19 @@ export function StockCard({ stocks }: { stocks: StockView[] }) {
 
   return (
     <div className="card elev-sm" style={{ padding: 14 }}>
-      <div className="card-kicker" style={{ margin: 0, fontSize: 9 }}>
+      <div className="card-kicker" style={{ margin: 0, fontSize: "var(--fs-9)" }}>
         PT Industry Index
       </div>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "5px 0" }}>
         <div>
-          <div style={{ fontSize: 10.5, color: "var(--color-neutral-700)" }}>
+          <div style={{ fontSize: "var(--fs-10-5)", color: "var(--color-neutral-700)" }}>
             {stock.symbol} · {stock.exchange}
           </div>
           <div style={{ fontFamily: "var(--font-heading)", fontSize: 16, marginTop: 2 }}>{stock.price}</div>
         </div>
         <div
           style={{
-            fontSize: 10.5,
+            fontSize: "var(--fs-10-5)",
             fontWeight: 600,
             color: stock.changeUp ? "var(--color-accent-2-700)" : "var(--color-neutral-700)",
           }}
@@ -52,7 +52,7 @@ export function StockCard({ stocks }: { stocks: StockView[] }) {
           strokeLinejoin="round"
         />
       </svg>
-      <div style={{ fontSize: 8.5, color: "var(--color-neutral-700)", marginTop: 5 }}>
+      <div style={{ fontSize: "var(--fs-8-5)", color: "var(--color-neutral-700)", marginTop: 5 }}>
         {stock.name} · {stock.isLive ? "live" : "last known snapshot"}
       </div>
       {stocks.length > 1 && (

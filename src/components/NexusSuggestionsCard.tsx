@@ -19,7 +19,7 @@ export function NexusSuggestionsCard({ people }: { people: NexusSuggestion[] }) 
         <div className="card-kicker" style={{ margin: 0 }}>
           Nexus suggestions
         </div>
-        <Link href="/nexus/directory" style={{ fontSize: 10.5, color: "var(--color-accent-700)" }}>
+        <Link href="/nexus/directory" style={{ fontSize: "var(--fs-10-5)", color: "var(--color-accent-700)" }}>
           See all
         </Link>
       </div>
@@ -48,7 +48,7 @@ export function NexusSuggestionsCard({ people }: { people: NexusSuggestion[] }) 
               {p.headline && (
                 <div
                   style={{
-                    fontSize: 10,
+                    fontSize: "var(--fs-10)",
                     color: "var(--color-neutral-700)",
                     overflow: "hidden",
                     textOverflow: "ellipsis",

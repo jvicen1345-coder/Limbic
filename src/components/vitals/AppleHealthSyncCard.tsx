@@ -133,7 +133,7 @@ export function AppleHealthSyncCard({
                 background: "var(--color-surface-secondary)",
                 padding: 10,
                 borderRadius: "var(--radius-sm)",
-                fontSize: 11.5,
+                fontSize: "var(--fs-11-5)",
                 overflowX: "auto",
                 margin: "6px 0",
               }}

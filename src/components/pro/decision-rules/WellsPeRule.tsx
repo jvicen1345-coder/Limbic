@@ -46,7 +46,7 @@ export function WellsPeRule({ open }: { open?: boolean }) {
         </div>
         <div className="pro-calc-result-label">{result.label}, score &gt;6 high, 2&ndash;6 moderate, &lt;2 low</div>
       </div>
-      <p style={{ fontSize: 11, color: "var(--color-neutral-700)", marginTop: 8 }}>
+      <p style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", marginTop: 8 }}>
         A simplified two-tier version is also used clinically: score &le;4 as &ldquo;PE unlikely&rdquo; (consider
         D-dimer) and &gt;4 as &ldquo;PE likely&rdquo; (consider imaging), often paired with the PERC rule to decide
         whether further workup is needed at all in low-risk patients.

@@ -141,10 +141,10 @@ export function PastResultsSection({
                       <td>{a.musclesTested}</td>
                       <td>Paste Import</td>
                       <td className="forcelab-results-actions">
-                        <button type="button" className="btn btn-ghost" style={{ fontSize: 11.5 }} onClick={() => handleToggleExpand(a.id)}>
+                        <button type="button" className="btn btn-ghost" style={{ fontSize: "var(--fs-11-5)" }} onClick={() => handleToggleExpand(a.id)}>
                           View
                         </button>
-                        <button type="button" className="btn btn-ghost" style={{ fontSize: 11.5 }} onClick={() => handleCompareClick(a.id)}>
+                        <button type="button" className="btn btn-ghost" style={{ fontSize: "var(--fs-11-5)" }} onClick={() => handleCompareClick(a.id)}>
                           {selected ? "Selected" : compareIds.length === 1 ? "Compare With This" : "Compare"}
                         </button>
                         <button

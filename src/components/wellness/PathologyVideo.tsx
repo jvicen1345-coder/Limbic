@@ -55,7 +55,7 @@ export function PathologyVideo({ slug, name }: { slug: string; name: string }) {
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
         />
       </div>
-      <p style={{ fontSize: 11, color: "var(--color-neutral-700)", margin: "6px 0 0" }}>
+      <p style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", margin: "6px 0 0" }}>
         {video!.title} — {video!.channelTitle}
       </p>
     </div>

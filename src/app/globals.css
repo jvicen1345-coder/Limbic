@@ -144,6 +144,26 @@
      self-hosted Figtree google font this pointed to before. */
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
+  /* — small-text scale —
+     Every font-size below 12px in this file (and the handful set inline in components) goes
+     through one of these instead of a literal, so the small end of the type scale can be
+     lifted on small screens in one place. Desktop values are exactly what they were.
+
+     They needed lifting: an audit at iPhone width found sub-12px text on 106 of 110 routes —
+     11px tags on 103 of them, 10px card kickers on 27, and a handful at 9.5px. The comment on
+     .dashboard-metric-tile .card-kicker below already conceded the problem ("small (9.5px) and
+     all-caps compounds low contrast into genuinely hard to read") and only adjusted the colour.
+     The mobile block further down floors these at 12px while keeping their relative order, so
+     the hierarchy survives at a readable size rather than being flattened. */
+  --fs-8: 8px;
+  --fs-8-5: 8.5px;
+  --fs-9: 9px;
+  --fs-9-5: 9.5px;
+  --fs-10: 10px;
+  --fs-10-5: 10.5px;
+  --fs-11: 11px;
+  --fs-11-5: 11.5px;
+
   --space-1: 4.4px;
   --space-2: 8.8px;
   --space-3: 13.2px;
@@ -454,14 +474,14 @@ input[type="date"].input::-webkit-date-and-time-value { text-align: left; }
 html[data-theme="dark"] .card.card-hoverable:hover {
   box-shadow: var(--shadow-lg);
 }
-.card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
+.card-kicker { font-size: var(--fs-10); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
 .card-title {
   font-family: var(--font-heading); font-weight: var(--font-heading-weight);
   font-size: 17px; line-height: 1.2;
 }
 .card-body { margin: 0; font-size: 13px; opacity: 0.8; flex: 1; max-width: 680px; line-height: 1.6; }
 .card-meta {
-  display: flex; align-items: center; gap: 6px; font-size: 11px;
+  display: flex; align-items: center; gap: 6px; font-size: var(--fs-11);
   color: color-mix(in srgb, var(--color-text) 50%, transparent);
 }
 .elev-sm { box-shadow: var(--shadow-sm); }
@@ -508,7 +528,7 @@ html[data-theme="dark"] .card.elev-lg {
 .hero-card-topleft { left: 14px; }
 .hero-card-topright { right: 14px; }
 .hero-card-meta-pill {
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   color: #fff;
   background: rgba(0, 0, 0, 0.4);
   padding: 4px 10px;
@@ -588,7 +608,7 @@ html[data-theme="dark"] .card.elev-lg {
      all-caps compounds low contrast into genuinely hard to read, more than the rest of
      this app's kicker labels tend to be. */
   color: var(--color-neutral-800);
-  font-size: 9.5px;
+  font-size: var(--fs-9-5);
   letter-spacing: 0.03em;
   white-space: nowrap;
   overflow: hidden;
@@ -642,7 +662,7 @@ html[data-theme="dark"] .card.elev-lg {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: var(--fs-11);
   color: var(--color-neutral-600);
 }
 .home-question-text {
@@ -883,7 +903,7 @@ html[data-theme="dark"] .card.elev-lg {
 
 /* — tags — */
 .tag {
-  display: inline-flex; align-items: center; font-size: 11px;
+  display: inline-flex; align-items: center; font-size: var(--fs-11);
   letter-spacing: 0.02em; padding: 3px 10px;
   border-radius: 999px;
   /* A tag holding a long label (e.g. "Concussion in Sport Group Consensus Statement" on
@@ -1048,7 +1068,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   border-radius: 999px;
   background: var(--color-neutral-100);
   color: var(--color-neutral-700);
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 600;
 }
 
@@ -1461,7 +1481,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 /* — shared small-caps section label (components/ArticleReadingPane.tsx: Topics, Related —
    and components/ThreadsWeb.tsx: Article Connections, so all three read as one family). */
 .article-section-label {
-  font-size: 11px;
+  font-size: var(--fs-11);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-neutral-700);
@@ -1530,8 +1550,8 @@ html[data-theme="dark"] .nav-founding-link-active {
   -webkit-line-clamp: 2;
   overflow: hidden;
 }
-.article-related-meta { font-size: 11.5px; color: var(--color-neutral-700); }
-.article-related-date { font-size: 11px; color: var(--color-neutral-600); }
+.article-related-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.article-related-date { font-size: var(--fs-11); color: var(--color-neutral-600); }
 /* A quiet "this is clickable" hint in the corner — muted, not a real button, so it doesn't
    compete with the title/meta for attention; nudges right on hover as its only signal. */
 .article-related-arrow {
@@ -1746,7 +1766,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 /* Same 3 colors as the tiles above (and the keyboard below) — a swatch + label per state
    so a first-time player doesn't have to infer what each color means from context. */
-.wordle-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; font-size: 11.5px; color: var(--color-neutral-700); }
+.wordle-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 .wordle-legend-item { display: flex; align-items: center; gap: 5px; }
 .wordle-legend-swatch { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
 .wordle-legend-swatch-correct { background: var(--color-accent); }
@@ -1761,7 +1781,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   font: 600 13px var(--font-body); cursor: pointer; flex: 1; max-width: 40px;
 }
 .wordle-key:disabled { cursor: not-allowed; }
-.wordle-key-wide { max-width: 60px; font-size: 11px; flex: 1.5; }
+.wordle-key-wide { max-width: 60px; font-size: var(--fs-11); flex: 1.5; }
 .wordle-key-correct { background: var(--color-accent); color: #fff; }
 .wordle-key-present { background: var(--color-accent-2); color: #fff; }
 .wordle-key-absent { background: var(--color-danger-soft); color: #fff; }
@@ -1884,7 +1904,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   position: absolute;
   top: 4px;
   left: 5px;
-  font-size: 10px;
+  font-size: var(--fs-10);
   font-family: var(--font-body);
   font-weight: 700;
   color: var(--color-neutral-700);
@@ -1925,7 +1945,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 
 .crossword-clues-panel { display: flex; flex-direction: column; gap: 28px; }
 .crossword-clue-section-title {
-  font-size: 11px;
+  font-size: var(--fs-11);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-neutral-700);
@@ -2048,7 +2068,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   font-weight: 500;
   color: var(--color-neutral-700);
 }
-.streak-card-caption { font-size: 11.5px; color: var(--color-neutral-700); margin-top: 3px; }
+.streak-card-caption { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin-top: 3px; }
 
 /* — Boards header streak: a compact pill in the /boards page header, replacing the old
    full-width BoardsStreakCard below the Daily Dose card (see boards/page.tsx). Same accent
@@ -2120,7 +2140,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   align-items: flex-start;
   gap: 8px;
   padding: 14px 20px;
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   color: #7c8db5;
   line-height: 1.5;
 }
@@ -2132,7 +2152,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   color: #ffb042;
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
-  font-size: 10px;
+  font-size: var(--fs-10);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 3px 9px;
@@ -2218,7 +2238,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
 }
 .agent-detail-kicker {
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #6ea8ff;
@@ -2243,7 +2263,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   line-height: 1;
 }
 .agent-detail-close:hover { color: #dbe4f5; }
-.agent-detail-hint { font-size: 11px; color: #6ea8ff; font-style: italic; margin: 8px 0 0; }
+.agent-detail-hint { font-size: var(--fs-11); color: #6ea8ff; font-style: italic; margin: 8px 0 0; }
 
 /* Nodes/links */
 .agent-link { stroke-width: 1.4; }
@@ -2331,7 +2351,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 
 @media (max-width: 640px) {
-  .agent-topbar { padding: 10px 14px; font-size: 10.5px; }
+  .agent-topbar { padding: 10px 14px; font-size: var(--fs-10-5); }
   .agent-input-bar { padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px)); }
 }
 
@@ -2407,7 +2427,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   color: #ffb042;
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
-  font-size: 9.5px;
+  font-size: var(--fs-9-5);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 2px 8px;
@@ -2417,7 +2437,7 @@ html[data-theme="dark"] .nav-founding-link-active {
    link into the article's real Threads web, not a hover-revealed preview. */
 .card-threads-teaser {
   margin-top: 4px;
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   color: var(--color-accent-700);
   display: flex;
   align-items: center;
@@ -2504,7 +2524,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   background: var(--color-surface);
   padding: 8px;
   text-align: center;
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -2538,7 +2558,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 10px;
+  font-size: var(--fs-10);
   line-height: 1.6;
   padding: 1px 6px;
   border-radius: 999px;
@@ -2551,7 +2571,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .cal-pill-personal { background: color-mix(in srgb, var(--color-warn) 18%, var(--color-surface)); color: var(--color-warn); }
 .cal-pill-platform { background: var(--color-accent-100); color: var(--color-accent-700); }
 .cal-pill-community { background: color-mix(in srgb, var(--color-success) 18%, var(--color-surface)); color: var(--color-success); }
-.cal-more-indicator { font-size: 10px; font-weight: 600; color: var(--color-neutral-700); padding: 0 6px; }
+.cal-more-indicator { font-size: var(--fs-10); font-weight: 600; color: var(--color-neutral-700); padding: 0 6px; }
 
 @media (max-width: 640px) {
   .cal-month-weekdays, .cal-month-grid { grid-template-columns: repeat(7, minmax(92px, 1fr)); }
@@ -2574,7 +2594,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .cal-week-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .cal-week-col-header { text-align: center; padding: 8px 4px; border-radius: var(--radius-sm); background: var(--color-surface); box-shadow: var(--shadow-sm); }
 .cal-week-col-header.cal-cell-today { box-shadow: var(--shadow-sm), inset 0 0 0 2px var(--color-accent); }
-.cal-week-weekday { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-700); }
+.cal-week-weekday { font-size: var(--fs-10-5); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-700); }
 .cal-week-daynum { font-family: var(--font-heading); font-size: 16px; }
 .cal-week-event-card {
   background: var(--color-surface);
@@ -2593,8 +2613,8 @@ html[data-theme="dark"] .nav-founding-link-active {
 .cal-week-event-card.cal-pill-platform { border-left-color: var(--color-accent); background: var(--color-surface); color: var(--color-text); }
 .cal-week-event-card.cal-pill-community { border-left-color: var(--color-success); background: var(--color-surface); color: var(--color-text); }
 .cal-week-event-title { font-size: 12.5px; font-weight: 700; line-height: 1.3; }
-.cal-week-event-meta { font-size: 10.5px; color: var(--color-neutral-700); margin-top: 3px; }
-.cal-week-empty { font-size: 11px; color: var(--color-neutral-700); text-align: center; padding: 10px 0; }
+.cal-week-event-meta { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 3px; }
+.cal-week-empty { font-size: var(--fs-11); color: var(--color-neutral-700); text-align: center; padding: 10px 0; }
 @media (max-width: 640px) {
   .cal-week-grid { grid-template-columns: repeat(7, minmax(140px, 1fr)); }
   .cal-week-col { min-width: 140px; }
@@ -2621,7 +2641,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .cal-list-event:hover { background: var(--color-neutral-100); }
 .cal-list-event-dot { width: 8px; height: 8px; border-radius: 999px; margin-top: 5px; flex-shrink: 0; }
 .cal-list-event-title { font-size: 13.5px; font-weight: 700; }
-.cal-list-event-meta { font-size: 11.5px; color: var(--color-neutral-700); margin-top: 3px; }
+.cal-list-event-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin-top: 3px; }
 .cal-list-event-desc { font-size: 12px; color: var(--color-neutral-700); margin-top: 4px; }
 .cal-list-empty { text-align: center; padding: 50px 0; color: var(--color-neutral-700); font-size: 13px; }
 .cal-list-toggle-row { text-align: center; margin-top: 16px; }
@@ -2661,11 +2681,11 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 .cal-panel-title { font-family: var(--font-heading); font-size: 16px; }
 .cal-panel-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 20px; }
-.cal-panel-group-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 8px; }
+.cal-panel-group-label { font-size: var(--fs-11); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 8px; }
 .cal-panel-event { background: var(--color-neutral-100); border-radius: var(--radius-lg); padding: 12px 14px; margin-bottom: 8px; }
 .cal-panel-event:last-child { margin-bottom: 0; }
 .cal-panel-event-title { font-family: var(--font-heading); font-size: 13.5px; line-height: 1.3; margin-bottom: 4px; }
-.cal-panel-event-meta { font-size: 11px; color: var(--color-neutral-700); }
+.cal-panel-event-meta { font-size: var(--fs-11); color: var(--color-neutral-700); }
 .cal-panel-empty { text-align: center; color: var(--color-neutral-700); font-size: 13px; padding: 30px 0; }
 
 @media (max-width: 640px) {
@@ -2731,7 +2751,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   margin-bottom: 16px;
 }
 .license-modal-summary-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.license-modal-summary-label { font-size: 11.5px; color: var(--color-neutral-700); }
+.license-modal-summary-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 .license-modal-summary-value { font-size: 13.5px; font-weight: 600; text-align: right; }
 .license-modal-attestation {
   display: flex;
@@ -2747,7 +2767,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 /* — Professional Credentials card's status badges (components/ProfessionalCredentialsCard.tsx)
    — same pill shape as .wellness-badge, kept as its own small class rather than reusing that
    one directly since this card isn't a Wellness feature. */
-.license-badge { display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; flex-shrink: 0; }
+.license-badge { display: inline-flex; align-items: center; font-size: var(--fs-11-5); font-weight: 700; padding: 3px 10px; border-radius: 999px; flex-shrink: 0; }
 .license-badge--student { color: var(--color-accent-700); background: color-mix(in srgb, var(--color-accent) 16%, transparent); }
 .license-badge--pending { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
 .license-badge--verified { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 16%, transparent); }
@@ -2769,7 +2789,7 @@ html[data-theme="dark"] .nav-founding-link-active {
    cards; everything below is specific to the disclaimer banner and the pure-CSS weekly bar
    chart (no charting library — spec requirement). */
 .vitals-disclaimer {
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   line-height: 1.5;
   color: var(--color-neutral-700);
   background: var(--color-neutral-100);
@@ -2823,7 +2843,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   transform: translateX(-50%);
   background: var(--color-text);
   color: var(--color-bg);
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   font-weight: 600;
   white-space: nowrap;
   padding: 4px 8px;
@@ -2839,7 +2859,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .vitals-chart-segment:hover .vitals-chart-tooltip,
 .vitals-chart-segment:focus .vitals-chart-tooltip,
 .vitals-chart-segment:focus-visible .vitals-chart-tooltip { opacity: 1; }
-.vitals-chart-daylabel { font-size: 10.5px; color: var(--color-neutral-700); font-weight: 600; }
+.vitals-chart-daylabel { font-size: var(--fs-10-5); color: var(--color-neutral-700); font-weight: 600; }
 .vitals-chart-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--color-divider); }
 .vitals-chart-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
 .vitals-chart-legend-dot { width: 9px; height: 9px; border-radius: 999px; flex-shrink: 0; }
@@ -2854,11 +2874,11 @@ html[data-theme="dark"] .nav-founding-link-active {
 .vitals-log-list { display: flex; flex-direction: column; gap: 2px; margin-top: 14px; }
 .vitals-log-row { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid var(--color-divider); font-size: 13px; }
 .vitals-log-row:last-child { border-bottom: none; }
-.vitals-log-date { color: var(--color-neutral-700); font-size: 11.5px; min-width: 46px; }
+.vitals-log-date { color: var(--color-neutral-700); font-size: var(--fs-11-5); min-width: 46px; }
 .vitals-log-activity { flex: 1; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 .vitals-log-minutes { color: var(--color-neutral-700); font-size: 12px; }
 .vitals-log-synced-badge {
-  font-size: 10px;
+  font-size: var(--fs-10);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -2934,7 +2954,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .nutrition-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 12px; }
 
 .nutrition-section-label {
-  font-size: 10px;
+  font-size: var(--fs-10);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-neutral-700);
@@ -3041,7 +3061,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   font-size: 14.5px;
 }
 .wellness-source-card-desc { font-size: 12.5px; color: var(--color-neutral-700); margin: 6px 0; line-height: 1.5; }
-.wellness-source-card-domain { font-size: 11px; color: var(--color-accent-700); font-weight: 600; }
+.wellness-source-card-domain { font-size: var(--fs-11); color: var(--color-accent-700); font-weight: 600; }
 
 /* — Macro Calculator's macro-split bar — */
 .wellness-macro-split { margin-top: 8px; }
@@ -3064,7 +3084,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   background: var(--color-neutral-100);
   align-items: flex-end;
 }
-.wellness-macro-weightgoal-hint { flex-basis: 100%; font-size: 11.5px; color: var(--color-neutral-600); margin: 6px 0 0; }
+.wellness-macro-weightgoal-hint { flex-basis: 100%; font-size: var(--fs-11-5); color: var(--color-neutral-600); margin: 6px 0 0; }
 .wellness-macro-weightgoal-result { font-size: 12.5px; color: var(--color-neutral-700); margin: 8px 0 0; line-height: 1.5; }
 .wellness-macro-weightgoal-warning { color: var(--color-warn); }
 
@@ -3094,14 +3114,14 @@ html[data-theme="dark"] .nav-founding-link-active {
   margin-bottom: 18px;
 }
 .wellness-snapshot-kicker {
-  font-size: 11px;
+  font-size: var(--fs-11);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-neutral-700);
   margin-bottom: 12px;
 }
 .wellness-snapshot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; }
-.wellness-snapshot-stat-label { font-size: 11px; color: var(--color-neutral-700); margin-bottom: 3px; }
+.wellness-snapshot-stat-label { font-size: var(--fs-11); color: var(--color-neutral-700); margin-bottom: 3px; }
 .wellness-snapshot-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; }
 .wellness-snapshot-stat-note { font-size: 12px; color: var(--color-accent-700); margin-top: 2px; }
 .wellness-snapshot-empty { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 10px; }
@@ -3186,7 +3206,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   position: absolute;
   top: 14px;
   right: 14px;
-  font-size: 9.5px;
+  font-size: var(--fs-9-5);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -3292,7 +3312,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   font-weight: 700;
 }
 .research-literacy-topic[open] .research-literacy-topic-summary::before { content: "–"; }
-.wellness-calc-source { font-size: 11px; color: var(--color-neutral-600); margin-top: 10px; }
+.wellness-calc-source { font-size: var(--fs-11); color: var(--color-neutral-600); margin-top: 10px; }
 
 /* — Missing-profile notice — shown instead of a calculator's own input fields for anything
    now sourced from the single profile on /wellness/activity (see BodyMetricsCard). */
@@ -3337,7 +3357,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wellness-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   font-weight: 700;
   padding: 3px 10px;
   border-radius: 999px;
@@ -3371,8 +3391,8 @@ html[data-theme="dark"] .nav-founding-link-active {
 .histogram-bars { display: flex; gap: 4px; align-items: flex-end; min-width: 320px; height: 120px; padding-top: 8px; }
 .histogram-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px; }
 .histogram-bar { width: 100%; min-height: 3px; border-radius: 3px 3px 0 0; background: var(--color-accent); }
-.histogram-bar-label { font-size: 9.5px; color: var(--color-neutral-700); white-space: nowrap; transform: rotate(-40deg); transform-origin: top right; margin-top: 4px; }
-.histogram-caption { font-size: 11.5px; color: var(--color-neutral-600); margin-top: 14px; font-style: italic; }
+.histogram-bar-label { font-size: var(--fs-9-5); color: var(--color-neutral-700); white-space: nowrap; transform: rotate(-40deg); transform-origin: top right; margin-top: 4px; }
+.histogram-caption { font-size: var(--fs-11-5); color: var(--color-neutral-600); margin-top: 14px; font-style: italic; }
 
 /* — BMI spectrum bar — */
 .wellness-spectrum-bar {
@@ -3398,7 +3418,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   background: var(--color-text);
   transform: translateX(-50%);
 }
-.wellness-spectrum-labels { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--color-neutral-600); }
+.wellness-spectrum-labels { display: flex; justify-content: space-between; font-size: var(--fs-10-5); color: var(--color-neutral-600); }
 
 /* — Heart rate zones — */
 .wellness-hr-zones { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
@@ -3439,7 +3459,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 .wellness-rpe-point--selected { border-color: var(--color-text); }
 .wellness-rpe-point-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; }
-.wellness-rpe-point-label { font-size: 8.5px; text-align: center; line-height: 1.2; opacity: 0.95; }
+.wellness-rpe-point-label { font-size: var(--fs-8-5); text-align: center; line-height: 1.2; opacity: 0.95; }
 
 /* — Metrics Over Time trends dashboard — one shared line chart (BMI/HRV/VO2 Max as
    differently colored lines on a shared time axis) plus a legend, instead of three
@@ -3451,7 +3471,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   border: 1px solid var(--color-divider);
   margin-bottom: 20px;
 }
-.wellness-tracking-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-700); }
+.wellness-tracking-label { font-size: var(--fs-11); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-700); }
 .wellness-tracking-empty { font-size: 12.5px; color: var(--color-neutral-600); font-style: italic; margin: 10px 0 0; }
 .wellness-tracking-trend { font-size: 13px; font-weight: 700; }
 .wellness-tracking-trend--up { color: var(--color-success); }
@@ -3480,7 +3500,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   font-size: 13px;
 }
 .wellness-log-history-row:last-of-type { border-bottom: none; }
-.wellness-log-history-date { color: var(--color-neutral-700); font-size: 11.5px; min-width: 50px; }
+.wellness-log-history-date { color: var(--color-neutral-700); font-size: var(--fs-11-5); min-width: 50px; }
 .wellness-log-history-metric { flex: 1; font-weight: 600; }
 .wellness-log-history-value { color: var(--color-neutral-700); }
 
@@ -3522,7 +3542,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 .switch[aria-checked="true"] .switch-thumb { transform: translateX(15px); }
 
-.wellness-assess-steps-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-700); margin: 14px 0 6px; }
+.wellness-assess-steps-label { font-size: var(--fs-11); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-700); margin: 14px 0 6px; }
 .wellness-assess-steps { margin: 0 0 14px; padding-left: 20px; font-size: 13px; line-height: 1.65; color: var(--color-text); }
 .wellness-assess-steps--bullet { list-style-type: disc; }
 .wellness-assess-note { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.55; margin: 0 0 8px; }
@@ -3531,8 +3551,8 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wellness-table { border-collapse: collapse; width: 100%; font-size: 12.5px; min-width: 420px; }
 .wellness-table th,
 .wellness-table td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--color-divider); }
-.wellness-table th { color: var(--color-neutral-700); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
-.wellness-table-note { font-size: 11px; color: var(--color-neutral-600); margin: 6px 0 0; font-style: italic; }
+.wellness-table th { color: var(--color-neutral-700); font-weight: 600; font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.04em; }
+.wellness-table-note { font-size: var(--fs-11); color: var(--color-neutral-600); margin: 6px 0 0; font-style: italic; }
 
 .wellness-assess-checklist { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
 .wellness-assess-checklist-item { padding: 10px 14px; border-radius: var(--radius-md); background: var(--color-neutral-100); }
@@ -3598,7 +3618,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .assess-test-card { border-left: 3px solid var(--color-accent); }
 
 .assess-video-cell { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.assess-right-panel-heading { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700); margin: 0 0 2px; }
+.assess-right-panel-heading { font-size: var(--fs-11); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700); margin: 0 0 2px; }
 
 .assess-video-card {
   padding: 12px;
@@ -3621,7 +3641,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   margin-bottom: 8px;
 }
 .assess-video-thumb-icon { color: rgba(255, 255, 255, 0.85); }
-.assess-video-link { display: inline-block; font-size: 11.5px; color: var(--color-neutral-700); text-decoration: none; }
+.assess-video-link { display: inline-block; font-size: var(--fs-11-5); color: var(--color-neutral-700); text-decoration: none; }
 .assess-video-link:hover { text-decoration: underline; }
 
 /* — Top 10 Exercises — */
@@ -3639,12 +3659,12 @@ html[data-theme="dark"] .nav-founding-link-active {
   justify-content: center;
   flex-shrink: 0;
 }
-.wellness-difficulty-badge { margin-left: auto; font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.03em; }
+.wellness-difficulty-badge { margin-left: auto; font-size: var(--fs-10-5); font-weight: 700; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.03em; }
 .wellness-difficulty-badge--medium { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
 .wellness-difficulty-badge--hard { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 16%, transparent); }
 .wellness-muscle-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 .wellness-muscle-chip {
-  font-size: 11px;
+  font-size: var(--fs-11);
   padding: 3px 10px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--color-vitals-mindfulness) 14%, transparent);
@@ -3671,7 +3691,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   background: var(--color-neutral-100);
 }
 @media (max-width: 480px) { .wellness-exercise-progressions { grid-template-columns: 1fr; } }
-.wellness-exercise-progression-label { font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 3px; }
+.wellness-exercise-progression-label { font-size: var(--fs-10-5); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 3px; }
 .wellness-exercise-progression-text { font-size: 12.5px; margin: 0; line-height: 1.5; }
 
 /* — Rep Continuum — a two-column layout so "Which zone is right for me?" reads as a
@@ -3707,11 +3727,11 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 .wellness-continuum-marker { position: absolute; top: -3px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .wellness-continuum-marker-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--color-surface); border: 3px solid var(--color-text); }
-.wellness-continuum-marker-label { position: absolute; top: 26px; font-size: 10.5px; font-weight: 600; white-space: nowrap; }
+.wellness-continuum-marker-label { position: absolute; top: 26px; font-size: var(--fs-10-5); font-weight: 600; white-space: nowrap; }
 .wellness-continuum-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 10px 0 14px; }
 @media (max-width: 560px) { .wellness-continuum-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .wellness-continuum-stats > div { display: flex; flex-direction: column; gap: 2px; }
-.wellness-continuum-stat-label { font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); }
+.wellness-continuum-stat-label { font-size: var(--fs-10-5); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); }
 .wellness-continuum-stat-value { font-size: 13px; font-weight: 600; }
 .wellness-goal-guide {
   padding: 20px 22px;
@@ -3742,7 +3762,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   padding: 18px;
 }
 .wellness-agent-personalize { display: flex; flex-direction: column; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--color-divider); }
-.wellness-agent-personalize-label { font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px; }
+.wellness-agent-personalize-label { font-size: var(--fs-11); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px; }
 .wellness-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .wellness-chip {
   font-size: 12px;
@@ -3777,7 +3797,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wellness-agent-msg--user { align-self: flex-end; background: var(--color-accent); color: #fff; border-bottom-right-radius: 4px; }
 .wellness-agent-msg--agent { align-self: flex-start; background: var(--color-surface); border: 1px solid var(--color-divider); border-bottom-left-radius: 4px; }
 .wellness-agent-msg--pending { color: var(--color-neutral-600); font-style: italic; }
-.wellness-agent-msg-sources { font-size: 10.5px; color: var(--color-neutral-600); margin-top: 8px; }
+.wellness-agent-msg-sources { font-size: var(--fs-10-5); color: var(--color-neutral-600); margin-top: 8px; }
 .wellness-agent-msg-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 .wellness-agent-feedback-btn {
   display: flex;
@@ -3796,7 +3816,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 600;
   color: var(--color-accent-700);
   background: transparent;
@@ -3980,7 +4000,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .game-card-standalone .game-card-btn { background: var(--color-accent); color: #fff; }
 .game-card-daily-badge {
   align-self: flex-start;
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -4066,7 +4086,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 .games-stat-tile { text-align: center; padding: 14px 8px; }
 .games-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; }
-.games-stat-label { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
+.games-stat-label { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
 
 .games-week-bar { display: flex; align-items: center; gap: 6px; }
 .games-week-dot { width: 22px; height: 22px; border-radius: 999px; background: var(--color-neutral-200); flex-shrink: 0; }
@@ -4133,7 +4153,7 @@ html[data-theme="dark"] .nav-founding-link-active {
 .sharpen-dose-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; margin: 6px 0 10px; }
 .sharpen-dose-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .sharpen-dose-meta span {
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   font-weight: 600;
   color: var(--color-neutral-700);
   background: var(--color-neutral-100);
@@ -4151,7 +4171,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   padding: 12px 16px;
   margin-bottom: 14px;
 }
-.sharpen-challenge-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-700); margin-bottom: 2px; }
+.sharpen-challenge-label { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-700); margin-bottom: 2px; }
 .sharpen-challenge-value { font-size: 15px; font-weight: 700; color: var(--color-text); }
 .sharpen-intro-card-hint { font-size: 12.5px; color: var(--color-accent-700); font-weight: 600; white-space: nowrap; flex-shrink: 0; }
 
@@ -4176,9 +4196,9 @@ html[data-theme="dark"] .nav-founding-link-active {
   transition: color 200ms ease;
 }
 .sharpen-timer--over { color: var(--color-danger); }
-.sharpen-timer-over-label { font-size: 11.5px; font-weight: 600; color: var(--color-danger); text-align: center; margin: -6px 0 10px; }
+.sharpen-timer-over-label { font-size: var(--fs-11-5); font-weight: 600; color: var(--color-danger); text-align: center; margin: -6px 0 10px; }
 .sharpen-progress-row { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.sharpen-progress-label { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-700); }
+.sharpen-progress-label { font-size: var(--fs-11-5); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-700); }
 .sharpen-progress-dots { display: flex; gap: 8px; }
 .sharpen-progress-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--color-neutral-300); }
 .sharpen-progress-dot--done { background: var(--color-success); }
@@ -4402,7 +4422,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   border-radius: 999px;
   background: color-mix(in srgb, var(--color-accent) 16%, transparent);
   color: var(--color-accent);
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 700;
 }
 
@@ -4503,7 +4523,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   align-items: center;
   padding: 3px 10px;
   border-radius: 999px;
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -4535,7 +4555,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   border-radius: 999px;
   background: color-mix(in srgb, var(--color-accent) 16%, transparent);
   color: var(--color-accent);
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   font-weight: 700;
 }
 .rehab-sequence-text { flex: 1; font-size: 13px; line-height: 1.4; }
@@ -4546,7 +4566,7 @@ html[data-theme="dark"] .nav-founding-link-active {
   color: var(--color-neutral-700);
   width: 22px;
   height: 18px;
-  font-size: 9px;
+  font-size: var(--fs-9);
   border-radius: 4px;
   cursor: pointer;
   line-height: 1;
@@ -4653,7 +4673,7 @@ html[data-theme="dark"] .body-silhouette-card {
 
 .body-region-label {
   fill: color-mix(in srgb, #fff 88%, transparent);
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 600;
   text-anchor: middle;
   pointer-events: none;
@@ -4714,12 +4734,12 @@ html[data-theme="dark"] .body-silhouette-card {
   border-radius: 50%;
   background: color-mix(in srgb, var(--color-accent) 14%, transparent);
   color: var(--color-accent);
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 700;
 }
 .body-function-text-wrap { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .body-function-text { font-size: 13.5px; color: var(--color-text); line-height: 1.4; }
-.body-function-matched-label { font-size: 11.5px; font-weight: 600; color: var(--color-vitals-mobility); }
+.body-function-matched-label { font-size: var(--fs-11-5); font-weight: 600; color: var(--color-vitals-mobility); }
 
 .body-function-selected { background: var(--color-accent); border-left-color: var(--color-accent-800); }
 .body-function-selected .body-function-text { color: #fff; }
@@ -5081,7 +5101,7 @@ html[data-theme="dark"] .app-root--atrium {
 .atrium-dashboard-link:hover { text-decoration: underline; }
 .atrium-dashboard-link--amber { color: var(--atrium-tint); }
 .atrium-dashboard-empty { font-size: 12.5px; color: var(--color-neutral-600); font-style: italic; }
-.atrium-dashboard-locked { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--color-neutral-600); }
+.atrium-dashboard-locked { display: flex; align-items: center; gap: 5px; font-size: var(--fs-11-5); color: var(--color-neutral-600); }
 
 /* This Week card (see .atrium-v2-grid below, components/AtriumThisWeekCard.tsx) — replaces
    the old Weekly Roundup panel that used to live in this same grid-area (see
@@ -5132,7 +5152,7 @@ html[data-theme="dark"] .app-root--atrium {
 .atrium-week-assignment--done .atrium-week-assignment-title { text-decoration: line-through; color: var(--color-neutral-700); }
 .atrium-week-assignment-course {
   flex-shrink: 0;
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   color: var(--color-neutral-700);
   background: var(--atrium-surface);
   border: 1px solid var(--atrium-border);
@@ -5145,7 +5165,7 @@ html[data-theme="dark"] .app-root--atrium {
 
 .atrium-week-recs { display: flex; flex-direction: column; gap: 10px; }
 .atrium-week-recs-title {
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -5298,7 +5318,7 @@ html[data-theme="dark"] .app-root--atrium {
   justify-content: center;
 }
 .atrium-progress-ring-number { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; line-height: 1; }
-.atrium-progress-ring-label { font-size: 10.5px; color: var(--color-neutral-700); margin-top: 3px; text-align: center; }
+.atrium-progress-ring-label { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 3px; text-align: center; }
 .atrium-progress-ring-label--empty { font-size: 12px; }
 .atrium-progress-details { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
 .atrium-progress-streak {
@@ -5330,7 +5350,7 @@ html[data-theme="dark"] .app-root--atrium {
 .atrium-progress-domain-swatch { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .atrium-progress-domain-name { font-size: 12px; color: var(--color-text); width: 132px; flex-shrink: 0; }
 .atrium-progress-domain-bar { flex: 1; min-width: 0; }
-.atrium-progress-domain-frac { font-size: 11.5px; color: var(--color-neutral-700); width: 46px; flex-shrink: 0; text-align: right; }
+.atrium-progress-domain-frac { font-size: var(--fs-11-5); color: var(--color-neutral-700); width: 46px; flex-shrink: 0; text-align: right; }
 .atrium-progress-domain-arrow { flex-shrink: 0; color: var(--color-neutral-500); }
 .atrium-progress-cta {
   display: flex;
@@ -5398,7 +5418,7 @@ html[data-theme="dark"] .app-root--atrium {
   .atrium-path-icon { width: 36px; height: 36px; }
   .atrium-path-title { font-size: 13.5px; margin-bottom: 2px; }
   .atrium-path-desc {
-    font-size: 11.5px;
+    font-size: var(--fs-11-5);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -5443,7 +5463,7 @@ html[data-theme="dark"] .app-root--atrium {
 .specialty-overview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; align-items: start; }
 .specialty-overview-item { margin-top: 10px; }
 .specialty-overview-item:first-child { margin-top: 10px; }
-.specialty-overview-item-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--specialty-accent, var(--color-accent)); margin-bottom: 4px; }
+.specialty-overview-item-label { font-size: var(--fs-11); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--specialty-accent, var(--color-accent)); margin-bottom: 4px; }
 .specialty-overview-item-text { font-size: 13px; line-height: 1.55; color: var(--color-text); margin: 0; }
 
 .specialty-pearl-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
@@ -5481,10 +5501,10 @@ html[data-theme="dark"] .app-root--atrium {
 
 .specialty-table-wrap { overflow-x: auto; margin-top: 10px; }
 .specialty-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.specialty-table th { text-align: left; padding: 8px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); border-bottom: 1px solid var(--color-divider); white-space: nowrap; }
+.specialty-table th { text-align: left; padding: 8px 10px; font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); border-bottom: 1px solid var(--color-divider); white-space: nowrap; }
 .specialty-table td { padding: 10px; border-bottom: 1px solid var(--color-divider); color: var(--color-text); }
 .specialty-table tr:last-child td { border-bottom: none; }
-.specialty-table-note { font-size: 11.5px; color: var(--color-neutral-700); margin: 8px 0 0; font-style: italic; }
+.specialty-table-note { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 8px 0 0; font-style: italic; }
 
 .specialty-question-card { padding: 14px; border-radius: var(--radius-md); background: var(--color-neutral-100); border: 1px solid var(--color-neutral-200); margin-bottom: 10px; }
 .specialty-question-card:last-child { margin-bottom: 0; }
@@ -5545,7 +5565,7 @@ html[data-theme="dark"] .app-root--atrium {
 }
 .specialty-hub-card-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; margin: 0; }
 .specialty-hub-card-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; flex: 1; }
-.specialty-hub-card-meta { font-size: 11.5px; color: var(--color-neutral-600); text-transform: uppercase; letter-spacing: 0.03em; }
+.specialty-hub-card-meta { font-size: var(--fs-11-5); color: var(--color-neutral-600); text-transform: uppercase; letter-spacing: 0.03em; }
 
 @media (max-width: 799px) {
   .specialty-overview-grid { grid-template-columns: minmax(0, 1fr); }
@@ -5808,7 +5828,7 @@ html[data-theme="dark"] .app-root--atrium {
   background: var(--ff-gold-cta-tint);
   border: 2px solid var(--ff-gold-cta);
   color: var(--ff-text);
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   padding: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -5820,7 +5840,7 @@ html[data-theme="dark"] .app-root--atrium {
 .ff-slot-circle-claimed {
   background: var(--ff-gold-cta);
   color: #241704;
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   padding: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -5839,13 +5859,13 @@ html[data-theme="dark"] .app-root--atrium {
   50% { box-shadow: 0 0 0 6px var(--ff-gold-cta-tint), 0 2px 18px color-mix(in srgb, var(--ff-gold-cta) 68%, transparent); }
 }
 .ff-slot-label {
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--ff-text-muted);
 }
 .ff-slot-credential {
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   font-weight: 600;
   color: var(--ff-text);
   max-width: 72px;
@@ -5856,7 +5876,7 @@ html[data-theme="dark"] .app-root--atrium {
 }
 @media (max-width: 520px) {
   .ff-slots-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px 6px; }
-  .ff-slot-credential { font-size: 9.5px; max-width: 56px; }
+  .ff-slot-credential { font-size: var(--fs-9-5); max-width: 56px; }
 }
 
 /* — Section 5: waitlist / payment — */
@@ -6082,7 +6102,7 @@ html[data-theme="dark"] .app-root--atrium {
   background: var(--ff-gold-cta);
 }
 
-.ff-modal-legal { font-size: 11.5px; color: var(--ff-text-muted); line-height: 1.5; margin: 0 0 18px; }
+.ff-modal-legal { font-size: var(--fs-11-5); color: var(--ff-text-muted); line-height: 1.5; margin: 0 0 18px; }
 
 .ff-modal-error { font-size: 12.5px; color: var(--color-danger); margin: 0 0 12px; }
 
@@ -6188,7 +6208,7 @@ html[data-theme="dark"] .app-root--atrium {
   margin-top: 40px;
 }
 .ff-disclaimer-title {
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -6226,10 +6246,10 @@ html[data-theme="dark"] .app-root--atrium {
 .ff-roster-count-number { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; }
 .ff-roster-count--confirmed .ff-roster-count-number { color: var(--color-success); }
 .ff-roster-count--pending .ff-roster-count-number { color: var(--ff-gold-cta); }
-.ff-roster-count-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ff-text-muted); }
+.ff-roster-count-label { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.05em; color: var(--ff-text-muted); }
 
 .ff-roster-group { margin-top: 18px; }
-.ff-roster-group-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ff-text-muted); margin: 0 0 8px; }
+.ff-roster-group-title { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.05em; color: var(--ff-text-muted); margin: 0 0 8px; }
 .ff-roster-row {
   display: flex;
   align-items: center;
@@ -6322,7 +6342,7 @@ html[data-theme="dark"] .app-root--atrium {
   border-bottom: 1px solid var(--color-divider);
 }
 .suggestion-admin-row:last-child { border-bottom: none; }
-.suggestion-admin-date { font-size: 11px; color: var(--color-neutral-600); margin-bottom: 3px; }
+.suggestion-admin-date { font-size: var(--fs-11); color: var(--color-neutral-600); margin-bottom: 3px; }
 .suggestion-admin-body { font-size: 13.5px; line-height: 1.55; margin: 0; white-space: pre-wrap; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -6471,7 +6491,7 @@ html[data-theme="dark"] .app-root--atrium {
 }
 .landing-audience-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 .landing-audience-card-label {
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--color-accent-700);
@@ -6584,7 +6604,7 @@ html[data-theme="dark"] .app-root--atrium {
 .landing-footer-dot { margin: 0 8px; color: var(--color-neutral-600); }
 .landing-footer-disclaimer {
   flex-basis: 100%;
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   line-height: 1.55;
   color: var(--color-neutral-600);
   text-align: center;
@@ -6696,7 +6716,7 @@ html[data-theme="dark"] .app-root--atrium {
 /* Shrinks the label instead of letting 3 equal-width tabs force a scrollbar — every tab
    stays visible and legible even at the narrowest supported phone width. */
 @media (max-width: 480px) {
-  .boards-tab { font-size: 11.5px; padding: 10px 4px; }
+  .boards-tab { font-size: var(--fs-11-5); padding: 10px 4px; }
 }
 
 /* — Daily Sharpening tab's streak section (below the Daily Dose card, see
@@ -6723,8 +6743,8 @@ html[data-theme="dark"] .app-root--atrium {
   background: color-mix(in srgb, var(--color-accent) 30%, transparent);
   animation: boards-streak-pulse 1.8s ease-in-out infinite;
 }
-.boards-streak-day-check { font-size: 8px; color: #fff; }
-.boards-streak-day-label { font-size: 10px; color: var(--color-neutral-700); }
+.boards-streak-day-check { font-size: var(--fs-8); color: #fff; }
+.boards-streak-day-label { font-size: var(--fs-10); color: var(--color-neutral-700); }
 
 @keyframes boards-streak-pulse {
   0% { opacity: 1; }
@@ -6740,7 +6760,7 @@ html[data-theme="dark"] .app-root--atrium {
 .boards-streak-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 0 0 12px; }
 .boards-streak-stat { text-align: center; padding: 14px 8px; }
 .boards-streak-stat-value { font-family: var(--font-heading); font-weight: 700; font-size: 28px; color: var(--color-text); }
-.boards-streak-stat-label { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
+.boards-streak-stat-label { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
 
 .boards-streak-message { font-size: 13px; margin: 0; text-align: center; }
 .boards-streak-message--muted { color: var(--color-neutral-700); }
@@ -6794,7 +6814,7 @@ html[data-theme="dark"] .app-root--atrium {
   position: absolute;
   top: 8px;
   right: 10px;
-  font-size: 10px;
+  font-size: var(--fs-10);
   color: var(--color-neutral-700);
   background: var(--color-card-surface);
   border-radius: 999px;
@@ -6806,7 +6826,7 @@ html[data-theme="dark"] .app-root--atrium {
   position: absolute;
   bottom: 8px;
   right: 10px;
-  font-size: 10px;
+  font-size: var(--fs-10);
   font-weight: 600;
   border-radius: 999px;
   padding: 2px 8px;
@@ -6816,7 +6836,7 @@ html[data-theme="dark"] .app-root--atrium {
 
 .paper-anatomy-detail { padding: 4px 0; }
 .paper-anatomy-detail-title { font-size: 18px; font-weight: 700; margin: 0 0 10px; }
-.paper-anatomy-detail-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-neutral-700); margin: 14px 0 4px; }
+.paper-anatomy-detail-label { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-neutral-700); margin: 14px 0 4px; }
 .paper-anatomy-detail-label:first-of-type { margin-top: 0; }
 .paper-anatomy-detail-text { font-size: 14px; line-height: 1.7; color: var(--color-text); margin: 0; }
 .paper-anatomy-detail-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
@@ -6845,10 +6865,10 @@ html[data-theme="dark"] .app-root--atrium {
 .stats-formula-pill--purple { background: rgba(124, 58, 237, 0.15); color: #7c3aed; }
 
 .stats-card-def { font-size: 13px; line-height: 1.6; color: var(--color-text); margin: 0 0 12px; }
-.stats-card-subhead { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-neutral-700); margin: 14px 0 6px; }
+.stats-card-subhead { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-neutral-700); margin: 14px 0 6px; }
 
 .stats-callout { border-radius: 6px; padding: 10px 12px; margin-top: 10px; }
-.stats-callout-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 3px; }
+.stats-callout-label { font-size: var(--fs-10); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 3px; }
 .stats-callout-text { font-size: 12px; line-height: 1.55; color: var(--color-neutral-700); margin: 0; }
 .stats-callout--amber { background: rgba(201, 133, 58, 0.08); border-left: 3px solid #c9853a; }
 .stats-callout-label--amber { color: #c9853a; }
@@ -6877,7 +6897,7 @@ html[data-theme="dark"] .app-root--atrium {
 .stats-memory-box { flex: 1; min-width: 0; background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: 8px; padding: 12px; }
 .stats-memory-box-title { font-size: 14px; margin-bottom: 4px; }
 .stats-memory-box-text { font-size: 12px; color: var(--color-text); margin: 0 0 6px; line-height: 1.4; }
-.stats-memory-box-example { font-size: 11.5px; color: var(--color-neutral-700); margin: 0; line-height: 1.4; }
+.stats-memory-box-example { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 0; line-height: 1.4; }
 
 .stats-lr-card { background: var(--color-neutral-100); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
 .stats-lr-row { font-size: 12px; color: var(--color-neutral-700); }
@@ -6887,8 +6907,8 @@ html[data-theme="dark"] .app-root--atrium {
 .stats-nnt-segment--good { background: rgba(22, 163, 74, 0.15); }
 .stats-nnt-segment--mid { background: rgba(201, 133, 58, 0.15); }
 .stats-nnt-segment--poor { background: rgba(220, 38, 38, 0.15); }
-.stats-nnt-segment-value { font-size: 11.5px; font-weight: 700; }
-.stats-nnt-segment-label { font-size: 10.5px; color: var(--color-neutral-700); margin-top: 2px; }
+.stats-nnt-segment-value { font-size: var(--fs-11-5); font-weight: 700; }
+.stats-nnt-segment-label { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 2px; }
 .stats-nnt-arrow { font-size: 13px; color: var(--color-neutral-700); flex-shrink: 0; }
 
 .stats-causation-flow { display: flex; align-items: center; gap: 4px; margin: 10px 0 14px; }
@@ -6897,7 +6917,7 @@ html[data-theme="dark"] .app-root--atrium {
 .stats-causation-step--amber { background: rgba(201, 133, 58, 0.08); border-color: rgba(201, 133, 58, 0.3); }
 .stats-causation-step--green { background: rgba(22, 163, 74, 0.08); border-color: rgba(22, 163, 74, 0.3); }
 .stats-causation-step-title { font-size: 12px; font-weight: 600; color: var(--color-text); }
-.stats-causation-step-sub { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
+.stats-causation-step-sub { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
 
 .stats-causation-arrow { position: relative; width: 18px; height: 2px; flex-shrink: 0; background: var(--color-divider); }
 .stats-causation-arrow::after {
@@ -6971,7 +6991,7 @@ html[data-theme="dark"] .app-root--atrium {
 .evidence-pyramid-level--active { filter: brightness(1.12); }
 .evidence-pyramid-level--bordered { border-top: 1px solid var(--color-divider); border-bottom: 1px solid var(--color-divider); }
 .evidence-pyramid-badge {
-  font-size: 9px;
+  font-size: var(--fs-9);
   font-weight: 700;
   background: rgba(255, 255, 255, 0.35);
   border-radius: 999px;
@@ -6983,15 +7003,15 @@ html[data-theme="dark"] .app-root--atrium {
    and give it more height to wrap into on small screens, rather than letting long labels
    like "Systematic Reviews and Meta-Analyses" get cut off by the clip-path. */
 @media (max-width: 480px) {
-  .evidence-pyramid-level { font-size: 9.5px; line-height: 1.25; height: 68px; padding: 4px 8px; }
-  .evidence-pyramid-badge { font-size: 8px; padding: 1px 6px; }
+  .evidence-pyramid-level { font-size: var(--fs-9-5); line-height: 1.25; height: 68px; padding: 4px 8px; }
+  .evidence-pyramid-badge { font-size: var(--fs-8); padding: 1px 6px; }
 }
 
 .evidence-pyramid-side-label {
   position: absolute;
   right: -8px;
   transform: translateX(100%);
-  font-size: 11px;
+  font-size: var(--fs-11);
   color: var(--color-neutral-700);
   white-space: nowrap;
   padding-left: 14px;
@@ -7013,7 +7033,7 @@ html[data-theme="dark"] .app-root--atrium {
 
 .evidence-pyramid-detail { background: var(--color-card-surface); border: 1px solid var(--color-divider); border-radius: 10px; padding: 20px; margin-top: 24px; }
 .evidence-pyramid-detail-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
-.evidence-pyramid-detail-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-neutral-700); margin: 12px 0 4px; }
+.evidence-pyramid-detail-label { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-neutral-700); margin: 12px 0 4px; }
 .evidence-pyramid-detail-label:first-of-type { margin-top: 0; }
 .evidence-pyramid-detail-text { font-size: 13.5px; line-height: 1.6; color: var(--color-text); margin: 0; }
 .evidence-pyramid-detail-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
@@ -7057,7 +7077,7 @@ html[data-theme="dark"] .app-root--atrium {
   transition: transform 150ms ease;
 }
 .boards-resource-link:hover::after { transform: translate(2px, -2px); }
-.boards-resource-disclaimer { font-size: 11.5px; color: var(--color-neutral-700); margin: 12px 0 0; }
+.boards-resource-disclaimer { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 12px 0 0; }
 
 /* Official NPTE Resources card — lives on app/(app)/student/resources/page.tsx's own
    960px-wide page (see .atrium-page), not squeezed into Boards' narrower 760px column
@@ -7113,7 +7133,7 @@ html[data-theme="dark"] .app-root--atrium {
 .boards-badge-soon {
   display: inline-flex;
   align-items: center;
-  font-size: 9.5px;
+  font-size: var(--fs-9-5);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -7147,7 +7167,7 @@ html[data-theme="dark"] .app-root--atrium {
   border-left: 4px solid var(--color-migration-gold);
   margin-bottom: 26px;
 }
-.connexion-mission-kicker { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-migration-gold); margin-bottom: 8px; }
+.connexion-mission-kicker { font-size: var(--fs-11); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-migration-gold); margin-bottom: 8px; }
 .connexion-mission-text { font-size: 15px; line-height: 1.6; margin: 0; color: var(--color-text); }
 
 /* Desktop-first base (3 columns), shrinking at narrower widths — same pattern
@@ -7173,7 +7193,7 @@ html[data-theme="dark"] .app-root--atrium {
   align-items: center;
   gap: 4px;
   align-self: flex-start;
-  font-size: 10px;
+  font-size: var(--fs-10);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -7214,7 +7234,7 @@ html[data-theme="dark"] .app-root--atrium {
      right edge with no way to scroll to the rest of the answer. */
   max-width: 100%;
   overflow-wrap: anywhere;
-  font-size: 9.5px;
+  font-size: var(--fs-9-5);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -7243,7 +7263,7 @@ html[data-theme="dark"] .app-root--atrium {
 }
 .connexion-cta-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; margin: 0 0 10px; color: #fff; }
 .connexion-cta-body { font-size: 13.5px; line-height: 1.6; max-width: 480px; margin: 0 auto 22px; color: #9fb0d0; }
-.connexion-cta-fineprint { font-size: 11.5px; margin: 16px 0 0; color: #9fb0d0; }
+.connexion-cta-fineprint { font-size: var(--fs-11-5); margin: 16px 0 0; color: #9fb0d0; }
 
 /* The visit-request form itself — stacked fields (not the old single-row email+button), left
    aligned within the centered dark card, same rgba-on-navy input treatment the old waitlist
@@ -7262,7 +7282,7 @@ html[data-theme="dark"] .app-root--atrium {
    emptying the field — see the bug this button was added to fix) — this bypasses the native
    widget entirely and just resets the field's own React state to "" directly. */
 .connexion-visit-clear-btn {
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 600;
   color: var(--color-migration-gold);
   background: none;
@@ -7337,7 +7357,7 @@ select.connexion-visit-input { color-scheme: dark; }
   border-radius: 6px;
   margin: 0 0 12px;
 }
-.connexion-visit-privacy { font-size: 11px; color: #9fb0d0; text-align: center; margin: 0; }
+.connexion-visit-privacy { font-size: var(--fs-11); color: #9fb0d0; text-align: center; margin: 0; }
 .connexion-visit-privacy a { color: var(--color-migration-gold); }
 @media (max-width: 480px) {
   .connexion-visit-field-row { flex-direction: column; }
@@ -7394,7 +7414,7 @@ select.connexion-visit-input { color-scheme: dark; }
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 600;
   color: var(--color-migration-gold);
   white-space: nowrap;
@@ -7443,7 +7463,7 @@ select.connexion-visit-input { color-scheme: dark; }
    /connexion/afit (see PROTOCOL_STEPS' `afit` flag in protocol/page.tsx). */
 .connexion-step-afit-block { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .connexion-step-afit-tag {
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   font-weight: 600;
   color: var(--color-migration-gold);
   background: color-mix(in srgb, var(--color-migration-gold) 14%, transparent);
@@ -7489,7 +7509,7 @@ select.connexion-visit-input { color-scheme: dark; }
   font-size: 13px;
   cursor: not-allowed;
 }
-.connexion-score-row-note { font-size: 11px; color: var(--color-neutral-600); margin: 12px 0 0; font-style: italic; }
+.connexion-score-row-note { font-size: var(--fs-11); color: var(--color-neutral-600); margin: 12px 0 0; font-style: italic; }
 
 .connexion-score-output-card {
   text-align: center;
@@ -7519,7 +7539,7 @@ select.connexion-visit-input { color-scheme: dark; }
 }
 .connexion-score-risk-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .connexion-score-risk-pill {
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   font-weight: 600;
   color: var(--color-neutral-500);
   background: var(--color-neutral-100);
@@ -7539,7 +7559,7 @@ select.connexion-visit-input { color-scheme: dark; }
 .connexion-assess-domain-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .connexion-assess-domain-score { font-size: 13px; font-weight: 700; color: var(--color-migration-gold); }
 .connexion-assess-section-label {
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   font-weight: 600;
   color: var(--color-neutral-700);
   text-transform: uppercase;
@@ -7575,7 +7595,7 @@ select.connexion-visit-input { color-scheme: dark; }
   color: #241704;
 }
 .connexion-assess-toggle-btn {
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   font-weight: 600;
   padding: 5px 12px;
   border-radius: 999px;
@@ -7809,7 +7829,7 @@ select.connexion-visit-input { color-scheme: dark; }
 .pro-tool-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); text-decoration: none; }
 .pro-tool-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15.5px; }
 .pro-tool-card-desc { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }
-.pro-tool-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; font-size: 11.5px; color: var(--color-neutral-700); }
+.pro-tool-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 .pro-tool-card-arrow { display: inline-flex; align-items: center; gap: 3px; color: var(--color-accent); font-weight: 600; }
 
 /* — PRO gate / locked state — shared by every /pro/* tool page (see
@@ -7919,9 +7939,9 @@ select.connexion-visit-input { color-scheme: dark; }
 /* — Calculator cards (/pro/calculators) — */
 .pro-calc-card { display: flex; flex-direction: column; gap: 2px; }
 .pro-calc-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; }
-.pro-calc-fullname { font-size: 11.5px; color: var(--color-neutral-700); margin: 0 0 6px; }
+.pro-calc-fullname { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 0 0 6px; }
 .pro-calc-desc { font-size: 13px; color: var(--color-text); margin: 0; line-height: 1.5; }
-.pro-calc-meta { font-size: 11.5px; color: var(--color-neutral-700); margin: 6px 0 10px; }
+.pro-calc-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 6px 0 10px; }
 .pro-calc-result {
   margin-top: 12px;
   padding: 12px 14px;
@@ -7956,7 +7976,7 @@ select.connexion-visit-input { color-scheme: dark; }
 /* CalcTimer — the stopwatch/countdown widget on TUG, TUG Cognitive, 6MWT, 30-Second Sit
    to Stand, and mBESS (see components/pro/calculators/CalcTimer.tsx). */
 .calc-timer { padding: 12px 14px; border-radius: var(--radius-md); background: var(--color-neutral-100); border: 1px solid var(--color-neutral-200); margin-bottom: 12px; }
-.calc-timer-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); margin-bottom: 8px; }
+.calc-timer-label { font-size: var(--fs-11); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); margin-bottom: 8px; }
 .calc-timer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .calc-timer-display { font-family: var(--font-heading); font-size: 26px; font-weight: var(--font-heading-weight); font-variant-numeric: tabular-nums; min-width: 72px; }
 .calc-timer-controls { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -7972,7 +7992,7 @@ select.connexion-visit-input { color-scheme: dark; }
 /* NPRS-style slider */
 .pro-slider-row { display: flex; flex-direction: column; gap: 8px; }
 .pro-slider { width: 100%; accent-color: var(--color-accent); cursor: pointer; }
-.pro-slider-scale { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--color-neutral-700); }
+.pro-slider-scale { display: flex; justify-content: space-between; font-size: var(--fs-10-5); color: var(--color-neutral-700); }
 
 /* — Accordions — decision rules, red flags, medications, guidelines all use
    native <details>/<summary>, styled to match .card. */
@@ -8108,7 +8128,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .plan-compare-current-pill {
   display: inline-block;
   margin-top: 2px;
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 700;
   color: #fff;
   background: var(--color-accent);
@@ -8121,7 +8141,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .plan-compare-coming-soon-pill {
   display: inline-block;
   margin-top: 2px;
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 700;
   color: var(--color-neutral-700);
   background: var(--color-neutral-100);
@@ -8138,7 +8158,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .plan-compare-divider-row td {
   background: var(--color-card-surface);
   color: var(--color-neutral-700);
-  font-size: 11px;
+  font-size: var(--fs-11);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
@@ -8175,7 +8195,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .plan-compare-card-soon {
   background: var(--color-card-surface);
   color: var(--color-neutral-700);
-  font-size: 11px;
+  font-size: var(--fs-11);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
@@ -8209,7 +8229,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .pro-ce-stats-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 14px 0; }
 .pro-ce-stat { display: flex; flex-direction: column; gap: 2px; }
 .pro-ce-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; }
-.pro-ce-stat-label { font-size: 11.5px; color: var(--color-neutral-700); }
+.pro-ce-stat-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 @media (max-width: 560px) {
   .pro-ce-stats-row { grid-template-columns: minmax(0, 1fr); }
 }
@@ -8386,7 +8406,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .hep-template-panel-header { cursor: default; pointer-events: none; list-style: none; display: block; margin-bottom: 14px; }
 .hep-template-panel-header::-webkit-details-marker { display: none; }
 .hep-template-panel-header-text { display: flex; flex-direction: column; gap: 2px; }
-.hep-template-panel-subtitle { font-size: 11.5px; color: var(--color-neutral-700); }
+.hep-template-panel-subtitle { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 .hep-template-panel-body { display: flex; flex-direction: column; gap: 16px; }
 
 .hep-template-category-list { display: flex; flex-direction: column; gap: 2px; }
@@ -8400,7 +8420,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   justify-content: space-between;
   gap: 8px;
   padding: 8px 2px;
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -8430,13 +8450,13 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .hep-template-card:hover { border-color: var(--color-neutral-400); box-shadow: var(--shadow-sm); }
 .hep-template-card-name { font-size: 13px; font-weight: 600; color: var(--color-text); }
-.hep-template-card-meta { font-size: 11px; color: var(--color-neutral-700); margin: 2px 0 8px; }
+.hep-template-card-meta { font-size: var(--fs-11); color: var(--color-neutral-700); margin: 2px 0 8px; }
 .hep-template-card-actions { display: flex; gap: 8px; }
 
 .hep-template-save-row { border-top: 1px solid var(--color-neutral-200); padding-top: 14px; display: flex; flex-direction: column; gap: 8px; }
 .hep-template-save-prompt { display: flex; flex-direction: column; gap: 8px; }
-.hep-template-save-error { font-size: 11.5px; color: var(--color-danger); margin: 0; }
-.hep-template-save-success { font-size: 11.5px; color: var(--color-success); margin: 0; }
+.hep-template-save-error { font-size: var(--fs-11-5); color: var(--color-danger); margin: 0; }
+.hep-template-save-success { font-size: var(--fs-11-5); color: var(--color-success); margin: 0; }
 
 @media (max-width: 860px) {
   .hep-layout { grid-template-columns: 1fr; }
@@ -8553,7 +8573,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .atlas-zone--selected, .atlas-zone--selected:hover { fill: rgba(99, 179, 237, 0.5); }
 .atlas-zone:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
 
-.atlas-credit { font-size: 10.5px; color: var(--color-neutral-600); text-align: center; margin-top: 4px; }
+.atlas-credit { font-size: var(--fs-10-5); color: var(--color-neutral-600); text-align: center; margin-top: 4px; }
 .atlas-credit a { color: inherit; text-decoration: underline; }
 
 /* Right clinical panel */
@@ -8592,7 +8612,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .atlas-gate-card-title { font-size: 15px; margin: 0 0 10px; }
 .atlas-gate-card-bullets { margin: 0 0 14px; padding-left: 18px; font-size: 12.5px; line-height: 1.6; color: var(--color-neutral-700); display: flex; flex-direction: column; gap: 4px; }
 .atlas-gate-card-btn { width: 100%; justify-content: center; margin-top: 8px; }
-.atlas-gate-card-note { font-size: 11.5px; color: var(--color-neutral-700); margin: 10px 0 0; }
+.atlas-gate-card-note { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 10px 0 0; }
 
 /* Search bar (above the region list) + its results, swapped in for the region list once the
    query is 2+ characters — see components/atlas/AtlasClient.tsx. */
@@ -8625,10 +8645,10 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .atlas-search-result:hover { background: var(--color-neutral-100); }
 .atlas-search-result-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.atlas-search-result-pill { font-size: 10px; font-weight: 600; text-transform: uppercase; padding: 2px 6px; border-radius: 999px; line-height: 1.4; }
+.atlas-search-result-pill { font-size: var(--fs-10); font-weight: 600; text-transform: uppercase; padding: 2px 6px; border-radius: 999px; line-height: 1.4; }
 .atlas-search-result-label { font-size: 12.5px; font-weight: 600; color: var(--color-text); }
 .atlas-search-highlight { background: var(--color-accent-100); color: var(--color-accent-700); border-radius: 2px; }
-.atlas-search-result-region { font-size: 11px; color: var(--color-neutral-700); }
+.atlas-search-result-region { font-size: var(--fs-11); color: var(--color-neutral-700); }
 .atlas-search-no-results, .atlas-search-overflow-note { font-size: 12px; color: var(--color-neutral-700); text-align: center; margin: 10px 0; }
 
 /* Explore Further connection cards — always visible, ungated (see ExploreFurtherSection). */
@@ -8645,11 +8665,11 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .atlas-connection-card:hover { border-color: var(--color-accent); }
 .atlas-connection-card--locked { opacity: 0.5; cursor: default; }
 .atlas-connection-card-title { font-size: 12.5px; font-weight: 600; color: var(--color-text); }
-.atlas-connection-card-desc { font-size: 11.5px; color: var(--color-neutral-700); margin: 2px 0 0; }
+.atlas-connection-card-desc { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 2px 0 0; }
 .atlas-connection-lock-pill {
   display: inline-block;
   margin-top: 6px;
-  font-size: 10px;
+  font-size: var(--fs-10);
   font-weight: 600;
   color: var(--color-accent-700);
   background: var(--color-accent-100);
@@ -8694,7 +8714,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .clindash-brief-tile { padding: 14px 16px; }
 .clindash-brief-tile-label {
-  font-size: 11px;
+  font-size: var(--fs-11);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--color-neutral-700);
@@ -8728,7 +8748,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .clindash-add-patient-actions { display: flex; gap: 8px; }
 .clindash-hipaa-note {
-  font-size: 11px;
+  font-size: var(--fs-11);
   line-height: 1.4;
   color: var(--color-warn);
   background: color-mix(in srgb, var(--color-warn) 12%, transparent);
@@ -8755,14 +8775,14 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-patient-code { font-weight: 700; font-size: 13.5px; }
 .clindash-reassess-dot { width: 7px; height: 7px; border-radius: 999px; background: #c9853a; flex-shrink: 0; }
 .clindash-patient-condition {
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   color: var(--color-neutral-700);
   margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.clindash-patient-progress { font-size: 11px; color: var(--color-neutral-700); margin-top: 3px; }
+.clindash-patient-progress { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 3px; }
 .clindash-empty-state { font-size: 13px; color: var(--color-neutral-700); padding: 8px 2px; line-height: 1.5; }
 
 /* — Main workspace (center column) — */
@@ -8781,7 +8801,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-patient-header-code { font-family: var(--font-heading); font-size: 24px; }
 .clindash-patient-header-condition { font-size: 13.5px; color: var(--color-neutral-700); margin-top: 2px; }
 .clindash-patient-header-pills { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
-.clindash-status-pill { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+.clindash-status-pill { font-size: var(--fs-11); font-weight: 600; padding: 3px 9px; border-radius: 999px; }
 .clindash-status-pill--active { background: color-mix(in srgb, var(--color-success) 18%, transparent); color: var(--color-success); }
 .clindash-status-pill--discharged { background: var(--color-neutral-200); color: var(--color-neutral-700); }
 .clindash-patient-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
@@ -8801,8 +8821,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   white-space: pre-wrap;
 }
 .clindash-brief-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
-.clindash-brief-generated-label { font-size: 11.5px; color: var(--color-neutral-700); }
-.clindash-disclaimer { font-size: 11px; color: var(--color-neutral-700); margin-top: 8px; line-height: 1.5; }
+.clindash-brief-generated-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.clindash-disclaimer { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 8px; line-height: 1.5; }
 
 .clindash-visit-progress-label { font-family: var(--font-heading); font-size: 18px; margin-bottom: 8px; }
 .clindash-progress-bar { height: 8px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
@@ -8812,7 +8832,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-outcome-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 .clindash-outcome-table th {
   text-align: left;
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--color-neutral-700);
@@ -8826,11 +8846,11 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-trend-arrow--up { color: var(--color-success); }
 .clindash-trend-arrow--down { color: var(--color-danger); }
 .clindash-trend-arrow--flat { color: var(--color-neutral-600); }
-.clindash-outcome-history { padding: 4px 0 10px; font-size: 11.5px; color: var(--color-neutral-700); }
+.clindash-outcome-history { padding: 4px 0 10px; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 .clindash-outcome-history-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed var(--color-divider); }
 
 .clindash-trend-chart-wrap { margin-top: 6px; padding: 10px 4px 4px; }
-.clindash-trend-chart-name { font-size: 11.5px; font-weight: 600; margin-bottom: 6px; }
+.clindash-trend-chart-name { font-size: var(--fs-11-5); font-weight: 600; margin-bottom: 6px; }
 .clindash-trend-chart { position: relative; height: 70px; overflow: hidden; }
 /* width/height 100% is required, not just inset:0 -- an absolutely positioned <svg> with no
    explicit size is a *replaced element with an intrinsic aspect ratio* (from its viewBox),
@@ -8847,8 +8867,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   background: var(--color-accent);
   transform: translate(-50%, 50%);
 }
-.clindash-trend-label { position: absolute; font-size: 10px; color: var(--color-neutral-700); white-space: nowrap; }
-.clindash-trend-need-more { font-size: 11.5px; color: var(--color-neutral-700); font-style: italic; margin-top: 4px; }
+.clindash-trend-label { position: absolute; font-size: var(--fs-10); color: var(--color-neutral-700); white-space: nowrap; }
+.clindash-trend-need-more { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-style: italic; margin-top: 4px; }
 
 .clindash-inline-form {
   display: flex;
@@ -8868,7 +8888,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
    the clinician's own past Calculators results (see /pro/calculators) matching the
    currently-selected measure, one click away from filling in Score/Max Score below. */
 .clindash-outcome-pull { display: flex; flex-direction: column; gap: 4px; }
-.clindash-outcome-pull-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); }
+.clindash-outcome-pull-label { font-size: var(--fs-10-5); text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); }
 .clindash-outcome-pull-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .clindash-outcome-pull-row {
   display: flex;
@@ -8889,17 +8909,17 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-hep-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--color-divider); font-size: 13px; }
 .clindash-hep-item:first-child { border-top: none; }
 .clindash-hep-item-name { font-weight: 600; }
-.clindash-hep-item-date { font-size: 11.5px; color: var(--color-neutral-700); }
+.clindash-hep-item-date { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 
 .clindash-note-item { padding: 10px 0; border-top: 1px solid var(--color-divider); cursor: pointer; }
 .clindash-note-item:first-child { border-top: none; }
-.clindash-note-item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 11.5px; color: var(--color-neutral-700); }
-.clindash-note-type-pill { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--color-accent-100); color: var(--color-accent-700); }
+.clindash-note-item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.clindash-note-type-pill { font-size: var(--fs-10-5); font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--color-accent-100); color: var(--color-accent-700); }
 .clindash-note-preview { font-size: 12.5px; margin-top: 4px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .clindash-note-full { font-size: 12.5px; margin-top: 4px; line-height: 1.5; white-space: pre-wrap; }
 
 /* — Research feed (right column) — */
-.clindash-research-sub { font-size: 11.5px; color: var(--color-neutral-700); margin: -6px 0 10px; }
+.clindash-research-sub { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: -6px 0 10px; }
 .clindash-research-list { display: flex; flex-direction: column; gap: 8px; }
 .clindash-research-item {
   display: block;
@@ -8909,7 +8929,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   color: inherit;
   text-decoration: none;
 }
-.clindash-research-item-meta { font-size: 10px; color: var(--color-accent-700); margin-bottom: 3px; }
+.clindash-research-item-meta { font-size: var(--fs-10); color: var(--color-accent-700); margin-bottom: 3px; }
 .clindash-research-item-title { font-family: var(--font-heading); font-size: 12.5px; line-height: 1.3; }
 .clindash-research-see-all { display: block; font-size: 12px; margin-top: 10px; text-align: center; }
 .clindash-quick-tools { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
@@ -8919,7 +8939,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-metric-card-value { font-family: var(--font-heading); font-size: 26px; margin: 6px 0 2px; }
 .clindash-metric-card-sub { font-size: 12px; color: var(--color-neutral-700); }
 .clindash-region-bars { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-.clindash-region-bar-row { display: flex; align-items: center; gap: 8px; font-size: 11.5px; }
+.clindash-region-bar-row { display: flex; align-items: center; gap: 8px; font-size: var(--fs-11-5); }
 .clindash-region-bar-label { width: 92px; flex-shrink: 0; color: var(--color-neutral-700); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .clindash-region-bar-track { flex: 1; height: 10px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
 .clindash-region-bar-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
@@ -8963,7 +8983,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .ppm-step-bar { height: 4px; border-radius: 999px; background: var(--color-divider); }
 .ppm-step-bar--active,
 .ppm-step-bar--done { background: var(--color-accent); }
-.ppm-step-label { font-size: 10.5px; color: var(--color-neutral-700); }
+.ppm-step-label { font-size: var(--fs-10-5); color: var(--color-neutral-700); }
 .ppm-step-label--active { color: var(--color-accent-700); font-weight: 600; }
 .ppm-step-heading { font-family: var(--font-heading); font-size: 19px; margin-bottom: 14px; }
 .ppm-textarea { width: 100%; min-height: 160px; font: inherit; font-size: 13.5px; line-height: 1.6; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--color-divider); background: var(--color-surface); color: var(--color-text); resize: vertical; }
@@ -8974,10 +8994,10 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .ppm-hep-row-name { font-size: 12.5px; font-weight: 600; }
 .ppm-details-grid { display: flex; flex-direction: column; gap: 12px; }
 .ppm-details-row { display: flex; flex-direction: column; gap: 4px; }
-.ppm-details-label { font-size: 11px; color: var(--color-neutral-700); }
+.ppm-details-label { font-size: var(--fs-11); color: var(--color-neutral-700); }
 .ppm-details-static { font-size: 13.5px; padding: 8px 0; }
 .ppm-patient-name-line { font-size: 13.5px; color: var(--color-neutral-700); border-bottom: 1px solid var(--color-divider); padding-bottom: 10px; }
-.ppm-patient-name-note { font-size: 11px; color: var(--color-warn); margin-top: 4px; }
+.ppm-patient-name-note { font-size: var(--fs-11); color: var(--color-warn); margin-top: 4px; }
 .ppm-download-wrap { text-align: center; padding: 30px 10px; }
 .ppm-download-instruction { font-size: 12px; color: var(--color-neutral-700); margin-top: 12px; max-width: 380px; margin-left: auto; margin-right: auto; line-height: 1.5; }
 
@@ -9033,7 +9053,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   margin-bottom: 22px;
 }
 .patient-brief-clinic-name { font-size: 20px; font-weight: 700; }
-.patient-brief-clinic-tagline { font-size: 11.5px; color: #555; margin-top: 2px; }
+.patient-brief-clinic-tagline { font-size: var(--fs-11-5); color: #555; margin-top: 2px; }
 .patient-brief-doc-title { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #555; margin-bottom: 4px; }
 .patient-brief-meta-grid {
   display: grid;
@@ -9053,7 +9073,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .patient-brief-hep-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 .patient-brief-hep-table th {
   text-align: left;
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: #666;
@@ -9065,7 +9085,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   margin-top: 32px;
   padding-top: 16px;
   border-top: 1px solid #ddd;
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   color: #777;
   line-height: 1.6;
 }
@@ -9098,7 +9118,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-eod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .clindash-eod-stat-value { font-family: var(--font-heading); font-size: 22px; }
 .clindash-eod-stat-value--danger { color: var(--color-danger); }
-.clindash-eod-stat-label { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
+.clindash-eod-stat-label { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
 .clindash-eod-note { font-size: 12px; color: var(--color-neutral-700); margin-top: 12px; }
 .clindash-eod-actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
 
@@ -9115,7 +9135,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-today-row-main { min-width: 0; }
 .clindash-today-row-code { font-weight: 700; font-size: 13.5px; }
 .clindash-today-row-condition { font-size: 12px; color: var(--color-neutral-700); }
-.clindash-today-row-outcome { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
+.clindash-today-row-outcome { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
 
 .clindash-reminders-header { color: #c9853a; margin: 0 0 8px; }
 .clindash-reminder-row {
@@ -9131,12 +9151,12 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .clindash-reminder-row-main { min-width: 0; }
 .clindash-reminder-row-code { font-weight: 700; font-size: 13px; }
-.clindash-reminder-row-condition { font-size: 11.5px; color: var(--color-neutral-700); }
+.clindash-reminder-row-condition { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 
 .clindash-quickstats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
 .clindash-quickstat-tile { padding: 12px 14px; text-align: center; }
 .clindash-quickstat-value { font-family: var(--font-heading); font-size: 20px; }
-.clindash-quickstat-label { font-size: 10.5px; color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 3px; }
+.clindash-quickstat-label { font-size: var(--fs-10-5); color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 3px; }
 
 .clindash-switch-view-link {
   display: block;
@@ -9190,7 +9210,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-milestone-banner-dismiss { font-size: 12px; color: var(--color-neutral-700); background: none; border: none; cursor: pointer; padding: 0; }
 
 .clindash-reassess-pill {
-  font-size: 9.5px;
+  font-size: var(--fs-9-5);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.02em;
@@ -9213,10 +9233,10 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
    ============================================================================ */
 
 .clindash-ci-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px; }
-.clindash-ci-section-title { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--color-neutral-700); margin-bottom: 5px; }
+.clindash-ci-section-title { font-size: var(--fs-10-5); text-transform: uppercase; letter-spacing: 0.03em; color: var(--color-neutral-700); margin-bottom: 5px; }
 .clindash-ci-measures { display: flex; flex-wrap: wrap; gap: 6px; }
 .clindash-ci-measure-pill {
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 600;
   padding: 3px 9px;
   border-radius: 999px;
@@ -9227,15 +9247,15 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .clindash-ci-text { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; }
 .clindash-ci-pearl { font-size: 12.5px; color: var(--color-neutral-700); font-style: italic; line-height: 1.5; }
-.clindash-ci-find-link { display: inline; font-size: 11.5px; margin-left: 6px; color: var(--color-accent); text-decoration: none; }
+.clindash-ci-find-link { display: inline; font-size: var(--fs-11-5); margin-left: 6px; color: var(--color-accent); text-decoration: none; }
 .clindash-ci-find-link:hover { text-decoration: underline; }
 
 @media (max-width: 700px) {
   .clindash-ci-grid { grid-template-columns: 1fr; }
 }
 
-.clindash-benchmark-line { font-size: 11px; color: var(--color-neutral-700); margin-top: 2px; }
-.clindash-benchmark-pill { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-top: 4px; }
+.clindash-benchmark-line { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
+.clindash-benchmark-pill { display: inline-block; font-size: var(--fs-10); font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-top: 4px; }
 .clindash-benchmark-pill--good { background: color-mix(in srgb, var(--color-success) 16%, transparent); color: var(--color-success); }
 .clindash-benchmark-pill--warn { background: color-mix(in srgb, #c9853a 16%, transparent); color: #c9853a; }
 .clindash-benchmark-pill--bad { background: color-mix(in srgb, var(--color-danger) 14%, transparent); color: var(--color-danger); }
@@ -9264,7 +9284,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-alert-item-text { display: flex; gap: 6px; }
 .clindash-alert-item-text::before { content: "•"; flex-shrink: 0; }
 .clindash-alert-item-dismiss {
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   color: var(--color-neutral-700);
   background: none;
   border: none;
@@ -9272,7 +9292,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   padding: 0;
   flex-shrink: 0;
 }
-.clindash-alert-footer { margin-top: 10px; font-size: 11.5px; }
+.clindash-alert-footer { margin-top: 10px; font-size: var(--fs-11-5); }
 
 /* ============================================================================
    Clinician Dashboard — Prompt 3 practice-building features (Episode Length Tracker,
@@ -9286,20 +9306,20 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-goal-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .clindash-goal-text { font-size: 13px; line-height: 1.5; flex: 1; min-width: 200px; }
 .clindash-goal-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.clindash-goal-timeframe { font-size: 11px; color: var(--color-neutral-700); }
-.clindash-goal-status-select { font-size: 11.5px; padding: 3px 6px; border-radius: var(--radius-md); border: 1px solid var(--color-divider); background: var(--color-surface); color: var(--color-text); }
+.clindash-goal-timeframe { font-size: var(--fs-11); color: var(--color-neutral-700); }
+.clindash-goal-status-select { font-size: var(--fs-11-5); padding: 3px 6px; border-radius: var(--radius-md); border: 1px solid var(--color-divider); background: var(--color-surface); color: var(--color-text); }
 .clindash-goal-met-check { color: var(--color-success); }
 
 .clindash-suggested-goals { margin-top: 10px; padding: 10px; border-radius: var(--radius-md); background: var(--color-surface); border: 1px solid var(--color-divider); }
-.clindash-suggested-goals-title { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--color-neutral-700); margin-bottom: 6px; }
+.clindash-suggested-goals-title { font-size: var(--fs-10-5); text-transform: uppercase; letter-spacing: 0.03em; color: var(--color-neutral-700); margin-bottom: 6px; }
 .clindash-suggested-goal-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px dashed var(--color-divider); font-size: 12px; }
 .clindash-suggested-goal-row:first-child { border-top: none; }
-.clindash-suggested-goal-use { font-size: 11px; flex-shrink: 0; }
+.clindash-suggested-goal-use { font-size: var(--fs-11); flex-shrink: 0; }
 
 .clindash-discharge-summary-box { padding: 14px 16px; border-radius: var(--radius-md); background: var(--color-neutral-100); font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
-.clindash-discharge-summary-date { font-size: 11px; color: var(--color-neutral-700); margin-top: 8px; }
+.clindash-discharge-summary-date { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 8px; }
 
-.clindash-region-stat-table { width: 100%; font-size: 11.5px; margin-top: 8px; border-collapse: collapse; }
+.clindash-region-stat-table { width: 100%; font-size: var(--fs-11-5); margin-top: 8px; border-collapse: collapse; }
 .clindash-region-stat-table td { padding: 4px 0; border-top: 1px dashed var(--color-divider); }
 .clindash-region-stat-table tr:first-child td { border-top: none; }
 
@@ -9318,7 +9338,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 
 .clindash-digest-header-row { margin-bottom: 4px; }
 .clindash-digest-title { font-family: var(--font-heading); font-size: 15px; }
-.clindash-digest-subtitle { font-size: 11px; color: var(--color-neutral-700); margin: 2px 0 10px; }
+.clindash-digest-subtitle { font-size: var(--fs-11); color: var(--color-neutral-700); margin: 2px 0 10px; }
 .clindash-digest-item { padding: 10px 0; border-top: 1px solid var(--color-divider); }
 .clindash-digest-item:first-child { border-top: none; }
 .clindash-digest-item-title {
@@ -9332,8 +9352,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   color: inherit;
   text-decoration: none;
 }
-.clindash-digest-item-meta { font-size: 10.5px; color: var(--color-neutral-700); margin-top: 4px; }
-.clindash-digest-placeholder { font-size: 11.5px; color: var(--color-neutral-700); font-style: italic; padding: 10px 0; border-top: 1px solid var(--color-divider); }
+.clindash-digest-item-meta { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 4px; }
+.clindash-digest-placeholder { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-style: italic; padding: 10px 0; border-top: 1px solid var(--color-divider); }
 
 .clindash-question-log { margin-top: 16px; }
 .clindash-question-card {
@@ -9350,12 +9370,12 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.clindash-question-date { font-size: 10.5px; color: var(--color-neutral-700); margin-top: 3px; }
+.clindash-question-date { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 3px; }
 .clindash-question-actions { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
-.clindash-question-ask { font-size: 11.5px; color: var(--color-accent); background: none; border: none; cursor: pointer; padding: 0; font-weight: 600; }
-.clindash-question-delete { font-size: 11.5px; color: var(--color-danger); background: none; border: none; cursor: pointer; padding: 0; }
-.clindash-question-answered-label { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--color-success); cursor: pointer; }
-.clindash-question-see-all { display: block; text-align: center; font-size: 11.5px; margin-top: 4px; }
+.clindash-question-ask { font-size: var(--fs-11-5); color: var(--color-accent); background: none; border: none; cursor: pointer; padding: 0; font-weight: 600; }
+.clindash-question-delete { font-size: var(--fs-11-5); color: var(--color-danger); background: none; border: none; cursor: pointer; padding: 0; }
+.clindash-question-answered-label { display: flex; align-items: center; gap: 5px; font-size: var(--fs-11-5); color: var(--color-success); cursor: pointer; }
+.clindash-question-see-all { display: block; text-align: center; font-size: var(--fs-11-5); margin-top: 4px; }
 
 .clindash-benchmarks-section { margin-top: 24px; }
 .clindash-benchmarks-header { font-family: var(--font-heading); font-size: 17px; }
@@ -9367,8 +9387,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-benchmark-card-verdict--good { color: var(--color-success); }
 .clindash-benchmark-card-verdict--warn { color: #c9853a; }
 .clindash-benchmark-card-verdict--bad { color: var(--color-danger); }
-.clindash-benchmark-card-source { font-size: 10.5px; color: var(--color-neutral-700); margin-top: 6px; }
-.clindash-benchmarks-disclaimer { font-size: 11px; color: var(--color-neutral-700); margin-top: 12px; line-height: 1.5; }
+.clindash-benchmark-card-source { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 6px; }
+.clindash-benchmarks-disclaimer { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 12px; line-height: 1.5; }
 
 /* ============================================================================
    Clinic PRO expansion — Team Overview tab (components/pro/dashboard/TeamOverview.tsx),
@@ -9401,7 +9421,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-team-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 .clindash-team-table th {
   text-align: left;
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--color-neutral-700);
@@ -9416,16 +9436,16 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-team-patient-row {
   display: flex;
   gap: 14px;
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   color: var(--color-neutral-700);
   padding: 3px 0;
 }
 .clindash-team-patient-row span:first-child { font-weight: 600; color: var(--color-text); min-width: 70px; }
-.clindash-team-you-label { font-size: 11.5px; color: var(--color-neutral-700); }
+.clindash-team-you-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 
 .clindash-seats-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--color-divider); }
 .clindash-seats-label { font-size: 12.5px; font-weight: 600; margin-bottom: 6px; }
-.clindash-seats-price { font-size: 11px; color: var(--color-neutral-700); margin: 6px 0 0; }
+.clindash-seats-price { font-size: var(--fs-11); color: var(--color-neutral-700); margin: 6px 0 0; }
 .clindash-seats-add-link {
   background: none;
   border: none;
@@ -9443,7 +9463,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-transfer-recent-row {
   display: flex;
   gap: 14px;
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   color: var(--color-neutral-700);
   padding: 5px 0;
   border-top: 1px dashed var(--color-divider);
@@ -9472,7 +9492,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-report-stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 12px; }
 .clindash-report-stat-card { padding: 12px 14px; }
 .clindash-report-stat-value { font-family: var(--font-heading); font-size: 22px; }
-.clindash-report-stat-label { font-size: 11px; color: var(--color-neutral-700); }
+.clindash-report-stat-label { font-size: var(--fs-11); color: var(--color-neutral-700); }
 .clindash-report-history-row {
   display: flex;
   justify-content: space-between;
@@ -9561,15 +9581,15 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.forcelab-history-card-date { font-size: 10.5px; color: var(--color-neutral-700); margin: 2px 0 6px; }
-.forcelab-history-card-peaks { display: flex; justify-content: space-between; font-size: 11.5px; margin-bottom: 6px; }
+.forcelab-history-card-date { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin: 2px 0 6px; }
+.forcelab-history-card-peaks { display: flex; justify-content: space-between; font-size: var(--fs-11-5); margin-bottom: 6px; }
 .forcelab-history-card-tags { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .forcelab-lsi-pill {
   display: inline-block;
   padding: 1px 8px;
   border-radius: 999px;
   border: 1px solid currentColor;
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   font-weight: 700;
 }
 
@@ -9577,9 +9597,9 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   .forcelab-history-list { gap: 6px; }
   .forcelab-history-card { padding: 8px 10px; }
   .forcelab-history-card-muscle { font-size: 12px; }
-  .forcelab-history-card-date { font-size: 10px; margin: 1px 0 4px; }
-  .forcelab-history-card-peaks { font-size: 11px; margin-bottom: 4px; }
-  .forcelab-lsi-pill { padding: 0 6px; font-size: 10px; }
+  .forcelab-history-card-date { font-size: var(--fs-10); margin: 1px 0 4px; }
+  .forcelab-history-card-peaks { font-size: var(--fs-11); margin-bottom: 4px; }
+  .forcelab-lsi-pill { padding: 0 6px; font-size: var(--fs-10); }
 }
 
 /* — Main Entry (center column) — */
@@ -9590,12 +9610,12 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 
 .forcelab-form-section { margin-top: 18px; }
 .forcelab-form-section:first-child { margin-top: 4px; }
-.forcelab-form-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-700); font-weight: 700; margin-bottom: 8px; }
+.forcelab-form-section-title { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-700); font-weight: 700; margin-bottom: 8px; }
 .forcelab-form-section-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .forcelab-form-section-title-row .forcelab-form-section-title { margin-bottom: 0; }
 
 .forcelab-unit-toggle { display: flex; border: 1px solid var(--color-divider); border-radius: 999px; overflow: hidden; }
-.forcelab-unit-btn { background: none; border: none; padding: 3px 12px; font-size: 11.5px; font-weight: 600; cursor: pointer; color: var(--color-neutral-700); }
+.forcelab-unit-btn { background: none; border: none; padding: 3px 12px; font-size: var(--fs-11-5); font-weight: 600; cursor: pointer; color: var(--color-neutral-700); }
 .forcelab-unit-btn--active { background: var(--color-accent); color: var(--color-bg); }
 
 .forcelab-measurement-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -9617,11 +9637,11 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .forcelab-norm-result { margin-top: 10px; font-size: 12px; }
 .forcelab-norm-result p { margin: 0 0 6px; color: var(--color-neutral-700); }
 .forcelab-norm-pill { font-size: 12px; font-weight: 700; }
-.forcelab-norm-none { font-size: 11.5px; color: var(--color-neutral-700); margin-top: 8px; }
+.forcelab-norm-none { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin-top: 8px; }
 
-.forcelab-confidence { font-size: 11.5px; color: var(--color-neutral-700); margin: 14px 0 0; }
+.forcelab-confidence { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 14px 0 0; }
 .forcelab-confidence--low { color: #c9853a; font-weight: 600; }
-.forcelab-review-notice { font-size: 11px; color: var(--color-neutral-700); font-style: italic; margin: 4px 0 0; }
+.forcelab-review-notice { font-size: var(--fs-11); color: var(--color-neutral-700); font-style: italic; margin: 4px 0 0; }
 
 /* — Import Screenshot tab — */
 .forcelab-import-instructions p { font-size: 13px; margin: 0 0 6px; }
@@ -9647,11 +9667,11 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 
 .forcelab-force-display { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
 .forcelab-force-display-col { padding: 14px; border-radius: var(--radius-md); background: var(--color-surface-2); }
-.forcelab-force-display-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+.forcelab-force-display-label { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
 .forcelab-force-display-label--right { color: var(--color-accent); }
 .forcelab-force-display-label--left { color: #c9853a; }
 .forcelab-force-display-value { font-family: var(--font-heading); font-size: 28px; margin-top: 4px; }
-.forcelab-force-display-muted { font-size: 11px; color: var(--color-neutral-700); margin-top: 4px; }
+.forcelab-force-display-muted { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 4px; }
 
 .forcelab-session-notes { margin-top: 18px; }
 .forcelab-session-notes p { font-size: 13px; margin: 0; white-space: pre-wrap; }
@@ -9677,21 +9697,21 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .forcelab-trend-point { position: absolute; width: 7px; height: 7px; border-radius: 999px; transform: translate(-50%, 50%); }
 .forcelab-trend-point--right { background: var(--color-accent); }
 .forcelab-trend-point--left { background: #c9853a; }
-.forcelab-trend-axis { display: flex; justify-content: space-between; font-size: 10px; color: var(--color-neutral-700); margin-top: 2px; }
+.forcelab-trend-axis { display: flex; justify-content: space-between; font-size: var(--fs-10); color: var(--color-neutral-700); margin-top: 2px; }
 .forcelab-trend-legend { display: flex; gap: 14px; margin-top: 8px; }
-.forcelab-trend-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--color-neutral-700); }
+.forcelab-trend-legend-item { display: flex; align-items: center; gap: 5px; font-size: var(--fs-11); color: var(--color-neutral-700); }
 .forcelab-trend-swatch { width: 8px; height: 8px; border-radius: 999px; }
 .forcelab-trend-swatch--right { background: var(--color-accent); }
 .forcelab-trend-swatch--left { background: #c9853a; }
-.forcelab-trend-need-more { font-size: 11.5px; color: var(--color-neutral-700); font-style: italic; text-align: center; margin: 0; padding: 0 8px; }
+.forcelab-trend-need-more { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-style: italic; text-align: center; margin: 0; padding: 0 8px; }
 
 /* — Strength Profile (right column, compact; full-width on the patient session page) — */
 .forcelab-profile-regions { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
 .forcelab-profile-regions--full { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
-.forcelab-profile-region-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 8px; }
-.forcelab-profile-empty { font-size: 11.5px; color: var(--color-neutral-700); font-style: italic; }
+.forcelab-profile-region-title { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 8px; }
+.forcelab-profile-empty { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-style: italic; }
 .forcelab-profile-bar-row { margin-bottom: 8px; }
-.forcelab-profile-bar-label { display: flex; justify-content: space-between; font-size: 11.5px; margin-bottom: 3px; }
+.forcelab-profile-bar-label { display: flex; justify-content: space-between; font-size: var(--fs-11-5); margin-bottom: 3px; }
 .forcelab-profile-bar-label span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 8px; }
 .forcelab-profile-bar-label span:last-child { font-weight: 700; white-space: nowrap; }
 .forcelab-profile-bar-track { display: block; height: 8px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
@@ -9699,14 +9719,14 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 /* Unilateral entries (one side only, so no LSI) skip the bar entirely — see
    StrengthProfilePanel.tsx. font-weight set inline on the span itself since
    .forcelab-profile-bar-label span:last-child above already forces bold. */
-.forcelab-profile-unilateral { color: var(--color-neutral-700); font-size: 11px; }
+.forcelab-profile-unilateral { color: var(--color-neutral-700); font-size: var(--fs-11); }
 .forcelab-profile-unilateral em { font-style: italic; margin-left: 4px; }
 
 /* — Patient session page (/pro/force-lab/patient/[patientCode]) — */
 .forcelab-patient-history-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 14px; }
 .forcelab-patient-history-table th {
   text-align: left;
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--color-neutral-700);
@@ -9722,21 +9742,21 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
    since this is one of several sections stacked in the active patient workspace and was
    previously the tallest one on a caseload with any real Force Lab history. */
 .forcelab-card-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.forcelab-card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700); }
-.forcelab-card-patient-code { font-size: 11.5px; color: var(--color-neutral-700); }
+.forcelab-card-kicker { font-size: var(--fs-10); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700); }
+.forcelab-card-patient-code { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 .forcelab-card-meta { font-size: 12px; color: var(--color-neutral-700); margin: 4px 0 0; }
 .forcelab-card-empty { font-size: 12.5px; color: var(--color-neutral-700); text-align: center; margin: 10px 0; }
 .forcelab-card-empty-btn { width: 100%; text-align: center; color: var(--color-accent); border-color: var(--color-accent); }
 
 .forcelab-card-divider { border-top: 1px solid var(--color-divider); margin: 10px 0; }
-.forcelab-card-section-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 6px; }
+.forcelab-card-section-label { font-size: var(--fs-10-5); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 6px; }
 .forcelab-card-muscle-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
 .forcelab-card-columns { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .forcelab-card-values { font-size: 13px; display: flex; flex-direction: column; gap: 2px; }
 .forcelab-card-values div:first-child { color: var(--color-accent); }
 .forcelab-card-values div:last-child { color: var(--color-neutral-700); }
 .forcelab-card-lsi-col { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-.forcelab-card-trend { font-size: 11px; }
+.forcelab-card-trend { font-size: var(--fs-11); }
 .forcelab-card-trend--stable { color: var(--color-neutral-700); }
 
 .forcelab-card-attention-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 0; }
@@ -9771,10 +9791,10 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .forcelab-paste-meta-panel .field:first-child { margin-top: 0; }
 .forcelab-paste-table-panel { min-width: 0; }
 .forcelab-inline-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-.forcelab-automatch-note { font-size: 11px; color: var(--color-success); font-weight: 600; margin: 4px 0 0; }
-.forcelab-unrecognized-note { font-size: 10.5px; color: #c9853a; font-weight: 600; margin-top: 2px; }
-.forcelab-row-count { font-size: 11.5px; color: var(--color-neutral-700); margin: 8px 0 0; }
-.forcelab-paste-disclaimer { font-size: 10.5px; color: var(--color-neutral-700); font-style: italic; margin: 10px 0 0; }
+.forcelab-automatch-note { font-size: var(--fs-11); color: var(--color-success); font-weight: 600; margin: 4px 0 0; }
+.forcelab-unrecognized-note { font-size: var(--fs-10-5); color: #c9853a; font-weight: 600; margin-top: 2px; }
+.forcelab-row-count { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 8px 0 0; }
+.forcelab-paste-disclaimer { font-size: var(--fs-10-5); color: var(--color-neutral-700); font-style: italic; margin: 10px 0 0; }
 
 @media (max-width: 900px) {
   .forcelab-paste-preview { grid-template-columns: 1fr; }
@@ -9793,7 +9813,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .forcelab-expanded-meta-bar { display: flex; flex-wrap: wrap; gap: 8px; }
 .forcelab-meta-pill {
   display: inline-block; padding: 3px 10px; border-radius: 999px; background: var(--color-surface-2);
-  font-size: 11.5px; color: var(--color-neutral-700);
+  font-size: var(--fs-11-5); color: var(--color-neutral-700);
 }
 .forcelab-expanded-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-divider); }
 .forcelab-patient-pill {
@@ -9807,9 +9827,9 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 
 .forcelab-ai-card { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--color-divider); }
 .forcelab-ai-card-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
-.forcelab-ai-generated-label { font-size: 10.5px; color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.03em; }
+.forcelab-ai-generated-label { font-size: var(--fs-10-5); color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.03em; }
 .forcelab-ai-text { font-size: 13px; line-height: 1.6; background: var(--color-surface-2); border-radius: var(--radius-md); padding: 12px 14px; margin: 0; }
-.forcelab-ai-disclaimer { font-size: 10.5px; color: var(--color-neutral-700); font-style: italic; margin: 8px 0 0; }
+.forcelab-ai-disclaimer { font-size: var(--fs-10-5); color: var(--color-neutral-700); font-style: italic; margin: 8px 0 0; }
 
 @media (max-width: 600px) {
   .forcelab-expanded-meta-bar { flex-direction: column; align-items: flex-start; }
@@ -9821,9 +9841,9 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .forcelab-assessment-summary-card { padding: 12px 14px; border: 1px solid var(--color-divider); border-radius: var(--radius-md); }
 .forcelab-assessment-summary-top { display: flex; align-items: baseline; gap: 10px; }
 .forcelab-assessment-summary-date { font-weight: 700; font-size: 13.5px; }
-.forcelab-assessment-summary-count { font-size: 11.5px; color: var(--color-neutral-700); }
+.forcelab-assessment-summary-count { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 .forcelab-assessment-summary-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.forcelab-assessment-summary-more { font-size: 10.5px; color: var(--color-neutral-700); align-self: center; }
+.forcelab-assessment-summary-more { font-size: var(--fs-10-5); color: var(--color-neutral-700); align-self: center; }
 .forcelab-assessment-summary-actions { display: flex; gap: 8px; margin-top: 10px; }
 
 .forcelab-assessment-trends-section { margin-top: 20px; }
@@ -9839,16 +9859,16 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 /* — Patient brief print document's Strength Measurements section — */
 .pbrief-forcelab-title { font-size: 14px; font-weight: 700; color: #3b6fe0; margin-bottom: 8px; }
 .pbrief-forcelab-row { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; padding: 4px 0; border-bottom: 1px solid #eee; }
-.pbrief-forcelab-note { font-size: 10.5px; color: #666; margin-top: 6px; font-style: italic; }
+.pbrief-forcelab-note { font-size: var(--fs-10-5); color: #666; margin-top: 6px; font-style: italic; }
 
 /* — Force Lab single-assessment print document's muscle-group table (see
    app/pro/force-lab/assessment/[assessmentId]/print/page.tsx) — same literal-hex,
    theme-independent approach as every other patient-brief/pbrief rule in this block, for
    the same reason: this document must look identical no matter the clinician's own theme.
    LSI color is applied inline per-cell (varies per row), not via a class. */
-.pbrief-assessment-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.pbrief-assessment-table { width: 100%; border-collapse: collapse; font-size: var(--fs-11); }
 .pbrief-assessment-table th {
-  text-align: left; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.03em;
+  text-align: left; font-size: var(--fs-9-5); text-transform: uppercase; letter-spacing: 0.03em;
   color: #666; padding: 5px 6px; border-bottom: 1px solid #ccc; white-space: nowrap;
 }
 .pbrief-assessment-table td { padding: 6px; border-bottom: 1px solid #eee; white-space: nowrap; }
@@ -9936,8 +9956,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .pbrief-bar-value { width: 48px; flex-shrink: 0; text-align: right; font-size: 12px; }
 
 .pbrief-symmetry-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
-.pbrief-symmetry-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; font-size: 11.5px; font-weight: 700; }
-.pbrief-patient-norm { font-size: 11.5px; color: #666; }
+.pbrief-symmetry-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; font-size: var(--fs-11-5); font-weight: 700; }
+.pbrief-patient-norm { font-size: var(--fs-11-5); color: #666; }
 
 /* — Overall Strength Summary card (between the header and Your Results at a Glance) — a
    quick three-bucket roll-up, coarser than the per-muscle-group pill's five-tier scale
@@ -9962,7 +9982,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .pbrief-patient-contact { font-size: 12.5px; margin: 0 0 2px; }
 .pbrief-patient-summary-recap { background: #f5f5f3; border-radius: 6px; padding: 12px 14px; margin-bottom: 4px; }
 
-.pbrief-patient-footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 20px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 10px; color: #777; }
+.pbrief-patient-footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 20px; padding-top: 12px; border-top: 1px solid #ddd; font-size: var(--fs-10); color: #777; }
 
 /* — Screen-only "summary not generated" gate above the Patient Report (see
    ForceLabAssessmentPrintView.tsx) — same amber as FORCE_LAB_AMBER used throughout this
@@ -10025,7 +10045,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .card-link-hero-title { font-size: 15px; font-weight: 600; margin: 0 0 10px; }
 .card-link-hero-school {
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.75);
@@ -10117,7 +10137,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .syllabi-review-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .syllabi-review-table th {
   text-align: left;
-  font-size: 11px;
+  font-size: var(--fs-11);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-neutral-700);
@@ -10222,7 +10242,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .programs-table-row:hover { background: color-mix(in srgb, var(--color-accent) 5%, transparent); }
 .programs-institution-cell { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 700; }
 .programs-state-pill-inline {
-  font-size: 10.5px;
+  font-size: var(--fs-10-5);
   font-weight: 600;
   color: var(--color-neutral-700);
   background: var(--color-divider);
@@ -10233,7 +10253,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .programs-pill {
   display: inline-flex;
   align-items: center;
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 600;
   padding: 3px 9px;
   border-radius: 999px;
@@ -10241,7 +10261,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   color: var(--color-neutral-700);
 }
 .programs-pill--warn { background: color-mix(in srgb, var(--color-warn) 20%, transparent); color: #92600f; }
-.programs-pill--tiny { font-size: 10px; padding: 2px 7px; }
+.programs-pill--tiny { font-size: var(--fs-10); padding: 2px 7px; }
 
 .programs-detail-row td { padding: 0; border-bottom: 1px solid var(--color-divider); }
 .programs-detail { padding: 18px 20px; background: color-mix(in srgb, var(--color-accent) 3%, transparent); }
@@ -10249,7 +10269,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .programs-detail-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 .programs-detail-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 12px; }
 .programs-detail-field { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
-.programs-detail-label { font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-600); }
+.programs-detail-label { font-size: var(--fs-10-5); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-600); }
 .programs-detail-notes { font-size: 12.5px; color: var(--color-neutral-700); font-style: italic; margin: 0 0 12px; }
 .programs-detail-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
 .programs-detail-source { font-size: 12px; color: var(--color-neutral-600); text-decoration: none; }
@@ -10386,7 +10406,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 
 .outreach-filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; }
 
-.outreach-pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.outreach-pill { display: inline-block; font-size: var(--fs-11); font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
 .outreach-pill--not_contacted { background: var(--color-divider); color: var(--color-neutral-700); }
 .outreach-pill--contacted { background: color-mix(in srgb, var(--color-accent) 16%, transparent); color: var(--color-accent); }
 .outreach-pill--in_discussion { background: color-mix(in srgb, #c9853a 18%, transparent); color: #8a5a20; }
@@ -10433,7 +10453,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 
 .ml-detail-label {
-  font-size: 11px;
+  font-size: var(--fs-11);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-neutral-700);
@@ -10537,7 +10557,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .ml-picker-row:last-child { border-bottom: none; }
 .ml-picker-row:hover { background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
 .ml-picker-row-name { display: block; font-size: 13px; font-weight: 600; }
-.ml-picker-row-sub { display: block; font-size: 11.5px; color: var(--color-neutral-700); margin-top: 2px; }
+.ml-picker-row-sub { display: block; font-size: var(--fs-11-5); color: var(--color-neutral-700); margin-top: 2px; }
 
 /* Atrium monthly calendar (see components/AtriumCalendar.tsx, app/(app)/student/page.tsx) —
    two-column layout: a fixed-width month grid on the left, an assignment detail panel that
@@ -10601,7 +10621,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   border-radius: 6px;
   background: transparent;
   color: var(--color-neutral-700);
-  font-size: 11px;
+  font-size: var(--fs-11);
   padding: 4px 8px;
   cursor: pointer;
 }
@@ -10613,7 +10633,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   margin-bottom: 4px;
 }
 .atrium-calendar-weekdays span {
-  font-size: 11px;
+  font-size: var(--fs-11);
   text-transform: uppercase;
   text-align: center;
   color: var(--color-neutral-700);
@@ -10689,7 +10709,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   position: absolute;
   top: 1px;
   right: 3px;
-  font-size: 8px;
+  font-size: var(--fs-8);
   color: #16a34a;
 }
 
@@ -10708,7 +10728,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 
 .calendar-cell-more {
-  font-size: 9px;
+  font-size: var(--fs-9);
   color: var(--color-neutral-700);
   margin-left: 1px;
 }
@@ -10723,7 +10743,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: var(--fs-11);
   color: var(--color-neutral-700);
 }
 
@@ -10788,7 +10808,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   color: var(--color-neutral-700);
 }
 .atrium-calendar-assignment-course {
-  font-size: 11px;
+  font-size: var(--fs-11);
   color: var(--color-neutral-700);
   background: var(--color-card-surface);
   border: 1px solid var(--color-divider);
@@ -10803,7 +10823,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   white-space: nowrap;
 }
 .atrium-calendar-assignment-urgency {
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -10846,7 +10866,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   font-weight: 700;
 }
 .atrium-calendar-month-summary-label {
-  font-size: 11px;
+  font-size: var(--fs-11);
   color: var(--color-neutral-700);
 }
 @media (max-width: 480px) {
@@ -10915,7 +10935,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .article-research-panel-section { display: flex; flex-direction: column; }
 
 .article-research-panel-kicker {
-  font-size: 11px;
+  font-size: var(--fs-11);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--color-neutral-700);
@@ -10940,7 +10960,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 
 .article-research-panel-prefill-note {
-  font-size: 11px;
+  font-size: var(--fs-11);
   font-style: italic;
   color: var(--color-neutral-700);
   margin: 0;
@@ -10965,7 +10985,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 
 .article-research-panel-disclaimer {
-  font-size: 11.5px;
+  font-size: var(--fs-11-5);
   color: var(--color-neutral-600);
   margin-top: 14px;
 }
@@ -11135,7 +11155,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
    a flex row with the title squeezed it down to one word per line. */
 .pro-calc-admin-badge {
   align-self: flex-start;
-  font-size: 10px;
+  font-size: var(--fs-10);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -11236,8 +11256,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   border-top: 1px solid var(--color-divider);
 }
 .npte-system-record-value { font-family: var(--font-heading); font-weight: 700; font-size: 18px; color: var(--color-text); }
-.npte-system-record-label { font-size: 11.5px; color: var(--color-neutral-700); }
-.npte-system-record-cta { width: 100%; text-align: right; font-size: 11.5px; font-weight: 600; color: var(--color-accent-700); }
+.npte-system-record-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.npte-system-record-cta { width: 100%; text-align: right; font-size: var(--fs-11-5); font-weight: 600; color: var(--color-accent-700); }
 
 /* — missed-question review (Daily Sharpening tab) — */
 .boards-review-empty, .boards-review-intro {
@@ -11264,12 +11284,12 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .boards-review-toggle:hover { background: var(--color-neutral-100); }
 .boards-review-question { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; line-height: 1.5; }
-.boards-review-domain { flex-shrink: 0; font-size: 10.5px; color: var(--color-neutral-700); white-space: nowrap; padding-top: 2px; }
+.boards-review-domain { flex-shrink: 0; font-size: var(--fs-10-5); color: var(--color-neutral-700); white-space: nowrap; padding-top: 2px; }
 .boards-review-body { padding: 0 12px 12px; border-top: 1px solid var(--color-divider); }
 .boards-review-answer { display: flex; gap: 8px; font-size: 12.5px; line-height: 1.5; margin: 10px 0 0; }
 .boards-review-answer-label {
   flex-shrink: 0;
-  font-size: 10px;
+  font-size: var(--fs-10);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -11295,7 +11315,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .boards-domain-link:hover { background: var(--color-neutral-100); }
 .boards-domain-link-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .boards-domain-link-name { font-size: 13px; font-weight: 600; }
-.boards-domain-link-meta { margin-left: auto; font-size: 11.5px; color: var(--color-neutral-700); }
+.boards-domain-link-meta { margin-left: auto; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 .boards-official-link {
   display: flex;
   flex-direction: column;
@@ -11307,11 +11327,11 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .boards-official-link:hover { background: var(--color-neutral-100); }
 .boards-official-link-name { font-size: 13px; font-weight: 600; color: var(--color-accent-700); }
-.boards-official-link-desc { font-size: 11.5px; color: var(--color-neutral-700); line-height: 1.5; }
+.boards-official-link-desc { font-size: var(--fs-11-5); color: var(--color-neutral-700); line-height: 1.5; }
 
 @media (max-width: 480px) {
   .boards-review-domain { display: none; }
-  .boards-domain-link-meta { font-size: 10.5px; }
+  .boards-domain-link-meta { font-size: var(--fs-10-5); }
   .boards-streak-stat-value { font-size: 22px; }
 }
 
@@ -11533,4 +11553,43 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
     width: max(44px, var(--icon-btn-dim));
     height: max(44px, var(--icon-btn-dim));
   }
+}
+
+/* Small-text floor on phones — see the --fs-* scale defined at the top of this file.
+   Nothing drops below 12px at this width; the tiers stay in order so labels still read as
+   secondary to the text around them. Uses the same 799px breakpoint as the rest of the app's
+   mobile layout (the sidebar/bottom-nav switch, the .input anti-zoom rule), rather than
+   pointer:coarse, because this is about how far the screen is from your eyes, not what you
+   are tapping with — a narrow desktop window benefits identically. */
+@media (max-width: 799px) {
+  :root {
+    --fs-8: 12px;
+    --fs-8-5: 12px;
+    --fs-9: 12px;
+    --fs-9-5: 12px;
+    --fs-10: 12px;
+    --fs-10-5: 12px;
+    --fs-11: 12.5px;
+    --fs-11-5: 13px;
+  }
+}
+
+/* Boards tab strip on narrow screens. The four labels ("Daily Sharpening", "NPTE Breakdown",
+   "Research & Stats", "Resources") are white-space: nowrap in flex: 1 columns, so on a phone
+   each one is cut off mid-word inside its own 89px tab — and .boards-tabs sets
+   overflow: hidden, so there is nothing to scroll to the rest of the label either.
+   Let the strip scroll instead and size each tab to its text, the same pattern .sub-tabs and
+   .sliding-tabs already use for exactly this. */
+@media (max-width: 799px) {
+  .boards-tabs { overflow-x: auto; overflow-y: hidden; }
+  .boards-tab { flex: 0 0 auto; padding-left: 14px; padding-right: 14px; }
+}
+
+/* The top keyboard row is ten keys at min-width 32px with 6px gaps — 374px of content in the
+   ~354px a phone gives it, so .wordle-keyboard clipped a few pixels off the outermost keys.
+   Predates the small-text scale (nothing in this chain is a font-size), but it is the same
+   kind of defect: shave the gap and the floor just enough for ten keys to fit. */
+@media (max-width: 420px) {
+  .wordle-keyboard-row { gap: 4px; }
+  .wordle-key { min-width: 30px; padding: 0 4px; }
 }

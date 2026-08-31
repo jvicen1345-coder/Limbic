@@ -31,7 +31,7 @@ function SaveToProfileFooter({ testKey, testName, result }: { testKey: string; t
 
   if (!activeProfileLabel) {
     return (
-      <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", marginTop: 14 }}>
+      <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", marginTop: 14 }}>
         Select or create a profile in the panel on the right to save this result.
       </p>
     );

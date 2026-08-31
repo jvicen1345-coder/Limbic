@@ -21,7 +21,7 @@ export function SavedClipCard({ clip }: { clip: Clip }) {
           <div className="card-title" style={{ fontSize: 14.5, margin: "6px 0 4px" }}>
             {clip.title}
           </div>
-          <div style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>{clip.source}</div>
+          <div style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)" }}>{clip.source}</div>
         </div>
       </a>
       <div style={{ position: "absolute", top: 8, right: 8, background: "var(--color-surface)", borderRadius: "50%" }}>

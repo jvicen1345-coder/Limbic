@@ -615,7 +615,7 @@ function VideoDemonstration({ test }: { test: SpecialTest }) {
         Watch demonstration on YouTube
         <ExternalLinkIcon size={13} />
       </a>
-      <p style={{ fontSize: 11, color: "var(--color-neutral-700)", margin: "6px 0 0" }}>
+      <p style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", margin: "6px 0 0" }}>
         {video!.title} — {video!.channelTitle}
       </p>
     </div>

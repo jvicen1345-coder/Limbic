@@ -148,7 +148,7 @@ export function SessionDetailView({
                 </option>
               ))}
             </select>
-            {error && <p style={{ fontSize: 11.5, color: "var(--color-danger)", margin: 0 }}>{error}</p>}
+            {error && <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-danger)", margin: 0 }}>{error}</p>}
             <div className="clindash-inline-form-actions">
               <button type="button" className="btn btn-primary" style={{ fontSize: 12 }} disabled={pending || !linkPatientId} onClick={handleLink}>
                 Save

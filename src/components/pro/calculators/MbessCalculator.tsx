@@ -81,7 +81,7 @@ export function MbessCalculator() {
           <div className="pro-calc-result-value">{total} errors</div>
           <div className="pro-calc-result-label">Higher error count indicates worse balance</div>
         </div>
-        <p style={{ fontSize: 11, color: "var(--color-neutral-700)", marginTop: 8 }}>
+        <p style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", marginTop: 8 }}>
           If a stance cannot be held for at least 5 seconds, score it the maximum of 10 errors for that condition.
           Minimal detectable change: roughly 3-5 error points (varies by rater and population); a 1-2 error increase
           after concussion can still fall within measurement error alone.

@@ -74,7 +74,7 @@ export function ClinicalQuestionLogSection() {
         <div className="card-kicker" style={{ margin: 0 }}>
           Questions to Answer
         </div>
-        <button type="button" className="btn btn-ghost" style={{ fontSize: 11.5 }} onClick={() => setFormOpen((v) => !v)}>
+        <button type="button" className="btn btn-ghost" style={{ fontSize: "var(--fs-11-5)" }} onClick={() => setFormOpen((v) => !v)}>
           <PlusIcon size={12} />
           Add Question
         </button>
@@ -88,7 +88,7 @@ export function ClinicalQuestionLogSection() {
             value={questionText}
             onChange={(e) => setQuestionText(e.target.value)}
           />
-          {error && <p style={{ fontSize: 11.5, color: "var(--color-danger)", margin: 0 }}>{error}</p>}
+          {error && <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-danger)", margin: 0 }}>{error}</p>}
           <div className="clindash-inline-form-actions">
             <button type="button" className="btn btn-primary" style={{ fontSize: 12 }} disabled={pending} onClick={handleAdd}>
               Save
@@ -101,7 +101,7 @@ export function ClinicalQuestionLogSection() {
       )}
 
       {!hasAny ? (
-        <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>
+        <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)" }}>
           No questions logged. Tap Add Question to capture clinical questions as they come up.
         </p>
       ) : (

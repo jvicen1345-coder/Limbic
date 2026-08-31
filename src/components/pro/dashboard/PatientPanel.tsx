@@ -212,7 +212,7 @@ export function PatientPanel({
               </div>
               <div className="clindash-patient-condition">{p.condition}</div>
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3, flexWrap: "wrap" }}>
-                <span className={`tag ${bodyRegionTagClass(p.bodyRegion)}`} style={{ fontSize: 10 }}>
+                <span className={`tag ${bodyRegionTagClass(p.bodyRegion)}`} style={{ fontSize: "var(--fs-10)" }}>
                   {p.bodyRegion}
                 </span>
                 <span className="clindash-patient-progress">

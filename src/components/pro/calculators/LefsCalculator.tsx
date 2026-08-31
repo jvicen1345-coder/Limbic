@@ -87,7 +87,7 @@ export function LefsCalculator() {
           <div className="pro-calc-result-value">{total} / 80</div>
           <div className="pro-calc-result-label">Higher is better function, 80 is full function</div>
         </div>
-        <p style={{ fontSize: 11.5, color: "var(--color-neutral-700)", marginTop: 8 }}>
+        <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", marginTop: 8 }}>
           Minimal detectable change: 9 points. Minimal clinically important difference: 9 points.
         </p>
       </CalcModal>

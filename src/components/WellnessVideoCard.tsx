@@ -24,7 +24,7 @@ export function WellnessVideoCard({ video, saved }: { video: WellnessVideo; save
           <div className="card-title" style={{ fontSize: 14.5, margin: "0 0 4px" }}>
             {video.title}
           </div>
-          <div style={{ fontSize: 11.5, color: "var(--color-neutral-700)" }}>
+          <div style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)" }}>
             {video.source}
             {video.duration ? ` · ${video.duration}` : ""}
           </div>

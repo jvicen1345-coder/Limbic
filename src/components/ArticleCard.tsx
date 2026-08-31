@@ -73,7 +73,7 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
       {extraTags.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
           {extraTags.map((t) => (
-            <span key={t} className="tag tag-outline" style={{ fontSize: 10.5 }}>
+            <span key={t} className="tag tag-outline" style={{ fontSize: "var(--fs-10-5)" }}>
               {t}
             </span>
           ))}

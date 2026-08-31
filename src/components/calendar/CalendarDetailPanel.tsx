@@ -96,10 +96,10 @@ export function CalendarDetailPanel({
                           onChange={(e) => setEditingValue(e.target.value)}
                           style={{ fontSize: 12, padding: "5px 10px" }}
                         />
-                        <button type="button" className="btn btn-primary" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => savePersonalEdit(ev.field)}>
+                        <button type="button" className="btn btn-primary" style={{ fontSize: "var(--fs-11)", padding: "5px 10px" }} onClick={() => savePersonalEdit(ev.field)}>
                           Save
                         </button>
-                        <button type="button" className="btn btn-ghost" style={{ fontSize: 11, padding: "5px 8px" }} onClick={() => setEditingField(null)}>
+                        <button type="button" className="btn btn-ghost" style={{ fontSize: "var(--fs-11)", padding: "5px 8px" }} onClick={() => setEditingField(null)}>
                           Cancel
                         </button>
                       </div>
@@ -109,7 +109,7 @@ export function CalendarDetailPanel({
                         <button
                           type="button"
                           className="btn btn-ghost"
-                          style={{ fontSize: 11, padding: "4px 8px", marginTop: 6 }}
+                          style={{ fontSize: "var(--fs-11)", padding: "4px 8px", marginTop: 6 }}
                           onClick={() => {
                             setEditingField(ev.field);
                             setEditingValue(ev.date);
@@ -128,13 +128,13 @@ export function CalendarDetailPanel({
                     </div>
                     {ev.notes && <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: "6px 0" }}>{ev.notes}</p>}
                     <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
-                      <button type="button" className="btn btn-ghost" style={{ fontSize: 11, padding: "4px 8px" }} onClick={() => onEditUserEvent(ev)}>
+                      <button type="button" className="btn btn-ghost" style={{ fontSize: "var(--fs-11)", padding: "4px 8px" }} onClick={() => onEditUserEvent(ev)}>
                         <PencilIcon size={11} /> Edit
                       </button>
                       <button
                         type="button"
                         className="btn btn-ghost"
-                        style={{ fontSize: 11, padding: "4px 8px", color: "var(--color-danger)" }}
+                        style={{ fontSize: "var(--fs-11)", padding: "4px 8px", color: "var(--color-danger)" }}
                         onClick={() =>
                           startTransition(async () => {
                             await deleteUserCalendarEventAction(ev.rawId);
@@ -159,13 +159,13 @@ export function CalendarDetailPanel({
                   <div className="cal-panel-event-title">{ev.title}</div>
                   <div className="cal-panel-event-meta">{ev.source}</div>
                   <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
-                    <Link href={`/article/${ev.articleId}`} className="btn btn-secondary" style={{ fontSize: 11, padding: "5px 10px" }}>
+                    <Link href={`/article/${ev.articleId}`} className="btn btn-secondary" style={{ fontSize: "var(--fs-11)", padding: "5px 10px" }}>
                       Read article
                     </Link>
                     <button
                       type="button"
                       className="btn btn-ghost"
-                      style={{ fontSize: 11, padding: "5px 10px" }}
+                      style={{ fontSize: "var(--fs-11)", padding: "5px 10px" }}
                       disabled={savedArticleIds.has(ev.articleId)}
                       onClick={() =>
                         startTransition(async () => {
@@ -197,7 +197,7 @@ export function CalendarDetailPanel({
                   <div className="cal-panel-event-title">{ev.title}</div>
                   <div className="cal-panel-event-meta">{ev.authorName}</div>
                   <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: "6px 0" }}>{ev.bodyPreview}…</p>
-                  <Link href={ev.postHref} className="btn btn-secondary" style={{ fontSize: 11, padding: "5px 10px" }}>
+                  <Link href={ev.postHref} className="btn btn-secondary" style={{ fontSize: "var(--fs-11)", padding: "5px 10px" }}>
                     View post
                   </Link>
                 </div>
