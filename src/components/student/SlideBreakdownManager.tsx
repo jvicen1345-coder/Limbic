@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { generateSlideBreakdown } from "@/app/actions/slide-breakdown";
+import { generateSlideBreakdown, generateSlideBreakdownFromPdf } from "@/app/actions/slide-breakdown";
 
 export interface SlideBreakdownCourse {
   id: string;
@@ -10,18 +10,28 @@ export interface SlideBreakdownCourse {
   courseName: string;
 }
 
-/** Paste-text form for /student/slides (see that page's own doc comment) — picks an
+type SlideResult = { cardsCreated: number; notesUpdated: boolean; courseCode: string };
+
+/** PDF-upload form for /student/slides (see that page's own doc comment) — picks an
  *  existing course rather than letting one be created here, since a flashcard/note has to
  *  belong to a course and Assignments (see components/student/SyllabiManager.tsx) already
  *  owns "add a new course." Result is a plain summary + a link into Study Guide, not an
  *  inline preview of the generated cards — the Flashcards/Self-Quiz/Visual Aids tabs there
- *  are already the review surface, no need to duplicate it here. */
+ *  are already the review surface, no need to duplicate it here.
+ *  "The input for slide breakdown needs to be pdf" — PDF upload (see
+ *  generateSlideBreakdownFromPdf, lib/pdf-text.ts) is the primary path now; pasting text is
+ *  still here as a fallback for a scanned/image-only PDF (this app has no OCR) or a reader
+ *  who already has the text copied some other way, toggled behind a link rather than shown
+ *  as an equal second tab, since PDF upload is what was actually asked for. */
 export function SlideBreakdownManager({ courses }: { courses: SlideBreakdownCourse[] }) {
   const [courseId, setCourseId] = useState(courses[0]?.id ?? "");
+  const [mode, setMode] = useState<"pdf" | "text">("pdf");
+  const [fileName, setFileName] = useState<string | null>(null);
   const [text, setText] = useState("");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ cardsCreated: number; notesUpdated: boolean; courseCode: string } | null>(null);
+  const [result, setResult] = useState<SlideResult | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (courses.length === 0) {
     return (
@@ -32,21 +42,47 @@ export function SlideBreakdownManager({ courses }: { courses: SlideBreakdownCour
     );
   }
 
-  function handleSubmit() {
+  function applyResult(course: SlideBreakdownCourse, res: { cardsCreated: number; notesUpdated: boolean }) {
+    setResult({ cardsCreated: res.cardsCreated, notesUpdated: res.notesUpdated, courseCode: course.courseCode });
+  }
+
+  function handlePdfChosen() {
+    const file = fileInputRef.current?.files?.[0];
+    if (!file) return;
+    setError(null);
+    setResult(null);
+    setFileName(file.name);
+    const course = courses.find((c) => c.id === courseId);
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.set("syllabusId", courseId);
+      formData.set("file", file);
+      const res = await generateSlideBreakdownFromPdf(formData);
+      if ("error" in res) {
+        setError(res.error);
+        return;
+      }
+      if (course) applyResult(course, res);
+      setFileName(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    });
+  }
+
+  function handleTextSubmit() {
     setError(null);
     setResult(null);
     if (!text.trim()) {
       setError("Paste your slide text first.");
       return;
     }
+    const course = courses.find((c) => c.id === courseId);
     startTransition(async () => {
       const res = await generateSlideBreakdown(courseId, text);
       if ("error" in res) {
         setError(res.error);
         return;
       }
-      const course = courses.find((c) => c.id === courseId);
-      setResult({ cardsCreated: res.cardsCreated, notesUpdated: res.notesUpdated, courseCode: course?.courseCode ?? "" });
+      if (course) applyResult(course, res);
       setText("");
     });
   }
@@ -64,17 +100,47 @@ export function SlideBreakdownManager({ courses }: { courses: SlideBreakdownCour
         </select>
       </div>
 
-      <div className="field" style={{ marginTop: 14 }}>
-        <label htmlFor="slide-text">Slide Text</label>
-        <textarea
-          id="slide-text"
-          className="input"
-          style={{ minHeight: 220 }}
-          placeholder="Paste the text from this lecture's slides here."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-      </div>
+      {mode === "pdf" ? (
+        <>
+          <div className="slide-breakdown-dropzone" style={{ marginTop: 14 }}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/pdf,.pdf"
+              onChange={handlePdfChosen}
+              disabled={pending}
+              style={{ display: "none" }}
+            />
+            <button type="button" className="btn btn-primary" disabled={pending} onClick={() => fileInputRef.current?.click()}>
+              {pending ? "Reading your slides…" : "Choose PDF"}
+            </button>
+            {fileName && <span className="slide-breakdown-filename">{fileName}</span>}
+          </div>
+          <button type="button" className="slide-breakdown-mode-link" onClick={() => setMode("text")}>
+            Have text instead of a PDF? Paste it here.
+          </button>
+        </>
+      ) : (
+        <>
+          <div className="field" style={{ marginTop: 14 }}>
+            <label htmlFor="slide-text">Slide Text</label>
+            <textarea
+              id="slide-text"
+              className="input"
+              style={{ minHeight: 220 }}
+              placeholder="Paste the text from this lecture's slides here."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
+          </div>
+          <button type="button" className="btn btn-primary" style={{ marginTop: 4 }} onClick={handleTextSubmit} disabled={pending}>
+            {pending ? "Reading your slides…" : "Break Down Slides with Limbic AI"}
+          </button>
+          <button type="button" className="slide-breakdown-mode-link" onClick={() => setMode("pdf")}>
+            Upload a PDF instead
+          </button>
+        </>
+      )}
 
       {error && <p className="syllabi-error">{error}</p>}
 
@@ -85,10 +151,6 @@ export function SlideBreakdownManager({ courses }: { courses: SlideBreakdownCour
           <Link href="/student/study-guide">Open Study Guide →</Link>
         </div>
       )}
-
-      <button type="button" className="btn btn-primary" style={{ marginTop: 12 }} onClick={handleSubmit} disabled={pending}>
-        {pending ? "Reading your slides…" : "Break Down Slides with Limbic AI"}
-      </button>
     </div>
   );
 }
