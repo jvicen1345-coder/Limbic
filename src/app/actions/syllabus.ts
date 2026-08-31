@@ -6,7 +6,7 @@ import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { parseSyllabusText, type ParsedAssignment } from "@/lib/syllabus-parser";
 import { getThisWeekDateRange } from "@/lib/atrium-recommendations";
 import { MEETING_DAY_CODES } from "@/lib/calendar-events";
-import { parseMeetingTimesColumn } from "@/lib/syllabus-meeting-times";
+import { parseMeetingTimesColumn, type MeetingDayTime } from "@/lib/syllabus-meeting-times";
 import type { Syllabus, Assignment } from "@/generated/prisma/client";
 
 // Explicit discriminated-union return types for every mutation the client actually branches
@@ -49,9 +49,9 @@ export interface SyllabusWithCount {
   parsedAt: Date | null;
   assignmentCount: number;
   meetingDays: string[] | null;
-  /** Maps a meetingDays entry to its own time — see Syllabus.meetingTimes in
+  /** Maps a meetingDays entry to its own MeetingDayTime — see Syllabus.meetingTimes in
    *  prisma/schema.prisma for why this isn't a single shared string. */
-  meetingTimes: Record<string, string> | null;
+  meetingTimes: Record<string, MeetingDayTime> | null;
 }
 
 /** All syllabi for the signed-in student, most recently uploaded first — powers both the
@@ -142,7 +142,7 @@ export async function parseSyllabusFromText(
   syllabusId: string,
   rawText: string
 ): Promise<
-  ActionError | { success: true; assignments: Assignment[]; meetingDays: string[] | null; meetingTimes: Record<string, string> | null }
+  ActionError | { success: true; assignments: Assignment[]; meetingDays: string[] | null; meetingTimes: Record<string, MeetingDayTime> | null }
 > {
   const user = await requireStudentUser();
   if (!user) return { error: "Unauthorized" };
@@ -204,7 +204,7 @@ export async function parseSyllabusFromText(
 export async function updateSyllabusMeetingPattern(
   syllabusId: string,
   days: string[],
-  timesByDay: Record<string, string>
+  timesByDay: Record<string, MeetingDayTime>
 ): Promise<ActionError | { success: true }> {
   const user = await requireStudentUser();
   if (!user) return { error: "Unauthorized" };
@@ -216,7 +216,9 @@ export async function updateSyllabusMeetingPattern(
   if (validDays.length !== days.length) return { error: "Invalid meeting day." };
 
   const trimmedTimes = Object.fromEntries(
-    validDays.filter((d) => timesByDay[d]?.trim()).map((d) => [d, timesByDay[d].trim()])
+    validDays
+      .filter((d) => timesByDay[d]?.start.trim() || timesByDay[d]?.end.trim())
+      .map((d) => [d, { start: timesByDay[d].start.trim(), end: timesByDay[d].end.trim() }])
   );
 
   await prisma.syllabus.update({

@@ -13,51 +13,64 @@ import {
   updateSyllabusMeetingPattern,
   type SyllabusWithCount,
 } from "@/app/actions/syllabus";
+import { MEETING_DAY_CODES } from "@/lib/calendar-events";
+import { formatMeetingDayTime, type MeetingDayTime } from "@/lib/syllabus-meeting-times";
 import { TrashIcon, ChevronRightIcon } from "@/components/icons";
 
 const CATEGORIES = ["Exam", "Quiz", "Assignment", "Lab Practical", "Paper", "Presentation", "Clinical", "Other"] as const;
-// Mon-first for display (this app's week always starts Monday, see getThisWeekDateRange) —
-// MEETING_DAY_CODES (lib/calendar-events.ts) itself stays Sunday-first to match
-// Date.getDay(), see that constant's own comment.
-const MEETING_DAYS_DISPLAY_ORDER = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
+const EMPTY_DAY_TIME: MeetingDayTime = { start: "", end: "" };
 
 /** "Meets Mon 10:00 AM-10:50 AM, Fri 8:30 AM-9:20 AM" — the same class can meet at a
  *  different time on different days (see Syllabus.meetingTimes in prisma/schema.prisma), so
  *  each day gets its own optional time instead of one shared string. A day with no time in
  *  `times` just shows its name with nothing after it. */
-function formatMeetingSchedule(days: string[], times: Record<string, string> | null): string {
-  return MEETING_DAYS_DISPLAY_ORDER.filter((d) => days.includes(d))
-    .map((day) => (times?.[day] ? `${day} ${times[day]}` : day))
+function formatMeetingSchedule(days: string[], times: Record<string, MeetingDayTime> | null): string {
+  return MEETING_DAY_CODES.filter((d) => days.includes(d))
+    .map((day) => {
+      const t = formatMeetingDayTime(times?.[day]);
+      return t ? `${day} ${t}` : day;
+    })
     .join(", ");
 }
 
-/** One time input per selected meeting day — shared between the "Add Manually" new-course
- *  fields and the per-card editor below, which otherwise only differ in which state setter
- *  they call. */
+/** A start/end `<input type="time">` pair per selected meeting day — a real time picker
+ *  instead of a free-text field — shared between the "Add Manually" new-course fields and
+ *  the per-card editor below, which otherwise only differ in which state setter they call. */
 function MeetingTimeFields({
   days,
   times,
   onChangeTime,
 }: {
   days: string[];
-  times: Record<string, string>;
-  onChangeTime: (day: string, value: string) => void;
+  times: Record<string, MeetingDayTime>;
+  onChangeTime: (day: string, field: "start" | "end", value: string) => void;
 }) {
   if (days.length === 0) return null;
   return (
     <div className="syllabi-meeting-times">
-      {MEETING_DAYS_DISPLAY_ORDER.filter((d) => days.includes(d)).map((day) => (
-        <div key={day} className="syllabi-meeting-time-row">
-          <span className="syllabi-meeting-time-day">{day}</span>
-          <input
-            className="input syllabi-meeting-time-input"
-            type="text"
-            placeholder="Time (optional), e.g. 10:00-10:50 AM"
-            value={times[day] ?? ""}
-            onChange={(e) => onChangeTime(day, e.target.value)}
-          />
-        </div>
-      ))}
+      {MEETING_DAY_CODES.filter((d) => days.includes(d)).map((day) => {
+        const t = times[day] ?? EMPTY_DAY_TIME;
+        return (
+          <div key={day} className="syllabi-meeting-time-row">
+            <span className="syllabi-meeting-time-day">{day}</span>
+            <input
+              className="input syllabi-meeting-time-input"
+              type="time"
+              aria-label={`${day} start time`}
+              value={t.start}
+              onChange={(e) => onChangeTime(day, "start", e.target.value)}
+            />
+            <span className="syllabi-meeting-time-sep">to</span>
+            <input
+              className="input syllabi-meeting-time-input"
+              type="time"
+              aria-label={`${day} end time`}
+              value={t.end}
+              onChange={(e) => onChangeTime(day, "end", e.target.value)}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -111,7 +124,7 @@ export function SyllabiManager({
   const [parseError, setParseError] = useState<string | null>(null);
   const [review, setReview] = useState<{ syllabusId: string; rows: ReviewRow[] } | null>(null);
   const [newRow, setNewRow] = useState({ title: "", dueDate: "", category: "Assignment" });
-  const [parsedMeeting, setParsedMeeting] = useState<{ days: string[]; times: Record<string, string> | null } | null>(null);
+  const [parsedMeeting, setParsedMeeting] = useState<{ days: string[]; times: Record<string, MeetingDayTime> | null } | null>(null);
 
   function handleParse() {
     setParseError(null);
@@ -224,7 +237,7 @@ export function SyllabiManager({
   // the card below, then click Edit" round trip that was the only way to do this before (see
   // the per-card editor further down, still there for correcting/removing a pattern later).
   const [manualMeetingDays, setManualMeetingDays] = useState<string[]>([]);
-  const [manualMeetingTimes, setManualMeetingTimes] = useState<Record<string, string>>({});
+  const [manualMeetingTimes, setManualMeetingTimes] = useState<Record<string, MeetingDayTime>>({});
   const [manualTitle, setManualTitle] = useState("");
   const [manualDueDate, setManualDueDate] = useState("");
   const [manualCategory, setManualCategory] = useState<string>(CATEGORIES[1]);
@@ -302,7 +315,7 @@ export function SyllabiManager({
   // correct it by hand, right on the syllabus card.
   const [editingMeetingId, setEditingMeetingId] = useState<string | null>(null);
   const [meetingDaysDraft, setMeetingDaysDraft] = useState<string[]>([]);
-  const [meetingTimesDraft, setMeetingTimesDraft] = useState<Record<string, string>>({});
+  const [meetingTimesDraft, setMeetingTimesDraft] = useState<Record<string, MeetingDayTime>>({});
 
   function openMeetingEditor(s: SyllabusWithCount) {
     setEditingMeetingId(s.id);
@@ -575,7 +588,7 @@ export function SyllabiManager({
                   <div className="field" style={{ gridColumn: "1 / -1" }}>
                     <label>Class meets each week (optional)</label>
                     <div className="syllabi-meeting-days">
-                      {MEETING_DAYS_DISPLAY_ORDER.map((day) => (
+                      {MEETING_DAY_CODES.map((day) => (
                         <label
                           key={day}
                           className={manualMeetingDays.includes(day) ? "syllabi-meeting-day syllabi-meeting-day--on" : "syllabi-meeting-day"}
@@ -588,7 +601,9 @@ export function SyllabiManager({
                     <MeetingTimeFields
                       days={manualMeetingDays}
                       times={manualMeetingTimes}
-                      onChangeTime={(day, value) => setManualMeetingTimes((prev) => ({ ...prev, [day]: value }))}
+                      onChangeTime={(day, field, value) =>
+                        setManualMeetingTimes((prev) => ({ ...prev, [day]: { ...(prev[day] ?? EMPTY_DAY_TIME), [field]: value } }))
+                      }
                     />
                   </div>
                 </>
@@ -709,7 +724,7 @@ export function SyllabiManager({
             {editingMeetingId === s.id && (
               <div className="syllabi-meeting-form">
                 <div className="syllabi-meeting-days">
-                  {MEETING_DAYS_DISPLAY_ORDER.map((day) => (
+                  {MEETING_DAY_CODES.map((day) => (
                     <label
                       key={day}
                       className={meetingDaysDraft.includes(day) ? "syllabi-meeting-day syllabi-meeting-day--on" : "syllabi-meeting-day"}
@@ -722,7 +737,9 @@ export function SyllabiManager({
                 <MeetingTimeFields
                   days={meetingDaysDraft}
                   times={meetingTimesDraft}
-                  onChangeTime={(day, value) => setMeetingTimesDraft((prev) => ({ ...prev, [day]: value }))}
+                  onChangeTime={(day, field, value) =>
+                    setMeetingTimesDraft((prev) => ({ ...prev, [day]: { ...(prev[day] ?? EMPTY_DAY_TIME), [field]: value } }))
+                  }
                 />
                 <div className="syllabi-meeting-form-actions">
                   <button type="button" className="btn btn-primary" onClick={() => handleSaveMeetingPattern(s.id)} disabled={pending}>
