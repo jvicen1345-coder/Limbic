@@ -27,7 +27,7 @@ export default async function ProCeTrackerPage() {
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
           Track your continuing education hours toward license renewal. Available with LimbicPRO — $15/month.
         </p>
-        <ProGate toolName="the CE Hours Tracker" />
+        <ProGate toolName="The CE Tracker" />
       </div>
     );
   }

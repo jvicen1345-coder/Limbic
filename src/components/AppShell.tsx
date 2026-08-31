@@ -343,8 +343,22 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         {studentExpanded && (
           <>
             <NavLink href="/student" icon={<GraduationCapIcon />} label={isStudent ? "Atrium" : "Overview"} bold={false} onNavigate={onNavigate} />
-            {isStudent && (
-              <NavLink href="/boards" icon={<CheckCircleIcon />} label="Boards" locked={!isVerifiedStudent} lockLabel="STUDENT+" bold={false} onNavigate={onNavigate} />
+            {/* Licensed clinicians get this link too, not just students: /boards itself
+                says Boards is "available to PT students and licensed clinicians" and loads
+                fine for them, but the link used to be student-only — so a clinician who
+                reached /boards found this section auto-expanded around it with nothing
+                active, no entry for the page they were standing on, and no way back to it.
+                The STUDENT+ lock badge only applies to the student route into it. */}
+            {(isStudent || hasLicense) && (
+              <NavLink
+                href="/boards"
+                icon={<CheckCircleIcon />}
+                label="Boards"
+                locked={!isVerifiedStudent && !hasLicense}
+                lockLabel="STUDENT+"
+                bold={false}
+                onNavigate={onNavigate}
+              />
             )}
             {isStudent && (
               <NavLink href="/pro/lab-values" icon={<GridIcon />} label="Clinical Reference" bold={false} onNavigate={onNavigate} />

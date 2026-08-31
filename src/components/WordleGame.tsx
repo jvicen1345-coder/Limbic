@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { ArrowLeftIcon } from "@/components/icons";
 import { wordForDate } from "@/lib/wordle-words";
 import { recordWordleCompletionAction } from "@/app/actions/daily-completion";
 import { formatElapsed } from "@/lib/meta";
@@ -154,7 +156,15 @@ export function WordleGame({
 
   return (
     <div className="screen-pad" style={{ maxWidth: 460, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Limbic Games</h1>
+      {/* Same header shape as the Mini Crossword (see CrosswordGame.tsx): a persistent way
+          back to the hub, and the game's own name rather than the section's. This page used
+          to title itself "Limbic Games" — the name of the hub listing it — and offered no
+          back link at all, while /games lists it as "Daily Term". */}
+      <Link href="/games" className="game-back-link">
+        <ArrowLeftIcon size={14} />
+        Back to Games
+      </Link>
+      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Daily Term</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         Guess today&rsquo;s 5-letter health & wellness word in 6 tries.
       </p>
@@ -213,10 +223,10 @@ export function WordleGame({
               nexusOptIn={nexusOptIn}
               body={
                 status === "won"
-                  ? `Solved today's Limbic Games in ${guesses.length}/${MAX_GUESSES} guesses${
+                  ? `Solved today's Daily Term in ${guesses.length}/${MAX_GUESSES} guesses${
                       elapsedSeconds != null ? `, ${formatElapsed(elapsedSeconds)}` : ""
                     } 🎯`
-                  : `Gave today's Limbic Games a shot${elapsedSeconds != null ? ` (${formatElapsed(elapsedSeconds)})` : ""}, back at it tomorrow.`
+                  : `Gave today's Daily Term a shot${elapsedSeconds != null ? ` (${formatElapsed(elapsedSeconds)})` : ""}, back at it tomorrow.`
               }
             />
           </div>
