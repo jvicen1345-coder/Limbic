@@ -9,9 +9,9 @@ export function DeleteHepButton({ programId }: { programId: string }) {
   return (
     <button
       type="button"
-      className="btn btn-ghost btn-icon"
+      className="btn btn-ghost btn-icon icon-btn-sized"
       aria-label="Delete program"
-      style={{ width: 28, height: 28, flexShrink: 0 }}
+      style={{ "--icon-btn-dim": "28px", flexShrink: 0 } as React.CSSProperties}
       onClick={() => startTransition(async () => void (await deleteHepAction(programId)))}
     >
       <TrashIcon size={14} />

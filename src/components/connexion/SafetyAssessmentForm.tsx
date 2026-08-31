@@ -141,6 +141,24 @@ export function SafetyAssessmentForm({ mode, id, initial, visitRequestId, initia
         </div>
       </div>
 
+      {/* What 0–4 mean used to live only in each button's `title`, i.e. only on hover — so a
+          clinician scoring this on a phone saw five bare digits and no scale. */}
+      <div className="card elev-sm">
+        <div className="card-kicker" style={{ margin: 0 }}>
+          Risk scale
+        </div>
+        <ul className="connexion-assess-legend">
+          {RISK_SCALE.map((r) => (
+            <li key={r.score}>
+              <span className="connexion-assess-legend-score">{r.score}</span>
+              <span>
+                <strong>{r.label}</strong> — {r.meaning}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       {SAFETY_SCORE_DOMAINS.map((domain) => {
         const domainScore = domain.key === "environmental" ? totals.environmental : domain.key === "mobility" ? totals.mobility : totals.fallRisk;
         return (
@@ -167,6 +185,10 @@ export function SafetyAssessmentForm({ mode, id, initial, visitRequestId, initia
                           className={`connexion-assess-score-btn${(itemScores[item.key] ?? 0) === r.score ? " active" : ""}`}
                           onClick={() => setScore(item.key, r.score)}
                           title={`${r.label} — ${r.meaning}`}
+                          // A title tooltip needs a hover, which a phone can't do — without
+                          // this the button is a bare digit whose meaning is unreachable on
+                          // touch. See also the visible legend above the domains.
+                          aria-label={`${item.label}: ${r.score} — ${r.label}. ${r.meaning}`}
                         >
                           {r.score}
                         </button>

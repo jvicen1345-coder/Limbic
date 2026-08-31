@@ -243,6 +243,17 @@ html[data-theme="dark"] {
 html { height: 100%; }
 html, body { max-width: 100vw; overflow-x: hidden; }
 
+/* Because that overflow-x: hidden (and .app-main's, further down) means nothing on the page
+   can ever be scrolled sideways, anything too wide isn't merely awkward — it's unreachable.
+   These two are the safety net for that: long unbroken strings (DOIs, journal URLs, emails,
+   license numbers) break rather than run off the edge, and a <select> never demands more room
+   than its container just because one option is long — its automatic minimum size is its
+   widest option, which is what pushed the HEP exercise picker off-screen on a phone.
+   `break-word` deliberately, not `anywhere`: it doesn't change min-content sizing, so no
+   existing layout gets narrower than it was. */
+body { overflow-wrap: break-word; }
+select { max-width: 100%; min-width: 0; }
+
 body {
   min-height: 100%;
   margin: 0;
@@ -319,6 +330,19 @@ button { font-family: inherit; }
 .btn-ghost:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
 .btn-icon { width: 36px; height: 36px; padding: 0; }
 .btn-block { width: 100%; margin-top: var(--space-2); }
+
+/* — touch targets —
+   36px is a comfortable mouse target and an awkward finger one; both Apple's HIG and WCAG
+   2.5.8 put the floor at 44px. Gated on `pointer: coarse` rather than a width breakpoint so
+   this follows the input device, not the window size: a desktop mouse keeps the tighter
+   original sizing, a phone or tablet gets a real target. .btn-icon matters most — it is the
+   app's only icon-button primitive, and on a phone it *is* the hamburger and the drawer's
+   close button, i.e. the entry point to everything outside the three bottom tabs. */
+@media (pointer: coarse) {
+  .btn-icon { width: 44px; height: 44px; }
+  .input { min-height: 44px; }
+  input[type="checkbox"], input[type="radio"] { width: 22px; height: 22px; }
+}
 
 /* — forms — */
 .field > label {
@@ -862,6 +886,12 @@ html[data-theme="dark"] .card.elev-lg {
   display: inline-flex; align-items: center; font-size: 11px;
   letter-spacing: 0.02em; padding: 3px 10px;
   border-radius: 999px;
+  /* A tag holding a long label (e.g. "Concussion in Sport Group Consensus Statement" on
+     /pro/guidelines) used to hold its full single-line width, push itself off the right edge
+     where nothing can scroll to it, and squeeze the neighbouring card title down to one word
+     per line. `anywhere` rather than `break-word` here on purpose: only `anywhere` also
+     shrinks the min-content width, which is what lets the tag give room back to the title. */
+  max-width: 100%; overflow-wrap: anywhere;
 }
 .tag-accent { background: var(--color-accent-100); color: var(--color-accent-800); }
 .tag-accent-2 { background: var(--color-accent-2-100); color: var(--color-accent-2-800); }
@@ -1064,7 +1094,12 @@ html[data-theme="dark"] .nav-founding-link-active {
   display: none;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
+  /* The top/side insets matter once the app is installed to the home screen: appleWebApp's
+     "black-translucent" status bar draws page content under the clock and notch, so without
+     these the hamburger and wordmark sit underneath it. They resolve to 0 in ordinary Safari,
+     leaving the original 14px/18px untouched. */
+  padding: calc(14px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right))
+           14px calc(18px + env(safe-area-inset-left));
   background: var(--color-surface-secondary);
   position: sticky;
   top: 0;
@@ -1082,8 +1117,10 @@ html[data-theme="dark"] .nav-founding-link-active {
   border-top: 1px solid var(--color-neutral-200);
   padding: 8px 4px;
   /* iPhone home-indicator clearance — without this the bar sits under the gesture
-     indicator instead of above it. */
-  padding-bottom: env(safe-area-inset-bottom);
+     indicator instead of above it. Note the `8px +`: this longhand overrides the shorthand's
+     bottom value, so writing the bare env() here dropped the intended 8px to 0 on every phone
+     (env() resolves to 0px without viewport-fit: cover, which is set in app/layout.tsx). */
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
   z-index: 20;
 }
 
@@ -2490,6 +2527,14 @@ html[data-theme="dark"] .nav-founding-link-active {
 
 @media (max-width: 640px) {
   .cal-month-weekdays, .cal-month-grid { grid-template-columns: repeat(7, minmax(92px, 1fr)); }
+  /* The minmax floor above makes the seven columns ~650px wide, which is the whole point —
+     .cal-month-scroll is meant to scroll them. But both grids carry `overflow: hidden` (for
+     their rounded corners, above), and that clips the overflow *inside* the grid instead of
+     letting it reach the scroller: .cal-month-scroll then measures scrollWidth === clientWidth,
+     finds nothing to scroll, and Thu/Fri/Sat are simply unreachable on a phone. Release the
+     clip here and let the scroll container round the corners instead. */
+  .cal-month-weekdays, .cal-month-grid { overflow: visible; }
+  .cal-month-scroll { border-radius: var(--radius-md); }
 }
 
 /* Week view */
@@ -2760,7 +2805,11 @@ html[data-theme="dark"] .nav-founding-link-active {
   transition: opacity 120ms ease;
   z-index: 2;
 }
+/* :focus (not just :focus-visible) so a tap reveals the value too — the segments are now
+   focusable (see components/vitals/WeeklyActivityChart.tsx), and on a touchscreen a tap
+   focuses without necessarily qualifying for :focus-visible. */
 .vitals-chart-segment:hover .vitals-chart-tooltip,
+.vitals-chart-segment:focus .vitals-chart-tooltip,
 .vitals-chart-segment:focus-visible .vitals-chart-tooltip { opacity: 1; }
 .vitals-chart-daylabel { font-size: 10.5px; color: var(--color-neutral-700); font-weight: 600; }
 .vitals-chart-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--color-divider); }
@@ -4560,6 +4609,12 @@ html[data-theme="dark"] .body-silhouette-card {
   transition: opacity 200ms ease;
 }
 .body-region-group:hover .body-region-label { opacity: 1; }
+/* Where there's no hover, revealing a region's name on hover means never revealing it: the
+   click handler sits on the <path>, so the label could only ever appear after you'd already
+   selected the region. Show them all instead — you can read what you're about to tap. */
+@media (hover: none) {
+  .body-region-label { opacity: 1; }
+}
 
 .body-selected-tooltip {
   position: absolute;
@@ -7102,6 +7157,11 @@ html[data-theme="dark"] .app-root--atrium {
 .connexion-badge-soon {
   display: inline-flex;
   align-items: center;
+  /* Same wrapping fix as .tag: this pill also carries whole sentences ("Low Risk — Continue
+     current safety practices" is the safety-score result), and on a phone that ran past the
+     right edge with no way to scroll to the rest of the answer. */
+  max-width: 100%;
+  overflow-wrap: anywhere;
   font-size: 9.5px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -7110,7 +7170,10 @@ html[data-theme="dark"] .app-root--atrium {
   background: color-mix(in srgb, var(--color-migration-gold) 16%, transparent);
   border-radius: 999px;
   padding: 3px 9px;
-  white-space: nowrap;
+  /* Was `nowrap`, which is right for the short "Coming soon" pills this class was written for
+     but wrong for the safety-score result, which is a whole sentence and ran off the edge of a
+     phone. Short pills still don't wrap — they fit on one line regardless. */
+  white-space: normal;
 }
 
 /* — Bottom "Schedule Your Visit" CTA (see ConnexionScheduleSection.tsx, embedded on
@@ -11240,4 +11303,171 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .pro-calc-wide-page .pro-calc-region .pro-grid-2 > * {
   flex: 1 1 280px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Touch-device corrections, kept together at the end of the file on purpose.
+
+   Every rule below exists to beat an earlier one by source order rather than by
+   inflating specificity. That ordering *is* the fix for the group of font-size
+   rules: the app already does the right thing near the top of this file with
+   `@media (max-width: 799px) { .input { font-size: 16px } }`, but a media query
+   contributes no specificity, so `.forcelab-filter-row .input { font-size: 12px }`
+   (0-2-0) beat it outright and `.forcelab-paste-textarea` beat it on order. Any
+   focusable field whose text computes under 16px makes iOS zoom the whole page in
+   on focus, which the reader then has to pinch back out of by hand.
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (pointer: coarse) {
+  /* Fields that opted out of .input entirely, so the 16px rule never reached them. */
+  .connexion-visit-input,
+  .ff-modal-input,
+  .ppm-textarea,
+  .clindash-goal-status-select,
+  .clinref-search-input,
+  /* …and fields that override .input later or more specifically. */
+  .forcelab-filter-row .input,
+  .forcelab-paste-textarea,
+  .syllabi-review-table .input {
+    font-size: 16px;
+  }
+  /* These two also shrank their own box below the 44px touch floor. */
+  .syllabi-review-table .input { min-height: 44px; }
+  .clindash-goal-status-select { min-height: 44px; }
+  .clinref-search-input { min-height: 44px; }
+
+  /* Rehab Sequence is the app's only drag-and-drop screen, and HTML5 drag events never
+     fire on a touchscreen — so on a phone these two arrows are not a fallback, they are
+     the only way to play. At 22×18px with a 2px gap they were unusable. */
+  .rehab-sequence-arrows { gap: 6px; }
+  .rehab-sequence-arrows button { width: 44px; height: 36px; font-size: 13px; }
+
+  /* The "clear topic filter" × on the Home feed — the smallest control in the app. */
+  .topic-filter-pill button { width: 28px; height: 28px; }
+}
+
+/* The theme preview is a 1000px mock-up shrunk with transform: scale() inside a fixed-height
+   frame. At the desktop 0.4 it renders 400px wide, which overflows the ~354px the frame gets
+   on a phone and clips the right-hand column off the thing being previewed. Scale to fit the
+   narrower frame instead, and bring the frame's height down by the same ratio so the crop
+   stays proportional. */
+@media (max-width: 420px) {
+  .theme-preview { transform: scale(0.33); }
+  .theme-preview-frame { height: 139px; }
+}
+
+/* Visible 0–4 risk legend on the Connexion safety assessment (see
+   components/connexion/SafetyAssessmentForm.tsx). The scale used to be documented only in
+   each score button's `title` attribute, which needs a hover a touchscreen can't perform. */
+.connexion-assess-legend {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.connexion-assess-legend li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--color-neutral-700);
+}
+.connexion-assess-legend-score {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-neutral-200);
+  background: var(--color-card-surface);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* The score buttons themselves sat at 26×26 with 4px gaps — five of them per row, on every
+   item of a full assessment. Give them a real finger target where the pointer is coarse. */
+@media (pointer: coarse) {
+  .connexion-assess-score-buttons { gap: 6px; }
+  .connexion-assess-score-btn { width: 44px; height: 44px; font-size: 14px; }
+}
+
+/* Pagination (components/Pagination.tsx) — used by Under Review, APTA News, Saved and Search.
+   Sizing lives here rather than inline so the touch bump below can apply; the component keeps
+   only the active/disabled colours inline. */
+.pagination-nav { display: flex; align-items: center; gap: 4px; margin-top: 22px; flex-wrap: wrap; }
+.pagination-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: var(--radius-md);
+  border: none;
+  font: inherit;
+  font-size: 13px;
+  text-decoration: none;
+}
+/* 32px targets 4px apart are the classic "meant to tap 3, got 4". */
+@media (pointer: coarse) {
+  .pagination-nav { gap: 6px; }
+  .pagination-link { min-width: 44px; height: 44px; font-size: 14px; }
+}
+
+/* Remaining sub-44px controls, same coarse-pointer gate as the block above. These are all
+   horizontal tab strips and inline text buttons that sat between 12px and 36px tall. */
+@media (pointer: coarse) {
+  /* The HEP exercise-library picker is a <select> styled as a button, so it never picked up
+     the .input font-size rule and still zoomed the page on focus. */
+  select.btn { font-size: 16px; }
+
+  .sliding-tab { padding-top: 13px; padding-bottom: 13px; }
+  .boards-tab { padding-top: 15px; padding-bottom: 15px; }
+  /* An 11.5px inline button that computed to ~12px tall — the "N threads" teaser on feed cards. */
+  .card-threads-teaser { padding: 8px 0; }
+}
+
+/* The generic control classes, brought up to the same 44px floor on touch. .btn covers most
+   of the app's buttons at once (Save, Edit, Replay Tour, …, all ~36px tall from their padding
+   alone); the rest are the horizontal tab and chip strips. min-height rather than height so a
+   control that is already taller — a wrapped two-line chip — keeps its size. */
+@media (pointer: coarse) {
+  .btn,
+  .sub-tab,
+  .sliding-tab,
+  .wellness-chip,
+  .card-threads-teaser {
+    min-height: 44px;
+  }
+}
+
+/* Ghost variant of the clip save button — see components/ClipSaveButton.tsx, which used to
+   carry these as inline styles that no media query could reach. */
+.clip-save-btn-ghost { width: 30px; height: 30px; }
+
+/* Final touch-target pass. These sit at the very end because each one has to beat an earlier
+   declaration of the same specificity: the checkbox/radio sizing above is undone by the base
+   `input[type="checkbox"] { width: 16px }` rule further down the file, and .clip-save-btn-ghost
+   is declared just above. */
+@media (pointer: coarse) {
+  input[type="checkbox"], input[type="radio"] { width: 22px; height: 22px; }
+  .clip-save-btn-ghost { width: 44px; height: 44px; }
+  .home-refresh-pill { min-height: 44px; }
+  .home-question-option { min-height: 44px; }
+}
+
+/* Icon buttons whose pixel size is set per-instance by the component (article/wellness save,
+   delete-exercise, HEP row controls). The size arrives as the --icon-btn-dim custom property
+   rather than an inline width/height, because an inline width wins against every stylesheet
+   rule — which is exactly what kept these below the touch-target floor on phones. */
+.icon-btn-sized { width: var(--icon-btn-dim); height: var(--icon-btn-dim); }
+@media (pointer: coarse) {
+  .icon-btn-sized {
+    width: max(44px, var(--icon-btn-dim));
+    height: max(44px, var(--icon-btn-dim));
+  }
 }
