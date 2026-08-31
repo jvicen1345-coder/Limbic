@@ -12033,6 +12033,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   margin-bottom: 4px;
   overflow-wrap: break-word;
 }
+.atrium-week-schedule-event-title { display: block; font-weight: 600; }
+.atrium-week-schedule-event-time { display: block; font-size: 10px; color: var(--color-neutral-700); margin-top: 1px; }
 @media (max-width: 700px) {
   .atrium-week-schedule-grid { grid-template-columns: repeat(5, 84px); overflow-x: auto; padding-bottom: 2px; }
 }

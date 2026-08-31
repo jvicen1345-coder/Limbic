@@ -305,7 +305,8 @@ export default async function StudentAtriumPage() {
         return {
           id: `syllabus-${s.id}-${dateKey}`,
           title: s.courseCode,
-          type: time ? `${s.courseName} · ${time}` : s.courseName,
+          type: s.courseName,
+          time: time || undefined,
         };
       });
     return {

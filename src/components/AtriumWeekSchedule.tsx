@@ -4,6 +4,12 @@ export interface WeekScheduleEvent {
   id: string;
   title: string;
   type: string;
+  /** Meeting time for this specific day (e.g. "10:00 AM-10:50 AM"), when known — shown
+   *  inline in the cell rather than only in the hover tooltip (see the `time` field build in
+   *  app/(app)/student/page.tsx's scheduleDays). Undefined for manually-added Class-type
+   *  calendar events, which have no time field to show (see UserCalendarEvent in
+   *  prisma/schema.prisma). */
+  time?: string;
 }
 
 export interface WeekScheduleDay {
@@ -18,8 +24,9 @@ export interface WeekScheduleDay {
 /** "I want the weekly schedule to be the class schedule since we have events in the
  *  calendar already", then "not what I wanted, I want it to show your class schedule and
  *  only your classes", then "use the information from the syllabi to create a class
- *  schedule" — this is that: a Monday-Sunday strip built from two additive sources (see
- *  app/(app)/student/page.tsx's query):
+ *  schedule" — this is that: a Monday-Friday strip (see MEETING_DAY_CODES in
+ *  lib/calendar-events.ts — classes don't meet weekends) built from two additive sources
+ *  (see app/(app)/student/page.tsx's query):
  *  1. Recurring weekly meetings parsed off the reader's own syllabi (or set by hand on the
  *     syllabus card when the AI parse can't find one — see Syllabus.meetingDays/meetingTimes
  *     in prisma/schema.prisma, lib/syllabus-parser.ts, and updateSyllabusMeetingPattern in
@@ -30,10 +37,13 @@ export interface WeekScheduleDay {
  *     out of this strip on purpose.
  *  Sits right after the greeting, at the top of app/(app)/student/page.tsx, above the
  *  streak/roundup grid — the most time-sensitive "what does my week look like" question,
- *  first. Dates only, no times in the grid itself: /calendar's own week/month/list views
- *  already treat UserCalendarEvent.date as a day-level field (see lib/calendar-data.ts
- *  buildCalendarEvents, which strips the time component before ever reaching a view), so
- *  each event's meeting time (when known) is in its tooltip instead of the day cell. */
+ *  first. "I want the schedule to be more effective" -> "show more detail per class, right
+ *  in the cell" — a syllabus meeting's time (WeekScheduleEvent.time) now renders inline
+ *  under the course code instead of being buried in the hover tooltip; the tooltip
+ *  (WeekScheduleEvent.type) still carries the full course name. Manual Class-type calendar
+ *  events have no `time` (UserCalendarEvent has no time field — see lib/calendar-data.ts
+ *  buildCalendarEvents, which strips it before it ever reaches /calendar's own views either),
+ *  so those cells show just the title, same as before. */
 export function AtriumWeekSchedule({ days, weekLabel }: { days: WeekScheduleDay[]; weekLabel: string }) {
   const isEmpty = days.every((d) => d.events.length === 0);
 
@@ -66,7 +76,8 @@ export function AtriumWeekSchedule({ days, weekLabel }: { days: WeekScheduleDay[
               ) : (
                 d.events.map((e) => (
                   <div key={e.id} className="atrium-week-schedule-event" title={e.type}>
-                    {e.title}
+                    <span className="atrium-week-schedule-event-title">{e.title}</span>
+                    {e.time && <span className="atrium-week-schedule-event-time">{e.time}</span>}
                   </div>
                 ))
               )}
