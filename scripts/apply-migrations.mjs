@@ -16,8 +16,33 @@ import path from "node:path";
 const databaseUrl = process.env.DATABASE_URL || "file:./dev.db";
 
 if (databaseUrl.startsWith("file:")) {
-  execSync("npx prisma migrate deploy", { stdio: "inherit" });
-  process.exit(0);
+  // Retry on a locked database. `migrate deploy` is a separate native binary with its own
+  // SQLite connection and no busy timeout, so it gives up the instant the file is locked
+  // rather than waiting — and a local dev server holding a write is enough to do that. Since
+  // this runs as the first half of `npm run build`, that surfaced as the whole build failing
+  // with "SQLite database error / database is locked" for anyone who happened to have
+  // `npm run dev` open. Same shape of fix as the retry around grantLicense in
+  // e2e/movement-lab.spec.ts: wait a moment and try again rather than treating a transient
+  // lock as fatal. Only the local file path needs this; Turso has real concurrency.
+  for (let attempt = 0; ; attempt++) {
+    try {
+      // Output is captured rather than inherited so the "is this a lock?" check below has
+      // something to read; both streams are echoed either way, so this still prints exactly
+      // what `migrate deploy` printed.
+      const result = execSync("npx prisma migrate deploy 2>&1", { encoding: "utf8" });
+      process.stdout.write(result);
+      process.exit(0);
+    } catch (error) {
+      const output = `${error.stdout ?? ""}${error.stderr ?? ""}`;
+      process.stdout.write(output);
+      // Only a lock is worth retrying. A bad migration fails the same way every time, and
+      // retrying it would just delay the real error by a few seconds and bury it in noise.
+      if (!/database is locked/i.test(output) || attempt >= 3) throw error;
+      const wait = 500 * 2 ** attempt;
+      console.log(`[migrate] database is locked, retrying in ${wait}ms`);
+      await new Promise((resolve) => setTimeout(resolve, wait));
+    }
+  }
 }
 
 const client = createClient({ url: databaseUrl, authToken: process.env.TURSO_AUTH_TOKEN });
