@@ -11,37 +11,60 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <LegalPageLayout title="Privacy Policy" updated="August 14, 2026">
+    <LegalPageLayout title="Privacy Policy" updated="August 31, 2026">
       <h2 className="legal-section-title">1. Information We Collect</h2>
-      <p className="legal-body">When you create an account on Limbic we collect:</p>
+      <p className="legal-body">When you create an account and use Limbic we collect:</p>
       <ul className="legal-list">
         <li>Account information: name, email address, license number for PT accounts, specialty, and practice state.</li>
+        <li>Payment information: payment processing is handled by Stripe. Limbic does not store credit card numbers or payment details directly.</li>
+        <li>
+          Wellness data you track about yourself: height, weight, age, activity level, sleep, mood, vitals, and
+          other self-reported metrics you enter into Limbic Vitals, or that you choose to sync from a connected
+          fitness or health account (see Section 4). This data is used to personalize your own wellness experience
+          and is not used to provide medical care.
+        </li>
+        <li>
+          Clinical practice data: if you are a clinician, information you enter about your own clinical practice
+          and, where the feature involves recording information about a specific patient or client, that
+          information — see Section 2 below for what this can include and who is responsible for it.
+        </li>
+        <li>
+          Education data: if you are a PT student, syllabus text you upload or paste, assignments extracted from
+          it, and — if you connect a Canvas LMS account — the access token you provide and the assignments Limbic
+          syncs from your school&rsquo;s Canvas instance on your behalf.
+        </li>
         <li>
           Usage data: articles read, searches performed, content saved, streak activity, game completions, and
           feature interactions. This data is used to personalize your experience.
         </li>
         <li>Profile information: headline, bio, and any information you choose to add to your Nexus profile.</li>
-        <li>
-          Payment information: payment processing is handled by Stripe. Limbic does not store credit card numbers
-          or payment details directly.
-        </li>
-        <li>
-          Wellness data: height, weight, age, activity level, and exercise logs entered into Limbic Vitals are
-          used solely to personalize your wellness experience. This information is not shared with third parties
-          and is not used for medical purposes.
-        </li>
       </ul>
 
-      <h2 className="legal-section-title">2. What We Never Collect</h2>
+      <h2 className="legal-section-title">2. Patient and Client Data You Enter</h2>
       <p className="legal-body">
-        Limbic is designed to never collect patient data or Protected Health Information as defined by HIPAA. Home
-        Exercise Programs created on Limbic use reference codes only; no patient names, dates of birth, or
-        identifying information are stored on the platform.
+        Several LimbicPRO tools — including the Clinician Dashboard, Force Lab, Outcome Measures, and the Connexion
+        Safety Score assessment — let a clinician record information about a specific patient or client in order to
+        use the tool. Depending on which fields you choose to fill in, this can include a name, contact details or
+        address, clinical notes, assessment scores, and other information about that individual&rsquo;s condition or
+        care. This information is stored under your account and is visible only to you (and, for Clinic PRO
+        multi-clinician accounts, other clinicians on your team).
+      </p>
+      <p className="legal-body">
+        <strong>Limbic is not a covered entity or business associate under HIPAA</strong>, does not offer a signed
+        Business Associate Agreement, and these tools are not a certified medical record system. If you are a
+        licensed clinician, you are solely responsible for complying with HIPAA, your state&rsquo;s health
+        information laws, your employer&rsquo;s policies, and any other legal or professional obligation that
+        applies to how you record and store information about your patients or clients — including obtaining any
+        consent required to do so. Where a field lets you use a reference code, initials, or other de-identified
+        label instead of a full name, we recommend doing so; several of these tools (for example, Home Exercise
+        Programs) are built around reference codes for this reason, but not all of them require it, and Limbic
+        cannot control what you choose to type into a free-text field.
       </p>
 
       <h2 className="legal-section-title">3. How We Use Your Information</h2>
       <p className="legal-body">We use the information we collect to:</p>
       <ul className="legal-list">
+        <li>Provide the specific tool you are using — for example, generating a Force Lab comparison or a patient brief you requested.</li>
         <li>Personalize your content feed based on reading history and followed topics.</li>
         <li>Power Limbic Agent recommendations and gap topic suggestions.</li>
         <li>Track streaks and daily activity for the dashboard and games.</li>
@@ -51,22 +74,36 @@ export default function PrivacyPage() {
       <p className="legal-body">We do not sell your personal information to third parties.</p>
 
       <h2 className="legal-section-title">4. Third Party Services</h2>
-      <p className="legal-body">Limbic uses the following third party services:</p>
+      <p className="legal-body">
+        Limbic uses the following third party services to provide the platform. Some are used for every account;
+        others only process your data if you choose to use the related feature.
+      </p>
       <ul className="legal-list">
         <li>
-          Anthropic: powers Limbic Agent. Queries sent to Limbic Agent are processed by Anthropic&rsquo;s API. See
-          Anthropic&rsquo;s privacy policy at anthropic.com.
+          Anthropic: powers Limbic Agent and AI-assisted search. Queries you send to these features are processed
+          by Anthropic&rsquo;s API. See Anthropic&rsquo;s privacy policy at anthropic.com.
         </li>
-        <li>Stripe: processes subscription payments. See Stripe&rsquo;s privacy policy at stripe.com.</li>
-        <li>Vercel: hosts the Limbic platform. See Vercel&rsquo;s privacy policy at vercel.com.</li>
-        <li>PubMed: research articles are sourced from PubMed&rsquo;s public API. No user data is sent to PubMed.</li>
+        <li>Stripe: processes subscription and Founding Funder payments. See Stripe&rsquo;s privacy policy at stripe.com.</li>
+        <li>Vercel: hosts the Limbic platform and provides aggregate, cookieless usage analytics (Vercel Analytics and Speed Insights). See Vercel&rsquo;s privacy policy at vercel.com.</li>
+        <li>Turso: hosts Limbic&rsquo;s production database.</li>
+        <li>Resend: delivers account emails such as password resets.</li>
+        <li>Google: if you sign in with Google or connect a Google Health account, Google processes the associated authentication or health data. See Google&rsquo;s privacy policy at policies.google.com/privacy.</li>
+        <li>Strava and Fitbit: if you connect one of these accounts from your Activity Log, Limbic receives your recent activity data from that provider to sync into your Limbic Vitals log.</li>
+        <li>
+          Canvas LMS: if you connect a Canvas account, Limbic sends the access token you provide to the Canvas
+          domain you specify, in order to read your course assignments. Limbic does not control, and is not
+          responsible for, the school&rsquo;s own Canvas instance or its privacy practices.
+        </li>
+        <li>PubMed and Unpaywall: research articles and full-text links are sourced from these public research APIs. No account data is sent to them.</li>
+        <li>YouTube and Pexels: power the Clips and article-image features respectively. No account data is sent to them.</li>
       </ul>
 
       <h2 className="legal-section-title">5. Data Retention</h2>
       <p className="legal-body">
-        We retain your account data for as long as your account is active. If you delete your account your
-        personal data is removed within 30 days. Some anonymized usage data may be retained for platform
-        improvement purposes.
+        We retain your account data for as long as your account is active. Deleting your account from Profile
+        Settings permanently and immediately removes your account and the data associated with it. Some anonymized
+        usage data, and records we are required to keep for legal, tax, or dispute-resolution purposes (such as
+        payment records), may be retained after account deletion.
       </p>
 
       <h2 className="legal-section-title">6. Your Rights</h2>
@@ -74,8 +111,8 @@ export default function PrivacyPage() {
       <ul className="legal-list">
         <li>Access the personal data we hold about you.</li>
         <li>Request correction of inaccurate data.</li>
-        <li>Request deletion of your account and associated data.</li>
-        <li>Export your data in a readable format.</li>
+        <li>Delete your account and associated data at any time from Profile Settings.</li>
+        <li>Request a copy of your data by contacting us at the address below.</li>
       </ul>
       <p className="legal-body">To exercise these rights contact us at limbic.center.</p>
 
@@ -87,32 +124,40 @@ export default function PrivacyPage() {
         information.
       </p>
 
-      <h2 className="legal-section-title">8. Cookies</h2>
+      <h2 className="legal-section-title">8. Cookies and Analytics</h2>
       <p className="legal-body">
-        Limbic uses session cookies to keep you signed in. We do not use tracking cookies or third party
-        advertising cookies.
+        Limbic uses a session cookie to keep you signed in. We do not use third party advertising cookies. We use
+        Vercel Analytics and Speed Insights, which are cookieless and report only aggregated, non-identifying usage
+        statistics.
       </p>
 
-      <h2 className="legal-section-title">9. Children</h2>
+      <h2 className="legal-section-title">9. International Users</h2>
+      <p className="legal-body">
+        Limbic is operated from the United States and our servers and service providers are located in the United
+        States. If you access Limbic from outside the United States, your information will be transferred to and
+        processed in the United States.
+      </p>
+
+      <h2 className="legal-section-title">10. Children</h2>
       <p className="legal-body">
         Limbic is not intended for users under the age of 13. We do not knowingly collect personal information
         from children under 13.
       </p>
 
-      <h2 className="legal-section-title">10. Security</h2>
+      <h2 className="legal-section-title">11. Security</h2>
       <p className="legal-body">
         We take reasonable measures to protect your personal information including encrypted connections and
         secure data storage. No method of transmission over the internet is completely secure and we cannot
         guarantee absolute security.
       </p>
 
-      <h2 className="legal-section-title">11. Changes to This Policy</h2>
+      <h2 className="legal-section-title">12. Changes to This Policy</h2>
       <p className="legal-body">
         We may update this privacy policy from time to time. We will notify users of significant changes via the
         platform. Continued use of Limbic after changes constitutes acceptance of the updated policy.
       </p>
 
-      <h2 className="legal-section-title">12. Contact</h2>
+      <h2 className="legal-section-title">13. Contact</h2>
       <p className="legal-body">For privacy questions or data requests contact: limbic.center</p>
       <p className="legal-body">Newport Beach, California</p>
     </LegalPageLayout>
