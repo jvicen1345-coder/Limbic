@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { parseSyllabusText, type ParsedAssignment } from "@/lib/syllabus-parser";
 import { getThisWeekDateRange } from "@/lib/atrium-recommendations";
-import type { Syllabus, SyllabusAssignment } from "@/generated/prisma/client";
+import type { Syllabus, Assignment } from "@/generated/prisma/client";
 
 // Explicit discriminated-union return types for every mutation the client actually branches
 // on (see components/student/SyllabiManager.tsx) — without these, TypeScript's inference
@@ -18,7 +18,7 @@ type ActionError = { error: string };
  *  client-passed id (same reasoning as every other server action in this app — a userId
  *  argument would just be something a client could spoof). Gated on hasStudentAccess, not
  *  just "signed in", since syllabus tracking is a Limbic Student feature (see
- *  app/(app)/student/syllabi/page.tsx's own gate). */
+ *  app/(app)/student/assignments/page.tsx's own gate). */
 async function requireStudentUser() {
   const user = await getCurrentUser();
   if (!user || !hasStudentAccess(user)) return null;
@@ -32,7 +32,7 @@ async function requireOwnedSyllabus(userId: string, syllabusId: string) {
 }
 
 async function requireOwnedAssignment(userId: string, assignmentId: string) {
-  const assignment = await prisma.syllabusAssignment.findUnique({ where: { id: assignmentId } });
+  const assignment = await prisma.assignment.findUnique({ where: { id: assignmentId } });
   if (!assignment || assignment.userId !== userId) return null;
   return assignment;
 }
@@ -82,7 +82,7 @@ export async function getSyllabusAssignments(syllabusId: string) {
   const syllabus = await requireOwnedSyllabus(user.id, syllabusId);
   if (!syllabus) return [];
 
-  return prisma.syllabusAssignment.findMany({
+  return prisma.assignment.findMany({
     where: { syllabusId },
     orderBy: { dueDate: "asc" },
   });
@@ -102,7 +102,7 @@ export async function createSyllabus(
     data: { userId: user.id, courseCode: courseCode.trim(), courseName: courseName.trim(), trimester, year },
   });
 
-  revalidatePath("/student/syllabi");
+  revalidatePath("/student/assignments");
   return { success: true, syllabus };
 }
 
@@ -113,24 +113,26 @@ export async function deleteSyllabus(syllabusId: string) {
   const syllabus = await requireOwnedSyllabus(user.id, syllabusId);
   if (!syllabus) return { error: "Syllabus not found." };
 
-  // SyllabusAssignment.syllabus has onDelete: Cascade — deleting the syllabus deletes every
-  // assignment it owns in the same statement.
+  // Assignment.syllabus has onDelete: Cascade — deleting the syllabus deletes every
+  // syllabus-sourced assignment it owns in the same statement (Canvas-sourced rows have no
+  // syllabusId and are never affected).
   await prisma.syllabus.delete({ where: { id: syllabusId } });
 
-  revalidatePath("/student/syllabi");
+  revalidatePath("/student/assignments");
   revalidatePath("/student");
   return { success: true };
 }
 
 /** Runs the raw syllabus text through Limbic AI (see lib/syllabus-parser.ts), saves the raw
- *  text + parsedAt on the syllabus, and creates one SyllabusAssignment per extracted item.
+ *  text + parsedAt on the syllabus, and creates one Assignment (source: "syllabus") per
+ *  extracted item.
  *  Returns the created rows so the review panel (see components/student/SyllabiManager.tsx)
  *  can show exactly what got saved — this app's UI never re-parses to display something
  *  it's already about to persist. */
 export async function parseSyllabusFromText(
   syllabusId: string,
   rawText: string
-): Promise<ActionError | { success: true; assignments: SyllabusAssignment[] }> {
+): Promise<ActionError | { success: true; assignments: Assignment[] }> {
   const user = await requireStudentUser();
   if (!user) return { error: "Unauthorized" };
   if (!rawText.trim()) return { error: "Paste your syllabus text first." };
@@ -146,7 +148,7 @@ export async function parseSyllabusFromText(
   await prisma.$transaction([
     prisma.syllabus.update({ where: { id: syllabusId }, data: { rawText, parsedAt: now } }),
     ...parsed.map((a: ParsedAssignment) =>
-      prisma.syllabusAssignment.create({
+      prisma.assignment.create({
         data: {
           syllabusId,
           userId: user.id,
@@ -160,9 +162,9 @@ export async function parseSyllabusFromText(
     ),
   ]);
 
-  const assignments = await prisma.syllabusAssignment.findMany({ where: { syllabusId }, orderBy: { dueDate: "asc" } });
+  const assignments = await prisma.assignment.findMany({ where: { syllabusId }, orderBy: { dueDate: "asc" } });
 
-  revalidatePath("/student/syllabi");
+  revalidatePath("/student/assignments");
   revalidatePath("/student");
   return { success: true, assignments };
 }
@@ -172,7 +174,7 @@ export async function addManualAssignment(
   title: string,
   dueDate: string,
   category: string
-): Promise<ActionError | { success: true; assignment: SyllabusAssignment }> {
+): Promise<ActionError | { success: true; assignment: Assignment }> {
   const user = await requireStudentUser();
   if (!user) return { error: "Unauthorized" };
   if (!title.trim() || !dueDate.trim()) return { error: "Title and due date are required." };
@@ -180,7 +182,7 @@ export async function addManualAssignment(
   const syllabus = await requireOwnedSyllabus(user.id, syllabusId);
   if (!syllabus) return { error: "Syllabus not found." };
 
-  const assignment = await prisma.syllabusAssignment.create({
+  const assignment = await prisma.assignment.create({
     data: {
       syllabusId,
       userId: user.id,
@@ -192,7 +194,7 @@ export async function addManualAssignment(
     },
   });
 
-  revalidatePath("/student/syllabi");
+  revalidatePath("/student/assignments");
   revalidatePath("/student");
   return { success: true, assignment };
 }
@@ -207,7 +209,7 @@ export async function getThisWeekAssignments() {
 
   const { start, end } = getThisWeekDateRange();
 
-  return prisma.syllabusAssignment.findMany({
+  return prisma.assignment.findMany({
     where: { userId: user.id, dueDate: { gte: start, lte: end } },
     orderBy: { dueDate: "asc" },
   });
@@ -231,7 +233,7 @@ export async function getMonthAssignments(userId: string, year: number, month: n
   const lastDay = new Date(year, month, 0).getDate();
   const end = `${year}-${monthStr}-${String(lastDay).padStart(2, "0")}`;
 
-  return prisma.syllabusAssignment.findMany({
+  return prisma.assignment.findMany({
     where: { userId: user.id, dueDate: { gte: start, lte: end } },
     orderBy: { dueDate: "asc" },
   });
@@ -245,12 +247,12 @@ export async function toggleAssignmentComplete(assignmentId: string): Promise<Ac
   if (!assignment) return { error: "Assignment not found." };
 
   const completed = !assignment.completed;
-  await prisma.syllabusAssignment.update({
+  await prisma.assignment.update({
     where: { id: assignmentId },
     data: { completed, completedAt: completed ? new Date() : null },
   });
 
-  revalidatePath("/student/syllabi");
+  revalidatePath("/student/assignments");
   revalidatePath("/student");
   return { success: true, completed };
 }
@@ -268,12 +270,12 @@ export async function updateAssignment(assignmentId: string, title: string, dueD
   const assignment = await requireOwnedAssignment(user.id, assignmentId);
   if (!assignment) return { error: "Assignment not found." };
 
-  await prisma.syllabusAssignment.update({
+  await prisma.assignment.update({
     where: { id: assignmentId },
     data: { title: title.trim(), dueDate, category },
   });
 
-  revalidatePath("/student/syllabi");
+  revalidatePath("/student/assignments");
   revalidatePath("/student");
   return { success: true };
 }
@@ -285,9 +287,9 @@ export async function deleteAssignment(assignmentId: string) {
   const assignment = await requireOwnedAssignment(user.id, assignmentId);
   if (!assignment) return { error: "Assignment not found." };
 
-  await prisma.syllabusAssignment.delete({ where: { id: assignmentId } });
+  await prisma.assignment.delete({ where: { id: assignmentId } });
 
-  revalidatePath("/student/syllabi");
+  revalidatePath("/student/assignments");
   revalidatePath("/student");
   return { success: true };
 }

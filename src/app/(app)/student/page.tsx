@@ -215,7 +215,7 @@ export default async function StudentAtriumPage() {
   // Upcoming were Quick Links entries the dashboard redesign removed — see
   // atrium-supporting-row below — but nothing about the fetch itself changed, this just
   // stops binding results neither the redesigned page nor anything else here reads).
-  const [, , weekCompletions, boardActivityRows, , thisWeekAssignments, syllabusCount, monthAssignments] = await Promise.all([
+  const [, , weekCompletions, boardActivityRows, , thisWeekAssignments, syllabusCount, monthAssignments, canvasConnection] = await Promise.all([
     prisma.dailyCompletion.findFirst({
       where: { userId: user.id, dateKey: todayKey, kind: { in: ["boardQuestion", "boardTerm"] } },
     }),
@@ -243,7 +243,13 @@ export default async function StudentAtriumPage() {
     // month, complete or not; the calendar's own month navigation re-fetches via
     // app/api/assignments/route.ts rather than re-running this page.
     getMonthAssignments(user.id, now.getFullYear(), now.getMonth() + 1),
+    // Whether Canvas is connected — "no syllabi uploaded" alone used to gate the This Week
+    // card's and calendar's empty states (see hasSyllabi/syllabusCount below), but a student
+    // who's only connected Canvas has real assignments without ever touching the syllabus
+    // tracker, so those empty states now check this too.
+    prisma.canvasConnection.findUnique({ where: { userId: user.id }, select: { id: true } }),
   ]);
+  const hasAssignmentSource = syllabusCount > 0 || canvasConnection != null;
 
   const daysCompletedThisWeek = new Set(boardActivityRows.map((r) => r.dateKey)).size;
 
@@ -373,7 +379,7 @@ export default async function StudentAtriumPage() {
             courseCode: a.courseCode,
             completed: a.completed,
           }))}
-          hasSyllabi={syllabusCount > 0}
+          hasAssignmentSource={hasAssignmentSource}
           recommendations={recommendations}
         />
 
@@ -399,12 +405,12 @@ export default async function StudentAtriumPage() {
           <section style={{ marginTop: "24px", marginBottom: "24px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
               <h2 style={{ fontSize: "16px", fontWeight: 700 }}>Academic Calendar</h2>
-              <Link href="/student/syllabi" style={{ fontSize: "12px", color: "var(--color-neutral-700)", textDecoration: "none" }}>
-                Manage syllabi →
+              <Link href="/student/assignments" style={{ fontSize: "12px", color: "var(--color-neutral-700)", textDecoration: "none" }}>
+                Manage assignments →
               </Link>
             </div>
 
-            {monthAssignments.length === 0 && syllabusCount === 0 ? (
+            {monthAssignments.length === 0 && !hasAssignmentSource ? (
               <div
                 style={{
                   background: "var(--color-card-surface)",
@@ -415,10 +421,10 @@ export default async function StudentAtriumPage() {
                 }}
               >
                 <p style={{ color: "var(--color-neutral-700)", fontSize: "14px", marginBottom: "12px" }}>
-                  Upload your syllabi to see your academic calendar here.
+                  Connect Canvas or upload a syllabus to see your academic calendar here.
                 </p>
                 <Link
-                  href="/student/syllabi"
+                  href="/student/assignments"
                   style={{
                     display: "inline-block",
                     padding: "8px 20px",
@@ -430,7 +436,7 @@ export default async function StudentAtriumPage() {
                     textDecoration: "none",
                   }}
                 >
-                  Add Syllabus
+                  Add Assignments
                 </Link>
               </div>
             ) : (

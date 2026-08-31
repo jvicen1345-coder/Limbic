@@ -51,12 +51,12 @@ function formatDueDate(dueDate: string): string {
 export function AtriumThisWeekCard({
   weekLabel,
   assignments,
-  hasSyllabi,
+  hasAssignmentSource,
   recommendations,
 }: {
   weekLabel: string;
   assignments: ThisWeekAssignment[];
-  hasSyllabi: boolean;
+  hasAssignmentSource: boolean;
   recommendations: PlatformRecommendation[];
 }) {
   const [rows, setRows] = useState(assignments);
@@ -89,18 +89,18 @@ export function AtriumThisWeekCard({
         <span className="atrium-week-range">{weekLabel}</span>
       </div>
 
-      {!hasSyllabi ? (
+      {!hasAssignmentSource ? (
         <div className="atrium-week-empty-prompt">
-          <p>Upload your syllabi to track assignments here.</p>
-          <Link href="/student/syllabi" className="btn btn-secondary atrium-week-empty-cta">
-            Add Syllabus
+          <p>Connect Canvas or upload a syllabus to track assignments here.</p>
+          <Link href="/student/assignments" className="btn btn-secondary atrium-week-empty-cta">
+            Add Assignments
           </Link>
         </div>
       ) : rows.length === 0 ? (
         <div>
           <p className="atrium-dashboard-empty">No assignments due this week</p>
-          <Link href="/student/syllabi" className="atrium-week-add-link">
-            Add your syllabus →
+          <Link href="/student/assignments" className="atrium-week-add-link">
+            Manage assignments →
           </Link>
         </div>
       ) : (
@@ -111,7 +111,9 @@ export function AtriumThisWeekCard({
               <span className="atrium-week-assignment-due" style={{ color: a.completed ? "var(--color-neutral-700)" : urgencyColor(a.dueDate, todayKey, tomorrowKey) }}>
                 {formatDueDate(a.dueDate)}
               </span>
-              <span className="atrium-week-assignment-title">{a.title}</span>
+              <Link href="/student/assignments" className="atrium-week-assignment-title">
+                {a.title}
+              </Link>
               <span className="atrium-week-assignment-course">{a.courseCode}</span>
               <span
                 className="atrium-week-assignment-dot"

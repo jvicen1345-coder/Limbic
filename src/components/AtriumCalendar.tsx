@@ -256,7 +256,7 @@ export function AtriumCalendar({
               {dayList.length === 0 ? (
                 <div className="atrium-calendar-detail-nothing">
                   <p>Nothing due</p>
-                  <Link href="/student/syllabi" className="atrium-calendar-add-link">
+                  <Link href="/student/assignments" className="atrium-calendar-add-link">
                     Add assignment →
                   </Link>
                 </div>
@@ -280,7 +280,9 @@ export function AtriumCalendar({
                             style={{ background: CATEGORY_COLORS[a.category] ?? OTHER_CATEGORY_COLOR }}
                             aria-hidden="true"
                           />
-                          <span className="atrium-calendar-assignment-title">{a.title}</span>
+                          <Link href="/student/assignments" className="atrium-calendar-assignment-title">
+                            {a.title}
+                          </Link>
                           <span className="atrium-calendar-assignment-course">{a.courseCode}</span>
                           <span className="atrium-calendar-assignment-category">{a.category}</span>
                           {urgency && (

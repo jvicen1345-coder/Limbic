@@ -33,8 +33,9 @@ interface AssignmentRow {
   completed: boolean;
 }
 
-/** Client-side add/manage UI for the syllabus tracker — see app/(app)/student/syllabi/
- *  page.tsx (server gate + initial fetch) and app/actions/syllabus.ts (every mutation
+/** Client-side add/manage UI for the syllabus tracker — see app/(app)/student/assignments/
+ *  page.tsx (server gate + initial fetch, alongside CanvasConnectPanel) and
+ *  app/actions/syllabus.ts (every mutation
  *  below). Assignments returned by parseSyllabusFromText are already persisted (see that
  *  action's own docstring) — the review table below is an edit-after-save step, not a
  *  staging area, so "Cancel" deletes what parsing just created rather than merely closing

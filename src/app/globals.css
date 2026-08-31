@@ -5145,10 +5145,12 @@ html[data-theme="dark"] .app-root--atrium {
   min-width: 0;
   font-size: 12.5px;
   color: var(--color-text);
+  text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.atrium-week-assignment-title:hover { text-decoration: underline; }
 .atrium-week-assignment--done .atrium-week-assignment-title { text-decoration: line-through; color: var(--color-neutral-700); }
 .atrium-week-assignment-course {
   flex-shrink: 0;
@@ -10103,7 +10105,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .card-link-footer-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; margin: 0 0 2px; }
 .card-link-footer-email { font-size: 13px; color: var(--color-neutral-700); margin: 0; }
 
-/* Syllabus tracker (app/(app)/student/syllabi/page.tsx, components/student/
+/* Syllabus tracker (app/(app)/student/assignments/page.tsx, components/student/
    SyllabiManager.tsx) — feeds the Atrium's This Week card (see .atrium-week-panel above).
    Reuses the sitewide .field/.input/.btn primitives throughout; only the add-tabs, review
    table, and existing-syllabi list below are page-specific. */
@@ -10798,10 +10800,13 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   min-width: 0;
   font-size: 14px;
   font-weight: 600;
+  color: var(--color-text);
+  text-decoration: none;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.atrium-calendar-assignment-title:hover { text-decoration: underline; }
 .atrium-calendar-assignment-row--done .atrium-calendar-assignment-title {
   font-weight: 400;
   text-decoration: line-through;
@@ -11593,3 +11598,36 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   .wordle-keyboard-row { gap: 4px; }
   .wordle-key { min-width: 30px; padding: 0 4px; }
 }
+
+/* Canvas connect panel (components/student/CanvasConnectPanel.tsx), the top section of
+   app/(app)/student/assignments/page.tsx above the syllabus tracker — same card treatment as
+   .syllabi-add-section further up this file, kept as its own block since the two aren't
+   related components. */
+.canvas-connect-panel {
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.canvas-connect-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; margin: 0 0 6px; }
+.canvas-connect-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; margin: 0 0 16px; max-width: 640px; }
+.canvas-connect-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 640px) {
+  .canvas-connect-form { grid-template-columns: minmax(0, 1fr); }
+}
+.canvas-connect-status { font-size: 12.5px; color: var(--color-success); margin: 10px 0 0; }
+
+.canvas-connect-panel--connected { display: flex; flex-direction: column; }
+.canvas-connect-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.canvas-connect-meta { font-size: 12.5px; color: var(--color-neutral-700); margin-top: 2px; }
+.canvas-connect-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+.canvas-connect-disconnect {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-danger);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 4px;
+}
+.canvas-connect-disconnect:disabled { opacity: 0.6; cursor: default; }
