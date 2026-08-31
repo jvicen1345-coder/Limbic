@@ -21,7 +21,7 @@ export interface WeekScheduleDay {
  *  schedule" — this is that: a Monday-Sunday strip built from two additive sources (see
  *  app/(app)/student/page.tsx's query):
  *  1. Recurring weekly meetings parsed off the reader's own syllabi (or set by hand on the
- *     syllabus card when the AI parse can't find one — see Syllabus.meetingDays/meetingTime
+ *     syllabus card when the AI parse can't find one — see Syllabus.meetingDays/meetingTimes
  *     in prisma/schema.prisma, lib/syllabus-parser.ts, and updateSyllabusMeetingPattern in
  *     app/actions/syllabus.ts) — the primary source now, since that's what was asked for.
  *  2. One-off UserCalendarEvent rows with type "Class" (see lib/calendar-events.ts's

@@ -33,6 +33,7 @@ import { getWeekRecommendations, getThisWeekDateRange } from "@/lib/atrium-recom
 import { getUserProgram } from "@/app/actions/dpt-programs";
 import { getTimeZone } from "@/lib/user-time-zone";
 import { dateToLocalIso } from "@/lib/limbic-calendar";
+import { parseMeetingTimesColumn } from "@/lib/syllabus-meeting-times";
 import { AtriumWeekSchedule } from "@/components/AtriumWeekSchedule";
 
 // A safe all-zero phase for a reader who's picked a real program (see getUserProgram) but
@@ -252,14 +253,14 @@ export default async function StudentAtriumPage() {
       orderBy: { date: "asc" },
     }),
     // Also feeds the Class Schedule strip — recurring weekly meetings parsed straight off a
-    // student's own syllabi (see lib/syllabus-parser.ts and Syllabus.meetingDays/meetingTime
+    // student's own syllabi (see lib/syllabus-parser.ts and Syllabus.meetingDays/meetingTimes
     // in prisma/schema.prisma), or set by hand on the syllabus card when the AI parse can't
     // find one (see updateSyllabusMeetingPattern in app/actions/syllabus.ts). "use the
     // information from the syllabi to create a class schedule" — this is that: additive to
     // the manual Class-type calendar events above, not a replacement for them.
     prisma.syllabus.findMany({
       where: { userId: user.id, meetingDays: { not: null } },
-      select: { id: true, courseCode: true, courseName: true, meetingDays: true, meetingTime: true },
+      select: { id: true, courseCode: true, courseName: true, meetingDays: true, meetingTimes: true },
     }),
     // This Week card (see components/AtriumThisWeekCard.tsx, replacing the old Weekly
     // Roundup panel here) — every syllabus assignment due this calendar week, plus a plain
@@ -300,14 +301,19 @@ export default async function StudentAtriumPage() {
     // Every uploaded syllabus whose meetingDays includes this weekday (see the
     // prisma.syllabus.findMany query above) contributes one entry here — title is the short
     // course code so it fits the day cell, and the tooltip (WeekScheduleEvent.type, rendered
-    // as the card's title attribute) carries the full course name and meeting time instead.
+    // as the card's title attribute) carries the full course name and this specific weekday's
+    // time (see Syllabus.meetingTimes in prisma/schema.prisma — the same class can meet at a
+    // different time on different days, e.g. Monday at 10 and Friday at 8:30).
     const syllabusEvents = weekSyllabiMeetings
       .filter((s) => s.meetingDays!.split(",").includes(weekday))
-      .map((s) => ({
-        id: `syllabus-${s.id}-${dateKey}`,
-        title: s.courseCode,
-        type: s.meetingTime ? `${s.courseName} · ${s.meetingTime}` : s.courseName,
-      }));
+      .map((s) => {
+        const time = parseMeetingTimesColumn(s.meetingTimes)?.[weekday];
+        return {
+          id: `syllabus-${s.id}-${dateKey}`,
+          title: s.courseCode,
+          type: time ? `${s.courseName} · ${time}` : s.courseName,
+        };
+      });
     return {
       dateKey,
       label: weekday,

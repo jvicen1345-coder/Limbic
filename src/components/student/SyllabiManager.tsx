@@ -21,6 +21,47 @@ const CATEGORIES = ["Exam", "Quiz", "Assignment", "Lab Practical", "Paper", "Pre
 // Date.getDay(), see that constant's own comment.
 const MEETING_DAYS_DISPLAY_ORDER = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 
+/** "Meets Mon 10:00 AM-10:50 AM, Fri 8:30 AM-9:20 AM" — the same class can meet at a
+ *  different time on different days (see Syllabus.meetingTimes in prisma/schema.prisma), so
+ *  each day gets its own optional time instead of one shared string. A day with no time in
+ *  `times` just shows its name with nothing after it. */
+function formatMeetingSchedule(days: string[], times: Record<string, string> | null): string {
+  return MEETING_DAYS_DISPLAY_ORDER.filter((d) => days.includes(d))
+    .map((day) => (times?.[day] ? `${day} ${times[day]}` : day))
+    .join(", ");
+}
+
+/** One time input per selected meeting day — shared between the "Add Manually" new-course
+ *  fields and the per-card editor below, which otherwise only differ in which state setter
+ *  they call. */
+function MeetingTimeFields({
+  days,
+  times,
+  onChangeTime,
+}: {
+  days: string[];
+  times: Record<string, string>;
+  onChangeTime: (day: string, value: string) => void;
+}) {
+  if (days.length === 0) return null;
+  return (
+    <div className="syllabi-meeting-times">
+      {MEETING_DAYS_DISPLAY_ORDER.filter((d) => days.includes(d)).map((day) => (
+        <div key={day} className="syllabi-meeting-time-row">
+          <span className="syllabi-meeting-time-day">{day}</span>
+          <input
+            className="input syllabi-meeting-time-input"
+            type="text"
+            placeholder="Time (optional), e.g. 10:00-10:50 AM"
+            value={times[day] ?? ""}
+            onChange={(e) => onChangeTime(day, e.target.value)}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 interface ReviewRow {
   id: string;
   title: string;
@@ -71,7 +112,7 @@ export function SyllabiManager({
   const [parseError, setParseError] = useState<string | null>(null);
   const [review, setReview] = useState<{ syllabusId: string; rows: ReviewRow[] } | null>(null);
   const [newRow, setNewRow] = useState({ title: "", dueDate: "", category: "Assignment" });
-  const [parsedMeeting, setParsedMeeting] = useState<{ days: string[]; time: string | null } | null>(null);
+  const [parsedMeeting, setParsedMeeting] = useState<{ days: string[]; times: Record<string, string> | null } | null>(null);
 
   function handleParse() {
     setParseError(null);
@@ -106,7 +147,7 @@ export function SyllabiManager({
           courseName: a.courseName,
         })),
       });
-      setParsedMeeting(parsed.meetingDays ? { days: parsed.meetingDays, time: parsed.meetingTime } : null);
+      setParsedMeeting(parsed.meetingDays ? { days: parsed.meetingDays, times: parsed.meetingTimes } : null);
       await refreshSyllabi();
     });
   }
@@ -184,7 +225,7 @@ export function SyllabiManager({
   // the card below, then click Edit" round trip that was the only way to do this before (see
   // the per-card editor further down, still there for correcting/removing a pattern later).
   const [manualMeetingDays, setManualMeetingDays] = useState<string[]>([]);
-  const [manualMeetingTime, setManualMeetingTime] = useState("");
+  const [manualMeetingTimes, setManualMeetingTimes] = useState<Record<string, string>>({});
   const [manualTitle, setManualTitle] = useState("");
   const [manualDueDate, setManualDueDate] = useState("");
   const [manualCategory, setManualCategory] = useState<string>(CATEGORIES[1]);
@@ -218,7 +259,7 @@ export function SyllabiManager({
         }
         syllabusId = created.syllabus.id;
         if (manualMeetingDays.length > 0) {
-          await updateSyllabusMeetingPattern(syllabusId, manualMeetingDays, manualMeetingTime);
+          await updateSyllabusMeetingPattern(syllabusId, manualMeetingDays, manualMeetingTimes);
         }
       }
       const result = await addManualAssignment(syllabusId, manualTitle, manualDueDate, manualCategory);
@@ -230,7 +271,7 @@ export function SyllabiManager({
       setManualDueDate("");
       setManualCategory(CATEGORIES[1]);
       setManualMeetingDays([]);
-      setManualMeetingTime("");
+      setManualMeetingTimes({});
       setManualSyllabusId(syllabusId);
       setManualNewCode("");
       setManualNewName("");
@@ -262,12 +303,12 @@ export function SyllabiManager({
   // correct it by hand, right on the syllabus card.
   const [editingMeetingId, setEditingMeetingId] = useState<string | null>(null);
   const [meetingDaysDraft, setMeetingDaysDraft] = useState<string[]>([]);
-  const [meetingTimeDraft, setMeetingTimeDraft] = useState("");
+  const [meetingTimesDraft, setMeetingTimesDraft] = useState<Record<string, string>>({});
 
   function openMeetingEditor(s: SyllabusWithCount) {
     setEditingMeetingId(s.id);
     setMeetingDaysDraft(s.meetingDays ?? []);
-    setMeetingTimeDraft(s.meetingTime ?? "");
+    setMeetingTimesDraft(s.meetingTimes ?? {});
   }
 
   function toggleMeetingDay(day: string) {
@@ -276,7 +317,7 @@ export function SyllabiManager({
 
   function handleSaveMeetingPattern(syllabusId: string) {
     startTransition(async () => {
-      await updateSyllabusMeetingPattern(syllabusId, meetingDaysDraft, meetingTimeDraft);
+      await updateSyllabusMeetingPattern(syllabusId, meetingDaysDraft, meetingTimesDraft);
       setEditingMeetingId(null);
       await refreshSyllabi();
     });
@@ -383,8 +424,8 @@ export function SyllabiManager({
                 </p>
                 {parsedMeeting && (
                   <p className="syllabi-review-meeting">
-                    Also found a class schedule: meets {MEETING_DAYS_DISPLAY_ORDER.filter((d) => parsedMeeting.days.includes(d)).join(", ")}
-                    {parsedMeeting.time ? ` · ${parsedMeeting.time}` : ""} — it&rsquo;ll show up on your Atrium&rsquo;s Class Schedule. Edit it below anytime.
+                    Also found a class schedule: meets {formatMeetingSchedule(parsedMeeting.days, parsedMeeting.times)} — it&rsquo;ll show up on
+                    your Atrium&rsquo;s Class Schedule. Edit it below anytime.
                   </p>
                 )}
                 <div className="syllabi-review-table-wrap">
@@ -545,16 +586,11 @@ export function SyllabiManager({
                         </label>
                       ))}
                     </div>
-                    {manualMeetingDays.length > 0 && (
-                      <input
-                        className="input syllabi-meeting-time-input"
-                        style={{ marginTop: 8 }}
-                        type="text"
-                        placeholder="Time (optional), e.g. 9:00-9:50 AM"
-                        value={manualMeetingTime}
-                        onChange={(e) => setManualMeetingTime(e.target.value)}
-                      />
-                    )}
+                    <MeetingTimeFields
+                      days={manualMeetingDays}
+                      times={manualMeetingTimes}
+                      onChangeTime={(day, value) => setManualMeetingTimes((prev) => ({ ...prev, [day]: value }))}
+                    />
                   </div>
                 </>
               )}
@@ -610,16 +646,7 @@ export function SyllabiManager({
                     Trimester {s.trimester} · {s.year} · {s.assignmentCount} assignment{s.assignmentCount === 1 ? "" : "s"}
                   </div>
                   <div className={s.meetingDays && s.meetingDays.length > 0 ? "syllabi-card-meeting" : "syllabi-card-meeting syllabi-card-meeting--unset"}>
-                    <span>
-                      {s.meetingDays && s.meetingDays.length > 0 ? (
-                        <>
-                          Meets {MEETING_DAYS_DISPLAY_ORDER.filter((d) => s.meetingDays!.includes(d)).join(", ")}
-                          {s.meetingTime ? ` · ${s.meetingTime}` : ""}
-                        </>
-                      ) : (
-                        "No class meeting time set"
-                      )}
-                    </span>
+                    <span>{s.meetingDays && s.meetingDays.length > 0 ? `Meets ${formatMeetingSchedule(s.meetingDays, s.meetingTimes)}` : "No class meeting time set"}</span>
                     <button
                       type="button"
                       className="syllabi-meeting-edit-link"
@@ -693,12 +720,10 @@ export function SyllabiManager({
                     </label>
                   ))}
                 </div>
-                <input
-                  className="input syllabi-meeting-time-input"
-                  type="text"
-                  placeholder="Time (optional), e.g. 9:00-9:50 AM"
-                  value={meetingTimeDraft}
-                  onChange={(e) => setMeetingTimeDraft(e.target.value)}
+                <MeetingTimeFields
+                  days={meetingDaysDraft}
+                  times={meetingTimesDraft}
+                  onChangeTime={(day, value) => setMeetingTimesDraft((prev) => ({ ...prev, [day]: value }))}
                 />
                 <div className="syllabi-meeting-form-actions">
                   <button type="button" className="btn btn-primary" onClick={() => handleSaveMeetingPattern(s.id)} disabled={pending}>

@@ -1938,27 +1938,31 @@ model UnpaywallCache {
 // card (app/(app)/student/page.tsx) and the assignments management page
 // (app/(app)/student/assignments/page.tsx). rawText/parsedAt are null until parseSyllabusFromText
 // actually runs; a syllabus added only to hold manually-entered assignments never gets either.
-// meetingDays/meetingTime power the Atrium's Class Schedule strip (see AtriumWeekSchedule.tsx)
+// meetingDays/meetingTimes power the Atrium's Class Schedule strip (see AtriumWeekSchedule.tsx)
 // — either extracted by parseSyllabusText from a recurring "MWF 9:00-9:50 AM"-style line in
 // the syllabus text, or set/corrected by hand on the syllabus card (see
 // updateSyllabusMeetingPattern in app/actions/syllabus.ts). meetingDays is a comma-separated
 // list of short day codes ("Mon,Wed,Fri", whitelisted server-side against MEETING_DAY_CODES
 // in lib/calendar-events.ts, same "no DB-level enum" reasoning as USER_EVENT_TYPES);
-// meetingTime is free text as written, display-only — no DateTime/timezone math is ever done
-// on it, same as every other date-only field in this schema. Both null until a meeting
-// pattern is known for this course.
+// meetingTimes is a JSON-encoded object mapping a day code to its own free-text time
+// (`{"Mon":"10:00 AM-10:50 AM","Fri":"8:30 AM-9:20 AM"}`) — a day can have a different meeting
+// time than the others (the same course meeting Monday at 10 and Friday at 8:30 is a real,
+// asked-for case), and a day present in meetingDays with no entry here just shows no time.
+// Free text as written either way, display-only — no DateTime/timezone math is ever done on
+// it, same as every other date-only field in this schema. Both null until a meeting pattern
+// is known for this course.
 model Syllabus {
-  id          String    @id @default(cuid())
-  userId      String
-  courseCode  String
-  courseName  String
-  trimester   Int
-  year        Int
-  uploadedAt  DateTime  @default(now())
-  rawText     String?
-  parsedAt    DateTime?
-  meetingDays String?
-  meetingTime String?
+  id           String    @id @default(cuid())
+  userId       String
+  courseCode   String
+  courseName   String
+  trimester    Int
+  year         Int
+  uploadedAt   DateTime  @default(now())
+  rawText      String?
+  parsedAt     DateTime?
+  meetingDays  String?
+  meetingTimes String?
 
   user        User         @relation(fields: [userId], references: [id])
   assignments Assignment[]
