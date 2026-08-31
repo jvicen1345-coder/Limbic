@@ -436,6 +436,7 @@ model User {
   forceLabAssessments ForceLabAssessment[]
   forceLabComparisons ForceLabComparison[]
   connexionSafetyAssessments ConnexionSafetyAssessment[]
+  threeRepMaxTests    ThreeRepMaxTest[]
 
   connectionsSent     Connection[]       @relation("ConnectionRequester")
   connectionsReceived Connection[]       @relation("ConnectionRecipient")
@@ -1194,6 +1195,7 @@ model ClinicalPatient {
   transfers           PatientTransfer[]
   forceLabSessions    ForceLabSession[]
   forceLabAssessments ForceLabAssessment[]
+  threeRepMaxTests    ThreeRepMaxTest[]
 
   // A clinician's own patient codes must be unique to them (not globally — two different
   // clinicians can each have their own "PT-001") — enforced here, not just checked in
@@ -1680,6 +1682,32 @@ model ForceLabNorm {
   sdLbs       Float
   source      String
   createdAt   DateTime @default(now())
+}
+
+// A barbell 3-rep-max test on the Clinician Dashboard (see ThreeRepMaxCard.tsx,
+// app/actions/three-rep-max.ts) — separate from Force Lab above, which is handheld-
+// dynamometer isometric muscle testing, not a loaded barbell lift. weightLbs is the load
+// actually lifted for 3 reps; bodyweightLbs/sex are captured per test (not read off the
+// patient record, which has neither field) so a stale weight never silently skews a later
+// comparison — same "snapshot, not a live reference" reasoning as
+// ForceLabAssessment.patientWeight/patientSex. lift/sex are plain strings against the fixed
+// value sets in lib/three-rep-max-standards.ts (LIFTS/sexes), same convention as
+// ClinicalPatient.status. The "general population" comparison itself (estimated 1RM,
+// bodyweight-relative strength level) is computed on read in that same lib file, not stored
+// here, so tightening the reference standards later doesn't require touching old rows.
+model ThreeRepMaxTest {
+  id            String   @id @default(cuid())
+  userId        String
+  patientId     String?
+  lift          String
+  weightLbs     Float
+  bodyweightLbs Float
+  sex           String
+  testedAt      DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient ClinicalPatient? @relation(fields: [patientId], references: [id], onDelete: SetNull)
 }
 
 // One of the 25 "Founding 25" spots on /founding-funders. Created two ways: self-serve via
