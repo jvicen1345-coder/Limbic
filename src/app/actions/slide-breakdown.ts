@@ -25,11 +25,14 @@ type ActionError = { error: string };
 type SlideBreakdownResult = ActionError | { success: true; cardsCreated: number; notesUpdated: boolean };
 
 /** Shared by both entry points below — writes an already-parsed breakdown into the picked
- *  course's Study Guide section: every extracted flashcard becomes a StudyCard (shared by
- *  the Flashcards and Self-Quiz tabs — see app/actions/study-guide.ts), and the extracted
- *  summary is appended to that course's existing Syllabus.studyNotes (Visual Aids tab),
- *  separated by a blank line rather than overwriting it — uploading a second lecture's
- *  slides for the same course shouldn't lose the first lecture's notes. */
+ *  course's Study Guide: every extracted flashcard becomes a StudyCard (read by that
+ *  course's Flashcards and Self-Quiz pages — see app/actions/study-guide.ts), and the
+ *  extracted summary is appended to that course's existing Syllabus.studyNotes (its Notes
+ *  page), separated by a blank line rather than overwriting it — uploading a second
+ *  lecture's slides for the same course shouldn't lose the first lecture's notes. This is
+ *  the only place new StudyCard rows or notes text get created now — see
+ *  app/(app)/student/study-guide/[syllabusId]/flashcards/page.tsx's own doc comment for why
+ *  there's no "add" form on the Study Guide pages themselves. */
 async function writeSlideBreakdown(userId: string, syllabus: Syllabus, parsed: ParsedSlideBreakdown): Promise<SlideBreakdownResult> {
   const notesUpdated = parsed.notesSummary.length > 0;
   await prisma.$transaction([
@@ -53,6 +56,9 @@ async function writeSlideBreakdown(userId: string, syllabus: Syllabus, parsed: P
   ]);
 
   revalidatePath("/student/study-guide");
+  revalidatePath(`/student/study-guide/${syllabus.id}/flashcards`);
+  revalidatePath(`/student/study-guide/${syllabus.id}/quiz`);
+  revalidatePath(`/student/study-guide/${syllabus.id}/notes`);
   return { success: true, cardsCreated: parsed.flashcards.length, notesUpdated };
 }
 

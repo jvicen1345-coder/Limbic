@@ -12153,34 +12153,37 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 }
 .atrium-calendar-important-title { font-weight: 600; }
 
-/* Study Guide (/student/study-guide, components/student/StudyGuideManager.tsx) — one
-   .study-guide-course-card per course, same shell as .syllabi-card above; the summary/content
-   split reuses .pro-accordion-summary/-content/-chevron. */
-.study-guide-course-card {
+/* Study Guide (/student/study-guide) — the index is a plain list of course cards
+   (.study-guide-index-*), same shell as .syllabi-card, each linking out to that course's own
+   Flashcards/Self-Quiz/Visual Aids page (components/student/StudyGuideFlashcards.tsx,
+   StudyGuideQuiz.tsx, StudyGuideNotes.tsx) rather than an inline accordion — see the index
+   page's own doc comment for why. */
+.study-guide-index-list { display: flex; flex-direction: column; gap: 10px; }
+.study-guide-index-card {
   background: var(--atrium-surface);
   border: 1px solid var(--atrium-border);
   border-radius: var(--radius-md);
   padding: 14px 16px;
-  margin-bottom: 10px;
 }
-.study-guide-course-summary { cursor: pointer; }
-.study-guide-course-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; }
-.study-guide-course-meta { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
-
-.study-guide-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-.study-guide-tab {
+.study-guide-index-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; }
+.study-guide-index-meta { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+.study-guide-index-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.study-guide-index-link {
   font-size: 12.5px;
   font-weight: 600;
   padding: 6px 12px;
   border-radius: 999px;
   border: 1px solid var(--atrium-border);
-  background: transparent;
-  color: var(--color-neutral-700);
-  cursor: pointer;
+  color: var(--atrium-tint);
+  text-decoration: none;
 }
-.study-guide-tab--active { border-color: var(--atrium-tint); color: var(--atrium-tint); background: color-mix(in srgb, var(--atrium-tint) 12%, transparent); }
+.study-guide-index-link:hover { border-color: var(--atrium-tint); background: color-mix(in srgb, var(--atrium-tint) 12%, transparent); }
+.study-guide-index-creator-hint { font-size: 13px; color: var(--color-neutral-700); margin-top: 18px; }
+.study-guide-index-creator-hint a { color: var(--atrium-tint); font-weight: 600; text-decoration: none; }
+.study-guide-index-creator-hint a:hover { text-decoration: underline; }
 
-/* Flashcards tab */
+/* Flashcards page (StudyGuideFlashcards.tsx) — Edit/Delete on an existing card only, no
+   "add a card" row. */
 .study-guide-card-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
 .study-guide-card-row {
   display: grid;
@@ -12199,10 +12202,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .study-guide-card-edit { font-size: 12px; color: var(--atrium-tint); background: none; border: none; cursor: pointer; padding: 0; font-weight: 600; }
 .study-guide-card-delete { color: var(--color-neutral-700); background: none; border: none; cursor: pointer; padding: 2px; display: flex; }
 .study-guide-card-delete:hover { color: var(--color-danger); }
-.study-guide-add-card { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; margin-top: 12px; align-items: center; }
 @media (max-width: 700px) {
   .study-guide-card-row { grid-template-columns: 1fr; }
-  .study-guide-add-card { grid-template-columns: 1fr; }
 }
 
 /* Flip-through study session (Flashcards tab) and quiz session (Self-Quiz tab) share the
@@ -12248,7 +12249,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .study-guide-notes-table td { border: 1px solid var(--atrium-border); padding: 6px 10px; text-align: left; }
 .study-guide-notes-table th { background: var(--atrium-surface-2); font-weight: 700; }
 
-/* Slide Breakdown (/student/slides, components/student/SlideBreakdownManager.tsx) result
+/* Study Guide Creator (/student/slides, components/student/SlideBreakdownManager.tsx) result
    banner — same "quiet success state" shape as .syllabi-review-meeting above. */
 .slide-breakdown-result {
   font-size: 13px;

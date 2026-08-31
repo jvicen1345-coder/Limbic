@@ -24,6 +24,15 @@ async function requireOwnedStudyCard(userId: string, cardId: string) {
   return card;
 }
 
+/** Every page for one course's Study Guide content shares this revalidation set — the index
+ *  list (card/notes counts shown there) plus that course's own three content pages. */
+function revalidateCourse(syllabusId: string) {
+  revalidatePath("/student/study-guide");
+  revalidatePath(`/student/study-guide/${syllabusId}/flashcards`);
+  revalidatePath(`/student/study-guide/${syllabusId}/quiz`);
+  revalidatePath(`/student/study-guide/${syllabusId}/notes`);
+}
+
 type ActionError = { error: string };
 
 export interface StudyCardData {
@@ -34,6 +43,17 @@ export interface StudyCardData {
   lastResult: string | null;
 }
 
+/** One row on the Study Guide index (see app/(app)/student/study-guide/page.tsx) — just
+ *  enough to render a course card and its three content links, without pulling every card's
+ *  front/back or the full notes text for a page that doesn't display them. */
+export interface StudyGuideCourseSummary {
+  id: string;
+  courseCode: string;
+  courseName: string;
+  cardCount: number;
+  hasNotes: boolean;
+}
+
 export interface StudyGuideCourse {
   id: string;
   courseCode: string;
@@ -42,51 +62,57 @@ export interface StudyGuideCourse {
   cards: StudyCardData[];
 }
 
-/** Powers /student/study-guide (see app/(app)/student/study-guide/page.tsx and
- *  components/student/StudyGuideManager.tsx) — one section per uploaded/added course (see
- *  Syllabus in prisma/schema.prisma), each carrying its own flashcards and Visual Aids note.
- *  A course with zero study cards and no note still gets a section — the study guide is
- *  organized around "your classes" (from /student/assignments), not around which classes
- *  happen to already have study content. */
-export async function getStudyGuideData(): Promise<StudyGuideCourse[]> {
+/** Powers the Study Guide index (see app/(app)/student/study-guide/page.tsx) — one card per
+ *  uploaded/added course (see Syllabus in prisma/schema.prisma), each linking to its own
+ *  Flashcards/Self-Quiz/Visual Aids page. A course with zero study cards and no note still
+ *  gets a card — the study guide is organized around "your classes" (from
+ *  /student/assignments), not around which classes happen to already have study content. */
+export async function getStudyGuideCourses(): Promise<StudyGuideCourseSummary[]> {
   const user = await requireStudentUser();
   if (!user) return [];
 
   const syllabi = await prisma.syllabus.findMany({
     where: { userId: user.id },
     orderBy: { uploadedAt: "desc" },
-    include: { studyCards: { orderBy: { createdAt: "asc" } } },
+    include: { _count: { select: { studyCards: true } } },
   });
 
   return syllabi.map((s) => ({
     id: s.id,
     courseCode: s.courseCode,
     courseName: s.courseName,
-    studyNotes: s.studyNotes,
-    cards: s.studyCards.map((c) => ({ id: c.id, front: c.front, back: c.back, reviewCount: c.reviewCount, lastResult: c.lastResult })),
+    cardCount: s._count.studyCards,
+    hasNotes: Boolean(s.studyNotes),
   }));
 }
 
-export async function createStudyCard(
-  syllabusId: string,
-  front: string,
-  back: string
-): Promise<ActionError | { success: true; card: StudyCardData }> {
+/** Powers each of a course's three content pages (see
+ *  app/(app)/student/study-guide/[syllabusId]/flashcards|quiz|notes/page.tsx) — ownership-
+ *  checked the same way every other per-resource fetch in this app is, so a stray/guessed id
+ *  from another account's course never leaks its cards or notes. Returns null for a syllabus
+ *  that doesn't exist or isn't this reader's, which each page turns into a 404. */
+export async function getStudyGuideCourse(syllabusId: string): Promise<StudyGuideCourse | null> {
   const user = await requireStudentUser();
-  if (!user) return { error: "Unauthorized" };
-  if (!front.trim() || !back.trim()) return { error: "Both sides of the card are required." };
+  if (!user) return null;
 
-  const syllabus = await requireOwnedSyllabus(user.id, syllabusId);
-  if (!syllabus) return { error: "Course not found." };
-
-  const card = await prisma.studyCard.create({
-    data: { userId: user.id, syllabusId, front: front.trim(), back: back.trim() },
+  const syllabus = await prisma.syllabus.findUnique({
+    where: { id: syllabusId },
+    include: { studyCards: { orderBy: { createdAt: "asc" } } },
   });
+  if (!syllabus || syllabus.userId !== user.id) return null;
 
-  revalidatePath("/student/study-guide");
-  return { success: true, card: { id: card.id, front: card.front, back: card.back, reviewCount: card.reviewCount, lastResult: card.lastResult } };
+  return {
+    id: syllabus.id,
+    courseCode: syllabus.courseCode,
+    courseName: syllabus.courseName,
+    studyNotes: syllabus.studyNotes,
+    cards: syllabus.studyCards.map((c) => ({ id: c.id, front: c.front, back: c.back, reviewCount: c.reviewCount, lastResult: c.lastResult })),
+  };
 }
 
+/** Edit on the Flashcards page — see that page's own doc comment for why there's no matching
+ *  "create" action here anymore: new cards only come from Study Guide Creator
+ *  (app/actions/slide-breakdown.ts) now. */
 export async function updateStudyCard(cardId: string, front: string, back: string): Promise<ActionError | { success: true }> {
   const user = await requireStudentUser();
   if (!user) return { error: "Unauthorized" };
@@ -96,7 +122,7 @@ export async function updateStudyCard(cardId: string, front: string, back: strin
   if (!card) return { error: "Card not found." };
 
   await prisma.studyCard.update({ where: { id: cardId }, data: { front: front.trim(), back: back.trim() } });
-  revalidatePath("/student/study-guide");
+  revalidateCourse(card.syllabusId);
   return { success: true };
 }
 
@@ -108,16 +134,17 @@ export async function deleteStudyCard(cardId: string): Promise<ActionError | { s
   if (!card) return { error: "Card not found." };
 
   await prisma.studyCard.delete({ where: { id: cardId } });
-  revalidatePath("/student/study-guide");
+  revalidateCourse(card.syllabusId);
   return { success: true };
 }
 
 /** Self-Quiz's grading action — "Got it" / "Missed it" on a revealed card (see
- *  StudyGuideManager.tsx's quiz session). Not revalidated: the quiz session's ordering and
- *  running score live entirely in client state for that round, so there's nothing server-
- *  rendered that needs to reflect this immediately — the next full page load (or a Flashcards
- *  tab visit) is what actually benefits from the updated lastResult/reviewCount, same as any
- *  other "record progress, don't re-render around it" mutation in this app. */
+ *  components/student/StudyGuideQuiz.tsx's quiz session). Not revalidated: the quiz
+ *  session's ordering and running score live entirely in client state for that round, so
+ *  there's nothing server-rendered that needs to reflect this immediately — the next full
+ *  page load (or a Flashcards page visit) is what actually benefits from the updated
+ *  lastResult/reviewCount, same as any other "record progress, don't re-render around it"
+ *  mutation in this app. */
 export async function recordStudyCardResult(cardId: string, correct: boolean): Promise<ActionError | { success: true }> {
   const user = await requireStudentUser();
   if (!user) return { error: "Unauthorized" };
@@ -132,6 +159,9 @@ export async function recordStudyCardResult(cardId: string, correct: boolean): P
   return { success: true };
 }
 
+/** Save on the Notes page — see that page's own doc comment: only available once a note
+ *  already exists (from Study Guide Creator or a previous save here), not for typing one
+ *  from scratch. */
 export async function updateStudyNotes(syllabusId: string, content: string): Promise<ActionError | { success: true }> {
   const user = await requireStudentUser();
   if (!user) return { error: "Unauthorized" };
@@ -140,6 +170,6 @@ export async function updateStudyNotes(syllabusId: string, content: string): Pro
   if (!syllabus) return { error: "Course not found." };
 
   await prisma.syllabus.update({ where: { id: syllabusId }, data: { studyNotes: content.trim() || null } });
-  revalidatePath("/student/study-guide");
+  revalidateCourse(syllabusId);
   return { success: true };
 }
