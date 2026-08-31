@@ -9,12 +9,10 @@ export const metadata: Metadata = {
 import { firstName, timeOfDayGreeting } from "@/lib/meta";
 import { npteDomainOf, todayDateKey } from "@/lib/board-content";
 import { boardQuestionForCompletion } from "@/lib/boards-progress";
-import { getAcceptedConnectionIds } from "@/lib/nexus";
 import { last7DateKeys } from "@/lib/games";
 import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumProgressChart";
 import { AtriumThisWeekCard } from "@/components/AtriumThisWeekCard";
 import { AtriumCalendar } from "@/components/AtriumCalendar";
-import { AtriumFriendsStrip } from "@/components/AtriumFriendsStrip";
 import { StudentGate } from "@/components/student/StudentGate";
 import {
   FileTextIcon,
@@ -223,7 +221,6 @@ export default async function StudentAtriumPage() {
 
   const [
     ,
-    connectionIds,
     weekCompletions,
     boardActivityRows,
     weekCalendarEvents,
@@ -235,7 +232,6 @@ export default async function StudentAtriumPage() {
     prisma.dailyCompletion.findFirst({
       where: { userId: user.id, dateKey: todayKey, kind: { in: ["boardQuestion", "boardTerm"] } },
     }),
-    getAcceptedConnectionIds(user.id),
     prisma.dailyCompletion.findMany({
       where: { userId: user.id, kind: "boardQuestion", dateKey: { in: weekDateKeys } },
     }),
@@ -272,13 +268,6 @@ export default async function StudentAtriumPage() {
     prisma.canvasConnection.findUnique({ where: { userId: user.id }, select: { id: true } }),
   ]);
   const hasAssignmentSource = syllabusCount > 0 || canvasConnection != null;
-
-  // Your People (see components/AtriumFriendsStrip.tsx) — capped at 8 faces so the strip
-  // stays one row; the component's own "+N more" reads off connectionIds.length (the real,
-  // uncapped count) rather than the capped array it's handed, so it stays honest past 8.
-  const friends = connectionIds.length
-    ? await prisma.user.findMany({ where: { id: { in: connectionIds } }, select: { id: true, name: true }, take: 8 })
-    : [];
 
   // Weekly schedule strip's 7 day columns (see components/AtriumWeekSchedule.tsx) — built
   // from weekStart/weekCalendarEvents above. dateToLocalIso, not toISOString, for the same
@@ -382,8 +371,6 @@ export default async function StudentAtriumPage() {
       </div>
 
       <AtriumWeekSchedule days={scheduleDays} weekLabel={weekLabel} />
-
-      <AtriumFriendsStrip friends={friends} totalCount={connectionIds.length} />
 
       {phase.type === "clinical" && phase.trimester && (
         <div className="atrium-rotation-banner">
