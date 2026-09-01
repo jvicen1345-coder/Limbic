@@ -12429,3 +12429,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-progression-name { font-size: 13px; font-weight: 700; }
 .clindash-progression-points { display: flex; flex-wrap: wrap; gap: 6px 14px; }
 .clindash-progression-point { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+
+/* "vs. ages 30–39" line on the 3-Rep-Max card (ThreeRepMaxCard.tsx) — sits between the
+   strength-level badge and the "X lbs to next level" hint, same muted small-text treatment
+   as .trm-next-level. */
+.trm-age-bracket { font-size: var(--fs-10-5); color: var(--color-neutral-700); white-space: nowrap; }
