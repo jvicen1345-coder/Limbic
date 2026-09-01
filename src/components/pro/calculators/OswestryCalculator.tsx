@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalcModal, CalcCardShell, LicensedInstrumentNotice } from "./CalcModal";
+import { CalcModal, CalcCardShell, LicensedInstrumentNotice, ItemScoreRow } from "./CalcModal";
 
 /**
  * The ODI 2.0's ten section headings — kept as row labels so the examiner can see which
@@ -69,27 +69,17 @@ export function OswestryCalculator() {
         </p>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {OSWESTRY_SECTIONS.map((section, i) => (
-            <div className="pro-item-row" key={section}>
-              <span className="pro-item-row-label">
-                {i + 1}. {section}
-              </span>
-              <select
-                className="input pro-item-row-select"
-                aria-label={`Section ${i + 1}, ${section}, score`}
-                value={scores[i]}
-                onChange={(e) => {
-                  const next = [...scores];
-                  next[i] = Number(e.target.value);
-                  setScores(next);
-                }}
-              >
-                {[0, 1, 2, 3, 4, 5].map((score) => (
-                  <option key={score} value={score}>
-                    {score}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <ItemScoreRow
+              key={section}
+              label={`${i + 1}. ${section}`}
+              scores={[0, 1, 2, 3, 4, 5]}
+              value={scores[i]}
+              onChange={(next) => {
+                const updated = [...scores];
+                updated[i] = next ?? 0;
+                setScores(updated);
+              }}
+            />
           ))}
         </div>
         <div className="pro-calc-result" style={{ marginTop: 14 }}>
