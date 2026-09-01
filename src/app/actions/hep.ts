@@ -19,6 +19,8 @@ export interface HepExerciseInput {
   name: string;
   sets: string;
   reps: string;
+  weight?: string;
+  frequency?: string;
   notes: string;
   imageUrl?: string;
   videoUrl?: string;
@@ -47,6 +49,8 @@ export async function createHepAction(input: { programName: string; exercises: H
           name: ex.name,
           sets: ex.sets,
           reps: ex.reps,
+          weight: ex.weight || null,
+          frequency: ex.frequency || null,
           notes: ex.notes,
           order: i,
           imageUrl: user.isPro ? sanitizeMediaUrl(ex.imageUrl) : null,
@@ -138,6 +142,8 @@ export async function saveHepTemplateAction(
         name: ex.name,
         sets: ex.sets,
         reps: ex.reps,
+        weight: ex.weight,
+        frequency: ex.frequency,
         notes: ex.notes,
         imageUrl: user.isPro ? sanitizeMediaUrl(ex.imageUrl) : null,
         videoUrl: user.isPro ? sanitizeMediaUrl(ex.videoUrl) : null,

@@ -41,14 +41,13 @@ function draftFromParams(params: { exercises?: string; protocol?: string; phase?
         sets: ex.dosage.sets,
         reps: ex.dosage.reps,
         // Not something a Movement Lab pick specifies — see HepTemplateExercise's own
-        // comment in lib/hep-templates.ts on why that's fine (dashboard-only, optional
-        // context).
+        // comment in lib/hep-templates.ts on why that's fine (optional context).
         weight: "",
-        // Same shape the picker builds (see addFromMovementLab in HepBuilder) — the
-        // frequency and hold the sets/reps fields can't carry, plus the patient-facing cue.
-        notes: [ex.dosage.hold ? `hold ${ex.dosage.hold}` : "", ex.dosage.frequency, ex.cue.replace(/^“|”$/g, "")]
-          .filter(Boolean)
-          .join(" — "),
+        frequency: ex.dosage.frequency,
+        // Same shape the picker/autocomplete build (see movementExerciseFields in
+        // HepBuilder) — the hold time the sets/reps fields can't carry, plus the
+        // patient-facing cue.
+        notes: [ex.dosage.hold ? `hold ${ex.dosage.hold}` : "", ex.cue.replace(/^“|”$/g, "")].filter(Boolean).join(" — "),
         imageUrl: "",
         videoUrl: "",
       }));
@@ -164,7 +163,10 @@ export default async function HepPage({
                             />
                           )}
                           <div style={{ fontSize: 12.5, color: "var(--color-text)" }}>
-                            {ex.name}, {ex.sets}x{ex.reps} <span style={{ color: "var(--color-neutral-700)" }}>{ex.notes}</span>
+                            {ex.name}, {ex.sets}x{ex.reps}
+                            {ex.weight && ` @ ${ex.weight}`}
+                            {ex.frequency && `, ${ex.frequency}`}{" "}
+                            <span style={{ color: "var(--color-neutral-700)" }}>{ex.notes}</span>
                             {videoUrl && (
                               <>
                                 {" "}

@@ -1220,6 +1220,14 @@ model HepExercise {
   name      String
   sets      String
   reps      String
+  // The load used for this exercise (e.g. "20 lbs", "bodyweight") and how often per day/week
+  // (e.g. "2x/day") — free text, same HepTemplateExercise shape lib/hep-templates.ts defines
+  // for the JSON exercises columns elsewhere (HEPTemplate, PatientHEPAssignment,
+  // SessionExerciseLog); nullable here only because this is a real column added after the
+  // model shipped, not because either is optional going forward — createHepAction always
+  // sends a value (possibly "").
+  weight    String?
+  frequency String?
   notes     String
   order     Int        @default(0)
   // LimbicPRO-only (see createHepAction, which only ever persists these for user.isPro —
