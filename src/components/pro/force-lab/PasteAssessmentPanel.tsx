@@ -116,6 +116,15 @@ export function PasteAssessmentPanel({
       <div className="forcelab-import-instructions">
         <p>Copy your full session from the ActiveForce app — tap Share or Export — then paste it here.</p>
         <p>1. Copy from ActiveForce → 2. Paste below → 3. Review and save</p>
+        {/* Naming the product you import from is nominative use and fine; implying its maker
+            is behind this feature is not. The header used to read "powered by ActiveForce",
+            which asserts a partnership that doesn't exist — Force Lab reads an export the
+            clinician pastes in themselves. This line keeps that distinction explicit at the
+            one place a reader might otherwise assume an integration. */}
+        <p className="forcelab-import-affiliation">
+          ActiveForce is a product of its respective owner. Limbic is not affiliated with, endorsed by, or
+          sponsored by ActiveForce, and reads only the session data you paste in yourself.
+        </p>
 
         {saved && <p className="forcelab-paste-confirmation">Assessment saved.</p>}
 

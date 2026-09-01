@@ -186,7 +186,7 @@ export function ForceLabWorkspace({
       <div className="forcelab-header-row">
         <div>
           <h1 className="forcelab-title">Force Lab</h1>
-          <p className="forcelab-subtitle">Handheld dynamometer data — powered by ActiveForce</p>
+          <p className="forcelab-subtitle">Handheld dynamometer data, imported from your ActiveForce sessions</p>
         </div>
         <div className="forcelab-header-actions">
           <button type="button" className="btn btn-primary" onClick={handleNewSession}>
