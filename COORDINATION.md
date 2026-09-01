@@ -62,13 +62,27 @@ Volatile — update or ignore once these land.
 
 | Branch | Scope | Owns |
 |---|---|---|
-| `claude/mobile-ux-review-*` | Mobile UX pass | `@media (max-width: …)` blocks only |
-| `claude/desktop-visual-review-*` | Desktop visual pass | base rules + `@media (min-width: …)` only |
+| `claude/legal-risk-review-2d6asg` | Legal/compliance pass | E-utilities ID centralization, `apta.org` scrape removal, dead-code cleanup (65 files) |
+| `claude/exercise-chat-integration-x3r2ub` | Movement Lab exercise bank | `src/lib/movement-lab/`, Exercise Programs data (pure additions) |
+| `claude/health-wellness-redesign-bjvaod` | Health & Wellness page | the wellness page + its appended `globals.css` block |
 
-Merge order: mobile → desktop. The two CSS passes are the pair most likely to conflict;
-land them one at a time, and rebase the second on the first. Neither has a branch on the
-remote as of 2026-08-30 — per rule 2 above, an unpushed branch is invisible, so treat
-these two rows as reservations rather than as work you can go read.
+All three are pushed and live as of 2026-09-01 — unlike the reservations this table used to
+carry, you can go read them. The Movement Lab / Exercise Programs surface is owned by
+`claude/exercise-chat-integration-*`; coordinate before editing there. The legal pass spans
+the widest file set, so rebase on it rather than the other way around if you collide.
+
+### Recently landed (2026-09-01)
+
+- **Mobile UX and desktop visual passes** — both landed 2026-08-31 and their reservation rows
+  are removed. The merge-order note they carried no longer applies.
+- **Exercise Programs** (the renamed `/hep`), Movement Lab tab + autocomplete, Clinician
+  Dashboard 3-rep-max and session exercise logging, mobile bottom-nav reorder, Study Guide
+  mastery indicators, Atrium Canvas link-out — PRs #367–#382.
+- Note for anyone auditing branch state: this repo squash-merges, so **the ~20 stale
+  branches on origin whose work has already landed still show a non-empty
+  `git diff main...branch`**. Three-dot diffs are not evidence of unmerged work. Test with
+  `git diff main branch` (two-dot) or by checking whether the branch's new files exist on
+  `main`; the branches listed in the table above are the only ones with real unmerged work.
 
 ### Recently landed (2026-08-30)
 
