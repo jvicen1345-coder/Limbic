@@ -7,6 +7,7 @@
     "build": "node scripts/apply-migrations.mjs && next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "test": "playwright test",
     "postinstall": "prisma generate",
     "fetch:retraction-watch": "node scripts/fetch-retraction-watch.mjs",

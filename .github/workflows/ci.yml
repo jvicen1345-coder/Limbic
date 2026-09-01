@@ -1,0 +1,83 @@
+# Runs the checks a contributor already runs locally (README "Local development"), on every
+# PR and every push to main. Before this existed nothing ran them automatically, so a change
+# could rename a heading the e2e suite asserts on and still land green — which is exactly
+# what happened when #376/#380 renamed the Exercise Programs heading and left three Movement
+# Lab tests red on main until someone noticed by hand.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A second push to a PR makes the first run's result irrelevant — don't pay for it.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Typecheck and lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # `postinstall` runs `prisma generate`, which writes src/generated/prisma —
+      # tsc and eslint both need it, so this has to come before either.
+      - run: npm ci
+
+      - run: npm run typecheck
+
+      - run: npm run lint
+
+  e2e:
+    name: End-to-end (Playwright)
+    runs-on: ubuntu-latest
+    # Blocking. The suite is green on main as of the merge in this branch: 22 tests,
+    # 21 passed and 1 flaky (the sign-in lockout test in e2e/auth.spec.ts is timing
+    # sensitive and passed on retry — playwright.config.ts already sets retries: 2 under
+    # CI, which is what absorbs it).
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # The suite runs against a real dev server and the local SQLite dev.db, exactly as
+      # playwright.config.ts documents — there is no mocked backend. .env.example's
+      # DATABASE_URL already points at file:./dev.db; the only value that must not be the
+      # placeholder is the session-cookie signing key.
+      - name: Create .env
+        run: |
+          cp .env.example .env
+          sed -i "s|^SESSION_SECRET=.*|SESSION_SECRET=\"$(openssl rand -base64 32)\"|" .env
+
+      - name: Apply migrations
+        run: node scripts/apply-migrations.mjs
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # playwright.config.ts's `webServer` starts `npm run dev` itself and waits for :3000.
+      # CI=true also turns on forbidOnly and the config's 2 retries.
+      - name: Run Playwright
+        run: npm test
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
