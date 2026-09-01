@@ -12514,3 +12514,18 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   text-underline-offset: 3px;
 }
 .accept-terms-label a:hover { color: var(--color-accent); }
+
+/* Copyright notice at the top of each score-entry calculator for a licensed published
+   instrument (see LicensedInstrumentNotice in components/pro/calculators/CalcModal.tsx).
+   Quiet but not hidden — a clinician needs to register that the form itself comes from
+   their own copy, not from here. Appended, scoped, overrides nothing. */
+.pro-calc-licence-notice {
+  font-size: var(--fs-11-5);
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100, #f2f4f5);
+  border-left: 2px solid var(--color-neutral-400);
+  border-radius: 3px;
+  padding: 8px 10px;
+  margin: 0 0 14px;
+}
