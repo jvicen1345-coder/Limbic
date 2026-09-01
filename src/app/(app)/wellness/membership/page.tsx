@@ -2,6 +2,7 @@ import { getCurrentUser, hasFreeAccess } from "@/lib/session";
 import { stripeEnabled } from "@/lib/stripe";
 import { subscribeToWellnessPlusMonthlyAction, subscribeToWellnessPlusYearlyAction, cancelWellnessPlusAction } from "@/app/actions/pro";
 import { WellnessIcon } from "@/components/icons";
+import { AutoRenewalTerms } from "@/components/AutoRenewalTerms";
 
 export default async function WellnessMembershipPage({
   searchParams,
@@ -107,13 +108,18 @@ export default async function WellnessMembershipPage({
               conversational chat. It&rsquo;s also a way to support Limbic&rsquo;s Health &amp; Wellness content, with early
               access to whatever we build here next. Cancel any time.
             </p>
-            <div style={{ display: "flex", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
+            {/* Each plan carries its own renewal terms rather than one shared line: the
+                monthly and yearly options renew on different cadences, and the disclosure
+                has to match the button it sits with. */}
+            <div style={{ display: "flex", gap: 24, marginTop: 10, flexWrap: "wrap" }}>
               <form action={subscribeToWellnessPlusMonthlyAction}>
+                <AutoRenewalTerms price="$3" cadence="month" />
                 <button type="submit" className="btn btn-primary" disabled={!billingEnabled}>
                   $3/month
                 </button>
               </form>
               <form action={subscribeToWellnessPlusYearlyAction}>
+                <AutoRenewalTerms price="$18" cadence="year" />
                 <button type="submit" className="btn btn-secondary" disabled={!billingEnabled}>
                   $18/year
                 </button>

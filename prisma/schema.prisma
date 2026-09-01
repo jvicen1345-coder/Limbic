@@ -1939,6 +1939,21 @@ model ConnexionVisitRequest {
   status        String    @default("new") // "new" | "contacted" | "scheduled" | "completed"
   createdAt     DateTime  @default(now())
 
+  // Affirmative consent captured at submission. Both the timestamp and the exact wording
+  // shown are stored, not just a boolean: consent is only worth anything if you can show
+  // *what* the person agreed to on the day, and the on-page copy will be edited over time.
+  // The text comes from CONNEXION_CONSENT_TEXT in lib/connexion-consent.ts, which is the
+  // same constant the checkbox renders, so the two cannot drift.
+  //
+  // This form is a first-party collection by Limbic — unlike the clinician tools, where
+  // Privacy §2 puts responsibility on the clinician — and a "reason for visit" plus the
+  // fall-risk assessment it leads to are consumer health data under the Washington My
+  // Health My Data Act and Nevada SB 370, which require affirmative opt-in before
+  // collection. Null for rows created before this shipped; those predate the consent and
+  // are deliberately not backfilled.
+  consentAt   DateTime?
+  consentText String?
+
   safetyAssessments ConnexionSafetyAssessment[]
 }
 

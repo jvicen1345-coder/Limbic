@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <LegalPageLayout title="Terms of Service" updated="August 31, 2026">
+    <LegalPageLayout title="Terms of Service" updated="September 1, 2026">
       <h2 className="legal-section-title">1. Acceptance of Terms</h2>
       <p className="legal-body">
         By accessing or using Limbic you agree to be bound by these Terms of Service. If you do not agree to these

@@ -14,7 +14,7 @@
  * printed on the documents themselves, so the two can't drift apart into separate
  * numbering schemes.
  */
-export const TERMS_VERSION = "2026-08-31";
+export const TERMS_VERSION = "2026-09-01";
 
 /** The form field name for the signup/guest clickwrap checkbox, shared between the form
  *  (components/SignInForm.tsx) and the server-side check every account-creating action

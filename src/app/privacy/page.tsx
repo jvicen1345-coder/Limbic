@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <LegalPageLayout title="Privacy Policy" updated="August 31, 2026">
+    <LegalPageLayout title="Privacy Policy" updated="September 1, 2026">
       <h2 className="legal-section-title">1. Information We Collect</h2>
       <p className="legal-body">When you create an account and use Limbic we collect:</p>
       <ul className="legal-list">
@@ -20,7 +20,7 @@ export default function PrivacyPage() {
         <li>
           Wellness data you track about yourself: height, weight, age, activity level, sleep, mood, vitals, and
           other self-reported metrics you enter into Limbic Vitals, or that you choose to sync from a connected
-          fitness or health account (see Section 4). This data is used to personalize your own wellness experience
+          fitness or health account (see Section 5). This data is used to personalize your own wellness experience
           and is not used to provide medical care.
         </li>
         <li>
@@ -60,7 +60,40 @@ export default function PrivacyPage() {
         cannot control what you choose to type into a free-text field.
       </p>
 
-      <h2 className="legal-section-title">3. How We Use Your Information</h2>
+      <h2 className="legal-section-title">3. The Connexion Method and Consumer Health Data</h2>
+      <p className="legal-body">
+        The Connexion Method is a Limbic partner program offering in-home safety and mobility assessments. Unlike
+        the clinician tools described in Section 2, <strong>Limbic itself is the collector here</strong>, and this
+        section describes what we hold and why.
+      </p>
+      <p className="legal-body">
+        If you request a visit through the form on the Connexion pages, we collect your name, phone number, email
+        address, your preferred date and time, and the reason for your visit. We use these only to contact you
+        about scheduling and to carry out the assessment you asked for. The form asks you to affirmatively agree
+        to this before you submit it, and we record both the date of your agreement and the exact wording you
+        agreed to.
+      </p>
+      <p className="legal-body">
+        If a visit goes ahead, the Connexion Safety Score assessment records the client&rsquo;s name, the address
+        visited, scores across roughly fifty home-environment, mobility, and fall-risk items, a resulting risk
+        level, any critical safety findings, and recommended equipment. This is held under Limbic&rsquo;s own
+        administrative access and is visible only to Limbic staff and the licensed physical therapist conducting
+        the Connexion Method visit.
+      </p>
+      <p className="legal-body">
+        We treat this information, along with the wellness data described in Section 1, as{" "}
+        <strong>consumer health data</strong>. We do not sell it, we do not use it for advertising, and we do not
+        share it with third parties for their own purposes. You may ask us to provide a copy of it, correct it, or
+        delete it at any time using the contact details in Section 14, and we will not condition the service on
+        your agreeing to anything beyond what the assessment itself requires. Residents of Washington, Nevada, and
+        other states with consumer health data laws have these rights by statute; we extend them to everyone.
+      </p>
+      <p className="legal-body">
+        Limbic is not a covered entity or business associate under HIPAA, and a Connexion assessment is not a
+        medical record. It is a home safety assessment.
+      </p>
+
+      <h2 className="legal-section-title">4. How We Use Your Information</h2>
       <p className="legal-body">We use the information we collect to:</p>
       <ul className="legal-list">
         <li>Provide the specific tool you are using — for example, generating a Force Lab comparison or a patient brief you requested.</li>
@@ -72,7 +105,7 @@ export default function PrivacyPage() {
       </ul>
       <p className="legal-body">We do not sell your personal information to third parties.</p>
 
-      <h2 className="legal-section-title">4. Third Party Services</h2>
+      <h2 className="legal-section-title">5. Third Party Services</h2>
       <p className="legal-body">
         Limbic uses the following third party services to provide the platform. Some are used for every account;
         others only process your data if you choose to use the related feature.
@@ -92,7 +125,7 @@ export default function PrivacyPage() {
         <li>YouTube and Pexels: power the Clips and article-image features respectively. No account data is sent to them.</li>
       </ul>
 
-      <h2 className="legal-section-title">5. Data Retention</h2>
+      <h2 className="legal-section-title">6. Data Retention</h2>
       <p className="legal-body">
         We retain your account data for as long as your account is active. Deleting your account from Profile
         Settings permanently and immediately removes your account and the data associated with it. Some anonymized
@@ -100,7 +133,7 @@ export default function PrivacyPage() {
         payment records), may be retained after account deletion.
       </p>
 
-      <h2 className="legal-section-title">6. Your Rights</h2>
+      <h2 className="legal-section-title">7. Your Rights</h2>
       <p className="legal-body">You have the right to:</p>
       <ul className="legal-list">
         <li>Access the personal data we hold about you.</li>
@@ -110,7 +143,7 @@ export default function PrivacyPage() {
       </ul>
       <p className="legal-body">To exercise these rights contact us at limbic.center.</p>
 
-      <h2 className="legal-section-title">7. California Privacy Rights</h2>
+      <h2 className="legal-section-title">8. California Privacy Rights</h2>
       <p className="legal-body">
         If you are a California resident you have additional rights under the California Consumer Privacy Act
         including the right to know what personal information is collected, the right to delete personal
@@ -118,40 +151,40 @@ export default function PrivacyPage() {
         information.
       </p>
 
-      <h2 className="legal-section-title">8. Cookies and Analytics</h2>
+      <h2 className="legal-section-title">9. Cookies and Analytics</h2>
       <p className="legal-body">
         Limbic uses a session cookie to keep you signed in. We do not use third party advertising cookies. We use
         Vercel Analytics and Speed Insights, which are cookieless and report only aggregated, non-identifying usage
         statistics.
       </p>
 
-      <h2 className="legal-section-title">9. International Users</h2>
+      <h2 className="legal-section-title">10. International Users</h2>
       <p className="legal-body">
         Limbic is operated from the United States and our servers and service providers are located in the United
         States. If you access Limbic from outside the United States, your information will be transferred to and
         processed in the United States.
       </p>
 
-      <h2 className="legal-section-title">10. Children</h2>
+      <h2 className="legal-section-title">11. Children</h2>
       <p className="legal-body">
         Limbic is not intended for users under the age of 13. We do not knowingly collect personal information
         from children under 13.
       </p>
 
-      <h2 className="legal-section-title">11. Security</h2>
+      <h2 className="legal-section-title">12. Security</h2>
       <p className="legal-body">
         We take reasonable measures to protect your personal information including encrypted connections and
         secure data storage. No method of transmission over the internet is completely secure and we cannot
         guarantee absolute security.
       </p>
 
-      <h2 className="legal-section-title">12. Changes to This Policy</h2>
+      <h2 className="legal-section-title">13. Changes to This Policy</h2>
       <p className="legal-body">
         We may update this privacy policy from time to time. We will notify users of significant changes via the
         platform. Continued use of Limbic after changes constitutes acceptance of the updated policy.
       </p>
 
-      <h2 className="legal-section-title">13. Contact</h2>
+      <h2 className="legal-section-title">14. Contact</h2>
       <p className="legal-body">For privacy questions or data requests contact: limbic.center</p>
       <p className="legal-body">Newport Beach, California</p>
     </LegalPageLayout>

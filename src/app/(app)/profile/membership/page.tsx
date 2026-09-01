@@ -8,6 +8,7 @@ import {
 } from "@/app/actions/pro";
 import { PROFILE_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
+import { AutoRenewalTerms } from "@/components/AutoRenewalTerms";
 
 type Cell = boolean | "soon";
 type TierKey = "free" | "wellness" | "student" | "pro" | "clinic";
@@ -144,7 +145,21 @@ interface TierConfig {
  *  layouts can never drift out of sync on which tier is purchasable/current. The name
  *  itself used to be the purchase link (a plain-text button); it's now inert display text,
  *  with a real "Subscribe" button underneath as its own, more obvious entry point. */
-function TierHeader({ tier, billingEnabled }: { tier: TierConfig; billingEnabled: boolean }) {
+function TierHeader({
+  tier,
+  billingEnabled,
+  showRenewalTerms = false,
+}: {
+  tier: TierConfig;
+  billingEnabled: boolean;
+  /** The mobile card stack sets this — each card is full width, so the disclosure reads
+   *  normally right under its button. The desktop table does not: its tier columns are
+   *  ~120px wide, where the same sentence wraps to one or two words a line and becomes
+   *  markedly *less* conspicuous than it is in a single readable line. That layout puts one
+   *  full-width statement immediately beneath the Subscribe row instead — still adjacent to
+   *  every button, and actually legible. */
+  showRenewalTerms?: boolean;
+}) {
   return (
     <div className="plan-compare-header">
       <div className="plan-compare-name">{tier.label}</div>
@@ -158,6 +173,7 @@ function TierHeader({ tier, billingEnabled }: { tier: TierConfig; billingEnabled
           <button type="submit" className="btn btn-primary plan-compare-cta" disabled={!billingEnabled}>
             Subscribe
           </button>
+          {showRenewalTerms && <AutoRenewalTerms price={tier.price.replace("/mo", "")} cadence="month" />}
         </form>
       ) : (
         tier.nonClickableReason && (
@@ -240,6 +256,10 @@ export default async function ProfileMembershipPage({
     { key: "clinic", label: "Clinic PRO", price: "$100/mo", current: onClinic, action: null, comingSoon: !onClinic },
   ];
 
+  // Whether any tier can actually be bought right now — a reader who is already on the top
+  // tier, or who sees "Coming Soon" everywhere, has no consent to disclose anything about.
+  const hasPurchasableTier = TIERS.some((t) => t.action !== null);
+
   return (
     <div className="screen-pad">
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Profile</h1>
@@ -306,6 +326,15 @@ export default async function ProfileMembershipPage({
                 </th>
               ))}
             </tr>
+            {hasPurchasableTier && (
+              <tr>
+                {/* Spans the whole table so it sits directly under every Subscribe button
+                    and reads as one line — see TierHeader's showRenewalTerms note. */}
+                <td colSpan={TIERS.length + 1} className="plan-compare-renewal-row">
+                  <AutoRenewalTerms cadence="month" />
+                </td>
+              </tr>
+            )}
           </thead>
           <tbody>
             {BASE_FEATURES.map((row) => (
@@ -377,7 +406,7 @@ export default async function ProfileMembershipPage({
           return (
             <div className={tier.current ? "plan-compare-card plan-compare-card--current" : "plan-compare-card"} key={tier.key}>
               <div className="plan-compare-card-header">
-                <TierHeader tier={tier} billingEnabled={billingEnabled} />
+                <TierHeader tier={tier} billingEnabled={billingEnabled} showRenewalTerms />
               </div>
               <ul className="plan-compare-card-features">
                 {included.map((row) => (

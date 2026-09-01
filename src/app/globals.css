@@ -12533,3 +12533,53 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   padding: 8px 10px;
   margin: 0 0 14px;
 }
+
+/* Consent opt-in on the Connexion visit request form (see ConnexionScheduleSection.tsx).
+   Sits inside the dark .connexion-cta-card, so it takes its colours from that card rather
+   than the app's neutral tokens. Appended, scoped, overrides nothing. */
+.connexion-visit-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 4px;
+}
+.connexion-visit-consent-box {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+  accent-color: var(--color-migration-gold);
+  cursor: pointer;
+}
+.connexion-visit-consent-label {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+}
+
+/* Automatic-renewal disclosure shown directly above every subscribe button (see
+   components/AutoRenewalTerms.tsx). Sized to read as ordinary body copy rather than fine
+   print — California's ARL requires it be *conspicuous*, so it deliberately isn't shrunk
+   or greyed toward invisibility. Appended, scoped, overrides nothing. */
+.auto-renewal-terms {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  max-width: min(46ch, 100%);
+  margin: 0 0 10px;
+}
+.auto-renewal-terms--inverted { color: rgba(255, 255, 255, 0.78); }
+
+/* The plan comparison table's single full-width renewal-terms row, sitting directly beneath
+   the Subscribe buttons (see profile/membership/page.tsx). Full width rather than per
+   column because the tier columns are ~120px, where the same sentence wraps to one or two
+   words a line and reads as less conspicuous, not more. Appended, scoped. */
+.plan-compare-renewal-row {
+  padding: 10px 14px 12px;
+  border-top: 1px solid var(--color-neutral-200);
+}
+.plan-compare-renewal-row .auto-renewal-terms {
+  max-width: none;
+  margin: 0;
+}
