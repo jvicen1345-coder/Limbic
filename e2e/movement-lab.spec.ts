@@ -296,7 +296,9 @@ test.describe("Movement Lab → HEP Builder", () => {
     await grantLicense(email);
 
     await page.goto("/hep?protocol=not-a-real-protocol&phase=99");
-    await expect(page.getByRole("heading", { name: "Home Exercise Programs" })).toBeVisible();
+    // "Exercise Programs", not "Home Exercise Programs" — the page was renamed when the
+    // builder gained its Home/In-Clinic toggle (#376), which didn't update this assertion.
+    await expect(page.getByRole("heading", { name: "Exercise Programs" })).toBeVisible();
     await expect(page.getByText(/Loaded \d+ exercises/)).toBeHidden();
     await expect(page.locator('input[placeholder="Straight leg raise"]')).toHaveCount(0);
   });
