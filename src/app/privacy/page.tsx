@@ -30,7 +30,10 @@ export default function PrivacyPage() {
         </li>
         <li>
           Education data: if you are a PT student, syllabus text you upload or paste and the assignments extracted
-          from it.
+          from it, and any course material you choose to put through Study Guide Creator &mdash; including lecture
+          slide PDFs. Text from that material is sent to Anthropic to generate flashcards and study notes, and the
+          extracted text, flashcards and notes are stored under your account. Only upload material you created or
+          are permitted to use; see your school&rsquo;s policy on course materials.
         </li>
         <li>
           Usage data: articles read, searches performed, content saved, streak activity, game completions, and
