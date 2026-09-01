@@ -828,7 +828,7 @@ export const HIP_EXERCISES: MovementExercise[] = [
   {
     id: "single-leg-rdl",
     name: "Single-Leg Romanian Deadlift",
-    aka: ["Single-leg deadlift", "SLRDL", "Single-leg hinge"],
+    aka: ["Single-leg deadlift", "SLRDL", "Single-leg RDL", "RDL", "Single-leg hinge"],
     region: "Hip & Pelvis",
     category: "Strength",
     positions: ["Standing"],
