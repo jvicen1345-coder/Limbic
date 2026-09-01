@@ -12380,20 +12380,32 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
-  padding: 8px 10px;
+  padding: 10px 12px;
   background: none;
   border: none;
   border-top: 1px solid var(--color-divider);
   cursor: pointer;
   text-align: left;
-  font-size: 12.5px;
+  font-size: 13.5px;
+  line-height: 1.3;
 }
 .hep-exercise-autocomplete-row:first-child { border-top: none; }
-.hep-exercise-autocomplete-row:hover { background: var(--color-neutral-100); }
+/* Not just var(--color-neutral-100) — that's nearly indistinguishable from
+   var(--color-surface) in dark mode, so a hovered row looked identical to its neighbors. */
+.hep-exercise-autocomplete-row:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
 .hep-exercise-autocomplete-name { font-weight: 600; }
-.hep-exercise-autocomplete-region { font-size: var(--fs-10-5); color: var(--color-neutral-700); white-space: nowrap; }
+.hep-exercise-autocomplete-region {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
 .hep-exercise-autocomplete-request {
   display: block;
   width: 100%;
