@@ -1605,6 +1605,10 @@ export function protocolPhaseToHepExercises(phase: MovementProtocolPhase): HepTe
       // blanking out in that case.
       frequency: dosageIsOverride ? "" : exercise.dosage.frequency,
       hold: dosageIsOverride ? "" : (exercise.dosage.hold ?? ""),
+      // Equipment isn't part of dosage, so it's never blanked out for a step override —
+      // same join format the browse page itself displays it in (see ExerciseCard in
+      // MovementLabBrowser.tsx).
+      equipment: exercise.equipment.join(" · "),
       notes,
       imageUrl: "",
       videoUrl: "",

@@ -67,9 +67,13 @@ export const HEP_TEMPLATE_KIND_SHORT_LABELS: Record<HepTemplateKind, string> = {
 // Dashboard's own weight field still allows non-numeric values like "bodyweight" or "2 lb
 // ankle weight". `frequency` (how often per day/week, e.g. "2x/day") and `hold` (how long a
 // held position is held, e.g. "5 sec") are both free text for the same "doesn't cleanly
-// reduce to one number" reasoning. Movement Lab picks (the autocomplete and the standalone
-// picker) backfill frequency and hold automatically where the exercise bank specifies them —
-// weight never gets backfilled, since Movement Lab dosage doesn't specify a load.
+// reduce to one number" reasoning. `equipment` (e.g. "Resistance band · Yoga mat") is a
+// single joined string rather than a list — unlike Movement Lab's own MovementExercise,
+// which tracks equipment as a real MovementEquipment[] enum array for filtering, this is
+// just a printed-program line, so free text is enough and matches every other field here.
+// Movement Lab picks (the autocomplete and the standalone picker) backfill frequency, hold,
+// and equipment automatically where the exercise bank specifies them — weight never gets
+// backfilled, since Movement Lab dosage doesn't specify a load.
 export interface HepTemplateExercise {
   name: string;
   sets: string;
@@ -77,6 +81,7 @@ export interface HepTemplateExercise {
   weight: string;
   frequency: string;
   hold: string;
+  equipment: string;
   notes: string;
   imageUrl: string;
   videoUrl: string;
@@ -98,6 +103,7 @@ export function parseHepExercises(raw: unknown): HepTemplateExercise[] {
       weight: e.weight ?? "",
       frequency: e.frequency ?? "",
       hold: e.hold ?? "",
+      equipment: e.equipment ?? "",
       notes: e.notes ?? "",
       imageUrl: e.imageUrl ?? "",
       videoUrl: e.videoUrl ?? "",

@@ -45,9 +45,10 @@ function draftFromParams(params: { exercises?: string; protocol?: string; phase?
         weight: "",
         frequency: ex.dosage.frequency,
         hold: ex.dosage.hold ?? "",
+        equipment: ex.equipment.join(" · "),
         // Same shape the picker/autocomplete build (see movementExerciseFields in
-        // HepBuilder) — just the patient-facing cue, since frequency and hold now have
-        // their own fields above.
+        // HepBuilder) — just the patient-facing cue, since frequency, hold, and equipment
+        // now have their own fields above.
         notes: ex.cue.replace(/^“|”$/g, ""),
         imageUrl: "",
         videoUrl: "",
@@ -167,7 +168,8 @@ export default async function HepPage({
                             {ex.name}, {ex.sets}x{ex.reps}
                             {ex.weight && ` @ ${ex.weight} lbs`}
                             {ex.hold && `, hold ${ex.hold}`}
-                            {ex.frequency && `, ${ex.frequency}`}{" "}
+                            {ex.frequency && `, ${ex.frequency}`}
+                            {ex.equipment && ` (${ex.equipment})`}{" "}
                             <span style={{ color: "var(--color-neutral-700)" }}>{ex.notes}</span>
                             {videoUrl && (
                               <>
