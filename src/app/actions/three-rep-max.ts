@@ -3,7 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
-import { estimateOneRepMax, classifyStrengthLevel, LIFTS, SEXES, type Lift, type Sex, type StrengthClassification } from "@/lib/three-rep-max-standards";
+import {
+  estimateOneRepMax,
+  classifyStrengthLevel,
+  LIFTS,
+  SEXES,
+  MIN_AGE,
+  MAX_AGE,
+  type Lift,
+  type Sex,
+  type StrengthClassification,
+} from "@/lib/three-rep-max-standards";
 
 const THREE_RM_REPS = 3;
 
@@ -29,6 +39,7 @@ export interface ThreeRepMaxEntry {
   weightLbs: number;
   bodyweightLbs: number;
   sex: Sex;
+  age: number;
   testedAt: Date;
   oneRepMaxLbs: number;
   classification: StrengthClassification;
@@ -60,9 +71,10 @@ export async function getThreeRepMaxCardData(patientId: string): Promise<ThreeRe
       weightLbs: t.weightLbs,
       bodyweightLbs: t.bodyweightLbs,
       sex,
+      age: t.age,
       testedAt: t.testedAt,
       oneRepMaxLbs,
-      classification: classifyStrengthLevel(lift, sex, oneRepMaxLbs, t.bodyweightLbs),
+      classification: classifyStrengthLevel(lift, sex, t.age, oneRepMaxLbs, t.bodyweightLbs),
     });
   }
 
@@ -73,15 +85,16 @@ export async function getThreeRepMaxCardData(patientId: string): Promise<ThreeRe
 }
 
 /** Log a new 3-rep-max test (see ThreeRepMaxCard.tsx's inline add form) — weightLbs is the
- *  load actually lifted for 3 reps; bodyweightLbs/sex are captured with this entry rather
- *  than read off the patient record, which has neither field (see ThreeRepMaxTest's own
- *  comment in schema.prisma). */
+ *  load actually lifted for 3 reps; bodyweightLbs/sex/age are captured with this entry
+ *  rather than read off the patient record, which has none of those fields (see
+ *  ThreeRepMaxTest's own comment in schema.prisma). */
 export async function createThreeRepMaxTest(
   patientId: string,
   lift: string,
   weightLbs: number,
   bodyweightLbs: number,
-  sex: string
+  sex: string,
+  age: number
 ): Promise<ActionError | { success: true }> {
   const user = await requireProUser();
   if (!user) return { error: "Unauthorized" };
@@ -93,9 +106,10 @@ export async function createThreeRepMaxTest(
   if (!SEXES.some((s) => s.value === sex)) return { error: "Pick a sex for the strength standards comparison." };
   if (!(weightLbs > 0)) return { error: "Enter the weight lifted for 3 reps." };
   if (!(bodyweightLbs > 0)) return { error: "Enter the patient's bodyweight." };
+  if (!Number.isFinite(age) || age < MIN_AGE || age > MAX_AGE) return { error: `Enter an age between ${MIN_AGE} and ${MAX_AGE}.` };
 
   await prisma.threeRepMaxTest.create({
-    data: { userId: user.id, patientId, lift, weightLbs, bodyweightLbs, sex },
+    data: { userId: user.id, patientId, lift, weightLbs, bodyweightLbs, sex, age: Math.round(age) },
   });
 
   revalidatePath("/pro/dashboard");

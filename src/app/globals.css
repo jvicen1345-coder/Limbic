@@ -12352,3 +12352,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 @media (max-width: 700px) {
   .hep-exercise-editor-row { grid-template-columns: 1fr 1fr; }
 }
+
+/* "vs. ages 30–39" line on the 3-Rep-Max card (ThreeRepMaxCard.tsx) — sits between the
+   strength-level badge and the "X lbs to next level" hint, same muted small-text treatment
+   as .trm-next-level. */
+.trm-age-bracket { font-size: var(--fs-10-5); color: var(--color-neutral-700); white-space: nowrap; }

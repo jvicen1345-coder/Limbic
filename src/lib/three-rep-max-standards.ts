@@ -1,5 +1,5 @@
 /** Reference data + math for the Clinician Dashboard's 3-Rep-Max card (ThreeRepMaxCard.tsx,
- *  app/actions/three-rep-max.ts). Two things live here on purpose:
+ *  app/actions/three-rep-max.ts). Three things live here on purpose:
  *
  *  1. estimateOneRepMax — the Brzycki formula, a standard way to project a 1RM from a
  *     lower-rep max. Published bodyweight-relative strength standards (below) are expressed
@@ -13,6 +13,13 @@
  *     ForceLabNorm's dynamometer means/SDs are (see that model's own comment in
  *     schema.prisma) — there is no single controlled-population study for "barbell 3-rep-max
  *     vs. bodyweight" the way there is for handheld dynamometer MMT.
+ *  3. AGE_ADJUSTMENT — a rough multiplier on the standards above so "compare to similar age
+ *     ranges" means something: strength commonly peaks in the 18-29 bracket and gradually
+ *     declines afterward. This is a general population trend, not a separate age-stratified
+ *     study of the "18-29" table above — every bracket still classifies on the same
+ *     Untrained..Elite ladder, just against thresholds scaled down for what's typical at
+ *     that age, loosely consistent with commonly cited aggregate strength declines of
+ *     roughly 8-15% per decade starting in the 40s.
  */
 
 export type Lift = "squat" | "bench" | "deadlift";
@@ -59,6 +66,46 @@ const RATIO_STANDARDS: Record<Lift, Record<Sex, Record<StrengthLevel, number>>> 
   },
 };
 
+export interface AgeBracket {
+  min: number;
+  max: number;
+  label: string;
+}
+
+// Validation bounds for the log-test form/action (see ThreeRepMaxCard.tsx,
+// createThreeRepMaxTest in app/actions/three-rep-max.ts) — MIN_AGE matches the youngest age
+// AGE_BRACKETS actually covers; MAX_AGE is a generous sanity ceiling, not a real bracket
+// boundary (AGE_BRACKETS' own "60+" already has no real upper bound).
+export const MIN_AGE = 18;
+export const MAX_AGE = 100;
+
+// Every age 18 and up is covered by exactly one bracket — the standards below are adult
+// bodyweight-ratio figures, not calibrated for a pediatric/adolescent patient, so the log-test
+// form floors age at 18. 60+ has no upper bound in practice, capped here at 130 just so `max`
+// is always a real number to compare against.
+export const AGE_BRACKETS: AgeBracket[] = [
+  { min: 18, max: 29, label: "18–29" },
+  { min: 30, max: 39, label: "30–39" },
+  { min: 40, max: 49, label: "40–49" },
+  { min: 50, max: 59, label: "50–59" },
+  { min: 60, max: 130, label: "60+" },
+];
+
+export function ageBracketFor(age: number): AgeBracket {
+  return AGE_BRACKETS.find((b) => age >= b.min && age <= b.max) ?? AGE_BRACKETS[AGE_BRACKETS.length - 1];
+}
+
+// See this file's own top-of-file comment (#3) on where these come from — applied to
+// RATIO_STANDARDS' thresholds before classifying, so "Intermediate" means "intermediate for
+// that age bracket," not "intermediate for a 25-year-old regardless of who's being tested."
+const AGE_ADJUSTMENT: Record<string, number> = {
+  "18–29": 1.0,
+  "30–39": 0.97,
+  "40–49": 0.9,
+  "50–59": 0.82,
+  "60+": 0.72,
+};
+
 /** Brzycki formula (weight × 36 ÷ (37 − reps)) — the standard way to project a 1-rep max from
  *  a submaximal-rep set, accurate up to roughly 10 reps and most reliable at the low rep
  *  counts (like 3) this card is built around. */
@@ -71,25 +118,38 @@ export interface StrengthClassification {
   ratio: number;
   nextLevel: StrengthLevel | null;
   lbsToNextLevel: number | null;
+  ageBracket: string;
 }
 
-/** Classifies an estimated 1RM against the bodyweight-relative standards above. Ratio is
- *  compared against each level's threshold from the top down implicitly by scanning
- *  ascending and keeping the last (highest) one met — a ratio below every threshold still
- *  returns "untrained" as the floor rather than null, since every lifter is somewhere on the
- *  scale. */
-export function classifyStrengthLevel(lift: Lift, sex: Sex, oneRepMaxLbs: number, bodyweightLbs: number): StrengthClassification {
+/** Classifies an estimated 1RM against the bodyweight-relative standards above, scaled for
+ *  the lifter's age bracket (see AGE_ADJUSTMENT) — "compare to similar age ranges" means the
+ *  same Untrained..Elite ladder is used for everyone, but the bar for each rung shifts with
+ *  age the way the underlying population trend does. Ratio is compared against each level's
+ *  (adjusted) threshold from the top down implicitly by scanning ascending and keeping the
+ *  last (highest) one met — a ratio below every threshold still returns "untrained" as the
+ *  floor rather than null, since every lifter is somewhere on the scale. */
+export function classifyStrengthLevel(
+  lift: Lift,
+  sex: Sex,
+  age: number,
+  oneRepMaxLbs: number,
+  bodyweightLbs: number
+): StrengthClassification {
   const ratio = bodyweightLbs > 0 ? oneRepMaxLbs / bodyweightLbs : 0;
-  const thresholds = RATIO_STANDARDS[lift][sex];
+  const baseThresholds = RATIO_STANDARDS[lift][sex];
+  const bracket = ageBracketFor(age);
+  const adjustment = AGE_ADJUSTMENT[bracket.label];
 
   let level: StrengthLevel = "untrained";
   for (const candidate of STRENGTH_LEVELS) {
-    if (ratio >= thresholds[candidate]) level = candidate;
+    if (ratio >= baseThresholds[candidate] * adjustment) level = candidate;
   }
 
   const levelIndex = STRENGTH_LEVELS.indexOf(level);
   const nextLevel = levelIndex < STRENGTH_LEVELS.length - 1 ? STRENGTH_LEVELS[levelIndex + 1] : null;
-  const lbsToNextLevel = nextLevel ? Math.max(0, Math.round(thresholds[nextLevel] * bodyweightLbs - oneRepMaxLbs)) : null;
+  const lbsToNextLevel = nextLevel
+    ? Math.max(0, Math.round(baseThresholds[nextLevel] * adjustment * bodyweightLbs - oneRepMaxLbs))
+    : null;
 
-  return { level, ratio, nextLevel, lbsToNextLevel };
+  return { level, ratio, nextLevel, lbsToNextLevel, ageBracket: bracket.label };
 }
