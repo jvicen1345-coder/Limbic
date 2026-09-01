@@ -19,7 +19,15 @@ import { freshEmail, signUp, PASSWORD } from "./helpers";
 
 /** One UPDATE/INSERT over a second connection, with the same SQLITE_BUSY retry as
  *  grantLicense in movement-lab.spec.ts — the dev server holds the same file while serving
- *  the sign-up that just ran. */
+ *  the sign-up that just ran.
+ *
+ *  The connection is closed in a `finally`, which matters more here than it looks. Under
+ *  playwright.config.ts's fullyParallel these tests run alongside auth.spec.ts, whose
+ *  rate-limit test needs six sequential sign-in POSTs to each write to SignInThrottle. An
+ *  unclosed libSQL client keeps a write connection open against the same SQLite file for
+ *  the rest of the run, and with `PRAGMA busy_timeout = 10000` those sign-in writes then
+ *  queue behind it long enough to blow that test's 15s expect timeout — which is exactly
+ *  what happened, and looked for all the world like an unrelated flake in auth.spec.ts. */
 async function withDb<T>(fn: (db: Awaited<ReturnType<typeof openDb>>) => Promise<T>): Promise<T> {
   let lastError: unknown;
   for (let attempt = 0; ; attempt++) {
@@ -31,6 +39,8 @@ async function withDb<T>(fn: (db: Awaited<ReturnType<typeof openDb>>) => Promise
       lastError = error;
       if (attempt >= 4) throw lastError;
       await new Promise((r) => setTimeout(r, 250 * 2 ** attempt));
+    } finally {
+      db.close();
     }
   }
 }
