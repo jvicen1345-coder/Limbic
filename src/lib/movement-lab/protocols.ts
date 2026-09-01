@@ -1603,6 +1603,9 @@ export function protocolPhaseToHepExercises(phase: MovementProtocolPhase): HepTe
       name: exercise.name,
       sets: dosageIsOverride ? "" : exercise.dosage.sets,
       reps: dosageIsOverride ? "" : exercise.dosage.reps,
+      // Not something a protocol phase specifies — see HepTemplateExercise's own comment in
+      // lib/hep-templates.ts on why that's fine (dashboard-only, optional context).
+      weight: "",
       notes,
       imageUrl: "",
       videoUrl: "",

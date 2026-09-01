@@ -12326,13 +12326,18 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 
 /* Exercise list editor/display shared by HEPSection.tsx and SessionExerciseSection.tsx (see
    components/pro/dashboard/HepExerciseList.tsx) — a compact sibling of HepBuilder's own
-   exercise rows (see components/HepBuilder.tsx), scoped to name/sets/reps/notes only. */
-.hep-exercise-editor { display: flex; flex-direction: column; gap: 8px; }
-.hep-exercise-editor-row {
+   exercise rows (see components/HepBuilder.tsx), scoped to name/sets/reps/weight/notes.
+   Each row is two stacked lines (name+remove, then the dosage fields) rather than one wide
+   grid row, both so the name field has room for the autocomplete dropdown below it and so
+   the row doesn't get too cramped once weight joined sets/reps/notes. */
+.hep-exercise-editor { display: flex; flex-direction: column; gap: 10px; }
+.hep-exercise-editor-row { display: flex; flex-direction: column; gap: 6px; }
+.hep-exercise-editor-name-row { display: flex; align-items: flex-start; gap: 6px; }
+.hep-exercise-editor-name-row > .hep-exercise-name-field { flex: 1; }
+.hep-exercise-editor-dosage-row {
   display: grid;
-  grid-template-columns: 2fr 70px 70px 2fr auto;
+  grid-template-columns: 1fr 1fr 1.4fr 2fr;
   gap: 6px;
-  align-items: center;
 }
 .hep-exercise-editor-remove {
   background: none;
@@ -12340,7 +12345,8 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   cursor: pointer;
   color: var(--color-neutral-700);
   display: flex;
-  padding: 4px;
+  padding: 8px 4px;
+  flex-shrink: 0;
 }
 .hep-exercise-editor-remove:hover { color: var(--color-danger); }
 .hep-exercise-display { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
@@ -12350,5 +12356,76 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .hep-exercise-display-notes { color: var(--color-neutral-700); font-size: var(--fs-11-5); }
 .hep-exercise-display-empty { font-size: 12px; color: var(--color-neutral-700); margin: 0; }
 @media (max-width: 700px) {
-  .hep-exercise-editor-row { grid-template-columns: 1fr 1fr; }
+  .hep-exercise-editor-dosage-row { grid-template-columns: 1fr 1fr; }
 }
+
+/* Exercise-name autocomplete + "request to add" (ExerciseNameField in HepExerciseList.tsx) —
+   a small absolutely-positioned dropdown under the name input, since the editor row it lives
+   in has no room to push content down without reflowing every other row in the list. */
+.hep-exercise-name-field { position: relative; }
+.hep-exercise-autocomplete {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  margin-top: 2px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.hep-exercise-autocomplete-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--color-divider);
+  cursor: pointer;
+  text-align: left;
+  font-size: 12.5px;
+}
+.hep-exercise-autocomplete-row:first-child { border-top: none; }
+.hep-exercise-autocomplete-row:hover { background: var(--color-neutral-100); }
+.hep-exercise-autocomplete-name { font-weight: 600; }
+.hep-exercise-autocomplete-region { font-size: var(--fs-10-5); color: var(--color-neutral-700); white-space: nowrap; }
+.hep-exercise-autocomplete-request {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+.hep-exercise-autocomplete-request:hover { background: var(--color-neutral-100); }
+.hep-exercise-request-form {
+  margin-top: 6px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.hep-exercise-request-actions { display: flex; gap: 8px; }
+.hep-exercise-request-sent { font-size: 12px; color: var(--color-accent); margin: 6px 0 0; }
+
+/* Session Exercises' Progression disclosure (SessionExerciseSection.tsx) — per-exercise
+   trend built from the same logged sessions the history list above already shows, not a
+   separate fetch. */
+.clindash-progression-row { padding: 10px 0; border-top: 1px solid var(--color-divider); }
+.clindash-progression-row:first-child { border-top: none; }
+.clindash-progression-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.clindash-progression-name { font-size: 13px; font-weight: 700; }
+.clindash-progression-points { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.clindash-progression-point { font-size: var(--fs-11-5); color: var(--color-neutral-700); }

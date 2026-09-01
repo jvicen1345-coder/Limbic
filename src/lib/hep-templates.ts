@@ -31,13 +31,21 @@ export const HEP_TEMPLATE_BODY_PART_NOTE: Partial<Record<HepTemplateBodyPart, st
   Spine: "Cervical, Thoracic, Lumbar",
 };
 
-// Same shape as HepBuilder's DraftExercise, minus the client-only numeric `id` — what
-// actually gets persisted as HEPTemplate.exercises, PatientHEPAssignment.exercises, and
-// SessionExerciseLog.exercises (see each model's own comment in schema.prisma).
+// What actually gets persisted as HEPTemplate.exercises, PatientHEPAssignment.exercises, and
+// SessionExerciseLog.exercises (see each model's own comment in schema.prisma) — read/written
+// by the Clinician Dashboard's shared exercise editor (components/pro/dashboard/
+// HepExerciseList.tsx). Same shape as HepBuilder's DraftExercise minus the client-only
+// numeric `id`, EXCEPT `weight` — that field is dashboard-only (the load used for that
+// exercise this HEP/session, e.g. "20 lbs", "2 lb ankle weight", "bodyweight"; free text like
+// sets/reps rather than a strict number, so it stays meaningful for a hold- or band-based
+// exercise with no plate weight). HepBuilder's own template-authoring flow (the /hep page)
+// doesn't collect it, so a template built there always snapshots weight as "" — acceptable
+// since it's optional context, not required to render or use the program.
 export interface HepTemplateExercise {
   name: string;
   sets: string;
   reps: string;
+  weight: string;
   notes: string;
   imageUrl: string;
   videoUrl: string;
@@ -56,6 +64,7 @@ export function parseHepExercises(raw: unknown): HepTemplateExercise[] {
       name: e.name ?? "",
       sets: e.sets ?? "",
       reps: e.reps ?? "",
+      weight: e.weight ?? "",
       notes: e.notes ?? "",
       imageUrl: e.imageUrl ?? "",
       videoUrl: e.videoUrl ?? "",
