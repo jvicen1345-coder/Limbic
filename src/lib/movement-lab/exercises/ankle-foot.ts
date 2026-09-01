@@ -136,7 +136,7 @@ export const ANKLE_FOOT_EXERCISES: MovementExercise[] = [
       "Letting the band snap the foot back",
     ],
     regression: "Lighter band and fewer repetitions.",
-    progression: "Double-leg heel raise, then single-leg.",
+    progression: "Double-Leg Heel Raise, then the Single-Leg Heel Raise.",
     precautions: [
       "Follow the surgeon's protocol after Achilles repair — calf loading is staged carefully.",
       "Stop for calf cramping and reduce the tension.",
@@ -204,7 +204,7 @@ export const ANKLE_FOOT_EXERCISES: MovementExercise[] = [
       "Letting the band snap the foot back",
     ],
     regression: "Lighter band, smaller range.",
-    progression: "Heavier band, then progress to single-leg balance and hop control work.",
+    progression: "Heavier band, then the Single-Leg Stance and the Single-Leg Hop in Place for balance and hop control.",
     precautions: [
       "The key strengthening direction after a lateral ankle sprain — but follow the acute-phase timeline before loading it.",
       "Stop for sharp pain over the outside of the ankle.",
@@ -311,7 +311,7 @@ export const ANKLE_FOOT_EXERCISES: MovementExercise[] = [
       "Dropping the heels down",
     ],
     regression: "Fewer repetitions with no added weight.",
-    progression: "Add weight on the thighs, then move to standing double-leg then single-leg raises.",
+    progression: "Add weight on the thighs, then the Double-Leg Heel Raise and the Single-Leg Heel Raise standing.",
     precautions: [
       "Follow post-operative loading timelines.",
       "Stop for sharp Achilles pain.",
@@ -562,7 +562,7 @@ export const ANKLE_FOOT_EXERCISES: MovementExercise[] = [
       "Giving up in the first session — it usually takes practice to find",
     ],
     regression: "Do it seated with no weight through the foot, and use a hand under the arch for feedback.",
-    progression: "Progress to standing, then single-leg standing, then during a step or a heel raise.",
+    progression: "Progress to standing, then the Single-Leg Stance, then holding the arch during a step or a heel raise.",
     precautions: [
       "Stop for foot cramping and rest.",
       "Progress slowly where there is a rigid foot deformity.",
@@ -599,7 +599,7 @@ export const ANKLE_FOOT_EXERCISES: MovementExercise[] = [
       "Doing too many too soon — the Achilles usually complains the day after, not during",
     ],
     regression: "Double-Leg Heel Raise, then small hops with a hand on a counter for support.",
-    progression: "Single-leg pogo hops, then hopping for distance, then running drills.",
+    progression: "Single-Leg Hop in Place, then the Single-Leg Hop for Distance, then running drills.",
     precautions: [
       "The first true impact exercise for the calf and Achilles: expect to build it gradually, and judge it by how the tendon feels the next morning rather than during the set.",
       "Not appropriate while an Achilles or calf injury is still painful under load, and after Achilles repair only when the surgeon's protocol allows impact.",
