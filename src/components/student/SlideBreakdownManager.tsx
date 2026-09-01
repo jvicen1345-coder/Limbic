@@ -143,6 +143,19 @@ export function SlideBreakdownManager({ courses }: { courses: SlideBreakdownCour
           <button type="button" className="slide-breakdown-mode-link" onClick={() => setMode("text")}>
             Have text instead of a PDF? Paste it here.
           </button>
+          {/* Lecture slides belong to whoever made them — usually the instructor or the
+              school, not the student uploading them. A student copying them for their own
+              study has a reasonable fair-use position; Limbic ingesting them, generating
+              derivatives and storing them has a weaker one, and Limbic is who a university
+              would write to. Saying plainly what may be uploaded is both the fair thing to
+              tell a student and part of what makes the DMCA process at /dmca work: §512
+              protects a host best when it has told users what they may post. */}
+          <p className="slide-breakdown-upload-notice">
+            Only upload material you created or are permitted to use, and check your school&rsquo;s policy before
+            uploading a lecture. Slide text is sent to Anthropic to be turned into flashcards and notes, and the
+            result is stored under your account &mdash; see the{" "}
+            <a href="/privacy">Privacy Policy</a>.
+          </p>
         </>
       ) : (
         <>

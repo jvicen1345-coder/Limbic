@@ -7,6 +7,7 @@ import { WellnessListItem } from "@/components/RowCards";
 import { WellnessVideoCard } from "@/components/WellnessVideoCard";
 import { RefreshWellnessButton } from "@/components/RefreshWellnessButton";
 import { ArrowLeftIcon } from "@/components/icons";
+import { WellnessDisclaimer } from "@/components/vitals/WellnessDisclaimer";
 
 /** The full Health & Wellness reading/watching feed — this used to be the whole
  *  /wellness page before the Overview became a hub with just a 3-article preview (see
@@ -82,6 +83,8 @@ export default async function WellnessArticlesPage() {
           <WellnessVideoCard key={v.id} video={v} saved={savedIds.has(v.id)} />
         ))}
       </div>
+
+      <WellnessDisclaimer />
     </div>
   );
 }

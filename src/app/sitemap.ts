@@ -6,7 +6,7 @@ const baseUrl = "https://limbic.center";
  *  a signed-out visitor straight to /sign-in (see app/(app)/layout.tsx). This only lists
  *  the pages a signed-out visitor (and therefore a crawler) can actually reach and see real
  *  content on: the public marketing page at "/" (see components/LandingPage.tsx), sign-in,
- *  Founding Funders, and the two static legal pages. Listing anything under (app) would
+ *  Founding Funders, and the three static legal pages. Listing anything under (app) would
  *  just point crawlers at login redirects. */
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -54,6 +54,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/dmca`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,

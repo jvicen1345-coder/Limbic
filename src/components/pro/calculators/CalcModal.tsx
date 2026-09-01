@@ -104,6 +104,38 @@ export function CalcModal({
   );
 }
 
+/**
+ * Shown at the top of every calculator for a published instrument whose items and response
+ * wording are somebody else's copyrighted work.
+ *
+ * These calculators used to reproduce the instruments in full — all 30 DASH items, the ODI
+ * 2.0's sixty graded statements, Berg's and the FGA's per-item scoring criteria — with no
+ * attribution, no licence, and no copyright notice, inside a paid subscription. Item text
+ * and graded response wording are the protected expression of these measures, and several
+ * have active licensing programmes (the DASH in particular is licensed by the Institute for
+ * Work & Health, which requires an agreement and forbids modification). Reproducing them
+ * behind a paywall is commercial use of exactly the kind those programmes exist to capture.
+ *
+ * So the tools became score-entry instead: the clinician administers the real form from
+ * their own licensed copy and enters the numbers, and Limbic does the arithmetic,
+ * interpretation bands and MDC/MCID — none of which is protected expression. Almost all of
+ * the clinical value survives, and none of the copying does.
+ *
+ * What is deliberately kept is short functional labels for the rows an examiner has to fill
+ * in — the ODI's ten section headings, Berg's and the FGA's task names. Those are titles,
+ * not the instrument's expression, and without them the input is an unlabelled column of
+ * dropdowns. Where the item *is* the text (the DASH, the LEFS), rows are numbered instead.
+ * Don't reintroduce item statements or graded criteria to any of these.
+ */
+export function LicensedInstrumentNotice({ instrument, developedBy }: { instrument: string; developedBy: string }) {
+  return (
+    <p className="pro-calc-licence-notice">
+      Score entry only. Administer the {instrument} from your own licensed or authorised copy of the form — its
+      items and response wording are not reproduced here. Developed by {developedBy}.
+    </p>
+  );
+}
+
 /** "Patient-Reported" — the patient fills this out themselves (a PROM) — vs
  *  "Clinician-Administered" — the PT times, counts, or scores it. Shown as a badge on every
  *  card (see CalcCardShell below) alongside the region-based grouping on

@@ -32,7 +32,6 @@ import {
   LockIcon,
   CalendarIcon,
   ActivityIcon,
-  AppleIcon,
   DumbbellIcon,
   ChevronRightIcon,
   ShieldIcon,
@@ -244,7 +243,7 @@ interface NavContentProps {
    *  resources/page.tsx), but never sees the individual paid-tier sub-links (Break Down
    *  Slides, SOAP Note, etc.) as locked list items — same "collapse to just the overview"
    *  treatment the pro zoneTwoSections entry gives LimbicPRO's own sub-links. Limbic Games
-   *  (/wordle) is open to everyone regardless of this flag. This is a separate concern from
+   *  (/daily-term) is open to everyone regardless of this flag. This is a separate concern from
    *  zoneTwoOrder below — isStudent only ever changes what renders inside the section;
    *  zoneTwoOrder only ever reorders sections that already render. */
   isStudent: boolean;
@@ -287,6 +286,11 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
   // route), so at most one ever matches here.
   const [expandedSection, setExpandedSection] = useState<SidebarSection | null>(() => {
     if (pathname.startsWith("/nexus")) return "nexus";
+    // /wellness/pathologies is the one route whose sidebar home isn't its URL prefix — its
+    // link moved under LimbicPRO (see the wellness section below for why) while the route
+    // itself stayed put, so it's matched exactly here, ahead of the /wellness prefix check,
+    // rather than expanding a section that no longer lists it.
+    if (pathname === "/wellness/pathologies") return "pro";
     if (pathname.startsWith("/pro") || pathname.startsWith("/hep") || pathname.startsWith("/agent")) return "pro";
     if (pathname.startsWith("/connexion")) return "connexion";
     if (pathname.startsWith("/student") || pathname.startsWith("/boards")) return "student";
@@ -408,6 +412,10 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
                 /pro/red-flags is now just a redirect there. */}
             <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Screening & Decision Support" bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" bold={false} onNavigate={onNavigate} />
+            {/* Moved off the Health and Wellness hub's card grid — plain-language condition
+                explanations are reference reading, so they sit with the other reference
+                tools here. The /wellness/pathologies route itself is unchanged. */}
+            <NavLink href="/wellness/pathologies" icon={<BodyIcon />} label="Common Pathologies" bold={false} onNavigate={onNavigate} />
             {/* Now a tab on Exercise Programs (see app/(app)/hep/page.tsx) rather than its
                 own page — this is a second entry into that page, same pattern as Team
                 Dashboard's /pro/dashboard?tab=team below. Kept as its own row, unlocked and
@@ -431,12 +439,14 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         />
         {wellnessExpanded && (
           <>
+            {/* Three sub-items, not seven — Nutrition, Assess Yourself, and Exercise
+                Library are all one click from the Overview hub's card grid (see
+                app/(app)/wellness/page.tsx), and Connexion Method has its own Zone 2
+                section already, so duplicating any of them here only made the longest
+                sidebar section longer. Every route is unchanged and still reachable. */}
             <NavLink href="/wellness" icon={<WellnessIcon />} label="Overview" bold={false} onNavigate={onNavigate} />
             <NavLink href="/wellness/metrics" icon={<ActivityIcon />} label="Metrics" bold={false} onNavigate={onNavigate} />
             <NavLink href="/wellness/activity" icon={<ZapIcon />} label="Activity Log" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/wellness/nutrition" icon={<AppleIcon />} label="Nutrition" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/wellness/assess" icon={<CheckCircleIcon />} label="Assess Yourself" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/wellness/exercises" icon={<DumbbellIcon />} label="Exercise Library" bold={false} onNavigate={onNavigate} />
           </>
         )}
       </>
@@ -539,6 +549,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             <>
               <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/licenses" icon={<CheckCircleIcon />} label="License Queue" bold={false} onNavigate={onNavigate} />
+              <NavLink href="/admin/copyright" icon={<ShieldIcon />} label="Copyright Notices" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/connexion-visits" icon={<ShieldIcon />} label="Connexion Visits" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/connexion-safety-score" icon={<ShieldIcon />} label="Connexion Safety Score" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/boards-tagging" icon={<GraduationCapIcon />} label="Boards Question Tagging" bold={false} onNavigate={onNavigate} />

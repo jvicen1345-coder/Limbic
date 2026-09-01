@@ -14,6 +14,7 @@ import { ConnectButton } from "@/components/ConnectButton";
 import { NexusPostCard, type NexusPostData } from "@/components/NexusPostCard";
 import { getFoundingFunderStatus } from "@/lib/founding-funders";
 import { FoundingFunderBadge } from "@/components/FoundingFunderBadge";
+import { visibleContentWhere } from "@/lib/copyright";
 
 export default async function NexusProfilePage({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params;
@@ -40,7 +41,7 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
 
   const [posts, personFoundingFunder, currentUserFoundingFunder] = await Promise.all([
     prisma.nexusPost.findMany({
-      where: { authorId: person.id },
+      where: { authorId: person.id, ...visibleContentWhere },
       orderBy: { createdAt: "desc" },
       include: {
         author: {
@@ -48,6 +49,7 @@ export default async function NexusProfilePage({ params }: { params: Promise<{ u
         },
         likes: { select: { userId: true } },
         comments: {
+          where: { ...visibleContentWhere },
           orderBy: { createdAt: "asc" },
           include: {
             author: { select: { id: true, name: true, foundingFunderBadgeHidden: true, foundingFunder: { select: { paymentStatus: true } } } },

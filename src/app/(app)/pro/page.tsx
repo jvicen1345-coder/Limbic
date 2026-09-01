@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 import { CrownIcon } from "@/components/icons";
 import { PRO_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
+import { AutoRenewalTerms } from "@/components/AutoRenewalTerms";
 
 /** The six tools that still require a LimbicPRO subscription — everything else in the old
  *  ten-tool toolbox (Outcome Measures, Screening & Decision Support, Special Tests,
@@ -124,6 +125,7 @@ export default async function ProOverviewPage() {
         <div className="card elev-sm" style={{ margin: "20px 0 0" }}>
           <div className="card-kicker">$15 per month — cancel anytime</div>
           <form action={subscribeToProAction} style={{ marginTop: 10 }}>
+            <AutoRenewalTerms price="$15" cadence="month" />
             <button type="submit" className="btn btn-primary" disabled={!billingEnabled}>
               Upgrade to LimbicPRO
             </button>

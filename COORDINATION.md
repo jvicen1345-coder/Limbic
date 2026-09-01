@@ -58,17 +58,55 @@ Merging it would resurrect a rejected design and clobber that work.
 
 ## Currently active
 
-Volatile — update or ignore once these land.
+**This table goes stale fast — check it before you trust it.** Every branch listed here on
+the morning of 2026-09-01 had landed by midday. In a repo merging a dozen PRs a day, a
+hand-maintained list of in-flight work is wrong more often than it is right, so treat a row
+as a hint about *who to ask*, not as fact about what is unmerged.
 
 | Branch | Scope | Owns |
 |---|---|---|
-| `claude/mobile-ux-review-*` | Mobile UX pass | `@media (max-width: …)` blocks only |
-| `claude/desktop-visual-review-*` | Desktop visual pass | base rules + `@media (min-width: …)` only |
+| _(none currently reserved)_ | | |
 
-Merge order: mobile → desktop. The two CSS passes are the pair most likely to conflict;
-land them one at a time, and rebase the second on the first. Neither has a branch on the
-remote as of 2026-08-30 — per rule 2 above, an unpushed branch is invisible, so treat
-these two rows as reservations rather than as work you can go read.
+### Working out what is actually unmerged
+
+Do this instead of reading the table above. It takes ten seconds and is always correct:
+
+```sh
+git fetch origin
+# 1. Zero diff against main means the branch has landed. Most of origin is this.
+git diff --quiet origin/main origin/<branch> && echo "landed"
+
+# 2. Non-empty diff proves nothing on its own — see below. Check whether the branch's
+#    own tip subject already has a squash commit on main:
+git log -1 --format=%s origin/<branch>
+git log --oneline origin/main --grep="<that subject>" -i
+```
+
+**Why the obvious check does not work.** This repo squash-merges, so a landed branch's tip
+SHA is not an ancestor of `main` and `git diff main...branch` (three-dot, from the merge
+base) still reports the branch's full original diff. As of 2026-09-01 roughly 100 branches
+sit on origin and all but a couple have already shipped — every one of them looks unmerged
+to a three-dot diff. `fix-slide-breakdown-course-mixup` was the clearest example: it read as
+unmerged while *being* main's HEAD.
+
+Use the two-dot form (`git diff main branch`), or check whether the branch's new files exist
+on `main`. A large deletion count in a two-dot diff means main is ahead of the branch — i.e.
+it landed and the branch is now stale, the opposite of unmerged work.
+
+If auto-delete-on-merge ever gets turned on in repo settings, most of this section stops
+being necessary: a branch still existing would mean something.
+
+### Recently landed (2026-09-01)
+
+- **Legal/compliance pass** — PR #375, from `claude/legal-risk-review-*`. Also carried e2e
+  fixes for three Movement Lab tests that #376/#380 had left red on main.
+- **Health & Wellness hub redesign** — PR #384.
+- **Movement Lab exercise bank additions** — PRs #383, #385.
+- **Mobile UX and desktop visual passes** — landed 2026-08-31; their reservation rows are
+  gone and the merge-order note they carried no longer applies.
+- **Exercise Programs** (the renamed `/hep`), Movement Lab tab + autocomplete, Clinician
+  Dashboard 3-rep-max and session exercise logging, mobile bottom-nav reorder, Study Guide
+  mastery indicators, Atrium Canvas link-out — PRs #367–#382.
 
 ### Recently landed (2026-08-30)
 

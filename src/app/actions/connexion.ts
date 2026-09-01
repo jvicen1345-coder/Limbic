@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { isSiteAdmin } from "@/lib/admin";
+import { CONNEXION_CONSENT_TEXT } from "@/lib/connexion-consent";
 
 export interface SubmitVisitRequestInput {
   name: string;
@@ -11,6 +12,8 @@ export interface SubmitVisitRequestInput {
   preferredDate?: string;
   preferredTime?: string;
   visitReason?: string;
+  /** The consent checkbox on the form. Required — see the check in submitVisitRequest. */
+  consentAccepted: boolean;
 }
 
 export interface SubmitVisitRequestResult {
@@ -31,6 +34,14 @@ export async function submitVisitRequest(input: SubmitVisitRequestInput): Promis
     return { ok: false, error: "Name, phone, and email are required." };
   }
 
+  // Checked server-side, not just by the checkbox's own `required` attribute — this action
+  // is its own callable endpoint. Checked before the row is written so a request is never
+  // stored without the consent that makes collecting it lawful (see lib/connexion-consent.ts
+  // for why this form has a consent gate when the rest of the app's forms don't).
+  if (!input.consentAccepted) {
+    return { ok: false, error: "Please agree to the consent statement before submitting." };
+  }
+
   await prisma.connexionVisitRequest.create({
     data: {
       name,
@@ -39,6 +50,9 @@ export async function submitVisitRequest(input: SubmitVisitRequestInput): Promis
       preferredDate: input.preferredDate ? new Date(`${input.preferredDate}T00:00:00`) : null,
       preferredTime: input.preferredTime || null,
       visitReason: input.visitReason || null,
+      // The wording as shown, not a bare flag — see CONNEXION_CONSENT_TEXT.
+      consentAt: new Date(),
+      consentText: CONNEXION_CONSENT_TEXT,
     },
   });
 

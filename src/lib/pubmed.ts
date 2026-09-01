@@ -15,6 +15,36 @@ import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
 
 const EUTILS = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";
 const FETCH_TIMEOUT_MS = 8000;
+
+/**
+ * NCBI's E-utilities usage policy requires every request to identify its caller with a
+ * `tool` name and a contact `email`, and offers a free API key that raises the rate limit
+ * from 3 requests/second to 10. None of the three were being sent.
+ *
+ * The practical consequence of skipping them is not legal but operational, and it is
+ * unpleasant: NCBI throttles and then blocks unidentified high-volume clients by IP, and on
+ * Vercel that IP is shared — so the research feed can go dark with no error we control and
+ * no way to appeal, because NCBI has no idea who to contact. `email` is exactly the channel
+ * they use to warn a caller before blocking them.
+ *
+ * Applied centrally in withNcbiIdentification below rather than at each of the nine call
+ * sites, so a new E-utilities call can't forget it.
+ */
+const NCBI_TOOL = "limbic";
+const NCBI_CONTACT_EMAIL = process.env.NCBI_CONTACT_EMAIL ?? "jonathan@limbic.center";
+
+/** Appends NCBI's required identification (and the optional API key, when set) to any
+ *  E-utilities URL. A no-op for every other host, so the shared fetchers below can apply it
+ *  unconditionally. */
+function withNcbiIdentification(url: string): string {
+  if (!url.startsWith(EUTILS)) return url;
+  const u = new URL(url);
+  u.searchParams.set("tool", NCBI_TOOL);
+  u.searchParams.set("email", NCBI_CONTACT_EMAIL);
+  const apiKey = process.env.NCBI_API_KEY;
+  if (apiKey) u.searchParams.set("api_key", apiKey);
+  return u.toString();
+}
 // MeSH concept terms + PubMed's own structured Publication Type/MeSH tags, not Title/
 // Abstract free-text keyword matching — a real evidence-tier upgrade, not just a volume
 // one: "randomized"/"trial"/"cohort" as free-text has both false positives (a paper that
@@ -47,7 +77,10 @@ async function fetchJson(url: string): Promise<unknown | null> {
     // itself is widened from 15min to 1hr — new PubMed results don't arrive minute to
     // minute, and every cache miss here is a real 3-round-trip network cost (esearch +
     // esummary + efetch) on whoever's request lands right after expiry.
-    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 3600, tags: ["live-research"] } });
+    const res = await fetch(withNcbiIdentification(url), {
+      signal: controller.signal,
+      next: { revalidate: 3600, tags: ["live-research"] },
+    });
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -61,7 +94,10 @@ async function fetchText(url: string): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
-    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 3600, tags: ["live-research"] } });
+    const res = await fetch(withNcbiIdentification(url), {
+      signal: controller.signal,
+      next: { revalidate: 3600, tags: ["live-research"] },
+    });
     if (!res.ok) return null;
     return await res.text();
   } catch {
