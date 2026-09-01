@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalcModal, CalcCardShell, LicensedInstrumentNotice } from "./CalcModal";
+import { CalcModal, CalcCardShell, LicensedInstrumentNotice, ItemScoreRow } from "./CalcModal";
 
 /**
  * The Berg Balance Scale's fourteen task names — kept as row labels so an examiner scoring
@@ -74,27 +74,17 @@ export function BergBalanceCalculator() {
         </p>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {BERG_ITEMS.map((item, i) => (
-            <div className="pro-item-row" key={item}>
-              <span className="pro-item-row-label">
-                {i + 1}. {item}
-              </span>
-              <select
-                className="input pro-item-row-select"
-                aria-label={`Item ${i + 1}, ${item}, score`}
-                value={scores[i]}
-                onChange={(e) => {
-                  const next = [...scores];
-                  next[i] = Number(e.target.value);
-                  setScores(next);
-                }}
-              >
-                {[0, 1, 2, 3, 4].map((score) => (
-                  <option key={score} value={score}>
-                    {score}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <ItemScoreRow
+              key={item}
+              label={`${i + 1}. ${item}`}
+              scores={[0, 1, 2, 3, 4]}
+              value={scores[i]}
+              onChange={(next) => {
+                const updated = [...scores];
+                updated[i] = next ?? 0;
+                setScores(updated);
+              }}
+            />
           ))}
         </div>
         <div className="pro-calc-result" style={{ marginTop: 14 }}>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalcModal, CalcCardShell, LicensedInstrumentNotice } from "./CalcModal";
+import { CalcModal, CalcCardShell, LicensedInstrumentNotice, ItemScoreRow } from "./CalcModal";
 
 /** The DASH is 30 items. Unlike the ODI or Berg there are no section or task headings to
  *  label rows with — on this instrument the item *is* the text — so rows are numbered, and
@@ -66,26 +66,18 @@ export function DashCalculator() {
         </p>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {Array.from({ length: DASH_ITEM_COUNT }, (_, i) => (
-            <div className="pro-item-row" key={i}>
-              <span className="pro-item-row-label">Item {i + 1}</span>
-              <select
-                className="input pro-item-row-select"
-                aria-label={`Item ${i + 1} response`}
-                value={scores[i] ?? ""}
-                onChange={(e) => {
-                  const next = [...scores];
-                  next[i] = e.target.value === "" ? null : Number(e.target.value);
-                  setScores(next);
-                }}
-              >
-                <option value="">—</option>
-                {[1, 2, 3, 4, 5].map((score) => (
-                  <option key={score} value={score}>
-                    {score}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <ItemScoreRow
+              key={i}
+              label={`Item ${i + 1}`}
+              scores={[1, 2, 3, 4, 5]}
+              value={scores[i]}
+              allowUnset
+              onChange={(next) => {
+                const updated = [...scores];
+                updated[i] = next;
+                setScores(updated);
+              }}
+            />
           ))}
         </div>
         <div className="pro-calc-result" style={{ marginTop: 14 }}>
