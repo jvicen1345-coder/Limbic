@@ -75,13 +75,22 @@ export type MovementPosition = (typeof MOVEMENT_POSITIONS)[number];
 
 /** What the patient has to own to do it at home. "None" is its own value and is the single
  *  most-used filter in the browser for exactly that reason — a program built out of
- *  equipment the patient doesn't have is a program that doesn't get done. */
+ *  equipment the patient doesn't have is a program that doesn't get done.
+ *
+ *  Ordered as two groups: training implements a patient buys (band through rope), then the
+ *  household objects and surfaces most people already have (chair through table). "Rope"
+ *  covers battle ropes and any anchored heavy rope. Gym kit with no value of its own —
+ *  a barbell, a landmine, a machine — is filed under the nearest implement here and named
+ *  in the exercise's own `setup`; deliberately keep this list short enough to scan in a
+ *  dropdown rather than growing a value per piece of equipment. Never file real kit under
+ *  "None": that value is a promise the patient needs nothing. */
 export const MOVEMENT_EQUIPMENT = [
   "None",
   "Resistance band",
   "Weight",
   "Ball",
   "Foam roller",
+  "Rope",
   "Chair",
   "Step or stairs",
   "Towel or strap",

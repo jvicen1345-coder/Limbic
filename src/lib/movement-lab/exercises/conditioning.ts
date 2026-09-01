@@ -235,7 +235,7 @@ export const CONDITIONING_EXERCISES: MovementExercise[] = [
     region: "General Conditioning",
     category: "Endurance",
     positions: ["Standing"],
-    equipment: ["Weight"],
+    equipment: ["Rope"],
     difficulty: 3,
     phases: ["Strengthening", "Return to Activity"],
     targets: ["Cardiovascular system", "Shoulder girdle endurance", "Latissimus dorsi", "Grip and forearms", "Trunk", "Lower limb isometric endurance"],
