@@ -5,7 +5,7 @@ import { createHepAction } from "@/app/actions/hep";
 import { XIcon } from "@/components/icons";
 import { MovementLabPicker } from "@/components/movement-lab/MovementLabPicker";
 import type { MovementExercise } from "@/lib/movement-lab";
-import type { HepTemplateExercise } from "@/lib/hep-templates";
+import { HEP_TEMPLATE_KINDS, HEP_TEMPLATE_KIND_LABELS, type HepTemplateExercise, type HepTemplateKind } from "@/lib/hep-templates";
 
 interface DraftExercise {
   id: number;
@@ -28,8 +28,8 @@ const EMPTY_DRAFT: Omit<DraftExercise, "id"> = { name: "", sets: "", reps: "", n
  *  that would mean touching every setState call below; this bolts on external read/write
  *  access without changing any of the builder's own state management or behavior. */
 export interface HepBuilderHandle {
-  loadTemplate(name: string, exercises: HepTemplateExercise[]): void;
-  getDraft(): { programName: string; exercises: HepTemplateExercise[] } | null;
+  loadTemplate(name: string, exercises: HepTemplateExercise[], kind: HepTemplateKind): void;
+  getDraft(): { programName: string; exercises: HepTemplateExercise[]; kind: HepTemplateKind } | null;
 }
 
 /** A draft handed in by the page rather than built here — how a Movement Lab selection or a
@@ -49,12 +49,19 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
   const [exercises, setExercises] = useState<DraftExercise[]>(() =>
     (initialDraft?.exercises ?? []).map((ex) => ({ id: idSeq++, ...ex })),
   );
+  // Only meaningful for "Save current as template" (see HepWorkspace.tsx saveCurrentAsTemplate,
+  // saveHepTemplateAction) — "Save program" below still writes a kind-less HepProgram, same as
+  // before this field existed. Defaults to "home" since that's the only kind that existed
+  // until now, so an old bookmarked draft or a Movement Lab deep-link (which doesn't specify
+  // one) still behaves exactly as it always has.
+  const [kind, setKind] = useState<HepTemplateKind>("home");
   const [isPending, startTransition] = useTransition();
 
   useImperativeHandle(ref, () => ({
-    loadTemplate(name, templateExercises) {
+    loadTemplate(name, templateExercises, templateKind) {
       setProgramName(name);
       setExercises(templateExercises.map((ex) => ({ id: idSeq++, ...ex })));
+      setKind(templateKind);
     },
     getDraft() {
       if (!programName.trim() || exercises.length === 0) return null;
@@ -71,6 +78,7 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
           imageUrl: ex.imageUrl,
           videoUrl: ex.videoUrl,
         })),
+        kind,
       };
     },
   }));
@@ -123,6 +131,22 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
     <div className="card elev-sm" style={{ marginBottom: 22 }}>
       <div className="card-kicker">New program</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 10 }}>
+        <div className="field">
+          <label>Program type</label>
+          <div className="pro-filter-bar" style={{ marginBottom: 0 }}>
+            {HEP_TEMPLATE_KINDS.map((k) => (
+              <button
+                key={k}
+                type="button"
+                className={`pro-filter-chip${kind === k ? " active" : ""}`}
+                onClick={() => setKind(k)}
+              >
+                {HEP_TEMPLATE_KIND_LABELS[k]}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="field">
           <label htmlFor="hep-program">Program name</label>
           <input

@@ -4,7 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { HepBuilder, type HepBuilderHandle, type HepInitialDraft } from "@/components/HepBuilder";
 import { HepTemplateLibrary } from "@/components/HepTemplateLibrary";
 import { loadHepTemplateAction, saveHepTemplateAction } from "@/app/actions/hep";
-import type { HepTemplateBodyPart, HepTemplateExercise } from "@/lib/hep-templates";
+import type { HepTemplateBodyPart, HepTemplateExercise, HepTemplateKind } from "@/lib/hep-templates";
 import type { HepTemplateSummary } from "@/app/actions/hep";
 
 /**
@@ -17,12 +17,12 @@ import type { HepTemplateSummary } from "@/app/actions/hep";
  */
 export function HepWorkspace({
   isPro,
-  templatesByBodyPart,
+  templatesByKindAndBodyPart,
   initialDraft,
   children,
 }: {
   isPro: boolean;
-  templatesByBodyPart: Record<HepTemplateBodyPart, HepTemplateSummary[]>;
+  templatesByKindAndBodyPart: Record<HepTemplateKind, Record<HepTemplateBodyPart, HepTemplateSummary[]>>;
   /** A draft resolved server-side from the Movement Lab deep-link params — passed straight
    *  through to the builder's initial state. See app/(app)/hep/page.tsx. */
   initialDraft?: HepInitialDraft | null;
@@ -38,7 +38,7 @@ export function HepWorkspace({
   function loadTemplate(templateId: string) {
     startTransition(async () => {
       const data = await loadHepTemplateAction(templateId);
-      if (data) builderRef.current?.loadTemplate(data.name, data.exercises);
+      if (data) builderRef.current?.loadTemplate(data.name, data.exercises, data.kind);
     });
   }
 
@@ -51,7 +51,7 @@ export function HepWorkspace({
     setSaveError(null);
     const exercises: HepTemplateExercise[] = draft.exercises;
     startTransition(() => {
-      saveHepTemplateAction(draft.programName, bodyPart, exercises);
+      saveHepTemplateAction(draft.programName, bodyPart, exercises, draft.kind);
     });
     return true;
   }
@@ -63,7 +63,7 @@ export function HepWorkspace({
         {children}
       </div>
       <HepTemplateLibrary
-        templatesByBodyPart={templatesByBodyPart}
+        templatesByKindAndBodyPart={templatesByKindAndBodyPart}
         onLoad={loadTemplate}
         onSaveCurrent={saveCurrentAsTemplate}
         saveError={saveError}
