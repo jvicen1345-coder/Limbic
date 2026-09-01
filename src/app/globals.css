@@ -12852,3 +12852,29 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
   max-width: none;
   margin: 0;
 }
+
+/* Non-affiliation note on the Force Lab import panels (see PasteAssessmentPanel.tsx).
+   Quieter than the surrounding instructions but not hidden — it exists to correct an
+   impression, so it has to be readable. Appended, scoped, overrides nothing. */
+.forcelab-import-affiliation {
+  font-size: var(--fs-11-5);
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  margin-top: 10px;
+}
+
+/* Upload guidance under the Study Guide Creator's PDF picker (see
+   student/SlideBreakdownManager.tsx). Small but not fine print — it tells a student what
+   they may upload, which only works if they read it. Appended, scoped, overrides nothing. */
+.slide-breakdown-upload-notice {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  max-width: 62ch;
+  margin: 10px 0 0;
+}
+.slide-breakdown-upload-notice a {
+  color: var(--color-accent-700);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
