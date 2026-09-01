@@ -536,6 +536,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             <>
               <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/licenses" icon={<CheckCircleIcon />} label="License Queue" bold={false} onNavigate={onNavigate} />
+              <NavLink href="/admin/copyright" icon={<ShieldIcon />} label="Copyright Notices" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/connexion-visits" icon={<ShieldIcon />} label="Connexion Visits" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/connexion-safety-score" icon={<ShieldIcon />} label="Connexion Safety Score" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/boards-tagging" icon={<GraduationCapIcon />} label="Boards Question Tagging" bold={false} onNavigate={onNavigate} />

@@ -10,6 +10,7 @@ import {
   type ProfessionalDateField,
 } from "@/lib/limbic-calendar";
 import { todayLocalDateStr } from "@/lib/today";
+import { visibleContentWhere } from "@/lib/copyright";
 
 type PersonalDates = Record<ProfessionalDateField, Date | null>;
 
@@ -64,6 +65,7 @@ export async function LimbicCalendarWidget({
   // field on NexusPost would be needed for this to show anything in normal use.
   const candidatePosts = isAdmin
     ? await prisma.nexusPost.findMany({
+        where: { ...visibleContentWhere },
         select: { id: true, body: true, articleTitle: true, createdAt: true, sourceUrl: true, authorId: true },
         orderBy: { createdAt: "desc" },
         take: 300,

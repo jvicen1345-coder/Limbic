@@ -51,6 +51,18 @@ model User {
   termsAcceptedAt DateTime?
   termsVersion    String?
 
+  // Account suspension, used by the repeat-infringer termination policy the DMCA page
+  // publishes (app/dmca/page.tsx §6) and required by 17 U.S.C. §512(i)(1)(A), which
+  // conditions safe harbor on that policy being *reasonably implemented*, not merely
+  // written down. A suspension is deliberately not a deletion: the account, its content and
+  // the CopyrightNotice rows against it all survive, because the evidence that the policy
+  // was actually enforced is the thing §512(i) is asking for. getCurrentUser() returns null
+  // while suspendedAt is set and both sign-in paths refuse the account outright, so a
+  // suspension takes effect on the next request rather than whenever the session expires.
+  suspendedAt     DateTime?
+  suspendedReason String?
+  copyrightNotices CopyrightNotice[]
+
   // Legacy single "primary license" (sign-in-with-license flow predating password auth, plus
   // whatever CE tracking/admin lookup/hasLicenseAccess still read directly off User instead
   // of the License relation below). Kept in sync with the reader's best License row — most
@@ -479,6 +491,54 @@ model User {
   messagesReceived    NexusMessage[]     @relation("MessageRecipient")
 }
 
+// One notice of claimed copyright infringement received under the DMCA (see
+// app/dmca/page.tsx, which publishes where to send them), recorded by an admin from
+// /admin/copyright. This table is the evidence that the repeat-infringer policy §512(i)
+// requires is *reasonably implemented* — courts read that phrase strictly, and a provider
+// that publishes a policy without a record of enforcing it is the fact pattern that loses
+// safe harbor. So a notice is never deleted, only resolved: a rejected or reinstated notice
+// keeps its row and stops counting as a strike.
+//
+// Not every notice is a strike. status is the single source of truth for that (see
+// NOTICE_STATUSES / countsAsStrike in lib/copyright.ts):
+//   "received"  — logged, content still up, nothing decided yet. Not a strike.
+//   "removed"   — the material was taken down. Counts as a strike.
+//   "rejected"  — facially defective or not infringing; content stays up. Not a strike.
+//   "reinstated"— was removed, then restored (valid counter-notice, or withdrawn). Not a strike.
+model CopyrightNotice {
+  id         String   @id @default(cuid())
+  receivedAt DateTime @default(now())
+
+  // The complainant, as given in their notice. Free text and never validated against
+  // anything — it is a record of what was claimed, not an assertion that it is true.
+  complainantName  String
+  complainantEmail String
+  // What they say was infringed, and where they say it appears.
+  workDescription  String
+
+  // The targeted content. A plain type+id pair rather than two nullable relations: the
+  // notice has to outlive the content it is about (a post can be deleted by its own author
+  // after a takedown, and the record still has to stand), so this deliberately does not
+  // cascade. "post" | "comment" — see NOTICE_TARGET_TYPES in lib/copyright.ts.
+  targetType String
+  targetId   String
+
+  // Whose content it was. This is the relation strike counts are computed over, so it must
+  // be set even when targetId no longer resolves. Cascades on account deletion, which is
+  // correct: strikes against an account that no longer exists count for nothing.
+  targetAuthorId String
+  targetAuthor   User   @relation(fields: [targetAuthorId], references: [id], onDelete: Cascade)
+
+  status     String    @default("received")
+  actionedAt DateTime?
+  // Free-text admin record — why a notice was rejected, that a counter-notice arrived and
+  // when, anything else the file should show later.
+  notes      String?
+
+  @@index([targetAuthorId])
+  @@index([status])
+}
+
 // A PT license submitted through the post-signup verification flow (see
 // app/actions/license.ts, components/AddLicenseModal.tsx, app/(app)/admin/licenses/page.tsx)
 // — one row per state a reader is licensed in, since a PT can hold licenses in more than one
@@ -554,6 +614,18 @@ model NexusPost {
   sourceLabel  String?
   createdAt    DateTime @default(now())
 
+  // Soft removal for copyright takedowns (§512(c)(1)(C) requires removing or *disabling
+  // access to* the material, not destroying it). Deliberately not a hard delete for two
+  // reasons: the DMCA page's counter-notification section promises material can be restored
+  // in 10-14 business days if a valid counter-notice arrives (§512(g)), which a delete makes
+  // impossible; and the removed row is the record that the takedown actually happened.
+  //
+  // IMPORTANT: a removed post must not appear in any reader-facing query. Every read site
+  // spreads `visibleContentWhere` from lib/copyright.ts rather than writing the filter by
+  // hand — add new queries the same way, and see that file for the full list.
+  removedAt     DateTime?
+  removedReason String?
+
   likes    NexusPostLike[]
   comments NexusPostComment[]
 }
@@ -577,6 +649,10 @@ model NexusPostComment {
   author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   body      String
   createdAt DateTime  @default(now())
+
+  // Same soft-removal contract as NexusPost above — see that field's comment.
+  removedAt     DateTime?
+  removedReason String?
 }
 
 // A direct message between two connected users. senderId/recipientId, not a thread id —

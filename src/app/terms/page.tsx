@@ -64,6 +64,13 @@ export default function TermsPage() {
         responsible for content you post. You agree not to post content that is false, harmful, harassing, or
         violates any applicable law.
       </p>
+      <p className="legal-body">
+        This includes copyright. Do not post material you do not own or do not have permission to use. Limbic
+        removes material that is the subject of a valid infringement notice and{" "}
+        <strong>terminates the accounts of repeat infringers in appropriate circumstances</strong>. How notices
+        are handled, how to dispute a removal, and how the repeat-infringer policy works are set out in our{" "}
+        <a href="/dmca">Copyright &amp; DMCA Policy</a>.
+      </p>
 
       <h2 className="legal-section-title">7. Third Party Integrations</h2>
       <p className="legal-body">

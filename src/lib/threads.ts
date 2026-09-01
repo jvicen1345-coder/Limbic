@@ -4,6 +4,7 @@ import { ensureNexusSeedData } from "@/lib/nexus-seed";
 import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
 import type { ThreadsNodeData } from "@/lib/threads-graph";
 import type { Article, ArticleType } from "@/lib/types";
+import { visibleContentWhere } from "@/lib/copyright";
 
 const MAX_MATCHES_CONSIDERED = 4;
 const NEXUS_POSTS_SCANNED = 60;
@@ -45,6 +46,7 @@ async function findNexusMatch(article: Article): Promise<{ authorName: string; s
   if (candidateTerms.length === 0) return null;
 
   const posts = await prisma.nexusPost.findMany({
+    where: { ...visibleContentWhere },
     orderBy: { createdAt: "desc" },
     take: NEXUS_POSTS_SCANNED,
     select: { body: true, articleTitle: true, author: { select: { name: true } } },

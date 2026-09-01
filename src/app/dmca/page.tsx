@@ -93,7 +93,7 @@ export default function DmcaPage() {
         <br />
         Newport Beach, CA 92660
         <br />
-        Phone: 949-500-5308
+        Phone: 949-416-3519
         <br />
         Email: jvicen1345@gmail.com
       </p>

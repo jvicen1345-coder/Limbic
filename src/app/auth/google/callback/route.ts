@@ -28,7 +28,11 @@ export async function GET(request: NextRequest) {
 
   try {
     const { email, name, sub } = await exchangeGoogleCode(code);
-    await signInWithGoogle({ email, name, sub });
+    const result = await signInWithGoogle({ email, name, sub });
+    // A suspended account can't come in through Google either (see lib/session.ts) — sent
+    // back to /sign-in with the same message the password form shows, rather than a
+    // redirect to /home that would land on a signed-out app shell.
+    if (!result.ok) return failure("account_suspended");
   } catch (err) {
     console.error("[auth/google/callback]", err);
     return failure("google_failed");

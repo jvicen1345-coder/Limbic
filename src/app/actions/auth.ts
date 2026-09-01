@@ -29,6 +29,13 @@ export async function signInAction(formData: FormData) {
 
   const result = await signInWithPassword({ email, password });
   if (!result.ok) {
+    // A suspended account is not a failed credential — the password was correct, the
+    // account is closed (see lib/session.ts, User.suspendedAt). Not recorded as a failed
+    // attempt, since counting it would lock the reader out of an account they can already
+    // no longer reach and bury the real message behind a rate-limit one.
+    if (result.reason === "suspended") {
+      redirect(`/sign-in?error=account_suspended&email=${encodeURIComponent(email)}`);
+    }
     await recordFailedSignIn(email);
     const code = result.reason === "needsPassword" ? "needs_password" : "invalid_credentials";
     redirect(`/sign-in?error=${code}&email=${encodeURIComponent(email)}`);

@@ -28,6 +28,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   guest_rate_limited: "Too many guest sign-ins from this network recently — please try again later, or create a real account.",
   guest_name_required: "Please enter a name to continue as guest.",
   terms_required: "Please accept the Terms of Service and Privacy Policy to create an account.",
+  account_suspended:
+    "This account has been suspended. Contact support if you believe this is a mistake.",
   rate_limited: "Too many attempts. Please try again later.",
 };
 
