@@ -24,7 +24,14 @@ type SlideResult = { cardsCreated: number; notesUpdated: boolean; courseCode: st
  *  who already has the text copied some other way, toggled behind a link rather than shown
  *  as an equal second tab, since PDF upload is what was actually asked for. */
 export function SlideBreakdownManager({ courses }: { courses: SlideBreakdownCourse[] }) {
-  const [courseId, setCourseId] = useState(courses[0]?.id ?? "");
+  // Deliberately no default course — defaulting to courses[0] (or "whichever was last
+  // selected") let a student upload one lecture's slides while the picker was still sitting
+  // on a different course from a prior visit, silently merging that lecture's AI-extracted
+  // notes into the wrong course's Study Guide (studyNotes is one appended blob per course,
+  // see Syllabus.studyNotes in schema.prisma — there's no way to undo that after the fact
+  // short of manually editing the merged text). Requiring an explicit choice every time
+  // closes that off instead of relying on the student to notice and change a pre-filled value.
+  const [courseId, setCourseId] = useState("");
   const [mode, setMode] = useState<"pdf" | "text">("pdf");
   const [fileName, setFileName] = useState<string | null>(null);
   const [text, setText] = useState("");
@@ -49,6 +56,11 @@ export function SlideBreakdownManager({ courses }: { courses: SlideBreakdownCour
   function handlePdfChosen() {
     const file = fileInputRef.current?.files?.[0];
     if (!file) return;
+    if (!courseId) {
+      setError("Select a course first.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
     setError(null);
     setResult(null);
     setFileName(file.name);
@@ -71,6 +83,10 @@ export function SlideBreakdownManager({ courses }: { courses: SlideBreakdownCour
   function handleTextSubmit() {
     setError(null);
     setResult(null);
+    if (!courseId) {
+      setError("Select a course first.");
+      return;
+    }
     if (!text.trim()) {
       setError("Paste your slide text first.");
       return;
@@ -92,6 +108,9 @@ export function SlideBreakdownManager({ courses }: { courses: SlideBreakdownCour
       <div className="field">
         <label htmlFor="slide-course">Course</label>
         <select id="slide-course" className="input" value={courseId} onChange={(e) => setCourseId(e.target.value)}>
+          <option value="" disabled>
+            Select a course…
+          </option>
           {courses.map((c) => (
             <option key={c.id} value={c.id}>
               {c.courseCode} — {c.courseName}
@@ -108,10 +127,15 @@ export function SlideBreakdownManager({ courses }: { courses: SlideBreakdownCour
               type="file"
               accept="application/pdf,.pdf"
               onChange={handlePdfChosen}
-              disabled={pending}
+              disabled={pending || !courseId}
               style={{ display: "none" }}
             />
-            <button type="button" className="btn btn-primary" disabled={pending} onClick={() => fileInputRef.current?.click()}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={pending || !courseId}
+              onClick={() => fileInputRef.current?.click()}
+            >
               {pending ? "Reading your slides…" : "Choose PDF"}
             </button>
             {fileName && <span className="slide-breakdown-filename">{fileName}</span>}
@@ -133,7 +157,13 @@ export function SlideBreakdownManager({ courses }: { courses: SlideBreakdownCour
               onChange={(e) => setText(e.target.value)}
             />
           </div>
-          <button type="button" className="btn btn-primary" style={{ marginTop: 4 }} onClick={handleTextSubmit} disabled={pending}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            style={{ marginTop: 4 }}
+            onClick={handleTextSubmit}
+            disabled={pending || !courseId}
+          >
             {pending ? "Reading your slides…" : "Break Down Slides with Limbic AI"}
           </button>
           <button type="button" className="slide-breakdown-mode-link" onClick={() => setMode("pdf")}>

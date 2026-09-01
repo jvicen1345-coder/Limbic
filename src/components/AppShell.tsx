@@ -408,10 +408,13 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
                 /pro/red-flags is now just a redirect there. */}
             <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Screening & Decision Support" bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" bold={false} onNavigate={onNavigate} />
-            {/* Free to any signed-in user, same as the reference tools above it — it feeds
-                the HEP Builder below, so it sits next to it rather than under Wellness's
-                Exercise Library, which is general-fitness content for a different reader. */}
-            <NavLink href="/movement-lab" icon={<DumbbellIcon />} label="Movement Lab" bold={false} onNavigate={onNavigate} />
+            {/* Now a tab on Exercise Programs (see app/(app)/hep/page.tsx) rather than its
+                own page — this is a second entry into that page, same pattern as Team
+                Dashboard's /pro/dashboard?tab=team below. Kept as its own row, unlocked and
+                free to any signed-in user, since the Builder tab it sits next to still needs
+                a license and shows a lock pill (see Exercise Programs below) — a reader with
+                neither would otherwise have no unlocked way into this from the sidebar. */}
+            <NavLink href="/hep?tab=movement-lab" icon={<DumbbellIcon />} label="Movement Lab" bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
             <NavLink href="/hep" icon={<BandageIcon />} label="Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
           </>
