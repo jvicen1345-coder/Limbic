@@ -45,3 +45,17 @@ export function wellnessTipForDate(dateKey: string): string {
   for (let i = 0; i < dateKey.length; i++) h = (Math.imul(h, 31) + dateKey.charCodeAt(i)) >>> 0;
   return WELLNESS_TIPS[h % WELLNESS_TIPS.length];
 }
+
+/** Display-only split of a tip's trailing "Source: …" citation off its body text, so the
+ *  Overview's tip card can render the citation as a proper footnote instead of a sentence
+ *  fragment trailing the tip itself (see app/(app)/wellness/page.tsx). Deliberately reads
+ *  the already-selected tip rather than touching WELLNESS_TIPS or wellnessTipForDate above
+ *  — the tip strings and the rotation that picks them are unchanged, this only decides
+ *  where the line breaks on screen. Tips with no "Source:" segment come back whole, with a
+ *  null source, so a future uncited tip still renders correctly. */
+export function splitWellnessTip(tip: string): { text: string; source: string | null } {
+  const marker = tip.lastIndexOf("Source:");
+  if (marker < 0) return { text: tip.trim(), source: null };
+  const source = tip.slice(marker + "Source:".length).trim();
+  return { text: tip.slice(0, marker).trim(), source: source.length > 0 ? source : null };
+}
