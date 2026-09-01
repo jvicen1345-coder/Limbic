@@ -26,9 +26,12 @@ import { classify, fetchGoogleNewsRss, stripHtml, sourceName, toIsoDate, estimat
  * posture at all, since the results come from whatever outlets Google News indexed, not
  * from apta.org's servers directly. Only used when tier 1 comes back thin.
  *
- * Falls back to APTA_NEWS_SEED (lib/apta-news-static.ts) if both tiers together still
- * return too few results — same graceful-degradation pattern as every other live source
- * in this app.
+ * There is no third tier. If both of the above come back empty, this feed renders empty.
+ * It used to fall back to a bundled APTA_NEWS_SEED, but that content was invented
+ * advocacy reporting — naming real state legislatures and real bills — published under
+ * `source: "APTA"`, and tier 1 failing is the *expected* case (see the 403 above), so in
+ * practice the fallback was what readers usually saw. An empty section is the correct
+ * degradation for a feed that can only honestly carry someone else's reporting.
  */
 
 const NEWS_URL = "https://www.apta.org/news";

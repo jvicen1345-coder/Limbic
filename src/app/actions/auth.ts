@@ -12,6 +12,7 @@ import { clientIp } from "@/lib/request-ip";
 import { consumeGuestSignupAllowance } from "@/lib/guest-rate-limit";
 import { isSignInRateLimited, recordFailedSignIn, clearSignInAttempts } from "@/lib/sign-in-rate-limit";
 import { isPasswordResetRateLimited, recordPasswordResetRequest } from "@/lib/password-reset-rate-limit";
+import { hasAcceptedTerms } from "@/lib/legal-terms";
 
 // Backs the Email tab's sign-in form (see components/SignInForm.tsx). Rate-limited per
 // email (see lib/sign-in-rate-limit.ts) — checked before signInWithPassword runs at all, so
@@ -42,6 +43,15 @@ export async function signUpAction(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
+
+  // Checked server-side, not just via the checkbox's `required` attribute — this action is
+  // its own callable endpoint, same reasoning as submitLicenseVerification's field
+  // validation in app/actions/license.ts. Checked ahead of everything else so an account is
+  // never created without a recorded acceptance, and the email is echoed back so the reader
+  // only has to re-tick the box rather than retype the form.
+  if (!hasAcceptedTerms(formData)) {
+    redirect(`/sign-in?error=terms_required&mode=signup&email=${encodeURIComponent(email)}`);
+  }
 
   if (password !== confirmPassword) {
     redirect(`/sign-in?error=password_mismatch&mode=signup&email=${encodeURIComponent(email)}`);
@@ -146,6 +156,13 @@ export async function guestSignInAction(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   if (!name) {
     redirect("/sign-in?error=guest_name_required&tab=guest");
+  }
+
+  // A guest account is still an account: it gets a session cookie and accumulates saved
+  // content, so it needs the same recorded assent. Checked before consumeGuestSignupAllowance
+  // below, so a missing tick doesn't burn the reader's guest-signup allowance for the network.
+  if (!hasAcceptedTerms(formData)) {
+    redirect("/sign-in?error=terms_required&tab=guest");
   }
 
   const ip = await clientIp();

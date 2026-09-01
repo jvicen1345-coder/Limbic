@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 import { nameFromEmail } from "@/lib/meta";
 import { hashPassword, verifyPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";
+import { TERMS_VERSION } from "@/lib/legal-terms";
 import type { User } from "@/generated/prisma/client";
 
 const COOKIE_NAME = "pt_news_session";
@@ -263,6 +264,12 @@ export async function signInAsGuest(name: string) {
       hasCompletedOnboarding: false,
       hasSetName: false,
       hasCompletedTour: false,
+      // Every path into this file that creates an account is gated on affirmative assent
+      // first (see lib/legal-terms.ts, app/actions/auth.ts, components/SignInForm.tsx),
+      // so the record is stamped here, at the single moment the account comes into
+      // existence, rather than in each caller.
+      termsAcceptedAt: new Date(),
+      termsVersion: TERMS_VERSION,
       name: name.trim() || "Guest",
     },
   });
@@ -292,6 +299,12 @@ export async function signUpWithPassword(input: { email: string; password: strin
       hasCompletedOnboarding: false,
       hasSetName: false,
       hasCompletedTour: false,
+      // Every path into this file that creates an account is gated on affirmative assent
+      // first (see lib/legal-terms.ts, app/actions/auth.ts, components/SignInForm.tsx),
+      // so the record is stamped here, at the single moment the account comes into
+      // existence, rather than in each caller.
+      termsAcceptedAt: new Date(),
+      termsVersion: TERMS_VERSION,
       passwordHash,
     },
   });
@@ -331,6 +344,12 @@ export async function signInWithGoogle(input: { email: string; name?: string | n
       hasCompletedOnboarding: false,
       hasSetName: false,
       hasCompletedTour: false,
+      // Every path into this file that creates an account is gated on affirmative assent
+      // first (see lib/legal-terms.ts, app/actions/auth.ts, components/SignInForm.tsx),
+      // so the record is stamped here, at the single moment the account comes into
+      // existence, rather than in each caller.
+      termsAcceptedAt: new Date(),
+      termsVersion: TERMS_VERSION,
       googleId: input.sub,
     },
   });

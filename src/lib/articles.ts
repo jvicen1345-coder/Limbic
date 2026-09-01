@@ -1,11 +1,10 @@
 import "server-only";
 import type { Article, ArticleType, WellnessArticle } from "@/lib/types";
-import { SEED_ARTICLES, SEED_WELLNESS_ARTICLES, WELLNESS_VIDEOS } from "@/lib/articles-static";
+import { SEED_WELLNESS_ARTICLES, WELLNESS_VIDEOS } from "@/lib/articles-static";
 import { fetchLiveArticles, fetchLiveWellness } from "@/lib/news-live";
 import { fetchPubmedResearch, fetchPubmedById } from "@/lib/pubmed";
 import { RETRACTION_WATCH_ARTICLES } from "@/lib/retraction-watch-data";
 import { fetchAptaNews } from "@/lib/apta-news";
-import { APTA_NEWS_SEED } from "@/lib/apta-news-static";
 import { ORTHOPT_CPG_SEED } from "@/lib/orthopt-cpg-static";
 import { defaultEvidenceLevelForType } from "@/lib/evidence";
 
@@ -28,16 +27,16 @@ const LIVE_TYPES: ArticleType[] = ["research", "industry", "product"];
  * lib/orthopt-cpg-static.ts — "Guidelines" means those specific documents, not a keyword
  * guess off general news search).
  *
- * Deliberately never tops up a thin live result with SEED_ARTICLES (lib/articles-static.ts)
- * — that file is hand-authored, illustrative content (fabricated study details, fake
- * legislative changes, invented FDA clearances) with no real sourceUrl a reader could
- * verify it against, and showing it interleaved with genuine PubMed/news results with no
- * way to tell them apart is a real clinical-trust problem for licensed clinicians reading
- * this feed. In practice PubMed and the Google News queries return well above what a
- * MIN_LIVE_PER_TYPE-style threshold ever needed, so real supply isn't actually the
- * constraint that fallback existed for. SEED_ARTICLES itself isn't deleted — see
- * getArticleById below, which still resolves already-saved seed-origin ids directly —
- * just never surfaced as a new recommendation.
+ * There is no fabricated fallback at any tier. This used to top up thin live results
+ * from SEED_ARTICLES — hand-authored filler with fabricated study details, fake
+ * legislative changes and invented FDA clearances, carrying the bylines of real journals
+ * and federal documents. Interleaving that with genuine PubMed/news results, with no way
+ * for a reader to tell them apart, is both a clinical-trust problem for the licensed
+ * clinicians reading this feed and a false attribution to the real sources named on it.
+ * That array is now deleted outright rather than merely unsurfaced. In practice PubMed
+ * and the Google News queries return well above what a MIN_LIVE_PER_TYPE-style threshold
+ * ever needed, so real supply was never the constraint the fallback existed for; a
+ * category that genuinely has nothing returns empty.
  *
  * CE & Events has no live source at all right now (Google News doesn't carry precise
  * future event dates — see lib/news-live.ts) and, for the same reason, no longer falls
@@ -87,9 +86,9 @@ export async function getUnderReviewArticles(): Promise<Article[]> {
 /**
  * Live news from apta.org/news (see lib/apta-news.ts for why this is scraped rather than
  * an API/RSS feed, and the real risk that it may not work in production either). Two real
- * tiers (see lib/apta-news.ts) — never tops up with APTA_NEWS_SEED's fabricated content
- * (same reasoning as getArticles() above), so this can come back sparse or empty if both
- * tiers genuinely have nothing, rather than ever showing invented news. Kept separate from
+ * tiers (see lib/apta-news.ts) and no fabricated fallback behind them (same reasoning as
+ * getArticles() above), so this can come back sparse or empty if both tiers genuinely
+ * have nothing, rather than ever showing invented news. Kept separate from
  * getArticles() — this is its own feed, not a category within the main one.
  */
 export async function getAptaNewsArticles(): Promise<Article[]> {
@@ -106,15 +105,12 @@ export async function getArticleById(id: string): Promise<Article | null> {
   }
   if (id.startsWith("apta-")) {
     const aptaArticles = await getAptaNewsArticles();
-    const live = aptaArticles.find((a) => a.id === id);
-    if (live) return live;
-    // Not a live result right now — still resolve it directly if it's a
-    // previously-saved APTA_NEWS_SEED id, same backward-compatibility reasoning as the
-    // SEED_ARTICLES fallback below: getArticles()/getAptaNewsArticles() no longer
-    // surface this fabricated content as a *new* recommendation, but an existing
-    // SavedArticle row pointing at one shouldn't 404 just because of that.
-    const aptaSeedMatch = APTA_NEWS_SEED.find((a) => a.id === id);
-    return aptaSeedMatch ? withEvidenceLevel([aptaSeedMatch])[0] : null;
+    // No fallback beyond the live tiers. A previously-saved id that no live tier
+    // still carries resolves to null and 404s, which is the intended outcome: the
+    // APTA_NEWS_SEED it used to fall back to was fabricated APTA news, and a stale
+    // bookmark 404ing is a far better failure than serving invented advocacy reporting
+    // under a real association's byline (see lib/apta-news-static.ts's removal).
+    return aptaArticles.find((a) => a.id === id) ?? null;
   }
   if (id.startsWith("pubmed-")) {
     // Don't rely on the article still being in fetchPubmedResearch()'s current top
@@ -122,10 +118,10 @@ export async function getArticleById(id: string): Promise<Article | null> {
     // touches, so look this one PMID up directly instead of 404ing on a valid article.
     return fetchPubmedById(id.slice("pubmed-".length));
   }
-  // SEED_ARTICLES is no longer surfaced as a new recommendation (see getArticles()
-  // above) — checked directly here only so a previously-saved seed-origin id still
-  // resolves instead of 404ing, same reasoning as the APTA_NEWS_SEED check above.
-  const seedMatch = [...SEED_ARTICLES, ...ORTHOPT_CPG_SEED].find((a) => a.id === id);
+  // ORTHOPT_CPG_SEED only — these are real, curated AOPT guidelines that getArticles()
+  // also surfaces, resolved here directly so the lookup doesn't depend on a live fetch.
+  // The fabricated SEED_ARTICLES that used to be checked alongside them are deleted.
+  const seedMatch = ORTHOPT_CPG_SEED.find((a) => a.id === id);
   if (seedMatch) return withEvidenceLevel([seedMatch])[0];
 
   const articles = await getArticles();

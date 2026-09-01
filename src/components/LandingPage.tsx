@@ -45,6 +45,7 @@ const FEATURES = [
 const FOOTER_LINKS = [
   { href: "/terms", label: "Terms" },
   { href: "/privacy", label: "Privacy" },
+  { href: "/dmca", label: "Copyright" },
   { href: "/sign-in", label: "Sign In" },
   { href: "/founding-funders", label: "Founding Funders" },
   // A crawlable internal link from the homepage to the public program directory (see
