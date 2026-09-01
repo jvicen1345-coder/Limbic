@@ -8,7 +8,7 @@ import { requestMovementLabExercise } from "@/app/actions/movement-lab-requests"
 
 let idSeq = 1;
 type DraftRow = HepTemplateExercise & { _id: number };
-const EMPTY_ROW: HepTemplateExercise = { name: "", sets: "", reps: "", weight: "", notes: "", imageUrl: "", videoUrl: "" };
+const EMPTY_ROW: HepTemplateExercise = { name: "", sets: "", reps: "", weight: "", frequency: "", notes: "", imageUrl: "", videoUrl: "" };
 
 /** Rough patient-facing dosage note for an autocompleted Movement Lab pick — same fields as
  *  HepBuilder.tsx's own addFromMovementLab, kept as its own small copy here rather than a
@@ -152,7 +152,19 @@ export function ExerciseListEditor({
   const emit = (next: DraftRow[]) => {
     setRows(next);
     onChange(
-      next.map((r) => ({ name: r.name, sets: r.sets, reps: r.reps, weight: r.weight, notes: r.notes, imageUrl: r.imageUrl, videoUrl: r.videoUrl }))
+      next.map((r) => ({
+        name: r.name,
+        sets: r.sets,
+        reps: r.reps,
+        weight: r.weight,
+        // No dedicated input for this in the compact editor below — just preserved as-is so
+        // a row loaded from a HepBuilder-authored template (which does collect it) doesn't
+        // silently lose it on the next edit-and-resave here.
+        frequency: r.frequency,
+        notes: r.notes,
+        imageUrl: r.imageUrl,
+        videoUrl: r.videoUrl,
+      }))
     );
   };
 

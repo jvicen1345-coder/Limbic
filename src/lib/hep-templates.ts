@@ -60,18 +60,19 @@ export const HEP_TEMPLATE_KIND_SHORT_LABELS: Record<HepTemplateKind, string> = {
 // What actually gets persisted as HEPTemplate.exercises, PatientHEPAssignment.exercises, and
 // SessionExerciseLog.exercises (see each model's own comment in schema.prisma) — read/written
 // by the Clinician Dashboard's shared exercise editor (components/pro/dashboard/
-// HepExerciseList.tsx). Same shape as HepBuilder's DraftExercise minus the client-only
-// numeric `id`, EXCEPT `weight` — that field is dashboard-only (the load used for that
-// exercise this HEP/session, e.g. "20 lbs", "2 lb ankle weight", "bodyweight"; free text like
-// sets/reps rather than a strict number, so it stays meaningful for a hold- or band-based
-// exercise with no plate weight). HepBuilder's own template-authoring flow (the /hep page)
-// doesn't collect it, so a template built there always snapshots weight as "" — acceptable
-// since it's optional context, not required to render or use the program.
+// HepExerciseList.tsx) and the Exercise Programs builder (components/HepBuilder.tsx). Same
+// shape as HepBuilder's DraftExercise minus the client-only numeric `id`. `weight` (the load
+// used for that exercise, e.g. "20 lbs", "2 lb ankle weight", "bodyweight") and `frequency`
+// (how often per day/week, e.g. "2x/day") are both free text rather than a strict number —
+// stays meaningful for a hold- or band-based exercise with no plate weight, or a dosage that
+// doesn't cleanly reduce to one number. Movement Lab picks (the autocomplete and the
+// standalone picker) backfill both automatically where the exercise bank specifies them.
 export interface HepTemplateExercise {
   name: string;
   sets: string;
   reps: string;
   weight: string;
+  frequency: string;
   notes: string;
   imageUrl: string;
   videoUrl: string;
@@ -91,6 +92,7 @@ export function parseHepExercises(raw: unknown): HepTemplateExercise[] {
       sets: e.sets ?? "",
       reps: e.reps ?? "",
       weight: e.weight ?? "",
+      frequency: e.frequency ?? "",
       notes: e.notes ?? "",
       imageUrl: e.imageUrl ?? "",
       videoUrl: e.videoUrl ?? "",

@@ -1592,20 +1592,18 @@ export function resolveProtocolSteps(phase: MovementProtocolPhase): ResolvedProt
 export function protocolPhaseToHepExercises(phase: MovementProtocolPhase): HepTemplateExercise[] {
   return resolveProtocolSteps(phase).map(({ exercise, dosage, note }) => {
     const dosageIsOverride = dosage !== formatDosage(exercise.dosage);
-    const notes = [
-      dosageIsOverride ? dosage : exercise.dosage.frequency,
-      exercise.cue.replace(/^“|”$/g, ""),
-      note,
-    ]
-      .filter(Boolean)
-      .join(" — ");
+    const notes = [dosageIsOverride ? dosage : "", exercise.cue.replace(/^“|”$/g, ""), note].filter(Boolean).join(" — ");
     return {
       name: exercise.name,
       sets: dosageIsOverride ? "" : exercise.dosage.sets,
       reps: dosageIsOverride ? "" : exercise.dosage.reps,
       // Not something a protocol phase specifies — see HepTemplateExercise's own comment in
-      // lib/hep-templates.ts on why that's fine (dashboard-only, optional context).
+      // lib/hep-templates.ts on why that's fine (optional context).
       weight: "",
+      // Left blank when the step overrides dosage — the override string above (already in
+      // notes) may not reduce to one clean frequency, same reasoning as sets/reps blanking
+      // out in that case.
+      frequency: dosageIsOverride ? "" : exercise.dosage.frequency,
       notes,
       imageUrl: "",
       videoUrl: "",
