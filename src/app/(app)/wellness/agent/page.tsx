@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/db";
+import { getWellnessProfile } from "@/lib/wellness-profile";
 import { WellnessAgentChat } from "@/components/WellnessAgentChat";
 import { LockIcon } from "@/components/icons";
 
@@ -32,7 +32,7 @@ export default async function WellnessAgentPage() {
     );
   }
 
-  const profile = await prisma.vitalsProfile.findUnique({ where: { userId: user.id } });
+  const profile = await getWellnessProfile(user.id);
 
   return (
     <div className="screen-pad" style={{ maxWidth: 760, margin: "0 auto" }}>

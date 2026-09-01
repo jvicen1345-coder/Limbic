@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/db";
+import { getWellnessProfile } from "@/lib/wellness-profile";
 import type { WellnessGoal } from "@/lib/vitals";
 import { ExerciseLibraryTabs } from "@/components/wellness/ExerciseLibraryTabs";
 
@@ -12,8 +12,8 @@ export default async function ExerciseLibraryPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const profile = await prisma.vitalsProfile.findUnique({ where: { userId: user.id } });
-  const goal = (profile?.wellnessGoal as WellnessGoal | undefined) ?? null;
+  const profile = await getWellnessProfile(user.id);
+  const goal = (profile.wellnessGoal as WellnessGoal | null) ?? null;
 
   return (
     <div className="screen-pad" style={{ maxWidth: 1040, margin: "0 auto" }}>

@@ -6,11 +6,16 @@ import { computeWellnessSet, WELLNESS_ARTICLE_TARGET } from "@/lib/wellness-rota
 import { wellnessTipForDate, splitWellnessTip } from "@/lib/wellness-tips-static";
 import { todayDateKey } from "@/lib/wordle-words";
 import { isMetricsLogMetric, type MetricsLogMetric } from "@/lib/metrics";
-import { VITALS_CATEGORY_LABEL, type VitalsCategory } from "@/lib/vitals";
+import { VITALS_CATEGORY_LABEL, isWellnessProfileComplete, type VitalsCategory } from "@/lib/vitals";
+import { getWellnessProfile } from "@/lib/wellness-profile";
+import { summarizeSleep, summarizeMood } from "@/lib/wellness-recovery";
+import { dateToLocalIso } from "@/lib/limbic-calendar";
 import { wellnessCardOrder, type WellnessCardKey } from "@/lib/user-role";
 import { WellnessOverviewTabs } from "@/components/WellnessOverviewTabs";
 import { WellnessArticlePreview } from "@/components/wellness/WellnessArticlePreview";
 import { MetricsTrackingSection, type MetricsLogEntry } from "@/components/metrics/MetricsTrackingSection";
+import { RecoverySection } from "@/components/wellness/RecoverySection";
+import { BodyMetricsCard } from "@/components/vitals/BodyMetricsCard";
 import {
   ActivityIcon,
   LeafIcon,
@@ -69,6 +74,11 @@ const METRIC_PREVIEW: Record<MetricsLogMetric, { label: string; unit: string; de
   fatConsumedG: { label: "Fat", unit: "g", decimals: 0 },
 };
 
+/** How far back the Trends tab's Recovery block looks. Two weeks is long enough for a
+ *  nightly average and an active-vs-rest-day mood split to mean something, and short enough
+ *  that both still describe how the reader is doing now. */
+const RECOVERY_WINDOW_DAYS = 14;
+
 function shortDate(d: Date): string {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
@@ -77,22 +87,51 @@ export default async function WellnessOverviewPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  // Unchanged from before this layout pass — same six queries, same shapes. `profile` and
-  // `latestHrv` fed the removed Health Snapshot card and no longer have a reader on this
-  // page; they stay in the batch (rather than being dropped) because this pass was scoped to
-  // layout only, and they run in parallel with the four results below that are still used.
-  const [, latestVitalsLog, , latestMetricsLog, metricsLogRows, articlePool] = await Promise.all([
-    prisma.vitalsProfile.findUnique({ where: { userId: user.id } }),
-    prisma.vitalsLog.findFirst({ where: { userId: user.id }, orderBy: { createdAt: "desc" } }),
-    prisma.metricsLog.findFirst({ where: { userId: user.id, metric: "hrv" }, orderBy: { loggedAt: "desc" } }),
-    prisma.metricsLog.findFirst({ where: { userId: user.id }, orderBy: { loggedAt: "desc" } }),
-    prisma.metricsLog.findMany({ where: { userId: user.id }, orderBy: { loggedAt: "desc" }, take: 60 }),
-    getWellnessArticles(),
-  ]);
+  const recoveryWindowStart = new Date();
+  recoveryWindowStart.setDate(recoveryWindowStart.getDate() - (RECOVERY_WINDOW_DAYS - 1));
+  recoveryWindowStart.setHours(0, 0, 0, 0);
+
+  const [profile, latestVitalsLog, latestMetricsLog, metricsLogRows, sleepRows, moodRows, activeDayRows, articlePool] =
+    await Promise.all([
+      // Drives the setup prompt below rather than the old Health Snapshot card — the two
+      // queries that fed that card (this one, plus a latest-HRV lookup) had been left in
+      // place with no reader; the HRV one is gone and this one has a real purpose again.
+      getWellnessProfile(user.id),
+      prisma.vitalsLog.findFirst({ where: { userId: user.id }, orderBy: { createdAt: "desc" } }),
+      prisma.metricsLog.findFirst({ where: { userId: user.id }, orderBy: { loggedAt: "desc" } }),
+      prisma.metricsLog.findMany({ where: { userId: user.id }, orderBy: { loggedAt: "desc" }, take: 60 }),
+      // Sleep and mood for the Trends tab's Recovery block. SleepLog is written by
+      // lib/google-health-sleep-sync.ts and, until this read, had no reader anywhere in the
+      // app; MoodLog was read only by the Activity Log page that writes it.
+      prisma.sleepLog.findMany({ where: { userId: user.id, date: { gte: recoveryWindowStart } }, orderBy: { date: "desc" } }),
+      prisma.moodLog.findMany({ where: { userId: user.id, date: { gte: recoveryWindowStart } }, orderBy: { date: "desc" } }),
+      prisma.vitalsLog.findMany({
+        where: { userId: user.id, date: { gte: recoveryWindowStart } },
+        select: { date: true },
+      }),
+      getWellnessArticles(),
+    ]);
 
   const metricsLogs: MetricsLogEntry[] = metricsLogRows
     .filter((r) => isMetricsLogMetric(r.metric))
     .map((r) => ({ id: r.id, metric: r.metric as MetricsLogEntry["metric"], value: r.value, loggedAt: r.loggedAt }));
+
+  // Bucketed by local date so a late-evening workout and that evening's mood check-in land
+  // on the same day — see summarizeMood in lib/wellness-recovery.ts.
+  const activeDateKeys = new Set(activeDayRows.map((r) => dateToLocalIso(r.date)));
+  const sleepSummary = summarizeSleep(
+    sleepRows.map((r) => ({ date: r.date, minutesAsleep: r.minutesAsleep, minutesInBed: r.minutesInBed }))
+  );
+  const moodSummary = summarizeMood(
+    moodRows.map((r) => ({ dateKey: dateToLocalIso(r.date), mood: r.mood })),
+    activeDateKeys
+  );
+
+  // Every calculator in this section reads the same profile, but it could only ever be
+  // entered on Metrics — so a new reader met "add your details first" on Assess Yourself and
+  // Nutrition with no way to act on it from where they stood. The same card, shown here
+  // until the profile can actually drive those calculators.
+  const needsProfile = !isWellnessProfileComplete(profile);
 
   const timeZone = await getTimeZone(user);
   const dailyTip = splitWellnessTip(wellnessTipForDate(todayDateKey(timeZone)));
@@ -196,6 +235,23 @@ export default async function WellnessOverviewPage() {
         </Link>
       </div>
 
+      {needsProfile && (
+        <div className="wellness-profile-setup">
+          <div className="wellness-profile-setup-head">
+            <span className="wellness-profile-setup-kicker">Finish your setup</span>
+            <Link href="/wellness/metrics" className="wellness-snapshot-link" style={{ marginTop: 0 }}>
+              Go to Metrics &rarr;
+            </Link>
+          </div>
+          <p className="wellness-profile-setup-copy">
+            Your age, height, weight, and biological sex are what the BMI, heart-rate, VO2 Max, and macro calculators
+            compute from, and what Assess Yourself scores against. Add them once here and every one of them starts
+            working &mdash; all optional, all private to you.
+          </p>
+          <BodyMetricsCard initial={profile} compact />
+        </div>
+      )}
+
       <div className="wellness-agent-banner">
         <div className="wellness-agent-banner-main">
           <div className="wellness-agent-banner-pill-row">
@@ -242,6 +298,7 @@ export default async function WellnessOverviewPage() {
         trends={
           <div className="wellness-trends-panel">
             <MetricsTrackingSection logs={metricsLogs} />
+            <RecoverySection sleep={sleepSummary} mood={moodSummary} moodWindowDays={RECOVERY_WINDOW_DAYS} />
           </div>
         }
       />
