@@ -5,6 +5,7 @@ import { getWellnessArticleById } from "@/lib/articles";
 import { withOpenedId } from "@/lib/wellness-rotation";
 import { formatDate } from "@/lib/meta";
 import { BackButton } from "@/components/BackButton";
+import { WellnessDisclaimer } from "@/components/vitals/WellnessDisclaimer";
 
 export default async function WellnessArticlePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -50,6 +51,8 @@ export default async function WellnessArticlePage({ params }: { params: Promise<
           ))}
         </div>
       )}
+
+      <WellnessDisclaimer />
     </div>
   );
 }

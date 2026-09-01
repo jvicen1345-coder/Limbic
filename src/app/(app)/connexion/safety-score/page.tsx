@@ -6,7 +6,7 @@ import { SAFETY_SCORE_DOMAINS, domainMaxScore } from "@/lib/connexion-safety-sco
 const DOMAIN_DESCRIPTIONS: Record<string, string> = {
   environmental: "A room-by-room home walkthrough — entryway, living areas, bathroom, bedroom, kitchen, and stairs — scoring 25 hazard checkpoints.",
   mobility: "Sit-to-stand, transfers, walking, stairs, device use, and balance during functional tasks, observed directly during your visit.",
-  fallRisk: "Fall history, strength, balance, gait, cognition, footwear, and caregiver support — the factors most predictive of a future fall.",
+  fallRisk: "Fall history, strength, balance, gait, cognition, footwear, and caregiver support — risk factors well established in the falls literature.",
 };
 
 const RISK_LEVELS = ["Low Risk", "Moderate Risk", "High Risk", "Very High Risk", "Critical Risk"];
@@ -86,8 +86,10 @@ export default async function ConnexionSafetyScorePage() {
       </div>
 
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", lineHeight: 1.6, textAlign: "center", maxWidth: 620, margin: "18px auto 30px" }}>
-        Your Connexion Safety Score is calculated by a licensed PT during your home visit. The score combines your
-        environmental safety, functional mobility, and fall-risk findings into a single 0-208 predictive index.
+        Your Connexion Safety Score is scored by a licensed PT during your home visit. It totals what they observe
+        across environmental safety, functional mobility, and fall-risk factors into a single 0-208 figure, with a
+        subtotal for each of the three. It is a structured record of what was found on the day, not a prediction
+        about any individual, and it does not replace your clinician&rsquo;s own assessment.
       </p>
 
       <div className="connexion-assessment-card">

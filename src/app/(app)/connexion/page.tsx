@@ -29,7 +29,7 @@ export default async function ConnexionOverviewPage() {
         <h1 className="connexion-hero-title">The Connexion Method</h1>
         <p className="connexion-hero-subtitle">
           A standardized, evidence-based system for senior home safety, mobility optimization, and fall prevention,
-          designed to identify risk before an event occurs and support recovery after one does.
+          designed to document the risk factors present in a home today and support recovery after an event.
         </p>
         <p className="connexion-hero-partner">
           A Limbic partner program, developed by{" "}
@@ -43,8 +43,8 @@ export default async function ConnexionOverviewPage() {
         <div className="connexion-mission-kicker">Mission</div>
         <p className="connexion-mission-text">
           To improve the safety, independence, and quality of life of older adults by delivering a standardized,
-          evidence-based home mobility and safety system, one that identifies the likelihood of a fall or injury
-          before it happens, and guides recovery when it does.
+          evidence-based home mobility and safety system, one that surfaces the fall and injury risk factors already
+          present in a home so they can be addressed, and guides recovery when an event does occur.
         </p>
       </div>
 

@@ -454,7 +454,7 @@ export const THORACIC_EXERCISES: MovementExercise[] = [
       "Working only the dominant side",
     ],
     regression: "Half-kneeling throws to remove the legs, a lighter ball, or a slow rotational press into the wall with no throw.",
-    progression: "Increase speed, add a step into the throw, or move to single-arm and overhead-diagonal patterns.",
+    progression: "Increase speed, add a step into the throw, then the Single-Arm Medicine Ball Throw and overhead-diagonal patterns.",
     precautions: [
       "Rotational power under load is a late-stage activity: hold off with symptomatic low back pain, and where spinal loading or rotation is restricted.",
       "Follow the surgeon's protocol after spinal, shoulder or abdominal surgery.",

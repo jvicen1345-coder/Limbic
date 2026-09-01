@@ -27,6 +27,7 @@ import {
   LockIcon,
 } from "@/components/icons";
 import { getTimeZone } from "@/lib/user-time-zone";
+import { WellnessDisclaimer } from "@/components/vitals/WellnessDisclaimer";
 
 /** The six Explore cards, keyed by lib/user-role.ts's WellnessCardKey — which two lead (and
  *  so get the large primary-row treatment) is decided per-role by wellnessCardOrder there,
@@ -308,6 +309,8 @@ export default async function WellnessOverviewPage() {
         </Link>
       </div>
       <WellnessArticlePreview articles={previewArticles} savedIds={savedIds} openedIds={openedIds} />
+
+      <WellnessDisclaimer />
     </div>
   );
 }

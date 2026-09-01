@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getWellnessProfile } from "@/lib/wellness-profile";
 import type { WellnessGoal } from "@/lib/vitals";
 import { ExerciseLibraryTabs } from "@/components/wellness/ExerciseLibraryTabs";
+import { WellnessDisclaimer } from "@/components/vitals/WellnessDisclaimer";
 
 export const metadata: Metadata = {
   title: "Exercise Library",
@@ -23,6 +24,8 @@ export default async function ExerciseLibraryPage() {
       </p>
 
       <ExerciseLibraryTabs goal={goal} />
+
+      <WellnessDisclaimer />
     </div>
   );
 }
