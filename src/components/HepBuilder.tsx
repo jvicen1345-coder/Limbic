@@ -1,17 +1,143 @@
 "use client";
 
-import { useState, useTransition, useImperativeHandle, forwardRef } from "react";
+import { useMemo, useState, useTransition, useImperativeHandle, forwardRef } from "react";
 import { createHepAction } from "@/app/actions/hep";
+import { requestMovementLabExercise } from "@/app/actions/movement-lab-requests";
 import { XIcon } from "@/components/icons";
 import { MovementLabPicker } from "@/components/movement-lab/MovementLabPicker";
-import type { MovementExercise } from "@/lib/movement-lab";
+import { searchExercises, MOVEMENT_REGIONS, type MovementExercise, type MovementRegion } from "@/lib/movement-lab";
 import { HEP_TEMPLATE_KINDS, HEP_TEMPLATE_KIND_LABELS, type HepTemplateExercise, type HepTemplateKind } from "@/lib/hep-templates";
+
+/** Autocompletes the "Exercise" field against Movement Lab as the clinician types — same
+ *  ranked search (searchExercises) and dropdown behavior as the Clinician Dashboard's own
+ *  exercise-name autocomplete (see ExerciseNameField in components/pro/dashboard/
+ *  HepExerciseList.tsx), kept as its own local copy here rather than a shared import since
+ *  the two builders' surrounding row shapes have always evolved independently (this one also
+ *  carries image/video URL fields and the standalone Movement Lab picker button below). The
+ *  "request to add" flow is only offered to isPro accounts, matching
+ *  requestMovementLabExercise's own isPro gate — a licensed-but-not-pro clinician (who can
+ *  still use this builder, see hasLicenseAccess in app/(app)/hep/page.tsx) sees a plain
+ *  "nothing matches" message instead of a request button that would just fail silently. */
+function ExerciseNameField({
+  value,
+  onNameChange,
+  onPickMovementExercise,
+  isPro,
+}: {
+  value: string;
+  onNameChange: (name: string) => void;
+  onPickMovementExercise: (exercise: MovementExercise) => void;
+  isPro: boolean;
+}) {
+  const [focused, setFocused] = useState(false);
+  const [requestOpen, setRequestOpen] = useState(false);
+  const [requestRegion, setRequestRegion] = useState<MovementRegion | "">("");
+  const [requestNote, setRequestNote] = useState("");
+  const [requestSent, setRequestSent] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  const query = value.trim();
+  const results = useMemo(() => (query.length >= 2 ? searchExercises(query).slice(0, 5) : []), [query]);
+  const showDropdown = focused && query.length >= 2 && !requestOpen && !requestSent;
+
+  const handleSubmitRequest = () => {
+    startTransition(async () => {
+      const result = await requestMovementLabExercise(query, requestRegion || null, requestNote);
+      if (result.ok) setRequestSent(true);
+    });
+  };
+
+  return (
+    <div className="hep-exercise-name-field">
+      <input
+        className="input"
+        placeholder="Straight leg raise"
+        value={value}
+        onChange={(e) => {
+          onNameChange(e.target.value);
+          setRequestOpen(false);
+          setRequestSent(false);
+        }}
+        onFocus={() => setFocused(true)}
+        // Delayed so a click on a dropdown row (below) registers before the dropdown
+        // unmounts — an onMouseDown on those rows fires first regardless, but this also
+        // covers keyboard/touch selection without needing per-row event juggling.
+        onBlur={() => setTimeout(() => setFocused(false), 150)}
+      />
+
+      {showDropdown && (
+        <div className="hep-exercise-autocomplete">
+          {results.length > 0 ? (
+            results.map((ex) => (
+              <button
+                type="button"
+                key={ex.id}
+                className="hep-exercise-autocomplete-row"
+                onMouseDown={() => {
+                  onPickMovementExercise(ex);
+                  setFocused(false);
+                }}
+              >
+                <span className="hep-exercise-autocomplete-name">{ex.name}</span>
+                <span className="hep-exercise-autocomplete-region">{ex.region}</span>
+              </button>
+            ))
+          ) : isPro ? (
+            <button
+              type="button"
+              className="hep-exercise-autocomplete-request"
+              onMouseDown={() => {
+                setRequestOpen(true);
+                setFocused(false);
+              }}
+            >
+              Not in Movement Lab — Request to add &ldquo;{query}&rdquo;
+            </button>
+          ) : (
+            <p className="hep-exercise-autocomplete-empty">Nothing matches in Movement Lab.</p>
+          )}
+        </div>
+      )}
+
+      {requestOpen && !requestSent && (
+        <div className="hep-exercise-request-form">
+          <select className="input" value={requestRegion} onChange={(e) => setRequestRegion(e.target.value as MovementRegion | "")}>
+            <option value="">Region (optional)</option>
+            {MOVEMENT_REGIONS.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
+          <input
+            className="input"
+            placeholder="Why you need it (optional)"
+            value={requestNote}
+            onChange={(e) => setRequestNote(e.target.value)}
+          />
+          <div className="hep-exercise-request-actions">
+            <button type="button" className="btn btn-secondary" disabled={pending} onClick={handleSubmitRequest}>
+              {pending ? "Sending…" : "Send request"}
+            </button>
+            <button type="button" className="btn btn-ghost" onClick={() => setRequestOpen(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {requestSent && <p className="hep-exercise-request-sent">Requested — an admin will review it.</p>}
+    </div>
+  );
+}
 
 interface DraftExercise {
   id: number;
   name: string;
   sets: string;
   reps: string;
+  weight: string;
+  frequency: string;
   notes: string;
   imageUrl: string;
   videoUrl: string;
@@ -19,7 +145,33 @@ interface DraftExercise {
 
 let idSeq = 1;
 
-const EMPTY_DRAFT: Omit<DraftExercise, "id"> = { name: "", sets: "", reps: "", notes: "", imageUrl: "", videoUrl: "" };
+const EMPTY_DRAFT: Omit<DraftExercise, "id"> = {
+  name: "",
+  sets: "",
+  reps: "",
+  weight: "",
+  frequency: "",
+  notes: "",
+  imageUrl: "",
+  videoUrl: "",
+};
+
+/** The fields a Movement Lab pick fills in — shared by the "+ Add from Movement Lab" picker
+ *  (addFromMovementLab below, which creates a new row) and the inline autocomplete
+ *  (applyMovementExercise, which fills an existing one). `weight` stays empty either way —
+ *  Movement Lab dosage doesn't specify a load, so there's nothing meaningful to fill it
+ *  with. `notes` gets the hold time plus the patient-facing cue; frequency now has its own
+ *  field (see HepTemplateExercise in lib/hep-templates.ts) so it's no longer folded in here
+ *  the way it used to be. */
+function movementExerciseFields(ex: MovementExercise): Pick<DraftExercise, "sets" | "reps" | "weight" | "frequency" | "notes"> {
+  return {
+    sets: ex.dosage.sets,
+    reps: ex.dosage.reps,
+    weight: "",
+    frequency: ex.dosage.frequency,
+    notes: [ex.dosage.hold ? `hold ${ex.dosage.hold}` : "", ex.cue.replace(/^“|”$/g, "")].filter(Boolean).join(" — "),
+  };
+}
 
 /** Imperative handle so the template library panel (a sibling, not a parent/child of the
  *  builder) can populate the builder from a saved template and read its current draft to
@@ -71,9 +223,8 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
           name: ex.name,
           sets: ex.sets,
           reps: ex.reps,
-          // Not collected by this builder — see HepTemplateExercise's own comment in
-          // lib/hep-templates.ts on why that's fine (dashboard-only, optional context).
-          weight: "",
+          weight: ex.weight,
+          frequency: ex.frequency,
           notes: ex.notes,
           imageUrl: ex.imageUrl,
           videoUrl: ex.videoUrl,
@@ -88,17 +239,30 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
   function addExercise(prefill?: Omit<DraftExercise, "id">) {
     setExercises((prev) => [...prev, { id: idSeq++, ...(prefill ?? EMPTY_DRAFT) }]);
   }
-  /** The Movement Lab stores sets, reps, hold and frequency as separate fields, so they drop
-   *  straight into the builder's own inputs — no parsing. (The old library stored one
-   *  "10 reps × 2–3 sets" string that had to be regexed apart, and silently produced empty
-   *  fields for any hold- or time-based dosage; see lib/movement-lab/types.ts.) `notes` gets
-   *  the frequency plus the patient-facing cue, since that's what a patient actually reads
-   *  off the printed program. */
   function addFromMovementLab(ex: MovementExercise) {
-    const notes = [ex.dosage.hold ? `hold ${ex.dosage.hold}` : "", ex.dosage.frequency, ex.cue.replace(/^“|”$/g, "")]
-      .filter(Boolean)
-      .join(" — ");
-    addExercise({ name: ex.name, sets: ex.dosage.sets, reps: ex.dosage.reps, notes, imageUrl: "", videoUrl: "" });
+    addExercise({ name: ex.name, ...movementExerciseFields(ex), imageUrl: "", videoUrl: "" });
+  }
+  // Fills an existing row from an autocomplete pick (see ExerciseNameField below) — name
+  // always overwrites, but sets/reps/frequency/notes only backfill fields the clinician
+  // hasn't already typed into, same "don't clobber an edit made before the match was
+  // chosen" reasoning as the Clinician Dashboard's own autocomplete (handlePickMovementExercise
+  // in components/pro/dashboard/HepExerciseList.tsx).
+  function applyMovementExercise(id: number, ex: MovementExercise) {
+    const fields = movementExerciseFields(ex);
+    setExercises((prev) =>
+      prev.map((row) =>
+        row.id === id
+          ? {
+              ...row,
+              name: ex.name,
+              sets: row.sets || fields.sets,
+              reps: row.reps || fields.reps,
+              frequency: row.frequency || fields.frequency,
+              notes: row.notes || fields.notes,
+            }
+          : row,
+      ),
+    );
   }
   function updateExercise(id: number, field: keyof Omit<DraftExercise, "id">, value: string) {
     setExercises((prev) => prev.map((ex) => (ex.id === id ? { ...ex, [field]: value } : ex)));
@@ -115,6 +279,8 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
         name: ex.name,
         sets: ex.sets,
         reps: ex.reps,
+        weight: ex.weight,
+        frequency: ex.frequency,
         notes: ex.notes,
         imageUrl: ex.imageUrl,
         videoUrl: ex.videoUrl,
@@ -174,11 +340,11 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
               <div style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
                 <div className="field" style={{ flex: 2, minWidth: 140 }}>
                   <label>Exercise</label>
-                  <input
-                    className="input"
-                    placeholder="Straight leg raise"
+                  <ExerciseNameField
                     value={ex.name}
-                    onChange={(e) => updateExercise(ex.id, "name", e.target.value)}
+                    onNameChange={(name) => updateExercise(ex.id, "name", name)}
+                    onPickMovementExercise={(movementEx) => applyMovementExercise(ex.id, movementEx)}
+                    isPro={isPro}
                   />
                 </div>
                 <div className="field" style={{ width: 70 }}>
@@ -199,11 +365,29 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
                     onChange={(e) => updateExercise(ex.id, "reps", e.target.value)}
                   />
                 </div>
+                <div className="field" style={{ width: 100 }}>
+                  <label>Weight</label>
+                  <input
+                    className="input"
+                    placeholder="20 lbs"
+                    value={ex.weight}
+                    onChange={(e) => updateExercise(ex.id, "weight", e.target.value)}
+                  />
+                </div>
+                <div className="field" style={{ width: 100 }}>
+                  <label>Frequency</label>
+                  <input
+                    className="input"
+                    placeholder="2x/day"
+                    value={ex.frequency}
+                    onChange={(e) => updateExercise(ex.id, "frequency", e.target.value)}
+                  />
+                </div>
                 <div className="field" style={{ flex: 2, minWidth: 140 }}>
                   <label>Notes</label>
                   <input
                     className="input"
-                    placeholder="2x/day, no pain"
+                    placeholder="No pain, ice after"
                     value={ex.notes}
                     onChange={(e) => updateExercise(ex.id, "notes", e.target.value)}
                   />

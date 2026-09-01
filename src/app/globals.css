@@ -12419,6 +12419,10 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   color: var(--color-accent);
 }
 .hep-exercise-autocomplete-request:hover { background: var(--color-neutral-100); }
+/* Shown instead of the request button above for a licensed-but-not-pro clinician (see
+   ExerciseNameField's isPro gate in HepBuilder.tsx) — requestMovementLabExercise itself is
+   isPro-gated, so a request button here would just fail silently for that account. */
+.hep-exercise-autocomplete-empty { padding: 8px 10px; margin: 0; font-size: 12px; font-style: italic; color: var(--color-neutral-700); }
 .hep-exercise-request-form {
   margin-top: 6px;
   padding: 10px;
