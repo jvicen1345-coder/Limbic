@@ -244,7 +244,7 @@ interface NavContentProps {
    *  resources/page.tsx), but never sees the individual paid-tier sub-links (Break Down
    *  Slides, SOAP Note, etc.) as locked list items — same "collapse to just the overview"
    *  treatment the pro zoneTwoSections entry gives LimbicPRO's own sub-links. Limbic Games
-   *  (/wordle) is open to everyone regardless of this flag. This is a separate concern from
+   *  (/daily-term) is open to everyone regardless of this flag. This is a separate concern from
    *  zoneTwoOrder below — isStudent only ever changes what renders inside the section;
    *  zoneTwoOrder only ever reorders sections that already render. */
   isStudent: boolean;

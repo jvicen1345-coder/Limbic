@@ -11,8 +11,15 @@ import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
  * actual authoritative medical-literature database rather than general news search.
  *
  * The remaining home-feed categories (industry/product) don't have a single "PT industry
- * news" API, so each is backed by a Google News RSS search (no API key required) with a
- * query tuned to that category. To keep general lifestyle/health journalism from slipping
+ * news" API, so each is backed by a Google News RSS search with a query tuned to that
+ * category. Worth being straight about what that is: Google publishes no supported news
+ * API behind this endpoint, and consuming it programmatically sits outside its terms of
+ * service. Everything surfaced links out to the original outlet and nothing is republished,
+ * which keeps this on the right side of copyright, but the dependency itself is a
+ * commercial-terms risk and the real fix is a licensed news API (NewsAPI, Bing News) or
+ * publisher feeds offered for syndication — both of which need a key and a budget decision
+ * rather than a code change. Documented here rather than left implicit in the phrase "no
+ * API key required", which reads as a convenience when it is actually the problem. To keep general lifestyle/health journalism from slipping
  * onto the home page under a professional-sounding label, a result only survives if it
  * actually matches professional/medical-sector language (see the `matchedTypeKeywords`
  * confidence check in `classify` below) — anything that merely came back from the search
@@ -43,8 +50,11 @@ const parser = new Parser({
 });
 
 const FETCH_TIMEOUT_MS = 8000;
-const USER_AGENT =
-  "Mozilla/5.0 (compatible; LimbicPTNews/1.0; +https://example.com/bot)";
+/** Identifies the crawler honestly, with a real contact URL. The previous value pointed at
+ *  `https://example.com/bot` — a placeholder, which means a site operator who wanted to ask
+ *  us to stop, or to rate-limit us rather than ban us, had nowhere to go. A bot that can't
+ *  be contacted looks evasive whether or not it means to be. */
+const USER_AGENT = "Mozilla/5.0 (compatible; LimbicPTNews/1.0; +https://limbic.center)";
 
 async function fetchXml(url: string): Promise<string | null> {
   const controller = new AbortController();
@@ -84,8 +94,8 @@ export interface GoogleNewsItem {
 type RawItem = GoogleNewsItem;
 
 /** Exported so other live sources (e.g. lib/apta-news.ts) can search Google News for a
- *  topic that doesn't have its own dedicated feed, using the same no-API-key mechanism
- *  as this file's own category queries below. */
+ *  topic that doesn't have its own dedicated feed, using the same mechanism as this file's
+ *  own category queries below — including its terms-of-service caveat, see the file header. */
 export async function fetchGoogleNewsRss(query: string): Promise<GoogleNewsItem[]> {
   const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
   const xml = await fetchXml(url);

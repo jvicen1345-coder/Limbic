@@ -160,9 +160,24 @@ export default function PrivacyPage() {
 
       <h2 className="legal-section-title">10. International Users</h2>
       <p className="legal-body">
-        Limbic is operated from the United States and our servers and service providers are located in the United
+        Limbic is operated from the United States, and our servers and service providers are located in the United
         States. If you access Limbic from outside the United States, your information will be transferred to and
-        processed in the United States.
+        processed in the United States, which may not offer the same level of data protection as your own country.
+      </p>
+      <p className="legal-body">
+        Limbic is built for a United States audience and is not marketed or targeted to the European Economic
+        Area, the United Kingdom, or Switzerland. If you are in one of those regions and choose to use Limbic
+        anyway, we handle your personal data as follows. We process it to perform the agreement between us (in
+        order to provide the account and features you asked for), on the basis of your consent where you have
+        given it (connecting a fitness account, requesting a Connexion visit), and on the basis of our legitimate
+        interest in operating and improving the platform. You may request access to your data, correction,
+        deletion, a portable copy, or restriction of processing, and you may withdraw consent at any time — use
+        the contact details in Section 14, and we will respond within one month. You also have the right to
+        complain to your local supervisory authority.
+      </p>
+      <p className="legal-body">
+        We have not appointed an EU or UK representative and do not currently rely on Standard Contractual
+        Clauses, because Limbic does not target those markets. If that changes, this policy will change with it.
       </p>
 
       <h2 className="legal-section-title">11. Children</h2>
