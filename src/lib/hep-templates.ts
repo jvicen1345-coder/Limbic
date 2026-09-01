@@ -61,18 +61,22 @@ export const HEP_TEMPLATE_KIND_SHORT_LABELS: Record<HepTemplateKind, string> = {
 // SessionExerciseLog.exercises (see each model's own comment in schema.prisma) — read/written
 // by the Clinician Dashboard's shared exercise editor (components/pro/dashboard/
 // HepExerciseList.tsx) and the Exercise Programs builder (components/HepBuilder.tsx). Same
-// shape as HepBuilder's DraftExercise minus the client-only numeric `id`. `weight` (the load
-// used for that exercise, e.g. "20 lbs", "2 lb ankle weight", "bodyweight") and `frequency`
-// (how often per day/week, e.g. "2x/day") are both free text rather than a strict number —
-// stays meaningful for a hold- or band-based exercise with no plate weight, or a dosage that
-// doesn't cleanly reduce to one number. Movement Lab picks (the autocomplete and the
-// standalone picker) backfill both automatically where the exercise bank specifies them.
+// shape as HepBuilder's DraftExercise minus the client-only numeric `id`. `weight` is always
+// pounds in the Exercise Programs builder (a bare number, e.g. "20" — the "(lbs)" is on the
+// field's label, not the value) but stays free text at the type level since the Clinician
+// Dashboard's own weight field still allows non-numeric values like "bodyweight" or "2 lb
+// ankle weight". `frequency` (how often per day/week, e.g. "2x/day") and `hold` (how long a
+// held position is held, e.g. "5 sec") are both free text for the same "doesn't cleanly
+// reduce to one number" reasoning. Movement Lab picks (the autocomplete and the standalone
+// picker) backfill frequency and hold automatically where the exercise bank specifies them —
+// weight never gets backfilled, since Movement Lab dosage doesn't specify a load.
 export interface HepTemplateExercise {
   name: string;
   sets: string;
   reps: string;
   weight: string;
   frequency: string;
+  hold: string;
   notes: string;
   imageUrl: string;
   videoUrl: string;
@@ -93,6 +97,7 @@ export function parseHepExercises(raw: unknown): HepTemplateExercise[] {
       reps: e.reps ?? "",
       weight: e.weight ?? "",
       frequency: e.frequency ?? "",
+      hold: e.hold ?? "",
       notes: e.notes ?? "",
       imageUrl: e.imageUrl ?? "",
       videoUrl: e.videoUrl ?? "",

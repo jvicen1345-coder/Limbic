@@ -1601,9 +1601,10 @@ export function protocolPhaseToHepExercises(phase: MovementProtocolPhase): HepTe
       // lib/hep-templates.ts on why that's fine (optional context).
       weight: "",
       // Left blank when the step overrides dosage — the override string above (already in
-      // notes) may not reduce to one clean frequency, same reasoning as sets/reps blanking
-      // out in that case.
+      // notes) may not reduce to one clean frequency/hold, same reasoning as sets/reps
+      // blanking out in that case.
       frequency: dosageIsOverride ? "" : exercise.dosage.frequency,
+      hold: dosageIsOverride ? "" : (exercise.dosage.hold ?? ""),
       notes,
       imageUrl: "",
       videoUrl: "",

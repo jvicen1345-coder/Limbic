@@ -44,10 +44,11 @@ function draftFromParams(params: { exercises?: string; protocol?: string; phase?
         // comment in lib/hep-templates.ts on why that's fine (optional context).
         weight: "",
         frequency: ex.dosage.frequency,
+        hold: ex.dosage.hold ?? "",
         // Same shape the picker/autocomplete build (see movementExerciseFields in
-        // HepBuilder) — the hold time the sets/reps fields can't carry, plus the
-        // patient-facing cue.
-        notes: [ex.dosage.hold ? `hold ${ex.dosage.hold}` : "", ex.cue.replace(/^“|”$/g, "")].filter(Boolean).join(" — "),
+        // HepBuilder) — just the patient-facing cue, since frequency and hold now have
+        // their own fields above.
+        notes: ex.cue.replace(/^“|”$/g, ""),
         imageUrl: "",
         videoUrl: "",
       }));
@@ -164,7 +165,8 @@ export default async function HepPage({
                           )}
                           <div style={{ fontSize: 12.5, color: "var(--color-text)" }}>
                             {ex.name}, {ex.sets}x{ex.reps}
-                            {ex.weight && ` @ ${ex.weight}`}
+                            {ex.weight && ` @ ${ex.weight} lbs`}
+                            {ex.hold && `, hold ${ex.hold}`}
                             {ex.frequency && `, ${ex.frequency}`}{" "}
                             <span style={{ color: "var(--color-neutral-700)" }}>{ex.notes}</span>
                             {videoUrl && (
