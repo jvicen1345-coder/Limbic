@@ -413,7 +413,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
                 Exercise Library, which is general-fitness content for a different reader. */}
             <NavLink href="/movement-lab" icon={<DumbbellIcon />} label="Movement Lab" bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/hep" icon={<BandageIcon />} label="Home Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/hep" icon={<BandageIcon />} label="Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
           </>
         )}
       </>

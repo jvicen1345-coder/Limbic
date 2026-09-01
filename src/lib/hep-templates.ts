@@ -31,6 +31,32 @@ export const HEP_TEMPLATE_BODY_PART_NOTE: Partial<Record<HepTemplateBodyPart, st
   Spine: "Cervical, Thoracic, Lumbar",
 };
 
+// What a saved HEPTemplate is *for* — a take-home program the patient does on their own
+// (the only kind that existed before this field) vs. a circuit the clinician runs with the
+// patient in clinic. Orthogonal to HEP_TEMPLATE_BODY_PARTS above (a body part describes what
+// the exercises target; a kind describes who does them and where) — the /hep page's template
+// library groups by body part within whichever kind is selected, not the other way around.
+export const HEP_TEMPLATE_KINDS = ["home", "clinic"] as const;
+
+export type HepTemplateKind = (typeof HEP_TEMPLATE_KINDS)[number];
+
+export function isHepTemplateKind(value: string): value is HepTemplateKind {
+  return (HEP_TEMPLATE_KINDS as readonly string[]).includes(value);
+}
+
+export const HEP_TEMPLATE_KIND_LABELS: Record<HepTemplateKind, string> = {
+  home: "Home Program",
+  clinic: "In-Clinic Program",
+};
+
+// Shorter form for the template library panel's kind tabs (HepTemplateLibrary.tsx) — that
+// panel is a fixed 280px column (see .hep-template-panel in globals.css), too narrow for
+// both full HEP_TEMPLATE_KIND_LABELS side by side without clipping.
+export const HEP_TEMPLATE_KIND_SHORT_LABELS: Record<HepTemplateKind, string> = {
+  home: "Home",
+  clinic: "In-Clinic",
+};
+
 // What actually gets persisted as HEPTemplate.exercises, PatientHEPAssignment.exercises, and
 // SessionExerciseLog.exercises (see each model's own comment in schema.prisma) — read/written
 // by the Clinician Dashboard's shared exercise editor (components/pro/dashboard/

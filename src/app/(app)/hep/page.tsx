@@ -73,16 +73,16 @@ export default async function HepPage({
   if (!hasLicenseAccess(user)) {
     return (
       <div className="screen-pad">
-        <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Home Exercise Programs</h1>
+        <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Exercise Programs</h1>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: 0 }}>
-          Build and assign home exercise programs for your patients.
+          Build and assign home or in-clinic exercise programs for your patients.
         </p>
         <LicenseGate toolName="The HEP Builder" />
       </div>
     );
   }
 
-  const [programs, templatesByBodyPart, params] = await Promise.all([
+  const [programs, templatesByKindAndBodyPart, params] = await Promise.all([
     prisma.hepProgram.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
@@ -95,10 +95,10 @@ export default async function HepPage({
 
   return (
     <div className="screen-pad hep-page-pad">
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Home Exercise Programs</h1>
+      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Exercise Programs</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 22px" }}>
-        Build a home exercise program for a patient. Available to signed-in clinicians only. Pull exercises and whole
-        protocol phases from the <Link href="/movement-lab">Limbic Movement Lab</Link>.
+        Build a home or in-clinic exercise program for a patient. Available to signed-in clinicians only. Pull
+        exercises and whole protocol phases from the <Link href="/movement-lab">Limbic Movement Lab</Link>.
       </p>
 
       {initialDraft && (
@@ -121,7 +121,7 @@ export default async function HepPage({
         </div>
       )}
 
-      <HepWorkspace isPro={user.isPro} templatesByBodyPart={templatesByBodyPart} initialDraft={initialDraft}>
+      <HepWorkspace isPro={user.isPro} templatesByKindAndBodyPart={templatesByKindAndBodyPart} initialDraft={initialDraft}>
         {programs.length > 0 && (
           <>
             <div

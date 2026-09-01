@@ -2,7 +2,14 @@
 
 import { useState, useTransition } from "react";
 import { deleteHepTemplateAction, type HepTemplateSummary } from "@/app/actions/hep";
-import { HEP_TEMPLATE_BODY_PARTS, HEP_TEMPLATE_BODY_PART_NOTE, type HepTemplateBodyPart } from "@/lib/hep-templates";
+import {
+  HEP_TEMPLATE_BODY_PARTS,
+  HEP_TEMPLATE_BODY_PART_NOTE,
+  HEP_TEMPLATE_KINDS,
+  HEP_TEMPLATE_KIND_SHORT_LABELS,
+  type HepTemplateBodyPart,
+  type HepTemplateKind,
+} from "@/lib/hep-templates";
 
 function TemplateCard({ template, onLoad }: { template: HepTemplateSummary; onLoad: (templateId: string) => void }) {
   const [confirming, setConfirming] = useState(false);
@@ -68,21 +75,27 @@ function TemplateCategory({ bodyPart, templates, onLoad }: { bodyPart: HepTempla
 }
 
 export function HepTemplateLibrary({
-  templatesByBodyPart,
+  templatesByKindAndBodyPart,
   onLoad,
   onSaveCurrent,
   saveError,
   clearSaveError,
 }: {
-  templatesByBodyPart: Record<HepTemplateBodyPart, HepTemplateSummary[]>;
+  templatesByKindAndBodyPart: Record<HepTemplateKind, Record<HepTemplateBodyPart, HepTemplateSummary[]>>;
   onLoad: (templateId: string) => void;
   onSaveCurrent: (bodyPart: HepTemplateBodyPart) => boolean;
   saveError: string | null;
   clearSaveError: () => void;
 }) {
+  // Which kind's templates are showing below — independent of the builder's own Program
+  // type toggle (HepBuilder.tsx), since browsing "In-Clinic" templates while the builder is
+  // mid-draft for a home program (or vice versa) is a normal thing to do; "Save current as
+  // template" always saves under the builder's own kind regardless of which tab is open here.
+  const [selectedKind, setSelectedKind] = useState<HepTemplateKind>(HEP_TEMPLATE_KINDS[0]);
   const [promptOpen, setPromptOpen] = useState(false);
   const [selectedBodyPart, setSelectedBodyPart] = useState<HepTemplateBodyPart>(HEP_TEMPLATE_BODY_PARTS[0]);
   const [justSaved, setJustSaved] = useState(false);
+  const templatesByBodyPart = templatesByKindAndBodyPart[selectedKind];
 
   function confirmSave() {
     const ok = onSaveCurrent(selectedBodyPart);
@@ -98,11 +111,24 @@ export function HepTemplateLibrary({
       <summary className="hep-template-panel-header">
         <div className="hep-template-panel-header-text">
           <span className="card-title">My Templates</span>
-          <span className="hep-template-panel-subtitle">Saved layouts by body part</span>
+          <span className="hep-template-panel-subtitle">Saved layouts by body part and type</span>
         </div>
       </summary>
 
       <div className="hep-template-panel-body">
+        <div className="pro-filter-bar" style={{ marginBottom: 0 }}>
+          {HEP_TEMPLATE_KINDS.map((k) => (
+            <button
+              key={k}
+              type="button"
+              className={`pro-filter-chip${selectedKind === k ? " active" : ""}`}
+              onClick={() => setSelectedKind(k)}
+            >
+              {HEP_TEMPLATE_KIND_SHORT_LABELS[k]}
+            </button>
+          ))}
+        </div>
+
         <div className="hep-template-category-list">
           {HEP_TEMPLATE_BODY_PARTS.map((bp) => (
             <TemplateCategory key={bp} bodyPart={bp} templates={templatesByBodyPart[bp]} onLoad={onLoad} />
