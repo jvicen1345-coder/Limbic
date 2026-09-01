@@ -40,6 +40,10 @@ function draftFromParams(params: { exercises?: string; protocol?: string; phase?
         name: ex.name,
         sets: ex.dosage.sets,
         reps: ex.dosage.reps,
+        // Not something a Movement Lab pick specifies — see HepTemplateExercise's own
+        // comment in lib/hep-templates.ts on why that's fine (dashboard-only, optional
+        // context).
+        weight: "",
         // Same shape the picker builds (see addFromMovementLab in HepBuilder) — the
         // frequency and hold the sets/reps fields can't carry, plus the patient-facing cue.
         notes: [ex.dosage.hold ? `hold ${ex.dosage.hold}` : "", ex.dosage.frequency, ex.cue.replace(/^“|”$/g, "")]

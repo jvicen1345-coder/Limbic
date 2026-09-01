@@ -43,6 +43,7 @@ model User {
   licenseEmail             String?
   licenseExpiration        DateTime?
   licenses                 License[]
+  movementLabExerciseRequests MovementLabExerciseRequest[]
   calculatorProfiles       CalculatorProfile[]
   specialtyQuestionAnswers SpecialtyQuestionAnswer[]
   domainQuestionAnswers    DomainQuestionAnswer[]
@@ -1935,6 +1936,32 @@ model Suggestion {
   id        String   @id @default(cuid())
   body      String
   createdAt DateTime @default(now())
+}
+
+// A clinician-submitted request to add a new exercise to Movement Lab's exercise bank (see
+// lib/movement-lab) — surfaced inline when the exercise-name autocomplete on the Clinician
+// Dashboard's HEP/Session Exercises editor (components/pro/dashboard/HepExerciseList.tsx)
+// finds no match for what was typed. Movement Lab is a hand-curated static TS catalog
+// (lib/movement-lab/exercises/*.ts), not a database table, so "approving" a request doesn't
+// insert it automatically — same review-queue shape as License above, not an auto-apply
+// pipeline; an admin who marks one "added" has manually written it into the right region
+// file the normal way, and this row just tracks that the request was fulfilled.
+model MovementLabExerciseRequest {
+  id     String  @id @default(cuid())
+  userId String
+  name   String
+  // One of MOVEMENT_REGIONS (lib/movement-lab), or null when the requester didn't specify —
+  // plain String, same fixed-but-app-enforced value set convention as ClinicalPatient.status.
+  region String?
+  // The clinician's own context for the request — why they need it, what it should include.
+  note   String?
+  // "pending" | "added" | "declined" — see MOVEMENT_LAB_REQUEST_STATUSES in
+  // lib/movement-lab-requests.ts, same convention as License.status.
+  status     String    @default("pending")
+  createdAt  DateTime  @default(now())
+  reviewedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // Admin-assigned region tags for Limbic Boards questions (see lib/board-content.ts's static

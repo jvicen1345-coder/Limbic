@@ -1,10 +1,19 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { addSessionExerciseLog, type PatientDetail } from "@/app/actions/clinician-dashboard";
 import { ExerciseListEditor, ExerciseListDisplay } from "./HepExerciseList";
 import { parseHepExercises, type HepTemplateExercise } from "@/lib/hep-templates";
+import { computeExerciseProgression, type ExerciseProgressionTrend } from "@/lib/exercise-progression";
+import { FORCE_LAB_GREEN, FORCE_LAB_RED } from "@/lib/force-lab-units";
 import { PlusIcon } from "@/components/icons";
+
+function TrendBadge({ trend }: { trend: ExerciseProgressionTrend }) {
+  if (trend === "up") return <span style={{ color: FORCE_LAB_GREEN, fontSize: 12, fontWeight: 700 }}>↑ progressing</span>;
+  if (trend === "down") return <span style={{ color: FORCE_LAB_RED, fontSize: 12, fontWeight: 700 }}>↓ regressing</span>;
+  if (trend === "flat") return <span style={{ color: "var(--color-neutral-700)", fontSize: 12 }}>→ holding steady</span>;
+  return null;
+}
 
 /** What was actually done with the patient in clinic, one entry per visit — distinct from
  *  HEPSection above it (what the patient does on their own at home). Kept as history, newest
@@ -16,6 +25,8 @@ export function SessionExerciseSection({ patient, onChanged }: { patient: Patien
   const [visitNumber, setVisitNumber] = useState(String(patient.visitCount || 1));
   const [exercises, setExercises] = useState<HepTemplateExercise[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  const progression = useMemo(() => computeExerciseProgression(patient.sessionExerciseLogs), [patient.sessionExerciseLogs]);
 
   const handleSave = () => {
     setError(null);
@@ -62,6 +73,27 @@ export function SessionExerciseSection({ patient, onChanged }: { patient: Patien
             </div>
           ))}
         </div>
+      )}
+
+      {progression.length > 0 && (
+        <details className="clindash-hep-history">
+          <summary>Progression ({progression.length})</summary>
+          {progression.map((p) => (
+            <div className="clindash-progression-row" key={p.name}>
+              <div className="clindash-progression-header">
+                <span className="clindash-progression-name">{p.name}</span>
+                <TrendBadge trend={p.trend} />
+              </div>
+              <div className="clindash-progression-points">
+                {p.points.map((pt, i) => (
+                  <span className="clindash-progression-point" key={i}>
+                    Visit {pt.visitNumber}: {[pt.weight, pt.sets && pt.reps && `${pt.sets}×${pt.reps}`].filter(Boolean).join(" · ") || "—"}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </details>
       )}
 
       {formOpen && (

@@ -4,7 +4,13 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser, hasLicenseAccess } from "@/lib/session";
 import { sanitizeMediaUrl } from "@/lib/media-url";
-import { HEP_TEMPLATE_BODY_PARTS, isHepTemplateBodyPart, type HepTemplateBodyPart, type HepTemplateExercise } from "@/lib/hep-templates";
+import {
+  HEP_TEMPLATE_BODY_PARTS,
+  isHepTemplateBodyPart,
+  parseHepExercises,
+  type HepTemplateBodyPart,
+  type HepTemplateExercise,
+} from "@/lib/hep-templates";
 
 export interface HepExerciseInput {
   name: string;
@@ -158,17 +164,5 @@ export async function loadHepTemplateAction(
   });
   if (!template) return null;
 
-  const raw = Array.isArray(template.exercises) ? template.exercises : [];
-  const exercises: HepTemplateExercise[] = raw.map((ex) => {
-    const e = ex as Partial<HepTemplateExercise>;
-    return {
-      name: e.name ?? "",
-      sets: e.sets ?? "",
-      reps: e.reps ?? "",
-      notes: e.notes ?? "",
-      imageUrl: e.imageUrl ?? "",
-      videoUrl: e.videoUrl ?? "",
-    };
-  });
-  return { name: template.name, exercises };
+  return { name: template.name, exercises: parseHepExercises(template.exercises) };
 }

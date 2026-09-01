@@ -64,6 +64,9 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
           name: ex.name,
           sets: ex.sets,
           reps: ex.reps,
+          // Not collected by this builder — see HepTemplateExercise's own comment in
+          // lib/hep-templates.ts on why that's fine (dashboard-only, optional context).
+          weight: "",
           notes: ex.notes,
           imageUrl: ex.imageUrl,
           videoUrl: ex.videoUrl,
