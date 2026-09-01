@@ -26,3 +26,25 @@ const ZONE_TWO_ORDER: Record<UserRole, ZoneTwoKey[]> = {
 export function zoneTwoOrder(role: string | null): ZoneTwoKey[] {
   return ZONE_TWO_ORDER[isUserRole(role ?? "") ? (role as UserRole) : "general"];
 }
+
+/** The Health and Wellness hub's six Explore cards (see app/(app)/wellness/page.tsx) —
+ *  two large "primary" cards followed by four smaller ones. Every key always renders for
+ *  every account; like ZONE_TWO_ORDER above, role only changes the order, which in turn
+ *  decides which two get the large treatment. The card each key maps to (title, copy,
+ *  route) lives with the page itself. */
+export type WellnessCardKey = "metrics" | "activity" | "nutrition" | "assess" | "exercises" | "connexion";
+
+const WELLNESS_CARD_ORDER: Record<UserRole, WellnessCardKey[]> = {
+  // A licensed clinician tracking their own numbers: the two logging surfaces lead.
+  pt: ["metrics", "activity", "assess", "exercises", "nutrition", "connexion"],
+  // A student is likeliest here for the self-screens, so those get the second large slot.
+  pts: ["metrics", "assess", "activity", "exercises", "nutrition", "connexion"],
+  // General public: nutrition is the most-asked-for surface after the numbers themselves.
+  general: ["metrics", "nutrition", "activity", "exercises", "assess", "connexion"],
+};
+
+/** Same "general" fallback for a role-less account as zoneTwoOrder above, and for the same
+ *  reason — the call site gets a usable order rather than a null case to handle. */
+export function wellnessCardOrder(role: string | null): WellnessCardKey[] {
+  return WELLNESS_CARD_ORDER[isUserRole(role ?? "") ? (role as UserRole) : "general"];
+}

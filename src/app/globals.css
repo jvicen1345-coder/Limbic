@@ -3157,18 +3157,24 @@ html[data-theme="dark"] .nav-founding-link-active {
 .wellness-tab {
   font: inherit;
   font-size: 12px;
-  font-weight: 700;
+  /* Weight and color now carry the whole inactive/active distinction alongside the
+     underline — an inactive tab is plain secondary text with no border at all, so the one
+     underlined, brand-colored, semibold tab is unambiguously the current view. */
+  font-weight: 400;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--color-neutral-600);
+  color: var(--color-neutral-700);
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
   padding: 0 2px 10px;
   margin-right: 18px;
   cursor: pointer;
+  transition: color 160ms ease;
 }
-.wellness-tab--active { color: var(--color-text); border-bottom-color: var(--color-accent); }
+.wellness-tab:hover { color: var(--color-text); }
+.wellness-tab--active,
+.wellness-tab--active:hover { color: var(--color-accent); font-weight: 600; border-bottom-color: var(--color-accent); }
 .wellness-trends-panel { margin-bottom: 30px; }
 
 .wellness-explore-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 30px; }
@@ -12474,6 +12480,269 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .atrium-week-canvas-btn:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
 .atrium-week-canvas-btn--prompt { border-color: var(--color-neutral-400); color: var(--color-neutral-700); }
 .atrium-week-canvas-btn--prompt:hover { background: var(--atrium-surface-2); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Health and Wellness hub — Quick Actions, Ask Limbic Agent banner, Today's
+   Tip, the two-row Explore grid, and the article preview
+   (see app/(app)/wellness/page.tsx). Appended as its own scoped block rather
+   than folded into the .wellness-* section further up, per COORDINATION.md.
+   The older .wellness-snapshot-* rules up there are still used by
+   app/(app)/wellness/loading.tsx's skeleton and by .wellness-snapshot-link,
+   which several wellness pages share, so none of them are removed here.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* — Quick Actions bar — replaces the Health Snapshot card. Three equal-width
+   buttons on desktop, stacked full-width on mobile. */
+.wellness-quick-actions { display: flex; gap: 12px; margin-bottom: 18px; }
+.wellness-quick-action {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-decoration: none;
+  text-align: center;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+.wellness-quick-action:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 7%, var(--color-card-surface));
+}
+/* Plain text glyphs (+ ↗ ⚡), not icon components — one line of markup each and they
+   inherit the button's own font, so they stay aligned with the label at any text size. */
+.wellness-quick-action-glyph { font-size: 14px; line-height: 1; flex-shrink: 0; }
+.wellness-quick-action-glyph--brand { color: var(--color-accent); }
+@media (max-width: 640px) {
+  .wellness-quick-actions { flex-direction: column; }
+  .wellness-quick-action { width: 100%; }
+}
+
+/* — Ask Limbic Agent featured banner — promoted out of the Explore grid, so it reads as
+   the section's one headline offer rather than a seventh peer card. */
+.wellness-agent-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+  background: linear-gradient(
+    to right,
+    var(--color-card-surface),
+    color-mix(in srgb, var(--color-accent) 8%, var(--color-card-surface))
+  );
+}
+.wellness-agent-banner-main { min-width: 0; }
+.wellness-agent-banner-pill-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.wellness-agent-banner-pill {
+  font-size: var(--fs-10);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+.wellness-agent-banner-lock { color: var(--color-neutral-600); flex-shrink: 0; }
+.wellness-agent-banner-title { font-size: 18px; font-weight: 700; color: var(--color-text); margin-bottom: 4px; }
+.wellness-agent-banner-sub { font-size: 13px; line-height: 1.5; color: var(--color-neutral-700); margin: 0; }
+.wellness-agent-banner-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.wellness-agent-banner-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 8px;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 160ms ease;
+}
+.wellness-agent-banner-btn:hover { background: var(--color-accent-600); }
+.wellness-agent-banner-note { font-size: var(--fs-11); color: var(--color-neutral-700); text-align: right; }
+@media (max-width: 720px) {
+  .wellness-agent-banner { flex-direction: column; align-items: stretch; gap: 16px; }
+  .wellness-agent-banner-cta { align-items: flex-start; }
+  .wellness-agent-banner-note { text-align: left; }
+}
+
+/* — Today's Tip — the citation is split off the tip text server-side (see
+   lib/wellness-tips-static.ts splitWellnessTip) and rendered as a footnote below it, so
+   the tip itself reads as one sentence rather than trailing a journal name. */
+.wellness-tip-card {
+  padding: 16px 20px;
+  margin-bottom: 26px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-left: 3px solid var(--wellness-tip-green);
+  border-radius: 8px;
+  /* Brightened in dark mode below — #16a34a on the dark card surface sits under the
+     4.5:1 contrast floor the rest of this file's accent colors are held to. */
+  --wellness-tip-green: #16a34a;
+}
+html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
+.wellness-tip-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.wellness-tip-card-kicker {
+  font-size: var(--fs-11);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--wellness-tip-green);
+}
+.wellness-tip-card-date { font-size: var(--fs-11); color: var(--color-neutral-700); white-space: nowrap; }
+.wellness-tip-card-text { font-size: 14px; line-height: 1.7; color: var(--color-text); margin: 0; }
+.wellness-tip-card-source { font-size: var(--fs-11); font-style: italic; color: var(--color-neutral-700); margin: 8px 0 0; }
+
+/* — Explore grid, two rows — two large primary cards over four smaller ones. Which cards
+   land in which row is decided per-role server-side (lib/user-role.ts wellnessCardOrder);
+   these rules only describe the two sizes. */
+.wellness-explore-rows { display: flex; flex-direction: column; gap: 14px; margin-bottom: 30px; }
+/* Overrides the shared .wellness-explore-grid's 3-up template above — same class is reused
+   for the card styling, only the column count differs per row. */
+.wellness-explore-grid--primary { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 0; }
+.wellness-explore-grid--secondary { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 0; }
+/* Extra bottom padding on top of the spec'd 24px / 16px: .wellness-explore-arrow is
+   absolutely positioned at bottom 18px, so without a reserved band the preview line's
+   second row (e.g. "Last logged: Zone 2 run on Aug 31" wrapping in a narrow secondary
+   card) ran straight under the chevron. */
+.wellness-explore-card--primary { padding: 24px 24px 40px; min-height: 140px; }
+.wellness-explore-card--secondary { padding: 16px 20px 36px; min-height: 100px; }
+.wellness-explore-card--secondary .wellness-explore-icon { width: 34px; height: 34px; margin-bottom: 10px; }
+.wellness-explore-card--secondary .wellness-explore-title { font-size: 14.5px; }
+/* The whole card is one <a>, so the global `a:hover { color: …; text-decoration: underline }`
+   near the top of this file outranks .wellness-explore-card's own `text-decoration: none` /
+   `color: inherit` and underlined and recolored every line of copy on hover. Pinned back
+   here (0,2,0 beats that rule's 0,1,1) so hover stays the lift + shadow it was designed as. */
+.wellness-explore-card:hover { text-decoration: none; color: inherit; }
+
+/* The live "last logged" line under Metrics' and Activity Log's descriptions, at either
+   card size — see the CARD_PREVIEW note in app/(app)/wellness/page.tsx. */
+.wellness-explore-preview {
+  display: block;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  margin-top: 8px;
+  padding-right: 28px;
+}
+@media (max-width: 800px) {
+  .wellness-explore-grid--secondary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .wellness-explore-grid--primary,
+  .wellness-explore-grid--secondary { grid-template-columns: 1fr; }
+  .wellness-explore-card--primary { min-height: 0; padding: 20px 20px 36px; }
+  .wellness-explore-card--secondary { min-height: 0; }
+}
+
+/* — Latest Wellness Articles — first article featured, the other two as compact rows. */
+.wellness-article-featured {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 10px;
+  transition: border-color 160ms ease;
+}
+.wellness-article-featured:hover { border-color: color-mix(in srgb, var(--color-accent) 40%, transparent); }
+.wellness-article-featured-body { min-width: 0; padding-bottom: 6px; }
+.wellness-article-featured-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-text);
+  text-decoration: none;
+}
+.wellness-article-featured-title:hover { color: var(--color-accent); }
+.wellness-article-featured-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+.wellness-article-dot { width: 3px; height: 3px; border-radius: 999px; background: var(--color-neutral-700); flex-shrink: 0; }
+.wellness-article-read { display: inline-flex; align-items: center; gap: 3px; }
+.wellness-article-featured-arrow {
+  position: absolute;
+  right: 20px;
+  bottom: 14px;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--color-neutral-700);
+}
+.wellness-article-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+.wellness-article-row-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  color: var(--color-text);
+  text-decoration: none;
+}
+.wellness-article-row-title:hover { color: var(--color-accent); }
+.wellness-article-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  text-align: right;
+}
+@media (max-width: 560px) {
+  .wellness-article-featured { padding: 16px 18px; }
+  .wellness-article-featured-arrow { right: 16px; }
+  /* The one-line title plus a right-aligned source·date doesn't fit at phone width —
+     stack them rather than truncating the title down to a few characters. */
+  .wellness-article-row { flex-wrap: wrap; gap: 4px 10px; }
+  .wellness-article-row-title { flex-basis: 100%; white-space: normal; }
+  .wellness-article-row-meta { width: 100%; justify-content: space-between; text-align: left; }
 
 /* Inline links inside legal prose (/terms, /privacy, /dmca). The global `a` rule only
    underlines on hover, which is fine for nav and cards but too quiet inside a wall of
