@@ -139,6 +139,7 @@ export default async function ProfilePage() {
           specialty={user.specialty}
           practiceState={user.practiceState}
           school={user.school ?? ""}
+          canvasUrl={user.canvasUrl ?? ""}
           clinicName={user.clinicName ?? ""}
           isStudent={isStudentForCredentials}
           isPro={user.isPro}

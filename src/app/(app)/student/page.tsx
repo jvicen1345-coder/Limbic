@@ -12,6 +12,7 @@ import { boardQuestionForCompletion } from "@/lib/boards-progress";
 import { last7DateKeys } from "@/lib/games";
 import { AtriumProgressChart, type DomainAccuracy } from "@/components/AtriumProgressChart";
 import { AtriumThisWeekCard } from "@/components/AtriumThisWeekCard";
+import { normalizeCanvasUrl } from "@/lib/canvas-url";
 import { AtriumCalendar } from "@/components/AtriumCalendar";
 import { StudentGate } from "@/components/student/StudentGate";
 import {
@@ -460,6 +461,7 @@ export default async function StudentAtriumPage() {
           }))}
           hasAssignmentSource={hasAssignmentSource}
           recommendations={recommendations}
+          canvasUrl={normalizeCanvasUrl(user.canvasUrl)}
         />
 
         <div className="atrium-zone-cards">

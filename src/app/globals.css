@@ -12434,3 +12434,27 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
    strength-level badge and the "X lbs to next level" hint, same muted small-text treatment
    as .trm-next-level. */
 .trm-age-bracket { font-size: var(--fs-10-5); color: var(--color-neutral-700); white-space: nowrap; }
+
+/* Canvas URL field hint on Profile (ProfileForm.tsx) — same muted small-text treatment as
+   the other Profile field hints (e.g. .wellness-macro-weightgoal-hint), just not one of
+   those page-scoped classes since ProfileForm has none of its own yet. */
+.profile-field-hint { font-size: 12px; color: var(--color-neutral-700); margin: 4px 0 0; }
+
+/* "Open Canvas" header button on the Atrium This Week card (AtriumThisWeekCard.tsx) — the
+   title+range pair moved into .atrium-week-header-group so the existing .atrium-week-header
+   space-between rule still reads as a two-item row (label group | button) with this new
+   button added. */
+.atrium-week-header-group { display: flex; align-items: baseline; gap: 8px; }
+.atrium-week-canvas-btn {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.atrium-week-canvas-btn:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.atrium-week-canvas-btn--prompt { border-color: var(--color-neutral-400); color: var(--color-neutral-700); }
+.atrium-week-canvas-btn--prompt:hover { background: var(--atrium-surface-2); }
