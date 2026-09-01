@@ -87,15 +87,15 @@ export default function DmcaPage() {
       <p className="legal-body">
         Jonathan Vicencio, Designated Agent
         <br />
-        Limbic
+        Limbic Center
         <br />
-        3056 Corte Marin
+        P.O. Box 10908
         <br />
-        Newport Beach, CA 92660
+        Newport Beach, CA 92658
         <br />
         Phone: 949-416-3519
         <br />
-        Email: jvicen1345@gmail.com
+        Email: Jonathan@limbic.center
       </p>
       <p className="legal-body">
         Limbic is registered in the U.S. Copyright Office&rsquo;s DMCA Designated Agent Directory under
