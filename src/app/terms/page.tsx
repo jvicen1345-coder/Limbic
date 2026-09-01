@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <LegalPageLayout title="Terms of Service" updated="August 31, 2026">
+    <LegalPageLayout title="Terms of Service" updated="September 1, 2026">
       <h2 className="legal-section-title">1. Acceptance of Terms</h2>
       <p className="legal-body">
         By accessing or using Limbic you agree to be bound by these Terms of Service. If you do not agree to these
@@ -64,6 +64,13 @@ export default function TermsPage() {
         responsible for content you post. You agree not to post content that is false, harmful, harassing, or
         violates any applicable law.
       </p>
+      <p className="legal-body">
+        This includes copyright. Do not post material you do not own or do not have permission to use. Limbic
+        removes material that is the subject of a valid infringement notice and{" "}
+        <strong>terminates the accounts of repeat infringers in appropriate circumstances</strong>. How notices
+        are handled, how to dispute a removal, and how the repeat-infringer policy works are set out in our{" "}
+        <a href="/dmca">Copyright &amp; DMCA Policy</a>.
+      </p>
 
       <h2 className="legal-section-title">7. Third Party Integrations</h2>
       <p className="legal-body">
@@ -73,11 +80,17 @@ export default function TermsPage() {
         availability, accuracy, or content of, any third party service.
       </p>
 
-      <h2 className="legal-section-title">8. Platform Liability</h2>
+      <h2 className="legal-section-title">8. Platform Liability and Copyright Claims</h2>
       <p className="legal-body">
         Limbic is a platform that hosts user generated content. Consistent with Section 230 of the Communications
         Decency Act, Limbic is not responsible for content posted by users. Limbic reserves the right to remove
         content that violates these terms.
+      </p>
+      <p className="legal-body">
+        Section 230 does not apply to intellectual property claims. Claims of copyright infringement are handled
+        under our <a href="/dmca">Copyright &amp; DMCA Policy</a>, which sets out how to send a notice of alleged
+        infringement, how to file a counter-notification, how to reach our designated copyright agent, and our
+        policy of terminating the accounts of repeat infringers.
       </p>
 
       <h2 className="legal-section-title">9. Subscriptions and Payments</h2>

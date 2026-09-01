@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signInAction, signUpAction, guestSignInAction } from "@/app/actions/auth";
+import { ACCEPT_TERMS_FIELD } from "@/lib/legal-terms";
 import { GoogleIcon } from "@/components/icons";
 
 const TABS = [
@@ -14,6 +15,24 @@ const TABS = [
  *  to retype it. Device-local convenience only, email address only — never the password —
  *  not part of the auth flow itself. */
 const EMAIL_STORAGE_KEY = "limbic:signIn:email";
+
+/** The clickwrap checkbox both account-creating forms render (email signup and guest).
+ *  Unticked by default and never pre-checked — a pre-ticked box is not affirmative assent
+ *  — and backed by a server-side check in app/actions/auth.ts, since `required` here is
+ *  only a convenience. Signing *in* to an existing account doesn't render this: that
+ *  account already has a recorded acceptance (User.termsAcceptedAt). */
+function AcceptTermsField({ id }: { id: string }) {
+  return (
+    <div className="accept-terms">
+      <input className="accept-terms-box" id={id} name={ACCEPT_TERMS_FIELD} type="checkbox" required />
+      <label className="accept-terms-label" htmlFor={id}>
+        I have read and agree to the{" "}
+        <Link href="/terms">Terms of Service</Link> and{" "}
+        <Link href="/privacy">Privacy Policy</Link>.
+      </label>
+    </div>
+  );
+}
 
 /** The Email tab's form — email + password (+ confirm, in signup mode). PTs and everyone
  *  else use the same form (see AddLicenseModal on Profile for license verification), so
@@ -89,6 +108,8 @@ function EmailForm({
           Forgot password?
         </Link>
       )}
+
+      {authMode === "signup" && <AcceptTermsField id="si-accept-terms" />}
 
       <button type="submit" className="btn btn-primary btn-block">
         {authMode === "signup" ? "Create account" : "Sign in"}
@@ -199,6 +220,7 @@ export function SignInForm({
               <label htmlFor="si-guest-name">Your name</label>
               <input className="input" id="si-guest-name" name="name" type="text" placeholder="Jamie" autoComplete="name" maxLength={80} required />
             </div>
+            <AcceptTermsField id="si-guest-accept-terms" />
             <button type="submit" className="btn btn-primary btn-block">
               Continue as guest
             </button>
@@ -206,8 +228,12 @@ export function SignInForm({
         </div>
       )}
 
+      {/* Account *creation* takes affirmative assent through AcceptTermsField above. This
+          line remains for the two paths that don't render it: signing in to an existing
+          account, and "Continue with Google", which leaves for the OAuth redirect rather
+          than submitting a form of ours. */}
       <p style={{ fontSize: 12, color: "var(--color-neutral-700)", margin: 0, textAlign: "center" }}>
-        By signing in you agree to our{" "}
+        By signing in or continuing with Google you agree to our{" "}
         <Link href="/terms" style={{ color: "var(--color-neutral-700)", textDecoration: "underline" }}>
           Terms of Service
         </Link>{" "}

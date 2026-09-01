@@ -31,6 +31,9 @@ export async function signUp(page: Page, email: string) {
   const passwordFields = page.locator('input[type="password"]');
   await passwordFields.nth(0).fill(PASSWORD);
   await passwordFields.nth(1).fill(PASSWORD);
+  // Clickwrap assent (components/SignInForm.tsx AcceptTermsField) — required, and enforced
+  // server-side in app/actions/auth.ts, so no account is created without ticking it.
+  await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Create account" }).click();
 }
 
