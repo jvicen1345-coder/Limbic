@@ -85,11 +85,21 @@ export default function DmcaPage() {
         agent:
       </p>
       <p className="legal-body">
-        Copyright Agent, Limbic
+        Jonathan Vicencio, Designated Agent
         <br />
-        Newport Beach, California
+        Limbic
         <br />
-        limbic.center
+        3056 Corte Marin
+        <br />
+        Newport Beach, CA 92660
+        <br />
+        Phone: 949-500-5308
+        <br />
+        Email: jvicen1345@gmail.com
+      </p>
+      <p className="legal-body">
+        Limbic is registered in the U.S. Copyright Office&rsquo;s DMCA Designated Agent Directory under
+        registration number DMCA-1079669.
       </p>
 
       <h2 className="legal-section-title">6. Repeat Infringers</h2>
