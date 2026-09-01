@@ -33,7 +33,7 @@ export interface GameMeta {
 export const GAMES: GameMeta[] = [
   {
     kind: "wordle",
-    href: "/wordle",
+    href: "/daily-term",
     title: "Daily Term",
     description: "Guess today's 5-letter health and wellness word in 6 tries",
     difficulty: "Medium",

@@ -12,6 +12,7 @@ import { SubTabs } from "@/components/SubTabs";
 import { NexusPostCard, type NexusPostData } from "@/components/NexusPostCard";
 import { NexusComposer } from "@/components/NexusComposer";
 import { getFoundingFunderStatus } from "@/lib/founding-funders";
+import { visibleContentWhere } from "@/lib/copyright";
 
 export default async function NexusFeedPage({ searchParams }: { searchParams: Promise<{ tags?: string }> }) {
   const user = await getCurrentUser();
@@ -27,6 +28,7 @@ export default async function NexusFeedPage({ searchParams }: { searchParams: Pr
 
   const [posts, currentUserFoundingFunder] = await Promise.all([
     prisma.nexusPost.findMany({
+      where: { ...visibleContentWhere },
       orderBy: { createdAt: "desc" },
       take: 40,
       include: {
@@ -35,6 +37,7 @@ export default async function NexusFeedPage({ searchParams }: { searchParams: Pr
         },
         likes: { select: { userId: true } },
         comments: {
+          where: { ...visibleContentWhere },
           orderBy: { createdAt: "asc" },
           include: {
             author: { select: { id: true, name: true, foundingFunderBadgeHidden: true, foundingFunder: { select: { paymentStatus: true } } } },

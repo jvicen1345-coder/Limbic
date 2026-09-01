@@ -6,6 +6,7 @@ import { dateToLocalIso, isEventPost, PERSONAL_DEADLINE_FIELDS } from "@/lib/lim
 import { todayLocalDateStr } from "@/lib/today";
 import type { CalendarEvent } from "@/lib/calendar-events";
 import { isAdminEmail } from "@/lib/session";
+import { visibleContentWhere } from "@/lib/copyright";
 
 /** Builds every event the full /calendar page can show for `user` — personal deadlines,
  *  future PT platform (CE) articles, future Limbic community (Nexus) events, and the
@@ -38,6 +39,7 @@ export async function buildCalendarEvents(user: User): Promise<CalendarEvent[]> 
     getArticles(),
     isAdmin
       ? prisma.nexusPost.findMany({
+          where: { ...visibleContentWhere },
           select: {
             id: true,
             body: true,

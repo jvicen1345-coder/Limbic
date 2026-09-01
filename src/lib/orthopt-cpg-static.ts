@@ -7,8 +7,8 @@ import { estimateReadMins } from "@/lib/news-live";
  * Therapy (orthopt.org — see https://www.orthopt.org/content/publications/pub-cpg),
  * curated by hand rather than scraped live (that page isn't reachable from this app's
  * fetch environment). Every entry links out to the actual guideline PDF or its JOSPT
- * record — no fabricated content, same integrity bar as lib/retraction-watch-data.ts
- * and the REAL_PEOPLE half of lib/nexus-seed.ts. Always included in getArticles() (see
+ * record — no fabricated content, same integrity bar as lib/retraction-watch-data.ts.
+ * Always included in getArticles() (see
  * lib/articles.ts) rather than only surfacing on a live-fetch topped-up count, since
  * unlike the Google-News-sourced categories these are the authoritative documents
  * themselves, not news coverage about them.

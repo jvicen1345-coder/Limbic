@@ -1,21 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { CalcModal, CalcCardShell } from "./CalcModal";
+import { CalcModal, CalcCardShell, LicensedInstrumentNotice } from "./CalcModal";
 import { CalcTimer } from "./CalcTimer";
 
-const CONDITIONS = ["Double leg stance, firm surface", "Single leg stance, firm surface", "Tandem stance, firm surface", "Double leg stance, foam surface", "Single leg stance, foam surface", "Tandem stance, foam surface"] as const;
+/** The six mBESS testing conditions — plain descriptions of the stance and surface being
+ *  tested, kept as row labels so an examiner knows which trial each error count belongs to.
+ *  The enumerated official error definitions that used to be listed above the inputs are
+ *  gone; see LicensedInstrumentNotice in CalcModal.tsx. Count errors against your own copy
+ *  of the protocol. */
+const CONDITIONS = [
+  "Double leg stance, firm surface",
+  "Single leg stance, firm surface",
+  "Tandem stance, firm surface",
+  "Double leg stance, foam surface",
+  "Single leg stance, foam surface",
+  "Tandem stance, foam surface",
+] as const;
 
-// The official BESS/mBESS error types, counted once per occurrence (max 1 per category
-// per stance) across the 20-second trial. Applies identically to all six conditions above.
-const ERROR_CRITERIA = [
-  "Lifting hands off the iliac crests",
-  "Opening the eyes",
-  "Step, stumble, or fall",
-  "Moving the hip into more than 30° of flexion or abduction",
-  "Lifting the forefoot or heel off the testing surface",
-  "Remaining out of the testing position for more than 5 seconds",
-];
+/** Published protocol: errors are capped at 10 per 20-second trial. */
+const MAX_ERRORS_PER_CONDITION = 10;
 
 /** Card copy for this measure, lifted out of the JSX so the Clinical Reference
  *  search box can match against it (see lib/reference-search.ts) without the text
@@ -29,9 +33,8 @@ export const MBESS_MEASURE = {
   administration: "Clinician-Administered",
 } as const;
 
-/** Fully functional — error-count inputs, the running total, the built-in 20-second-per-
- *  stance countdown (see CalcTimer), and the real official BESS error-counting criteria
- *  are all live. */
+/** Score entry for the mBESS: per-condition error counts entered from your own copy of the
+ *  protocol, totalled live, alongside the built-in 20-second-per-stance countdown. */
 export function MbessCalculator() {
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState<number[]>(Array(CONDITIONS.length).fill(0));
@@ -49,15 +52,12 @@ export function MbessCalculator() {
         testName="mBESS"
         result={{ value: `${total} errors`, label: "Higher error count indicates worse balance" }}
       >
+        <LicensedInstrumentNotice instrument="BESS protocol" developedBy="Riemann & Guskiewicz" />
         <CalcTimer mode="countdown" durationSeconds={20} label="20s per stance — reset before timing the next condition" />
-        <div className="pro-calc-result" style={{ marginBottom: 14 }}>
-          <div className="pro-calc-result-label" style={{ fontWeight: 600, marginBottom: 4 }}>Count one error per occurrence, per stance (max 10 per stance):</div>
-          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5 }}>
-            {ERROR_CRITERIA.map((c) => (
-              <li key={c}>{c}</li>
-            ))}
-          </ul>
-        </div>
+        <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", margin: "10px 0" }}>
+          Count errors against your copy of the protocol and enter the total for each condition, to a maximum of{" "}
+          {MAX_ERRORS_PER_CONDITION} per trial.
+        </p>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {CONDITIONS.map((condition, i) => (
             <div className="pro-item-row" key={condition}>
@@ -65,12 +65,13 @@ export function MbessCalculator() {
               <input
                 className="input pro-item-row-select"
                 type="number"
+                aria-label={`${condition} error count`}
                 min={0}
-                max={10}
+                max={MAX_ERRORS_PER_CONDITION}
                 value={errors[i]}
                 onChange={(e) => {
                   const next = [...errors];
-                  next[i] = Math.min(10, Math.max(0, Number(e.target.value)));
+                  next[i] = Math.min(MAX_ERRORS_PER_CONDITION, Math.max(0, Number(e.target.value)));
                   setErrors(next);
                 }}
               />
@@ -82,9 +83,9 @@ export function MbessCalculator() {
           <div className="pro-calc-result-label">Higher error count indicates worse balance</div>
         </div>
         <p style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", marginTop: 8 }}>
-          If a stance cannot be held for at least 5 seconds, score it the maximum of 10 errors for that condition.
-          Minimal detectable change: roughly 3-5 error points (varies by rater and population); a 1-2 error increase
-          after concussion can still fall within measurement error alone.
+          If a stance cannot be held for at least 5 seconds, score it the maximum of {MAX_ERRORS_PER_CONDITION} errors
+          for that condition. Minimal detectable change: roughly 3-5 error points (varies by rater and population); a
+          1-2 error increase after concussion can still fall within measurement error alone.
         </p>
       </CalcModal>
     </>

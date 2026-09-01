@@ -20,7 +20,13 @@ function LicenseRow({ license }: { license: CredentialsLicenseRow }) {
       : license.status === "pending"
         ? "license-badge license-badge--pending"
         : "license-badge license-badge--rejected";
-  const badgeLabel = license.status === "verified" ? "Verified" : license.status === "pending" ? "Pending" : "Not approved";
+  // "On file", not "Verified". What actually happened is that the reader attested to this
+  // license and an admin accepted the submission — Limbic does not query the issuing state
+  // board, so calling it "Verified" claims a check that was never run. That matters beyond
+  // wording: it's the word a reader (or an injured patient's lawyer) would reasonably read
+  // as board verification. The underlying status value stays "verified" (see
+  // lib/license-verification.ts LICENSE_STATUSES); this is the label only.
+  const badgeLabel = license.status === "verified" ? "On file" : license.status === "pending" ? "Pending" : "Not approved";
 
   return (
     <div className="license-row">
@@ -30,7 +36,7 @@ function LicenseRow({ license }: { license: CredentialsLicenseRow }) {
           {license.state}
           {license.status === "verified" &&
             license.verifiedAt &&
-            ` · Verified ${new Date(license.verifiedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`}
+            ` · Accepted ${new Date(license.verifiedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`}
         </div>
       </div>
       <span className={badgeClass}>{badgeLabel}</span>
@@ -84,8 +90,8 @@ export function ProfessionalCredentialsCard({
           )}
           <p className="card-body" style={{ marginTop: licenses.length === 0 ? 6 : 10 }}>
             {licenses.length === 0
-              ? "Add your PT license to verify your credentials and unlock PRO features."
-              : "A PT licensed in more than one state can add each one, one active license per state."}
+              ? "Add your PT license to record your credentials and unlock PRO features."
+              : "A PT licensed in more than one state can add each one, one active license per state. A license on file is one you attested to and we accepted; Limbic doesn't check it against the issuing state board."}
             {rejectedCount > 0 &&
               ` ${rejectedCount === 1 ? "A previous submission" : `${rejectedCount} previous submissions`} weren't approved — resubmit that state below with corrected details.`}
           </p>

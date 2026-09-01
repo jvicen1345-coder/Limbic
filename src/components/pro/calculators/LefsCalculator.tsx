@@ -1,32 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { CalcModal, CalcCardShell } from "./CalcModal";
+import { CalcModal, CalcCardShell, LicensedInstrumentNotice } from "./CalcModal";
 
-const LEFS_ITEMS = [
-  "Any of your usual work, housework, or school activities",
-  "Your usual hobbies, recreational, or sporting activities",
-  "Getting into or out of the bath",
-  "Walking between rooms",
-  "Putting on your shoes or socks",
-  "Squatting",
-  "Lifting an object, like a bag of groceries, from the floor",
-  "Performing light activities around your home",
-  "Performing heavy activities around your home",
-  "Getting into or out of a car",
-  "Walking 2 blocks",
-  "Walking a mile",
-  "Going up or down 10 stairs",
-  "Standing for 1 hour",
-  "Sitting for 1 hour",
-  "Running on even ground",
-  "Running on uneven ground",
-  "Making sharp turns while running fast",
-  "Hopping",
-  "Rolling over in bed",
-] as const;
-
-const SCORE_LABELS = ["0, extreme difficulty/unable", "1, quite a bit of difficulty", "2, moderate difficulty", "3, a little bit of difficulty", "4, no difficulty"];
+/** The LEFS is 20 items, each 0-4, summed out of 80. Like the DASH and unlike the ODI,
+ *  the item *is* the text — there are no section headings to label rows with — so rows are
+ *  numbered in the order they appear on the published form. The 20 item statements and the
+ *  0-4 difficulty anchors are not reproduced here; see LicensedInstrumentNotice in
+ *  CalcModal.tsx. */
+const LEFS_ITEM_COUNT = 20;
+const LEFS_MAX = LEFS_ITEM_COUNT * 4;
 
 /** Card copy for this measure, lifted out of the JSX so the Clinical Reference
  *  search box can match against it (see lib/reference-search.ts) without the text
@@ -40,11 +23,11 @@ export const LEFS_MEASURE = {
   administration: "Patient-Reported",
 } as const;
 
-/** Fully functional — all 20 items, each scored 0-4, summed in real time out of 80. Higher
- *  is better function; 80 is full function. */
+/** Score entry for the LEFS: each item entered 0-4 from the completed form and summed out
+ *  of 80. Higher is better function; 80 is full function. */
 export function LefsCalculator() {
   const [open, setOpen] = useState(false);
-  const [scores, setScores] = useState<number[]>(Array(LEFS_ITEMS.length).fill(4));
+  const [scores, setScores] = useState<number[]>(Array(LEFS_ITEM_COUNT).fill(4));
 
   const total = scores.reduce((sum, s) => sum + s, 0);
 
@@ -57,16 +40,20 @@ export function LefsCalculator() {
         onClose={() => setOpen(false)}
         testKey="lefs"
         testName="LEFS"
-        result={{ value: `${total} / 80`, label: "Higher is better function, 80 is full function" }}
+        result={{ value: `${total} / ${LEFS_MAX}`, label: "Higher is better function, 80 is full function" }}
       >
+        <LicensedInstrumentNotice instrument="LEFS" developedBy="Binkley, Stratford, Lott & Riddle" />
+        <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", margin: "0 0 10px" }}>
+          Enter each item&rsquo;s response, 0 (extreme difficulty or unable) to 4 (no difficulty), in the order they
+          appear on the form.
+        </p>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          {LEFS_ITEMS.map((item, i) => (
-            <div className="pro-item-row" key={item}>
-              <span className="pro-item-row-label">
-                {i + 1}. {item}
-              </span>
+          {Array.from({ length: LEFS_ITEM_COUNT }, (_, i) => (
+            <div className="pro-item-row" key={i}>
+              <span className="pro-item-row-label">Item {i + 1}</span>
               <select
                 className="input pro-item-row-select"
+                aria-label={`Item ${i + 1} response`}
                 value={scores[i]}
                 onChange={(e) => {
                   const next = [...scores];
@@ -74,9 +61,9 @@ export function LefsCalculator() {
                   setScores(next);
                 }}
               >
-                {SCORE_LABELS.map((label, score) => (
+                {[0, 1, 2, 3, 4].map((score) => (
                   <option key={score} value={score}>
-                    {label}
+                    {score}
                   </option>
                 ))}
               </select>
@@ -84,7 +71,9 @@ export function LefsCalculator() {
           ))}
         </div>
         <div className="pro-calc-result" style={{ marginTop: 14 }}>
-          <div className="pro-calc-result-value">{total} / 80</div>
+          <div className="pro-calc-result-value">
+            {total} / {LEFS_MAX}
+          </div>
           <div className="pro-calc-result-label">Higher is better function, 80 is full function</div>
         </div>
         <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", marginTop: 8 }}>

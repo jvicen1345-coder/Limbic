@@ -58,31 +58,55 @@ Merging it would resurrect a rejected design and clobber that work.
 
 ## Currently active
 
-Volatile — update or ignore once these land.
+**This table goes stale fast — check it before you trust it.** Every branch listed here on
+the morning of 2026-09-01 had landed by midday. In a repo merging a dozen PRs a day, a
+hand-maintained list of in-flight work is wrong more often than it is right, so treat a row
+as a hint about *who to ask*, not as fact about what is unmerged.
 
 | Branch | Scope | Owns |
 |---|---|---|
-| `claude/legal-risk-review-2d6asg` | Legal/compliance pass | E-utilities ID centralization, `apta.org` scrape removal, dead-code cleanup (65 files) |
-| `claude/exercise-chat-integration-x3r2ub` | Movement Lab exercise bank | `src/lib/movement-lab/`, Exercise Programs data (pure additions) |
-| `claude/health-wellness-redesign-bjvaod` | Health & Wellness page | the wellness page + its appended `globals.css` block |
+| _(none currently reserved)_ | | |
 
-All three are pushed and live as of 2026-09-01 — unlike the reservations this table used to
-carry, you can go read them. The Movement Lab / Exercise Programs surface is owned by
-`claude/exercise-chat-integration-*`; coordinate before editing there. The legal pass spans
-the widest file set, so rebase on it rather than the other way around if you collide.
+### Working out what is actually unmerged
+
+Do this instead of reading the table above. It takes ten seconds and is always correct:
+
+```sh
+git fetch origin
+# 1. Zero diff against main means the branch has landed. Most of origin is this.
+git diff --quiet origin/main origin/<branch> && echo "landed"
+
+# 2. Non-empty diff proves nothing on its own — see below. Check whether the branch's
+#    own tip subject already has a squash commit on main:
+git log -1 --format=%s origin/<branch>
+git log --oneline origin/main --grep="<that subject>" -i
+```
+
+**Why the obvious check does not work.** This repo squash-merges, so a landed branch's tip
+SHA is not an ancestor of `main` and `git diff main...branch` (three-dot, from the merge
+base) still reports the branch's full original diff. As of 2026-09-01 roughly 100 branches
+sit on origin and all but a couple have already shipped — every one of them looks unmerged
+to a three-dot diff. `fix-slide-breakdown-course-mixup` was the clearest example: it read as
+unmerged while *being* main's HEAD.
+
+Use the two-dot form (`git diff main branch`), or check whether the branch's new files exist
+on `main`. A large deletion count in a two-dot diff means main is ahead of the branch — i.e.
+it landed and the branch is now stale, the opposite of unmerged work.
+
+If auto-delete-on-merge ever gets turned on in repo settings, most of this section stops
+being necessary: a branch still existing would mean something.
 
 ### Recently landed (2026-09-01)
 
-- **Mobile UX and desktop visual passes** — both landed 2026-08-31 and their reservation rows
-  are removed. The merge-order note they carried no longer applies.
+- **Legal/compliance pass** — PR #375, from `claude/legal-risk-review-*`. Also carried e2e
+  fixes for three Movement Lab tests that #376/#380 had left red on main.
+- **Health & Wellness hub redesign** — PR #384.
+- **Movement Lab exercise bank additions** — PRs #383, #385.
+- **Mobile UX and desktop visual passes** — landed 2026-08-31; their reservation rows are
+  gone and the merge-order note they carried no longer applies.
 - **Exercise Programs** (the renamed `/hep`), Movement Lab tab + autocomplete, Clinician
   Dashboard 3-rep-max and session exercise logging, mobile bottom-nav reorder, Study Guide
   mastery indicators, Atrium Canvas link-out — PRs #367–#382.
-- Note for anyone auditing branch state: this repo squash-merges, so **the ~20 stale
-  branches on origin whose work has already landed still show a non-empty
-  `git diff main...branch`**. Three-dot diffs are not evidence of unmerged work. Test with
-  `git diff main branch` (two-dot) or by checking whether the branch's new files exist on
-  `main`; the branches listed in the table above are the only ones with real unmerged work.
 
 ### Recently landed (2026-08-30)
 

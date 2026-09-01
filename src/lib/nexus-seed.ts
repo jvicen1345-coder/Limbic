@@ -3,16 +3,21 @@ import { prisma } from "@/lib/db";
 import type { Specialty } from "@/lib/types";
 
 /**
- * Nexus directory/feed seed data. Two kinds of rows, both plain `User` records with no
- * email/licenseNumber (so they can never sign in — same trick as any other demo account):
+ * Nexus directory/feed seed data — fictional filler profiles only ("curated demo
+ * profiles"), with invented names that impersonate nobody and original, generic
+ * professional commentary attributed to no real source. Each is a plain `User` record
+ * with no email/licenseNumber, so it can never sign in.
  *
- *  - REAL_PEOPLE: real, named PT/OT/healthcare professionals, sourced via web search. Their
- *    seed post links out to a real thing they actually published (sourceUrl/sourceLabel) —
- *    never a fabricated quote attributed to them, same integrity bar as the rest of the
- *    app's "real" content (APTA News, wellness videos, Clips).
- *  - DEMO_PEOPLE: fictional filler profiles for the directory ("curated demo profiles"),
- *    invented names that don't impersonate anyone real. Their posts are original,
- *    generic professional commentary, not attributed to any real source.
+ * This file used to also carry a REAL_PEOPLE list: real, named PT/OT professionals
+ * sourced via web search, each with a post written in their voice. Even though those
+ * posts linked to something the person had genuinely published, the post text itself was
+ * an invented first-person statement signed with a real practitioner's name and
+ * credentials, and nothing in the directory marked those profiles as seeded — so they
+ * read as members who had joined and posted. That is a real person's name and
+ * professional identity used to populate a commercial product without their consent, and
+ * it is removed. RETIRED_SEED_IDS below deletes the rows from any database that already
+ * has them. Don't reintroduce this pattern: a real practitioner gets into the directory
+ * by claiming an account, not by being seeded into one.
  *
  * ensureNexusSeedData() is idempotent (fixed ids, upsert) and safe to call on every Nexus
  * page load — no separate seed script to remember to run against Turso in production.
@@ -25,89 +30,8 @@ interface SeedPerson {
   bio: string;
   specialty: Specialty;
   practiceState: string;
-  post: { body: string; sourceUrl?: string; sourceLabel?: string };
+  post: { body: string };
 }
-
-const REAL_PEOPLE: SeedPerson[] = [
-  {
-    id: "nexus-seed-sean-collins",
-    name: "Sean Collins, PT, DPT",
-    headline: "Professor of Clinical Inquiry · Writer, A Peripatetic Physical Therapist",
-    bio: "PT educator writing about clinical reasoning and how PTs think through diagnosis, on Substack.",
-    specialty: "ortho",
-    practiceState: "New Hampshire",
-    post: {
-      body: "New essay up on A Peripatetic Physical Therapist digging into how clinicians separate correlation from causation in diagnosis, worth a read if you teach differential reasoning or just want to sharpen your own.",
-      sourceUrl: "https://peripateticpt.substack.com/p/exploring-causation-and-diagnostic",
-      sourceLabel: "A Peripatetic Physical Therapist",
-    },
-  },
-  {
-    id: "nexus-seed-larry-benz",
-    name: "Larry Benz, PT, DPT",
-    headline: "Practice owner & writer, All Things #Physicaltherapy",
-    bio: "Physical therapy practice owner writing on industry trends, patient volume, and practice management.",
-    specialty: "ortho",
-    practiceState: "Kentucky",
-    post: {
-      body: "Been writing about the 'mill effect' in high-volume ortho clinics, what happens to outcomes and clinician retention when visit counts become the whole strategy. More on the Substack.",
-      sourceUrl: "https://physicaltherapy.substack.com",
-      sourceLabel: "All Things #Physicaltherapy",
-    },
-  },
-  {
-    id: "nexus-seed-karen-richards",
-    name: "Karen Richards, OT",
-    headline: "Pediatric Occupational Therapist · Writer, Kids OT",
-    bio: "Pediatric OT writing about private-practice OT work and hands-on treatment ideas.",
-    specialty: "pediatric",
-    practiceState: "United Kingdom",
-    post: {
-      body: "Wrote up some of the everyday prejudices private-practice pediatric OTs run into in the UK system, and a few creative therapy-putty activities for sensory work, for anyone who wants something lighter after that one.",
-      sourceUrl: "https://kidsot.substack.com/t/occupational-therapy",
-      sourceLabel: "Kids OT",
-    },
-  },
-  {
-    id: "nexus-seed-ben-fedewa",
-    name: "Ben Fedewa, PT, DPT",
-    headline: "Sports Physical Therapist, OSO Physical Therapy",
-    bio: "Sports PT focused on ACL rehab and criteria-based return-to-sport testing.",
-    specialty: "sports",
-    practiceState: "California",
-    post: {
-      body: "Put together a criteria-based checklist for clearing athletes to return to sport after ACL reconstruction, objective hop testing and strength symmetry, not just a date on the calendar.",
-      sourceUrl: "https://osophysicaltherapy.com/blog/criteria-based-checklist-for-returning-to-sport-after-acl-reconstruction-in-alameda",
-      sourceLabel: "OSO Physical Therapy",
-    },
-  },
-  {
-    id: "nexus-seed-neva-kirk-sanchez",
-    name: "Neva Kirk-Sanchez, PT, PhD",
-    headline: "Geriatric PT researcher · Lead author, APTA fall-risk CPG",
-    bio: "Researcher focused on fall risk and balance in community-dwelling older adults.",
-    specialty: "geriatric",
-    practiceState: "Florida",
-    post: {
-      body: "Our team's evidence-based clinical practice guideline on managing fall risk in community-dwelling older adults is out in the Journal of Geriatric Physical Therapy; multicomponent, progressive balance training remains the strongest lever we have.",
-      sourceUrl: "https://journals.lww.com/jgpt/fulltext/2025/04000/physical_therapy_management_of_fall_risk_in.3.aspx",
-      sourceLabel: "Journal of Geriatric Physical Therapy",
-    },
-  },
-  {
-    id: "nexus-seed-david-dansereau",
-    name: "David Dansereau, MSPT",
-    headline: "Neurologic PT · Host, Know Stroke · Writer, Achieve Balance",
-    bio: "Neuro PT writing and podcasting about stroke recovery and rebuilding balance after stroke.",
-    specialty: "neuro",
-    practiceState: "Massachusetts",
-    post: {
-      body: "New Know Stroke piece on how remote therapeutic monitoring is starting to close the gap between clinic visits for stroke survivors, more data between appointments, faster adjustments to the plan of care.",
-      sourceUrl: "https://knowstroke.substack.com/p/revolutionizing-neuro-rehab-with",
-      sourceLabel: "Know Stroke",
-    },
-  },
-];
 
 const DEMO_PEOPLE: SeedPerson[] = [
   {
@@ -167,7 +91,23 @@ const DEMO_PEOPLE: SeedPerson[] = [
   },
 ];
 
-export const ALL_SEED_PEOPLE = [...REAL_PEOPLE, ...DEMO_PEOPLE];
+export const ALL_SEED_PEOPLE = DEMO_PEOPLE;
+
+/** Ids of the retired REAL_PEOPLE seed profiles (see the note at the top of this file).
+ *  Removing them from source isn't enough on its own — ensureNexusSeedData() already
+ *  upserted them into every database it has ever run against, production included — so
+ *  they're deleted by id on the next seed run. Deleting the `User` cascades to their seed
+ *  post and to any connection request or message a real reader sent them (every one of
+ *  those relations is onDelete: Cascade, see schema.prisma). Safe to keep running
+ *  indefinitely: deleteMany on absent ids is a no-op, not an error. */
+const RETIRED_SEED_IDS = [
+  "nexus-seed-sean-collins",
+  "nexus-seed-larry-benz",
+  "nexus-seed-karen-richards",
+  "nexus-seed-ben-fedewa",
+  "nexus-seed-neva-kirk-sanchez",
+  "nexus-seed-david-dansereau",
+];
 
 let ensured: Promise<void> | null = null;
 
@@ -197,8 +137,6 @@ async function seedOnePerson(person: (typeof ALL_SEED_PEOPLE)[number]): Promise<
       data: {
         authorId: user.id,
         body: person.post.body,
-        sourceUrl: person.post.sourceUrl,
-        sourceLabel: person.post.sourceLabel,
       },
     });
   }
@@ -218,6 +156,9 @@ export async function ensureNexusSeedData(): Promise<void> {
     // once per process (see the `ensured` cache above), so the extra latency of going
     // one-at-a-time here is a one-time cost, not a per-request one.
     ensured = (async () => {
+      // Ahead of the upserts, so a database still carrying the retired real-person
+      // profiles is cleaned on the very first Nexus page load after this deploys.
+      await prisma.user.deleteMany({ where: { id: { in: RETIRED_SEED_IDS } } });
       for (const person of ALL_SEED_PEOPLE) {
         await seedOnePerson(person);
       }

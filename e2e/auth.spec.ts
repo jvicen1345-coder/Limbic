@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { freshEmail, signUp } from "./helpers";
+import { freshEmail, signUp, PASSWORD } from "./helpers";
 
 test.describe("landing + auth", () => {
   test("landing page renders for a signed-out visitor", async ({ page }) => {
@@ -53,6 +53,40 @@ test.describe("landing + auth", () => {
     // Past every gate: the real Home, with the app shell around it.
     await expect(page.getByText(/Good (morning|afternoon|evening)/)).toBeVisible();
     await expect(page.getByRole("heading", { name: "How are you using Limbic?" })).toBeHidden();
+  });
+
+  /**
+   * The clickwrap gate (components/SignInForm.tsx AcceptTermsField). The checkbox carries
+   * `required`, so this bypasses the browser's own validation with a direct form submit to
+   * exercise the *server-side* check in app/actions/auth.ts — that check is the one that
+   * actually matters, since signUpAction is a callable endpoint in its own right and the
+   * attribute only guards the happy path through the rendered form.
+   */
+  test("creating an account without accepting the terms is refused server-side", async ({ page }) => {
+    const email = freshEmail("noterms");
+    await page.goto("/sign-in");
+    await page.getByText("New here? Create an account").click();
+    await page.getByLabel("Email").fill(email);
+    const passwordFields = page.locator('input[type="password"]');
+    await passwordFields.nth(0).fill(PASSWORD);
+    await passwordFields.nth(1).fill(PASSWORD);
+
+    // Deliberately leave the box unticked, and drop `required` so the browser submits the
+    // form rather than blocking it — the point is what the server does with the submission.
+    await page.getByRole("checkbox").evaluate((el: HTMLInputElement) => el.removeAttribute("required"));
+    await page.getByRole("button", { name: "Create account" }).click();
+
+    await expect(page).toHaveURL(/error=terms_required/);
+    await expect(
+      page.getByText("Please accept the Terms of Service and Privacy Policy to create an account.")
+    ).toBeVisible();
+
+    // And no account was created: signing in with those credentials fails.
+    await page.goto("/sign-in");
+    await page.getByLabel("Email").fill(email);
+    await page.locator('input[type="password"]').first().fill(PASSWORD);
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page.getByText("Incorrect email or password.")).toBeVisible();
   });
 
   test("signing in with the wrong password shows a generic error", async ({ page }) => {

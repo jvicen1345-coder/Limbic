@@ -2,6 +2,7 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import { submitVisitRequest } from "@/app/actions/connexion";
+import { CONNEXION_CONSENT_TEXT } from "@/lib/connexion-consent";
 
 /** The Connexion Method's "Schedule Your Visit" section — the same dark CTA card + form
  *  embedded on /connexion and /connexion/delia (replaces the old email-only
@@ -17,18 +18,28 @@ export function ConnexionScheduleSection() {
   const [preferredDate, setPreferredDate] = useState("");
   const [preferredTime, setPreferredTime] = useState("");
   const [visitReason, setVisitReason] = useState("");
+  const [consentAccepted, setConsentAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const canSubmit = name.trim().length > 0 && phone.trim().length > 0 && email.trim().length > 0;
+  const canSubmit =
+    name.trim().length > 0 && phone.trim().length > 0 && email.trim().length > 0 && consentAccepted;
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
     setError(null);
     startTransition(async () => {
-      const result = await submitVisitRequest({ name, phone, email, preferredDate, preferredTime, visitReason });
+      const result = await submitVisitRequest({
+        name,
+        phone,
+        email,
+        preferredDate,
+        preferredTime,
+        visitReason,
+        consentAccepted,
+      });
       if (result.ok) {
         setSubmitted(true);
       } else {
@@ -151,6 +162,23 @@ export function ConnexionScheduleSection() {
             Do not include medical or health information in this form. A Connexion Method representative will
             contact you to discuss your specific needs privately.
           </p>
+
+          {/* Affirmative opt-in, unticked by default and gating the submit button. The
+              wording lives in lib/connexion-consent.ts so the text stored on the request is
+              byte-for-byte what was shown here. */}
+          <div className="connexion-visit-consent">
+            <input
+              id="connexion-visit-consent"
+              type="checkbox"
+              className="connexion-visit-consent-box"
+              checked={consentAccepted}
+              onChange={(e) => setConsentAccepted(e.target.checked)}
+              required
+            />
+            <label htmlFor="connexion-visit-consent" className="connexion-visit-consent-label">
+              {CONNEXION_CONSENT_TEXT}
+            </label>
+          </div>
 
           <button type="submit" className="connexion-visit-button" disabled={pending || !canSubmit}>
             {pending ? "Sending…" : "Request Your Visit"}
