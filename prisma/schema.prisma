@@ -1143,6 +1143,10 @@ model HEPTemplate {
   // this schema's existing convention for fixed-but-app-enforced value sets (see
   // FoundingFunder.paymentStatus, ConnexionVisitRequest.status).
   bodyPart  String
+  // "home" | "clinic" — see HEP_TEMPLATE_KINDS in lib/hep-templates.ts. Defaulted to "home"
+  // for every template that existed before this field (the only kind the builder produced
+  // until then), so no backfill was needed. Same plain-String convention as bodyPart above.
+  kind      String   @default("home")
   // JSON snapshot of the builder's draft exercises at save time — same shape as
   // HepBuilder's DraftExercise minus the client-only `id` field.
   exercises Json

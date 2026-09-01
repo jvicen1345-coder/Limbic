@@ -6,10 +6,13 @@ import { getCurrentUser, hasLicenseAccess } from "@/lib/session";
 import { sanitizeMediaUrl } from "@/lib/media-url";
 import {
   HEP_TEMPLATE_BODY_PARTS,
+  HEP_TEMPLATE_KINDS,
   isHepTemplateBodyPart,
+  isHepTemplateKind,
   parseHepExercises,
   type HepTemplateBodyPart,
   type HepTemplateExercise,
+  type HepTemplateKind,
 } from "@/lib/hep-templates";
 
 export interface HepExerciseInput {
@@ -78,27 +81,32 @@ export interface HepTemplateSummary {
   exerciseCount: number;
 }
 
-/** Grouped by body part, in HEP_TEMPLATE_BODY_PARTS order — every category is present
- *  (possibly empty) so the template library panel can always render all nine sections. Kept
- *  lightweight (no exercises payload) since the panel only needs full exercise data once a
- *  specific template is loaded — see loadHepTemplateAction below. Deliberately takes no
- *  userId parameter (unlike the spec's literal signature) — like every other action in this
- *  file, the user comes from the session, not a client-supplied id that could be spoofed. */
-export async function getHepTemplatesAction(): Promise<Record<HepTemplateBodyPart, HepTemplateSummary[]>> {
-  const grouped = {} as Record<HepTemplateBodyPart, HepTemplateSummary[]>;
-  for (const bp of HEP_TEMPLATE_BODY_PARTS) grouped[bp] = [];
+/** Grouped by kind first (HEP_TEMPLATE_KINDS order), then body part within each
+ *  (HEP_TEMPLATE_BODY_PARTS order) — every kind/body-part combination is present (possibly
+ *  empty) so the template library panel can always render all sections regardless of which
+ *  kind tab is selected. Kept lightweight (no exercises payload) since the panel only needs
+ *  full exercise data once a specific template is loaded — see loadHepTemplateAction below.
+ *  Deliberately takes no userId parameter (unlike the spec's literal signature) — like every
+ *  other action in this file, the user comes from the session, not a client-supplied id that
+ *  could be spoofed. */
+export async function getHepTemplatesAction(): Promise<Record<HepTemplateKind, Record<HepTemplateBodyPart, HepTemplateSummary[]>>> {
+  const grouped = {} as Record<HepTemplateKind, Record<HepTemplateBodyPart, HepTemplateSummary[]>>;
+  for (const k of HEP_TEMPLATE_KINDS) {
+    grouped[k] = {} as Record<HepTemplateBodyPart, HepTemplateSummary[]>;
+    for (const bp of HEP_TEMPLATE_BODY_PARTS) grouped[k][bp] = [];
+  }
   const user = await getCurrentUser();
   if (!user || !hasLicenseAccess(user)) return grouped;
 
   const templates = await prisma.hEPTemplate.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
-    select: { id: true, name: true, bodyPart: true, exercises: true },
+    select: { id: true, name: true, bodyPart: true, kind: true, exercises: true },
   });
   for (const t of templates) {
-    if (!isHepTemplateBodyPart(t.bodyPart)) continue;
+    if (!isHepTemplateBodyPart(t.bodyPart) || !isHepTemplateKind(t.kind)) continue;
     const exercises = Array.isArray(t.exercises) ? t.exercises : [];
-    grouped[t.bodyPart].push({ id: t.id, name: t.name, exerciseCount: exercises.length });
+    grouped[t.kind][t.bodyPart].push({ id: t.id, name: t.name, exerciseCount: exercises.length });
   }
   return grouped;
 }
@@ -107,11 +115,16 @@ export async function getHepTemplatesAction(): Promise<Record<HepTemplateBodyPar
  *  for non-pro accounts, same LimbicPRO-gating reasoning as createHepAction above. Confirms
  *  the caller is a signed-in, license-holding clinician before writing anything — a Server
  *  Action is its own callable endpoint regardless of which page's UI happens to call it. */
-export async function saveHepTemplateAction(name: string, bodyPart: string, exercises: HepTemplateExercise[]): Promise<HepActionResult> {
+export async function saveHepTemplateAction(
+  name: string,
+  bodyPart: string,
+  exercises: HepTemplateExercise[],
+  kind: string,
+): Promise<HepActionResult> {
   const user = await getCurrentUser();
   if (!user || !hasLicenseAccess(user)) return { ok: false, error: "Not authorized." };
   const trimmedName = name.trim();
-  if (!trimmedName || exercises.length === 0 || !isHepTemplateBodyPart(bodyPart)) {
+  if (!trimmedName || exercises.length === 0 || !isHepTemplateBodyPart(bodyPart) || !isHepTemplateKind(kind)) {
     return { ok: false, error: "A template name, body part, and at least one exercise are required." };
   }
 
@@ -120,6 +133,7 @@ export async function saveHepTemplateAction(name: string, bodyPart: string, exer
       userId: user.id,
       name: trimmedName,
       bodyPart,
+      kind,
       exercises: exercises.map((ex) => ({
         name: ex.name,
         sets: ex.sets,
@@ -150,19 +164,25 @@ export async function deleteHepTemplateAction(templateId: string): Promise<HepAc
   return { ok: true };
 }
 
-/** Returns the full draft (name + exercises) for populating the builder, or null if the
- *  template doesn't exist or belongs to someone else. */
+/** Returns the full draft (name + exercises + kind) for populating the builder, or null if
+ *  the template doesn't exist or belongs to someone else. Falls back to "home" for a stored
+ *  kind that somehow isn't one of HEP_TEMPLATE_KINDS (shouldn't happen post-migration, but
+ *  the builder's toggle needs a valid value regardless). */
 export async function loadHepTemplateAction(
   templateId: string,
-): Promise<{ name: string; exercises: HepTemplateExercise[] } | null> {
+): Promise<{ name: string; exercises: HepTemplateExercise[]; kind: HepTemplateKind } | null> {
   const user = await getCurrentUser();
   if (!user) return null;
 
   const template = await prisma.hEPTemplate.findFirst({
     where: { id: templateId, userId: user.id },
-    select: { name: true, exercises: true },
+    select: { name: true, exercises: true, kind: true },
   });
   if (!template) return null;
 
-  return { name: template.name, exercises: parseHepExercises(template.exercises) };
+  return {
+    name: template.name,
+    exercises: parseHepExercises(template.exercises),
+    kind: isHepTemplateKind(template.kind) ? template.kind : "home",
+  };
 }
