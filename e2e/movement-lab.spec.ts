@@ -142,8 +142,15 @@ test.describe("Movement Lab page", () => {
   test("browses, filters and selects exercises", async ({ page }) => {
     await signUpAndEnterApp(page, freshEmail("browse"));
 
+    // /movement-lab is now a redirect onto the Movement Lab tab of Exercise Programs
+    // (#380 folded the standalone route into a tab), so the page heading is that page's
+    // own — the Movement Lab is identified by its selected tab, not by an <h1>.
     await page.goto("/movement-lab");
-    await expect(page.getByRole("heading", { name: "Limbic Movement Lab" })).toBeVisible();
+    await expect(page).toHaveURL(/\/hep\?tab=movement-lab/);
+    await expect(page.getByRole("heading", { name: "Exercise Programs" })).toBeVisible();
+    // That the Movement Lab tab is the active one is proven by the exercise count below,
+    // which only the Movement Lab browser renders — SlidingTabs uses plain buttons with no
+    // tab role or aria-selected, so there is nothing more specific to assert on here.
 
     const count = page.getByText(/^\d+ exercises$/);
     await expect(count).toBeVisible();
@@ -199,7 +206,7 @@ test.describe("Movement Lab page", () => {
   test("/pro/exercises redirects to the Movement Lab", async ({ page }) => {
     await signUpAndEnterApp(page, freshEmail("redirect"));
     await page.goto("/pro/exercises");
-    await expect(page).toHaveURL(/\/movement-lab/);
+    await expect(page).toHaveURL(/\/hep\?tab=movement-lab/);
   });
 });
 
