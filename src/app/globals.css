@@ -12474,3 +12474,19 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .atrium-week-canvas-btn:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
 .atrium-week-canvas-btn--prompt { border-color: var(--color-neutral-400); color: var(--color-neutral-700); }
 .atrium-week-canvas-btn--prompt:hover { background: var(--atrium-surface-2); }
+
+/* Edit / Delete on one logged entry in the Session Exercises history
+   (SessionExerciseSection.tsx). Pushed to the right of the "Visit N · date" line the
+   entry already had, so correcting a past session doesn't cost the list a second row. */
+.clindash-session-exercise-actions { display: flex; gap: 10px; margin-left: auto; }
+.clindash-session-exercise-action {
+  font-size: var(--fs-11-5);
+  color: var(--color-accent-700);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.clindash-session-exercise-action:hover:not(:disabled) { text-decoration: underline; }
+.clindash-session-exercise-action:disabled { opacity: 0.5; cursor: default; }
+.clindash-session-exercise-action--danger { color: var(--color-danger); }

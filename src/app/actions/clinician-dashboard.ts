@@ -496,6 +496,49 @@ export async function addSessionExerciseLog(
   return { ok: true, log };
 }
 
+/** Correct a session that was already logged — a clinician writing up a visit from memory
+ *  gets the weight or the rep count wrong often enough that append-only history was the
+ *  wrong shape here. Overwrites the row in place rather than superseding it with a new one:
+ *  computeExerciseProgression reads every log for a patient, so a correction kept as a
+ *  second row for the same visit would show up as a phantom progression step between the
+ *  wrong numbers and the right ones. Same ownership check as addSessionExerciseLog. */
+export async function updateSessionExerciseLog(
+  logId: string,
+  visitNumber: number,
+  exercises: HepTemplateExercise[]
+): Promise<ClinicianDashboardResult<{ log: SessionExerciseLog }>> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const existing = await prisma.sessionExerciseLog.findUnique({ where: { id: logId } });
+  if (!existing || existing.userId !== user.id) return { ok: false, error: "Session not found." };
+
+  if (!Number.isFinite(visitNumber) || visitNumber <= 0) return { ok: false, error: "A visit number is required." };
+  const cleaned = exercises.filter((ex) => ex.name.trim().length > 0);
+  if (cleaned.length === 0) return { ok: false, error: "Add at least one exercise." };
+
+  // loggedAt is deliberately left as it was — it records when the visit happened, not when
+  // the write did, so a later correction shouldn't move a past session to today.
+  const log = await prisma.sessionExerciseLog.update({
+    where: { id: logId },
+    data: { visitNumber: Math.round(visitNumber), exercises: cleaned as object },
+  });
+
+  revalidatePath("/pro/dashboard");
+  return { ok: true, log };
+}
+
+/** Remove a session logged in error — e.g. logged against the wrong patient. */
+export async function deleteSessionExerciseLog(logId: string): Promise<ClinicianDashboardResult> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const existing = await prisma.sessionExerciseLog.findUnique({ where: { id: logId } });
+  if (!existing || existing.userId !== user.id) return { ok: false, error: "Session not found." };
+
+  await prisma.sessionExerciseLog.delete({ where: { id: logId } });
+  revalidatePath("/pro/dashboard");
+  return { ok: true };
+}
+
 /** Active patients where visitCount is a multiple of REASSESSMENT_INTERVAL_VISITS (and
  *  not zero — a brand-new patient with no visits yet isn't "due"), or it's been more than
  *  REASSESSMENT_STALE_DAYS since they were last seen. Same isReassessmentDue check the
