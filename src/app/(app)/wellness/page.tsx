@@ -212,8 +212,10 @@ export default async function WellnessOverviewPage() {
         <p className="wellness-hub-subtitle">Your personal health hub</p>
       </div>
 
-      {/* Replaces the old Health Snapshot card — the three things a reader actually comes
-          here to do, rather than a restatement of numbers the cards below already show. */}
+      {/* Replaces the old Health Snapshot card — what a reader actually comes here to do,
+          rather than a restatement of numbers the cards below already show. Ask Limbic Agent
+          is deliberately not a third button: it's the featured banner directly underneath,
+          and having it in both places made the bar repeat the page's own headline. */}
       <div className="wellness-quick-actions">
         <Link href="/wellness/activity" className="wellness-quick-action">
           <span className="wellness-quick-action-glyph" aria-hidden="true">
@@ -226,12 +228,6 @@ export default async function WellnessOverviewPage() {
             ↗
           </span>
           View My Metrics
-        </Link>
-        <Link href="/wellness/agent" className="wellness-quick-action">
-          <span className="wellness-quick-action-glyph wellness-quick-action-glyph--brand" aria-hidden="true">
-            ⚡
-          </span>
-          Ask Limbic Agent
         </Link>
       </div>
 

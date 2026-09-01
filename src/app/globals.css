@@ -12515,10 +12515,12 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
   background: color-mix(in srgb, var(--color-accent) 7%, var(--color-card-surface));
 }
-/* Plain text glyphs (+ ↗ ⚡), not icon components — one line of markup each and they
-   inherit the button's own font, so they stay aligned with the label at any text size. */
+/* Plain text glyphs (+ ↗), not icon components — one line of markup each and they inherit
+   the button's own font, so they stay aligned with the label at any text size. Both are
+   plain typographic characters that take the button's own color; the --brand modifier that
+   used to tint Ask Limbic Agent's bolt went with that button, and the bolt was never
+   actually tinted anyway — U+26A1 renders with emoji presentation, which ignores `color`. */
 .wellness-quick-action-glyph { font-size: 14px; line-height: 1; flex-shrink: 0; }
-.wellness-quick-action-glyph--brand { color: var(--color-accent); }
 @media (max-width: 640px) {
   .wellness-quick-actions { flex-direction: column; }
   .wellness-quick-action { width: 100%; }
