@@ -12878,3 +12878,34 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
+/* Tap-once score buttons on the outcome-measure calculators (see ItemScoreRow in
+   components/pro/calculators/CalcModal.tsx). Replaces a <select> per item: one tap instead
+   of two, the whole 0-5 range visible at once, and each value in a stable column position
+   so an examiner transcribing thirty items off a paper form can run straight down it.
+   Appended, scoped, overrides nothing. */
+.pro-score-row { display: flex; gap: 4px; flex-shrink: 0; }
+.pro-score-btn {
+  min-width: 34px;
+  padding: 6px 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-neutral-700);
+  background: var(--color-surface);
+  border: 1px solid var(--color-neutral-400);
+  border-radius: var(--radius-sm, 5px);
+  cursor: pointer;
+}
+.pro-score-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.pro-score-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+.pro-score-btn--on,
+.pro-score-btn--on:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+}
+@media (max-width: 560px) {
+  .pro-item-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .pro-score-btn { min-width: 40px; padding: 8px 0; }
+}
