@@ -98,21 +98,47 @@ export function filterExercises(
   });
 }
 
+/**
+ * True when `term` occurs in `haystack` at the start of a word — it need not finish one.
+ *
+ * This is deliberately stricter than `includes` and looser than a full word match, because
+ * both of those are wrong here in opposite directions. Plain `includes` matches inside a
+ * word, which is how a search for "RDL" used to return every exercise targeting a shoulder
+ * or pelvic *girdle* — and short clinical acronyms (RDL, SLR, ACL, ITB) are exactly the
+ * queries where buried substrings are common enough to bury the real answer. Requiring a
+ * whole word instead would break typing: the browse page filters on every keystroke, so
+ * "shoul" has to keep matching "shoulder" while the clinician is still typing it.
+ *
+ * A word starts at the beginning of the string or after any non-alphanumeric character, so
+ * hyphens and slashes count as boundaries — "foot" still finds "rear-foot-elevated" and "90"
+ * still finds "90/90". Both arguments are expected already lowercased.
+ */
+function matchesWordPrefix(haystack: string, term: string): boolean {
+  let from = 0;
+  for (;;) {
+    const at = haystack.indexOf(term, from);
+    if (at === -1) return false;
+    if (at === 0 || !/[a-z0-9]/.test(haystack[at - 1])) return true;
+    from = at + 1;
+  }
+}
+
 /** Fields a free-text term is matched against, ordered by how strongly a hit in each one
  *  suggests the clinician found what they were after. `indications` is in here because
  *  searching by condition ("plantar", "ACL", "sciatica") is how a clinician actually looks
  *  for an exercise, and `aka` because they type the name they were taught rather than the
- *  one this bank happens to use. */
+ *  one this bank happens to use. Every field below matches on a word prefix rather than a
+ *  bare substring — see matchesWordPrefix for why. */
 function searchScore(ex: MovementExercise, term: string): number {
   const name = ex.name.toLowerCase();
   if (name === term) return 100;
   if (name.startsWith(term)) return 80;
-  if (name.includes(term)) return 60;
-  if (ex.aka?.some((a) => a.toLowerCase().includes(term))) return 50;
-  if (ex.indications.some((i) => i.toLowerCase().includes(term))) return 40;
-  if (ex.targets.some((t) => t.toLowerCase().includes(term))) return 30;
-  if (ex.region.toLowerCase().includes(term) || ex.category.toLowerCase().includes(term)) return 20;
-  if (ex.cue.toLowerCase().includes(term) || ex.setup.toLowerCase().includes(term)) return 10;
+  if (matchesWordPrefix(name, term)) return 60;
+  if (ex.aka?.some((a) => matchesWordPrefix(a.toLowerCase(), term))) return 50;
+  if (ex.indications.some((i) => matchesWordPrefix(i.toLowerCase(), term))) return 40;
+  if (ex.targets.some((t) => matchesWordPrefix(t.toLowerCase(), term))) return 30;
+  if (matchesWordPrefix(ex.region.toLowerCase(), term) || matchesWordPrefix(ex.category.toLowerCase(), term)) return 20;
+  if (matchesWordPrefix(ex.cue.toLowerCase(), term) || matchesWordPrefix(ex.setup.toLowerCase(), term)) return 10;
   return 0;
 }
 
