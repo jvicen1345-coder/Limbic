@@ -53,11 +53,16 @@ export function AtriumThisWeekCard({
   assignments,
   hasAssignmentSource,
   recommendations,
+  canvasUrl,
 }: {
   weekLabel: string;
   assignments: ThisWeekAssignment[];
   hasAssignmentSource: boolean;
   recommendations: PlatformRecommendation[];
+  /** The student's Profile-entered Canvas URL (see canvasUrl in schema.prisma), already
+   *  normalized to an absolute link — null when unset, in which case the header button
+   *  prompts the student to add it via Profile instead of linking out. */
+  canvasUrl: string | null;
 }) {
   const [rows, setRows] = useState(assignments);
   const [, startTransition] = useTransition();
@@ -85,8 +90,19 @@ export function AtriumThisWeekCard({
   return (
     <aside className="atrium-week-panel atrium-zone-roundup">
       <div className="atrium-week-header">
-        <span className="atrium-week-title">This Week</span>
-        <span className="atrium-week-range">{weekLabel}</span>
+        <span className="atrium-week-header-group">
+          <span className="atrium-week-title">This Week</span>
+          <span className="atrium-week-range">{weekLabel}</span>
+        </span>
+        {canvasUrl ? (
+          <a href={canvasUrl} target="_blank" rel="noopener noreferrer" className="atrium-week-canvas-btn">
+            Open Canvas
+          </a>
+        ) : (
+          <Link href="/profile" className="atrium-week-canvas-btn atrium-week-canvas-btn--prompt">
+            Add Canvas link
+          </Link>
+        )}
       </div>
 
       {!hasAssignmentSource ? (

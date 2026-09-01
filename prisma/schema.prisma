@@ -80,6 +80,17 @@ model User {
   // ProfileForm.tsx) — most non-student accounts will never set it.
   school        String?
 
+  // The student's own institution's Canvas URL (e.g. "chapman.instructure.com"), set via
+  // the Profile "About you" form and used only to power the Atrium "Open Canvas" link-out
+  // button (see AtriumThisWeekCard.tsx) — Canvas has no single homepage, every school runs
+  // its own subdomain. This repo previously built (and then, at explicit user request,
+  // fully removed) a real Canvas sign-in/sync integration via a student-generated Personal
+  // Access Token — that hit a wall when a school disabled self-service token creation, and
+  // was torn out rather than fixed. This field is deliberately just a stored link, not a
+  // credential or a synced integration. Null until set; the button prompts the student to
+  // add it via Profile when unset.
+  canvasUrl String?
+
   // The clinician's practice/clinic name — shown on the LimbicPRO Clinician Dashboard's
   // patient-brief print document (see app/pro/patient-brief/[patientId]/page.tsx) and its
   // "Prepare for Patient" review step (see components/pro/PreparePatientModal.tsx). Null

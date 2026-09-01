@@ -9,6 +9,7 @@ export function ProfileForm({
   specialty,
   practiceState,
   school,
+  canvasUrl,
   clinicName,
   isStudent,
   isPro,
@@ -22,6 +23,11 @@ export function ProfileForm({
    *  student account (see AppShell.tsx) — only editable here when isStudent, since it has
    *  no meaning for a practicing clinician account. */
   school: string;
+  /** Powers the Atrium "Open Canvas" link-out button (see AtriumThisWeekCard.tsx) — only
+   *  editable here when isStudent, same "no meaning outside that context" reasoning as
+   *  school above. Just a stored link, not a sign-in/sync integration — see this field's
+   *  own comment in schema.prisma for why. */
+  canvasUrl: string;
   /** Shown on the LimbicPRO Clinician Dashboard's patient-brief print document (see
    *  app/pro/patient-brief/[patientId]/page.tsx) — only editable here when isPro, same
    *  "no meaning outside that context" reasoning as school/isStudent above. */
@@ -96,6 +102,19 @@ export function ProfileForm({
             defaultValue={school}
             onChange={(e) => startTransition(() => updateProfileFieldAction("school", e.target.value))}
           />
+        </div>
+      )}
+      {isStudent && (
+        <div className="field">
+          <label htmlFor="pf-canvas-url">Canvas URL</label>
+          <input
+            className="input"
+            id="pf-canvas-url"
+            placeholder="e.g. chapman.instructure.com"
+            defaultValue={canvasUrl}
+            onChange={(e) => startTransition(() => updateProfileFieldAction("canvasUrl", e.target.value))}
+          />
+          <p className="profile-field-hint">Your school&apos;s Canvas address — powers the &quot;Open Canvas&quot; button in Atrium. Just a link, not a sign-in.</p>
         </div>
       )}
       <div className="field">
