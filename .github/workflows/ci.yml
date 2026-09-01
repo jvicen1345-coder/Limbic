@@ -1,7 +1,8 @@
 # Runs the checks a contributor already runs locally (README "Local development"), on every
 # PR and every push to main. Before this existed nothing ran them automatically, so a change
-# could rename a heading the e2e suite asserts on and land green — which is exactly what
-# happened to three Movement Lab tests (see the `e2e` job below).
+# could rename a heading the e2e suite asserts on and still land green — which is exactly
+# what happened when #376/#380 renamed the Exercise Programs heading and left three Movement
+# Lab tests red on main until someone noticed by hand.
 name: CI
 
 on:
@@ -37,16 +38,10 @@ jobs:
   e2e:
     name: End-to-end (Playwright)
     runs-on: ubuntu-latest
-    # NOT BLOCKING YET — deliberately. Three tests in e2e/movement-lab.spec.ts assert
-    # headings that PRs #376 and #380 renamed ("Home Exercise Programs" -> "Exercise
-    # Programs", and the standalone Movement Lab page becoming a tab). They have been
-    # failing on main since those landed; this job is what surfaces them. The spec is
-    # currently also being edited on claude/legal-risk-review-2d6asg, so fixing it here
-    # would collide with that branch (COORDINATION.md rule 4).
-    #
-    # Once those three assertions match the current UI, delete this line to make the job
-    # blocking. Nothing else about the job needs to change.
-    continue-on-error: true
+    # Blocking. The suite is green on main as of the merge in this branch: 22 tests,
+    # 21 passed and 1 flaky (the sign-in lockout test in e2e/auth.spec.ts is timing
+    # sensitive and passed on retry — playwright.config.ts already sets retries: 2 under
+    # CI, which is what absorbs it).
     steps:
       - uses: actions/checkout@v4
 
