@@ -10,6 +10,7 @@ import {
   type MovementExercise,
   type MovementRegion,
 } from "@/lib/movement-lab";
+import { useSwitchToMovementLabTab } from "@/components/ExerciseProgramsTabs";
 
 /**
  * The HEP Builder's "add from the bank" control (see components/HepBuilder.tsx).
@@ -28,6 +29,7 @@ export function MovementLabPicker({ onPick }: { onPick: (exercise: MovementExerc
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState<MovementRegion | "">("");
+  const switchToMovementLab = useSwitchToMovementLabTab();
 
   // Only shown once the picker is open, so the search runs on nothing while it's collapsed.
   const results = useMemo(
@@ -112,9 +114,28 @@ export function MovementLabPicker({ onPick }: { onPick: (exercise: MovementExerc
         </div>
       )}
 
-      <Link href="/movement-lab" style={{ fontSize: 12 }}>
-        Browse the full Movement Lab, with technique and precautions
-      </Link>
+      {switchToMovementLab ? (
+        <button
+          type="button"
+          onClick={switchToMovementLab}
+          style={{
+            color: "var(--color-accent-700)",
+            background: "none",
+            border: "none",
+            padding: 0,
+            font: "inherit",
+            fontSize: 12,
+            cursor: "pointer",
+            textAlign: "left",
+          }}
+        >
+          Browse the full Movement Lab, with technique and precautions
+        </button>
+      ) : (
+        <Link href="/movement-lab" style={{ fontSize: 12 }}>
+          Browse the full Movement Lab, with technique and precautions
+        </Link>
+      )}
     </div>
   );
 }
