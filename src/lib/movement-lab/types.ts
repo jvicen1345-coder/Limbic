@@ -73,21 +73,41 @@ export const MOVEMENT_POSITIONS = [
 ] as const;
 export type MovementPosition = (typeof MOVEMENT_POSITIONS)[number];
 
-/** What the patient has to own to do it at home. "None" is its own value and is the single
- *  most-used filter in the browser for exactly that reason — a program built out of
- *  equipment the patient doesn't have is a program that doesn't get done. */
+/** What the patient needs access to in order to do it — not strictly what they own. `Wall`,
+ *  `Step or stairs` and `Table or counter` are features of a room rather than possessions,
+ *  and `Pool` and `Exercise bike` are that same idea one size up. "None" is its own value and
+ *  is the single most-used filter in the browser, because a program built out of equipment
+ *  the patient can't get to is a program that doesn't get done.
+ *
+ *  Ordered as three groups: training implements a patient buys (band through rope), the
+ *  household objects and surfaces most people already have (chair through table), then the
+ *  large equipment and venues they travel to (bike, pool). "Rope" covers battle ropes and any
+ *  anchored heavy rope. Gym kit with no value of its own — a barbell, a landmine, a cable
+ *  machine — is filed under the nearest implement here and named in the exercise's own `setup`.
+ *
+ *  Add a value only when an exercise actually needs it, one at a time. An option matching
+ *  nothing is a dead end a clinician spends a click discovering, and past roughly fifteen
+ *  values this stops being scannable in a dropdown. If the bank ever grows a real cluster of
+ *  gym- or clinic-only content, the answer is a separate setting axis (home / gym / pool /
+ *  clinic / outdoors) rather than more equipment values — "what can this patient do at home?"
+ *  is a venue question wearing an equipment costume.
+ *
+ *  Never file real kit under "None": that value is a promise the patient needs nothing. */
 export const MOVEMENT_EQUIPMENT = [
   "None",
   "Resistance band",
   "Weight",
   "Ball",
   "Foam roller",
+  "Rope",
   "Chair",
   "Step or stairs",
   "Towel or strap",
   "Wall",
   "Cane or dowel",
   "Table or counter",
+  "Exercise bike",
+  "Pool",
 ] as const;
 export type MovementEquipment = (typeof MOVEMENT_EQUIPMENT)[number];
 

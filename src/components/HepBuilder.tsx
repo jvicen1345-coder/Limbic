@@ -138,6 +138,8 @@ interface DraftExercise {
   reps: string;
   weight: string;
   frequency: string;
+  hold: string;
+  equipment: string;
   notes: string;
   imageUrl: string;
   videoUrl: string;
@@ -151,6 +153,8 @@ const EMPTY_DRAFT: Omit<DraftExercise, "id"> = {
   reps: "",
   weight: "",
   frequency: "",
+  hold: "",
+  equipment: "",
   notes: "",
   imageUrl: "",
   videoUrl: "",
@@ -160,16 +164,22 @@ const EMPTY_DRAFT: Omit<DraftExercise, "id"> = {
  *  (addFromMovementLab below, which creates a new row) and the inline autocomplete
  *  (applyMovementExercise, which fills an existing one). `weight` stays empty either way —
  *  Movement Lab dosage doesn't specify a load, so there's nothing meaningful to fill it
- *  with. `notes` gets the hold time plus the patient-facing cue; frequency now has its own
- *  field (see HepTemplateExercise in lib/hep-templates.ts) so it's no longer folded in here
- *  the way it used to be. */
-function movementExerciseFields(ex: MovementExercise): Pick<DraftExercise, "sets" | "reps" | "weight" | "frequency" | "notes"> {
+ *  with. `frequency`, `hold`, and `equipment` all have their own fields (see
+ *  HepTemplateExercise in lib/hep-templates.ts) so `notes` gets just the patient-facing cue,
+ *  not folded dosage text the way it used to be. `equipment` is Movement Lab's own
+ *  MovementEquipment[] joined into one line, same "· "-separated format the browse page
+ *  itself displays it in (see ExerciseCard in MovementLabBrowser.tsx). */
+function movementExerciseFields(
+  ex: MovementExercise,
+): Pick<DraftExercise, "sets" | "reps" | "weight" | "frequency" | "hold" | "equipment" | "notes"> {
   return {
     sets: ex.dosage.sets,
     reps: ex.dosage.reps,
     weight: "",
     frequency: ex.dosage.frequency,
-    notes: [ex.dosage.hold ? `hold ${ex.dosage.hold}` : "", ex.cue.replace(/^“|”$/g, "")].filter(Boolean).join(" — "),
+    hold: ex.dosage.hold ?? "",
+    equipment: ex.equipment.join(" · "),
+    notes: ex.cue.replace(/^“|”$/g, ""),
   };
 }
 
@@ -225,6 +235,8 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
           reps: ex.reps,
           weight: ex.weight,
           frequency: ex.frequency,
+          hold: ex.hold,
+          equipment: ex.equipment,
           notes: ex.notes,
           imageUrl: ex.imageUrl,
           videoUrl: ex.videoUrl,
@@ -258,6 +270,8 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
               sets: row.sets || fields.sets,
               reps: row.reps || fields.reps,
               frequency: row.frequency || fields.frequency,
+              hold: row.hold || fields.hold,
+              equipment: row.equipment || fields.equipment,
               notes: row.notes || fields.notes,
             }
           : row,
@@ -281,6 +295,8 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
         reps: ex.reps,
         weight: ex.weight,
         frequency: ex.frequency,
+        hold: ex.hold,
+        equipment: ex.equipment,
         notes: ex.notes,
         imageUrl: ex.imageUrl,
         videoUrl: ex.videoUrl,
@@ -365,11 +381,11 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
                     onChange={(e) => updateExercise(ex.id, "reps", e.target.value)}
                   />
                 </div>
-                <div className="field" style={{ width: 100 }}>
-                  <label>Weight</label>
+                <div className="field" style={{ width: 90 }}>
+                  <label>Weight (lbs)</label>
                   <input
                     className="input"
-                    placeholder="20 lbs"
+                    placeholder="20"
                     value={ex.weight}
                     onChange={(e) => updateExercise(ex.id, "weight", e.target.value)}
                   />
@@ -383,13 +399,13 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
                     onChange={(e) => updateExercise(ex.id, "frequency", e.target.value)}
                   />
                 </div>
-                <div className="field" style={{ flex: 2, minWidth: 140 }}>
-                  <label>Notes</label>
+                <div className="field" style={{ width: 90 }}>
+                  <label>Hold</label>
                   <input
                     className="input"
-                    placeholder="No pain, ice after"
-                    value={ex.notes}
-                    onChange={(e) => updateExercise(ex.id, "notes", e.target.value)}
+                    placeholder="5 sec"
+                    value={ex.hold}
+                    onChange={(e) => updateExercise(ex.id, "hold", e.target.value)}
                   />
                 </div>
                 <button
@@ -401,6 +417,27 @@ export const HepBuilder = forwardRef<HepBuilderHandle, { isPro: boolean; initial
                 >
                   <XIcon size={15} />
                 </button>
+              </div>
+
+              <div className="field" style={{ margin: 0 }}>
+                <label>Equipment</label>
+                <input
+                  className="input"
+                  placeholder="Resistance band, yoga mat"
+                  value={ex.equipment}
+                  onChange={(e) => updateExercise(ex.id, "equipment", e.target.value)}
+                />
+              </div>
+
+              <div className="field" style={{ margin: 0 }}>
+                <label>Notes</label>
+                <textarea
+                  className="input"
+                  placeholder="No pain, ice after"
+                  value={ex.notes}
+                  onChange={(e) => updateExercise(ex.id, "notes", e.target.value)}
+                  style={{ minHeight: 60 }}
+                />
               </div>
 
               {isPro && (
