@@ -63,12 +63,17 @@ export async function submitLicenseVerification(input: {
     return { ok: false, error: "Please complete every step and confirm the attestation before submitting." };
   }
 
-  // licenseNumber is @unique across every reader's License rows, not just this reader's own
-  // — a different account may already have claimed it (a typo, or someone re-entering
-  // someone else's number).
-  const existingNumber = await prisma.license.findUnique({ where: { licenseNumber } });
+  // licenseNumber is @@unique per state across every reader's License rows, not just this
+  // reader's own — a different account may already have claimed it for this state (a typo,
+  // or someone re-entering someone else's number). Scoped to the state because boards issue
+  // numbers independently: the same string in a different state is a different, equally
+  // real license, and matching on the number alone used to lock the second holder out of
+  // their own credential entirely.
+  const existingNumber = await prisma.license.findUnique({
+    where: { state_licenseNumber: { state, licenseNumber } },
+  });
   if (existingNumber && existingNumber.userId !== user.id) {
-    return { ok: false, error: "This license number is already associated with another account." };
+    return { ok: false, error: `That ${state} license number is already associated with another account.` };
   }
 
   const existingForState = await prisma.license.findUnique({ where: { userId_state: { userId: user.id, state } } });

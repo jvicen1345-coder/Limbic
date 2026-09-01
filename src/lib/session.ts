@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 import { nameFromEmail } from "@/lib/meta";
 import { hashPassword, verifyPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";
+import { TERMS_VERSION } from "@/lib/legal-terms";
 import type { User } from "@/generated/prisma/client";
 
 const COOKIE_NAME = "pt_news_session";
@@ -120,6 +121,15 @@ export async function getCurrentUser(): Promise<User | null> {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) return null;
 
+  // A suspended account (see User.suspendedAt — the repeat-infringer policy in
+  // app/dmca/page.tsx §6) reads as signed out everywhere, immediately, rather than keeping
+  // whatever session it already holds until the cookie expires a year from now. Every
+  // gated surface funnels through this one function, so returning null here is what makes
+  // a suspension actually take effect instead of being a flag nothing enforces. The reader
+  // is redirected to /sign-in like any signed-out visitor, where signInWithPassword and
+  // signInWithGoogle refuse the account by name and say why.
+  if (user.suspendedAt) return null;
+
   const admin = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
   const comped = compedAreas(user);
   if (!admin && comped.length === 0) return user;
@@ -219,7 +229,7 @@ export type SignInResult =
        *  than a separate migration flow. "invalid": wrong password, OR no account at all —
        *  folded into one reason (not "no account found") so a failed attempt can't be used
        *  to enumerate which emails are registered. */
-      reason: "needsPassword" | "invalid";
+      reason: "needsPassword" | "invalid" | "suspended";
     };
 
 /**
@@ -242,6 +252,10 @@ export async function signInWithPassword(input: { email: string; password: strin
   const valid = await verifyPassword(input.password, existing.passwordHash);
   if (!valid) return { ok: false, reason: "invalid" };
 
+  // Checked after the password, deliberately: answering "this account is suspended" before
+  // verifying the credential would let anyone probe which accounts have been terminated.
+  if (existing.suspendedAt) return { ok: false, reason: "suspended" };
+
   await signInToUserRecord(existing, existing.email !== email && existing.backupEmail === email);
   return { ok: true };
 }
@@ -263,6 +277,12 @@ export async function signInAsGuest(name: string) {
       hasCompletedOnboarding: false,
       hasSetName: false,
       hasCompletedTour: false,
+      // Every path into this file that creates an account is gated on affirmative assent
+      // first (see lib/legal-terms.ts, app/actions/auth.ts, components/SignInForm.tsx),
+      // so the record is stamped here, at the single moment the account comes into
+      // existence, rather than in each caller.
+      termsAcceptedAt: new Date(),
+      termsVersion: TERMS_VERSION,
       name: name.trim() || "Guest",
     },
   });
@@ -292,6 +312,12 @@ export async function signUpWithPassword(input: { email: string; password: strin
       hasCompletedOnboarding: false,
       hasSetName: false,
       hasCompletedTour: false,
+      // Every path into this file that creates an account is gated on affirmative assent
+      // first (see lib/legal-terms.ts, app/actions/auth.ts, components/SignInForm.tsx),
+      // so the record is stamped here, at the single moment the account comes into
+      // existence, rather than in each caller.
+      termsAcceptedAt: new Date(),
+      termsVersion: TERMS_VERSION,
       passwordHash,
     },
   });
@@ -313,15 +339,30 @@ export async function signUpWithPassword(input: { email: string; password: strin
  * already-linked account signing in again, both end up with it recorded (see
  * app/(app)/admin/accounts, which reads it to show how an account actually authenticates).
  */
-export async function signInWithGoogle(input: { email: string; name?: string | null; sub: string }) {
+/** Result of the Google path. Its own tiny type rather than SignInResult: the only way
+ *  Google sign-in can fail once the ID token has verified is a suspended account, and
+ *  widening it to SignInResult's "invalid"/"needsPassword" would invent failure modes the
+ *  caller can't produce and would have to handle anyway. */
+export type GoogleSignInResult = { ok: true } | { ok: false; reason: "suspended" };
+
+export async function signInWithGoogle(input: {
+  email: string;
+  name?: string | null;
+  sub: string;
+}): Promise<GoogleSignInResult> {
   const email = input.email.trim().toLowerCase();
   const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { backupEmail: email }, { licenseEmail: email }] } });
   if (existing) {
+    // Google is a second door into the same account, so it has to honour the suspension
+    // too — otherwise "sign in with Google" quietly undoes every termination. Google has
+    // already proven the address belongs to this person by the time we get here, so unlike
+    // the password path there's no credential left to check first.
+    if (existing.suspendedAt) return { ok: false, reason: "suspended" };
     if (existing.googleId !== input.sub) {
       await prisma.user.update({ where: { id: existing.id }, data: { googleId: input.sub } });
     }
     await signInToUserRecord(existing, existing.email !== email && existing.backupEmail === email);
-    return;
+    return { ok: true };
   }
   const user = await prisma.user.create({
     data: {
@@ -331,10 +372,17 @@ export async function signInWithGoogle(input: { email: string; name?: string | n
       hasCompletedOnboarding: false,
       hasSetName: false,
       hasCompletedTour: false,
+      // Every path into this file that creates an account is gated on affirmative assent
+      // first (see lib/legal-terms.ts, app/actions/auth.ts, components/SignInForm.tsx),
+      // so the record is stamped here, at the single moment the account comes into
+      // existence, rather than in each caller.
+      termsAcceptedAt: new Date(),
+      termsVersion: TERMS_VERSION,
       googleId: input.sub,
     },
   });
   await signInToUserRecord(user, false);
+  return { ok: true };
 }
 
 /** Read-only check for the one-time "signed in with backup email" banner (see

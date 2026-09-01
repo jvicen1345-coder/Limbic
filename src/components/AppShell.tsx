@@ -243,7 +243,7 @@ interface NavContentProps {
    *  resources/page.tsx), but never sees the individual paid-tier sub-links (Break Down
    *  Slides, SOAP Note, etc.) as locked list items — same "collapse to just the overview"
    *  treatment the pro zoneTwoSections entry gives LimbicPRO's own sub-links. Limbic Games
-   *  (/wordle) is open to everyone regardless of this flag. This is a separate concern from
+   *  (/daily-term) is open to everyone regardless of this flag. This is a separate concern from
    *  zoneTwoOrder below — isStudent only ever changes what renders inside the section;
    *  zoneTwoOrder only ever reorders sections that already render. */
   isStudent: boolean;
@@ -549,6 +549,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             <>
               <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/licenses" icon={<CheckCircleIcon />} label="License Queue" bold={false} onNavigate={onNavigate} />
+              <NavLink href="/admin/copyright" icon={<ShieldIcon />} label="Copyright Notices" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/connexion-visits" icon={<ShieldIcon />} label="Connexion Visits" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/connexion-safety-score" icon={<ShieldIcon />} label="Connexion Safety Score" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/boards-tagging" icon={<GraduationCapIcon />} label="Boards Question Tagging" bold={false} onNavigate={onNavigate} />

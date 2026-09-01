@@ -12743,4 +12743,112 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
   .wellness-article-row { flex-wrap: wrap; gap: 4px 10px; }
   .wellness-article-row-title { flex-basis: 100%; white-space: normal; }
   .wellness-article-row-meta { width: 100%; justify-content: space-between; text-align: left; }
+
+/* Inline links inside legal prose (/terms, /privacy, /dmca). The global `a` rule only
+   underlines on hover, which is fine for nav and cards but too quiet inside a wall of
+   body copy where a cross-reference to another policy has to be obviously clickable —
+   Terms §8 pointing at the DMCA policy is the case this exists for. Appended, scoped to
+   .legal-body/.legal-list, and overrides nothing. */
+.legal-body a,
+.legal-list a {
+  color: var(--color-accent-700);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.legal-body a:hover,
+.legal-list a:hover { color: var(--color-accent); }
+
+/* Clickwrap assent row on the sign-up and guest forms (components/SignInForm.tsx
+   AcceptTermsField). Sized to sit quietly above the submit button without reading as
+   fine print — the whole point is that it's noticed and ticked deliberately. Appended,
+   scoped, overrides nothing. */
+.accept-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+.accept-terms-box {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+.accept-terms-label {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.accept-terms-label a {
+  color: var(--color-neutral-700);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.accept-terms-label a:hover { color: var(--color-accent); }
+
+/* Copyright notice at the top of each score-entry calculator for a licensed published
+   instrument (see LicensedInstrumentNotice in components/pro/calculators/CalcModal.tsx).
+   Quiet but not hidden — a clinician needs to register that the form itself comes from
+   their own copy, not from here. Appended, scoped, overrides nothing. */
+.pro-calc-licence-notice {
+  font-size: var(--fs-11-5);
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100, #f2f4f5);
+  border-left: 2px solid var(--color-neutral-400);
+  border-radius: 3px;
+  padding: 8px 10px;
+  margin: 0 0 14px;
+}
+
+/* Consent opt-in on the Connexion visit request form (see ConnexionScheduleSection.tsx).
+   Sits inside the dark .connexion-cta-card, so it takes its colours from that card rather
+   than the app's neutral tokens. Appended, scoped, overrides nothing. */
+.connexion-visit-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 4px;
+}
+.connexion-visit-consent-box {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+  accent-color: var(--color-migration-gold);
+  cursor: pointer;
+}
+.connexion-visit-consent-label {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+}
+
+/* Automatic-renewal disclosure shown directly above every subscribe button (see
+   components/AutoRenewalTerms.tsx). Sized to read as ordinary body copy rather than fine
+   print — California's ARL requires it be *conspicuous*, so it deliberately isn't shrunk
+   or greyed toward invisibility. Appended, scoped, overrides nothing. */
+.auto-renewal-terms {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  max-width: min(46ch, 100%);
+  margin: 0 0 10px;
+}
+.auto-renewal-terms--inverted { color: rgba(255, 255, 255, 0.78); }
+
+/* The plan comparison table's single full-width renewal-terms row, sitting directly beneath
+   the Subscribe buttons (see profile/membership/page.tsx). Full width rather than per
+   column because the tier columns are ~120px, where the same sentence wraps to one or two
+   words a line and reads as less conspicuous, not more. Appended, scoped. */
+.plan-compare-renewal-row {
+  padding: 10px 14px 12px;
+  border-top: 1px solid var(--color-neutral-200);
+}
+.plan-compare-renewal-row .auto-renewal-terms {
+  max-width: none;
+  margin: 0;
 }

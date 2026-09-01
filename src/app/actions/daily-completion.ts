@@ -28,7 +28,7 @@ export async function recordWordleCompletionAction(
     }),
     status !== "playing" ? recordGameActivity(user.id, dateKey, await getTimeZone(user)) : Promise.resolve(),
   ]);
-  revalidatePath("/wordle");
+  revalidatePath("/daily-term");
   revalidatePath("/games");
 }
 

@@ -569,6 +569,16 @@ export function BoardsTabs({
               Limbic Boards follows the FSBPT content outline. When a detail here and an official source disagree, the
               official source wins — check these directly for exam registration, eligibility, and score reporting.
             </p>
+            {/* Nominative use of two registered marks needs a non-affiliation line, or
+                referencing the exam this way starts to imply endorsement. The question bank
+                itself is original — written from standard curriculum material, never from
+                real exam content, which is the thing FSBPT actually pursues. */}
+            <p className="boards-resource-intro">
+              Limbic is not affiliated with, endorsed by, or sponsored by FSBPT or APTA. NPTE&reg; and FSBPT&reg; are
+              registered trademarks of the Federation of State Boards of Physical Therapy. Limbic Boards questions
+              are written independently from standard physical therapy curriculum material and are not actual or
+              retired exam items.
+            </p>
             <div className="boards-official-links">
               <a className="boards-official-link" href="https://www.fsbpt.org" target="_blank" rel="noopener noreferrer">
                 <span className="boards-official-link-name">FSBPT</span>
