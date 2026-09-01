@@ -92,8 +92,21 @@ export default async function ConnexionSafetyScorePrintPage({ params }: { params
 
         <div className="patient-brief-section">
           <div className="patient-brief-section-title">Total Risk Score</div>
+          {/* The three domain subtotals alongside the total, not just the total and its band.
+              computeSafetyScoreTotals already returns them, and showing them is what lets a
+              reader see *which* domain drove the risk level rather than taking a single 0-208
+              figure on trust — the "can independently review the basis" property that keeps a
+              scoring tool a reference rather than something that decides for the clinician.
+              The per-item tables above carry the full detail; this is the bridge between them
+              and the headline number. */}
           <p className="patient-brief-summary-text">
             {totals.total} / 208 — {totals.riskLevel} Risk. {totals.riskAction}.
+          </p>
+          <p className="patient-brief-summary-text">
+            Environmental safety {totals.environmental} / {domainMaxScore(SAFETY_SCORE_DOMAINS[0])} · Functional
+            mobility {totals.mobility} / {domainMaxScore(SAFETY_SCORE_DOMAINS[1])} · Fall risk {totals.fallRisk} /{" "}
+            {domainMaxScore(SAFETY_SCORE_DOMAINS[2])}. Scored from the items above during the visit; a structured
+            record of what was found on the day, not a prediction about this individual.
           </p>
         </div>
 
