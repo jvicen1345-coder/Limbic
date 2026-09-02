@@ -7,9 +7,13 @@ import { CalcModal, CalcCardShell, LicensedInstrumentNotice, ItemScoreRow } from
  *  label rows with — on this instrument the item *is* the text — so rows are numbered, and
  *  the numbering matches the published form. The 30 item statements and their per-item
  *  response anchors are not reproduced here; see LicensedInstrumentNotice in CalcModal.tsx.
- *  The DASH is licensed by the Institute for Work & Health, which requires a licence
- *  agreement and forbids modifying the instrument, so this one especially does not get its
- *  text restored. */
+ *  The DASH belongs to the Institute for Work & Health. It is free to use with no licence at
+ *  all for non-profit purposes; a commercial licence and fee are needed here only because
+ *  LimbicPRO is sold, and their terms separately forbid altering the instrument — which the
+ *  version this replaced did, by restructuring its response anchors per item type. So the
+ *  door is not closed: IWH invites software integration through a User Profile form and
+ *  dash@iwh.on.ca, and a licence would let the items come back with whatever copyright line
+ *  it requires. See LicensedInstrumentNotice in CalcModal.tsx for the terms as checked. */
 const DASH_ITEM_COUNT = 30;
 
 /** The published scoring rule: at least 27 of the 30 items must be answered, and the score
