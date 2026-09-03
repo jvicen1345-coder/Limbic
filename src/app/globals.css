@@ -12515,10 +12515,12 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
   background: color-mix(in srgb, var(--color-accent) 7%, var(--color-card-surface));
 }
-/* Plain text glyphs (+ ↗ ⚡), not icon components — one line of markup each and they
-   inherit the button's own font, so they stay aligned with the label at any text size. */
+/* Plain text glyphs (+ ↗), not icon components — one line of markup each and they inherit
+   the button's own font, so they stay aligned with the label at any text size. Both are
+   plain typographic characters that take the button's own color; the --brand modifier that
+   used to tint Ask Limbic Agent's bolt went with that button, and the bolt was never
+   actually tinted anyway — U+26A1 renders with emoji presentation, which ignores `color`. */
 .wellness-quick-action-glyph { font-size: 14px; line-height: 1; flex-shrink: 0; }
-.wellness-quick-action-glyph--brand { color: var(--color-accent); }
 @media (max-width: 640px) {
   .wellness-quick-actions { flex-direction: column; }
   .wellness-quick-action { width: 100%; }
@@ -12743,6 +12745,7 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
   .wellness-article-row { flex-wrap: wrap; gap: 4px 10px; }
   .wellness-article-row-title { flex-basis: 100%; white-space: normal; }
   .wellness-article-row-meta { width: 100%; justify-content: space-between; text-align: left; }
+}
 
 /* Inline links inside legal prose (/terms, /privacy, /dmca). The global `a` rule only
    underlines on hover, which is fine for nav and cards but too quiet inside a wall of
@@ -12877,6 +12880,129 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
   color: var(--color-accent-700);
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+/* Tap-once score buttons on the outcome-measure calculators (see ItemScoreRow in
+   components/pro/calculators/CalcModal.tsx). Replaces a <select> per item: one tap instead
+   of two, the whole 0-5 range visible at once, and each value in a stable column position
+   so an examiner transcribing thirty items off a paper form can run straight down it.
+   Appended, scoped, overrides nothing. */
+.pro-score-row { display: flex; gap: 4px; flex-shrink: 0; }
+.pro-score-btn {
+  min-width: 34px;
+  padding: 6px 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-neutral-700);
+  background: var(--color-surface);
+  border: 1px solid var(--color-neutral-400);
+  border-radius: var(--radius-sm, 5px);
+  cursor: pointer;
+}
+.pro-score-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.pro-score-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+.pro-score-btn--on,
+.pro-score-btn--on:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+}
+@media (max-width: 560px) {
+  .pro-item-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .pro-score-btn { min-width: 40px; padding: 8px 0; }
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+   Health and Wellness — profile setup prompt and the Trends tab's Recovery
+   block (see app/(app)/wellness/page.tsx, components/wellness/RecoverySection.tsx).
+   Appended as its own scoped block, per COORDINATION.md.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* — Setup prompt — shown on the hub only while the profile can't drive the calculators.
+   Wraps the same BodyMetricsCard the Metrics page uses, so the fields are entered where
+   the reader already is rather than on a page they have to be sent to first. */
+.wellness-profile-setup {
+  padding: 18px 20px 4px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-card-surface));
+}
+.wellness-profile-setup-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.wellness-profile-setup-kicker {
+  font-size: var(--fs-11);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.wellness-profile-setup-copy {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  margin: 0 0 4px;
+}
+/* The wrapped card is already inside a bordered container — drop its own frame so the
+   prompt reads as one block rather than a card nested in a card. */
+.wellness-profile-setup .card {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+@media (max-width: 560px) {
+  .wellness-profile-setup { padding: 16px 16px 4px; }
+  .wellness-profile-setup-head { flex-direction: column; gap: 4px; }
+}
+
+/* — Recovery — sleep and mood on the Trends tab. */
+.wellness-recovery { margin-top: 22px; }
+.wellness-recovery-heading { margin-bottom: 10px; }
+.wellness-recovery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 720px) { .wellness-recovery-grid { grid-template-columns: 1fr; } }
+.wellness-recovery-card {
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+}
+.wellness-recovery-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.wellness-recovery-card-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+}
+.wellness-recovery-card-note { font-size: var(--fs-11); color: var(--color-neutral-700); white-space: nowrap; }
+/* Wraps rather than scrolls — sleep shows up to three stats and mood up to three, and at
+   narrow widths a second row reads better than a cramped single one. */
+.wellness-recovery-stats { display: flex; flex-wrap: wrap; gap: 18px 26px; }
+.wellness-recovery-stat { min-width: 0; }
+.wellness-recovery-stat-value {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 22px;
+  line-height: 1.15;
+}
+.wellness-recovery-stat-label { font-size: 12px; color: var(--color-neutral-700); margin-top: 3px; }
+.wellness-recovery-caption {
+  font-size: var(--fs-11);
+  font-style: italic;
+  color: var(--color-neutral-700);
+  line-height: 1.5;
+  margin: 12px 0 0;
 }
 
 /* Edit / Delete on one logged entry in the Session Exercises history

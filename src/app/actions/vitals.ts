@@ -30,9 +30,15 @@ export async function saveVitalsProfile(input: {
     create: { userId: user.id, ...input },
     update: input,
   });
-  revalidatePath("/wellness/metrics");
+  // Every page that reads this profile, not just the two that used to offer the form —
+  // it can now be saved from the Overview hub's setup prompt as well as from Metrics, and
+  // Assess Yourself's score and the Exercise Library's goal filter both read it too (see
+  // lib/wellness-profile.ts getWellnessProfile for the full set of readers).
   revalidatePath("/wellness");
+  revalidatePath("/wellness/metrics");
   revalidatePath("/wellness/nutrition");
+  revalidatePath("/wellness/assess");
+  revalidatePath("/wellness/exercises");
 }
 
 /** Log Activity form's submit (see components/vitals/LogActivityForm.tsx). `date` is an

@@ -217,7 +217,7 @@ export const NEURO_BALANCE_EXERCISES: MovementExercise[] = [
       "Never shifting far enough to actually challenge balance",
     ],
     regression: "Smaller shifts with both hands on the counter.",
-    progression: "Larger shifts, hands off, or shift onto a single leg.",
+    progression: "Larger shifts, hands off, then the Single-Leg Stance.",
     precautions: [
       "Follow post-operative weight-bearing restrictions.",
       "Always have a support within reach.",

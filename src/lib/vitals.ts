@@ -156,3 +156,23 @@ export function generateInsights(thisWeek: WeekSummary, lastWeek: WeekSummary): 
 
   return insights.slice(0, 3);
 }
+
+/** The fields the Health and Wellness calculators actually gate on, unioned: BMI needs
+ *  height and weight, Max HR and HRV need age, VO2 Max and Macros need age plus weight,
+ *  Assess Yourself's score needs age plus biological sex (see components/metrics/*). A
+ *  profile missing any of them leaves at least one card on at least one page showing its
+ *  "add your details first" state instead of a result.
+ *
+ *  activityLevel and wellnessGoal are deliberately not required — they personalize output
+ *  (macro targets, the Exercise Library's goal filter) but nothing refuses to compute
+ *  without them, so demanding them would nag a reader whose calculators all already work. */
+export function isWellnessProfileComplete(profile: WellnessProfile): boolean {
+  return (
+    profile.age != null &&
+    profile.age > 0 &&
+    profile.heightFeet != null &&
+    profile.weightLbs != null &&
+    profile.weightLbs > 0 &&
+    profile.biologicalSex != null
+  );
+}

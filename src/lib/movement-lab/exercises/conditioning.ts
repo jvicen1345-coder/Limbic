@@ -525,7 +525,7 @@ export const CONDITIONING_EXERCISES: MovementExercise[] = [
       "A rope of the wrong length, which makes the timing impossible",
     ],
     regression: "Pogo Hops with no rope, or skipping without a rope to build the rhythm first.",
-    progression: "Longer bouts, then single-leg and alternating-foot skipping, then faster rope turnover.",
+    progression: "Longer bouts, then alternating-foot and single-leg skipping — see Single-Leg Hop in Place for the single-leg load — then faster rope turnover.",
     precautions: [
       "Real repetitive impact through the calf, Achilles and plantar fascia: build the volume over weeks and judge it by how things feel the next morning.",
       "Not appropriate while an Achilles, calf or plantar heel problem is still painful under load, and after Achilles repair only when the protocol allows impact.",
