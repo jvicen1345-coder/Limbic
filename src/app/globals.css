@@ -13004,3 +13004,64 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
   line-height: 1.5;
   margin: 12px 0 0;
 }
+
+/* ============================================================================
+   Article study breakdown (components/ArticleBreakdown.tsx) — the five labelled
+   fields that stand in for the publisher's abstract as a research article's body
+   copy. Sits inside .article-prose, so the label/value rows deliberately reset the
+   prose paragraph spacing rather than inherit it.
+   ============================================================================ */
+.article-breakdown { display: flex; flex-direction: column; gap: 16px; }
+.article-breakdown-row { display: flex; flex-direction: column; gap: 4px; }
+.article-breakdown-label {
+  font-size: var(--fs-10-5);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-accent-700);
+}
+.article-breakdown-value { margin: 0; font-size: 15px; line-height: 1.6; }
+.article-breakdown-findings { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.article-breakdown-findings li { font-size: 15px; line-height: 1.6; }
+/* Set apart from the breakdown itself: this is provenance, not part of the study. */
+.article-breakdown-note {
+  margin: 4px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-divider);
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  font-style: italic;
+}
+.article-breakdown-failed { margin: 0; font-size: 15px; line-height: 1.6; color: var(--color-neutral-700); }
+
+/* First-reader-only state, while the one Anthropic call for this article is in flight —
+   every reader after that gets the cached breakdown server-rendered with no loading step. */
+.article-breakdown-loading { display: flex; flex-direction: column; gap: 12px; }
+.article-breakdown-loading-bar {
+  height: 46px;
+  border-radius: 8px;
+  background: var(--color-divider);
+  animation: article-breakdown-pulse 1.4s ease-in-out infinite;
+}
+.article-breakdown-loading-bar:nth-child(3) { width: 70%; }
+@keyframes article-breakdown-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .article-breakdown-loading-bar { animation: none; }
+}
+
+/* No screen-reader-only utility existed in this file before this; scoped to the breakdown
+   rather than introduced as a global one, so nothing else silently depends on it. */
+.article-breakdown-loading .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
