@@ -7,9 +7,11 @@ import { BackButton } from "@/components/BackButton";
 import { ArticleImage } from "@/components/ArticleImage";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { ArticleResearchPanel } from "@/components/ArticleResearchPanel";
+import { ArticleBreakdown } from "@/components/ArticleBreakdown";
 import { EVIDENCE_LEVEL_META } from "@/lib/evidence";
 import { slugifyTopic } from "@/lib/topic-slug";
 import { getOaStatusLabel, type UnpaywallResult } from "@/lib/unpaywall-shared";
+import type { ArticleBreakdown as ArticleBreakdownData } from "@/lib/article-breakdown-shared";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { EvidenceLevel } from "@/lib/types";
 
@@ -45,11 +47,15 @@ export function ArticleReadingPane({
   related,
   unpaywallResult,
   hasResearchAccess,
+  breakdown,
+  hasBreakdown,
 }: {
   article: DecoratedArticle;
   related: DecoratedArticle[];
   unpaywallResult: UnpaywallResult | null;
   hasResearchAccess: boolean;
+  breakdown: ArticleBreakdownData | null;
+  hasBreakdown: boolean;
 }) {
   const evidenceMeta = article.evidenceLevel ? EVIDENCE_LEVEL_META[article.evidenceLevel] : null;
 
@@ -97,17 +103,12 @@ export function ArticleReadingPane({
 
       <hr className="article-hero-divider" />
 
+      {/* A research article's body is its breakdown — the abstract itself is deliberately
+          not rendered here or anywhere else on the page (see lib/article-breakdown.ts).
+          Authored seed articles still render their own paragraphs below, unchanged. */}
       <div className="article-prose">
-        {article.fullAbstract ? (
-          article.fullAbstract
-            .split("\n")
-            .map((p) => p.trim())
-            .filter((p) => p.length > 0)
-            .map((para, i) => (
-              <p key={i} className={i === 0 ? "article-lede" : undefined}>
-                {para}
-              </p>
-            ))
+        {hasBreakdown ? (
+          <ArticleBreakdown articleId={article.id} initial={breakdown} />
         ) : article.body && article.body.length > 0 ? (
           article.body.map((para, i) => (
             <p key={i} className={i === 0 ? "article-lede" : undefined}>

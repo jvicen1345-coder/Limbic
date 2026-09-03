@@ -73,6 +73,8 @@ export function ArticleThreadsSplitView({
             article={view.article}
             related={view.related}
             unpaywallResult={view.unpaywallResult}
+            breakdown={view.breakdown}
+            hasBreakdown={view.hasBreakdown}
             hasResearchAccess={hasResearchAccess}
           />
           {swapError && (

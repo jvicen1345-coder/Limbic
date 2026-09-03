@@ -2314,3 +2314,17 @@ model GeneralizabilityCache {
   scoreData Json
   scoredAt  DateTime @default(now())
 }
+
+// One cached study breakdown per article — the five-field summary shown on the article
+// detail page in place of the publisher's abstract (see lib/article-breakdown.ts,
+// app/actions/article-breakdown.ts, components/ArticleBreakdown.tsx). Keyed by the
+// article's own id, a plain unique string rather than a relation, for the same reason
+// GeneralizabilityCache above is: articles are static/feed content, not a Prisma model.
+// Never expires — a published study's abstract doesn't change, so the first breakdown is
+// the only breakdown, and every reader after the first gets it with no Anthropic call.
+model ArticleBreakdownCache {
+  id            String   @id @default(cuid())
+  articleId     String   @unique
+  breakdownData Json
+  generatedAt   DateTime @default(now())
+}
