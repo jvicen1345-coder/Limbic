@@ -65,7 +65,6 @@ export async function buildCalendarEvents(user: User): Promise<CalendarEvent[]> 
       title: a.title,
       articleId: a.id,
       source: a.source,
-      readMins: a.readMins,
     });
   }
 

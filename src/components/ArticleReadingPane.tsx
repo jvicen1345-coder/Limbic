@@ -96,9 +96,17 @@ export function ArticleReadingPane({
         <h1 className="article-hero-title">{article.title}</h1>
 
         <div className="article-hero-journal">{article.source}</div>
-        <div className="article-hero-datemeta">
-          {article.dateLabel} · {article.readMins} min read
-        </div>
+        {/* Year included here, unlike the feed cards — see formatDateWithYear in lib/meta.ts.
+            The read-time that used to follow it is gone, here and on every other Article
+            surface. estimateReadMins divides the word count by 200 and floors the result at
+            2, and a journal abstract is 200-500 words: the quotient lands under 2.5, rounds
+            to 1 or 2, and the floor catches whatever's left. Every research article in the
+            feed therefore read "2 min" — as did the AOPT guidelines, off a one-line blurb —
+            and it takes a 500-word abstract to reach 3. A number with two reachable values,
+            one of them near-universal, tells a reader nothing. Wellness articles keep
+            theirs: WellnessArticle.readMins is hand-set per article (see
+            lib/articles-static.ts) and renders from /wellness/[id], not here. */}
+        <div className="article-hero-datemeta">{article.dateLabelWithYear}</div>
       </div>
 
       <hr className="article-hero-divider" />
@@ -234,7 +242,7 @@ export function ArticleReadingPane({
                   <hr className="article-related-divider" />
                   <div className="article-related-title">{rel.title}</div>
                   <div className="article-related-meta">
-                    {rel.source} · {rel.readMins} min
+                    {rel.source}
                   </div>
                   <div className="article-related-date">{rel.dateLabel}</div>
                 </div>

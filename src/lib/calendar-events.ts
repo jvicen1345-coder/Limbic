@@ -74,7 +74,6 @@ export interface PlatformCalendarEvent extends BaseCalendarEvent {
   kind: "platform";
   articleId: string;
   source: string;
-  readMins: number;
 }
 
 export interface CommunityCalendarEvent extends BaseCalendarEvent {
