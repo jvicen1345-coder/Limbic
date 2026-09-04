@@ -11,7 +11,10 @@ const AUDIENCE = [
   "Realtors serving senior clients",
   "Elder law and estate planning attorneys",
   "Contractors specializing in accessibility",
-  "Physical therapists seeking certification",
+  // Not "seeking certification": Connexion is a proprietary method with no accrediting
+  // body behind it, and offering a "certification" implies one. What is on offer is
+  // training in the method, which is what this now says.
+  "Physical therapists adopting the method in their own practice",
 ];
 
 /** The Connexion Method hub — a partner program between Limbic and a proprietary senior
@@ -28,8 +31,9 @@ export default async function ConnexionOverviewPage() {
       <div className="connexion-hero">
         <h1 className="connexion-hero-title">The Connexion Method</h1>
         <p className="connexion-hero-subtitle">
-          A standardized, evidence-based system for senior home safety, mobility optimization, and fall prevention,
-          designed to document the risk factors present in a home today and support recovery after an event.
+          A standardized system for senior home safety, mobility optimization, and fall prevention, built on
+          established home-safety and fall-prevention practice, designed to document the risk factors present in a
+          home today and support recovery after an event.
         </p>
         <p className="connexion-hero-partner">
           A Limbic partner program, developed by{" "}
@@ -42,9 +46,10 @@ export default async function ConnexionOverviewPage() {
       <div className="connexion-mission-card">
         <div className="connexion-mission-kicker">Mission</div>
         <p className="connexion-mission-text">
-          To improve the safety, independence, and quality of life of older adults by delivering a standardized,
-          evidence-based home mobility and safety system, one that surfaces the fall and injury risk factors already
-          present in a home so they can be addressed, and guides recovery when an event does occur.
+          To improve the safety, independence, and quality of life of older adults by delivering a standardized home
+          mobility and safety system, drawing on risk factors well established in the falls literature, that
+          surfaces what is already present in a home so it can be addressed, and guides recovery when an event does
+          occur.
         </p>
       </div>
 
