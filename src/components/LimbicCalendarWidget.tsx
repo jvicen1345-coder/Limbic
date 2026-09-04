@@ -19,7 +19,6 @@ export interface PlatformEvent {
   date: string;
   title: string;
   source: string;
-  readMins: number;
 }
 
 export async function LimbicCalendarWidget({
@@ -53,7 +52,7 @@ export async function LimbicCalendarWidget({
       date: ev.date,
       kind: "platform",
       title: ev.title,
-      description: `${ev.source} · ${ev.readMins} min`,
+      description: ev.source,
       href: `/article/${ev.id}`,
     });
   }

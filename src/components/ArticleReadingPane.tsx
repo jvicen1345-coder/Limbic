@@ -97,16 +97,15 @@ export function ArticleReadingPane({
 
         <div className="article-hero-journal">{article.source}</div>
         {/* Year included here, unlike the feed cards — see formatDateWithYear in lib/meta.ts.
-            The read-time that used to follow it is dropped: every Article estimates readMins
-            from `summary`, and no source produces one long enough for the estimate to mean
-            anything — PubMed clips it to 320 chars and the AOPT guidelines carry a one-line
-            blurb, so `Math.round(words / 200)` rounds to zero and estimateReadMins returns
-            its floor of 2 for all of them alike. It was a constant wearing a number's
-            clothes, and since the breakdown replaced the abstract it was also measuring text
-            this page no longer shows. Feed cards still render it (ArticleCard, RowCards),
-            where it's equally meaningless and equally worth removing — left alone here only
-            to keep this change to the page it's about. Wellness articles are unaffected
-            either way: their readMins is hand-set, and they render from their own page. */}
+            The read-time that used to follow it is gone, here and on every other Article
+            surface. estimateReadMins divides the word count by 200 and floors the result at
+            2, and a journal abstract is 200-500 words: the quotient lands under 2.5, rounds
+            to 1 or 2, and the floor catches whatever's left. Every research article in the
+            feed therefore read "2 min" — as did the AOPT guidelines, off a one-line blurb —
+            and it takes a 500-word abstract to reach 3. A number with two reachable values,
+            one of them near-universal, tells a reader nothing. Wellness articles keep
+            theirs: WellnessArticle.readMins is hand-set per article (see
+            lib/articles-static.ts) and renders from /wellness/[id], not here. */}
         <div className="article-hero-datemeta">{article.dateLabelWithYear}</div>
       </div>
 
@@ -243,7 +242,7 @@ export function ArticleReadingPane({
                   <hr className="article-related-divider" />
                   <div className="article-related-title">{rel.title}</div>
                   <div className="article-related-meta">
-                    {rel.source} · {rel.readMins} min
+                    {rel.source}
                   </div>
                   <div className="article-related-date">{rel.dateLabel}</div>
                 </div>

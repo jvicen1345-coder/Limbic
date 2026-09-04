@@ -14,7 +14,7 @@ function eventDescription(event: CalendarEvent): string | null {
     case "personal":
       return `${event.countdownVerb} ${daysRemainingOrPastDue(event.date)}`;
     case "platform":
-      return `${event.source} · ${event.readMins} min read`;
+      return event.source;
     case "community":
       return event.bodyPreview;
     case "user":
