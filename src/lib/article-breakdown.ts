@@ -43,7 +43,7 @@ const SYSTEM_PROMPT = [
   "1. question — one sentence on what the study set out to find out.",
   "2. population — who was actually studied, as a short phrase. Lead with the sample size if the abstract states one (e.g. \"62 adults with chronic low back pain, outpatient clinic\"). If it doesn't state one, say so rather than estimating.",
   "3. design — the study design and what was done or compared, as a short phrase (e.g. \"Randomized controlled trial, 12 weeks of supervised exercise vs. home program\"). Include the follow-up period when stated.",
-  "4. findings — two to four short bullets, the results that matter. Include the actual numbers the abstract reports (effect sizes, percentages, between-group differences, p-values) — a finding stated without its number is close to useless for appraisal. One result per bullet.",
+  "4. findings — the study's results, one per bullet, with the actual numbers the abstract reports (effect sizes, confidence intervals, percentages, between-group differences, p-values). A finding stated without its number is close to useless for appraisal. Two to four bullets is typical, but the count follows the study: return only as many bullets as there are real results. A bullet describing how the study was run — what was measured, on what scale, at what timepoint, how groups were split, what the primary outcome was — is not a finding, it belongs to the design field, and it must not appear here. If a study reports only one or two results, give one or two bullets; never pad this section out to a target length with method detail.",
   "5. takeaway — one sentence on what this study suggests for physical therapy practice.",
   "",
   "Be accurate before being brief. Never invent a sample size, a setting, a follow-up period, or a number that the abstract does not state — if something isn't there, say it isn't reported. Do not overstate a finding: if the study found no significant difference, the findings and the takeaway must both say so plainly.",
@@ -64,7 +64,12 @@ const BreakdownResponseSchema = z.object({
   question: z.string().describe("One sentence on what the study set out to find out."),
   population: z.string().describe("Who was studied, as a short phrase, leading with the sample size when stated."),
   design: z.string().describe("The study design and what was done or compared, as a short phrase."),
-  findings: z.array(z.string()).min(1).describe("Two to four short bullets, one result each, with the numbers the abstract reports."),
+  findings: z
+    .array(z.string())
+    .min(1)
+    .describe(
+      "The study's results, one per bullet, with the numbers the abstract reports. As many bullets as there are real results — usually two to four, fewer when the study reports fewer. Never method detail; that belongs in design."
+    ),
   takeaway: z.string().describe("One sentence on what this study suggests for physical therapy practice."),
 });
 

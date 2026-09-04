@@ -96,9 +96,18 @@ export function ArticleReadingPane({
         <h1 className="article-hero-title">{article.title}</h1>
 
         <div className="article-hero-journal">{article.source}</div>
-        <div className="article-hero-datemeta">
-          {article.dateLabel} · {article.readMins} min read
-        </div>
+        {/* Year included here, unlike the feed cards — see formatDateWithYear in lib/meta.ts.
+            The read-time that used to follow it is dropped: every Article estimates readMins
+            from `summary`, and no source produces one long enough for the estimate to mean
+            anything — PubMed clips it to 320 chars and the AOPT guidelines carry a one-line
+            blurb, so `Math.round(words / 200)` rounds to zero and estimateReadMins returns
+            its floor of 2 for all of them alike. It was a constant wearing a number's
+            clothes, and since the breakdown replaced the abstract it was also measuring text
+            this page no longer shows. Feed cards still render it (ArticleCard, RowCards),
+            where it's equally meaningless and equally worth removing — left alone here only
+            to keep this change to the page it's about. Wellness articles are unaffected
+            either way: their readMins is hand-set, and they render from their own page. */}
+        <div className="article-hero-datemeta">{article.dateLabelWithYear}</div>
       </div>
 
       <hr className="article-hero-divider" />
