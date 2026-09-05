@@ -30,15 +30,19 @@ export const INTAKE_ACTIVITIES = [
   "Manual work",
 ] as const;
 
+/** The health section is two closed questions, not a free-text box. A client typing into an
+ *  open field is how a diagnosis, a medication list or a surgical history ends up in an inbox
+ *  that has no business holding one — and none of it is needed to write a program. Yes/No is
+ *  answered explicitly rather than by a tick, so a blank can't be read as "no". */
+export const INTAKE_YES_NO = ["Yes", "No"] as const;
+
 export interface IntakeAnswers {
   activityLevel: string;
   activities: string[];
   daysPerWeek: string;
-  sessionLength: string;
-  howLong: string;
   goalShort: string;
   goalLong: string;
-  limits: string;
+  recentInjury: string;
   cleared: boolean;
   equipment: string[];
 }
@@ -47,11 +51,9 @@ export const EMPTY_INTAKE_ANSWERS: IntakeAnswers = {
   activityLevel: "",
   activities: [],
   daysPerWeek: "",
-  sessionLength: "",
-  howLong: "",
   goalShort: "",
   goalLong: "",
-  limits: "",
+  recentInjury: "",
   cleared: false,
   equipment: [],
 };
@@ -79,15 +81,14 @@ function pick(value: unknown, allowed: readonly string[]): string[] {
 export function parseIntakeAnswers(raw: unknown): IntakeAnswers {
   const o = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
   const level = str(o.activityLevel);
+  const injury = str(o.recentInjury);
   return {
     activityLevel: (INTAKE_ACTIVITY_LEVELS as readonly string[]).includes(level) ? level : "",
     activities: pick(o.activities, INTAKE_ACTIVITIES),
     daysPerWeek: str(o.daysPerWeek),
-    sessionLength: str(o.sessionLength),
-    howLong: str(o.howLong),
     goalShort: str(o.goalShort),
     goalLong: str(o.goalLong),
-    limits: str(o.limits),
+    recentInjury: (INTAKE_YES_NO as readonly string[]).includes(injury) ? injury : "",
     cleared: o.cleared === true,
     equipment: pick(o.equipment, INTAKE_EQUIPMENT),
   };

@@ -48,10 +48,10 @@ export default async function IntakePage({ searchParams }: { searchParams: Promi
                 never sold, and never shared without your written permission.
               </p>
               <p>
-                Your name is the only personal detail asked for — no email, no phone, no date of birth. Please
-                don&rsquo;t include medical records, imaging, insurance details or your Social Security number either;
-                they aren&rsquo;t needed here. If something about your health affects what you can do, one line under
-                &ldquo;Anything that limits you&rdquo; is enough.
+                Your name is the only personal detail asked for — no email, no phone, no date of birth, and nowhere
+                to write a medical history. Please don&rsquo;t send records, imaging, insurance details or your Social
+                Security number separately either; they aren&rsquo;t needed. If something about your health affects
+                what you can do, tell your clinician at your first session rather than writing it down here.
               </p>
             </div>
             <IntakeForm />

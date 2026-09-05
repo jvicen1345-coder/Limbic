@@ -260,7 +260,15 @@ function SubmissionRow({
         <Line label="Now" value={[a.activityLevel, a.activities.join(", ")].filter(Boolean).join(" — ")} />
         <Line label="Short term" value={a.goalShort} />
         <Line label="Long term" value={a.goalLong} />
-        <Line label="Limits" value={a.limits || (a.cleared ? "None stated" : "")} />
+        <Line
+          label="Health"
+          value={[
+            a.recentInjury && `Surgery or injury in the last 12 months: ${a.recentInjury.toLowerCase()}`,
+            a.cleared && "cleared for exercise",
+          ]
+            .filter(Boolean)
+            .join(" — ")}
+        />
         <Line label="Equipment" value={equipment} />
       </div>
 

@@ -8,6 +8,7 @@ import {
   INTAKE_ACTIVITIES,
   INTAKE_ACTIVITY_LEVELS,
   INTAKE_EQUIPMENT,
+  INTAKE_YES_NO,
   type IntakeAnswers,
 } from "@/lib/intake";
 
@@ -15,8 +16,8 @@ import {
  *  link. Same sections as the PDF that preceded it, in the same order, so a client who was
  *  sent one and then the other isn't answering a different set of questions.
  *
- *  Written as one screen rather than a wizard on purpose: it is ten questions, and a client
- *  can see the whole ask before starting instead of discovering it a step at a time. */
+ *  Written as one screen rather than a wizard on purpose: it is eight questions, and a
+ *  client can see the whole ask before starting instead of discovering it a step at a time. */
 export function IntakeForm() {
   const [answers, setAnswers] = useState<IntakeAnswers>(EMPTY_INTAKE_ANSWERS);
   const [firstName, setFirstName] = useState("");
@@ -117,14 +118,6 @@ export function IntakeForm() {
             <span>Days per week</span>
             <input className="input" value={answers.daysPerWeek} onChange={(e) => set("daysPerWeek", e.target.value)} />
           </label>
-          <label className="intake-field">
-            <span>Typical session length</span>
-            <input className="input" value={answers.sessionLength} onChange={(e) => set("sessionLength", e.target.value)} />
-          </label>
-          <label className="intake-field">
-            <span>How long at this level</span>
-            <input className="input" value={answers.howLong} onChange={(e) => set("howLong", e.target.value)} />
-          </label>
         </div>
       </section>
 
@@ -141,14 +134,24 @@ export function IntakeForm() {
       </section>
 
       <section className="intake-section">
-        <h2 className="intake-section-title">Anything that limits you</h2>
+        <h2 className="intake-section-title">Recent surgeries or injuries</h2>
         <p className="intake-prompt">
-          Keep it brief — a line is plenty. This is asked so your clinician can avoid exercises that will hurt, not to
-          build a medical history.
+          Have you had a surgery or an injury in the last 12 months? Yes or no is all that&rsquo;s needed — the
+          details belong in a conversation, not a form.
         </p>
-        <label className="intake-field">
-          <textarea className="input" rows={2} value={answers.limits} onChange={(e) => set("limits", e.target.value)} />
-        </label>
+        <div className="intake-options intake-options-2">
+          {INTAKE_YES_NO.map((option) => (
+            <label className="intake-check" key={option}>
+              <input
+                type="radio"
+                name="recentInjury"
+                checked={answers.recentInjury === option}
+                onChange={() => set("recentInjury", option)}
+              />
+              <span>{option}</span>
+            </label>
+          ))}
+        </div>
         <label className="intake-check">
           <input type="checkbox" checked={answers.cleared} onChange={(e) => set("cleared", e.target.checked)} />
           <span>A healthcare provider has cleared me for exercise</span>
