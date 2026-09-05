@@ -13111,3 +13111,188 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 .sub-tabs,
 .boards-tabs { overscroll-behavior-x: contain; }
 .sliding-tabs[data-scrollable="true"] { touch-action: pan-x; }
+
+/* ============================================================================
+   Appraisal workbench — /admin/appraisals (see components/admin/AppraisalWorkbench.tsx,
+   lib/appraisal.ts). Admin-only surface, so it is deliberately plain: a dense entry form
+   whose job is to be quick to fill in from a paper open beside it, not to look like the
+   reader-facing feed. Appended at the end of the file per COORDINATION.md.
+   ============================================================================ */
+.appraisal-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.appraisal-btn {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 14px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.appraisal-btn:hover:not(:disabled) { border-color: var(--color-accent); }
+.appraisal-btn:disabled { opacity: 0.5; cursor: default; }
+.appraisal-btn-primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+.appraisal-btn-danger { color: var(--color-danger, #9E2B25); }
+
+.appraisal-status-pill {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--color-surface-secondary);
+  color: var(--color-neutral-700);
+}
+.appraisal-status-pill[data-status="published"] {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.appraisal-empty {
+  font-size: 13.5px;
+  color: var(--color-neutral-700);
+  max-width: 60ch;
+  line-height: 1.6;
+}
+
+.appraisal-list { list-style: none; margin: 0; padding: 0; }
+.appraisal-list-row { border-top: 1px solid var(--color-neutral-300); }
+.appraisal-list-open {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 14px 2px;
+  cursor: pointer;
+}
+.appraisal-list-open:hover { background: var(--color-neutral-200); }
+.appraisal-list-title { display: block; font-size: 15px; font-weight: 600; color: var(--color-text); }
+.appraisal-list-meta { display: block; font-size: 12px; color: var(--color-neutral-700); margin-top: 3px; }
+.appraisal-list-flag {
+  display: block;
+  font-size: 12px;
+  color: var(--color-danger, #9E2B25);
+  margin-top: 5px;
+  line-height: 1.45;
+}
+
+.appraisal-preamble {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-neutral-700);
+  max-width: 66ch;
+  margin: 0 0 22px;
+}
+
+.appraisal-section {
+  border-top: 1px solid var(--color-neutral-300);
+  padding-top: 18px;
+  margin-top: 22px;
+}
+.appraisal-section-title { font-size: 15px; margin: 0 0 6px; }
+.appraisal-section-note {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--color-neutral-700);
+  max-width: 64ch;
+  margin: 0 0 14px;
+}
+
+.appraisal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+.appraisal-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.appraisal-field-wide { grid-column: 1 / -1; }
+.appraisal-field-label { font-size: 12px; font-weight: 600; color: var(--color-text); }
+.appraisal-field-hint { font-size: 11.5px; color: var(--color-neutral-700); line-height: 1.45; }
+.appraisal-field input,
+.appraisal-field select {
+  font: inherit;
+  font-size: 13.5px;
+  padding: 7px 9px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  width: 100%;
+  min-width: 0;
+}
+.appraisal-field input:focus-visible,
+.appraisal-field select:focus-visible,
+.appraisal-notes:focus-visible,
+.appraisal-para:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+
+.appraisal-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text);
+  grid-column: 1 / -1;
+}
+.appraisal-check input { width: 16px; height: 16px; }
+
+.appraisal-checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.appraisal-check-row { display: grid; grid-template-columns: 92px 1fr; gap: 12px; align-items: baseline; }
+.appraisal-check-verdict {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.appraisal-check-body { font-size: 13px; line-height: 1.55; color: var(--color-text); }
+
+.appraisal-notes,
+.appraisal-para {
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1.6;
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  resize: vertical;
+}
+.appraisal-para { margin-top: 10px; }
+
+.appraisal-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.appraisal-actions-note { font-size: 12px; color: var(--color-neutral-700); }
+.appraisal-actions-final {
+  border-top: 1px solid var(--color-neutral-300);
+  padding-top: 16px;
+  margin-top: 24px;
+}
+
+.appraisal-blockers {
+  margin: 22px 0 0;
+  padding: 12px 14px 12px 30px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-secondary);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--color-neutral-700);
+}
+
+.appraisal-message { font-size: 13px; margin: 14px 0 0; }
+.appraisal-message[data-kind="error"] { color: var(--color-danger, #9E2B25); }
+.appraisal-message[data-kind="ok"] { color: var(--color-success, #24614F); }
+
+@media (max-width: 640px) {
+  .appraisal-grid { grid-template-columns: minmax(0, 1fr); }
+  .appraisal-check-row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}

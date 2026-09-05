@@ -62,6 +62,7 @@ model User {
   suspendedAt     DateTime?
   suspendedReason String?
   copyrightNotices CopyrightNotice[]
+  appraisals       StudyAppraisal[]
 
   // Legacy single "primary license" (sign-in-with-license flow predating password auth, plus
   // whatever CE tracking/admin lookup/hasLicenseAccess still read directly off User instead
@@ -2327,4 +2328,47 @@ model ArticleBreakdownCache {
   articleId     String   @unique
   breakdownData Json
   generatedAt   DateTime @default(now())
+}
+
+// One research appraisal written by an admin (see lib/appraisal.ts, app/(app)/admin/appraisals).
+//
+// `input` is the whole entry form as typed — sample sizes, an effect estimate, an MCID and
+// its citation, the appraiser's own notes. It is stored verbatim and never rewritten,
+// because it is the provenance record as much as it is the draft: it shows exactly what
+// went into any published appraisal, and everything in it is a fact about a study rather
+// than a publisher's text. `sourceAccess` and `doi` are lifted out of that blob into their
+// own columns so "every appraisal I wrote from a subscription copy" is one query rather than
+// a scan — the question a publisher would actually ask.
+model StudyAppraisal {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+
+  // The appraiser. Cascades on account deletion — an appraisal is a signed opinion, and it
+  // does not outlive the account that signed it.
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  // "draft" | "published" — see APPRAISAL_STATUSES in lib/appraisal.ts.
+  status String @default("draft")
+
+  /// The full AppraisalInput as entered. Never contains article text: the form has no field
+  /// that accepts any, by design.
+  input Json
+
+  // The finished prose. `body` is a string[] of paragraphs, matching Article.body so a
+  // published appraisal drops straight into the article feed with no separate renderer.
+  summary String
+  body    Json
+
+  specialty String @default("ortho")
+  tags      Json
+
+  // Lifted out of `input` for querying — see the note above.
+  sourceAccess String @default("abstract_only")
+  doi          String @default("")
+
+  @@index([authorId])
+  @@index([status, publishedAt])
 }
