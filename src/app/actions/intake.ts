@@ -90,8 +90,8 @@ export async function previewIntakeLink(token: string): Promise<{ usable: boolea
  *  two simultaneous submits can't both get through. */
 export async function submitIntake(
   token: string,
-  clientName: string,
-  clientEmail: string,
+  firstName: string,
+  lastName: string,
   rawAnswers: unknown
 ): Promise<Result> {
   if (!token) return { ok: false, error: GENERIC_LINK_ERROR };
@@ -110,8 +110,7 @@ export async function submitIntake(
         data: {
           userId: link.userId,
           linkId: link.id,
-          clientName: clientName.trim().slice(0, 120) || null,
-          clientEmail: clientEmail.trim().slice(0, 160) || null,
+          clientName: [firstName.trim(), lastName.trim()].filter(Boolean).join(" ").slice(0, 120) || null,
           answers: answers as unknown as object,
         },
       }),
@@ -131,7 +130,6 @@ export async function submitIntake(
 export interface IntakeSubmissionView {
   id: string;
   clientName: string | null;
-  clientEmail: string | null;
   answers: IntakeAnswers;
   submittedAt: Date;
   status: string;
@@ -172,7 +170,6 @@ export async function getIntakeInbox(): Promise<IntakeInboxData> {
     pending: submissions.map((s) => ({
       id: s.id,
       clientName: s.clientName,
-      clientEmail: s.clientEmail,
       answers: parseIntakeAnswers(s.answers),
       submittedAt: s.submittedAt,
       status: s.status,
@@ -191,10 +188,9 @@ export async function getIntakeInbox(): Promise<IntakeInboxData> {
 /** Attach a submission to a patient — existing, or one createPatient just made — and close
  *  it out.
  *
- *  The identifying fields are cleared here, not merely hidden. The dashboard identifies
- *  patients by patientCode and that stays true: a client's name and email exist only for as
- *  long as it takes the clinician to recognize who submitted, and never reach
- *  ClinicalPatient. The answers themselves stay, linked to the patient, so the structured
+ *  The name is cleared here, not merely hidden. The dashboard identifies patients by
+ *  patientCode and that stays true: a client's name exists only for as long as it takes the
+ *  clinician to recognize who submitted, and never reaches ClinicalPatient. The answers themselves stay, linked to the patient, so the structured
  *  intake is still readable later instead of being flattened into a notes blob.
  *
  *  Goals become PatientGoal rows because that is where the rest of the dashboard looks for
@@ -232,7 +228,7 @@ export async function acceptIntakeSubmission(submissionId: string, patientId: st
     ),
     prisma.intakeSubmission.update({
       where: { id: submissionId },
-      data: { status: "accepted", patientId, reviewedAt: new Date(), clientName: null, clientEmail: null },
+      data: { status: "accepted", patientId, reviewedAt: new Date(), clientName: null },
     }),
   ]);
 
@@ -241,8 +237,8 @@ export async function acceptIntakeSubmission(submissionId: string, patientId: st
 }
 
 /** Drop a submission without attaching it — a duplicate, a test, or someone who never became
- *  a client. Same clearing of identifying fields as accepting: whichever way a submission
- *  leaves the queue, the name and email go with it. */
+ *  a client. Same clearing as accepting: whichever way a submission leaves the queue, the
+ *  client's name goes with it. */
 export async function dismissIntakeSubmission(submissionId: string): Promise<Result> {
   const user = await requireProUser();
   if (!user) return { ok: false, error: "Not authorized." };
@@ -251,7 +247,7 @@ export async function dismissIntakeSubmission(submissionId: string): Promise<Res
 
   await prisma.intakeSubmission.update({
     where: { id: submissionId },
-    data: { status: "dismissed", reviewedAt: new Date(), clientName: null, clientEmail: null },
+    data: { status: "dismissed", reviewedAt: new Date(), clientName: null },
   });
   revalidatePath("/pro/dashboard");
   return { ok: true };

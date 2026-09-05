@@ -48,7 +48,8 @@ export default async function IntakePage({ searchParams }: { searchParams: Promi
                 never sold, and never shared without your written permission.
               </p>
               <p>
-                Please don&rsquo;t include medical records, imaging, insurance details or your Social Security number —
+                Your name is the only personal detail asked for — no email, no phone, no date of birth. Please
+                don&rsquo;t include medical records, imaging, insurance details or your Social Security number either;
                 they aren&rsquo;t needed here. If something about your health affects what you can do, one line under
                 &ldquo;Anything that limits you&rdquo; is enough.
               </p>

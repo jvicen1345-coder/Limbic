@@ -20,8 +20,8 @@ import {
  *  client can see the whole ask before starting instead of discovering it a step at a time. */
 export function IntakeForm() {
   const [answers, setAnswers] = useState<IntakeAnswers>(EMPTY_INTAKE_ANSWERS);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -45,7 +45,7 @@ export function IntakeForm() {
       // The token stays in the URL and is read here rather than held in state, so a reload
       // mid-form resumes against the same link instead of losing it.
       const token = new URLSearchParams(window.location.search).get("token") ?? "";
-      const result = await submitIntake(token, name, email, answers);
+      const result = await submitIntake(token, firstName, lastName, answers);
       if (!result.ok) {
         setError(result.error);
         return;
@@ -62,19 +62,25 @@ export function IntakeForm() {
     <div className="intake-form">
       <section className="intake-section">
         <h2 className="intake-section-title">About you</h2>
+        {/* Name only — no email, no phone. Whoever sent this link already has a way to
+            reach the client, so asking again collects a contact detail for nothing. */}
         <div className="intake-grid-2">
           <label className="intake-field">
-            <span>Name</span>
-            <input className="input" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
-          </label>
-          <label className="intake-field">
-            <span>Email</span>
+            <span>First name</span>
             <input
               className="input"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              autoComplete="given-name"
+            />
+          </label>
+          <label className="intake-field">
+            <span>Last name</span>
+            <input
+              className="input"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              autoComplete="family-name"
             />
           </label>
         </div>

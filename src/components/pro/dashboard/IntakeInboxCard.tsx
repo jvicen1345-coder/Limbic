@@ -20,9 +20,11 @@ import { PlusIcon } from "@/components/icons";
  *  that no client can supply, and because "new person or one I already have" is a judgement
  *  the form can't make. Create the patient first if they're new, then attach.
  *
- *  The client's name and email are shown here and nowhere else. They exist so the clinician
- *  can tell who submitted, and are cleared the moment the submission is accepted or
- *  dismissed — see acceptIntakeSubmission. The caseload itself stays keyed on patientCode. */
+ *  The client's name is shown here and nowhere else, and it is the only identifying thing
+ *  the intake collects — no email, no phone, since whoever sent the link already has a way to
+ *  reach them. It exists so the clinician can tell who submitted, and is cleared the moment
+ *  the submission is accepted or dismissed — see acceptIntakeSubmission. The caseload itself
+ *  stays keyed on patientCode. */
 export function IntakeInboxCard({ data, patients, onChanged }: {
   data: IntakeInboxData;
   patients: PatientListEntry[];
@@ -85,7 +87,7 @@ export function IntakeInboxCard({ data, patients, onChanged }: {
   };
 
   const handleDismiss = (submissionId: string) => {
-    if (!window.confirm("Dismiss this intake? The client's answers will be kept, their name and email won't.")) return;
+    if (!window.confirm("Dismiss this intake? The client's answers will be kept, their name won't.")) return;
     setError(null);
     startTransition(async () => {
       const result = await dismissIntakeSubmission(submissionId);
@@ -237,10 +239,7 @@ function SubmissionRow({
       <div className="intake-submission-top">
         <div>
           <div className="intake-submission-name">{submission.clientName || "Unnamed client"}</div>
-          <div className="intake-submission-meta">
-            {submission.clientEmail ? `${submission.clientEmail} · ` : ""}
-            {new Date(submission.submittedAt).toLocaleDateString()}
-          </div>
+          <div className="intake-submission-meta">{new Date(submission.submittedAt).toLocaleDateString()}</div>
         </div>
         <div className="intake-open-link-actions">
           <button type="button" className="clindash-session-exercise-action" disabled={pending} onClick={onToggle}>

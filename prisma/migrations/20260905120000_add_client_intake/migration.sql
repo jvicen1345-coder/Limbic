@@ -16,7 +16,6 @@ CREATE TABLE "IntakeSubmission" (
     "userId" TEXT NOT NULL,
     "linkId" TEXT NOT NULL,
     "clientName" TEXT,
-    "clientEmail" TEXT,
     "answers" JSONB NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'pending',
     "patientId" TEXT,

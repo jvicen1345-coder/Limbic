@@ -2357,16 +2357,17 @@ model IntakeLink {
 // judgement only the clinician can make. It is also forced by the schema — ClinicalPatient
 // requires condition, bodyRegion, specialty and totalVisits, none of which a client can supply.
 //
-// clientName/clientEmail exist so the clinician can tell who submitted, and are cleared the
-// moment the submission is accepted or dismissed (see resolveIntakeSubmission). The dashboard
-// identifies patients by patientCode, not by name, and that stays true: identifying details
-// live here transiently and never reach ClinicalPatient.
+// clientName is the client's first and last name, and the only identifying thing collected —
+// no email, no phone. It exists so the clinician can tell who submitted, and is cleared the
+// moment the submission is accepted or dismissed. The dashboard identifies patients by
+// patientCode, not by name, and that stays true: this lives here transiently and never
+// reaches ClinicalPatient. A contact detail would be worse than useless — the clinician
+// already has one, or the client would not have received the link.
 model IntakeSubmission {
   id          String    @id @default(cuid())
   userId      String
   linkId      String
   clientName  String?
-  clientEmail String?
   // The answers themselves, shaped as IntakeAnswers in lib/intake.ts. Json rather than
   // columns because this is a form's output, read back whole and never queried by field.
   answers     Json
