@@ -89,208 +89,230 @@ const PUZZLES: CrosswordPuzzle[] = [
   buildPuzzle(
     "rest-alpha",
     [
-      ["REST", "The \"R\" in R.I.C.E. treatment"],
-      ["ALPHA", "First Greek letter, also a calm brain-wave frequency"],
-      ["IVIES", "Climbing vines, the poison kind causes an itchy rash"],
-      ["DENTS", "What a fender bender leaves behind"],
-      ["SEAT", "Chair, or a spot on the city council"],
+      ["REST", "Silence, on a musical staff"],
+      ["ALPHA", "Leader of the pack, supposedly"],
+      ["IVIES", "Harvard, Yale and Brown, collectively"],
+      ["DENTS", "Makes an impression?"],
+      ["SEAT", "It's up for grabs in an election"],
     ],
     [
-      ["RAID", "Surprise attack, or a bug-spray brand"],
-      ["ELVES", "Santa's workshop crew"],
-      ["SPINE", "The body's central support, or a book's bound edge"],
-      ["THETA", "Letter after Eta, a brain-wave rhythm slower than Alpha"],
-      ["ASST", "Right-hand person, for short"],
+      ["RAID", "Midnight fridge ___"],
+      ["ELVES", "Rivendell residents"],
+      ["SPINE", "Where a hardcover's title is printed"],
+      ["THETA", "Sorority letter after eta"],
+      ["ASST", "Deputy: Abbr."],
     ]
   ),
   buildPuzzle(
     "scan-nerve",
     [
-      ["SCAN", "MRI or CT, e.g."],
-      ["AIDED", "Lent a hand to"],
-      ["STORE", "Where to shop, or what a squirrel does with acorns"],
-      ["SERVE", "Tennis shot that starts a point, or what a waiter does"],
-      ["SEEP", "Ooze out slowly, as water through a crack"],
+      ["SCAN", "Skim, or scrutinize"],
+      ["AIDED", "Abetted"],
+      ["STORE", "Squirrel away"],
+      ["SERVE", "Do time"],
+      ["SEEP", "Ooze"],
     ],
     [
-      ["SASS", "Cheeky backtalk"],
-      ["CITES", "Gives credit to, as a source"],
-      ["ADORE", "Love to pieces"],
-      ["NERVE", "Signal-carrying body structure, or plain audacity"],
-      ["DEEP", "Not shallow, knee-___ in work"],
+      ["SASS", "Lip"],
+      ["CITES", "Names in a footnote"],
+      ["ADORE", "Be crazy about"],
+      ["NERVE", "Gall"],
+      ["DEEP", "Like a bass voice"],
     ]
   ),
   buildPuzzle(
     "disc-aches",
     [
-      ["DISC", "Spinal ___, a cushion between vertebrae"],
-      ["ACHES", "Dull, persistent pains"],
-      ["DIODE", "One-way gate for electric current"],
-      ["SEVEN", "Lucky number, or days in a week"],
-      ["REST", "The \"R\" in R.I.C.E. treatment"],
+      ["DISC", "Frisbee, formally"],
+      ["ACHES", "Longs, with \"for\""],
+      ["DIODE", "The \"D\" in LED"],
+      ["SEVEN", "Number of deadly sins"],
+      ["REST", "Remainder"],
     ],
     [
-      ["DADS", "Fathers, casually"],
-      ["ICIER", "More treacherous, like an untreated sidewalk"],
-      ["SHOVE", "Push roughly"],
-      ["CEDES", "Gives up, as territory or a point"],
-      ["SENT", "Mailed off"],
+      ["DADS", "Ones telling corny jokes, stereotypically"],
+      ["ICIER", "More frosty, as a reception"],
+      ["SHOVE", "When push comes to ___"],
+      ["CEDES", "Yields"],
+      ["SENT", "Dispatched"],
     ]
   ),
   buildPuzzle(
     "lank-axons",
     [
-      ["LANK", "Limp and thin, like unwashed hair"],
-      ["AXONS", "Nerve fibers that carry signals away from a cell body"],
-      ["TIBIA", "The larger of the two shin bones"],
-      ["SALTS", "Electrolytes like sodium and potassium"],
-      ["LESS", "Not as much"],
+      ["LANK", "Lean and droopy"],
+      ["AXONS", "Signal senders in the brain"],
+      ["TIBIA", "What a shin guard guards"],
+      ["SALTS", "Smelling ___"],
+      ["LESS", "Minus, in a way"],
     ],
     [
-      ["LATS", "Back muscles worked by a pull-up, for short"],
-      ["AXIAL", "Along the body's central line, as in the ___ skeleton"],
-      ["NOBLE", "Aristocratic, like royalty"],
-      ["KNITS", "Joins back together, as a healing fracture"],
-      ["SASS", "Smart-alecky retort"],
+      ["LATS", "Pull-up muscles, briefly"],
+      ["AXIAL", "Along the main axis"],
+      ["NOBLE", "Like helium or neon"],
+      ["KNITS", "Purl's partner"],
+      ["SASS", "Attitude, informally"],
     ]
   ),
   buildPuzzle(
     "cast-altar",
     [
-      ["CAST", "Rigid support for a broken bone, or a movie's ensemble"],
-      ["ALTAR", "Where \"I do\" is said"],
-      ["SLOPE", "Incline, like a wheelchair ramp"],
-      ["HONES", "Sharpens a skill"],
-      ["WEST", "Direction of sunset"],
+      ["CAST", "Throw, as a fishing line"],
+      ["ALTAR", "End of an aisle walk"],
+      ["SLOPE", "Ski run"],
+      ["HONES", "Sharpens"],
+      ["WEST", "Mae or Kanye"],
     ],
     [
-      ["CASH", "Paper money"],
-      ["ALLOW", "Give the green light to"],
-      ["STONE", "Rock, as in a kidney ___"],
-      ["TAPES", "Kinesiology ___, used to support a joint"],
-      ["REST", "The \"R\" in R.I.C.E. treatment"],
+      ["CASH", "Johnny of \"Folsom Prison Blues\""],
+      ["ALLOW", "Permit"],
+      ["STONE", "Fourteen pounds, in Britain"],
+      ["TAPES", "Records, in an old way"],
+      ["REST", "Take five"],
     ]
   ),
   buildPuzzle(
     "copy-aural",
     [
-      ["COPY", "Duplicate, as a document"],
-      ["AURAL", "Related to the sense of hearing"],
-      ["STORE", "Where to shop"],
-      ["TENDS", "Looks after, as a patient"],
-      ["REST", "The \"R\" in R.I.C.E. treatment"],
+      ["COPY", "Ad agency output"],
+      ["AURAL", "Like a podcast's appeal"],
+      ["STORE", "Stock up on"],
+      ["TENDS", "Is inclined"],
+      ["REST", "The others"],
     ],
     [
-      ["CAST", "Rigid support for a broken bone"],
-      ["OUTER", "___ space"],
-      ["PRONE", "Lying face-down, on the exam table"],
-      ["YARDS", "Gridiron gains, in football"],
-      ["LEST", "For fear that"],
+      ["CAST", "It gets signed by classmates"],
+      ["OUTER", "___ Banks"],
+      ["PRONE", "Liable"],
+      ["YARDS", "Three-foot units"],
+      ["LEST", "\"___ we forget\""],
     ]
   ),
   buildPuzzle(
     "wart-iliac",
     [
-      ["WART", "Small, rough skin growth"],
-      ["ILIAC", "Like the crest near the hip bone"],
-      ["NINNY", "A silly fool"],
-      ["DESKS", "Where office work gets done"],
-      ["NEST", "A bird's cozy home"],
+      ["WART", "Hag's facial feature, in cartoons"],
+      ["ILIAC", "Like a pelvic artery"],
+      ["NINNY", "Simpleton"],
+      ["DESKS", "Cubicle furniture"],
+      ["NEST", "Twiggy nursery"],
     ],
     [
-      ["WIND", "Moving air, or to twist, like a clock"],
-      ["ALIEN", "E.T., for one"],
-      ["RINSE", "Wash off with water"],
-      ["TANKS", "Storage containers, or armored vehicles"],
-      ["CYST", "Fluid-filled sac beneath the skin"],
+      ["WIND", "Coil up"],
+      ["ALIEN", "Roswell subject"],
+      ["RINSE", "Cycle after wash"],
+      ["TANKS", "Flops badly"],
+      ["CYST", "Ovarian ___"],
     ]
   ),
   buildPuzzle(
     "tone-stump",
     [
-      ["TONE", "Muscle firmness"],
-      ["STUMP", "Tree remnant, or to baffle with a tricky question"],
-      ["ATRIA", "The heart's upper chambers"],
-      ["RESTS", "Recovers, or takes a breather"],
-      ["REST", "The \"R\" in R.I.C.E. treatment"],
+      ["TONE", "Dial ___"],
+      ["STUMP", "Where a candidate speaks"],
+      ["ATRIA", "Skylit hotel spaces"],
+      ["RESTS", "\"The defense ___\""],
+      ["REST", "Repose"],
     ],
     [
-      ["TSAR", "Russian emperor, also spelled \"czar\""],
-      ["OTTER", "Playful, web-footed swimmer"],
-      ["NURSE", "Bedside clinician, or to feed an infant"],
-      ["EMITS", "Gives off, as light or sound"],
-      ["PAST", "Bygone days"],
+      ["TSAR", "Nicholas II, for one"],
+      ["OTTER", "Kelp-forest floater"],
+      ["NURSE", "Sip slowly"],
+      ["EMITS", "Gives off"],
+      ["PAST", "Water under the bridge"],
     ]
   ),
   buildPuzzle(
     "apex-valet",
     [
-      ["APEX", "The very top"],
-      ["VALET", "One who parks your car"],
-      ["INANE", "Silly and pointless"],
-      ["DETOX", "Cleanse the body of harmful substances"],
-      ["LENT", "Loaned, or the weeks before Easter"],
+      ["APEX", "Zenith"],
+      ["VALET", "One who takes your keys"],
+      ["INANE", "Vapid"],
+      ["DETOX", "Rehab's first phase"],
+      ["LENT", "Season of giving up"],
     ],
     [
-      ["AVID", "Enthusiastic"],
-      ["PANEL", "Group of experts, or a section of a door"],
-      ["ELATE", "Fill with joy"],
-      ["XENON", "Noble gas used in some car headlights"],
-      ["TEXT", "Written message"],
+      ["AVID", "Keen"],
+      ["PANEL", "Jury or door part"],
+      ["ELATE", "Send over the moon"],
+      ["XENON", "Element 54"],
+      ["TEXT", "Shoot a quick message"],
     ]
   ),
   buildPuzzle(
     "aunt-snark",
     [
-      ["AUNT", "Your parent's sister"],
-      ["SNARK", "Sarcastic wit"],
-      ["PITON", "Metal spike hammered into rock for climbing"],
-      ["STATE", "Condition, or a U.S. region"],
-      ["ELSE", "Otherwise"],
+      ["AUNT", "Cousin's mom"],
+      ["SNARK", "Biting humor"],
+      ["PITON", "Climber's anchor"],
+      ["STATE", "Say, or Ohio"],
+      ["ELSE", "\"Or ___!\""],
     ],
     [
-      ["ASPS", "Venomous snakes, in old Egypt"],
-      ["UNITE", "Join forces"],
-      ["NATAL", "Related to birth, as in pre-___ vitamins"],
-      ["TROTS", "Brisk, steady-paced runs, a horse's gait"],
-      ["KNEE", "Joint between thigh and shin"],
+      ["ASPS", "Cleopatra's snakes"],
+      ["UNITE", "\"Workers of the world, ___!\""],
+      ["NATAL", "Like an astrologer's chart"],
+      ["TROTS", "Jogs along"],
+      ["KNEE", "___-jerk reaction"],
     ]
   ),
   buildPuzzle(
     "fees-elves",
     [
-      ["FEES", "Charges for a service"],
-      ["ELVES", "Santa's little helpers"],
-      ["ABOVE", "Higher than"],
-      ["TOKEN", "Small symbolic item, or a subway fare of old"],
-      ["WENT", "Traveled, in the past tense"],
+      ["FEES", "Hidden airline charges"],
+      ["ELVES", "Keebler workers"],
+      ["ABOVE", "Overhead"],
+      ["TOKEN", "Arcade coin"],
+      ["WENT", "Departed"],
     ],
     [
-      ["FEAT", "Impressive achievement"],
-      ["ELBOW", "Joint between upper arm and forearm"],
-      ["EVOKE", "Bring to mind"],
-      ["SEVEN", "Lucky number, superstitiously"],
-      ["SENT", "Mailed off"],
+      ["FEAT", "Tour de force"],
+      ["ELBOW", "Nudge, or macaroni shape"],
+      ["EVOKE", "Call to mind"],
+      ["SEVEN", "Wonders of the world count"],
+      ["SENT", "Off in the mail"],
     ]
   ),
   buildPuzzle(
     "burn-osier",
     [
-      ["BURN", "Skin injury from heat, first, second, or third degree"],
-      ["OSIER", "Flexible willow twig used in basket-weaving"],
-      ["OUNCE", "Small unit of weight, 16 to a pound"],
-      ["MASKS", "Face coverings, like PPE"],
+      ["BURN", "Scathing insult, in slang"],
+      ["OSIER", "Basket-weaver's willow"],
+      ["OUNCE", "\"An ___ of prevention...\""],
+      ["MASKS", "Conceals"],
       ["LEST", "For fear that"],
     ],
     [
-      ["BOOM", "Loud, explosive sound"],
-      ["USUAL", "Normal, \"the ___ suspects\""],
-      ["RINSE", "Wash off with water"],
-      ["NECKS", "Body parts between head and shoulders"],
-      ["REST", "The \"R\" in R.I.C.E. treatment"],
+      ["BOOM", "Sonic ___"],
+      ["USUAL", "\"The ___ suspects\""],
+      ["RINSE", "Lather, ___, repeat"],
+      ["NECKS", "Bottle parts"],
+      ["REST", "Break"],
     ]
   ),
 ];
+
+/** No clue text may appear twice anywhere in the bank. Nine answers legitimately recur
+ *  across puzzles (REST alone is in six of the twelve — the 5x5 geometry is fixed and the
+ *  grids were machine-solved against it, so the same short fill turns up repeatedly), and
+ *  before this every one of them carried the *same* clue: a daily solver who had seen
+ *  "The \"R\" in R.I.C.E. treatment" once got that entry free in half the puzzles they
+ *  would ever play. Recurring answers are fine; recurring clues are a gimme. Throws at
+ *  module load, same fail-fast policy as buildPuzzle's intersection check above. */
+function assertCluesAreUnique(puzzles: CrosswordPuzzle[]): void {
+  const seen = new Map<string, string>();
+  for (const p of puzzles) {
+    for (const c of [...p.across, ...p.down]) {
+      const previous = seen.get(c.clue);
+      if (previous !== undefined) {
+        throw new Error(`Duplicate crossword clue "${c.clue}" in ${previous} and ${p.id}`);
+      }
+      seen.set(c.clue, p.id);
+    }
+  }
+}
+
+assertCluesAreUnique(PUZZLES);
 
 function hashString(s: string): number {
   let h = 0;
