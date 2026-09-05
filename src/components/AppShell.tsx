@@ -547,6 +547,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           />
           {adminExpanded && (
             <>
+              <NavLink href="/admin/appraisals" icon={<FileTextIcon />} label="Appraisals" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/licenses" icon={<CheckCircleIcon />} label="License Queue" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/copyright" icon={<ShieldIcon />} label="Copyright Notices" bold={false} onNavigate={onNavigate} />
