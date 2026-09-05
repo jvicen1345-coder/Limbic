@@ -232,7 +232,7 @@ function SubmissionRow({
   onDismiss: () => void;
 }) {
   const a = submission.answers;
-  const equipment = [...a.equipment, a.equipmentOther].filter(Boolean).join(", ");
+  const equipment = a.equipment.join(", ");
 
   return (
     <div className="intake-submission">
@@ -262,11 +262,6 @@ function SubmissionRow({
         <Line label="Long term" value={a.goalLong} />
         <Line label="Limits" value={a.limits || (a.cleared ? "None stated" : "")} />
         <Line label="Equipment" value={equipment} />
-        <Line label="Where" value={a.venues.join(", ")} />
-        <Line
-          label="Availability"
-          value={[a.availableDays && `${a.availableDays} days`, a.availableTime].filter(Boolean).join(", ")}
-        />
       </div>
 
       {expanded && (

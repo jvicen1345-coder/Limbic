@@ -30,11 +30,6 @@ export const INTAKE_ACTIVITIES = [
   "Manual work",
 ] as const;
 
-/** Where they'll actually train. Asked separately from equipment because, as
- *  lib/movement-lab/types.ts puts it, venue is a question wearing an equipment costume —
- *  and it changes the program as much as the kit does. */
-export const INTAKE_VENUES = ["At home", "At a gym", "Outdoors", "Pool or water"] as const;
-
 export interface IntakeAnswers {
   activityLevel: string;
   activities: string[];
@@ -46,10 +41,6 @@ export interface IntakeAnswers {
   limits: string;
   cleared: boolean;
   equipment: string[];
-  equipmentOther: string;
-  venues: string[];
-  availableDays: string;
-  availableTime: string;
 }
 
 export const EMPTY_INTAKE_ANSWERS: IntakeAnswers = {
@@ -63,10 +54,6 @@ export const EMPTY_INTAKE_ANSWERS: IntakeAnswers = {
   limits: "",
   cleared: false,
   equipment: [],
-  equipmentOther: "",
-  venues: [],
-  availableDays: "",
-  availableTime: "",
 };
 
 const MAX_TEXT = 600;
@@ -103,10 +90,6 @@ export function parseIntakeAnswers(raw: unknown): IntakeAnswers {
     limits: str(o.limits),
     cleared: o.cleared === true,
     equipment: pick(o.equipment, INTAKE_EQUIPMENT),
-    equipmentOther: str(o.equipmentOther),
-    venues: pick(o.venues, INTAKE_VENUES),
-    availableDays: str(o.availableDays),
-    availableTime: str(o.availableTime),
   };
 }
 

@@ -8,16 +8,15 @@ import {
   INTAKE_ACTIVITIES,
   INTAKE_ACTIVITY_LEVELS,
   INTAKE_EQUIPMENT,
-  INTAKE_VENUES,
   type IntakeAnswers,
 } from "@/lib/intake";
 
 /** The client-facing intake, rendered by app/intake/page.tsx for anyone holding a valid
- *  link. Same six sections as the PDF that preceded it, in the same order, so a client who
- *  was sent one and then the other isn't answering a different set of questions.
+ *  link. Same sections as the PDF that preceded it, in the same order, so a client who was
+ *  sent one and then the other isn't answering a different set of questions.
  *
- *  Written as one screen rather than a wizard on purpose: it is fifteen questions, and a
- *  client can see the whole ask before starting instead of discovering it a step at a time. */
+ *  Written as one screen rather than a wizard on purpose: it is ten questions, and a client
+ *  can see the whole ask before starting instead of discovering it a step at a time. */
 export function IntakeForm() {
   const [answers, setAnswers] = useState<IntakeAnswers>(EMPTY_INTAKE_ANSWERS);
   const [firstName, setFirstName] = useState("");
@@ -29,7 +28,7 @@ export function IntakeForm() {
   const set = <K extends keyof IntakeAnswers>(key: K, value: IntakeAnswers[K]) =>
     setAnswers((a) => ({ ...a, [key]: value }));
 
-  const toggle = (key: "activities" | "equipment" | "venues", value: string) =>
+  const toggle = (key: "activities" | "equipment", value: string) =>
     setAnswers((a) => ({
       ...a,
       [key]: a[key].includes(value) ? a[key].filter((v) => v !== value) : [...a[key], value],
@@ -173,30 +172,6 @@ export function IntakeForm() {
               <span>{item}</span>
             </label>
           ))}
-        </div>
-        <label className="intake-field">
-          <span>Anything else worth knowing about?</span>
-          <input className="input" value={answers.equipmentOther} onChange={(e) => set("equipmentOther", e.target.value)} />
-        </label>
-
-        <p className="intake-prompt">Where will you usually be training?</p>
-        <div className="intake-options intake-options-3">
-          {INTAKE_VENUES.map((v) => (
-            <label className="intake-check" key={v}>
-              <input type="checkbox" checked={answers.venues.includes(v)} onChange={() => toggle("venues", v)} />
-              <span>{v}</span>
-            </label>
-          ))}
-        </div>
-        <div className="intake-grid-2">
-          <label className="intake-field">
-            <span>Days a week you can realistically train</span>
-            <input className="input" value={answers.availableDays} onChange={(e) => set("availableDays", e.target.value)} />
-          </label>
-          <label className="intake-field">
-            <span>Time you have per session</span>
-            <input className="input" value={answers.availableTime} onChange={(e) => set("availableTime", e.target.value)} />
-          </label>
         </div>
       </section>
 
