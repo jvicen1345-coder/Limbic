@@ -13085,3 +13085,29 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
   white-space: nowrap;
   border: 0;
 }
+
+/* ============================================================================
+   Horizontal tab rails: keep a sideways swipe sideways.
+
+   .sliding-tabs, .sub-tabs and .boards-tabs are all `overflow-x: auto` strips, and
+   none of them told the browser what a touch gesture on them means. Two separate
+   things followed from that, and they need different treatments.
+
+   Scroll chaining, fixed for all three: swipe to the end of the rail and the leftover
+   scroll is handed to the ancestor, which scrolls vertically — so the page lurches
+   exactly when the rail stops. `overscroll-behavior-x: contain` ends the gesture at the
+   rail's own edge. It costs nothing on a rail that doesn't overflow, so it is unconditional.
+
+   Axis locking, gated: `touch-action: pan-x` is what stops a diagonal thumb swipe from
+   scrolling the page while it scrolls the rail. It also stops a finger landing on the rail
+   from scrolling the page vertically at all, which is a poor trade on a rail that fits its
+   box and has nothing to swipe. So it applies only where the rail really does overflow —
+   components/SlidingTabs.tsx measures itself and sets data-scrollable (Clinical Reference
+   runs 573px past a 390px viewport, Home 241px; Exercise Programs and the wellness exercise
+   library are both 0). .sub-tabs and .boards-tabs have no such measurement and so get the
+   chaining fix only; give them the same treatment if a swipe on them ever reads as jumpy.
+   ============================================================================ */
+.sliding-tabs,
+.sub-tabs,
+.boards-tabs { overscroll-behavior-x: contain; }
+.sliding-tabs[data-scrollable="true"] { touch-action: pan-x; }
