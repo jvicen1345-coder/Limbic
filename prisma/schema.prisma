@@ -75,6 +75,8 @@ model User {
   licenseExpiration        DateTime?
   licenses                 License[]
   movementLabExerciseRequests MovementLabExerciseRequest[]
+  intakeLinks              IntakeLink[]
+  intakeSubmissions        IntakeSubmission[]
   calculatorProfiles       CalculatorProfile[]
   specialtyQuestionAnswers SpecialtyQuestionAnswer[]
   domainQuestionAnswers    DomainQuestionAnswer[]
@@ -1315,6 +1317,7 @@ model ClinicalPatient {
   user                User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   clinic              Clinic?                @relation(fields: [clinicId], references: [id], onDelete: SetNull)
   outcomes            OutcomeMeasureEntry[]
+  intakeSubmissions   IntakeSubmission[]
   hepAssignments      PatientHEPAssignment[]
   clinicalNotes       ClinicalNote[]
   preBriefs           PreVisitBrief[]
@@ -2322,6 +2325,64 @@ model GeneralizabilityCache {
 // GeneralizabilityCache above is: articles are static/feed content, not a Prisma model.
 // Never expires — a published study's abstract doesn't change, so the first breakdown is
 // the only breakdown, and every reader after the first gets it with no Anthropic call.
+// A single-use link a clinician sends a new client so they can fill in their own intake —
+// activity level, goals and available equipment — instead of returning a PDF by email (see
+// app/intake/page.tsx, app/actions/intake.ts).
+//
+// The token is generated with crypto.randomBytes rather than left to @default(cuid()), which
+// is what ClinicInvite above does: a clinic invite goes to a named colleague who already
+// expects it, while this URL is the only thing standing between the open internet and a write
+// into a clinician's caseload, so it wants real entropy. Single use and time-limited for the
+// same reason — usedAt is stamped on submit, and a link that has been used or has expired is
+// indistinguishable from one that never existed (see previewIntakeLink).
+model IntakeLink {
+  id        String    @id @default(cuid())
+  userId    String
+  token     String    @unique
+  // What the clinician called it when generating — "Jane, referred by Dr Ruiz". Never shown
+  // to the client; it exists so a list of outstanding links is readable.
+  label     String?
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submissions IntakeSubmission[]
+}
+
+// One completed intake, waiting for the clinician to accept it onto a patient record.
+//
+// Deliberately not written straight through to ClinicalPatient. Two reasons: a public URL that
+// creates patients unattended is a spam vector, and "new client or one I already have" is a
+// judgement only the clinician can make. It is also forced by the schema — ClinicalPatient
+// requires condition, bodyRegion, specialty and totalVisits, none of which a client can supply.
+//
+// clientName/clientEmail exist so the clinician can tell who submitted, and are cleared the
+// moment the submission is accepted or dismissed (see resolveIntakeSubmission). The dashboard
+// identifies patients by patientCode, not by name, and that stays true: identifying details
+// live here transiently and never reach ClinicalPatient.
+model IntakeSubmission {
+  id          String    @id @default(cuid())
+  userId      String
+  linkId      String
+  clientName  String?
+  clientEmail String?
+  // The answers themselves, shaped as IntakeAnswers in lib/intake.ts. Json rather than
+  // columns because this is a form's output, read back whole and never queried by field.
+  answers     Json
+  // "pending" | "accepted" | "dismissed"
+  status      String    @default("pending")
+  // Set when accepted, so the structured answers stay reachable from the patient instead of
+  // being flattened into a notes blob.
+  patientId   String?
+  submittedAt DateTime  @default(now())
+  reviewedAt  DateTime?
+
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  link    IntakeLink       @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  patient ClinicalPatient? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+}
+
 model ArticleBreakdownCache {
   id            String   @id @default(cuid())
   articleId     String   @unique
