@@ -38,10 +38,13 @@ jobs:
   e2e:
     name: End-to-end (Playwright)
     runs-on: ubuntu-latest
-    # Blocking. The suite is green on main as of the merge in this branch: 22 tests,
-    # 21 passed and 1 flaky (the sign-in lockout test in e2e/auth.spec.ts is timing
-    # sensitive and passed on retry — playwright.config.ts already sets retries: 2 under
-    # CI, which is what absorbs it).
+    # Blocking, and now actually reliable: 22 tests, green three runs running. It used not
+    # to be — four of the ten main runs before this change were not green, on tests
+    # unrelated to whatever was being merged, because the suite ran against `next dev` and
+    # was really measuring route-compile contention between parallel workers. The config
+    # now builds and serves that build under CI; see playwright.config.ts's webServer for
+    # the reasoning. retries: 2 is still set, but it is a backstop rather than the thing
+    # holding the suite up.
     steps:
       - uses: actions/checkout@v4
 
@@ -67,8 +70,10 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      # playwright.config.ts's `webServer` starts `npm run dev` itself and waits for :3000.
-      # CI=true also turns on forbidOnly and the config's 2 retries.
+      # playwright.config.ts's `webServer` builds and starts the app itself and waits for
+      # :3000 — no separate build step here, and none wanted: the config owns which server
+      # a given environment gets. CI=true is what selects the build-and-serve path, and
+      # also turns on forbidOnly and the config's 2 retries.
       - name: Run Playwright
         run: npm test
 

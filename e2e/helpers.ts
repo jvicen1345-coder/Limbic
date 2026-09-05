@@ -54,9 +54,12 @@ export async function signUp(page: Page, email: string) {
  * them surfaces as a clear URL-wait failure instead of a mystery click timeout.
  */
 export async function completeFirstRun(page: Page, { firstName = "Pw", lastName = "Tester" } = {}) {
-  // Longer wait on this first gate only: playwright.config.ts's webServer starts `next dev`,
-  // which compiles each route on first request, so the very first sign-up of a run pays for
-  // compiling /onboarding/name on top of the request itself. The later gates are warm.
+  // Longer wait on this first gate only, for local runs: playwright.config.ts's webServer
+  // starts `next dev` there, which compiles each route on first request, so the first
+  // sign-up of a run pays for compiling /onboarding/name on top of the request itself. The
+  // later gates are warm. Under CI the same config serves a finished build instead and this
+  // gate resolves in well under a second — the wait is kept as headroom for the local path,
+  // not because CI still needs it.
   await page.waitForURL(/\/onboarding\/name/, { timeout: 25_000 });
   await page.getByLabel("First name").fill(firstName);
   await page.getByLabel("Last name").fill(lastName);
@@ -77,7 +80,9 @@ export async function completeFirstRun(page: Page, { firstName = "Pw", lastName 
   //
   // The generous timeout is deliberate. Completing this step is a server action plus a
   // revalidate, and the default 5s is not always enough when several workers are signing up
-  // at once — that showed up as an intermittent failure here under load, not as a bug.
+  // at once — that showed up as an intermittent failure here under load, not as a bug. Most
+  // of that load was `next dev` compiling routes under parallel workers, which CI no longer
+  // does (see playwright.config.ts's webServer), but the local path still can.
   await expect(page.getByRole("navigation")).toBeVisible({ timeout: 20_000 });
 }
 
