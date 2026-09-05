@@ -8,12 +8,27 @@ import type { ThreadsNodeData } from "@/lib/threads-graph";
 import { extractDoiFromUrl, type UnpaywallResult } from "@/lib/unpaywall";
 import { getCachedUnpaywall } from "@/lib/unpaywall-cache";
 import { getTimeZone } from "@/lib/user-time-zone";
+import { breakdownSourceText, type ArticleBreakdown } from "@/lib/article-breakdown-shared";
 
 export interface ArticleViewData {
   article: DecoratedArticle;
   related: DecoratedArticle[];
   threadsNodes: ThreadsNodeData[];
   unpaywallResult: UnpaywallResult | null;
+  /** This article's cached study breakdown, when one has already been generated — the
+   *  five-field summary shown in place of the abstract (see lib/article-breakdown.ts).
+   *  Read here so the overwhelmingly common case (an article some earlier reader already
+   *  triggered) is server-rendered with no loading state and no action round-trip. Null
+   *  means either "no breakdown cached yet", in which case components/ArticleBreakdown.tsx
+   *  generates one on mount, or "this article doesn't get one at all" — the two are told
+   *  apart by breakdownSourceText, not by this field. */
+  breakdown: ArticleBreakdown | null;
+  /** Whether this article renders a breakdown instead of body copy. Decided here, on the
+   *  raw article, and passed down as a plain flag rather than re-derived in the reading
+   *  pane — `article.fullAbstract` is stripped below for exactly these articles, so a
+   *  client-side breakdownSourceText() call would be answering the question from evidence
+   *  this view deliberately removed. */
+  hasBreakdown: boolean;
 }
 
 /** Everything the article detail page needs for one article, in one place — used both by
@@ -57,5 +72,23 @@ export async function buildArticleView(articleId: string, userId: string, isAdmi
     .map((a) => decorateArticle(a, savedIds));
   const threadsNodes = await buildThreadsWeb(raw, allArticles, isAdmin);
 
-  return { article, related, threadsNodes, unpaywallResult };
+  // Only look for a cached breakdown for an article that actually gets one — a seed
+  // article with authored body paragraphs never has a row here, so skip the query.
+  const hasBreakdown = breakdownSourceText(raw) !== null;
+  let breakdown: ArticleBreakdown | null = null;
+  if (hasBreakdown) {
+    const cached = await prisma.articleBreakdownCache.findUnique({ where: { articleId: raw.id } });
+    if (cached) breakdown = cached.breakdownData as unknown as ArticleBreakdown;
+  }
+
+  // Drop the untruncated abstract before this crosses to the client. Nothing renders it any
+  // more (the breakdown replaced it), but ArticleViewData is a prop on a client component,
+  // so anything left on the object is serialized into the page's flight payload and ships
+  // to every reader in the HTML — which would put the publisher's full text back on the
+  // page, just invisibly, and undo the point of the breakdown. The 320-char `summary`
+  // excerpt stays: it's the feed-card blurb the whole app already uses, and the research
+  // panel below still reads it.
+  const clientArticle = hasBreakdown ? { ...article, fullAbstract: undefined } : article;
+
+  return { article: clientArticle, related, threadsNodes, unpaywallResult, breakdown, hasBreakdown };
 }

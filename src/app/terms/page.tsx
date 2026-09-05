@@ -54,7 +54,8 @@ export default function TermsPage() {
         ownership interest of any kind in Limbic, its research curation, its intellectual property, or any
         affiliated entity. Founding Funders receive lifetime access to LimbicPRO features and founding member
         recognition. They do not acquire any financial interest, ownership rights, or claims to Limbic content,
-        data, or future revenue. All payments are final and non-refundable.
+        data, or future revenue. Payments are final and non-refundable, except where a refund is required by
+        applicable law.
       </p>
 
       <h2 className="legal-section-title">6. User Content</h2>
@@ -98,13 +99,14 @@ export default function TermsPage() {
         Subscription fees are charged on a monthly or annual basis depending on your selected plan. You may cancel
         your subscription at any time. Cancellation takes effect at the end of your current billing period. Limbic
         does not offer refunds for partial billing periods. Founding Funder payments are one time and
-        non-refundable.
+        non-refundable. Nothing in this section limits any refund or cancellation right you have under applicable
+        consumer law, including California&rsquo;s automatic renewal rules.
       </p>
 
       <h2 className="legal-section-title">10. Intellectual Property</h2>
       <p className="legal-body">
         All Limbic owned content, branding, design, software, and features, including but not limited to Limbic
-        Agent, Limbic Boards, Limbic Threads, The Movement Lab, and Limbic Vitals, are the exclusive intellectual
+        Agent, Limbic Boards, Limbic Threads, The Movement Lab, and Limbic Metrics, are the exclusive intellectual
         property of Limbic. You may not copy, reproduce, distribute, or create derivative works from any Limbic
         owned content without explicit written permission.
       </p>

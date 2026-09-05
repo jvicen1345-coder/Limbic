@@ -38,7 +38,7 @@ export function AccountSecuritySection({
   };
 
   return (
-    <div id="account-security" className="card elev-sm" style={{ marginTop: 18, scrollMarginTop: 90 }}>
+    <div id="account-security" className="card elev-sm" style={{ marginBottom: 18, scrollMarginTop: 90 }}>
       <div className="card-kicker">Account Security</div>
 
       <div style={{ marginTop: 10 }}>
