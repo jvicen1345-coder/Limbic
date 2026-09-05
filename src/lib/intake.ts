@@ -43,7 +43,6 @@ export interface IntakeAnswers {
   howLong: string;
   goalShort: string;
   goalLong: string;
-  goalMeasure: string;
   limits: string;
   cleared: boolean;
   equipment: string[];
@@ -61,7 +60,6 @@ export const EMPTY_INTAKE_ANSWERS: IntakeAnswers = {
   howLong: "",
   goalShort: "",
   goalLong: "",
-  goalMeasure: "",
   limits: "",
   cleared: false,
   equipment: [],
@@ -102,7 +100,6 @@ export function parseIntakeAnswers(raw: unknown): IntakeAnswers {
     howLong: str(o.howLong),
     goalShort: str(o.goalShort),
     goalLong: str(o.goalLong),
-    goalMeasure: str(o.goalMeasure),
     limits: str(o.limits),
     cleared: o.cleared === true,
     equipment: pick(o.equipment, INTAKE_EQUIPMENT),

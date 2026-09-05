@@ -133,10 +133,6 @@ export function IntakeForm() {
           <span>Long term — what about 6 to 12 months from now?</span>
           <textarea className="input" rows={3} value={answers.goalLong} onChange={(e) => set("goalLong", e.target.value)} />
         </label>
-        <label className="intake-field">
-          <span>How will you know it worked? A distance, a weight, a task you could point to.</span>
-          <input className="input" value={answers.goalMeasure} onChange={(e) => set("goalMeasure", e.target.value)} />
-        </label>
       </section>
 
       <section className="intake-section">

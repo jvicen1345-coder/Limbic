@@ -261,7 +261,6 @@ function SubmissionRow({
         <Line label="Now" value={[a.activityLevel, a.activities.join(", ")].filter(Boolean).join(" — ")} />
         <Line label="Short term" value={a.goalShort} />
         <Line label="Long term" value={a.goalLong} />
-        <Line label="Measure" value={a.goalMeasure} />
         <Line label="Limits" value={a.limits || (a.cleared ? "None stated" : "")} />
         <Line label="Equipment" value={equipment} />
         <Line label="Where" value={a.venues.join(", ")} />
