@@ -22,6 +22,8 @@ import { PatientPanel } from "./PatientPanel";
 import { PatientWorkspace } from "./PatientWorkspace";
 import { ResearchFeedPanel } from "./ResearchFeedPanel";
 import { PracticeMetrics } from "./PracticeMetrics";
+import { IntakeInboxCard } from "./IntakeInboxCard";
+import type { IntakeInboxData } from "@/app/actions/intake";
 import { PreparePatientModal } from "./PreparePatientModal";
 import { DischargeModal } from "./DischargeModal";
 import { TeamOverview } from "./TeamOverview";
@@ -49,6 +51,10 @@ export interface ClinicianDashboardProps {
    *  and isAdmin true is the only case that adds the tab bar/Team Overview tab. */
   isClinicAdmin: boolean;
   clinicPatientsToday: number | null;
+  /** Pending client intakes and the links still waiting to be used (see
+   *  app/actions/intake.ts). Server-loaded like the rest of this page's data; the card
+   *  calls router.refresh() after acting, same as every other mutation here. */
+  intakeInbox: IntakeInboxData;
   /** Force Lab's Dynamometer Unit Preference (see User.forceUnit, getUserForceUnit in
    *  app/actions/force-lab.ts) — threaded down to the active patient workspace's Force Lab
    *  section so its peak-force display matches the clinician's own preference. */
@@ -80,6 +86,7 @@ export function ClinicianDashboard({
   isClinicAdmin,
   clinicPatientsToday,
   forceUnit,
+  intakeInbox,
 }: ClinicianDashboardProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -249,6 +256,7 @@ export function ClinicianDashboard({
         </div>
 
         <div className="clindash-col-research">
+          <IntakeInboxCard data={intakeInbox} patients={initialPatients} onChanged={() => router.refresh()} />
           <ResearchFeedPanel articles={researchArticles} patientLabel={patientLabel} weeklyDigest={weeklyDigest} />
         </div>
       </div>

@@ -13111,3 +13111,118 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 .sub-tabs,
 .boards-tabs { overscroll-behavior-x: contain; }
 .sliding-tabs[data-scrollable="true"] { touch-action: pan-x; }
+
+/* ============================================================================
+   Client intake — the public form at /intake and the dashboard card that reviews
+   what comes back (components/IntakeForm.tsx, IntakeInboxCard.tsx).
+
+   The public page styles itself standalone: whoever opens it has no Limbic account
+   and never sees the app shell, so .intake-page owns its own background and
+   centring rather than inheriting .app-main's.
+   ============================================================================ */
+.intake-page {
+  min-height: 100dvh;
+  background: var(--color-page-bg, var(--color-neutral-100));
+  padding: 32px 16px 64px;
+  display: flex;
+  justify-content: center;
+}
+.intake-card {
+  width: 100%;
+  max-width: 760px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+.intake-masthead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.intake-title { font-family: var(--font-heading); font-size: 24px; margin: 0; }
+.intake-brand { font-size: 13px; color: var(--color-neutral-700); }
+.intake-intro { font-size: 14px; line-height: 1.55; margin: 10px 0 16px; }
+.intake-note { font-size: 13px; color: var(--color-neutral-700); line-height: 1.55; margin: 0; }
+
+.intake-privacy {
+  background: var(--color-accent-100);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 24px;
+}
+.intake-privacy-title {
+  font-size: var(--fs-10-5);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-accent-700);
+  margin-bottom: 6px;
+}
+.intake-privacy p { font-size: 12.5px; line-height: 1.5; margin: 0 0 6px; }
+.intake-privacy p:last-child { margin-bottom: 0; }
+
+.intake-form { display: flex; flex-direction: column; gap: 26px; }
+.intake-section { display: flex; flex-direction: column; gap: 12px; }
+.intake-section-title {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  margin: 0;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--color-divider);
+}
+.intake-prompt { font-size: 13px; font-weight: 600; margin: 4px 0 0; }
+.intake-field { display: flex; flex-direction: column; gap: 5px; }
+.intake-field > span { font-size: 12.5px; font-weight: 600; }
+.intake-field textarea.input { resize: vertical; }
+.intake-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.intake-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.intake-options { display: grid; gap: 8px 14px; }
+.intake-options-2 { grid-template-columns: repeat(2, 1fr); }
+.intake-options-3 { grid-template-columns: repeat(3, 1fr); }
+/* Whole row is the hit target, not just the 22px control — this is filled on a phone far
+   more often than at a desk. */
+.intake-check { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; min-height: 32px; }
+.intake-check input { flex-shrink: 0; }
+.intake-error { font-size: 13px; color: var(--color-danger); margin: 0; }
+.intake-submit-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.intake-submit-note { font-size: 12px; color: var(--color-neutral-700); }
+.intake-done { text-align: center; padding: 28px 0 8px; }
+.intake-done-title { font-family: var(--font-heading); font-size: 19px; margin: 0 0 8px; }
+.intake-done-body { font-size: 13.5px; color: var(--color-neutral-700); line-height: 1.55; margin: 0; }
+
+@media (max-width: 700px) {
+  .intake-card { padding: 20px 16px; }
+  .intake-grid-2, .intake-grid-3 { grid-template-columns: 1fr; }
+  .intake-options-2, .intake-options-3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 420px) {
+  .intake-options-2, .intake-options-3 { grid-template-columns: 1fr; }
+}
+
+/* — Dashboard side — */
+.intake-inbox { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.intake-empty { font-size: 12.5px; color: var(--color-neutral-700); margin: 0; line-height: 1.5; }
+.intake-fresh-link { background: var(--color-neutral-100); border-radius: var(--radius-md); padding: 10px 12px; }
+.intake-fresh-link-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin-bottom: 6px; }
+.intake-fresh-link-row { display: flex; gap: 8px; }
+.intake-fresh-link-row .input { font-size: 11.5px; }
+
+.intake-submission { border-top: 1px solid var(--color-divider); padding: 10px 0; }
+.intake-submission:first-of-type { border-top: none; }
+.intake-submission-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.intake-submission-name { font-weight: 600; font-size: 13px; }
+.intake-submission-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.intake-answers { display: flex; flex-direction: column; gap: 3px; margin-top: 7px; }
+.intake-answer-line { display: flex; gap: 8px; font-size: 12px; line-height: 1.45; }
+.intake-answer-label {
+  flex: 0 0 76px;
+  font-weight: 700;
+  font-size: var(--fs-10-5);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-accent-700);
+  padding-top: 1px;
+}
+.intake-answer-value { flex: 1; }
+.intake-attach-note { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 0; line-height: 1.45; }
+.intake-open-link { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 0; }
+.intake-open-link-label { font-size: 12.5px; font-weight: 600; }
+.intake-open-link-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.intake-open-link-actions { display: flex; gap: 10px; flex-shrink: 0; }
