@@ -6,7 +6,6 @@ import { getCurrentUser } from "@/lib/session";
 import {
   generateClinicalBrief,
   generatePatientBrief,
-  generateTreatmentIdeas as generateTreatmentIdeasBrief,
   generateDischargeSummary as generateDischargeSummaryBrief,
 } from "@/lib/pre-visit-brief";
 import { REASSESSMENT_INTERVAL_VISITS, REASSESSMENT_STALE_DAYS } from "@/lib/clinician-dashboard-types";
@@ -828,50 +827,6 @@ export async function getConditionIntelligence(condition: string): Promise<Condi
   return conditionIntelligenceMap[condition] ?? null;
 }
 
-/** "What should I try next?" on the active patient workspace — generates without
- *  overwriting: every call creates a fresh TreatmentIdea row (see
- *  components/pro/dashboard/TreatmentIdeasCard.tsx, which shows today's most recent row if
- *  one exists before offering to generate, same "don't call the model again for nothing"
- *  reasoning as the pre-visit brief). */
-export async function generateTreatmentIdeas(patientId: string): Promise<ClinicianDashboardResult<{ ideas: string[] }>> {
-  const user = await requireProUser();
-  if (!user) return { ok: false, error: "Not authorized." };
-  const context = await loadBriefContext(user.id, patientId);
-  if (!context) return { ok: false, error: "Patient not found." };
-
-  const ideas = await generateTreatmentIdeasBrief(context);
-  if (!ideas) return { ok: false, error: "Limbic Agent isn't available right now. Try again in a moment." };
-
-  await prisma.treatmentIdea.create({ data: { userId: user.id, patientId, ideas } });
-  revalidatePath("/pro/dashboard");
-  return { ok: true, ideas };
-}
-
-export interface TreatmentIdeaRecord {
-  id: string;
-  ideas: string[];
-  generatedAt: Date;
-}
-
-/** Today's most recently generated treatment ideas for this patient, if any — lets
- *  TreatmentIdeasCard show a saved result instead of an empty "generate" prompt on
- *  reopen, same pattern as PreVisitBriefSection's savedToday lookup. */
-export async function getTodaysTreatmentIdeas(patientId: string): Promise<TreatmentIdeaRecord | null> {
-  const user = await requireProUser();
-  if (!user) return null;
-  const patient = await requireOwnedPatient(user.id, patientId);
-  if (!patient) return null;
-
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  const row = await prisma.treatmentIdea.findFirst({
-    where: { patientId, generatedAt: { gte: startOfToday } },
-    orderBy: { generatedAt: "desc" },
-  });
-  if (!row) return null;
-  return { id: row.id, ideas: row.ideas as unknown as string[], generatedAt: row.generatedAt };
-}
-
 /** Runs lib/red-flag-detector.ts's checks against this patient's current outcome/visit
  *  data and persists any newly-detected pattern as a RedFlagAlert — "newly-detected" means
  *  no existing row (dismissed or not) already carries that exact (flagType, description)
@@ -1039,8 +994,8 @@ async function loadDischargeContext(userId: string, patientId: string) {
 
 /** Step 1 of the "Before You Discharge" modal — generates and saves a draft (confirmed:
  *  false) DischargeSummary, which confirmDischargeSummary later finalizes. Every call
- *  creates a fresh row (same "Regenerate creates, doesn't overwrite" reasoning as
- *  generateTreatmentIdeas) — the modal only ever shows the most recent one. */
+ *  creates a fresh row rather than overwriting the last — the modal only ever shows the
+ *  most recent one. */
 export async function generateDischargeSummaryAction(patientId: string): Promise<ClinicianDashboardResult<{ summary: string }>> {
   const user = await requireProUser();
   if (!user) return { ok: false, error: "Not authorized." };
