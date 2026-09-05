@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { getEndOfDaySummary, dismissEndOfDaySummary, type EndOfDaySummaryData } from "@/app/actions/clinician-dashboard";
 
 // "After 4pm local time" per spec, checked purely client-side against the browser's own
@@ -72,9 +71,6 @@ export function EndOfDayCard() {
         <button type="button" className="btn btn-secondary" onClick={handleDismiss}>
           Dismiss
         </button>
-        <Link href="/pro/ce-tracker" className="btn btn-ghost" style={{ fontSize: 12.5 }}>
-          Log CE Time
-        </Link>
       </div>
     </div>
   );

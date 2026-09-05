@@ -12,7 +12,6 @@ import { MorningRounds } from "./MorningRounds";
 import { VisitLogBanner } from "./VisitLogBanner";
 import { OutcomeMilestoneBanner } from "./OutcomeMilestoneBanner";
 import { ConditionIntelligenceCard } from "./ConditionIntelligenceCard";
-import { TreatmentIdeasCard } from "./TreatmentIdeasCard";
 import { ClinicalAlertBanner } from "./ClinicalAlertBanner";
 import { PatientGoalsSection } from "./PatientGoalsSection";
 import { ForceLabSummary } from "./ForceLabSummary";
@@ -116,8 +115,6 @@ function ActiveWorkspace({
       <ConditionIntelligenceCard condition={patient.condition} outcomeActionsRef={outcomeActionsRef} />
 
       <PreVisitBriefSection patient={patient} />
-
-      <TreatmentIdeasCard patientId={patient.id} />
 
       {patient.status === "discharged" && patient.confirmedDischargeSummary && (
         <div className="clindash-section">

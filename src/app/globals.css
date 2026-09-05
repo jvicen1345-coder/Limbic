@@ -9409,17 +9409,6 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-benchmark-pill--warn { background: color-mix(in srgb, #c9853a 16%, transparent); color: #c9853a; }
 .clindash-benchmark-pill--bad { background: color-mix(in srgb, var(--color-danger) 14%, transparent); color: var(--color-danger); }
 
-.clindash-treatment-ideas-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-.clindash-treatment-idea-row {
-  font-size: 13px;
-  line-height: 1.5;
-  padding: 8px 12px;
-  border-left: 3px solid var(--color-accent);
-  background: var(--color-neutral-100);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
-}
-.clindash-treatment-ideas-actions { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
-
 .clindash-alert-banner {
   padding: 12px 14px;
   border-radius: var(--radius-md);
