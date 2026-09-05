@@ -182,7 +182,7 @@ export function IntakeForm() {
 
       <div className="intake-submit-row">
         <button type="button" className="btn btn-primary" disabled={pending} onClick={handleSubmit}>
-          {pending ? "Sending…" : "Send to my clinician"}
+          {pending ? "Sending…" : "Send"}
         </button>
         <span className="intake-submit-note">You can only submit this once.</span>
       </div>
