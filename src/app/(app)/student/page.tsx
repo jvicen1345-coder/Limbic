@@ -27,6 +27,7 @@ import {
   ActivityIcon,
   ShieldIcon,
   ListIcon,
+  BandageIcon,
 } from "@/components/icons";
 import { getCurrentProgramPhase, getGenericProgramPhase, getProgramPhaseLabel, type ProgramPhase } from "@/lib/dpt-program";
 import { getThisWeekAssignments, getMonthAssignments } from "@/app/actions/syllabus";
@@ -551,6 +552,11 @@ export default async function StudentAtriumPage() {
                 <p className="atrium-resource-title">Specialty Tracks</p>
                 <p className="atrium-resource-desc">Key conditions, special tests, and clinical tools organized by practice area.</p>
               </Link>
+              <Link href="/student/playbooks" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><BandageIcon size={18} /></span>
+                <p className="atrium-resource-title">Playbooks</p>
+                <p className="atrium-resource-desc">A whole regional examination in the order you perform it, with the number behind every finding.</p>
+              </Link>
               <Link href="/student/slides" className="atrium-resource-card">
                 <span className="atrium-resource-icon"><FileTextIcon size={18} /></span>
                 <p className="atrium-resource-title">Study Guide Creator</p>
@@ -610,6 +616,11 @@ export default async function StudentAtriumPage() {
                 <span className="atrium-resource-icon"><GraduationCapIcon size={18} /></span>
                 <p className="atrium-resource-title">Specialty Tracks</p>
                 <p className="atrium-resource-desc">Review key conditions and clinical tools for your rotation setting.</p>
+              </Link>
+              <Link href="/student/playbooks" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><BandageIcon size={18} /></span>
+                <p className="atrium-resource-title">Playbooks</p>
+                <p className="atrium-resource-desc">Run a full regional exam at the bedside — sequence, norms, and the treatment each finding points to.</p>
               </Link>
               <Link href="/pro/force-lab" className="atrium-resource-card">
                 <span className="atrium-resource-icon"><ZapIcon size={18} /></span>
