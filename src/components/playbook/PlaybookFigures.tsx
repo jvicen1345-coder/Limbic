@@ -762,6 +762,79 @@ function IrritabilityDose() {
   );
 }
 
+/* ---------- joint mobilization ---------- */
+
+/** Traction is perpendicular to the treatment plane, a glide is parallel to it. */
+function TreatmentPlane() {
+  return (
+    <svg
+      viewBox="0 0 620 250"
+      role="img"
+      aria-label="A convex head sitting in a concave socket. A dashed line along the concave surface marks the treatment plane. One arrow runs at a right angle to that line, labelled traction, and separates the surfaces; a second arrow runs parallel to it, labelled glide, and translates one surface on the other."
+    >
+      <path d="M 126 134 A 76 76 0 0 0 274 134" fill="none" stroke="currentColor" strokeWidth="9" opacity=".3" strokeLinecap="round" />
+      <circle cx="200" cy="128" r="56" fill={A} fillOpacity=".1" stroke={A} strokeWidth="1.6" />
+      <line x1="108" y1="134" x2="300" y2="134" stroke={D2} strokeWidth="1.6" strokeDasharray="6 4" />
+      <text className="mono" x="108" y="120" fill={D2}>treatment plane</text>
+
+      <line x1="200" y1="118" x2="200" y2="56" stroke={D3} strokeWidth="2.6" />
+      <path d="M 193 64 L 200 54 L 207 64" fill="none" stroke={D3} strokeWidth="2.6" />
+      <path d="M 212 134 L 212 122 L 200 122" fill="none" stroke={D3} strokeWidth="1.3" opacity=".7" />
+      <text className="mono" x="212" y="70" fill={D3}>traction</text>
+
+      <line x1="200" y1="164" x2="292" y2="164" stroke={A} strokeWidth="2.6" />
+      <path d="M 284 157 L 294 164 L 284 171" fill="none" stroke={A} strokeWidth="2.6" />
+      <text className="mono" x="200" y="204" textAnchor="middle" fill={A}>glide</text>
+
+      <text className="mono" x="352" y="66" fill={D2}>THE PLANE SITS ON THE</text>
+      <text className="mono" x="352" y="82" fill={D2}>CONCAVE SURFACE</text>
+      <text x="352" y="104">so it moves when the concave partner</text>
+      <text x="352" y="122">moves, and stays put when the convex</text>
+      <text x="352" y="140">one does.</text>
+      <text className="mono" x="352" y="170" fill={D3}>TRACTION</text>
+      <text x="352" y="188">perpendicular — separates the surfaces</text>
+      <text className="mono" x="352" y="214" fill={A}>GLIDE</text>
+      <text x="352" y="232">parallel — translates one on the other</text>
+    </svg>
+  );
+}
+
+/** The same roll, with and without the glide that has to accompany it. */
+function RollWithoutSlide() {
+  return (
+    <svg
+      viewBox="0 0 620 258"
+      role="img"
+      aria-label="Two panels. With roll and slide together, the convex surface spins in place and the contact point stays in the middle of the socket. With roll and no slide, the contact point runs to the rim and the two surfaces are driven together, which is compression."
+    >
+      <text className="mono" x="160" y="24" textAnchor="middle" fill={A}>ROLL + SLIDE</text>
+      <path d="M 76 172 A 130 130 0 0 0 244 172" fill="none" stroke="currentColor" strokeWidth="8" opacity=".3" strokeLinecap="round" />
+      <circle cx="160" cy="150" r="50" fill={A} fillOpacity=".1" stroke={A} strokeWidth="1.6" />
+      <path d="M 113 103 A 66 66 0 0 1 207 103" fill="none" stroke={D2} strokeWidth="2" />
+      <path d="M 200 95 L 209 104 L 198 108" fill="none" stroke={D2} strokeWidth="2" />
+      <text className="mono" x="160" y="76" textAnchor="middle" fill={D2}>roll →</text>
+      <line x1="178" y1="170" x2="132" y2="170" stroke={A} strokeWidth="2.4" />
+      <path d="M 140 163 L 130 170 L 140 177" fill="none" stroke={A} strokeWidth="2.4" />
+      <text className="mono" x="216" y="174" fill={A}>← slide</text>
+      <circle cx="160" cy="201" r="5" fill={A} />
+      <text className="mono" x="160" y="228" textAnchor="middle">contact stays centred</text>
+      <text x="160" y="248" textAnchor="middle" fontSize="11">the head spins in place</text>
+
+      <text className="mono" x="450" y="24" textAnchor="middle" fill={HI}>ROLL, NO SLIDE</text>
+      <path d="M 366 172 A 130 130 0 0 0 534 172" fill="none" stroke="currentColor" strokeWidth="8" opacity=".3" strokeLinecap="round" />
+      <circle cx="450" cy="150" r="50" fill="none" stroke="currentColor" strokeWidth="1.2" strokeDasharray="4 4" opacity=".3" />
+      <circle cx="492" cy="144" r="50" fill={HI} fillOpacity=".1" stroke={HI} strokeWidth="1.6" />
+      <path d="M 445 97 A 66 66 0 0 1 539 97" fill="none" stroke={D2} strokeWidth="2" />
+      <path d="M 532 89 L 541 98 L 530 102" fill="none" stroke={D2} strokeWidth="2" />
+      <text className="mono" x="492" y="70" textAnchor="middle" fill={D2}>roll →</text>
+      <circle cx="518" cy="187" r="5" fill={HI} />
+      <path d="M 532 174 L 544 166 M 536 190 L 550 190 M 532 202 L 544 210" stroke={HI} strokeWidth="2" strokeLinecap="round" />
+      <text className="mono" x="440" y="228" textAnchor="middle" fill={HI}>contact runs to the rim</text>
+      <text x="440" y="248" textAnchor="middle" fontSize="11">the surfaces are driven together</text>
+    </svg>
+  );
+}
+
 const FIGURES: Record<string, () => React.ReactElement> = {
   "elevation-arithmetic": ElevationArithmetic,
   "restraint-by-angle": RestraintByAngle,
@@ -780,6 +853,8 @@ const FIGURES: Record<string, () => React.ReactElement> = {
   "convex-hip-glide": ConvexHipGlide,
   "maitland-grades": MaitlandGrades,
   "irritability-dose": IrritabilityDose,
+  "treatment-plane": TreatmentPlane,
+  "roll-without-slide": RollWithoutSlide,
 };
 
 /** Renders the figure a `figure` block names, or nothing if the id is unknown — a content
