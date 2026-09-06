@@ -5,6 +5,10 @@
  * normative numbers it's measured against, the tables that route a finding to a tissue,
  * and the treatment that tissue points to.
  *
+ * Most are a whole examination in the order it's performed; one — joint mobilization — is a
+ * technique rather than a region, and takes the same shape because the decision it describes
+ * is also made in an order.
+ *
  * A playbook is data, not a page — every section is a list of typed blocks and the
  * template renders them, so a second region (knee, lumbar, cervical) is a new file under
  * lib/playbooks/ plus its figures, with no new components. Diagrams are the one thing
@@ -27,6 +31,7 @@
  */
 
 import { HIP_PLAYBOOK } from "@/lib/playbooks/hip";
+import { JOINT_MOBILIZATION_PLAYBOOK } from "@/lib/playbooks/joint-mobilization";
 import { SHOULDER_PLAYBOOK } from "@/lib/playbooks/shoulder";
 
 /** A cell's presentation: `name` is the row's subject (bolded first column), `num` renders
@@ -149,7 +154,7 @@ export interface Playbook {
   footer: string;
 }
 
-export const PLAYBOOKS: Playbook[] = [SHOULDER_PLAYBOOK, HIP_PLAYBOOK];
+export const PLAYBOOKS: Playbook[] = [SHOULDER_PLAYBOOK, HIP_PLAYBOOK, JOINT_MOBILIZATION_PLAYBOOK];
 
 export function getPlaybook(slug: string): Playbook | undefined {
   return PLAYBOOKS.find((playbook) => playbook.slug === slug);

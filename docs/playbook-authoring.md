@@ -117,6 +117,20 @@ a label lifts its whole block. The blocks are measured from the rendered geometr
 legend entry's lines want to sit within a few pixels of each other and a clear line apart
 from the next entry — which is how the existing figures are already drawn.
 
+## A playbook does not have to be a region
+
+Most playbooks are a whole examination in the order it is performed. The joint
+mobilization playbook is a technique instead, and takes the same shape because the
+decision it describes is also made in an order: whether to mobilize at all, which
+direction, which grade, what dose, then the techniques and the ways each goes wrong.
+
+It works because the brief's rules are about evidence, not anatomy. The last column is
+still the finding, the checklist is still the thing you do in sequence, and the two
+regions it draws on are worked examples rather than its subject. Every technique in it
+also appears in its own region's playbook, where a reader working that region meets it —
+a technique playbook collects a decision, it does not replace the regional pages, and
+duplicating the rows is the right call over making either page incomplete.
+
 ## Adding a playbook
 
 1. Write `src/lib/playbooks/<region>.ts` exporting a `Playbook`, with a module docblock
