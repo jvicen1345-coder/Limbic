@@ -26,6 +26,7 @@
  * saying what its numbers are sourced from and what a reader should verify.
  */
 
+import { HIP_PLAYBOOK } from "@/lib/playbooks/hip";
 import { SHOULDER_PLAYBOOK } from "@/lib/playbooks/shoulder";
 
 /** A cell's presentation: `name` is the row's subject (bolded first column), `num` renders
@@ -103,7 +104,7 @@ export interface Playbook {
   footer: string;
 }
 
-export const PLAYBOOKS: Playbook[] = [SHOULDER_PLAYBOOK];
+export const PLAYBOOKS: Playbook[] = [SHOULDER_PLAYBOOK, HIP_PLAYBOOK];
 
 export function getPlaybook(slug: string): Playbook | undefined {
   return PLAYBOOKS.find((playbook) => playbook.slug === slug);

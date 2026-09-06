@@ -13791,3 +13791,12 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 @media (prefers-reduced-motion: reduce) {
   .playbook-progress-fill { transition: none; }
 }
+
+/* A playbook with many sections overflows the jump nav: 15 entries don't fit one row at
+   any desktop width, and a sideways-scrolling nav hides the sections furthest from the
+   masthead — exactly the ones a reader can't reach by scrolling either. Above the phone
+   breakpoint the row wraps instead; below it, it stays a single swipeable strip, which is
+   the better shape on a narrow screen. Playbooks whose nav already fits are unaffected. */
+@media (min-width: 900px) {
+  .playbook-navrow { flex-wrap: wrap; }
+}

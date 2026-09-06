@@ -74,7 +74,7 @@ behind scroll animations.
 | --- | --- | --- |
 | Eyebrow, two-line title, one-sentence purpose | `Playbook.eyebrow`, `.title`, `.summary` | `title` may hold a line break the index-card `name` shouldn't. |
 | Right-aligned block of 3–4 counts | `Playbook.stamp` | Shoulder uses four: exam items, movement syndromes, irritability levels, equipment. |
-| Sticky nav with jump links | Already rendered | From each section's `id` + `navLabel`. Write a nav label short enough for one row. |
+| Sticky nav with jump links | Already rendered | From each section's `id` + `navLabel`. Keep labels to a word or two: the row wraps at 900px and above, and stays a single sideways-scrolling strip below that, so long labels cost a reader on a phone the most. |
 | Numbered sections with a rule | Already rendered | `PlaybookPage` numbers by array order (`01`, `02`, …); never hand-number a heading. |
 | Section 01 is the checklist, with saved state and a progress counter | `{ kind: "checklist" }` | Must be the first section. State is `localStorage` under `limbic-playbook-<slug>-v1`, keyed by `PlaybookChecklistItem.id` — ids are stable identifiers, not positions, so renumbering the list must not renumber them or readers lose their ticks. The progress counter is automatic. |
 | Key-numbers grid, fixed column count, no ragged last row | `{ kind: "numbers" }` | The in-app grid is responsive (`auto-fill, minmax(215px, 1fr)`), so the column count changes with the viewport and the last row's cells stretch to fill it — the brief's "pick a count that divides evenly" is answered by the CSS here, and any number of cells is fine. |
