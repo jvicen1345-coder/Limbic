@@ -13421,3 +13421,373 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 @media (max-width: 640px) {
   .clindash-session-form-row { grid-template-columns: 1fr; }
 }
+/* ============================================================================
+   Limbic Playbooks — app/(app)/student/playbooks, components/playbook/*
+   ----------------------------------------------------------------------------
+   A playbook is a long-form regional examination reference: a check-off sequence,
+   normative numbers, routing tables, diagrams and a drill. It reads as a document
+   rather than a dashboard, so it runs wider and denser than the rest of Limbic
+   Student and sets its own type scale — but every colour is a Limbic token, and
+   the surfaces come from the warm --atrium-* family the /student chrome already
+   uses (see .app-root--atrium above), so it sits inside the section rather than
+   beside it.
+
+   The --pb-* variables below are the only colours the SVG figures in
+   components/playbook/PlaybookFigures.tsx know about; the figures never name a
+   hex, so re-tinting a playbook is an edit here and nowhere else.
+   ============================================================================ */
+
+.playbook {
+  --pb-surface: var(--atrium-surface, var(--color-surface));
+  --pb-surface-2: var(--atrium-surface-2, var(--color-neutral-200));
+  --pb-line: var(--atrium-border, var(--color-divider));
+  --pb-line-soft: color-mix(in srgb, var(--pb-line) 55%, transparent);
+  --pb-ink-2: var(--color-neutral-700);
+
+  /* Diagram palette: three separable hues, plus the three irritability signals. */
+  --pb-accent: var(--atrium-blue, var(--color-accent));
+  --pb-accent-soft: color-mix(in srgb, var(--pb-accent) 12%, var(--pb-surface));
+  --pb-accent-ink: var(--color-accent-700);
+  --pb-d2: var(--color-accent-2);
+  --pb-d3: var(--atrium-purple, #9b7fd4);
+  --pb-hi: var(--color-danger);
+  --pb-mod: var(--atrium-tint, var(--color-warn));
+  --pb-low: var(--color-success);
+
+  --pb-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  color: var(--color-text);
+  padding-bottom: 72px;
+}
+
+.playbook-wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+
+/* ---------- masthead ---------- */
+.playbook-masthead {
+  border-bottom: 2px solid var(--color-text);
+  padding: 22px 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.playbook-eyebrow {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pb-accent);
+  margin: 0 0 10px;
+}
+.playbook-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.06;
+  margin: 0;
+  text-wrap: balance;
+}
+.playbook-summary { margin: 10px 0 0; max-width: 56ch; color: var(--pb-ink-2); font-size: 14.5px; line-height: 1.5; }
+.playbook-stamp {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11-5);
+  line-height: 1.7;
+  color: var(--pb-ink-2);
+  text-align: right;
+  white-space: nowrap;
+}
+.playbook-stamp b { color: var(--color-text); font-weight: 600; }
+
+/* ---------- sticky section rail ---------- */
+.playbook-nav {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--atrium-bg, var(--color-bg));
+  border-bottom: 1px solid var(--pb-line);
+  margin-bottom: 30px;
+}
+.playbook-navrow {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 9px 22px;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.playbook-navrow a {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 5px 9px;
+  border-radius: var(--radius-sm);
+}
+.playbook-navrow a:hover { color: var(--pb-accent); background: var(--pb-accent-soft); text-decoration: none; }
+
+/* ---------- sections ---------- */
+.playbook-section { margin: 0 0 48px; scroll-margin-top: 56px; }
+.playbook-sechead {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px solid var(--pb-line);
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+.playbook-secnum { font-family: var(--pb-mono); font-size: 12px; font-weight: 600; color: var(--pb-accent); letter-spacing: 0.05em; }
+.playbook-sechead h2 { font-size: 21px; font-weight: 600; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+.playbook-sechead-note { margin-left: auto; font-size: 12px; color: var(--pb-ink-2); font-family: var(--pb-mono); }
+.playbook-h3 { font-size: 15.5px; font-weight: 600; margin: 24px 0 10px; color: var(--color-text); }
+.playbook-lede { max-width: 68ch; color: var(--pb-ink-2); margin: 0 0 16px; font-size: 14px; line-height: 1.55; }
+.playbook-footnote { font-size: 12.5px; color: var(--pb-ink-2); margin: 12px 0 0; max-width: 72ch; line-height: 1.5; }
+
+/* ---------- tables ----------
+   The horizontal scroll lives on the wrapper, never on the page — several of these
+   tables are five columns of prose and will not fit a phone. */
+.playbook-tablewrap {
+  overflow-x: auto;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 14px;
+}
+.playbook-table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13.4px; }
+.playbook-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--pb-surface-2);
+  z-index: 1;
+  font-family: var(--pb-mono);
+  font-weight: 600;
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--pb-line);
+}
+.playbook-table tbody td { padding: 9px 12px; border-bottom: 1px solid var(--pb-line-soft); vertical-align: top; line-height: 1.5; }
+.playbook-table tbody tr:last-child td { border-bottom: none; }
+.playbook-table tbody tr:hover { background: var(--pb-accent-soft); }
+.playbook-cell-name { font-weight: 600; min-width: 150px; }
+.playbook-cell-num { font-family: var(--pb-mono); font-variant-numeric: tabular-nums; font-size: 12.6px; }
+.playbook-cell-tissue { color: var(--pb-ink-2); min-width: 210px; }
+.playbook-cell-tissue strong { color: var(--color-text); font-weight: 600; }
+.playbook-row-group td {
+  background: var(--pb-surface-2);
+  padding: 7px 12px;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pb-accent-ink);
+  border-bottom: 1px solid var(--pb-line);
+}
+.playbook-row-group:hover td { background: var(--pb-surface-2); }
+
+/* ---------- checklist ---------- */
+.playbook-check-table td:first-child { width: 34px; text-align: center; }
+.playbook-check-table td:nth-child(2) { width: 34px; }
+.playbook-check-table input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--pb-accent); cursor: pointer; margin-top: 2px; }
+.playbook-idx { font-family: var(--pb-mono); font-size: var(--fs-11-5); color: var(--pb-ink-2); font-variant-numeric: tabular-nums; }
+.playbook-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 0;
+  font-family: var(--pb-mono);
+  font-size: 12px;
+  color: var(--pb-ink-2);
+}
+.playbook-progress-track {
+  flex: 1;
+  height: 5px;
+  background: var(--pb-surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--pb-line-soft);
+}
+.playbook-progress-fill { display: block; height: 100%; background: var(--pb-accent); transition: width 0.25s ease; }
+.playbook-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- numbers grid ---------- */
+.playbook-numgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 1px;
+  background: var(--pb-line);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.playbook-numcell { background: var(--pb-surface); padding: 13px 14px; }
+.playbook-numcell-value {
+  font-family: var(--pb-mono);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--pb-accent);
+  font-variant-numeric: tabular-nums;
+}
+.playbook-numcell-label { font-size: 12.5px; color: var(--pb-ink-2); margin-top: 3px; line-height: 1.4; }
+
+/* ---------- callouts ---------- */
+.playbook-callout {
+  border-left: 3px solid var(--pb-accent);
+  background: var(--pb-accent-soft);
+  padding: 12px 16px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 16px 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.playbook-callout-warn { border-left-color: var(--pb-mod); background: color-mix(in srgb, var(--pb-mod) 14%, var(--pb-surface)); }
+
+/* ---------- figures ---------- */
+.playbook-figure {
+  margin: 20px 0;
+  padding: 18px 18px 14px;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  box-shadow: var(--shadow-sm);
+}
+.playbook-figure svg {
+  display: block;
+  width: 100%;
+  max-width: 660px;
+  height: auto;
+  margin: 0 auto;
+  color: var(--pb-ink-2);
+  overflow: visible;
+}
+.playbook-figure text { font-family: var(--font-body); font-size: 12px; fill: currentColor; }
+.playbook-figure text.mono { font-family: var(--pb-mono); font-size: 10.5px; letter-spacing: 0.06em; }
+.playbook-figtitle {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pb-accent);
+  margin: 0 0 14px;
+}
+.playbook-figure figcaption { margin: 14px auto 0; font-size: 12.5px; line-height: 1.55; color: var(--pb-ink-2); max-width: 72ch; }
+.playbook-figure figcaption strong { color: var(--color-text); font-weight: 600; }
+
+/* ---------- irritability cards ---------- */
+.playbook-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+.playbook-card {
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  padding: 15px 16px;
+  border-top: 3px solid var(--pb-line);
+}
+.playbook-card-h { border-top-color: var(--pb-hi); }
+.playbook-card-m { border-top-color: var(--pb-mod); }
+.playbook-card-l { border-top-color: var(--pb-low); }
+.playbook-card h4 { margin: 0 0 3px; font-size: 14px; font-weight: 600; }
+.playbook-card-sub { font-family: var(--pb-mono); font-size: var(--fs-11-5); margin: 0 0 10px; color: var(--pb-ink-2); }
+.playbook-card ul { margin: 0; padding-left: 17px; font-size: 13px; color: var(--pb-ink-2); }
+.playbook-card li { margin-bottom: 4px; line-height: 1.45; }
+
+/* ---------- pills ---------- */
+.playbook-pill {
+  display: inline-block;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+.playbook-pill-h { background: color-mix(in srgb, var(--pb-hi) 16%, var(--pb-surface)); color: var(--pb-hi); }
+.playbook-pill-m { background: color-mix(in srgb, var(--pb-mod) 18%, var(--pb-surface)); color: var(--pb-mod); }
+.playbook-pill-l { background: color-mix(in srgb, var(--pb-low) 16%, var(--pb-surface)); color: var(--pb-low); }
+.playbook-pill-a { background: var(--pb-accent-soft); color: var(--pb-accent-ink); }
+
+/* ---------- drill ---------- */
+.playbook-drill {
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  margin-bottom: 7px;
+  overflow: hidden;
+}
+.playbook-drill summary {
+  cursor: pointer;
+  padding: 11px 14px;
+  font-weight: 500;
+  font-size: 14px;
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.45;
+}
+.playbook-drill summary::-webkit-details-marker { display: none; }
+.playbook-drill summary::before { content: "?"; font-family: var(--pb-mono); color: var(--pb-accent); font-weight: 600; font-size: 12px; margin-top: 2px; }
+.playbook-drill summary:hover { background: var(--pb-accent-soft); }
+.playbook-drill[open] summary { border-bottom: 1px solid var(--pb-line-soft); }
+.playbook-drill-answer { padding: 11px 14px 13px 36px; font-size: 13.5px; color: var(--pb-ink-2); line-height: 1.55; }
+
+.playbook-footer {
+  border-top: 1px solid var(--pb-line);
+  padding-top: 16px;
+  font-size: 12.4px;
+  color: var(--pb-ink-2);
+  max-width: 70ch;
+  line-height: 1.55;
+}
+.playbook-footer strong { color: var(--pb-ink-2); font-weight: 600; }
+
+/* ---------- index cards (student/playbooks) ---------- */
+.playbook-hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 20px; }
+.playbook-hub-card {
+  /* .specialty-explore-btn (above) tints itself from --specialty-accent and otherwise
+     falls back to the Atrium gold, which would leave a gold button inside a blue-edged
+     card — set the same accent the border uses so the two agree. */
+  --specialty-accent: var(--color-accent);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-left: 4px solid var(--color-accent);
+}
+.playbook-hub-card-name { font-size: 17px; font-weight: 600; margin: 0; }
+.playbook-hub-card-desc { font-size: 13px; color: var(--color-neutral-700); margin: 0; line-height: 1.5; }
+.playbook-hub-card-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-variant-numeric: tabular-nums; }
+
+@media (max-width: 640px) {
+  .playbook-wrap { padding: 0 14px; }
+  .playbook-navrow { padding: 9px 14px; }
+  .playbook-stamp { text-align: left; }
+  .playbook-masthead { padding-top: 14px; }
+  .playbook-drill-answer { padding-left: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .playbook-progress-fill { transition: none; }
+}
