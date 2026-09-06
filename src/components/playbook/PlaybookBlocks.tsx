@@ -20,14 +20,31 @@ function isGroupRow(row: PlaybookTableRow): row is { group: string } {
   return !Array.isArray(row);
 }
 
-function PlaybookTable({ groupId, columns, rows }: { groupId: string; columns: string[]; rows: PlaybookTableRow[] }) {
+function PlaybookTable({
+  groupId,
+  columns,
+  rows,
+  widths,
+}: {
+  groupId: string;
+  columns: string[];
+  rows: PlaybookTableRow[];
+  widths?: string[];
+}) {
   const { missedRows } = useRecall();
   const flagged = missedRows(groupId);
   return (
     <>
       <PlaybookGroupBar groupId={groupId} labels={columns} />
       <div className="playbook-tablewrap">
-        <table className="playbook-table">
+        <table className={widths ? "playbook-table playbook-table-fixed" : "playbook-table"}>
+          {widths && (
+            <colgroup>
+              {widths.map((width, i) => (
+                <col key={i} style={{ width }} />
+              ))}
+            </colgroup>
+          )}
           <thead>
             <tr>
               {columns.map((column) => (
@@ -124,7 +141,9 @@ export function PlaybookBlockView({
       return <PlaybookNumbers groupId={`${sectionId}:g${index}`} cells={block.cells} />;
 
     case "table":
-      return <PlaybookTable groupId={`${sectionId}:t${index}`} columns={block.columns} rows={block.rows} />;
+      return (
+        <PlaybookTable groupId={`${sectionId}:t${index}`} columns={block.columns} rows={block.rows} widths={block.widths} />
+      );
 
     case "callout":
       return (
@@ -152,7 +171,9 @@ export function PlaybookBlockView({
               <h4>
                 {card.title} <span className={`playbook-pill playbook-pill-${card.tone}`}>{card.badge}</span>
               </h4>
-              <p className="playbook-card-sub">{card.subtitle}</p>
+              <p className="playbook-card-sub">
+                <PlaybookInline text={card.subtitle} />
+              </p>
               <ul>
                 {card.points.map((point) => (
                   <li key={point}>

@@ -43,15 +43,37 @@ export interface PlaybookTableGroup {
 
 export type PlaybookTableRow = PlaybookCell[] | PlaybookTableGroup;
 
-export interface PlaybookChecklistItem {
-  /** Stable across edits — it keys the reader's saved check-off state, so renumbering the
-   *  list must not silently re-map what they've already ticked. */
-  id: string;
+/** One line of the checklist table — an item, or one of the further rows sharing its tick
+ *  box. Prose fields take the inline markup in lib/playbook-inline.ts. */
+export interface PlaybookChecklistRow {
   name: string;
   /** How the item is performed. */
   how: string;
   /** The number or observation that turns the test into information. */
   finding: string;
+}
+
+export interface PlaybookChecklistItem extends PlaybookChecklistRow {
+  /** Stable across edits — it keys the reader's saved check-off state, so renumbering the
+   *  list must not silently re-map what they've already ticked. */
+  id: string;
+  /** Further rows under the same tick box and number: two ways of testing one thing that you
+   *  either do together or not at all, so one box covers both. */
+  also?: PlaybookChecklistRow[];
+}
+
+/** The checklist flattened to the rows a reader actually sees — an item with two `also` rows
+ *  is three lines under one tick box. Recall keys its cells on this index, and the narrow
+ *  layout stacks these, so both need the same numbering the table renders. */
+export function playbookChecklistRows(
+  items: PlaybookChecklistItem[],
+): { row: PlaybookChecklistRow; item: PlaybookChecklistItem; index: number; first: boolean }[] {
+  const rows: { row: PlaybookChecklistRow; item: PlaybookChecklistItem; index: number; first: boolean }[] = [];
+  items.forEach((item, index) => {
+    rows.push({ row: item, item, index, first: true });
+    (item.also ?? []).forEach((row) => rows.push({ row, item, index, first: false }));
+  });
+  return rows;
 }
 
 export interface PlaybookCard {
@@ -86,7 +108,10 @@ export type PlaybookBlock =
   | { kind: "footnote"; text: string }
   | { kind: "checklist"; items: PlaybookChecklistItem[] }
   | { kind: "numbers"; cells: { value: string; label: string }[] }
-  | { kind: "table"; columns: string[]; rows: PlaybookTableRow[] }
+  /** `widths` fixes the column layout — CSS lengths or percentages, one per column. Without
+   *  it the browser sizes columns from their content, which is right for most tables and
+   *  wrong for the ones where a short column would otherwise be squeezed to nothing. */
+  | { kind: "table"; columns: string[]; rows: PlaybookTableRow[]; widths?: string[] }
   | { kind: "callout"; tone: "note" | "warn"; lead?: string; body: string }
   | { kind: "figure"; figureId: string; title: string; caption: string }
   | { kind: "cards"; cards: PlaybookCard[] }

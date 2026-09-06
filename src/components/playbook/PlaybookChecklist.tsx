@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import type { PlaybookChecklistItem } from "@/lib/playbook-content";
+import { playbookChecklistRows, type PlaybookChecklistItem } from "@/lib/playbook-content";
 import { PlaybookInline } from "@/components/playbook/PlaybookInline";
 import { PlaybookGroupBar, PlaybookMaskCell, useRecall } from "@/components/playbook/PlaybookRecall";
 import { RECALL_CHECKLIST_COLUMNS } from "@/lib/playbook-recall";
@@ -54,6 +54,9 @@ export function PlaybookChecklist({
 }) {
   const { missedRows } = useRecall();
   const flagged = missedRows(groupId);
+  // An item with `also` rows is several lines under one tick box, and recall keys its cells
+  // on the line rather than the item, so the table is rendered from the flattened list.
+  const rows = playbookChecklistRows(items);
   const storageKey = `limbic-playbook-${slug}-v1`;
   const stored = useSyncExternalStore<CheckState | null>(
     subscribeToNothing,
@@ -85,7 +88,14 @@ export function PlaybookChecklist({
     <>
       <PlaybookGroupBar groupId={groupId} labels={RECALL_CHECKLIST_COLUMNS} />
       <div className="playbook-tablewrap">
-        <table className="playbook-table playbook-check-table">
+        <table className="playbook-table playbook-check-table playbook-table-fixed">
+          <colgroup>
+            <col style={{ width: "34px" }} />
+            <col style={{ width: "42px" }} />
+            <col style={{ width: "18%" }} />
+            <col style={{ width: "40%" }} />
+            <col style={{ width: "40%" }} />
+          </colgroup>
           <thead>
             <tr>
               <th>
@@ -98,27 +108,38 @@ export function PlaybookChecklist({
             </tr>
           </thead>
           <tbody>
-            {items.map((item, i) => (
-              <tr key={item.id} className={flagged.has(i) ? "playbook-row-missed" : undefined}>
-                <td className="playbook-check-ck">
-                  <input type="checkbox" checked={isChecked(item.id)} onChange={() => toggle(item.id)} aria-label={item.name} />
-                </td>
-                <td className="playbook-idx">{i + 1}</td>
+            {rows.map(({ row, item, index, first }, i) => (
+              <tr key={`${item.id}-${i}`} className={flagged.has(i) ? "playbook-row-missed" : undefined}>
+                {first && (
+                  <>
+                    <td className="playbook-check-ck" rowSpan={1 + (item.also?.length ?? 0)}>
+                      <input
+                        type="checkbox"
+                        checked={isChecked(item.id)}
+                        onChange={() => toggle(item.id)}
+                        aria-label={item.name}
+                      />
+                    </td>
+                    <td className="playbook-idx" rowSpan={1 + (item.also?.length ?? 0)}>
+                      {index + 1}
+                    </td>
+                  </>
+                )}
                 <PlaybookMaskCell
                   groupId={groupId}
                   column={0}
                   row={i}
-                  text={item.name}
+                  text={row.name}
                   className="playbook-cell-name"
                   dataLabel={RECALL_CHECKLIST_COLUMNS[0]}
                 >
-                  {item.name}
+                  <PlaybookInline text={row.name} />
                 </PlaybookMaskCell>
-                <PlaybookMaskCell groupId={groupId} column={1} row={i} text={item.how} dataLabel={RECALL_CHECKLIST_COLUMNS[1]}>
-                  <PlaybookInline text={item.how} />
+                <PlaybookMaskCell groupId={groupId} column={1} row={i} text={row.how} dataLabel={RECALL_CHECKLIST_COLUMNS[1]}>
+                  <PlaybookInline text={row.how} />
                 </PlaybookMaskCell>
-                <PlaybookMaskCell groupId={groupId} column={2} row={i} text={item.finding} dataLabel={RECALL_CHECKLIST_COLUMNS[2]}>
-                  <PlaybookInline text={item.finding} />
+                <PlaybookMaskCell groupId={groupId} column={2} row={i} text={row.finding} dataLabel={RECALL_CHECKLIST_COLUMNS[2]}>
+                  <PlaybookInline text={row.finding} />
                 </PlaybookMaskCell>
               </tr>
             ))}

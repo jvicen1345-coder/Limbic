@@ -14148,3 +14148,31 @@ button.playbook-maskwrap:focus-visible {
   .playbook-mask-on .playbook-maskwrap,
   .playbook-labels-hidden svg text { transition: none; }
 }
+
+/* A table that declares column widths gets a fixed layout, so the widths are the widths;
+   without one the browser sizes columns from their content, which is right for most of
+   these tables and wrong where a short column would otherwise be squeezed to nothing. The
+   stacked-card layout below 860px replaces the table box entirely, so neither applies there. */
+.playbook-table-fixed { table-layout: fixed; }
+.playbook-check-table .playbook-check-ck { text-align: center; padding-left: 12px; padding-right: 2px; }
+.playbook-check-table .playbook-idx { text-align: right; padding-left: 2px; padding-right: 14px; white-space: nowrap; }
+
+/* The stacked-card layout replaces the table box, but a <col> width still reaches the cells
+   underneath it — a row that spans fewer columns than the colgroup declares ends up wearing
+   the first column's width, which on the checklist is 34px and renders a heading one letter
+   per line. Neutralise the columns and let each cell fill its card. */
+@media (max-width: 860px) {
+  .playbook-table col { width: auto; }
+  .playbook-table tbody td { width: auto; }
+  .playbook-check-table .playbook-check-ck,
+  .playbook-check-table .playbook-idx { width: auto; }
+}
+
+/* `.playbook-check-table td:first-child` above assumes the first cell of every row is the
+   tick box, which held until a checklist item could carry further rows under one box: those
+   rows start at the Item column, which then wears the tick box's 34px and centring and
+   renders a heading one letter per line. Match on what the cell is rather than where it sits. */
+.playbook-check-table td:first-child.playbook-cell-name { width: auto; text-align: left; }
+/* Same assumption, one column over: an `also` row's second cell is How it's performed, not
+   the row number, so it must not inherit the number column's width either. */
+.playbook-check-table td:nth-child(2):not(.playbook-idx) { width: auto; text-align: left; }

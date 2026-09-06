@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { PLAYBOOKS, playbookChecklist, type PlaybookBlock } from "@/lib/playbook-content";
+import { PLAYBOOKS, playbookChecklist, playbookChecklistRows, type PlaybookBlock } from "@/lib/playbook-content";
 import { parsePlaybookInline } from "@/lib/playbook-inline";
 import { signUpAndEnterApp } from "./helpers";
 
@@ -35,6 +35,17 @@ test.describe("Playbook content", () => {
       const ids = playbook.sections.map((section) => section.id);
       expect(new Set(ids).size, `duplicate section id in ${playbook.slug}`).toBe(ids.length);
     }
+  });
+
+  test("a table that declares column widths declares one per column", () => {
+    const problems: string[] = [];
+    for (const { playbook, section, block } of everyBlock()) {
+      if (block.kind !== "table" || !block.widths) continue;
+      if (block.widths.length !== block.columns.length) {
+        problems.push(`${playbook}/${section}: ${block.widths.length} widths, ${block.columns.length} columns`);
+      }
+    }
+    expect(problems).toEqual([]);
   });
 
   test("every table row has exactly as many cells as the table has columns", () => {
@@ -142,8 +153,10 @@ test.describe("Playbook page", () => {
         await expect(figures.nth(i).locator("svg")).toHaveCount(1);
       }
 
+      // One tick box per item, but an item may span several rows.
       const boxes = page.locator(".playbook-check-table input[type=checkbox]");
       await expect(boxes).toHaveCount(items.length);
+      await expect(page.locator(".playbook-check-table tbody tr")).toHaveCount(playbookChecklistRows(items).length);
       await expect(page.locator(".playbook-progress span").first()).toHaveText(`0 / ${items.length}`);
 
       await boxes.first().check();
@@ -175,7 +188,7 @@ test.describe("Playbook page", () => {
  *  playbook has exactly one and its columns are fixed, so the expected counts are known. */
 test.describe("Playbook recall", () => {
   for (const playbook of PLAYBOOKS) {
-    const items = playbookChecklist(playbook);
+    const checklistRows = playbookChecklistRows(playbookChecklist(playbook)).length;
     const figures = playbook.sections.flatMap((s) => s.blocks).filter((b) => b.kind === "figure");
 
     test(`hides, checks and remembers answers on the ${playbook.slug} playbook`, async ({ page }) => {
@@ -193,7 +206,7 @@ test.describe("Playbook recall", () => {
       const checklist = page.locator("#checklist");
       await checklist.locator(".playbook-tbl-recall").first().click();
       await expect(page.locator(".playbook-recallbar")).toBeVisible();
-      await expect(checklist.locator(".playbook-mask-on")).toHaveCount(items.length);
+      await expect(checklist.locator(".playbook-mask-on")).toHaveCount(checklistRows);
       await expect(checklist.locator("tbody tr").first().locator("td").nth(2)).not.toHaveClass(/playbook-mask-on/);
 
       // Clicking a hidden cell checks it, and only then offers to record it as missed.
@@ -208,7 +221,7 @@ test.describe("Playbook recall", () => {
       // The hidden column and the flag survive a reload; which cells were peeked at does
       // not, so the column comes back fully blanked for a second pass.
       await page.reload();
-      await expect(checklist.locator(".playbook-mask-on")).toHaveCount(items.length);
+      await expect(checklist.locator(".playbook-mask-on")).toHaveCount(checklistRows);
       await expect(page.locator(".playbook-flagcount")).toHaveText("1 flagged from recall");
 
       // The master switch clears first, then blanks everything — diagram labels included,

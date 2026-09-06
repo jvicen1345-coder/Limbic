@@ -53,14 +53,24 @@ export const SHOULDER_PLAYBOOK: Playbook = {
             {
               id: "arom-er-90",
               name: "AROM ER @ 90°",
-              how: "Watch scapular posterior tilt, thoracic ext/rotation, scapular retraction, humeral head anterior translation.",
-              finding: "Screen proximal: single-leg stance, hip IR/ER, core, glute med, GIRD",
+              how: "Abduct to 90° with the elbow at 90° and take into external rotation. Watch *where the range comes from*: scapular posterior tilt, thoracic extension and rotation, scapular retraction, humeral head anterior translation.",
+              finding:
+                "**Normal:** ~90° of ER, equal to the other side, with the humeral head staying centred and the scapula posteriorly tilting.\n**Faulty:** the head translates anteriorly (distal humerus drops back) or the scapula retracts and anteriorly tilts to supply the range.\n**Throwers:** add IR to get the total arc — arc loss >5° or IR loss 10–25° vs the other side is GIRD, then screen proximally (single-leg stance, hip IR/ER, core, glute med).",
             },
             {
               id: "hbh-hbb",
-              name: "Functional AROM: hand behind head / hand behind back",
-              how: "HBH: measure middle finger to spinous process, both sides. HBB: add OP with scapula stabilized.",
-              finding: "(+) involved side *significantly* less range than other",
+              name: "Hand behind head\n*flexion + ER*",
+              how: "Stand behind the patient. Palm to the back of the head. Measure the middle finger against the spinous process, both sides, then add overpressure at end range.",
+              finding:
+                "Symmetric side to side. Positive: clearly less reach, or symptoms with the overpressure. Follow up with flexion and ER ROM.",
+              also: [
+                {
+                  name: "Hand behind back\n*IR + extension + adduction*",
+                  how: "Hand climbs from the lumbar spine as high up the back as it reaches. Overpressure: one hand on the scapula, the other on the forearm, body driving the elbow in.",
+                  finding:
+                    "Compare the level reached. Positive: clearly less reach, or symptoms with the overpressure. Follow up with extension and IR ROM — the back-pocket motion.",
+                },
+              ],
             },
             {
               id: "prom-flexion",
@@ -260,7 +270,11 @@ export const SHOULDER_PLAYBOOK: Playbook = {
         {
           kind: "numbers",
           cells: [
-            { value: "2 : 1", label: "Scapulohumeral rhythm — 2° GH for every 1° scapular" },
+            {
+              value: "2 : 1",
+              label:
+                "Scapulohumeral rhythm — 2° GH for every 1° scapular. Written *2:1* as a ratio of motion, but some sources write the same relationship as *1:2* (scapula to humerus) — check which way the question is phrased.",
+            },
             { value: "120° + 60°", label: "GH abduction + scapular upward rotation = 180° elevation" },
             { value: "first 30°", label: "Of elevation is mostly humeral (setting phase)" },
             { value: "35–40°", label: "GH external rotation during full elevation" },
@@ -268,16 +282,24 @@ export const SHOULDER_PLAYBOOK: Playbook = {
             { value: "30° & 20°", label: "AC joint upward rotation & posterior tilt (0–5° ER)" },
             { value: "6° → 22–23°", label: "Scapular posterior tilt: 6° in first 90°, +16° after" },
             { value: "5°", label: "Superior tilt of the glenoid (passive stability)" },
-            { value: "T2 – T7", label: "Scapula on the thorax; root of spine ≈ T3, inferior angle ≈ T7" },
-            { value: "2.5–3 in", label: "Vertebral border to spine, borders parallel" },
-            { value: "30° & 9°", label: "Resting scapular medial rotation (scaption) & anterior tilt" },
-            { value: "> 15–20°", label: "Excessive scapular internal rotation" },
+            { value: "T2 – T7", label: "Scapula on the thorax: superior angle T2, root of the *scapular* spine T3, inferior angle T7" },
+            { value: "2.5–3 in", label: "Vertebral border to the spine, borders parallel to it or slightly upwardly rotated" },
+            {
+              value: "30° & 9°",
+              label: "At rest the scapula sits 30° anterior to the frontal plane — the scapular plane — with 9° of anterior tilt",
+            },
+            {
+              value: "> 15–20°",
+              label: "Scapular internal rotation beyond this is excessive — medial border lifts; palpate the triangle below the scapular spine",
+            },
             { value: "> ⅓", label: "Of humeral head anterior to acromion = anterior glide" },
             { value: "≤ ½ in", label: "Inferior angle protrusion past posterolateral thorax in full elevation" },
             { value: "165–180°", label: "Normal total arc of IR + ER" },
             { value: "2.54 cm", label: "Pec minor length — acromion to table" },
             { value: "> 1 in", label: "Lateral translation of scapular border in passive flexion = short teres major" },
             { value: "2%", label: "Of shoulder dislocations are posterior" },
+            { value: "60–120°", label: "Where a painful arc lives during abduction" },
+            { value: "~50°", label: "Abduction for the open-packed position used in mobilization" },
           ],
         },
         {
@@ -391,6 +413,33 @@ export const SHOULDER_PLAYBOOK: Playbook = {
           tone: "warn",
           lead: "Scapular assist test",
           body: "— if symptoms appear with AROM, manually supply upward rotation, adduction, and posterior tilt. You are looking for a change in *quantity, quality, or symptoms*. A positive test is also your treatment direction.",
+        },
+        { kind: "heading", text: "Quadruped movement assessment" },
+        {
+          kind: "lede",
+          text: "Loading the shoulder through the hand changes what you can see. Scapular faults that hide in standing show up here, which is why the movement syndrome material uses quadruped specifically to look for scapular internal rotation.",
+        },
+        {
+          kind: "table",
+          columns: ["What you assess", "Look for"],
+          rows: [
+            [
+              { text: "Static alignment", variant: "name" },
+              "Head, neck, thorax, shoulders, scapula, humerus. The scapula should lie flat with the medial border against the thorax, not tented away from it.",
+            ],
+            [
+              { text: "Scapular internal rotation", variant: "name" },
+              "Medial border lifting off the ribs under load — the finding that used to be called winging. Palpate the triangle below the scapular spine to confirm.",
+            ],
+            [
+              { text: "Rocking backward", variant: "name" },
+              "The scapula should stay controlled as the trunk moves over a fixed hand. Watch for the scapula sliding into elevation, downward rotation or anterior tilt as you rock back.",
+            ],
+            [
+              { text: "Correction", variant: "name" },
+              "Cue the scapula flat and reassess symptoms and quality — the same logic as the scapular assist test, in a loaded position.",
+            ],
+          ],
         },
       ],
     },
@@ -779,6 +828,9 @@ export const SHOULDER_PLAYBOOK: Playbook = {
         {
           kind: "table",
           columns: ["Test", "What it compresses or contracts", "Set-up", "Positive", "Stats"],
+          // Five columns of prose plus one of bare figures: left to size itself, the stats
+          // column wraps to one character per line while the tissue column sprawls.
+          widths: ["15%", "25%", "26%", "21%", "13%"],
           rows: [
             { group: "Compression under the coracoacromial arch" },
             [
@@ -1046,6 +1098,37 @@ export const SHOULDER_PLAYBOOK: Playbook = {
           lead: "Impingement EMG pattern:",
           body: "decreased serratus anterior activity, delayed middle and lower trap firing, and dominance of upper trap and levator scapulae → faulty scapulohumeral rhythm.",
         },
+        { kind: "heading", text: "The other naming system: ICF categories" },
+        {
+          kind: "lede",
+          text: "A movement system diagnosis names the fault. The ICF category names the *impairment pattern*, and it is what the lab tags every single test with. Most tests carry more than one — Neer's, for instance, is tagged mobility, coordination and power — so read these as the category a finding *feeds*, not a one-to-one label.",
+        },
+        {
+          kind: "table",
+          columns: ["ICF category", "What the presentation looks like", "Findings that feed it"],
+          rows: [
+            [
+              { text: "Shoulder pain with mobility deficits", variant: "name" },
+              "Loss in more than one direction, PROM close to AROM, capsular end feels, joint play restricted",
+              "PROM flexion, abduction, IR, ER · horizontal adduction · pure GH flexion under 120° with a capsular end feel · every joint mobilization in §10 · Hawkins-Kennedy",
+            ],
+            [
+              { text: "Shoulder pain with movement coordination impairments", variant: "name" },
+              "Faulty scapulohumeral rhythm, aberrant motion, symptoms that change when you correct the movement",
+              "The four critical events · scapular assist test · quadruped assessment · hand behind head and back · scapular upward rotation PROM versus AROM",
+            ],
+            [
+              { text: "Shoulder pain with muscle power deficits", variant: "name" },
+              "Pain or weakness on resisted testing; a lag sign means the tendon cannot hold the position at all",
+              "Static resisted IR, ER, abduction · every MMT · full and empty can · drop arm · ER and IR lag signs · Hornblower's",
+            ],
+            [
+              { text: "Shoulder stability and movement coordination impairments", variant: "name" },
+              "Apprehension rather than pain, generalized laxity, a history of the shoulder giving way",
+              "Anterior apprehension and relocation · posterior apprehension · sulcus sign · Biceps Load II · the anterior glide syndrome picture",
+            ],
+          ],
+        },
       ],
     },
     {
@@ -1109,7 +1192,7 @@ export const SHOULDER_PLAYBOOK: Playbook = {
               tone: "h",
               title: "High irritability",
               badge: "Gr I–II",
-              subtitle: "Empty end feel with PROM",
+              subtitle: "End feel: empty, before you reach end range\nHistory: pain at rest or at night, easily provoked, slow to settle",
               points: [
                 "Soft tissue mobilization emphasized",
                 "Grade I or II joint mobilizations",
@@ -1122,7 +1205,7 @@ export const SHOULDER_PLAYBOOK: Playbook = {
               tone: "m",
               title: "Moderate irritability",
               badge: "Gr II–III",
-              subtitle: "Pain at the onset of an end feel",
+              subtitle: "End feel: pain at the onset of the end feel\nHistory: pain with activity, settles within a reasonable time",
               points: [
                 "Soft tissue mobilization emphasized",
                 "Grade II to III joint mobilizations",
@@ -1135,10 +1218,55 @@ export const SHOULDER_PLAYBOOK: Playbook = {
               tone: "l",
               title: "Low irritability",
               badge: "Gr III–IV",
-              subtitle: "Minimal pain with overpressure at end feel",
+              subtitle: "End feel: minimal pain even with overpressure\nHistory: symptoms only at end range or under load, settles quickly",
               points: ["Grade III–IV joint mobilizations", "Sustained-hold PROM", "Maximize total end range time (TERT)"],
             },
           ],
+        },
+        { kind: "heading", text: "The subjective exam that sets the level" },
+        {
+          kind: "lede",
+          text: "End feel confirms the level; the history usually tells you before you lay a hand on them. Ask these first, then see whether the end feel agrees.",
+        },
+        {
+          kind: "table",
+          columns: ["Ask", "What the answer tells you"],
+          rows: [
+            [
+              { text: "What caused it?", variant: "name" },
+              "Overuse and a repeated movement pattern point to a movement system diagnosis; a single traumatic event points you toward tissue damage and instability",
+            ],
+            [
+              { text: "Any pain at rest?", variant: "name" },
+              "Resting pain, or an ache that never fully leaves, is the clearest marker of high irritability",
+            ],
+            [
+              { text: "Pain at night? Can you sleep on it?", variant: "name" },
+              "Night pain raises suspicion of a full-thickness tear when it sits alongside age over 65 and ER weakness — and sleeping posture is itself a treatment target",
+            ],
+            [
+              { text: "Average, worst and best in the last week", variant: "name" },
+              "Three numbers instead of one. A wide spread means the shoulder is reactive to what they do; a high floor means high irritability",
+            ],
+            [
+              { text: "What aggravates it, and how long does it take to settle?", variant: "name" },
+              "The settling time is the single most useful irritability question. **Minutes is low, hours is moderate, the rest of the day is high.**",
+            ],
+            [
+              { text: "What eases it?", variant: "name" },
+              "Positions and modalities that help are your starting dose and your home programme",
+            ],
+            [
+              { text: "What do you need the shoulder to do?", variant: "name" },
+              "The sport or task defines the movement you retrain and the position you have to make pain-free",
+            ],
+          ],
+        },
+        {
+          kind: "callout",
+          tone: "warn",
+          lead: "When the history and the end feel disagree,",
+          body: "treat to the more irritable of the two for the first session and reassess. Under-dosing costs you one visit; over-dosing costs you their trust and can flare them for days.",
         },
         {
           kind: "callout",
