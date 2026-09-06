@@ -34,7 +34,13 @@ function parseWeightLbs(weight: string): number | null {
  *  "wall slides" merge), ascending by session date; an exercise logged only once has no
  *  progression to show and is left out entirely rather than rendered as a single point. */
 export function computeExerciseProgression(logs: { visitNumber: number; loggedAt: Date; exercises: unknown }[]): ExerciseProgression[] {
-  const sorted = [...logs].sort((a, b) => a.loggedAt.getTime() - b.loggedAt.getTime());
+  // Visit number breaks a tie on the date. Session dates are stored as a calendar day (see
+  // lib/session-date.ts), so two sessions logged against the same day carry the identical
+  // instant — and a stable sort would then fall back to whatever order the query returned,
+  // which is newest-first, printing the pair backwards.
+  const sorted = [...logs].sort(
+    (a, b) => a.loggedAt.getTime() - b.loggedAt.getTime() || a.visitNumber - b.visitNumber
+  );
 
   const pointsByKey = new Map<string, ExerciseProgressionPoint[]>();
   const displayNameByKey = new Map<string, string>();

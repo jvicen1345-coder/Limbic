@@ -9,6 +9,7 @@ import {
   generateDischargeSummary as generateDischargeSummaryBrief,
 } from "@/lib/pre-visit-brief";
 import { REASSESSMENT_INTERVAL_VISITS, REASSESSMENT_STALE_DAYS } from "@/lib/clinician-dashboard-types";
+import { parseSessionDateInput } from "@/lib/session-date";
 import { todayLocalDateStr } from "@/lib/today";
 import { conditionIntelligenceMap } from "@/lib/condition-intelligence";
 import { mcidValues } from "@/lib/outcome-benchmarks";
@@ -303,6 +304,31 @@ export interface AddOutcomeInput {
   notes?: string;
 }
 
+/** Remove a patient outright — the counterpart to dischargePatient above, which only flips
+ *  a status and leaves the record in place.
+ *
+ *  This is for a record that shouldn't exist: a duplicate, a test entry, someone entered
+ *  against the wrong clinician. Discharge is still the right answer for a real course of
+ *  treatment that has finished, and the UI says so.
+ *
+ *  Everything hanging off the patient goes with it — outcomes, notes, goals, HEP
+ *  assignments, session logs, visit logs, briefs, alerts, referral source, discharge
+ *  summary — via the onDelete: Cascade the schema already declares on each of those
+ *  relations. Three relations are SetNull rather than Cascade and so survive with their
+ *  patient link cleared: ForceLabAssessment, ThreeRepMaxTest and IntakeSubmission. That is
+ *  the schema's existing choice, not one made here, and the confirmation the clinician sees
+ *  says as much rather than promising a cleaner sweep than actually happens. */
+export async function deletePatient(patientId: string): Promise<ClinicianDashboardResult> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const patient = await requireOwnedPatient(user.id, patientId);
+  if (!patient) return { ok: false, error: "Patient not found." };
+
+  await prisma.clinicalPatient.delete({ where: { id: patientId } });
+  revalidatePath("/pro/dashboard");
+  return { ok: true };
+}
+
 export async function addOutcomeEntry(
   patientId: string,
   data: AddOutcomeInput
@@ -476,7 +502,8 @@ export async function assignHEP(
 export async function addSessionExerciseLog(
   patientId: string,
   visitNumber: number,
-  exercises: HepTemplateExercise[]
+  exercises: HepTemplateExercise[],
+  sessionDate?: string
 ): Promise<ClinicianDashboardResult<{ log: SessionExerciseLog }>> {
   const user = await requireProUser();
   if (!user) return { ok: false, error: "Not authorized." };
@@ -487,8 +514,24 @@ export async function addSessionExerciseLog(
   const cleaned = exercises.filter((ex) => ex.name.trim().length > 0);
   if (cleaned.length === 0) return { ok: false, error: "Add at least one exercise." };
 
+  // Omitted means "now" — the column's own default, and what every caller did before the
+  // date became settable. Supplied and unparseable is a mistake worth reporting rather than
+  // silently filing the session under today.
+  let loggedAt: Date | undefined;
+  if (sessionDate) {
+    const parsed = parseSessionDateInput(sessionDate);
+    if (!parsed) return { ok: false, error: "That session date isn't a real past date." };
+    loggedAt = parsed;
+  }
+
   const log = await prisma.sessionExerciseLog.create({
-    data: { userId: user.id, patientId, visitNumber: Math.round(visitNumber), exercises: cleaned as object },
+    data: {
+      userId: user.id,
+      patientId,
+      visitNumber: Math.round(visitNumber),
+      exercises: cleaned as object,
+      ...(loggedAt ? { loggedAt } : {}),
+    },
   });
 
   revalidatePath("/pro/dashboard");
@@ -500,11 +543,16 @@ export async function addSessionExerciseLog(
  *  wrong shape here. Overwrites the row in place rather than superseding it with a new one:
  *  computeExerciseProgression reads every log for a patient, so a correction kept as a
  *  second row for the same visit would show up as a phantom progression step between the
- *  wrong numbers and the right ones. Same ownership check as addSessionExerciseLog. */
+ *  wrong numbers and the right ones. Same ownership check as addSessionExerciseLog.
+ *
+ *  The date is correctable too, and for the same reason the numbers are: a session entered
+ *  a few days late is easy to file against the wrong day. Passing no date leaves loggedAt
+ *  exactly as it was. */
 export async function updateSessionExerciseLog(
   logId: string,
   visitNumber: number,
-  exercises: HepTemplateExercise[]
+  exercises: HepTemplateExercise[],
+  sessionDate?: string
 ): Promise<ClinicianDashboardResult<{ log: SessionExerciseLog }>> {
   const user = await requireProUser();
   if (!user) return { ok: false, error: "Not authorized." };
@@ -515,11 +563,23 @@ export async function updateSessionExerciseLog(
   const cleaned = exercises.filter((ex) => ex.name.trim().length > 0);
   if (cleaned.length === 0) return { ok: false, error: "Add at least one exercise." };
 
-  // loggedAt is deliberately left as it was — it records when the visit happened, not when
-  // the write did, so a later correction shouldn't move a past session to today.
+  // loggedAt moves only when a date was actually supplied. It records when the visit
+  // happened, not when the write did, so a correction to the numbers alone must never drag
+  // a past session forward to today.
+  let loggedAt: Date | undefined;
+  if (sessionDate) {
+    const parsed = parseSessionDateInput(sessionDate);
+    if (!parsed) return { ok: false, error: "That session date isn't a real past date." };
+    loggedAt = parsed;
+  }
+
   const log = await prisma.sessionExerciseLog.update({
     where: { id: logId },
-    data: { visitNumber: Math.round(visitNumber), exercises: cleaned as object },
+    data: {
+      visitNumber: Math.round(visitNumber),
+      exercises: cleaned as object,
+      ...(loggedAt ? { loggedAt } : {}),
+    },
   });
 
   revalidatePath("/pro/dashboard");
