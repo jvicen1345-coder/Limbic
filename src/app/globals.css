@@ -13649,6 +13649,32 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 }
 .playbook-numcell-label { font-size: 12.5px; color: var(--pb-ink-2); margin-top: 3px; line-height: 1.4; }
 
+/* ---------- stats key ----------
+   The glossary above the special-tests table: what Sn / Sp / +LR / -LR actually mean,
+   so the numbers in that table can be weighed rather than just read. */
+.playbook-statkey {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--pb-line);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin: 18px 0 14px;
+}
+.playbook-skcell { background: var(--pb-surface); padding: 11px 14px; display: flex; gap: 11px; align-items: baseline; }
+.playbook-skcell b {
+  font-family: var(--pb-mono);
+  font-size: 12.5px;
+  color: var(--pb-accent);
+  min-width: 38px;
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+}
+.playbook-skcell span { font-size: 12.8px; color: var(--pb-ink-2); line-height: 1.45; }
+.playbook-skcell em { color: var(--color-text); font-style: normal; font-weight: 600; }
+.playbook-statnote { font-size: 12.4px; color: var(--pb-ink-2); margin: 0 0 4px; max-width: 72ch; line-height: 1.5; }
+
 /* ---------- callouts ---------- */
 .playbook-callout {
   border-left: 3px solid var(--pb-accent);
@@ -13781,6 +13807,9 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 .playbook-hub-card-desc { font-size: 13px; color: var(--color-neutral-700); margin: 0; line-height: 1.5; }
 .playbook-hub-card-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-variant-numeric: tabular-nums; }
 
+@media (max-width: 700px) {
+  .playbook-statkey { grid-template-columns: 1fr; }
+}
 @media (max-width: 640px) {
   .playbook-wrap { padding: 0 14px; }
   .playbook-navrow { padding: 9px 14px; }

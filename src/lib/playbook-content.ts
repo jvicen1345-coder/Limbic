@@ -58,6 +58,14 @@ export interface PlaybookCard {
   points: string[];
 }
 
+/** One row of a stats key — the abbreviation, what it stands for, and what it means in
+ *  practice. */
+export interface PlaybookStatKeyEntry {
+  abbr: string;
+  term: string;
+  body: string;
+}
+
 export type PlaybookBlock =
   | { kind: "heading"; text: string }
   | { kind: "lede"; text: string }
@@ -69,7 +77,10 @@ export type PlaybookBlock =
   | { kind: "callout"; tone: "note" | "warn"; lead?: string; body: string }
   | { kind: "figure"; figureId: string; title: string; caption: string }
   | { kind: "cards"; cards: PlaybookCard[] }
-  | { kind: "drill"; items: { question: string; answer: string }[] };
+  | { kind: "drill"; items: { question: string; answer: string }[] }
+  /** A glossary of the statistics a section's tables quote — Sn, Sp, +LR, −LR — so a
+   *  reader can weigh a number instead of just reading it. */
+  | { kind: "statkey"; entries: PlaybookStatKeyEntry[]; note?: string };
 
 export interface PlaybookSection {
   /** Anchor id and nav target. */
