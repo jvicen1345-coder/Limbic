@@ -142,6 +142,13 @@
      titles and nav labels, where it cost real legibility. */
   --font-heading: var(--font-jakarta), system-ui, sans-serif;
   --font-heading-weight: 700;
+  /* The "Limbic" logotype, heavier than an ordinary heading. It needs its own token because
+     the wordmark appears in five places that had drifted to three different weights — and
+     the three in AppShell.tsx had none at all, inheriting body 400. That went unnoticed
+     while the heading face was Caprasimo, which ships only weight 400 and is heavy by
+     design; the moment a normal-weight family replaced it, the logotype quietly became
+     light text. */
+  --font-wordmark-weight: 800;
   /* Same native system-UI font stack Facebook's web app renders body text with — no
      webfont download, just each OS's own UI font (San Francisco on macOS/iOS, Segoe UI on
      Windows, Roboto on Android/Chrome OS, sans-serif as the final fallback). Replaces the
@@ -6461,7 +6468,7 @@ html[data-theme="dark"] .app-root--atrium {
   padding: 84px 24px 64px;
 }
 .legal-header { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
-.legal-header-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; }
+.legal-header-name { font-family: var(--font-heading); font-weight: var(--font-wordmark-weight); font-size: 18px; }
 
 .legal-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; margin: 0 0 6px; }
 .legal-updated { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 36px; }
@@ -6562,7 +6569,7 @@ html[data-theme="dark"] .app-root--atrium {
   border-bottom: 1px solid var(--color-divider);
 }
 .landing-nav-brand { display: flex; align-items: center; gap: 9px; }
-.landing-nav-wordmark { font-family: var(--font-heading); font-weight: 800; font-size: 20px; color: var(--color-text); }
+.landing-nav-wordmark { font-family: var(--font-heading); font-weight: var(--font-wordmark-weight); font-size: 20px; color: var(--color-text); }
 .landing-nav-actions { display: flex; align-items: center; gap: 10px; }
 @media (max-width: 640px) {
   .landing-nav { flex-direction: column; align-items: stretch; padding: 14px 20px; }
@@ -10335,7 +10342,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   padding: 16px 24px;
   border-bottom: 1px solid var(--color-divider);
 }
-.programs-page-logo { display: flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; color: var(--color-text); text-decoration: none; }
+.programs-page-logo { display: flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-weight: var(--font-wordmark-weight); font-size: 18px; color: var(--color-text); text-decoration: none; }
 .programs-page-home-link { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-neutral-700); text-decoration: none; }
 .programs-page-home-link:hover { color: var(--color-accent); }
 .programs-page-content { max-width: 1180px; margin: 0 auto; padding: 32px 24px 64px; }
@@ -13819,4 +13826,15 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 }
 @media (prefers-reduced-motion: reduce) {
   .playbook-progress-fill { transition: none; }
+}
+
+/* The "Limbic" logotype in the app shell — desktop sidebar, mobile top bar, and mobile
+   drawer (see AppShell.tsx, which sets only the size inline, since the three differ). One
+   class rather than three inline styles: the weight is the whole point of this rule, and an
+   inline style carrying a family but no weight is exactly how the wordmark ended up
+   rendering at body weight in the first place. */
+.app-wordmark {
+  font-family: var(--font-heading);
+  font-weight: var(--font-wordmark-weight);
+  color: var(--color-text);
 }
