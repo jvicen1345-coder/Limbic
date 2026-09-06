@@ -845,6 +845,250 @@ function RollWithoutSlide() {
   );
 }
 
+/* ---------- knee ---------- */
+
+/** Four pain zones on a schematic knee, each with what it opens. */
+function KneePainMap() {
+  return (
+    <svg
+      viewBox="0 0 620 268"
+      role="img"
+      aria-label="Schematic knee from the front with four numbered pain zones — anterior, medial, lateral and posterior — each listed with the tests that separate its candidate sources."
+    >
+      <path d="M 96 40 L 96 96 Q 96 112 112 116 L 172 116 Q 188 112 188 96 L 188 40" fill="currentColor" fillOpacity=".05" stroke="currentColor" strokeWidth="1.3" opacity=".7" />
+      <ellipse cx="142" cy="124" rx="52" ry="12" fill="currentColor" fillOpacity=".07" stroke="currentColor" strokeWidth="1.2" opacity=".6" />
+      <path d="M 100 132 L 104 216 M 184 132 L 180 216" stroke="currentColor" strokeWidth="1.3" opacity=".55" />
+      <ellipse cx="142" cy="98" rx="19" ry="25" fill={A} fillOpacity=".1" stroke={A} strokeWidth="1.5" />
+      <text className="mono" x="40" y="254" opacity=".5">anterior view · right knee</text>
+
+      <circle cx="142" cy="98" r="6" fill={A} />
+      <text className="mono" x="142" y="72" textAnchor="middle" fill={A}>1</text>
+      <circle cx="98" cy="126" r="6" fill={D2} />
+      <text className="mono" x="82" y="130" textAnchor="end" fill={D2}>2</text>
+      <circle cx="186" cy="126" r="6" fill={D3} />
+      <text className="mono" x="200" y="130" fill={D3}>3</text>
+      <circle cx="142" cy="150" r="6" fill={HI} />
+      <text className="mono" x="142" y="172" textAnchor="middle" fill={HI}>4 (behind)</text>
+
+      <text className="mono" x="250" y="40" fill={A}>1 ANTERIOR</text>
+      <text x="250" y="58">patellofemoral pain · patellar tendinopathy ·</text>
+      <text x="250" y="76">Osgood-Schlatter · dislocation that reduced</text>
+      <text className="mono" x="250" y="106" fill={D2}>2 MEDIAL</text>
+      <text x="250" y="124">on the joint line: meniscus · above it: MCL ·</text>
+      <text x="250" y="142">below it: pes anserine</text>
+      <text className="mono" x="250" y="172" fill={D3}>3 LATERAL</text>
+      <text x="250" y="190">meniscus · IT band at the epicondyle ·</text>
+      <text x="250" y="208">LCL and the posterolateral corner</text>
+      <text className="mono" x="250" y="238" fill={HI}>4 POSTERIOR</text>
+      <text x="250" y="256">Baker&rsquo;s cyst · PCL sag · and the calf that ends the exam</text>
+    </svg>
+  );
+}
+
+/** The Q angle as two constructed lines, and what moves each end. */
+function QAngle() {
+  return (
+    <svg
+      viewBox="0 0 620 258"
+      role="img"
+      aria-label="The Q angle constructed from two lines: one from the anterior superior iliac spine to the centre of the patella, and one from the patella to the tibial tubercle. The angle between them is about 13 to 14 degrees in men and 17 to 18 in women."
+    >
+      <circle cx="120" cy="44" r="7" fill="currentColor" fillOpacity=".2" stroke="currentColor" strokeWidth="1.4" />
+      <text className="mono" x="120" y="30" textAnchor="middle" opacity=".7">ASIS</text>
+      <ellipse cx="196" cy="152" rx="17" ry="22" fill={A} fillOpacity=".12" stroke={A} strokeWidth="1.5" />
+      <text className="mono" x="222" y="150" fill={A}>patella</text>
+      <circle cx="208" cy="220" r="6" fill="currentColor" fillOpacity=".25" stroke="currentColor" strokeWidth="1.4" />
+      <text className="mono" x="208" y="244" textAnchor="middle" opacity=".7">tibial tubercle</text>
+
+      <line x1="120" y1="44" x2="196" y2="152" stroke={D2} strokeWidth="2.2" />
+      <line x1="196" y1="152" x2="208" y2="220" stroke={D3} strokeWidth="2.2" />
+      <line x1="196" y1="152" x2="184" y2="84" stroke={D3} strokeWidth="1.4" strokeDasharray="5 4" opacity=".8" />
+      <path d="M 168 113 A 48 48 0 0 0 188 105" fill="none" stroke={A} strokeWidth="2.2" />
+      <text className="mono" x="166" y="88" textAnchor="middle" fill={A}>Q</text>
+
+      <text className="mono" x="330" y="52" fill={A}>13–14° MEN · 17–18° WOMEN</text>
+      <text x="330" y="74">over 20° is usually called abnormal</text>
+      <text className="mono" x="330" y="108" fill={D2}>WHAT OPENS IT FROM ABOVE</text>
+      <text x="330" y="128">a wider pelvis · femoral anteversion</text>
+      <text className="mono" x="330" y="160" fill={D3}>WHAT OPENS IT FROM BELOW</text>
+      <text x="330" y="180">tibial external torsion · a pronated foot</text>
+      <text className="mono" x="330" y="216" opacity=".65">so the measurement obligates a version test</text>
+      <text className="mono" x="330" y="234" opacity=".65">and a foot assessment — not a knee treatment</text>
+    </svg>
+  );
+}
+
+/** The tibia rotates externally through the last of extension. */
+function ScrewHome() {
+  return (
+    <svg
+      viewBox="0 0 620 248"
+      role="img"
+      aria-label="Two top-down views of the tibial plateau. In flexion the tibial tubercle points straight forward. Through the last thirty degrees of extension the tibia rotates externally about ten degrees, because the medial femoral condyle is longer and keeps travelling after the lateral side has run out."
+    >
+      <text className="mono" x="150" y="28" textAnchor="middle" fill={D2}>FLEXED</text>
+      <ellipse cx="150" cy="120" rx="66" ry="44" fill="currentColor" fillOpacity=".05" stroke="currentColor" strokeWidth="1.5" />
+      <line x1="150" y1="120" x2="150" y2="66" stroke={D2} strokeWidth="3" />
+      <circle cx="150" cy="62" r="6" fill={D2} />
+      <text className="mono" x="150" y="46" textAnchor="middle" fill={D2}>tubercle</text>
+      <text className="mono" x="150" y="186" textAnchor="middle" opacity=".6">neutral rotation</text>
+
+      <path d="M 236 118 L 292 118" stroke="currentColor" strokeWidth="1.6" opacity=".5" />
+      <path d="M 284 111 L 294 118 L 284 125" fill="none" stroke="currentColor" strokeWidth="1.6" opacity=".5" />
+      <text className="mono" x="264" y="106" textAnchor="middle" opacity=".6">extend</text>
+
+      <text className="mono" x="400" y="28" textAnchor="middle" fill={A}>EXTENDED — LOCKED</text>
+      <ellipse cx="400" cy="120" rx="66" ry="44" fill="currentColor" fillOpacity=".05" stroke="currentColor" strokeWidth="1.5" />
+      <line x1="400" y1="120" x2="400" y2="66" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" opacity=".35" />
+      <line x1="400" y1="120" x2="418" y2="69" stroke={A} strokeWidth="3" />
+      <circle cx="419" cy="66" r="6" fill={A} />
+      <path d="M 400 78 A 42 42 0 0 1 412 74" fill="none" stroke={A} strokeWidth="1.8" />
+      <text className="mono" x="432" y="52" fill={A}>≈10° ER</text>
+      <text className="mono" x="400" y="186" textAnchor="middle" fill={A}>screwed home</text>
+
+      <text className="mono" x="40" y="216" opacity=".7">THE MEDIAL FEMORAL CONDYLE IS LONGER</text>
+      <text x="40" y="236">so the tibia keeps travelling on that side after the lateral side has run out — and the joint locks without quadriceps work</text>
+    </svg>
+  );
+}
+
+/** The sweep test moves fluid from one gutter to the other. */
+function EffusionSweep() {
+  return (
+    <svg
+      viewBox="0 0 620 268"
+      role="img"
+      aria-label="Three steps of the effusion sweep test. First an upward sweep empties the medial gutter, then a downward stroke on the lateral side drives fluid across, then the wave returning to the medial hollow is graded."
+    >
+      {[0, 1, 2].map((i) => (
+        <g key={i}>
+          <ellipse cx={110 + i * 200} cy="122" rx="46" ry="60" fill="currentColor" fillOpacity=".05" stroke="currentColor" strokeWidth="1.4" />
+          <ellipse cx={110 + i * 200} cy="112" rx="17" ry="22" fill="currentColor" fillOpacity=".1" stroke="currentColor" strokeWidth="1.2" />
+        </g>
+      ))}
+
+      <path d="M 74 158 L 74 88" stroke={A} strokeWidth="2.6" />
+      <path d="M 67 96 L 74 84 L 81 96" fill="none" stroke={A} strokeWidth="2.6" />
+      <text className="mono" x="110" y="28" textAnchor="middle" fill={A}>1 · SWEEP UP, MEDIAL</text>
+      <text x="110" y="206" textAnchor="middle" fontSize="11">empties the medial gutter</text>
+
+      <path d="M 346 88 L 346 158" stroke={D2} strokeWidth="2.6" />
+      <path d="M 339 150 L 346 162 L 353 150" fill="none" stroke={D2} strokeWidth="2.6" />
+      <text className="mono" x="310" y="28" textAnchor="middle" fill={D2}>2 · STROKE DOWN, LATERAL</text>
+      <text x="310" y="206" textAnchor="middle" fontSize="11">drives fluid across</text>
+
+      <path d="M 476 132 Q 494 118 476 104" fill="none" stroke={D3} strokeWidth="2.6" />
+      <path d="M 483 108 L 474 100 L 471 112" fill="none" stroke={D3} strokeWidth="2.6" />
+      <text className="mono" x="510" y="28" textAnchor="middle" fill={D3}>3 · WATCH THE MEDIAL HOLLOW</text>
+      <text x="510" y="206" textAnchor="middle" fontSize="11">the wave that returns is the grade</text>
+
+      <text className="mono" x="40" y="236" opacity=".75">0 none · TRACE a small wave · 1+ a larger bulge</text>
+      <text className="mono" x="40" y="256" opacity=".75">2+ it returns with no stroke · 3+ it cannot be swept out at all</text>
+    </svg>
+  );
+}
+
+/** Knee angle decides which restraint a test isolates. */
+function LigamentAngle() {
+  return (
+    <svg
+      viewBox="0 0 620 250"
+      role="img"
+      aria-label="Two knee positions. At twenty to thirty degrees of flexion the hamstrings are slack and an anterior force loads the anterior cruciate ligament cleanly, which is the Lachman test. At ninety degrees the hamstrings can resist the same force, which is why the anterior drawer performs worse, especially in an acutely swollen knee."
+    >
+      <text className="mono" x="150" y="26" textAnchor="middle" fill={A}>20–30° · LACHMAN</text>
+      <line x1="90" y1="80" x2="158" y2="126" stroke="currentColor" strokeWidth="9" opacity=".35" strokeLinecap="round" />
+      <line x1="158" y1="126" x2="222" y2="180" stroke="currentColor" strokeWidth="9" opacity=".35" strokeLinecap="round" />
+      <circle cx="158" cy="126" r="9" fill="currentColor" fillOpacity=".2" stroke="currentColor" strokeWidth="1.4" />
+      <line x1="176" y1="158" x2="224" y2="140" stroke={A} strokeWidth="2.6" />
+      <path d="M 216 134 L 227 139 L 219 148" fill="none" stroke={A} strokeWidth="2.6" />
+      <text className="mono" x="150" y="212" textAnchor="middle" fill={A}>hamstrings slack</text>
+      <text x="150" y="232" textAnchor="middle" fontSize="11">the ACL takes the force alone</text>
+
+      <text className="mono" x="440" y="26" textAnchor="middle" fill={HI}>90° · ANTERIOR DRAWER</text>
+      <line x1="378" y1="118" x2="452" y2="118" stroke="currentColor" strokeWidth="9" opacity=".35" strokeLinecap="round" />
+      <line x1="452" y1="118" x2="452" y2="194" stroke="currentColor" strokeWidth="9" opacity=".35" strokeLinecap="round" />
+      <circle cx="452" cy="118" r="9" fill="currentColor" fillOpacity=".2" stroke="currentColor" strokeWidth="1.4" />
+      <line x1="452" y1="160" x2="504" y2="160" stroke={A} strokeWidth="2.6" />
+      <path d="M 496 153 L 506 160 L 496 167" fill="none" stroke={A} strokeWidth="2.6" />
+      <path d="M 392 126 Q 420 168 444 192" fill="none" stroke={HI} strokeWidth="3" opacity=".8" />
+      <text className="mono" x="360" y="140" textAnchor="end" fill={HI}>hamstrings</text>
+      <text className="mono" x="360" y="156" textAnchor="end" fill={HI}>can defend</text>
+      <text className="mono" x="440" y="212" textAnchor="middle" fill={HI}>and the swollen knee</text>
+      <text x="440" y="232" textAnchor="middle" fontSize="11">will not reach the position at all</text>
+    </svg>
+  );
+}
+
+/** Blood supply decides whether a meniscal tear can heal. */
+function MeniscusZones() {
+  return (
+    <svg
+      viewBox="0 0 620 236"
+      role="img"
+      aria-label="A meniscus seen from above, divided into three concentric zones. The outer third, red-red, is vascular and can heal or be repaired. The middle red-white zone is marginal. The inner third, white-white, is avascular and will not heal, so tears there are trimmed rather than repaired."
+    >
+      <path d="M 176 60 A 74 74 0 1 0 176 184" fill="none" stroke={HI} strokeWidth="17" opacity=".55" strokeLinecap="round" />
+      <path d="M 176 76 A 56 56 0 1 0 176 168" fill="none" stroke={MOD} strokeWidth="14" opacity=".5" strokeLinecap="round" />
+      <path d="M 176 90 A 40 40 0 1 0 176 154" fill="none" stroke="currentColor" strokeWidth="12" opacity=".22" strokeLinecap="round" />
+
+      <line x1="200" y1="52" x2="266" y2="52" stroke={HI} strokeWidth="7" strokeLinecap="round" opacity=".55" />
+      <text className="mono" x="276" y="48" fill={HI}>RED-RED · OUTER THIRD</text>
+      <text x="276" y="68">vascular — heals, and can be repaired</text>
+      <line x1="200" y1="108" x2="266" y2="108" stroke={MOD} strokeWidth="7" strokeLinecap="round" opacity=".5" />
+      <text className="mono" x="276" y="104" fill={MOD}>RED-WHITE · MIDDLE</text>
+      <text x="276" y="124">marginal supply — repair is a judgement call</text>
+      <line x1="200" y1="164" x2="266" y2="164" stroke="currentColor" strokeWidth="7" strokeLinecap="round" opacity=".22" />
+      <text className="mono" x="276" y="160" opacity=".7">WHITE-WHITE · INNER THIRD</text>
+      <text x="276" y="180">avascular — will not heal, so it is trimmed</text>
+      <text className="mono" x="40" y="212" opacity=".65">the same tear shape carries a different prognosis</text>
+      <text className="mono" x="40" y="230" opacity=".65">depending only on how far from the rim it sits</text>
+    </svg>
+  );
+}
+
+/** The knee is concave-on-convex, so the glide follows the bone. */
+function ConcaveKneeGlide() {
+  return (
+    <svg
+      viewBox="0 0 620 312"
+      role="img"
+      aria-label="Two panels of the tibia on the femoral condyle, seen from the side of a right knee. The tibia is the concave partner and it is the bone that moves, so roll and glide travel the same way: in extension the plateau and the shaft both travel anteriorly, in flexion both travel posteriorly. This is the opposite arrangement to the hip and the shoulder, where the moving surface is convex and the glide opposes the shaft."
+    >
+      <text className="mono" x="170" y="26" textAnchor="middle" fill={A}>EXTENSION</text>
+      <circle cx="170" cy="96" r="36" fill="currentColor" fillOpacity=".07" stroke="currentColor" strokeWidth="1.5" />
+      <text className="mono" x="170" y="50" textAnchor="middle" opacity=".5">femur</text>
+      <line x1="170" y1="136" x2="132" y2="136" stroke={A} strokeWidth="2.6" />
+      <path d="M 140 129 L 130 136 L 140 143" fill="none" stroke={A} strokeWidth="2.6" />
+      <line x1="116" y1="148" x2="224" y2="148" stroke={A} strokeWidth="7" strokeLinecap="round" />
+      <text className="mono" x="232" y="152" opacity=".55">plateau</text>
+      <line x1="170" y1="152" x2="170" y2="226" stroke="currentColor" strokeWidth="6" opacity=".26" strokeDasharray="5 6" strokeLinecap="round" />
+      <line x1="170" y1="152" x2="134" y2="224" stroke="currentColor" strokeWidth="8" opacity=".38" strokeLinecap="round" />
+      <text className="mono" x="126" y="212" textAnchor="end" opacity=".55">tibia</text>
+      <text className="mono" x="170" y="254" textAnchor="middle" fill={A}>plateau glides anteriorly</text>
+      <text className="mono" x="170" y="274" textAnchor="middle" fill={D2}>shaft swings anteriorly too</text>
+      <text className="mono" x="170" y="298" textAnchor="middle">same direction — anterior glide</text>
+
+      <text className="mono" x="450" y="26" textAnchor="middle" fill={D3}>FLEXION</text>
+      <circle cx="450" cy="96" r="36" fill="currentColor" fillOpacity=".07" stroke="currentColor" strokeWidth="1.5" />
+      <text className="mono" x="450" y="50" textAnchor="middle" opacity=".5">femur</text>
+      <line x1="450" y1="136" x2="488" y2="136" stroke={D3} strokeWidth="2.6" />
+      <path d="M 480 129 L 490 136 L 480 143" fill="none" stroke={D3} strokeWidth="2.6" />
+      <line x1="396" y1="148" x2="504" y2="148" stroke={D3} strokeWidth="7" strokeLinecap="round" />
+      <text className="mono" x="388" y="152" textAnchor="end" opacity=".55">plateau</text>
+      <line x1="450" y1="152" x2="450" y2="226" stroke="currentColor" strokeWidth="6" opacity=".26" strokeDasharray="5 6" strokeLinecap="round" />
+      <line x1="450" y1="152" x2="486" y2="224" stroke="currentColor" strokeWidth="8" opacity=".38" strokeLinecap="round" />
+      <text className="mono" x="494" y="212" opacity=".55">tibia</text>
+      <text className="mono" x="450" y="254" textAnchor="middle" fill={D3}>plateau glides posteriorly</text>
+      <text className="mono" x="450" y="274" textAnchor="middle" fill={D2}>shaft swings posteriorly too</text>
+      <text className="mono" x="450" y="298" textAnchor="middle">same direction — posterior glide</text>
+
+      <text className="mono" x="24" y="140" opacity=".5">anterior ←</text>
+      <text className="mono" x="170" y="242" textAnchor="middle" opacity=".4">faded = start</text>
+    </svg>
+  );
+}
+
 const FIGURES: Record<string, () => React.ReactElement> = {
   "elevation-arithmetic": ElevationArithmetic,
   "restraint-by-angle": RestraintByAngle,
@@ -865,6 +1109,13 @@ const FIGURES: Record<string, () => React.ReactElement> = {
   "irritability-dose": IrritabilityDose,
   "treatment-plane": TreatmentPlane,
   "roll-without-slide": RollWithoutSlide,
+  "knee-pain-map": KneePainMap,
+  "q-angle": QAngle,
+  "screw-home": ScrewHome,
+  "effusion-sweep": EffusionSweep,
+  "ligament-angle": LigamentAngle,
+  "meniscus-zones": MeniscusZones,
+  "concave-knee-glide": ConcaveKneeGlide,
 };
 
 /** Renders the figure a `figure` block names, or nothing if the id is unknown — a content

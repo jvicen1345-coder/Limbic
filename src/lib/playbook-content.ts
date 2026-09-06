@@ -32,6 +32,7 @@
 
 import { HIP_PLAYBOOK } from "@/lib/playbooks/hip";
 import { JOINT_MOBILIZATION_PLAYBOOK } from "@/lib/playbooks/joint-mobilization";
+import { KNEE_PLAYBOOK } from "@/lib/playbooks/knee";
 import { SHOULDER_PLAYBOOK } from "@/lib/playbooks/shoulder";
 
 /** A cell's presentation: `name` is the row's subject (bolded first column), `num` renders
@@ -154,7 +155,7 @@ export interface Playbook {
   footer: string;
 }
 
-export const PLAYBOOKS: Playbook[] = [SHOULDER_PLAYBOOK, HIP_PLAYBOOK, JOINT_MOBILIZATION_PLAYBOOK];
+export const PLAYBOOKS: Playbook[] = [SHOULDER_PLAYBOOK, HIP_PLAYBOOK, KNEE_PLAYBOOK, JOINT_MOBILIZATION_PLAYBOOK];
 
 export function getPlaybook(slug: string): Playbook | undefined {
   return PLAYBOOKS.find((playbook) => playbook.slug === slug);
