@@ -7,6 +7,7 @@ import { EXERCISES } from "@/lib/exercises-static";
 import { REP_CONTINUUM_ZONES, GOAL_ZONE_GUIDANCE } from "@/lib/rep-continuum-static";
 import type { WellnessGoal } from "@/lib/vitals";
 import { RpeScaleCard } from "@/components/metrics/RpeScaleCard";
+import { CollapsibleCard } from "@/components/CollapsibleCard";
 
 type Tab = "exercises" | "continuum";
 
@@ -61,14 +62,14 @@ export function ExerciseLibraryTabs({ goal }: { goal: WellnessGoal | null }) {
                 </div>
 
                 <p className="wellness-calc-desc">{ex.benefits}</p>
-
+                <CollapsibleCard title="Expand">
                 <div className="wellness-assess-steps-label">How to perform</div>
                 <ol className="wellness-assess-steps">
                   {ex.steps.map((step, si) => (
                     <li key={si}>{step}</li>
                   ))}
                 </ol>
-
+                
                 <div className="wellness-assess-steps-label">Common errors</div>
                 <ul className="wellness-assess-steps wellness-assess-steps--bullet">
                   {ex.commonErrors.map((err, ei) => (
@@ -88,6 +89,7 @@ export function ExerciseLibraryTabs({ goal }: { goal: WellnessGoal | null }) {
                 </div>
 
                 <div className="wellness-calc-source">{ex.setsReps}</div>
+                </CollapsibleCard>
               </div>,
 
               <div key={`${ex.id}-video`} className="assess-video-cell">

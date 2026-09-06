@@ -3612,13 +3612,21 @@ html[data-theme="dark"] .nav-founding-link-active {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  margin-bottom: 24px;
 }
 @media (min-width: 1024px) {
   .assess-page-layout {
     display: grid;
-    grid-template-columns: minmax(0, 65%) minmax(0, 35%);
+    grid-template-columns: minmax(0, 13fr) minmax(0, 7fr);
     gap: 24px;
     align-items: start;
+    padding-top: 24px;
+  }
+  .assess-video-cell { position: relative; }
+  .assess-right-panel-heading {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
   }
 }
 .assess-test-card { border-left: 3px solid var(--color-accent); }
