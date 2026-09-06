@@ -12,6 +12,8 @@ const A = "var(--pb-accent)";
 const D2 = "var(--pb-d2)";
 const D3 = "var(--pb-d3)";
 const HI = "var(--pb-hi)";
+const MOD = "var(--pb-mod)";
+const LOW = "var(--pb-low)";
 
 /** Where 180° of elevation comes from — a stacked bar, then its scapular half broken into
  *  the SC and AC contributions. */
@@ -380,6 +382,386 @@ function HumerusRotation() {
   );
 }
 
+/* ---------- hip ---------- */
+
+/** Five pain zones on a schematic hip, each with the test that opens it. */
+function HipPainMap() {
+  return (
+    <svg
+      viewBox="0 0 620 300"
+      role="img"
+      aria-label="Schematic hip with five numbered pain zones — lateral thigh, buttock, groin and inner thigh, local trochanteric, and anterior hip and groin — each listed with the test that separates its causes. A bar across the foot of the figure notes that long axis distraction relieving symptoms points to hip osteoarthritis in all five zones."
+    >
+      <path
+        d="M 66 104 Q 110 74 152 84 Q 172 128 156 150 Q 140 168 106 156 Q 74 140 66 104 Z"
+        fill="currentColor"
+        fillOpacity=".07"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        opacity=".7"
+      />
+      <path d="M 106 156 Q 118 188 136 192 Q 152 188 152 168" fill="none" stroke="currentColor" strokeWidth="1.2" opacity=".55" />
+      <circle cx="166" cy="140" r="14" fill="currentColor" fillOpacity=".12" stroke="currentColor" strokeWidth="1.4" opacity=".8" />
+      <path d="M 178 148 L 190 156" stroke="currentColor" strokeWidth="4" opacity=".45" strokeLinecap="round" />
+      <path d="M 192 158 L 204 236" stroke="currentColor" strokeWidth="9" opacity=".3" strokeLinecap="round" />
+      <text className="mono" x="66" y="250" opacity=".5">anterior view · right hip</text>
+
+      <circle cx="206" cy="196" r="7" fill={A} />
+      <text className="mono" x="218" y="200" fill={A}>1</text>
+      <circle cx="86" cy="124" r="7" fill={D2} />
+      <text className="mono" x="70" y="128" textAnchor="end" fill={D2}>2</text>
+      <circle cx="124" cy="206" r="7" fill={D3} />
+      <text className="mono" x="112" y="224" textAnchor="end" fill={D3}>3</text>
+      <circle cx="196" cy="144" r="7" fill={A} />
+      <text className="mono" x="208" y="140" fill={A}>4</text>
+      <circle cx="146" cy="112" r="7" fill={D2} />
+      <text className="mono" x="146" y="98" textAnchor="middle" fill={D2}>5</text>
+
+      <text className="mono" x="276" y="44" fill={A}>1 LATERAL THIGH</text>
+      <text x="276" y="62">glute med static test · palpation · single leg stance</text>
+      <text className="mono" x="276" y="92" fill={D2}>2 BUTTOCK</text>
+      <text x="276" y="110">resisted knee flexion · hamstring stretch · palpation</text>
+      <text className="mono" x="276" y="140" fill={D3}>3 GROIN &amp; INNER THIGH</text>
+      <text x="276" y="158">resisted adduction · FADIR · log roll</text>
+      <text className="mono" x="276" y="188" fill={A}>4 LOCAL TROCHANTERIC</text>
+      <text x="276" y="206">posterolateral trochanter palpation · Trendelenburg</text>
+      <text className="mono" x="276" y="236" fill={D2}>5 ANTERIOR HIP &amp; GROIN</text>
+      <text x="276" y="254">resisted flexion · FADIR · AIIS / ASIS palpation</text>
+
+      <rect x="66" y="272" width="514" height="24" rx="5" fill={A} fillOpacity=".12" stroke={A} strokeWidth="1.2" />
+      <text className="mono" x="323" y="288" textAnchor="middle" fill={A}>
+        LONG AXIS DISTRACTION RELIEVES → HIP OA — IN ALL FIVE ZONES
+      </text>
+    </svg>
+  );
+}
+
+/** Femoral version seen down the shaft: neck angle against the condylar axis. */
+function FemoralVersion() {
+  return (
+    <svg
+      viewBox="0 0 620 240"
+      role="img"
+      aria-label="Three femurs viewed down the shaft from above. Normal anteversion is about 15 degrees between the femoral neck and the condylar axis. Excessive anteversion is a larger angle, turning the limb inward and giving more available internal rotation. Retroversion is a smaller or negative angle, turning the limb outward and giving more external rotation."
+    >
+      <text className="mono" x="310" y="26" textAnchor="middle" opacity=".6">VIEWED DOWN THE SHAFT — NECK ANGLE AGAINST THE FEMORAL CONDYLES</text>
+
+      <g>
+        <line x1="58" y1="150" x2="162" y2="150" stroke="currentColor" strokeWidth="7" opacity=".4" strokeLinecap="round" />
+        <line x1="110" y1="150" x2="50" y2="134" stroke={A} strokeWidth="6" strokeLinecap="round" />
+        <circle cx="46" cy="133" r="8" fill={A} fillOpacity=".3" stroke={A} strokeWidth="1.5" />
+        <path d="M 84 150 A 26 26 0 0 0 82 143" fill="none" stroke={A} strokeWidth="1.4" />
+        <text className="mono" x="110" y="176" textAnchor="middle" fill={A}>≈15°</text>
+        <text x="110" y="196" textAnchor="middle">Normal</text>
+        <text className="mono" x="110" y="216" textAnchor="middle" opacity=".7">toe-out 4–7°</text>
+      </g>
+
+      <g>
+        <line x1="258" y1="150" x2="362" y2="150" stroke="currentColor" strokeWidth="7" opacity=".4" strokeLinecap="round" />
+        <line x1="310" y1="150" x2="258" y2="118" stroke={D2} strokeWidth="6" strokeLinecap="round" />
+        <circle cx="254" cy="116" r="8" fill={D2} fillOpacity=".3" stroke={D2} strokeWidth="1.5" />
+        <path d="M 284 150 A 26 26 0 0 0 278 136" fill="none" stroke={D2} strokeWidth="1.4" />
+        <text className="mono" x="310" y="176" textAnchor="middle" fill={D2}>&gt; 15°</text>
+        <text x="310" y="196" textAnchor="middle">Anteversion</text>
+        <text className="mono" x="310" y="216" textAnchor="middle" opacity=".7">toe-in · more IR available</text>
+      </g>
+
+      <g>
+        <line x1="458" y1="150" x2="562" y2="150" stroke="currentColor" strokeWidth="7" opacity=".4" strokeLinecap="round" />
+        <line x1="510" y1="150" x2="450" y2="154" stroke={D3} strokeWidth="6" strokeLinecap="round" />
+        <circle cx="446" cy="154" r="8" fill={D3} fillOpacity=".3" stroke={D3} strokeWidth="1.5" />
+        <path d="M 484 150 A 26 26 0 0 0 484 152" fill="none" stroke={D3} strokeWidth="1.4" />
+        <text className="mono" x="510" y="176" textAnchor="middle" fill={D3}>&lt; 15°</text>
+        <text x="510" y="196" textAnchor="middle">Retroversion</text>
+        <text className="mono" x="510" y="216" textAnchor="middle" opacity=".7">toe-out · more ER available</text>
+      </g>
+    </svg>
+  );
+}
+
+/** Three pelvises in single leg stance: neutral, Trendelenburg, compensated. */
+function TrendelenburgDrop() {
+  return (
+    <svg
+      viewBox="0 0 620 250"
+      role="img"
+      aria-label="Three figures in single leg stance seen from behind. Neutral: the pelvis stays level. Trendelenburg: the unloaded pelvis drops more than two centimetres. Compensated Trendelenburg: the pelvis is nearly level but the trunk leans toward the stance leg, which shortens the abductor moment arm."
+    >
+      <g>
+        <line x1="110" y1="66" x2="110" y2="126" stroke="currentColor" strokeWidth="3" opacity=".5" strokeLinecap="round" />
+        <line x1="66" y1="126" x2="154" y2="126" stroke={A} strokeWidth="7" strokeLinecap="round" />
+        <line x1="82" y1="130" x2="82" y2="204" stroke="currentColor" strokeWidth="3" opacity=".5" strokeLinecap="round" />
+        <path d="M 138 130 L 148 168 L 132 186" fill="none" stroke="currentColor" strokeWidth="2" opacity=".35" strokeLinecap="round" />
+        <line x1="60" y1="126" x2="60" y2="126" stroke={A} strokeWidth="1" />
+        <text className="mono" x="110" y="226" textAnchor="middle" fill={A}>NEUTRAL</text>
+        <text className="mono" x="110" y="243" textAnchor="middle" opacity=".65">pelvis level</text>
+      </g>
+
+      <g>
+        <line x1="310" y1="62" x2="310" y2="122" stroke="currentColor" strokeWidth="3" opacity=".5" strokeLinecap="round" />
+        <line x1="266" y1="114" x2="354" y2="140" stroke={HI} strokeWidth="7" strokeLinecap="round" />
+        <line x1="282" y1="120" x2="282" y2="204" stroke="currentColor" strokeWidth="3" opacity=".5" strokeLinecap="round" />
+        <path d="M 340 146 L 350 182 L 334 198" fill="none" stroke="currentColor" strokeWidth="2" opacity=".35" strokeLinecap="round" />
+        <line x1="266" y1="114" x2="366" y2="114" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" opacity=".4" />
+        <line x1="362" y1="114" x2="362" y2="140" stroke={HI} strokeWidth="1.4" />
+        <path d="M 358 118 L 362 114 L 366 118" fill="none" stroke={HI} strokeWidth="1.4" />
+        <path d="M 358 136 L 362 140 L 366 136" fill="none" stroke={HI} strokeWidth="1.4" />
+        <text className="mono" x="372" y="132" fill={HI}>&gt; 2 cm</text>
+        <text className="mono" x="310" y="226" textAnchor="middle" fill={HI}>TRENDELENBURG</text>
+        <text className="mono" x="310" y="243" textAnchor="middle" opacity=".65">unloaded side drops</text>
+      </g>
+
+      <g>
+        <line x1="510" y1="124" x2="482" y2="66" stroke={D2} strokeWidth="3" strokeLinecap="round" />
+        <line x1="466" y1="124" x2="554" y2="130" stroke={D2} strokeWidth="7" strokeLinecap="round" />
+        <line x1="482" y1="128" x2="482" y2="204" stroke="currentColor" strokeWidth="3" opacity=".5" strokeLinecap="round" />
+        <path d="M 538 136 L 548 174 L 532 192" fill="none" stroke="currentColor" strokeWidth="2" opacity=".35" strokeLinecap="round" />
+        <path d="M 508 84 Q 492 78 486 72" fill="none" stroke={D2} strokeWidth="1.4" />
+        <path d="M 490 68 L 484 71 L 489 76" fill="none" stroke={D2} strokeWidth="1.4" />
+        <text className="mono" x="516" y="88" fill={D2}>trunk leans</text>
+        <text className="mono" x="510" y="226" textAnchor="middle" fill={D2}>COMPENSATED</text>
+        <text className="mono" x="510" y="243" textAnchor="middle" opacity=".65">same muscle, hidden</text>
+      </g>
+    </svg>
+  );
+}
+
+/** Quad-dominant and hip-dominant squat, compared by shin and trunk angle. */
+function SquatStrategy() {
+  return (
+    <svg
+      viewBox="0 0 620 236"
+      role="img"
+      aria-label="Two squat strategies compared. Quad dominant: the torso stays more upright and the shin angles further forward, loading the knee extensors. Hip dominant: the torso comes forward and the shin stays closer to vertical, loading the hip extensors."
+    >
+      <line x1="40" y1="196" x2="580" y2="196" stroke="currentColor" strokeWidth="1" opacity=".3" />
+
+      <g>
+        <line x1="150" y1="196" x2="150" y2="60" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" opacity=".28" />
+        <line x1="150" y1="194" x2="198" y2="140" stroke={A} strokeWidth="4" strokeLinecap="round" />
+        <line x1="198" y1="140" x2="140" y2="116" stroke="currentColor" strokeWidth="4" opacity=".55" strokeLinecap="round" />
+        <line x1="140" y1="116" x2="156" y2="58" stroke={A} strokeWidth="4" strokeLinecap="round" />
+        <circle cx="158" cy="48" r="9" fill="currentColor" fillOpacity=".14" stroke="currentColor" strokeWidth="1.4" />
+        <path d="M 150 168 A 28 28 0 0 0 166 162" fill="none" stroke={A} strokeWidth="1.4" />
+        <text className="mono" x="208" y="190" fill={A}>greater shin angle</text>
+        <text className="mono" x="150" y="216" textAnchor="middle" fill={A}>QUAD DOMINANT</text>
+        <text className="mono" x="150" y="232" textAnchor="middle" opacity=".65">torso upright · knee pays</text>
+      </g>
+
+      <g>
+        <line x1="430" y1="196" x2="430" y2="60" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" opacity=".28" />
+        <line x1="430" y1="194" x2="446" y2="140" stroke={D3} strokeWidth="4" strokeLinecap="round" />
+        <line x1="446" y1="140" x2="392" y2="126" stroke="currentColor" strokeWidth="4" opacity=".55" strokeLinecap="round" />
+        <line x1="392" y1="126" x2="438" y2="70" stroke={D3} strokeWidth="4" strokeLinecap="round" />
+        <circle cx="444" cy="62" r="9" fill="currentColor" fillOpacity=".14" stroke="currentColor" strokeWidth="1.4" />
+        <path d="M 430 168 A 28 28 0 0 0 436 166" fill="none" stroke={D3} strokeWidth="1.4" />
+        <text className="mono" x="462" y="190" fill={D3}>lesser shin angle</text>
+        <text className="mono" x="430" y="216" textAnchor="middle" fill={D3}>HIP DOMINANT</text>
+        <text className="mono" x="430" y="232" textAnchor="middle" opacity=".65">torso forward · hip pays</text>
+      </g>
+    </svg>
+  );
+}
+
+/** Three dials — sagittal, frontal, and rotation measured at 90° of hip and knee flexion. */
+function HipRomDial() {
+  return (
+    <svg
+      viewBox="0 0 620 262"
+      role="img"
+      aria-label="Three dials showing normal hip range. Sagittal plane: flexion 0 to 120 degrees, extension 0 to 30. Frontal plane: abduction 0 to 45 degrees, adduction 0 to 30. Rotation measured at 90 degrees of hip and knee flexion: internal rotation 0 to 45 degrees and external rotation 0 to 45 degrees."
+    >
+      <text className="mono" x="110" y="30" textAnchor="middle" fill={A}>SAGITTAL</text>
+      <circle cx="110" cy="118" r="58" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" opacity=".22" />
+      <path d="M 110 176 A 58 58 0 0 1 60 89" fill="none" stroke={A} strokeWidth="8" strokeLinecap="round" opacity=".85" />
+      <path d="M 110 176 A 58 58 0 0 0 139 168" fill="none" stroke={D3} strokeWidth="8" strokeLinecap="round" opacity=".85" />
+      <line x1="110" y1="118" x2="110" y2="176" stroke="currentColor" strokeWidth="2.5" opacity=".5" strokeLinecap="round" />
+      <circle cx="110" cy="118" r="4" fill="currentColor" opacity=".6" />
+      <text className="mono" x="110" y="206" textAnchor="middle" fill={A}>flexion 0–120°</text>
+      <text className="mono" x="110" y="222" textAnchor="middle" fill={D3}>extension 0–30°</text>
+      <text className="mono" x="110" y="242" textAnchor="middle" opacity=".55">anterior ←</text>
+
+      <text className="mono" x="310" y="30" textAnchor="middle" fill={A}>FRONTAL</text>
+      <circle cx="310" cy="118" r="58" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" opacity=".22" />
+      <path d="M 310 176 A 58 58 0 0 1 269 159" fill="none" stroke={A} strokeWidth="8" strokeLinecap="round" opacity=".85" />
+      <path d="M 310 176 A 58 58 0 0 0 339 168" fill="none" stroke={D3} strokeWidth="8" strokeLinecap="round" opacity=".85" />
+      <line x1="310" y1="118" x2="310" y2="176" stroke="currentColor" strokeWidth="2.5" opacity=".5" strokeLinecap="round" />
+      <circle cx="310" cy="118" r="4" fill="currentColor" opacity=".6" />
+      <text className="mono" x="310" y="206" textAnchor="middle" fill={A}>abduction 0–45°</text>
+      <text className="mono" x="310" y="222" textAnchor="middle" fill={D3}>adduction 0–30°</text>
+      <text className="mono" x="310" y="242" textAnchor="middle" opacity=".55">lateral ←</text>
+
+      <text className="mono" x="510" y="30" textAnchor="middle" fill={A}>ROTATION @ 90/90</text>
+      <circle cx="510" cy="118" r="58" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" opacity=".22" />
+      <path d="M 510 176 A 58 58 0 0 1 469 159" fill="none" stroke={A} strokeWidth="8" strokeLinecap="round" opacity=".85" />
+      <path d="M 510 176 A 58 58 0 0 0 551 159" fill="none" stroke={D3} strokeWidth="8" strokeLinecap="round" opacity=".85" />
+      <line x1="510" y1="118" x2="510" y2="176" stroke="currentColor" strokeWidth="2.5" opacity=".5" strokeLinecap="round" />
+      <circle cx="510" cy="118" r="4" fill="currentColor" opacity=".6" />
+      <text className="mono" x="510" y="206" textAnchor="middle" fill={A}>ER 0–45°</text>
+      <text className="mono" x="510" y="222" textAnchor="middle" fill={D3}>IR 0–45°</text>
+      <text className="mono" x="510" y="242" textAnchor="middle" opacity=".55">tibia vertical at start</text>
+    </svg>
+  );
+}
+
+/** Which correction brings the leg down decides which hip flexor is short. */
+function ThomasSort() {
+  return (
+    <svg
+      viewBox="0 0 620 250"
+      role="img"
+      aria-label="Decision chain for the second Thomas test attempt with the pelvis stabilized. If the thigh reaches the table the test is normal. If not, abducting the leg and having it come down implicates the tensor fasciae latae; extending the knee and having it come down implicates rectus femoris; if neither brings it down, the iliopsoas is short."
+    >
+      <rect x="40" y="24" width="252" height="38" rx="6" fill={A} fillOpacity=".12" stroke={A} strokeWidth="1.3" />
+      <text className="mono" x="166" y="42" textAnchor="middle" fill={A}>PELVIS STABILIZED · POSTERIOR TILT</text>
+      <text x="166" y="57" textAnchor="middle">lower the test leg</text>
+
+      <line x1="166" y1="62" x2="166" y2="88" stroke="currentColor" strokeWidth="1.3" opacity=".45" />
+
+      <rect x="40" y="88" width="252" height="34" rx="6" fill="currentColor" fillOpacity=".05" stroke="currentColor" strokeWidth="1" opacity=".8" />
+      <text x="166" y="109" textAnchor="middle">Does the thigh reach the table?</text>
+      <line x1="292" y1="105" x2="352" y2="105" stroke={D3} strokeWidth="1.3" />
+      <text className="mono" x="358" y="102" fill={D3}>YES — NORMAL</text>
+      <text className="mono" x="358" y="118" opacity=".7">knee 80–90° · hip ≥ 0°</text>
+
+      <line x1="166" y1="122" x2="166" y2="148" stroke="currentColor" strokeWidth="1.3" opacity=".45" />
+      <rect x="40" y="148" width="252" height="30" rx="6" fill="currentColor" fillOpacity=".05" stroke="currentColor" strokeWidth="1" opacity=".8" />
+      <text x="166" y="167" textAnchor="middle">Now abduct the leg — does it come down?</text>
+      <line x1="292" y1="163" x2="352" y2="163" stroke={A} strokeWidth="1.3" />
+      <text className="mono" x="358" y="167" fill={A}>YES → TFL IS SHORT</text>
+
+      <line x1="166" y1="178" x2="166" y2="200" stroke="currentColor" strokeWidth="1.3" opacity=".45" />
+      <rect x="40" y="200" width="252" height="30" rx="6" fill="currentColor" fillOpacity=".05" stroke="currentColor" strokeWidth="1" opacity=".8" />
+      <text x="166" y="219" textAnchor="middle">Now extend the knee — does it come down?</text>
+      <line x1="292" y1="215" x2="352" y2="215" stroke={D2} strokeWidth="1.3" />
+      <text className="mono" x="358" y="211" fill={D2}>YES → RECTUS FEMORIS</text>
+      <text className="mono" x="358" y="227" fill={HI}>NO → ILIOPSOAS</text>
+    </svg>
+  );
+}
+
+/** Convex head on concave socket: the glide opposes the shaft. */
+function ConvexHipGlide() {
+  return (
+    <svg
+      viewBox="0 0 620 274"
+      role="img"
+      aria-label="Two panels of the femoral head in the acetabulum. In hip flexion or internal rotation the shaft swings anteriorly and the convex head glides posteriorly, which is why the treatment is an anterior-to-posterior glide directed posterolaterally. In extension or external rotation the shaft swings posteriorly and the head glides anteriorly, treated with a posterior-to-anterior glide directed anteromedially."
+    >
+      <text className="mono" x="170" y="28" textAnchor="middle" fill={A}>FLEXION / INTERNAL ROTATION</text>
+      <text className="mono" x="170" y="74" textAnchor="middle" fill={A}>head glides posteriorly →</text>
+      <path d="M 130 140 A 40 40 0 0 1 210 140" fill="none" stroke="currentColor" strokeWidth="8" opacity=".32" strokeLinecap="round" />
+      <circle cx="170" cy="140" r="27" fill={A} fillOpacity=".12" stroke={A} strokeWidth="1.6" />
+      <line x1="170" y1="140" x2="206" y2="212" stroke="currentColor" strokeWidth="8" opacity=".4" strokeLinecap="round" />
+      <line x1="153" y1="140" x2="183" y2="140" stroke={A} strokeWidth="2.6" />
+      <path d="M 177 134 L 184 140 L 177 146" fill="none" stroke={A} strokeWidth="2.6" />
+      <path d="M 200 200 Q 158 214 128 196" fill="none" stroke={D2} strokeWidth="1.8" />
+      <path d="M 132 190 L 125 195 L 131 202" fill="none" stroke={D2} strokeWidth="1.8" />
+      <text className="mono" x="170" y="242" textAnchor="middle" fill={D2}>shaft swings anteriorly</text>
+      <text className="mono" x="170" y="264" textAnchor="middle">AP glide · posterolateral</text>
+
+      <text className="mono" x="450" y="28" textAnchor="middle" fill={D3}>EXTENSION / EXTERNAL ROTATION</text>
+      <text className="mono" x="450" y="74" textAnchor="middle" fill={D3}>← head glides anteriorly</text>
+      <path d="M 410 140 A 40 40 0 0 1 490 140" fill="none" stroke="currentColor" strokeWidth="8" opacity=".32" strokeLinecap="round" />
+      <circle cx="450" cy="140" r="27" fill={D3} fillOpacity=".12" stroke={D3} strokeWidth="1.6" />
+      <line x1="450" y1="140" x2="486" y2="212" stroke="currentColor" strokeWidth="8" opacity=".4" strokeLinecap="round" />
+      <line x1="467" y1="140" x2="437" y2="140" stroke={D3} strokeWidth="2.6" />
+      <path d="M 443 134 L 436 140 L 443 146" fill="none" stroke={D3} strokeWidth="2.6" />
+      <path d="M 486 204 Q 522 214 546 198" fill="none" stroke={D2} strokeWidth="1.8" />
+      <path d="M 540 192 L 547 197 L 541 204" fill="none" stroke={D2} strokeWidth="1.8" />
+      <text className="mono" x="450" y="242" textAnchor="middle" fill={D2}>shaft swings posteriorly</text>
+      <text className="mono" x="450" y="264" textAnchor="middle">PA glide · anteromedial</text>
+
+      <text className="mono" x="24" y="140" opacity=".5">anterior ←</text>
+    </svg>
+  );
+}
+
+/** The grades placed along the range, against the point where resistance begins. */
+function MaitlandGrades() {
+  return (
+    <svg
+      viewBox="0 0 620 282"
+      role="img"
+      aria-label="The Maitland mobilization grades drawn as amplitudes along the range of motion. Grades one and two sit before R1, the point where resistance begins, and treat pain. Grades three and four cross R1 into resistance and treat tissue length. Grade five is a single high velocity thrust at the end of the available range."
+    >
+      <rect x="70" y="46" width="290" height="118" fill={A} fillOpacity=".07" />
+      <rect x="360" y="46" width="150" height="118" fill={D2} fillOpacity=".1" />
+      <text className="mono" x="80" y="62" fill={A}>NO RESISTANCE — TREATS PAIN</text>
+      <text className="mono" x="370" y="62" fill={D2}>INTO RESISTANCE — TREATS LENGTH</text>
+
+      <line x1="70" y1="176" x2="546" y2="176" stroke="currentColor" strokeWidth="1.6" opacity=".55" />
+      <line x1="70" y1="170" x2="70" y2="182" stroke="currentColor" strokeWidth="1.6" opacity=".55" />
+      <line x1="360" y1="46" x2="360" y2="188" stroke={D2} strokeWidth="1.4" strokeDasharray="4 3" />
+      <line x1="510" y1="46" x2="510" y2="188" stroke="currentColor" strokeWidth="1.4" strokeDasharray="4 3" opacity=".5" />
+      <line x1="546" y1="170" x2="546" y2="182" stroke="currentColor" strokeWidth="1.6" opacity=".55" />
+
+      <text className="mono" x="70" y="200" opacity=".7">beginning</text>
+      <text className="mono" x="360" y="200" textAnchor="middle" fill={D2}>R1 — resistance begins</text>
+      <text className="mono" x="510" y="220" textAnchor="end" opacity=".7">end of available ROM</text>
+      <text className="mono" x="546" y="240" textAnchor="end" opacity=".7">end of normal ROM</text>
+
+      <line x1="80" y1="150" x2="124" y2="150" stroke={A} strokeWidth="7" strokeLinecap="round" />
+      <text className="mono" x="132" y="154" fill={A}>I — small, beginning of range</text>
+      <line x1="80" y1="126" x2="330" y2="126" stroke={A} strokeWidth="7" strokeLinecap="round" />
+      <text className="mono" x="338" y="130" fill={A}>II — large, mid-range</text>
+      <line x1="250" y1="102" x2="508" y2="102" stroke={D2} strokeWidth="7" strokeLinecap="round" />
+      <text className="mono" x="242" y="106" textAnchor="end" fill={D2}>III — large, reaches end</text>
+      <line x1="466" y1="80" x2="508" y2="80" stroke={D2} strokeWidth="7" strokeLinecap="round" />
+      <text className="mono" x="458" y="84" textAnchor="end" fill={D2}>IV — small, very end</text>
+
+      <path d="M 480 268 L 540 268" stroke={HI} strokeWidth="3" strokeLinecap="round" />
+      <path d="M 534 263 L 541 268 L 534 273" fill="none" stroke={HI} strokeWidth="3" />
+      <text className="mono" x="472" y="272" textAnchor="end" fill={HI}>V — thrust, performed once</text>
+    </svg>
+  );
+}
+
+/** One irritability reading, four decisions. */
+function IrritabilityDose() {
+  return (
+    <svg
+      viewBox="0 0 620 264"
+      role="img"
+      aria-label="A matrix showing that one irritability reading fixes four separate decisions. High irritability: grades one to two, ten to thirty second bouts, work before R1, isometric exercise. Moderate: grades two to three, work to the end feel, weight-bearing exercise. Low: grades three to four, sixty second bouts, work past R1 at end range, single leg exercise."
+    >
+      <text className="mono" x="40" y="30" opacity=".65">ONE READING OF IRRITABILITY SETS ALL FOUR ROWS</text>
+
+      <rect x="176" y="44" width="140" height="30" rx="5" fill={HI} fillOpacity=".14" stroke={HI} strokeWidth="1.2" />
+      <text className="mono" x="246" y="63" textAnchor="middle" fill={HI}>HIGH</text>
+      <rect x="324" y="44" width="140" height="30" rx="5" fill={MOD} fillOpacity=".16" stroke={MOD} strokeWidth="1.2" />
+      <text className="mono" x="394" y="63" textAnchor="middle" fill={MOD}>MODERATE</text>
+      <rect x="472" y="44" width="140" height="30" rx="5" fill={LOW} fillOpacity=".14" stroke={LOW} strokeWidth="1.2" />
+      <text className="mono" x="542" y="63" textAnchor="middle" fill={LOW}>LOW</text>
+
+      <text className="mono" x="164" y="102" textAnchor="end" opacity=".7">MOB GRADE</text>
+      <text x="246" y="102" textAnchor="middle">I–II</text>
+      <text x="394" y="102" textAnchor="middle">II–III</text>
+      <text x="542" y="102" textAnchor="middle">III–IV</text>
+      <line x1="176" y1="114" x2="612" y2="114" stroke="currentColor" strokeWidth="1" opacity=".18" />
+
+      <text className="mono" x="164" y="142" textAnchor="end" opacity=".7">BOUT LENGTH</text>
+      <text x="246" y="142" textAnchor="middle">10–30 s</text>
+      <text x="394" y="142" textAnchor="middle">10–60 s</text>
+      <text x="542" y="142" textAnchor="middle">60 s</text>
+      <line x1="176" y1="154" x2="612" y2="154" stroke="currentColor" strokeWidth="1" opacity=".18" />
+
+      <text className="mono" x="164" y="182" textAnchor="end" opacity=".7">WHERE IN RANGE</text>
+      <text x="246" y="182" textAnchor="middle">before R1</text>
+      <text x="394" y="182" textAnchor="middle">to the end feel</text>
+      <text x="542" y="182" textAnchor="middle">past R1, end range</text>
+      <line x1="176" y1="194" x2="612" y2="194" stroke="currentColor" strokeWidth="1" opacity=".18" />
+
+      <text className="mono" x="164" y="222" textAnchor="end" opacity=".7">EXERCISE</text>
+      <text x="246" y="222" textAnchor="middle">isometric</text>
+      <text x="394" y="222" textAnchor="middle">weight bearing</text>
+      <text x="542" y="222" textAnchor="middle">single leg</text>
+
+      <text className="mono" x="40" y="252" opacity=".6">graded twice — from the interview, and from where symptoms arrive relative to the end feel</text>
+    </svg>
+  );
+}
+
 const FIGURES: Record<string, () => React.ReactElement> = {
   "elevation-arithmetic": ElevationArithmetic,
   "restraint-by-angle": RestraintByAngle,
@@ -389,6 +771,15 @@ const FIGURES: Record<string, () => React.ReactElement> = {
   "head-alignment": HeadAlignment,
   "force-couple": ForceCouple,
   "humerus-rotation": HumerusRotation,
+  "hip-pain-map": HipPainMap,
+  "femoral-version": FemoralVersion,
+  "trendelenburg-drop": TrendelenburgDrop,
+  "squat-strategy": SquatStrategy,
+  "hip-rom-dial": HipRomDial,
+  "thomas-sort": ThomasSort,
+  "convex-hip-glide": ConvexHipGlide,
+  "maitland-grades": MaitlandGrades,
+  "irritability-dose": IrritabilityDose,
 };
 
 /** Renders the figure a `figure` block names, or nothing if the id is unknown — a content
