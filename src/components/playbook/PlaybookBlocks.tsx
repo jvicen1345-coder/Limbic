@@ -132,6 +132,27 @@ export function PlaybookBlockView({ block, slug }: { block: PlaybookBlock; slug:
         </div>
       );
 
+    case "statkey":
+      return (
+        <>
+          <div className="playbook-statkey">
+            {block.entries.map((entry) => (
+              <div className="playbook-skcell" key={entry.abbr}>
+                <b>{entry.abbr}</b>
+                <span>
+                  <em>{entry.term}</em> <PlaybookInline text={entry.body} />
+                </span>
+              </div>
+            ))}
+          </div>
+          {block.note && (
+            <p className="playbook-statnote">
+              <PlaybookInline text={block.note} />
+            </p>
+          )}
+        </>
+      );
+
     case "drill":
       return (
         <>
