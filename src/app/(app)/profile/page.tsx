@@ -28,6 +28,7 @@ import { ReplayTourButton } from "@/components/ReplayTourButton";
 import { ProgramTimelineSection } from "@/components/ProgramTimelineSection";
 import { dateToLocalIso } from "@/lib/limbic-calendar";
 import { getUserProgram } from "@/app/actions/dpt-programs";
+import { CollapsibleCard } from "@/components/CollapsibleCard";
 
 // The long tail of keyword topics not already covered by SUGGESTED_TOPICS — comes from a
 // fixed vocabulary rather than whatever's currently loaded (see allKnownKeywordTopics).
@@ -118,22 +119,22 @@ export default async function ProfilePage() {
         />
       )}
 
+      <CollapsibleCard title="Theme" style={{ marginBottom: 18 }}>
       <ThemeSection
         initialTheme={
           user.themePreference === "light" || user.themePreference === "dark" ? user.themePreference : "system"
         }
-      />
+        />
+      </CollapsibleCard>
 
-      <div className="card elev-sm" style={{ marginBottom: 18 }}>
-        <div className="card-kicker">Platform Tour</div>
+      <CollapsibleCard title="Platform Tour" style={{ marginBottom: 18 }}>
         <p className="card-body" style={{ marginTop: 2, marginBottom: 12 }}>
           Replay the guided tour to rediscover Limbic features.
         </p>
         <ReplayTourButton />
-      </div>
+      </CollapsibleCard>
 
-      <div className="card elev-sm" style={{ marginBottom: 18 }}>
-        <div className="card-kicker">About you</div>
+      <CollapsibleCard title="About you" style={{ marginBottom: 18 }}>
         <ProfileForm
           name={user.name}
           specialty={user.specialty}
@@ -146,18 +147,19 @@ export default async function ProfilePage() {
           headline={user.headline ?? ""}
           bio={user.bio ?? ""}
         />
-      </div>
+      </CollapsibleCard>
 
-      <GetTheAppCard dismissed={user.getTheAppDismissed} />
+      <GetTheAppCard />
 
-      <AccountSecuritySection
-        backupEmail={user.backupEmail}
-        backupEmailAddedAt={user.backupEmailAddedAt?.toISOString() ?? null}
-        isStudent={isStudent}
-      />
+      <CollapsibleCard title="Account security" style={{ marginBottom: 18 }}>
+        <AccountSecuritySection
+          backupEmail={user.backupEmail}
+          backupEmailAddedAt={user.backupEmailAddedAt?.toISOString() ?? null}
+          isStudent={isStudent}
+        />
+      </CollapsibleCard>
 
-      <div className="card elev-sm" style={{ marginBottom: 18 }}>
-        <div className="card-kicker">Nexus</div>
+      <CollapsibleCard title="Nexus" style={{ marginBottom: 18 }}>
         {isAdminUser ? (
           user.nexusOptIn ? (
             <>
@@ -214,10 +216,9 @@ export default async function ProfilePage() {
             </form>
           </>
         )}
-      </div>
+      </CollapsibleCard>
 
-      <div className="card elev-sm" style={{ marginBottom: 18 }}>
-        <div className="card-kicker">Followed topics</div>
+      <CollapsibleCard title="Followed topics" style={{ marginBottom: 18 }}>
         <p className="card-body" style={{ marginTop: 2 }}>
           Tap a topic to prioritize it in your home feed.
         </p>
@@ -253,10 +254,9 @@ export default async function ProfilePage() {
           Add more
         </div>
         <TopicBrowser topics={BROWSABLE_TOPICS} followedTopics={followedTopics} />
-      </div>
+      </CollapsibleCard>
 
-      <div className="card elev-sm" style={{ marginTop: 18 }}>
-        <div className="card-kicker">Home page widgets</div>
+      <CollapsibleCard title="Home page widgets" style={{ marginTop: 18 }}>
         <p className="card-body" style={{ marginTop: 2 }}>
           Choose what shows up in the sidebar on your home page.
         </p>
@@ -265,7 +265,7 @@ export default async function ProfilePage() {
             <HomeWidgetToggle key={w.id} id={w.id} label={w.label} visible={!hiddenHomeWidgets.includes(w.id)} />
           ))}
         </div>
-      </div>
+      </CollapsibleCard>
 
       <div style={{ marginTop: 18 }}>
         <SuggestionBoxCard />
