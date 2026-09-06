@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Caprasimo } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { TopLoadingBar } from "@/components/TopLoadingBar";
@@ -11,10 +11,14 @@ import "./globals.css";
 // thing that shows up as a slow First/Largest Contentful Paint despite a fast
 // Time-to-First-Byte. next/font fetches the font files at build time and serves them from
 // the app's own origin, with the @font-face + preload wired up automatically.
-const caprasimo = Caprasimo({
-  weight: "400",
+// No `weight` — Plus Jakarta Sans ships a variable font, so one file covers the whole
+// 200-800 range and every heading weight in globals.css resolves to a real master rather
+// than the browser faking one. This replaced Caprasimo, a single-weight display face that
+// was carrying 143 heading rules: fine on a wordmark, but it was setting article titles and
+// nav labels too, where a poster face is simply harder to read.
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-caprasimo",
+  variable: "--font-jakarta",
   display: "swap",
 });
 
@@ -96,7 +100,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={caprasimo.variable}
+      className={jakarta.variable}
       suppressHydrationWarning
     >
       <head>
