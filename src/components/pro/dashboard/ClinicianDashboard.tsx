@@ -196,6 +196,16 @@ export function ClinicianDashboard({
     setRefreshTick((t) => t + 1);
   };
 
+  /** The deleted patient can't stay selected — its detail fetch would 404 and the workspace
+   *  would sit on a record that no longer exists. Deselecting first drops the workspace back
+   *  to Morning Rounds, and the refresh then rebuilds the patient list without it. */
+  const handlePatientDeleted = () => {
+    setSelectedPatientId(null);
+    setPendingOutcomeOpenFor(null);
+    router.refresh();
+    setRefreshTick((t) => t + 1);
+  };
+
   const patientLabel = patientDetail ? `${patientDetail.bodyRegion} · ${patientDetail.condition}` : null;
 
   return (
@@ -233,6 +243,7 @@ export function ClinicianDashboard({
               availableHEPs={availableHEPs}
               onChanged={handleChanged}
               onOpenDischargeModal={() => setDischargeModalOpen(true)}
+              onPatientDeleted={handlePatientDeleted}
               onPrepareForPatient={() => setPrepareModalOpen(true)}
               todaysPatients={todaysPatients}
               outcomeReminderPatients={outcomeReminderPatients}

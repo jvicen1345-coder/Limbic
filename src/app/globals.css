@@ -13400,3 +13400,22 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 .intake-open-link-label { font-size: 12.5px; font-weight: 600; }
 .intake-open-link-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 .intake-open-link-actions { display: flex; gap: 10px; flex-shrink: 0; }
+
+/* Session date + patient delete — see SessionExerciseSection.tsx and PatientWorkspace.tsx. */
+.clindash-session-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* Delete is not Discharge. Discharge is the ordinary end of a course of treatment and gets
+   the muted outline above; this one destroys the record, so it reads as destructive from
+   across the header rather than only in its confirmation dialog. */
+.clindash-delete-patient-btn {
+  color: var(--color-danger);
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 45%, transparent);
+}
+.clindash-delete-patient-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+}
+.clindash-delete-patient-error { font-size: var(--fs-11-5); color: var(--color-danger); margin: 8px 0 0; }
+
+@media (max-width: 640px) {
+  .clindash-session-form-row { grid-template-columns: 1fr; }
+}
