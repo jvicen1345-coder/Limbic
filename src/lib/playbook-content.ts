@@ -15,6 +15,11 @@
  * *emphasis*, [[pill:h|label]]) rather than HTML, so nothing here is ever rendered with
  * dangerouslySetInnerHTML.
  *
+ * Every playbook is written against the same brief — docs/playbook-authoring.md holds it
+ * verbatim, along with which parts of it the template already answers (the numbered
+ * sections, the sticky nav, the saved check-off state) and which are the author's to get
+ * right (the finding column, the named mechanism, the "what fakes a result" column).
+ *
  * Clinical content is hand-curated from standard PT curriculum material — the same
  * well-established examination sequence, normative values and test statistics a
  * musculoskeletal textbook covers, not invented claims. Each playbook carries a `footer`
