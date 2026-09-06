@@ -58,17 +58,20 @@ export const SHOULDER_PLAYBOOK: Playbook = {
                 "**Normal:** ~90° of ER, equal to the other side, with the humeral head staying centred and the scapula posteriorly tilting.\n**Faulty:** the head translates anteriorly (distal humerus drops back) or the scapula retracts and anteriorly tilts to supply the range.\n**Throwers:** add IR to get the total arc — arc loss >5° or IR loss 10–25° vs the other side is GIRD, then screen proximally (single-leg stance, hip IR/ER, core, glute med).",
             },
             {
+              // One checkable item covering both manoeuvres, as the source has it — a single
+              // checkbox spanning two rows — rather than two items, which would change the
+              // count the progress bar reads against.
               id: "hbh-hbb",
-              name: "Hand behind head\n*flexion + ER*",
-              how: "Stand behind the patient. Palm to the back of the head. Measure the middle finger against the spinous process, both sides, then add overpressure at end range.",
+name: "Hand behind head\n*flexion + ER*",
+              how: "Stand behind the patient, palm to the back of the head. Measure the middle finger against the spinous process, both sides, then add overpressure at end range.",
               finding:
-                "Symmetric side to side. Positive: clearly less reach, or symptoms with the overpressure. Follow up with flexion and ER ROM.",
+                "Symmetric side to side. Positive is clearly less reach, or symptoms with the overpressure — follow up with flexion and ER ROM.",
               also: [
                 {
                   name: "Hand behind back\n*IR + extension + adduction*",
-                  how: "Hand climbs from the lumbar spine as high up the back as it reaches. Overpressure: one hand on the scapula, the other on the forearm, body driving the elbow in.",
+                  how: "The hand climbs from the lumbar spine as high up the back as it reaches. Overpressure: one hand on the scapula, the other on the forearm, body driving the elbow in.",
                   finding:
-                    "Compare the level reached. Positive: clearly less reach, or symptoms with the overpressure. Follow up with extension and IR ROM — the back-pocket motion.",
+                    "Compare the level reached. Positive is clearly less reach, or symptoms with the overpressure — follow up with extension and IR ROM, the back-pocket motion.",
                 },
               ],
             },
@@ -284,14 +287,8 @@ export const SHOULDER_PLAYBOOK: Playbook = {
             { value: "5°", label: "Superior tilt of the glenoid (passive stability)" },
             { value: "T2 – T7", label: "Scapula on the thorax: superior angle T2, root of the *scapular* spine T3, inferior angle T7" },
             { value: "2.5–3 in", label: "Vertebral border to the spine, borders parallel to it or slightly upwardly rotated" },
-            {
-              value: "30° & 9°",
-              label: "At rest the scapula sits 30° anterior to the frontal plane — the scapular plane — with 9° of anterior tilt",
-            },
-            {
-              value: "> 15–20°",
-              label: "Scapular internal rotation beyond this is excessive — medial border lifts; palpate the triangle below the scapular spine",
-            },
+            { value: "30° & 9°", label: "At rest the scapula sits 30° anterior to the frontal plane — the scapular plane — with 9° of anterior tilt" },
+            { value: "> 15–20°", label: "Scapular internal rotation beyond this is excessive — medial border lifts; palpate the triangle below the scapular spine" },
             { value: "> ⅓", label: "Of humeral head anterior to acromion = anterior glide" },
             { value: "≤ ½ in", label: "Inferior angle protrusion past posterolateral thorax in full elevation" },
             { value: "165–180°", label: "Normal total arc of IR + ER" },
@@ -508,10 +505,10 @@ export const SHOULDER_PLAYBOOK: Playbook = {
             ],
             [
               { text: "IR behind the back", variant: "name" },
-              "Thumb reaches roughly the mid-thoracic spine; compare sides",
-              "Measure the thumb tip against the spinous process, both sides",
+              "Hand climbs from the lumbar spine as high as it can reach; compare the level side to side",
+              "Standing. Measure the thumb tip against the spinous process it reaches, both sides",
               "Firm",
-              "Extension + adduction + IR combined — a posterior capsule, a short subscapularis, or simply pain",
+              "Internal rotation with extension and adduction — a stiff posterior or inferior capsule, a short subscapularis, or pain shutting it down. Add overpressure to confirm.",
             ],
             [
               { text: "Horizontal adduction", variant: "name" },
@@ -801,20 +798,24 @@ export const SHOULDER_PLAYBOOK: Playbook = {
           kind: "statkey",
           entries: [
             {
-              term: "Sn",
-              body: "*Sensitivity.* How often the test comes up positive in people who **do** have the condition. A very sensitive test that comes back negative helps rule the condition out.",
+              abbr: "Sn",
+              term: "Sensitivity.",
+              body: "How often the test comes up positive in people who do have the condition. A very sensitive test that comes back negative helps rule the condition out.",
             },
             {
-              term: "Sp",
-              body: "*Specificity.* How often it comes back negative in people who **do not** have it. A very specific test that comes back positive helps rule the condition in.",
+              abbr: "Sp",
+              term: "Specificity.",
+              body: "How often it comes back negative in people who do not have it. A very specific test that comes back positive helps rule the condition in.",
             },
             {
-              term: "+LR",
-              body: "*Positive likelihood ratio.* How far a positive result should shift your suspicion. Over 10 is a large shift, 5–10 moderate, 2–5 small, around 1 changes nothing.",
+              abbr: "+LR",
+              term: "Positive likelihood ratio.",
+              body: "How far a positive result should shift your suspicion. Over 10 is a large shift, 5–10 moderate, 2–5 small, around 1 changes nothing.",
             },
             {
-              term: "−LR",
-              body: "*Negative likelihood ratio.* How far a negative result argues against it. Under 0.1 is a large shift, 0.1–0.2 moderate, 0.2–0.5 small, around 1 changes nothing.",
+              abbr: "−LR",
+              term: "Negative likelihood ratio.",
+              body: "How far a negative result argues against it. Under 0.1 is a large shift, 0.1–0.2 moderate, 0.2–0.5 small, around 1 changes nothing.",
             },
           ],
           note: "Both ratios come from the same two numbers: +LR is Sn ÷ (1 − Sp), and −LR is (1 − Sn) ÷ Sp. Most single tests land in the small range, which is the whole argument for using clusters.",

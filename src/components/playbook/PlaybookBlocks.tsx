@@ -191,10 +191,10 @@ export function PlaybookBlockView({
         <>
           <div className="playbook-statkey">
             {block.entries.map((entry) => (
-              <div className="playbook-skcell" key={entry.term}>
-                <b>{entry.term}</b>
+              <div className="playbook-skcell" key={entry.abbr}>
+                <b>{entry.abbr}</b>
                 <span>
-                  <PlaybookInline text={entry.body} />
+                  <em>{entry.term}</em> <PlaybookInline text={entry.body} />
                 </span>
               </div>
             ))}

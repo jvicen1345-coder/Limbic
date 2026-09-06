@@ -142,6 +142,13 @@
      titles and nav labels, where it cost real legibility. */
   --font-heading: var(--font-jakarta), system-ui, sans-serif;
   --font-heading-weight: 700;
+  /* The "Limbic" logotype, heavier than an ordinary heading. It needs its own token because
+     the wordmark appears in five places that had drifted to three different weights — and
+     the three in AppShell.tsx had none at all, inheriting body 400. That went unnoticed
+     while the heading face was Caprasimo, which ships only weight 400 and is heavy by
+     design; the moment a normal-weight family replaced it, the logotype quietly became
+     light text. */
+  --font-wordmark-weight: 800;
   /* Same native system-UI font stack Facebook's web app renders body text with — no
      webfont download, just each OS's own UI font (San Francisco on macOS/iOS, Segoe UI on
      Windows, Roboto on Android/Chrome OS, sans-serif as the final fallback). Replaces the
@@ -6461,7 +6468,7 @@ html[data-theme="dark"] .app-root--atrium {
   padding: 84px 24px 64px;
 }
 .legal-header { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
-.legal-header-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; }
+.legal-header-name { font-family: var(--font-heading); font-weight: var(--font-wordmark-weight); font-size: 18px; }
 
 .legal-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; margin: 0 0 6px; }
 .legal-updated { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 36px; }
@@ -6562,7 +6569,7 @@ html[data-theme="dark"] .app-root--atrium {
   border-bottom: 1px solid var(--color-divider);
 }
 .landing-nav-brand { display: flex; align-items: center; gap: 9px; }
-.landing-nav-wordmark { font-family: var(--font-heading); font-weight: 800; font-size: 20px; color: var(--color-text); }
+.landing-nav-wordmark { font-family: var(--font-heading); font-weight: var(--font-wordmark-weight); font-size: 20px; color: var(--color-text); }
 .landing-nav-actions { display: flex; align-items: center; gap: 10px; }
 @media (max-width: 640px) {
   .landing-nav { flex-direction: column; align-items: stretch; padding: 14px 20px; }
@@ -10335,7 +10342,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   padding: 16px 24px;
   border-bottom: 1px solid var(--color-divider);
 }
-.programs-page-logo { display: flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; color: var(--color-text); text-decoration: none; }
+.programs-page-logo { display: flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-weight: var(--font-wordmark-weight); font-size: 18px; color: var(--color-text); text-decoration: none; }
 .programs-page-home-link { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-neutral-700); text-decoration: none; }
 .programs-page-home-link:hover { color: var(--color-accent); }
 .programs-page-content { max-width: 1180px; margin: 0 auto; padding: 32px 24px 64px; }
@@ -13649,6 +13656,32 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 }
 .playbook-numcell-label { font-size: 12.5px; color: var(--pb-ink-2); margin-top: 3px; line-height: 1.4; }
 
+/* ---------- stats key ----------
+   The glossary above the special-tests table: what Sn / Sp / +LR / -LR actually mean,
+   so the numbers in that table can be weighed rather than just read. */
+.playbook-statkey {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--pb-line);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin: 18px 0 14px;
+}
+.playbook-skcell { background: var(--pb-surface); padding: 11px 14px; display: flex; gap: 11px; align-items: baseline; }
+.playbook-skcell b {
+  font-family: var(--pb-mono);
+  font-size: 12.5px;
+  color: var(--pb-accent);
+  min-width: 38px;
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+}
+.playbook-skcell span { font-size: 12.8px; color: var(--pb-ink-2); line-height: 1.45; }
+.playbook-skcell em { color: var(--color-text); font-style: normal; font-weight: 600; }
+.playbook-statnote { font-size: 12.4px; color: var(--pb-ink-2); margin: 0 0 4px; max-width: 72ch; line-height: 1.5; }
+
 /* ---------- callouts ---------- */
 .playbook-callout {
   border-left: 3px solid var(--pb-accent);
@@ -13781,6 +13814,9 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 .playbook-hub-card-desc { font-size: 13px; color: var(--color-neutral-700); margin: 0; line-height: 1.5; }
 .playbook-hub-card-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-variant-numeric: tabular-nums; }
 
+@media (max-width: 700px) {
+  .playbook-statkey { grid-template-columns: 1fr; }
+}
 @media (max-width: 640px) {
   .playbook-wrap { padding: 0 14px; }
   .playbook-navrow { padding: 9px 14px; }
@@ -13995,31 +14031,6 @@ button.playbook-maskwrap {
 .playbook-labels-hidden svg text.playbook-label-shown { filter: none; opacity: 1; }
 .playbook-labels-hidden figcaption { filter: blur(5px); user-select: none; }
 
-/* ---------- stats key ---------- */
-.playbook-statkey {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  background: var(--pb-line);
-  border: 1px solid var(--pb-line);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  margin: 18px 0 14px;
-}
-.playbook-skcell { background: var(--pb-surface); padding: 11px 14px; display: flex; gap: 11px; align-items: baseline; }
-.playbook-skcell b {
-  font-family: var(--pb-mono);
-  font-size: 12.5px;
-  color: var(--pb-accent);
-  min-width: 38px;
-  flex-shrink: 0;
-  letter-spacing: 0.03em;
-}
-.playbook-skcell span { font-size: 12.8px; color: var(--pb-ink-2); line-height: 1.45; }
-.playbook-statnote { font-size: 12.4px; color: var(--pb-ink-2); margin: 0 0 4px; max-width: 72ch; }
-@media (max-width: 700px) {
-  .playbook-statkey { grid-template-columns: 1fr; }
-}
 
 /* A case answer is several labelled lines rather than one paragraph. */
 .playbook-case .playbook-drill-answer p { margin: 0 0 7px; }
@@ -14176,3 +14187,13 @@ button.playbook-maskwrap:focus-visible {
 /* Same assumption, one column over: an `also` row's second cell is How it's performed, not
    the row number, so it must not inherit the number column's width either. */
 .playbook-check-table td:nth-child(2):not(.playbook-idx) { width: auto; text-align: left; }
+/* The "Limbic" logotype in the app shell — desktop sidebar, mobile top bar, and mobile
+   drawer (see AppShell.tsx, which sets only the size inline, since the three differ). One
+   class rather than three inline styles: the weight is the whole point of this rule, and an
+   inline style carrying a family but no weight is exactly how the wordmark ended up
+   rendering at body weight in the first place. */
+.app-wordmark {
+  font-family: var(--font-heading);
+  font-weight: var(--font-wordmark-weight);
+  color: var(--color-text);
+}

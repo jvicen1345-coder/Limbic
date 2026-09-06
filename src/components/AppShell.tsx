@@ -699,7 +699,7 @@ export function AppShell({
       <nav className="app-sidebar" data-tour="sidebar">
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
           <LogoIcon size={22} />
-          <span style={{ fontFamily: "var(--font-heading)", fontSize: 19, color: "var(--color-text)" }}>
+          <span className="app-wordmark" style={{ fontSize: 19 }}>
             Limbic
           </span>
         </div>
@@ -718,7 +718,7 @@ export function AppShell({
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
             <LogoIcon size={19} />
-            <span style={{ fontFamily: "var(--font-heading)", fontSize: 17 }}>Limbic</span>
+            <span className="app-wordmark" style={{ fontSize: 17 }}>Limbic</span>
           </div>
           <span className="tag tag-neutral">{savedCount} saved</span>
         </div>
@@ -748,7 +748,7 @@ export function AppShell({
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <LogoIcon size={22} />
-                <span style={{ fontFamily: "var(--font-heading)", fontSize: 19, color: "var(--color-text)" }}>
+                <span className="app-wordmark" style={{ fontSize: 19 }}>
                   Limbic
                 </span>
               </div>

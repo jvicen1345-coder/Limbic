@@ -86,9 +86,10 @@ export interface PlaybookCard {
   points: string[];
 }
 
-/** One row of the key that explains how to read a statistic the tables above it quote —
- *  "Sn", "+LR". `body` leads with the term spelled out, then what it buys you. */
-export interface PlaybookStatEntry {
+/** One row of a stats key — the abbreviation, what it stands for, and what it means in
+ *  practice. */
+export interface PlaybookStatKeyEntry {
+  abbr: string;
   term: string;
   body: string;
 }
@@ -116,7 +117,9 @@ export type PlaybookBlock =
   | { kind: "figure"; figureId: string; title: string; caption: string }
   | { kind: "cards"; cards: PlaybookCard[] }
   | { kind: "drill"; items: { question: string; answer: string }[] }
-  | { kind: "statkey"; entries: PlaybookStatEntry[]; note?: string }
+  /** A glossary of the statistics a section's tables quote — Sn, Sp, +LR, −LR — so a
+   *  reader can weigh a number instead of just reading it. */
+  | { kind: "statkey"; entries: PlaybookStatKeyEntry[]; note?: string }
   | { kind: "cases"; items: PlaybookCase[] };
 
 export interface PlaybookSection {
