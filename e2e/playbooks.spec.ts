@@ -73,6 +73,20 @@ test.describe("Playbook content", () => {
     expect(leftovers).toEqual([]);
   });
 
+  test("case scenarios and every labelled line are filled in", () => {
+    const problems: string[] = [];
+    for (const { playbook, block } of everyBlock()) {
+      if (block.kind !== "cases") continue;
+      block.items.forEach((item) => {
+        if (!item.scenario.trim() || !item.lines.length) problems.push(`${playbook}: empty case`);
+        item.lines.forEach((line) => {
+          if (!line.label.trim() || !line.body.trim()) problems.push(`${playbook}: ${item.scenario.slice(0, 40)}`);
+        });
+      });
+    }
+    expect(problems).toEqual([]);
+  });
+
   test("drill questions and answers are both filled in", () => {
     const problems: string[] = [];
     for (const { playbook, block } of everyBlock()) {
@@ -151,6 +165,74 @@ test.describe("Playbook page", () => {
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
       );
       expect(pageOverflow).toBeLessThanOrEqual(1);
+    });
+  }
+});
+
+/** Recall mode (components/playbook/PlaybookRecall.tsx). Parameterized for the same reason
+ *  the page test is: what is asserted comes from the playbook's own data, so a new region is
+ *  covered by being added to PLAYBOOKS. The checklist is the group under test because every
+ *  playbook has exactly one and its columns are fixed, so the expected counts are known. */
+test.describe("Playbook recall", () => {
+  for (const playbook of PLAYBOOKS) {
+    const items = playbookChecklist(playbook);
+    const figures = playbook.sections.flatMap((s) => s.blocks).filter((b) => b.kind === "figure");
+
+    test(`hides, checks and remembers answers on the ${playbook.slug} playbook`, async ({ page }) => {
+      await signUpAndEnterApp(page, `pw-recall-${playbook.slug}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`);
+      await page.goto(`/student/playbooks/${playbook.slug}`);
+      await expect(page.getByRole("heading", { name: playbook.title })).toBeVisible();
+
+      // Nothing is hidden until asked, and the controls stay out of the way until then.
+      await expect(page.locator(".playbook-mask-on")).toHaveCount(0);
+      await expect(page.locator(".playbook-recallbar")).toHaveCount(0);
+
+      // A group's own switch hides its last column — the finding — and nothing else. The
+      // first control in the section belongs to the checklist itself; a playbook may put
+      // further tables in the same section.
+      const checklist = page.locator("#checklist");
+      await checklist.locator(".playbook-tbl-recall").first().click();
+      await expect(page.locator(".playbook-recallbar")).toBeVisible();
+      await expect(checklist.locator(".playbook-mask-on")).toHaveCount(items.length);
+      await expect(checklist.locator("tbody tr").first().locator("td").nth(2)).not.toHaveClass(/playbook-mask-on/);
+
+      // Clicking a hidden cell checks it, and only then offers to record it as missed.
+      const cell = checklist.locator("tbody tr").first().locator("td").last();
+      await expect(cell.locator(".playbook-missbtn")).toHaveCount(0);
+      await cell.locator("button.playbook-maskwrap").click();
+      await expect(cell).not.toHaveClass(/playbook-mask-on/);
+      await cell.locator(".playbook-missbtn").click();
+      await expect(checklist.locator("tr.playbook-row-missed")).toHaveCount(1);
+      await expect(page.locator(".playbook-flagcount")).toHaveText("1 flagged from recall");
+
+      // The hidden column and the flag survive a reload; which cells were peeked at does
+      // not, so the column comes back fully blanked for a second pass.
+      await page.reload();
+      await expect(checklist.locator(".playbook-mask-on")).toHaveCount(items.length);
+      await expect(page.locator(".playbook-flagcount")).toHaveText("1 flagged from recall");
+
+      // The master switch clears first, then blanks everything — diagram labels included,
+      // leaving the column that names each row.
+      await page.locator(".playbook-recall-toggle").click();
+      await expect(page.locator(".playbook-mask-on")).toHaveCount(0);
+      await page.locator(".playbook-recall-toggle").click();
+      await expect(page.locator(".playbook-recall-toggle")).toHaveText("Recall all");
+      await expect(page.locator("figure.playbook-labels-hidden")).toHaveCount(figures.length);
+      await expect(checklist.locator("tbody tr").first().locator("td").nth(2)).not.toHaveClass(/playbook-mask-on/);
+
+      // Drilling the misses blanks only what was marked, wherever it is.
+      await page.locator(".playbook-recallbar button", { hasText: "Hide missed" }).click();
+      await expect(page.locator(".playbook-mask-on")).toHaveCount(1);
+      await page.locator(".playbook-recallbar button", { hasText: "Clear missed" }).click();
+      await expect(page.locator(".playbook-flagcount")).toHaveCount(0);
+
+      // On a narrow screen every table is a stack of cards that prints its column names.
+      await page.setViewportSize({ width: 390, height: 844 });
+      const label = await checklist
+        .locator("td[data-label]")
+        .first()
+        .evaluate((el) => getComputedStyle(el, "::before").content);
+      expect(label).toContain("Item");
     });
   }
 });

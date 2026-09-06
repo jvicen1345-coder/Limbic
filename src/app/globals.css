@@ -13800,3 +13800,351 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 @media (min-width: 900px) {
   .playbook-navrow { flex-wrap: wrap; }
 }
+
+/* ============================================================================
+   Playbook recall mode (components/playbook/PlaybookRecall.tsx)
+
+   A playbook is a reference until you can answer it without reading it, so every answer
+   on the page can be blanked and checked. Everything below is scoped to .playbook-* and
+   appended rather than woven into the block above it.
+   ============================================================================ */
+
+.playbook-recall-toggle {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  padding: 4px 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.playbook-recall-toggle:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+.playbook-recall-toggle[aria-pressed="true"] { background: var(--pb-accent); border-color: var(--pb-accent); color: var(--pb-surface); }
+
+.playbook-sec-recall {
+  margin-left: auto;
+  flex-shrink: 0;
+  align-self: center;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.playbook-sechead-note + .playbook-sec-recall { margin-left: 12px; }
+.playbook-sec-recall:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+.playbook-sec-recall[aria-pressed="true"] { background: var(--pb-accent); border-color: var(--pb-accent); color: var(--pb-surface); }
+
+.playbook-recallbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  margin: 16px 0 0;
+  padding: 9px 13px;
+  background: var(--pb-accent-soft);
+  border-radius: var(--radius-sm);
+  font-size: 12.6px;
+  line-height: 1.5;
+  color: var(--pb-ink-2);
+}
+.playbook-recallbar button {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-accent-ink);
+  background: transparent;
+  border: 1px solid var(--pb-accent);
+  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  cursor: pointer;
+}
+.playbook-recallbar button:hover { background: var(--pb-surface); }
+.playbook-recallbar button[disabled] { opacity: 0.45; cursor: default; }
+
+/* The chips are only worth the row's height once the group is switched on. */
+.playbook-colmask {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0 0 8px;
+}
+.playbook-colmask .playbook-cmlabel,
+.playbook-colmask .playbook-chip { display: none; }
+.playbook-colmask-open .playbook-cmlabel,
+.playbook-colmask-open .playbook-chip { display: inline-block; }
+.playbook-cmlabel {
+  font-family: var(--pb-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  margin-right: 3px;
+}
+.playbook-chip {
+  font-family: var(--pb-mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px dashed var(--pb-line);
+  border-radius: 999px;
+  padding: 3px 10px;
+  cursor: pointer;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.playbook-chip:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+.playbook-chip[aria-pressed="true"] {
+  background: var(--pb-accent);
+  border-color: var(--pb-accent);
+  border-style: solid;
+  color: var(--pb-surface);
+}
+.playbook-tbl-recall {
+  flex-shrink: 0;
+  font-family: var(--pb-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+.playbook-tbl-recall:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+.playbook-tbl-recall[aria-pressed="true"] { background: var(--pb-accent); border-color: var(--pb-accent); color: var(--pb-surface); }
+
+/* The blanked cells themselves. The wrapper is a button when it is hiding something, so it
+   is reachable by keyboard and announces itself; it is styled back down to look like the
+   text it replaces. */
+.playbook-maskwrap { display: block; }
+button.playbook-maskwrap {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.playbook-mask-on { border-radius: var(--radius-sm); }
+.playbook-mask-on .playbook-maskwrap { filter: blur(5.5px); user-select: none; transition: filter 0.16s ease; }
+.playbook-mask-on:hover { background: var(--pb-accent-soft); }
+/* A blur hides a paragraph but not "60°" — a short answer keeps its shape through it, so it
+   is blanked with a panel instead. */
+.playbook-mask-solid .playbook-maskwrap {
+  filter: none;
+  color: transparent;
+  background: var(--pb-surface-2);
+  box-shadow: inset 0 0 0 1px var(--pb-line-soft);
+  border-radius: var(--radius-sm);
+}
+.playbook-missbtn {
+  display: inline-block;
+  margin-top: 7px;
+  font-family: var(--pb-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px dashed var(--pb-line);
+  border-radius: 999px;
+  padding: 2px 9px;
+  cursor: pointer;
+}
+.playbook-missbtn:hover { color: var(--pb-hi); border-color: var(--pb-hi); }
+.playbook-missbtn-on { color: var(--pb-hi); border-color: var(--pb-hi); border-style: solid; }
+.playbook-missed { box-shadow: inset 3px 0 0 var(--pb-hi); }
+/* A ticked box and a missed answer are different states, so they get different marks. */
+.playbook-row-missed td:first-child { box-shadow: inset 3px 0 0 var(--pb-mod); }
+.playbook-flagcount { font-family: var(--pb-mono); font-size: var(--fs-11-5); color: var(--pb-hi); }
+
+/* A diagram with its labels blanked is a name-the-anatomy question; the caption gives the
+   answer away, so it goes with them. */
+.playbook-labels-hidden { cursor: pointer; }
+.playbook-labels-hidden svg text {
+  filter: blur(3.5px);
+  opacity: 0.6;
+  cursor: pointer;
+  transition: filter 0.16s ease, opacity 0.16s ease;
+}
+.playbook-labels-hidden svg text.playbook-label-shown { filter: none; opacity: 1; }
+.playbook-labels-hidden figcaption { filter: blur(5px); user-select: none; }
+
+/* ---------- stats key ---------- */
+.playbook-statkey {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--pb-line);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin: 18px 0 14px;
+}
+.playbook-skcell { background: var(--pb-surface); padding: 11px 14px; display: flex; gap: 11px; align-items: baseline; }
+.playbook-skcell b {
+  font-family: var(--pb-mono);
+  font-size: 12.5px;
+  color: var(--pb-accent);
+  min-width: 38px;
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+}
+.playbook-skcell span { font-size: 12.8px; color: var(--pb-ink-2); line-height: 1.45; }
+.playbook-statnote { font-size: 12.4px; color: var(--pb-ink-2); margin: 0 0 4px; max-width: 72ch; }
+@media (max-width: 700px) {
+  .playbook-statkey { grid-template-columns: 1fr; }
+}
+
+/* A case answer is several labelled lines rather than one paragraph. */
+.playbook-case .playbook-drill-answer p { margin: 0 0 7px; }
+.playbook-case .playbook-drill-answer p:last-child { margin-bottom: 0; }
+.playbook-case .playbook-drill-answer b { color: var(--color-text); }
+
+/* ---------- focus ---------- */
+.playbook-navrow a:focus-visible,
+.playbook-recall-toggle:focus-visible,
+.playbook-sec-recall:focus-visible,
+.playbook-tbl-recall:focus-visible,
+.playbook-chip:focus-visible,
+.playbook-missbtn:focus-visible,
+.playbook-recallbar button:focus-visible,
+button.playbook-maskwrap:focus-visible {
+  outline: 2px solid var(--pb-accent);
+  outline-offset: 1px;
+  border-radius: var(--radius-sm);
+}
+.playbook-drill summary:focus-visible { outline: 2px solid var(--pb-accent); outline-offset: -2px; }
+
+/* A wide diagram squashed to phone width is unreadable; it scrolls in its own frame. */
+@media (max-width: 700px) {
+  .playbook-figure { overflow-x: auto; }
+  .playbook-figure svg { min-width: 540px; }
+}
+
+/* ---------- narrow screens: every table becomes a stack of cards ----------
+   A five-column table of prose cannot fit a phone, and a sideways-scrolling table hides
+   the last column — which in these tables is always the finding. Below this width each row
+   becomes a card with the column name printed above each value, so nothing is off-screen. */
+@media (max-width: 860px) {
+  .playbook-tablewrap { border: none; background: transparent; box-shadow: none; overflow-x: visible; }
+  .playbook-table { display: block; min-width: 0; }
+  .playbook-table thead { display: none; }
+  .playbook-table tbody { display: block; }
+  .playbook-table tbody tr {
+    display: block;
+    background: var(--pb-surface);
+    border: 1px solid var(--pb-line);
+    border-radius: var(--radius-sm);
+    padding: 11px 13px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  .playbook-table tbody tr:hover { background: var(--pb-surface); }
+  .playbook-table tbody tr.playbook-row-group {
+    background: var(--pb-surface-2);
+    padding: 7px 13px;
+    margin-bottom: 8px;
+    box-shadow: none;
+  }
+  .playbook-table tbody tr.playbook-row-group:hover { background: var(--pb-surface-2); }
+  .playbook-table tbody td { display: block; border: none; padding: 5px 0; }
+  .playbook-table tbody td:first-child { padding-top: 0; }
+  .playbook-table tbody td:last-child { padding-bottom: 0; }
+  .playbook-table tbody td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-family: var(--pb-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pb-ink-2);
+    margin-bottom: 3px;
+  }
+  .playbook-cell-name { font-size: 15px; min-width: 0; }
+  .playbook-cell-tissue { min-width: 0; }
+  .playbook-check-table .playbook-check-ck,
+  .playbook-check-table .playbook-idx {
+    display: inline-block;
+    width: auto;
+    text-align: left;
+    vertical-align: middle;
+    padding: 0;
+  }
+  .playbook-check-table .playbook-idx { margin-left: 9px; margin-right: 2px; }
+  .playbook-row-missed td:first-child { box-shadow: none; }
+  .playbook-row-missed { border-left: 3px solid var(--pb-mod); }
+}
+
+/* ---------- print ----------
+   A playbook is something people take into a lab, so it has to print: no controls, nothing
+   blanked, no sticky header floating over the page, and drill answers open. */
+@media print {
+  .playbook-nav,
+  .playbook-recallbar,
+  .playbook-colmask,
+  .playbook-recall-toggle,
+  .playbook-sec-recall,
+  .playbook-progress,
+  .playbook-missbtn {
+    display: none !important;
+  }
+  .playbook-mask-on .playbook-maskwrap,
+  .playbook-mask-solid .playbook-maskwrap {
+    filter: none !important;
+    color: inherit !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    user-select: auto !important;
+  }
+  .playbook-mask-on { background: transparent !important; }
+  .playbook-labels-hidden svg text { filter: none !important; opacity: 1 !important; }
+  .playbook-labels-hidden figcaption { filter: none !important; }
+  .playbook-wrap { max-width: none; padding: 0; }
+  .playbook-table thead th { position: static; }
+  .playbook-tablewrap { overflow: visible; box-shadow: none; }
+  .playbook-figure { box-shadow: none; }
+  .playbook-table tbody tr,
+  .playbook-figure,
+  .playbook-numcell,
+  .playbook-card,
+  .playbook-drill {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .playbook-section h2,
+  .playbook-h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .playbook-mask-on .playbook-maskwrap,
+  .playbook-labels-hidden svg text { transition: none; }
+}

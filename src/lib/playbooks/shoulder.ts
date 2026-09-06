@@ -208,6 +208,47 @@ export const SHOULDER_PLAYBOOK: Playbook = {
             },
           ],
         },
+        { kind: "heading", text: "The same items, grouped by patient position" },
+        {
+          kind: "lede",
+          text: "The list above is ordered by category, which is how you learn it. This is how you run it: get everything you need from one position before you move them. A full screen done in category order moves the patient four or five times.",
+        },
+        {
+          kind: "table",
+          columns: ["Position", "Everything you do there", "Why it lands here"],
+          rows: [
+            [
+              { text: "Standing", variant: "name" },
+              "Posture from the front, side and back · flexion AROM with the four critical events **1** · scapular assist test **2** · ER @ 90° **3** · hand behind head and hand behind back **4**",
+              "Everything that needs gravity and a freely moving scapula. Stand behind or in the quadrant so you can see the scapula and the thorax at once.",
+            ],
+            [
+              { text: "Quadruped", variant: "name" },
+              "Alignment through the chain · scapular internal rotation under load · rocking backward",
+              "Loading through the hand exposes scapular faults that hide in standing. One position change, several findings.",
+            ],
+            [
+              { text: "Seated", variant: "name" },
+              "Static resisted IR, ER, abduction **10** · MMT supraspinatus, infraspinatus, teres minor **11** · serratus anterior at ~130° **15** · palpation of the RTC tendons **22** · painful arc, Neer's, Hawkins-Kennedy, full and empty can **16** · drop arm **17** · ER lag **19** · Hornblower's · IR lag **18** · Speed's · sulcus sign · AC shear",
+              "The whole contractile and special-test block. Almost every provocation test is seated or standing, so batch them rather than sitting the patient up twice.",
+            ],
+            [
+              { text: "Supine", variant: "name" },
+              "PROM flexion total and pure GH **5** · abduction · IR and ER **7** · horizontal adduction **8** · pec minor and pec major length **9** · subscapularis length · apprehension and relocation **20** · posterior apprehension · Biceps Load II **21** · GH posterior and inferior glides **23 24** · traction · AC and SC mobilizations · supine STM and PROM",
+              "The longest block by far. Every passive measurement and most of the treatment happens here, so set the bolster once and work through it.",
+            ],
+            [
+              { text: "Sidelying", variant: "name" },
+              "Scapular upward rotation PROM and mobilization **6** · scapulothoracic mobilization · STM to posterior cuff, latissimus, teres major, upper trap",
+              "The only position that gives you the scapula from both edges at once. Pair the assessment and the treatment in the same roll.",
+            ],
+            [
+              { text: "Prone", variant: "name" },
+              "MMT subscapularis **12** · MMT lower and middle trapezius **13** · latissimus length **14** · posterior-to-anterior humeral mobilization · prone ER exercise **27**",
+              "Last, because it is the hardest position to leave. The scapular MMTs and the prone ER retraining belong together.",
+            ],
+          ],
+        },
       ],
     },
     {
@@ -708,6 +749,28 @@ export const SHOULDER_PLAYBOOK: Playbook = {
       title: "Special tests, grouped by the question they answer",
       blocks: [
         {
+          kind: "statkey",
+          entries: [
+            {
+              term: "Sn",
+              body: "*Sensitivity.* How often the test comes up positive in people who **do** have the condition. A very sensitive test that comes back negative helps rule the condition out.",
+            },
+            {
+              term: "Sp",
+              body: "*Specificity.* How often it comes back negative in people who **do not** have it. A very specific test that comes back positive helps rule the condition in.",
+            },
+            {
+              term: "+LR",
+              body: "*Positive likelihood ratio.* How far a positive result should shift your suspicion. Over 10 is a large shift, 5–10 moderate, 2–5 small, around 1 changes nothing.",
+            },
+            {
+              term: "−LR",
+              body: "*Negative likelihood ratio.* How far a negative result argues against it. Under 0.1 is a large shift, 0.1–0.2 moderate, 0.2–0.5 small, around 1 changes nothing.",
+            },
+          ],
+          note: "Both ratios come from the same two numbers: +LR is Sn ÷ (1 − Sp), and −LR is (1 − Sn) ÷ Sp. Most single tests land in the small range, which is the whole argument for using clusters.",
+        },
+        {
           kind: "callout",
           tone: "note",
           lead: "Subacromial pain syndrome.",
@@ -1083,6 +1146,53 @@ export const SHOULDER_PLAYBOOK: Playbook = {
           lead: "Standard mobilization dose:",
           body: "3 bouts of 30 seconds to 1 minute with 30 seconds rest. After grade III/IV, ease out with 5–10 seconds of grade I–II. A 30-second end-range stretch may follow each round. Then have the patient use the new range: 3 × 30 active reps in pain-free range. Reassess after every round of 3 bouts.",
         },
+        { kind: "heading", text: "From a finding to the first session" },
+        {
+          kind: "lede",
+          text: "The rest of this section is organized by technique. This one is organized by what you found, which is the direction you actually work in.",
+        },
+        {
+          kind: "table",
+          columns: ["What you found", "What it means", "First three things", "Reassess with"],
+          rows: [
+            [
+              { text: "Painful arc + Hawkins-Kennedy + painful or weak resisted ER", variant: "name" },
+              "Subacromial pain syndrome. Usually a space problem before it is a tissue problem.",
+              "1 · scapular upward rotation and posterior tilt training — serratus and lower trap\n2 · pec minor length and thoracic extension\n3 · cuff loading below the painful range",
+              "The painful arc itself, and the quality of AROM with the scapular assist",
+            ],
+            [
+              { text: "Limited IR and horizontal adduction, capsular end feel", variant: "name" },
+              "Posterior capsule — the upstream driver of the whole anterior cascade",
+              "1 · GH posterior glide, graded to irritability\n2 · horizontal adduction stretch\n3 · active IR through the range you just gained, 3 × 30",
+              "IR ROM and the total rotation arc, immediately after each round of three bouts",
+            ],
+            [
+              { text: "More than ⅓ of the head anterior, stiff posterior structures", variant: "name" },
+              "Humeral anterior glide syndrome",
+              "1 · supine IR with the correct movement pattern, lengthening the external rotators\n2 · horizontal adduction stretch for the posterior capsule\n3 · subscapularis strengthening",
+              "Resting alignment first, then the task that provokes them",
+            ],
+            [
+              { text: "Scapula fails to reach 60° upward rotation, but PROM is full", variant: "name" },
+              "Coordination and power, not mobility — **do not mobilize**",
+              "1 · serratus anterior and lower trapezius loading\n2 · the scapular assist correction as a movement cue\n3 · thoracic extension so the scapula has somewhere to go",
+              "The scapular assist test, and where the inferior angle reaches at end range",
+            ],
+            [
+              { text: "Empty end feel, PROM close to AROM, loss in several directions", variant: "name" },
+              "Mobility deficit with high irritability",
+              "1 · grade I–II mobilizations only\n2 · soft tissue mobilization in the open-packed position\n3 · patient-controlled AAROM, high reps, pain-free",
+              "Pain at rest and the size of the pain-free range — not end range",
+            ],
+            [
+              { text: "Over 65, night pain, weak ER, positive drop arm or lag sign", variant: "name" },
+              "Full-thickness tear is on the table — three risk factors lining up matters more than any single test",
+              "1 · stop provocative loading\n2 · talk to the referring provider about imaging before you progress\n3 · work the scapula and the proximal chain in the meantime",
+              "The lag signs, and whether night pain is changing",
+            ],
+          ],
+        },
         { kind: "heading", text: "Joint mobilizations" },
         {
           kind: "table",
@@ -1200,6 +1310,106 @@ export const SHOULDER_PLAYBOOK: Playbook = {
       title: "Rapid drill",
       note: "answer before you open",
       blocks: [
+        { kind: "heading", text: "Cases — work the whole chain" },
+        {
+          kind: "lede",
+          text: "Everything above tests one fact at a time. These do not. For each, name the findings you would go after, the irritability, the movement diagnosis, the ICF category, and what you do first.",
+        },
+        {
+          kind: "cases",
+          items: [
+            {
+              scenario:
+                "19-year-old volleyball hitter. Anterior shoulder pain in late cocking, hypermobile elsewhere. Standing, more than a third of the humeral head sits forward of the acromion. ER 105°, IR 45° at 90° of abduction. Pain 3/10, settles in an hour.",
+              lines: [
+                {
+                  label: "Arithmetic first:",
+                  body: "total arc 150°, well under the 165–180° normal, and IR is down against a high ER — that is GIRD.",
+                },
+                {
+                  label: "Movement diagnosis:",
+                  body: "humeral anterior glide syndrome. The picture fits: overhead athlete with general laxity, lax anterior capsule, stiff posterior structures, and the head taking the path of least resistance forward.",
+                },
+                { label: "Irritability:", body: "moderate — pain with activity that settles in a reasonable time, no rest or night pain." },
+                { label: "ICF:", body: "shoulder stability with movement coordination impairments." },
+                {
+                  label: "First session:",
+                  body: "horizontal adduction stretch and posterior glide for the posterior capsule; supine IR with the head blocked from translating — *swivel around an axis*; subscapularis strengthening. Correct resting and sleeping alignment before any of it, and check the proximal chain — single-leg stance, hip rotation, core.",
+                },
+                { label: "Reassess with:", body: "total arc and resting alignment, then the cocking position itself." },
+              ],
+            },
+            {
+              scenario:
+                "68-year-old, six weeks of shoulder pain after reaching into the back seat. Wakes at night. Cannot hold the arm at 90° of abduction; it drifts down. Resisted ER is weak more than painful.",
+              lines: [
+                {
+                  label: "The three that matter:",
+                  body: "age over 65, night pain, and ER weakness **together** raise the probability of a full-thickness tear more than any single special test does.",
+                },
+                {
+                  label: "Confirm with:",
+                  body: "drop arm (Sp 88, +LR 2.25) and the ER lag sign; add Hornblower's if you suspect teres minor and the IR lag sign for subscapularis.",
+                },
+                { label: "ICF:", body: "shoulder pain with muscle power deficits." },
+                {
+                  label: "First session:",
+                  body: "stop the provocative loading, talk to the referring provider about imaging before progressing, and work the scapula and proximal chain in the meantime.",
+                },
+                {
+                  label: "The trap:",
+                  body: "reading the weakness as a strengthening problem and loading into it. A lag sign means the tendon cannot hold the position at all — that is not a rep-range problem.",
+                },
+              ],
+            },
+            {
+              scenario:
+                "45-year-old at a desk. Pain 70–110° of abduction, none above or below. Hawkins-Kennedy positive, resisted ER painful. PROM full and symmetric. Pain 3/10, gone within minutes of stopping.",
+              lines: [
+                {
+                  label: "Cluster:",
+                  body: "painful arc + Hawkins-Kennedy + painful resisted ER — all three positive gives **+LR 10.56** for subacromial pain syndrome.",
+                },
+                {
+                  label: "Irritability:",
+                  body: "low. Full PROM, quick settling, minimal pain with overpressure — so you can work at end range and use grade III–IV if you need mobilization at all.",
+                },
+                {
+                  label: "Movement diagnosis:",
+                  body: "look for decreased scapular upward rotation or increased anterior tilt. Full PROM with a scapula that will not rotate means strength and motor control, not mobility.",
+                },
+                { label: "ICF:", body: "shoulder pain with movement coordination impairments." },
+                {
+                  label: "First session:",
+                  body: "serratus and lower trapezius loading, pec minor length and thoracic extension, cuff work below the painful range. Use the scapular assist as the movement cue — if it changes the pain, it is also your treatment.",
+                },
+                { label: "Reassess with:", body: "the painful arc, and where the inferior angle gets to at end range." },
+              ],
+            },
+            {
+              scenario:
+                "52-year-old, three months of progressive stiffness with no injury. Aches at rest, wakes at night. PROM is barely more than AROM. Loss is worst into ER, then abduction, then IR. End feel is empty.",
+              lines: [
+                {
+                  label: "Pattern:",
+                  body: "loss in multiple directions with PROM ≈ AROM is capsular, not muscular. The ER-worst ordering is the classic capsular pattern.",
+                },
+                { label: "Irritability:", body: "high — empty end feel before end range, pain at rest and at night." },
+                { label: "ICF:", body: "shoulder pain with mobility deficits." },
+                {
+                  label: "First session:",
+                  body: "grade I–II mobilizations only, soft tissue work in the open-packed position, pain-free patient-controlled AAROM at high repetitions. Bolster into open pack. **No end-range stretching and no grade III–IV**, however tempting the stiffness looks.",
+                },
+                { label: "Reassess with:", body: "pain at rest and the size of the pain-free range, not end range." },
+                {
+                  label: "The trap:",
+                  body: "treating stiffness aggressively because the numbers are low. Irritability sets the dose, not the diagnosis — and if the range does not improve within the session, you are dealing with shortness rather than stiffness and the timeline is longer.",
+                },
+              ],
+            },
+          ],
+        },
+        { kind: "heading", text: "Single facts" },
         {
           kind: "drill",
           items: [

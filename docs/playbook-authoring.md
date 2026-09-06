@@ -85,12 +85,35 @@ behind scroll animations.
 | Footer: compiled from what, quoted vs. supplied | `Playbook.footer` | Say plainly which numbers are reproduced from source material and which are assembled — see the shoulder footer for the form. |
 | Original inline SVG, one claim per figure, caption states the claim | `{ kind: "figure", figureId, title, caption }` + `src/components/playbook/PlaybookFigures.tsx` | Diagrams are the one thing that can't be data. Add the component and register it in the `FIGURES` map; an unregistered id silently drops the drawing. Draw originals — never trace a figure or photo out of a source. |
 | Three fonts, one accent, semantic colour only for a real level dimension | `src/app/globals.css` | Already set by the app's type and colour system. The only semantic dimension in the content is irritability: pills `[[pill:h\|…]]`, `m`, `l` and the `PlaybookCard.tone` of the same letters. Don't invent a second colour axis. |
-| Tabular figures, no horizontal scroll, row-becomes-card on narrow screens | Partly — see note | Tabular figures and the no-page-scroll rule hold: `.playbook-numcell-value` uses `font-variant-numeric: tabular-nums`, and horizontal scroll lives on `.playbook-tablewrap`, never on the page. The row-becomes-card treatment is the one part of the brief the app does **not** implement — a playbook table is `min-width: 640px` and scrolls inside its wrapper on a phone, because several of these tables are five columns of prose. Nothing per playbook to do either way; just don't assume a narrow reader sees every column at once, and put the finding in the last column regardless. |
+| Tabular figures, no horizontal scroll, row-becomes-card on narrow screens | Already rendered | `.playbook-numcell-value` uses `font-variant-numeric: tabular-nums`; below 860px every table unwraps into a stack of cards with its column name printed above each value, from the `data-label` the renderer stamps on each cell, so nothing is off-screen and the page itself never scrolls sideways. A wide diagram scrolls inside its own frame below 700px rather than squashing. Nothing per playbook to do. |
 | "Publish it as an artifact" | Not applicable in-repo | A playbook here is a page in the app: a new file under `src/lib/playbooks/` added to `PLAYBOOKS`. |
+| A statistics key, where a table quotes Sn / Sp / likelihood ratios | `{ kind: "statkey", entries, note? }` | A two-column key of term and meaning, plus an optional note under it. Put it above the table whose numbers it explains. |
+| Worked cases, where a section should ask for a whole chain rather than one fact | `{ kind: "cases", items }` | Collapsible like the drill, but the answer is a list of `{ label, body }` lines — the headings a reasoned answer has to hit: the arithmetic, the diagnosis, the irritability, what you do first, and the trap. Use `drill` for a single fact and `cases` when the answer has structure. |
 
 Prose fields take the inline markup in `src/lib/playbook-inline.ts` (`**bold**`,
 `*emphasis*`, `[[pill:h|label]]`, `\n` for a line break inside a cell) — not HTML, and
 not full Markdown.
+
+## Recall mode changes what the columns are for
+
+Every table, the checklist, the numbers grid and every figure is a *recall group*
+(`src/lib/playbook-recall.ts`), and a reader can blank it and quiz themselves
+(`PlaybookRecall.tsx`). Three consequences for how you write one:
+
+- **Switching a group on hides its last column.** That is the finding column, which is the
+  whole reason the finding goes last. A table whose last column restates the step produces a
+  quiz question with no answer in it.
+- **The first column is what the reader recalls from.** The master switch in the nav blanks
+  every column *except* the first, so the first column has to name the row well enough to be
+  the only prompt — a bare `1` or a bare `Front` is not enough on its own.
+- **A short answer is blanked with a panel, not a blur** (16 characters or fewer): `60°`
+  keeps its shape through a blur. Nothing to do per playbook, but it is why a finding of
+  `Firm` still works as a question.
+
+Figures are quizzable too: their `<text>` labels and the caption blur together, and clicking
+a label lifts its whole block. The blocks are measured from the rendered geometry, so a
+legend entry's lines want to sit within a few pixels of each other and a clear line apart
+from the next entry — which is how the existing figures are already drawn.
 
 ## Adding a playbook
 

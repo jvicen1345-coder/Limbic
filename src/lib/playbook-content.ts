@@ -64,6 +64,21 @@ export interface PlaybookCard {
   points: string[];
 }
 
+/** One row of the key that explains how to read a statistic the tables above it quote —
+ *  "Sn", "+LR". `body` leads with the term spelled out, then what it buys you. */
+export interface PlaybookStatEntry {
+  term: string;
+  body: string;
+}
+
+/** A worked case: a scenario, then the answer broken into the headings a reasoned answer
+ *  has to hit — the arithmetic, the diagnosis, the irritability, what you do first. Kept
+ *  separate from `drill` because a drill answer is one paragraph and this is a structure. */
+export interface PlaybookCase {
+  scenario: string;
+  lines: { label: string; body: string }[];
+}
+
 export type PlaybookBlock =
   | { kind: "heading"; text: string }
   | { kind: "lede"; text: string }
@@ -75,7 +90,9 @@ export type PlaybookBlock =
   | { kind: "callout"; tone: "note" | "warn"; lead?: string; body: string }
   | { kind: "figure"; figureId: string; title: string; caption: string }
   | { kind: "cards"; cards: PlaybookCard[] }
-  | { kind: "drill"; items: { question: string; answer: string }[] };
+  | { kind: "drill"; items: { question: string; answer: string }[] }
+  | { kind: "statkey"; entries: PlaybookStatEntry[]; note?: string }
+  | { kind: "cases"; items: PlaybookCase[] };
 
 export interface PlaybookSection {
   /** Anchor id and nav target. */

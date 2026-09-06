@@ -2,15 +2,24 @@ import { Breadcrumb, type BreadcrumbItem } from "@/components/Breadcrumb";
 import type { Playbook } from "@/lib/playbook-content";
 import { PlaybookBlockView } from "@/components/playbook/PlaybookBlocks";
 import { PlaybookInline } from "@/components/playbook/PlaybookInline";
+import {
+  PlaybookPrintDetails,
+  PlaybookRecallBar,
+  PlaybookRecallProvider,
+  PlaybookRecallToggle,
+  PlaybookSectionRecall,
+} from "@/components/playbook/PlaybookRecall";
+import { playbookRecallGroups } from "@/lib/playbook-recall";
 
 /** Renders a whole playbook (see lib/playbook-content.ts) — masthead, a sticky rail of
  *  section anchors, then each section's blocks in order.
  *
- *  A server component: the only interactive parts are the checklist (its own client
- *  component) and the drill's native <details>, so the nav is plain anchors that work
- *  before hydration and with JavaScript off. */
+ *  Still a server component: the interactive parts — the checklist, and recall mode's
+ *  controls (PlaybookRecall.tsx) — are client components rendered from here, so the section
+ *  anchors stay plain links that work before hydration and with JavaScript off. */
 export function PlaybookPage({ playbook, breadcrumb }: { playbook: Playbook; breadcrumb: BreadcrumbItem[] }) {
   return (
+    <PlaybookRecallProvider slug={playbook.slug} groups={playbookRecallGroups(playbook)}>
     <div className="playbook">
       <div className="playbook-wrap">
         <Breadcrumb items={breadcrumb} />
@@ -29,6 +38,8 @@ export function PlaybookPage({ playbook, breadcrumb }: { playbook: Playbook; bre
             ))}
           </div>
         </header>
+        <PlaybookRecallBar />
+        <PlaybookPrintDetails />
       </div>
 
       <nav className="playbook-nav" aria-label={`${playbook.name} sections`}>
@@ -38,6 +49,7 @@ export function PlaybookPage({ playbook, breadcrumb }: { playbook: Playbook; bre
               {section.navLabel}
             </a>
           ))}
+          <PlaybookRecallToggle />
         </div>
       </nav>
 
@@ -48,9 +60,10 @@ export function PlaybookPage({ playbook, breadcrumb }: { playbook: Playbook; bre
               <span className="playbook-secnum">{String(i + 1).padStart(2, "0")}</span>
               <h2>{section.title}</h2>
               {section.note && <span className="playbook-sechead-note">{section.note}</span>}
+              <PlaybookSectionRecall sectionId={section.id} />
             </div>
             {section.blocks.map((block, j) => (
-              <PlaybookBlockView block={block} slug={playbook.slug} key={j} />
+              <PlaybookBlockView block={block} slug={playbook.slug} sectionId={section.id} index={j} key={j} />
             ))}
           </section>
         ))}
@@ -60,5 +73,6 @@ export function PlaybookPage({ playbook, breadcrumb }: { playbook: Playbook; bre
         </footer>
       </div>
     </div>
+    </PlaybookRecallProvider>
   );
 }
