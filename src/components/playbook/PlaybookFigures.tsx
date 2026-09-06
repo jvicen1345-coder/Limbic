@@ -640,37 +640,47 @@ function ThomasSort() {
   );
 }
 
-/** Convex head on concave socket: the glide opposes the shaft. */
+/** Convex head on concave socket: the glide opposes the shaft.
+ *
+ *  Both panels used to draw the femur in the same position, so "swings anteriorly" against
+ *  "swings posteriorly" lived only in the labels and the two pictures looked identical. The
+ *  shaft is now drawn where the motion actually puts it — forward of neutral in flexion,
+ *  behind it in extension — against a faded neutral limb, so the opposition between the
+ *  shaft and the head is something you can see rather than read. */
 function ConvexHipGlide() {
   return (
     <svg
-      viewBox="0 0 620 274"
+      viewBox="0 0 620 288"
       role="img"
-      aria-label="Two panels of the femoral head in the acetabulum. In hip flexion or internal rotation the shaft swings anteriorly and the convex head glides posteriorly, which is why the treatment is an anterior-to-posterior glide directed posterolaterally. In extension or external rotation the shaft swings posteriorly and the head glides anteriorly, treated with a posterior-to-anterior glide directed anteromedially."
+      aria-label="Two panels of the femoral head in the acetabulum, each with the femur drawn against a faded neutral limb. In hip flexion or internal rotation the shaft swings forward, anteriorly, while the convex head glides the other way, posteriorly — treated with an anterior-to-posterior glide directed posterolaterally. In extension or external rotation the shaft swings backward and the head glides anteriorly, treated with a posterior-to-anterior glide directed anteromedially."
     >
       <text className="mono" x="170" y="28" textAnchor="middle" fill={A}>FLEXION / INTERNAL ROTATION</text>
       <text className="mono" x="170" y="74" textAnchor="middle" fill={A}>head glides posteriorly →</text>
       <path d="M 130 140 A 40 40 0 0 1 210 140" fill="none" stroke="currentColor" strokeWidth="8" opacity=".32" strokeLinecap="round" />
       <circle cx="170" cy="140" r="27" fill={A} fillOpacity=".12" stroke={A} strokeWidth="1.6" />
-      <line x1="170" y1="140" x2="206" y2="212" stroke="currentColor" strokeWidth="8" opacity=".4" strokeLinecap="round" />
+      <line x1="170" y1="140" x2="170" y2="216" stroke="currentColor" strokeWidth="3" opacity=".3" strokeDasharray="4 6" strokeLinecap="round" />
+      <line x1="170" y1="140" x2="112" y2="189" stroke="currentColor" strokeWidth="8" opacity=".45" strokeLinecap="round" />
       <line x1="153" y1="140" x2="183" y2="140" stroke={A} strokeWidth="2.6" />
       <path d="M 177 134 L 184 140 L 177 146" fill="none" stroke={A} strokeWidth="2.6" />
-      <path d="M 200 200 Q 158 214 128 196" fill="none" stroke={D2} strokeWidth="1.8" />
-      <path d="M 132 190 L 125 195 L 131 202" fill="none" stroke={D2} strokeWidth="1.8" />
-      <text className="mono" x="170" y="242" textAnchor="middle" fill={D2}>shaft swings anteriorly</text>
-      <text className="mono" x="170" y="264" textAnchor="middle">AP glide · posterolateral</text>
+      <path d="M 172 226 Q 140 236 108 202" fill="none" stroke={D2} strokeWidth="1.8" />
+      <path d="M 116 208 L 105 199 L 114 192" fill="none" stroke={D2} strokeWidth="1.8" />
+      <text className="mono" x="182" y="230" opacity=".5">neutral</text>
+      <text className="mono" x="170" y="256" textAnchor="middle" fill={D2}>shaft swings anteriorly</text>
+      <text className="mono" x="170" y="278" textAnchor="middle">AP glide · posterolateral</text>
 
       <text className="mono" x="450" y="28" textAnchor="middle" fill={D3}>EXTENSION / EXTERNAL ROTATION</text>
       <text className="mono" x="450" y="74" textAnchor="middle" fill={D3}>← head glides anteriorly</text>
       <path d="M 410 140 A 40 40 0 0 1 490 140" fill="none" stroke="currentColor" strokeWidth="8" opacity=".32" strokeLinecap="round" />
       <circle cx="450" cy="140" r="27" fill={D3} fillOpacity=".12" stroke={D3} strokeWidth="1.6" />
-      <line x1="450" y1="140" x2="486" y2="212" stroke="currentColor" strokeWidth="8" opacity=".4" strokeLinecap="round" />
+      <line x1="450" y1="140" x2="450" y2="216" stroke="currentColor" strokeWidth="3" opacity=".3" strokeDasharray="4 6" strokeLinecap="round" />
+      <line x1="450" y1="140" x2="492" y2="204" stroke="currentColor" strokeWidth="8" opacity=".45" strokeLinecap="round" />
       <line x1="467" y1="140" x2="437" y2="140" stroke={D3} strokeWidth="2.6" />
       <path d="M 443 134 L 436 140 L 443 146" fill="none" stroke={D3} strokeWidth="2.6" />
-      <path d="M 486 204 Q 522 214 546 198" fill="none" stroke={D2} strokeWidth="1.8" />
-      <path d="M 540 192 L 547 197 L 541 204" fill="none" stroke={D2} strokeWidth="1.8" />
-      <text className="mono" x="450" y="242" textAnchor="middle" fill={D2}>shaft swings posteriorly</text>
-      <text className="mono" x="450" y="264" textAnchor="middle">PA glide · anteromedial</text>
+      <path d="M 448 226 Q 476 234 500 216" fill="none" stroke={D2} strokeWidth="1.8" />
+      <path d="M 492 210 L 503 214 L 495 223" fill="none" stroke={D2} strokeWidth="1.8" />
+      <text className="mono" x="416" y="230" textAnchor="end" opacity=".5">neutral</text>
+      <text className="mono" x="450" y="256" textAnchor="middle" fill={D2}>shaft swings posteriorly</text>
+      <text className="mono" x="450" y="278" textAnchor="middle">PA glide · anteromedial</text>
 
       <text className="mono" x="24" y="140" opacity=".5">anterior ←</text>
     </svg>
