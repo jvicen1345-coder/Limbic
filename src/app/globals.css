@@ -14394,6 +14394,41 @@ button.playbook-maskwrap:focus-visible {
   .playbook-taught-set .playbook-taught-input { height: auto !important; }
 }
 
+/* ---------- Limbic Boards: the Study Guide tab ----------
+   One card per playbook. Shaped like .playbook-hub-card next door but whole-card clickable,
+   since here the card is the link rather than a card with a button in it. */
+.boards-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.boards-guide-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-left: 4px solid var(--color-accent);
+  text-decoration: none;
+  color: inherit;
+}
+.boards-guide-card:hover { background: var(--color-neutral-100); text-decoration: none; }
+.boards-guide-card-name { font-size: 16px; font-weight: 600; }
+.boards-guide-card-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; }
+/* Pushed to the foot of the card so the counts line up across a row whose summaries are
+   different lengths. */
+.boards-guide-card-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin-top: auto; padding-top: 6px; }
+
+/* Boards went from four tabs to five, and .boards-tab's flex:1 sized them to fit — which at
+   this page's measure ellipsed the labels down to "NPTE Breakd…". Let each keep the width of
+   its own label and scroll the strip when they don't all fit; a tab you nudge into view beats
+   a tab you can't read. They still grow to fill a wide strip. */
+.boards-tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.boards-tabs::-webkit-scrollbar { display: none; }
+.boards-tab { flex: 1 0 auto; }
+
 /* ============================================================================
    Appraisal citation lookup and outcome-measure picker — the two entry shortcuts on
    /admin/appraisals (see components/admin/AppraisalWorkbench.tsx). Appended at the end of
@@ -14529,4 +14564,29 @@ button.playbook-maskwrap:focus-visible {
   border-radius: 99px;
   background: var(--color-neutral-100);
   color: var(--color-neutral-700);
+}
+
+/* Clinical Toolbox on a phone (see app/(app)/pro/toolbox/page.tsx). The grid is already one
+   column below 860px, but at a full-size card the page runs about four screens of scrolling
+   on a 390px viewport — which works against a page whose whole job is to be scannable.
+   Measured at 2611px of scroll height before this block.
+
+   Tightened rather than gutted: the description is what tells a reader deciding on LimbicPRO
+   what a locked tool actually does, so it is clamped to two lines instead of hidden, and the
+   card keeps its "Open" affordance. Scoped to .toolbox-group so the /pro overview hub's own
+   cards, which are fewer and carry longer copy, are unaffected. */
+@media (max-width: 640px) {
+  .toolbox-group .pro-tools-grid { gap: 9px; margin: 14px 0; }
+  .toolbox-group { margin-top: 16px; }
+  .toolbox-group .pro-tool-card { padding: 11px 13px; gap: 2px; }
+  .toolbox-group .pro-tool-card-desc {
+    line-height: 1.45;
+    /* Two lines, then an ellipsis. -webkit-line-clamp is the only cross-browser way to do
+       this today; -webkit-box is what makes it apply, and is well supported everywhere. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .toolbox-group .pro-tool-card-footer { margin-top: 3px; }
 }

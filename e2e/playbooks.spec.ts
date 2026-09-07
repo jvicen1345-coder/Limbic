@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { PLAYBOOKS, playbookChecklist, playbookChecklistRows, type PlaybookBlock } from "@/lib/playbook-content";
 import { parsePlaybookInline } from "@/lib/playbook-inline";
 import { playbookTaughtCells } from "@/lib/playbook-taught";
-import { signUpAndEnterApp } from "./helpers";
+import { grantLimbicStudent, signUpAndEnterApp } from "./helpers";
 
 /**
  * Limbic Playbooks — the content bank (lib/playbooks/*) and the page that renders it
@@ -123,7 +123,9 @@ test.describe("Playbook page", () => {
     test(`renders the ${playbook.slug} playbook and remembers the checklist`, async ({ page }) => {
       // A .edu address rather than helpers' default @example.com — every /student route is
       // gated on hasStudentAccess (lib/session.ts), which is what that domain buys.
-      await signUpAndEnterApp(page, `pw-playbook-${playbook.slug}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`);
+      const email = `pw-playbook-${playbook.slug}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+      await signUpAndEnterApp(page, email);
+      await grantLimbicStudent(email);
 
       // Reached through the hub rather than by URL, so the index keeps proving it lists and
       // links every playbook — matched on the card's own heading so one playbook's name
@@ -198,7 +200,9 @@ test.describe("Playbook recall", () => {
     const figures = playbook.sections.flatMap((s) => s.blocks).filter((b) => b.kind === "figure");
 
     test(`hides, checks and remembers answers on the ${playbook.slug} playbook`, async ({ page }) => {
-      await signUpAndEnterApp(page, `pw-recall-${playbook.slug}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`);
+      const email = `pw-recall-${playbook.slug}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+      await signUpAndEnterApp(page, email);
+      await grantLimbicStudent(email);
       await page.goto(`/student/playbooks/${playbook.slug}`);
       await expect(page.getByRole("heading", { name: playbook.title })).toBeVisible();
 
@@ -276,7 +280,9 @@ test.describe("Playbook taught lane", () => {
   });
 
   test("opens a line under every cell, keeps what is typed, and stays out of recall's way", async ({ page }) => {
-    await signUpAndEnterApp(page, `pw-taught-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`);
+    const email = `pw-taught-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+    await signUpAndEnterApp(page, email);
+    await grantLimbicStudent(email);
     await page.goto("/student/playbooks/shoulder");
     await expect(page.getByRole("heading", { name: "Shoulder Examination Playbook" })).toBeVisible();
 
@@ -323,5 +329,31 @@ test.describe("Playbook taught lane", () => {
     await page.locator(".playbook-taughtbar button", { hasText: "Clear my lines" }).click();
     await expect(page.locator(".playbook-taught-set")).toHaveCount(0);
     await expect(toggle).toHaveText("Taught");
+  });
+});
+
+/** The paywall. The playbooks are what Limbic Boards is sold on, so "a .edu sign-in is
+ *  enough" is exactly the regression worth a test: it gives the product away without
+ *  anything failing. */
+test.describe("Playbook access", () => {
+  test("a .edu sign-in alone gets the upgrade, not the guide", async ({ page }) => {
+    const email = `pw-gate-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+    await signUpAndEnterApp(page, email);
+
+    // The hub names what is behind the lock but hands over none of it.
+    await page.goto("/student/playbooks");
+    await expect(page.getByText("LimbicStudent Required")).toBeVisible();
+    await expect(page.locator(".playbook-hub-card")).toHaveCount(0);
+
+    // A direct link to one playbook upsells rather than dead-ends, and still renders none
+    // of the guide itself.
+    await page.goto("/student/playbooks/shoulder");
+    await expect(page.getByRole("link", { name: "Upgrade to LimbicStudent" })).toBeVisible();
+    await expect(page.locator(".playbook-check-table")).toHaveCount(0);
+
+    // And the moment they subscribe, both open.
+    await grantLimbicStudent(email);
+    await page.goto("/student/playbooks/shoulder");
+    await expect(page.locator(".playbook-check-table")).toBeVisible();
   });
 });
