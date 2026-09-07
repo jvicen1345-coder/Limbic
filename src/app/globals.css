@@ -846,6 +846,13 @@ html[data-theme="dark"] .card.elev-lg {
   border-radius: var(--radius-lg);
   background: var(--color-card-surface);
   box-shadow: var(--shadow-lg);
+  /* Matches .tour-highlight above, so the card and the ring it belongs to travel together
+     between steps instead of the ring gliding while the card teleports. Opacity covers the
+     first step, which fades in once measured rather than appearing centred and jumping. */
+  transition: top 0.3s ease, left 0.3s ease, opacity 0.2s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-tooltip, .tour-highlight { transition: opacity 0.2s ease; }
 }
 .tour-progress { display: flex; gap: 4px; margin-bottom: 12px; }
 .tour-progress-seg { height: 3px; flex: 1; border-radius: 2px; background: var(--color-neutral-200); transition: background 0.2s ease; }

@@ -95,6 +95,9 @@ const TOUR_STEPS: TourStep[] = [
 
 const TOOLTIP_WIDTH = 320;
 
+/** How long to keep watching for a smooth scroll to settle before placing the card anyway. */
+const SETTLE_TIMEOUT_MS = 700;
+
 function getTooltipStyle(step: TourStep, targetRect: DOMRect | null): CSSProperties {
   if (!targetRect || step.target === "body") {
     return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
@@ -128,6 +131,10 @@ export function LimbicTour() {
   const [currentStep, setCurrentStep] = useState(0);
   const [visible, setVisible] = useState(true);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+  /** False only until the first step has been measured. The card is centred whenever there
+   *  is no rect, so without this it would appear dead centre on mount and jump to its anchor
+   *  a moment later — the same flash that used to happen on every step change. */
+  const [positioned, setPositioned] = useState(false);
   const [steps, setSteps] = useState<TourStep[]>(TOUR_STEPS);
 
   // Five of the ten steps point at sidebar items, and the sidebar is display:none below 800px
@@ -156,19 +163,64 @@ export function LimbicTour() {
   const isFirst = currentStep === 0;
   const isLast = currentStep >= steps.length - 1;
 
-  // targetRect is cleared eagerly by goToStep below, in the same tick as the step change —
-  // by the time this effect runs for the new step there's nothing stale to clear, so the
-  // only setState left in the effect body is the one inside the (already-async) timeout
-  // callback, not a synchronous call directly in the effect.
+  // The previous step's rect is deliberately *not* cleared when the step changes (see
+  // goToStep below). A null rect means "centre the card", so clearing it sent the card to the
+  // middle of the screen for the whole measuring window before it moved to the new element —
+  // the flash this effect's timing is built to avoid. Holding the old rect means the card
+  // stays put and then travels once, which the CSS transition renders as a glide.
+  //
+  // Measured by watching the rect until it stops moving, rather than guessing at a duration.
+  // scrollIntoView is smooth, so a rect read too early is the pre-scroll position; the old
+  // fixed 300ms was both a guess and a floor, making a target already on screen wait for a
+  // scroll that never happened. Every setState here is inside a rAF callback, never the
+  // effect body — see react-hooks/set-state-in-effect.
   useEffect(() => {
-    if (!visible || step.target === "body") return;
+    if (!visible) return;
 
-    const el = document.querySelector(step.target);
-    if (!el) return;
+    let frame = 0;
+    let cancelled = false;
+    const el = step.target === "body" ? null : document.querySelector(step.target);
+
+    // No element — a "body" step, or one whose target this account doesn't render. Centring
+    // is the intent here, so the rect is cleared rather than left pointing at the last step.
+    if (!el) {
+      frame = window.requestAnimationFrame(() => {
+        if (cancelled) return;
+        setTargetRect(null);
+        setPositioned(true);
+      });
+      return () => {
+        cancelled = true;
+        window.cancelAnimationFrame(frame);
+      };
+    }
 
     el.scrollIntoView({ behavior: "smooth", block: "center" });
-    const timeout = window.setTimeout(() => setTargetRect(el.getBoundingClientRect()), 300);
-    return () => window.clearTimeout(timeout);
+
+    let prev: DOMRect | null = null;
+    let stableFrames = 0;
+    const startedAt = performance.now();
+    const tick = () => {
+      if (cancelled) return;
+      const rect = el.getBoundingClientRect();
+      const settled = prev !== null && Math.abs(rect.top - prev.top) < 0.5 && Math.abs(rect.left - prev.left) < 0.5;
+      stableFrames = settled ? stableFrames + 1 : 0;
+      prev = rect;
+      // Two still frames, or the cap — a scroll that never settles (an animation on the page,
+      // a user scrolling along with it) must not leave the card stranded on the old step.
+      if (stableFrames >= 2 || performance.now() - startedAt > SETTLE_TIMEOUT_MS) {
+        setTargetRect(rect);
+        setPositioned(true);
+        return;
+      }
+      frame = window.requestAnimationFrame(tick);
+    };
+    frame = window.requestAnimationFrame(tick);
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frame);
+    };
   }, [currentStep, step.target, visible]);
 
   async function finish() {
@@ -177,7 +229,7 @@ export function LimbicTour() {
   }
 
   function goToStep(next: number) {
-    setTargetRect(null);
+    // Deliberately does not clear targetRect — see the measuring effect above.
     setCurrentStep(next);
   }
 
@@ -213,7 +265,7 @@ export function LimbicTour() {
         />
       )}
 
-      <div className="tour-tooltip" style={tooltipStyle}>
+      <div className="tour-tooltip" style={{ ...tooltipStyle, opacity: positioned ? 1 : 0 }}>
         <div className="tour-progress">
           {steps.map((s, i) => (
             <div key={s.id} className={i <= currentStep ? "tour-progress-seg tour-progress-seg--done" : "tour-progress-seg"} />
