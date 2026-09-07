@@ -14448,6 +14448,56 @@ button.playbook-maskwrap:focus-visible {
   color: var(--color-text);
 }
 
+/* ============================================================================
+   Read-only PubMed abstract pane on /admin/appraisals (see AbstractPane in
+   components/admin/AppraisalWorkbench.tsx). Styled as reference material rather than as
+   content: a muted panel with its own label and footnote, deliberately not looking like the
+   fields around it, because everything else on that page is something the appraiser typed
+   and this is the one thing that isn't. Appended at the end of the file per COORDINATION.md.
+   ============================================================================ */
+.appraisal-abstract { margin-bottom: 16px; }
+.appraisal-abstract-empty {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  margin: 0 0 14px;
+  max-width: 64ch;
+  line-height: 1.55;
+}
+.appraisal-abstract-pane {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px dashed var(--color-neutral-400);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-secondary);
+}
+.appraisal-abstract-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  margin: 0 0 8px;
+}
+.appraisal-abstract-text {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--color-text);
+  margin: 0;
+  max-width: 72ch;
+  /* Long abstracts scroll inside the pane rather than pushing the number fields — the
+     whole point is having both on screen at once. */
+  max-height: 320px;
+  overflow-y: auto;
+}
+.appraisal-abstract-foot {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  margin: 10px 0 0;
+  padding-top: 9px;
+  border-top: 1px solid var(--color-neutral-300);
+  max-width: 68ch;
+}
 /* Clinical-notes form: the "Note" label sits opposite a link out to the full documentation
    templates (see ClinicalNotesSection.tsx). */
 .clindash-note-label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
