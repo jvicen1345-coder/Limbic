@@ -52,3 +52,27 @@ export async function markMovementLabRequestAdded(id: string): Promise<ActionRes
 export async function declineMovementLabRequest(id: string): Promise<ActionResult> {
   return setRequestStatus(id, "declined");
 }
+
+/**
+ * Marks every given request added in one write — the queue's "mark all the matched ones"
+ * button, for the common case where a batch of requests has just been written into the
+ * catalog together and each row already shows a confirmed match.
+ *
+ * `status: "pending"` is part of the filter, not just the id list, because the ids come from
+ * a page the browser may have been sitting on for a while: a row another admin has since
+ * declined must stay declined rather than being quietly flipped by a stale click. Rows that
+ * no longer qualify are skipped and the count reflects what actually changed, so the caller
+ * can tell the difference.
+ */
+export async function markMovementLabRequestsAdded(ids: string[]): Promise<ActionResult & { updated: number }> {
+  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized.", updated: 0 };
+  if (ids.length === 0) return { ok: true, updated: 0 };
+
+  const { count } = await prisma.movementLabExerciseRequest.updateMany({
+    where: { id: { in: ids }, status: "pending" },
+    data: { status: "added", reviewedAt: new Date() },
+  });
+
+  revalidatePath("/admin/movement-lab-requests");
+  return { ok: true, updated: count };
+}
