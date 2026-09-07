@@ -43,7 +43,7 @@ export default async function ConnexionOverviewPage() {
         </p>
       </div>
 
-      <div className="connexion-mission-card">
+      <div className="connexion-mission-card" data-tour="connexion-mission">
         <div className="connexion-mission-kicker">Mission</div>
         <p className="connexion-mission-text">
           To improve the safety, independence, and quality of life of older adults by delivering a standardized home
@@ -53,7 +53,7 @@ export default async function ConnexionOverviewPage() {
         </p>
       </div>
 
-      <div className="connexion-feature-grid">
+      <div className="connexion-feature-grid" data-tour="connexion-features">
         <div className="connexion-feature-card">
           <HeartIcon size={22} style={{ color: "var(--color-migration-gold)", marginBottom: 12 }} />
           <div className="connexion-feature-title">Caregiver Education</div>

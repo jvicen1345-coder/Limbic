@@ -217,7 +217,7 @@ export default async function WellnessOverviewPage() {
           rather than a restatement of numbers the cards below already show. Ask Limbic Agent
           is deliberately not a third button: it's the featured banner directly underneath,
           and having it in both places made the bar repeat the page's own headline. */}
-      <div className="wellness-quick-actions">
+      <div className="wellness-quick-actions" data-tour="wellness-quick-actions">
         <Link href="/wellness/activity" className="wellness-quick-action">
           <span className="wellness-quick-action-glyph" aria-hidden="true">
             +
@@ -283,7 +283,7 @@ export default async function WellnessOverviewPage() {
 
       <WellnessOverviewTabs
         explore={
-          <div className="wellness-explore-rows">
+          <div className="wellness-explore-rows" data-tour="wellness-explore">
             <div className="wellness-explore-grid wellness-explore-grid--primary">
               {primaryKeys.map((key) => renderCard(key, "primary"))}
             </div>

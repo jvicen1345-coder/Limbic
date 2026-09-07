@@ -19,7 +19,6 @@ import { todayDateKey } from "@/lib/wordle-words";
 import { homeQuestionForDate } from "@/lib/home-questions-static";
 import { HomeFeed } from "@/components/HomeFeed";
 import { LimbicCalendarWidget } from "@/components/LimbicCalendarWidget";
-import { LimbicTour } from "@/components/LimbicTour";
 import { getFoundingFunderStatus } from "@/lib/founding-funders";
 import { visitorHourOfDay } from "@/lib/timezone";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
@@ -331,7 +330,6 @@ export default async function HomePage() {
       showGraduationTransitionCard={showGraduationTransitionCard}
       getTheAppDismissed={user.getTheAppDismissed}
     />
-    {!user.hasCompletedTour && <LimbicTour />}
     </>
   );
 }

@@ -40,7 +40,9 @@ export default async function ConnexionAfitPage() {
   return (
     <div className="screen-pad" style={{ maxWidth: 860, margin: "0 auto" }}>
       <div className="connexion-hero">
-        <h1 className="connexion-hero-title">Adult Functional Independence Test</h1>
+        {/* Tour anchor (see lib/tours.ts) — the heading, because it always renders and is
+          exactly what the step is about. */}
+      <h1 className="connexion-hero-title" data-tour="connexion-afit">Adult Functional Independence Test</h1>
         <p className="connexion-hero-subtitle" style={{ marginBottom: 4 }}>
           AFIT Functional Wellness Assessment
         </p>

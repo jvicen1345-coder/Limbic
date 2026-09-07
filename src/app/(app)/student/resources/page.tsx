@@ -52,7 +52,9 @@ export default async function NpteResourcesPage() {
 
   return (
     <div className="screen-pad atrium-page" style={{ maxWidth: 960 }}>
-      <h1 style={{ fontSize: 26, margin: "0 0 6px" }}>NPTE Resources</h1>
+      {/* Tour anchor (see lib/tours.ts) — the heading, because it always renders and is
+          exactly what the step is about. */}
+      <h1 data-tour="student-resources" style={{ fontSize: 26, margin: "0 0 6px" }}>NPTE Resources</h1>
       <p style={{ fontSize: 14, color: "var(--color-neutral-700)", maxWidth: 640, lineHeight: 1.5, margin: "0 0 20px" }}>
         Free, official resources from FSBPT, the national board that runs the NPTE and coordinates PT licensure —
         open to everyone, no Limbic Student subscription required.

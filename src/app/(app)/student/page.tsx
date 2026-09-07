@@ -131,7 +131,7 @@ export default async function StudentAtriumPage() {
   if (!hasStudentAccess(user)) {
     return (
       <div className="screen-pad atrium-page" style={{ maxWidth: 960 }}>
-        <h1 className="atrium-greeting">Limbic Student</h1>
+        <h1 className="atrium-greeting" data-tour="student-main">Limbic Student</h1>
         <p className="atrium-header-meta" style={{ marginBottom: 16 }}>
           A daily study hub built for DPT students — Boards sharpening, slide breakdowns,
           SOAP note practice, a study-buddy match, and mental wellness support, all in one
@@ -369,7 +369,7 @@ export default async function StudentAtriumPage() {
   return (
     <div className="screen-pad atrium-page" style={{ maxWidth: 1120 }}>
       <div className="atrium-header">
-        <h1 className="atrium-greeting">{greeting}</h1>
+        <h1 className="atrium-greeting" data-tour="student-main">{greeting}</h1>
         <p className="atrium-header-meta">{phaseLabel}</p>
         {userProgram && !genericPhase && (
           <p className="atrium-program-start-prompt">
