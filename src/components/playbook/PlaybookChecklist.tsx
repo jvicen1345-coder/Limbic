@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { Fragment, useState, useSyncExternalStore } from "react";
 import { playbookChecklistRows, type PlaybookChecklistItem } from "@/lib/playbook-content";
 import { PlaybookInline } from "@/components/playbook/PlaybookInline";
 import { PlaybookGroupBar, PlaybookMaskCell, useRecall } from "@/components/playbook/PlaybookRecall";
@@ -110,7 +110,16 @@ export function PlaybookChecklist({
           </thead>
           <tbody>
             {rows.map(({ row, item, index, first }, i) => (
-              <tr key={`${item.id}-${i}`} className={flagged.has(i) ? "playbook-row-missed" : undefined}>
+              <Fragment key={`${item.id}-${i}`}>
+                {/* A phase heading, printed above the first item of that phase. Not a row of
+                    its own: it has no tick box and nothing to recall, so it never enters the
+                    numbering that recall keys its cells on. */}
+                {first && item.group && (
+                  <tr className="playbook-row-group">
+                    <td colSpan={5}>{item.group}</td>
+                  </tr>
+                )}
+              <tr className={flagged.has(i) ? "playbook-row-missed" : undefined}>
                 {first && (
                   <>
                     <td className="playbook-check-ck" rowSpan={1 + (item.also?.length ?? 0)}>
@@ -143,6 +152,7 @@ export function PlaybookChecklist({
                   <PlaybookInline text={row.finding} />
                 </PlaybookMaskCell>
               </tr>
+              </Fragment>
             ))}
           </tbody>
         </table>

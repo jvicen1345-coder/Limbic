@@ -14,8 +14,8 @@
  * over a page they have already worked through. Touching any chip returns to `cols`.
  *
  * What the reader chose and what they got wrong persist in their browser only, through the
- * same little external store the checklist uses (PlaybookChecklist): this is a scratch pad for
- * working a page, not a record worth a round trip to the database. The store is read through
+ * little external store in lib/playbook-store.ts: this is a scratch pad for working a page,
+ * not a record worth a round trip to the database. The store is read through
  * useSyncExternalStore with an empty server snapshot, because localStorage does not exist
  * while the page is being rendered on the server and reading it during render would produce
  * different markup than the server sent.
@@ -23,45 +23,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { RECALL_SOLID_MAX_CHARS, recallCellId, recallColumnId, type RecallGroup } from "@/lib/playbook-recall";
-
-/* ---------- the persisted half ---------- */
-
-const listeners = new Set<() => void>();
-/** Parsed once per key and frozen: useSyncExternalStore compares snapshots by identity, so a
- *  fresh array on every read would loop forever. */
-const cache = new Map<string, unknown>();
-
-function readStored(key: string): unknown {
-  if (cache.has(key)) return cache.get(key);
-  let parsed: unknown = null;
-  try {
-    const raw = window.localStorage.getItem(key);
-    parsed = raw ? JSON.parse(raw) : null;
-  } catch {
-    // A private window, or storage turned off. Recall still works; it just won't be
-    // remembered, which is better than the page failing to render.
-    parsed = null;
-  }
-  cache.set(key, parsed);
-  return parsed;
-}
-
-function writeStored(key: string, value: unknown) {
-  cache.set(key, value);
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // As above — a failed write shouldn't break the interaction.
-  }
-  listeners.forEach((listener) => listener());
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
-}
+import { readStored, subscribeToStore, writeStored } from "@/lib/playbook-store";
+import { PlaybookTaughtLane } from "@/components/playbook/PlaybookTaught";
 
 const NO_COLUMNS: string[] = [];
 const NO_MISSED: string[] = [];
@@ -112,12 +75,12 @@ export function PlaybookRecallProvider({
   const missedKey = `limbic-playbook-${slug}-missed-v1`;
 
   const storedCols = useSyncExternalStore(
-    subscribe,
+    subscribeToStore,
     () => (readStored(stateKey) as string[] | null) ?? NO_COLUMNS,
     () => NO_COLUMNS,
   );
   const storedMissed = useSyncExternalStore(
-    subscribe,
+    subscribeToStore,
     () => (readStored(missedKey) as string[] | null) ?? NO_MISSED,
     () => NO_MISSED,
   );
@@ -476,6 +439,9 @@ export function PlaybookMaskCell({
           {missed ? "missed — clear" : "mark missed"}
         </button>
       )}
+      {/* The reader's own line for this cell — kept out of the way while the cell is blanked,
+          since what their program teaches would usually give the answer away. */}
+      <PlaybookTaughtLane cellId={cellId} suppressed={hidden} />
     </Tag>
   );
 }

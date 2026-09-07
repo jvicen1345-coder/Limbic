@@ -13682,6 +13682,53 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 .playbook-skcell em { color: var(--color-text); font-style: normal; font-weight: 600; }
 .playbook-statnote { font-size: 12.4px; color: var(--pb-ink-2); margin: 0 0 4px; max-width: 72ch; line-height: 1.5; }
 
+/* ---------- provenance ----------
+   Every clinical value in a playbook says what stands behind it: an unmarked value is
+   traced to a published source named beside it, and the two badges mark the ones that
+   aren't. Convention is taught everywhere and was never measured; Contested has been
+   measured and the studies disagree. Both are outlined rather than filled so they read as
+   an annotation on the value, not as another status pill. */
+.playbook-prov {
+  display: inline-block;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-9-5);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+  vertical-align: 1px;
+  border: 1px solid currentColor;
+  margin-right: 5px;
+}
+.playbook-prov-c { color: var(--pb-mod); }
+.playbook-prov-x { color: var(--pb-hi); }
+
+/* The citation itself — quiet, and allowed to break, since some run long. */
+.playbook-src {
+  font-family: var(--pb-mono);
+  font-size: 10.8px;
+  color: var(--pb-ink-2);
+  opacity: 0.9;
+  overflow-wrap: break-word;
+}
+
+.playbook-provkey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: baseline;
+  margin: 0 0 26px;
+  padding: 12px 16px;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  font-size: 12.4px;
+  line-height: 1.5;
+  color: var(--pb-ink-2);
+}
+.playbook-provkey strong { color: var(--color-text); }
+
 /* ---------- callouts ---------- */
 .playbook-callout {
   border-left: 3px solid var(--pb-accent);
@@ -14196,4 +14243,174 @@ button.playbook-maskwrap:focus-visible {
   font-family: var(--font-heading);
   font-weight: var(--font-wordmark-weight);
   color: var(--color-text);
+}
+
+/* Plain-language terms — the tappable jargon in the Atlas (see components/PlainText.tsx and
+   lib/plain-language.ts). Deliberately quiet: a dotted underline in the body colour, not a
+   link colour, because these sit inside running prose a clinician reads too and should not
+   compete with it. */
+.plain-term {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: help;
+  text-decoration: underline dotted var(--color-accent-500);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+.plain-term:hover { text-decoration-color: var(--color-accent-700); background: var(--color-accent-100); }
+.plain-term[aria-expanded="true"] { background: var(--color-accent-100); }
+.plain-term:focus-visible { outline: 2px solid var(--color-accent-500); outline-offset: 2px; border-radius: 2px; }
+.plain-term-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+/* Fixed, and portalled to <body> — see components/PlainText.tsx for why an absolutely
+   positioned child of the word could not work inside the Atlas's scrolling panel. */
+.plain-term-pop {
+  position: fixed;
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 32px));
+  padding: 11px 13px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 28px -14px rgba(0, 0, 0, 0.45);
+  text-align: left;
+  white-space: normal;
+  cursor: auto;
+}
+.plain-term-pop-word {
+  font-size: var(--fs-11);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+}
+.plain-term-pop-what { font-size: 13px; line-height: 1.45; color: var(--color-text); font-weight: 400; }
+.plain-term-pop-eg {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--color-neutral-700);
+  font-style: italic;
+  font-weight: 400;
+  padding-top: 5px;
+  border-top: 1px solid var(--color-divider);
+}
+.atlas-plain-hint {
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  margin: -4px 0 14px;
+}
+
+/* ---------- playbook: the taught lane ----------
+   A reader's own line under a cell, in the atrium purple so it never reads as part of the
+   guide's own text. Empty lanes only exist while the lane is switched on; a filled one stays
+   on the page, and prints with it. */
+.playbook-taught-toggle {
+  flex-shrink: 0;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  padding: 4px 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.playbook-taught-toggle:hover { color: var(--pb-d3); border-color: var(--pb-d3); }
+.playbook-taught-toggle[aria-pressed="true"] { background: var(--pb-d3); border-color: var(--pb-d3); color: var(--pb-surface); }
+
+.playbook-taughtbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  margin: 12px 0 0;
+  padding: 9px 13px;
+  background: color-mix(in srgb, var(--pb-d3) 11%, var(--pb-surface));
+  border-radius: var(--radius-sm);
+  font-size: 12.6px;
+  line-height: 1.5;
+  color: var(--pb-ink-2);
+}
+.playbook-taughtbar span:first-child { flex: 1 1 30ch; }
+.playbook-taught-count { font-family: var(--pb-mono); font-size: var(--fs-10-5); color: var(--pb-d3); }
+.playbook-taughtbar button {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-d3);
+  background: transparent;
+  border: 1px solid var(--pb-d3);
+  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  cursor: pointer;
+}
+.playbook-taughtbar button:hover { background: var(--pb-surface); }
+.playbook-taughtbar button[disabled] { opacity: 0.45; cursor: default; }
+
+/* Tag and line sit on one row: with every lane open at once, a stacked label would half
+   again the height of every table on the page. A lane with something in it earns the rule
+   above it; an empty one stays as quiet as an empty line can be. */
+.playbook-taught {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 6px 0 0;
+  color: var(--pb-d3);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.playbook-taught-set {
+  padding-top: 5px;
+  border-top: 1px dashed color-mix(in srgb, var(--pb-d3) 45%, transparent);
+}
+.playbook-taught-tag {
+  flex: 0 0 auto;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-9-5);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--pb-d3);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+.playbook-taught-input {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 1.45em;
+  resize: none;
+  overflow: hidden;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1.5;
+}
+.playbook-taught-input::placeholder { color: var(--pb-d3); opacity: 0.5; }
+.playbook-taught-input:focus { outline: none; }
+.playbook-taught-input:focus-visible { outline: 2px solid var(--pb-d3); outline-offset: 3px; border-radius: 2px; }
+
+/* A reader's own lines are part of what they take into the lab, so they print — but only the
+   ones with something in them. An open lane is several hundred empty fields, and an empty
+   field on paper is just a rule under every cell. */
+@media print {
+  .playbook-taughtbar { display: none !important; }
+  .playbook-taught:not(.playbook-taught-set) { display: none !important; }
+  .playbook-taught-set { color: #543a86; break-inside: avoid; page-break-inside: avoid; }
+  .playbook-taught-set .playbook-taught-input { height: auto !important; }
 }

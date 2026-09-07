@@ -207,6 +207,22 @@ export function PlaybookBlockView({
         </>
       );
 
+    case "provkey":
+      return (
+        <div className="playbook-provkey">
+          {block.entries.map((entry, i) => (
+            <span key={i}>
+              {entry.prov && (
+                <span className={`playbook-prov playbook-prov-${entry.prov}`}>
+                  {entry.prov === "c" ? "Convention" : "Contested"}
+                </span>
+              )}{" "}
+              <PlaybookInline text={entry.body} />
+            </span>
+          ))}
+        </div>
+      );
+
     case "drill":
       return (
         <>
