@@ -39,7 +39,7 @@ export function EndOfDayCard() {
 
   return (
     <div className="card elev-sm clindash-eod-card">
-      <div className="clindash-eod-header">End of Day</div>
+      <div className="card-kicker clindash-eod-header">End of Day</div>
       <div className="clindash-eod-grid">
         <div>
           <div className="clindash-eod-stat-value">{summary.patientsSeen}</div>

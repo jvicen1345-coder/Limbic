@@ -1089,7 +1089,359 @@ function ConcaveKneeGlide() {
   );
 }
 
+/** The two Ottawa zones on an anterior view, with the four bony points that decide. */
+function OttawaZones() {
+  return (
+    <svg
+      viewBox="0 0 620 306"
+      role="img"
+      aria-label="Anterior view of an ankle and foot showing the malleolar zone and the midfoot zone. Four bony points decide: the posterior edge or tip of the lateral malleolus, the same on the medial malleolus, the navicular, and the base of the fifth metatarsal. In either zone, an inability to bear weight for four steps is an alternative criterion."
+    >
+      <rect x="96" y="98" width="68" height="64" rx="4" fill={A} fillOpacity=".07" stroke={A} strokeWidth="1.4" strokeDasharray="5 4" />
+      <rect x="86" y="176" width="104" height="46" rx="4" fill={D3} fillOpacity=".07" stroke={D3} strokeWidth="1.4" strokeDasharray="5 4" />
+      <text className="mono" x="80" y="134" textAnchor="end" fill={A}>MALLEOLAR</text>
+      <text className="mono" x="80" y="204" textAnchor="end" fill={D3}>MIDFOOT</text>
+
+      <text className="mono" x="106" y="58" textAnchor="end" opacity=".45">tibia</text>
+      <text className="mono" x="164" y="58" opacity=".45">fibula</text>
+      <line x1="120" y1="36" x2="120" y2="146" stroke="currentColor" strokeWidth="16" opacity=".22" strokeLinecap="round" />
+      <line x1="150" y1="40" x2="150" y2="152" stroke="currentColor" strokeWidth="9" opacity=".22" strokeLinecap="round" />
+      <path
+        d="M 112 160 C 92 190, 90 230, 104 250 C 118 264, 168 262, 178 244 C 188 224, 182 190, 166 162 Z"
+        fill="currentColor"
+        fillOpacity=".05"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        opacity=".55"
+      />
+
+      <circle cx="150" cy="156" r="6" fill={A} fillOpacity=".3" stroke={A} strokeWidth="1.6" />
+      <text className="mono" x="172" y="152" fill={A}>1</text>
+      <circle cx="118" cy="150" r="6" fill={A} fillOpacity=".3" stroke={A} strokeWidth="1.6" />
+      <text className="mono" x="90" y="142" textAnchor="end" fill={A}>2</text>
+      <circle cx="102" cy="194" r="6" fill={D3} fillOpacity=".3" stroke={D3} strokeWidth="1.6" />
+      <text className="mono" x="78" y="192" textAnchor="end" fill={D3}>3</text>
+      <circle cx="176" cy="200" r="6" fill={D3} fillOpacity=".3" stroke={D3} strokeWidth="1.6" />
+      <text className="mono" x="198" y="200" fill={D3}>4</text>
+
+      <text className="mono" x="310" y="62" fill={A}>ANKLE FILM — MALLEOLAR ZONE</text>
+      <text x="310" y="86">1 posterior edge or tip, lateral malleolus</text>
+      <text x="310" y="106">2 the same on the medial malleolus</text>
+      <text className="mono" x="310" y="126" opacity=".6">the distal 6 cm of each</text>
+
+      <text className="mono" x="310" y="164" fill={D3}>FOOT FILM — MIDFOOT ZONE</text>
+      <text x="310" y="188">3 navicular</text>
+      <text x="310" y="208">4 base of the fifth metatarsal</text>
+
+      <text className="mono" x="310" y="246" fill={D2}>OR, IN EITHER ZONE</text>
+      <text x="310" y="270">unable to bear weight four steps — then and now</text>
+
+      <text className="mono" x="40" y="292" opacity=".5">bone tenderness only — soft tissue over a ligament does not count</text>
+    </svg>
+  );
+}
+
+/** Five pain zones around the ankle and foot, and the short list each one opens. */
+function AnklePainMap() {
+  return (
+    <svg
+      viewBox="0 0 620 306"
+      role="img"
+      aria-label="Side view of an ankle and foot with five numbered pain zones: lateral, medial on the far side, anterior and above the joint line, posterior and plantar heel, and forefoot. Each zone lists the structures it opens."
+    >
+      <path
+        d="M 100 44 L 100 128 C 100 146, 90 152, 88 164 C 86 176, 96 184, 110 184 L 232 184 C 248 184, 254 176, 248 168 C 242 160, 214 154, 186 148 C 152 140, 128 132, 124 118 L 124 44 Z"
+        fill="currentColor"
+        fillOpacity=".05"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        opacity=".55"
+      />
+
+      <circle cx="132" cy="140" r="7" fill={A} fillOpacity=".35" stroke={A} strokeWidth="1.5" />
+      <text className="mono" x="146" y="136" fill={A}>1</text>
+      <circle cx="106" cy="158" r="7" fill={D2} fillOpacity=".35" stroke={D2} strokeWidth="1.5" />
+      <text className="mono" x="92" y="154" textAnchor="end" fill={D2}>2</text>
+      <circle cx="118" cy="110" r="7" fill={D3} fillOpacity=".35" stroke={D3} strokeWidth="1.5" />
+      <text className="mono" x="134" y="106" fill={D3}>3</text>
+      <circle cx="96" cy="96" r="7" fill={HI} fillOpacity=".35" stroke={HI} strokeWidth="1.5" />
+      <circle cx="112" cy="180" r="7" fill={HI} fillOpacity=".35" stroke={HI} strokeWidth="1.5" />
+      <text className="mono" x="80" y="92" textAnchor="end" fill={HI}>4</text>
+      <circle cx="208" cy="172" r="7" fill={MOD} fillOpacity=".35" stroke={MOD} strokeWidth="1.5" />
+      <text className="mono" x="214" y="158" fill={MOD}>5</text>
+
+      <text className="mono" x="300" y="48" fill={A}>1 LATERAL</text>
+      <text x="300" y="70">ATFL and CFL · peroneals · fifth metatarsal</text>
+      <text className="mono" x="300" y="100" fill={D2}>2 MEDIAL (far side)</text>
+      <text x="300" y="122">posterior tibialis · deltoid · tarsal tunnel</text>
+      <text className="mono" x="300" y="152" fill={D3}>3 ANTERIOR, ABOVE THE JOINT LINE</text>
+      <text x="300" y="174">syndesmosis · anterior impingement</text>
+      <text className="mono" x="300" y="204" fill={HI}>4 POSTERIOR AND PLANTAR HEEL</text>
+      <text x="300" y="226">Achilles · plantar fascia · bone stress</text>
+      <text className="mono" x="300" y="256" fill={MOD}>5 FOREFOOT</text>
+      <text x="300" y="278">metatarsal stress · neuroma · first MTP</text>
+
+      <text className="mono" x="40" y="292" opacity=".5">side view · schematic</text>
+    </svg>
+  );
+}
+
+/** The windlass: extending the great toe winds the fascia round the metatarsal head and
+ *  raises the arch. */
+function ArchWindlass() {
+  return (
+    <svg
+      viewBox="0 0 620 296"
+      role="img"
+      aria-label="Two panels of a foot in side view. With the great toe flat the arch sits at its resting height. Extending the great toe winds the plantar fascia around the first metatarsal head, shortens it, and raises the arch, making the foot rigid for push-off."
+    >
+      <text className="mono" x="170" y="30" textAnchor="middle" opacity=".65">TOE FLAT</text>
+      <line x1="80" y1="200" x2="280" y2="200" stroke="currentColor" strokeWidth="1.2" opacity=".3" />
+      <circle cx="110" cy="184" r="11" fill="currentColor" fillOpacity=".12" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="226" cy="182" r="13" fill="currentColor" fillOpacity=".12" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M 110 172 Q 168 140 226 169" fill="none" stroke="currentColor" strokeWidth="6" opacity=".3" strokeLinecap="round" />
+      <path d="M 110 194 Q 168 190 226 192" fill="none" stroke={A} strokeWidth="3" />
+      <line x1="238" y1="186" x2="268" y2="190" stroke="currentColor" strokeWidth="7" opacity=".3" strokeLinecap="round" />
+      <line x1="80" y1="152" x2="280" y2="152" stroke="currentColor" strokeWidth="1" strokeDasharray="4 5" opacity=".35" />
+      <text className="mono" x="170" y="228" textAnchor="middle" opacity=".7">fascia lies along the sole</text>
+      <text className="mono" x="170" y="250" textAnchor="middle">arch at resting height</text>
+
+      <text className="mono" x="450" y="30" textAnchor="middle" fill={A}>GREAT TOE EXTENDED</text>
+      <line x1="360" y1="200" x2="560" y2="200" stroke="currentColor" strokeWidth="1.2" opacity=".3" />
+      <circle cx="390" cy="184" r="11" fill="currentColor" fillOpacity=".12" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="506" cy="182" r="13" fill={A} fillOpacity=".14" stroke={A} strokeWidth="1.6" />
+      <path d="M 390 172 Q 448 118 506 169" fill="none" stroke="currentColor" strokeWidth="6" opacity=".3" strokeLinecap="round" />
+      <path d="M 390 194 Q 448 186 500 190 A 13 13 0 0 0 514 176" fill="none" stroke={A} strokeWidth="3" />
+      <line x1="514" y1="174" x2="538" y2="150" stroke="currentColor" strokeWidth="7" opacity=".35" strokeLinecap="round" />
+      <line x1="360" y1="152" x2="560" y2="152" stroke="currentColor" strokeWidth="1" strokeDasharray="4 5" opacity=".35" />
+      <line x1="448" y1="150" x2="448" y2="122" stroke={A} strokeWidth="2.4" />
+      <path d="M 441 130 L 448 119 L 455 130" fill="none" stroke={A} strokeWidth="2.4" />
+      <text className="mono" x="450" y="228" textAnchor="middle" fill={A}>fascia winds round the head</text>
+      <text className="mono" x="450" y="250" textAnchor="middle">arch rises · the foot goes rigid</text>
+
+      <text className="mono" x="40" y="278" opacity=".55">the dashed line is the same height in both panels</text>
+    </svg>
+  );
+}
+
+/** The weight-bearing lunge test, and the two ways it is read. */
+function LungeTest() {
+  return (
+    <svg
+      viewBox="0 0 620 282"
+      role="img"
+      aria-label="The weight-bearing lunge test: the foot square to a wall, the knee driven forward to touch it with the heel staying down. It is read either as a toe-to-wall distance of about nine to ten centimetres or as a tibial angle of thirty-five to forty degrees, and the side-to-side difference is the finding."
+    >
+      <text className="mono" x="40" y="60" fill={A}>9–10 cm</text>
+      <text x="40" y="84">toe to wall, heel flat</text>
+      <text className="mono" x="40" y="120" fill={D2}>35–40°</text>
+      <text x="40" y="144">the same test as a tibial angle</text>
+      <text className="mono" x="40" y="180" fill={D3}>&gt; 1.5 cm</text>
+      <text x="40" y="204">side-to-side difference</text>
+      <text className="mono" x="40" y="240" opacity=".6">heel down · knee over the second toe</text>
+      <text className="mono" x="40" y="262" opacity=".45">same wall, same foot placement, every time</text>
+
+      <line x1="470" y1="36" x2="470" y2="240" stroke="currentColor" strokeWidth="4" opacity=".45" />
+      <path d="M 470 52 L 484 38 M 470 82 L 484 68 M 470 112 L 484 98 M 470 142 L 484 128 M 470 172 L 484 158 M 470 202 L 484 188" stroke="currentColor" strokeWidth="1.4" opacity=".3" />
+      <line x1="330" y1="240" x2="470" y2="240" stroke="currentColor" strokeWidth="1.2" opacity=".3" />
+
+      <line x1="352" y1="232" x2="444" y2="232" stroke="currentColor" strokeWidth="9" opacity=".35" strokeLinecap="round" />
+      <line x1="397" y1="228" x2="458" y2="150" stroke="currentColor" strokeWidth="9" opacity=".35" strokeLinecap="round" />
+      <line x1="458" y1="150" x2="420" y2="66" stroke="currentColor" strokeWidth="9" opacity=".35" strokeLinecap="round" />
+      <circle cx="458" cy="150" r="9" fill="currentColor" fillOpacity=".2" stroke="currentColor" strokeWidth="1.4" />
+
+      <line x1="397" y1="228" x2="397" y2="146" stroke={D2} strokeWidth="1.2" strokeDasharray="4 5" opacity=".7" />
+      <path d="M 397 178 A 50 50 0 0 1 428 189" fill="none" stroke={D2} strokeWidth="2.2" />
+      <text className="mono" x="414" y="156" textAnchor="middle" fill={D2}>35–40°</text>
+
+      <line x1="444" y1="256" x2="470" y2="256" stroke={A} strokeWidth="2.2" />
+      <path d="M 452 250 L 442 256 L 452 262" fill="none" stroke={A} strokeWidth="2.2" />
+      <path d="M 462 250 L 472 256 L 462 262" fill="none" stroke={A} strokeWidth="2.2" />
+      <text className="mono" x="450" y="274" textAnchor="middle" fill={A}>9–10 cm</text>
+
+      <text className="mono" x="344" y="220" textAnchor="end" opacity=".6">heel</text>
+      <text className="mono" x="344" y="236" textAnchor="end" opacity=".6">down</text>
+    </svg>
+  );
+}
+
+/** The talus is the convex partner in the mortise, so roll and glide oppose each other —
+ *  the counterpart to the knee figure, where the moving surface is concave. */
+function ConvexAnkleGlide() {
+  return (
+    <svg
+      viewBox="0 0 620 268"
+      role="img"
+      aria-label="Two panels of the talus in the ankle mortise. The talus is the convex partner and it is the bone that moves, so roll and glide oppose each other: into dorsiflexion the talus rolls anteriorly and must glide posteriorly, and into plantarflexion the reverse. This is the same arrangement as the hip and the opposite of the knee."
+    >
+      <text className="mono" x="170" y="26" textAnchor="middle" fill={A}>DORSIFLEXION</text>
+      <text className="mono" x="170" y="72" textAnchor="middle" opacity=".5">mortise</text>
+      <line x1="114" y1="86" x2="226" y2="86" stroke="currentColor" strokeWidth="7" opacity=".4" strokeLinecap="round" />
+      <line x1="114" y1="86" x2="114" y2="120" stroke="currentColor" strokeWidth="7" opacity=".4" strokeLinecap="round" />
+      <line x1="226" y1="86" x2="226" y2="126" stroke="currentColor" strokeWidth="7" opacity=".4" strokeLinecap="round" />
+      <circle cx="170" cy="122" r="31" fill="currentColor" fillOpacity=".07" stroke="currentColor" strokeWidth="1.5" />
+      <text className="mono" x="170" y="128" textAnchor="middle" opacity=".45">talus</text>
+      <line x1="170" y1="102" x2="132" y2="102" stroke={A} strokeWidth="2.6" />
+      <path d="M 140 95 L 130 102 L 140 109" fill="none" stroke={A} strokeWidth="2.6" />
+      <line x1="176" y1="140" x2="244" y2="140" stroke="currentColor" strokeWidth="7" opacity=".2" strokeDasharray="5 6" strokeLinecap="round" />
+      <line x1="176" y1="138" x2="242" y2="112" stroke="currentColor" strokeWidth="8" opacity=".4" strokeLinecap="round" />
+      <text className="mono" x="248" y="108" opacity=".5">foot</text>
+      <text className="mono" x="170" y="182" textAnchor="middle" fill={A}>rolls anteriorly</text>
+      <text className="mono" x="170" y="204" textAnchor="middle" fill={D2}>glides posteriorly</text>
+      <text className="mono" x="170" y="228" textAnchor="middle">opposite — posterior glide</text>
+
+      <text className="mono" x="450" y="26" textAnchor="middle" fill={D3}>PLANTARFLEXION</text>
+      <text className="mono" x="450" y="72" textAnchor="middle" opacity=".5">mortise</text>
+      <line x1="394" y1="86" x2="506" y2="86" stroke="currentColor" strokeWidth="7" opacity=".4" strokeLinecap="round" />
+      <line x1="394" y1="86" x2="394" y2="120" stroke="currentColor" strokeWidth="7" opacity=".4" strokeLinecap="round" />
+      <line x1="506" y1="86" x2="506" y2="126" stroke="currentColor" strokeWidth="7" opacity=".4" strokeLinecap="round" />
+      <circle cx="450" cy="122" r="31" fill="currentColor" fillOpacity=".07" stroke="currentColor" strokeWidth="1.5" />
+      <text className="mono" x="450" y="128" textAnchor="middle" opacity=".45">talus</text>
+      <line x1="450" y1="102" x2="488" y2="102" stroke={D3} strokeWidth="2.6" />
+      <path d="M 480 95 L 490 102 L 480 109" fill="none" stroke={D3} strokeWidth="2.6" />
+      <line x1="456" y1="140" x2="524" y2="140" stroke="currentColor" strokeWidth="7" opacity=".2" strokeDasharray="5 6" strokeLinecap="round" />
+      <line x1="456" y1="142" x2="522" y2="168" stroke="currentColor" strokeWidth="8" opacity=".4" strokeLinecap="round" />
+      <text className="mono" x="528" y="172" opacity=".5">foot</text>
+      <text className="mono" x="450" y="182" textAnchor="middle" fill={D3}>rolls posteriorly</text>
+      <text className="mono" x="450" y="204" textAnchor="middle" fill={D2}>glides anteriorly</text>
+      <text className="mono" x="450" y="228" textAnchor="middle">opposite — anterior glide</text>
+
+      <text className="mono" x="24" y="140" opacity=".5">→ anterior</text>
+      <text className="mono" x="24" y="252" opacity=".45">faded foot = starting position</text>
+    </svg>
+  );
+}
+
+/** Why the drawer and the tilt are done at different ankle positions. */
+function AtflPosition() {
+  return (
+    <svg
+      viewBox="0 0 620 274"
+      role="img"
+      aria-label="Two panels of the lateral ankle ligaments. The anterior talofibular ligament runs forward from the fibula and becomes vertical in plantarflexion, which is where the anterior drawer is done. The calcaneofibular ligament runs downward and becomes vertical in dorsiflexion, which is where the talar tilt is done. In each position the other ligament is out of the line of test."
+    >
+      <text className="mono" x="170" y="26" textAnchor="middle" fill={A}>10–20° PLANTARFLEXION</text>
+      <text className="mono" x="154" y="38" textAnchor="middle" opacity=".5">fibula</text>
+      <line x1="154" y1="48" x2="154" y2="106" stroke="currentColor" strokeWidth="9" opacity=".35" strokeLinecap="round" />
+      <circle cx="154" cy="112" r="5" fill="currentColor" fillOpacity=".3" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="186" cy="118" r="22" fill="currentColor" fillOpacity=".07" stroke="currentColor" strokeWidth="1.4" />
+      <text className="mono" x="214" y="126" opacity=".5">talus</text>
+      <ellipse cx="166" cy="164" rx="34" ry="18" fill="currentColor" fillOpacity=".07" stroke="currentColor" strokeWidth="1.4" />
+      <text className="mono" x="124" y="180" textAnchor="end" opacity=".5">calcaneus</text>
+      <line x1="154" y1="112" x2="206" y2="106" stroke={A} strokeWidth="4.5" />
+      <text className="mono" x="212" y="100" fill={A}>ATFL</text>
+      <line x1="154" y1="112" x2="148" y2="148" stroke="currentColor" strokeWidth="2" opacity=".28" />
+      <text className="mono" x="140" y="144" textAnchor="end" opacity=".3">CFL</text>
+      <line x1="192" y1="158" x2="238" y2="188" stroke="currentColor" strokeWidth="8" opacity=".3" strokeLinecap="round" />
+      <text className="mono" x="244" y="192" opacity=".45">foot</text>
+      <line x1="142" y1="206" x2="202" y2="206" stroke={A} strokeWidth="2.6" />
+      <path d="M 194 199 L 204 206 L 194 213" fill="none" stroke={A} strokeWidth="2.6" />
+      <text className="mono" x="170" y="228" textAnchor="middle" fill={A}>anterior drawer</text>
+      <text className="mono" x="170" y="250" textAnchor="middle">ATFL vertical — CFL is not</text>
+
+      <text className="mono" x="450" y="26" textAnchor="middle" fill={D3}>NEUTRAL → DORSIFLEXION</text>
+      <text className="mono" x="434" y="38" textAnchor="middle" opacity=".5">fibula</text>
+      <line x1="434" y1="48" x2="434" y2="106" stroke="currentColor" strokeWidth="9" opacity=".35" strokeLinecap="round" />
+      <circle cx="434" cy="112" r="5" fill="currentColor" fillOpacity=".3" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="466" cy="118" r="22" fill="currentColor" fillOpacity=".07" stroke="currentColor" strokeWidth="1.4" />
+      <text className="mono" x="494" y="126" opacity=".5">talus</text>
+      <ellipse cx="446" cy="164" rx="34" ry="18" fill="currentColor" fillOpacity=".07" stroke="currentColor" strokeWidth="1.4" />
+      <text className="mono" x="404" y="180" textAnchor="end" opacity=".5">calcaneus</text>
+      <line x1="434" y1="112" x2="486" y2="106" stroke="currentColor" strokeWidth="2" opacity=".28" />
+      <text className="mono" x="492" y="100" opacity=".3">ATFL</text>
+      <line x1="434" y1="112" x2="428" y2="148" stroke={D3} strokeWidth="4.5" />
+      <text className="mono" x="420" y="144" textAnchor="end" fill={D3}>CFL</text>
+      <line x1="472" y1="158" x2="518" y2="130" stroke="currentColor" strokeWidth="8" opacity=".3" strokeLinecap="round" />
+      <text className="mono" x="526" y="136" opacity=".45">foot</text>
+      <path d="M 480 196 A 44 44 0 0 1 424 200" fill="none" stroke={D3} strokeWidth="2.6" />
+      <path d="M 432 192 L 421 201 L 433 206" fill="none" stroke={D3} strokeWidth="2.6" />
+      <text className="mono" x="450" y="228" textAnchor="middle" fill={D3}>talar tilt</text>
+      <text className="mono" x="450" y="250" textAnchor="middle">CFL vertical — ATFL is not</text>
+    </svg>
+  );
+}
+
+/** Mid-portion and insertional Achilles pain are two different prescriptions. */
+function AchillesZones() {
+  return (
+    <svg
+      viewBox="0 0 620 272"
+      role="img"
+      aria-label="The Achilles tendon in side view. Mid-portion tendinopathy sits two to six centimetres above the insertion and tolerates full-range loading. Insertional tendinopathy sits at the calcaneus, where dorsiflexion compresses the tendon against the bone, so loading is kept to neutral and stretching into the compressed position is avoided."
+    >
+      <path d="M 118 44 C 104 74, 106 102, 122 116 L 158 116 C 172 102, 172 74, 158 44 Z" fill="currentColor" fillOpacity=".07" stroke="currentColor" strokeWidth="1.4" opacity=".7" />
+      <text className="mono" x="138" y="34" textAnchor="middle" opacity=".5">calf</text>
+      <line x1="140" y1="116" x2="140" y2="196" stroke="currentColor" strokeWidth="13" opacity=".3" strokeLinecap="round" />
+      <ellipse cx="152" cy="212" rx="36" ry="18" fill="currentColor" fillOpacity=".08" stroke="currentColor" strokeWidth="1.4" />
+      <text className="mono" x="152" y="246" textAnchor="middle" opacity=".5">calcaneus</text>
+
+      <rect x="131" y="140" width="18" height="38" rx="4" fill={MOD} fillOpacity=".3" stroke={MOD} strokeWidth="1.6" />
+      <line x1="162" y1="140" x2="162" y2="178" stroke={MOD} strokeWidth="1.6" />
+      <line x1="158" y1="140" x2="166" y2="140" stroke={MOD} strokeWidth="1.6" />
+      <line x1="158" y1="178" x2="166" y2="178" stroke={MOD} strokeWidth="1.6" />
+      <text className="mono" x="172" y="163" fill={MOD}>2–6 cm</text>
+
+      <circle cx="140" cy="196" r="8" fill={HI} fillOpacity=".3" stroke={HI} strokeWidth="1.8" />
+      <text className="mono" x="122" y="200" textAnchor="end" fill={HI}>insertion</text>
+
+      <text className="mono" x="290" y="58" fill={MOD}>MID-PORTION · 2–6 cm ABOVE THE BONE</text>
+      <text x="290" y="82">tolerates loading through full range</text>
+      <text x="290" y="102">heel drops off a step are fine here</text>
+
+      <text className="mono" x="290" y="146" fill={HI}>INSERTIONAL · AT THE CALCANEUS</text>
+      <text x="290" y="170">dorsiflexion compresses it against the bone</text>
+      <text x="290" y="190">so the loading stops at neutral</text>
+      <text x="290" y="210">and the stretch that looks helpful is not</text>
+
+      <text className="mono" x="290" y="250" opacity=".55">same tendon · same word · different exercise</text>
+    </svg>
+  );
+}
+
+/** Five pain zones at the shoulder — and how little most of them narrow the list. */
+function ShoulderPainMap() {
+  return (
+    <svg
+      viewBox="0 0 620 306"
+      role="img"
+      aria-label="Anterior view of a right shoulder with five pain zones: the lateral deltoid, which is diffuse and shared by several sources; the bicipital groove; the acromioclavicular joint; the posterior shoulder on the far side; and referral up toward the neck."
+    >
+      <rect x="52" y="70" width="52" height="180" rx="10" fill="currentColor" fillOpacity=".05" stroke="currentColor" strokeWidth="1.2" opacity=".5" />
+      <line x1="76" y1="30" x2="82" y2="74" stroke="currentColor" strokeWidth="20" opacity=".16" strokeLinecap="round" />
+      <line x1="104" y1="88" x2="176" y2="82" stroke="currentColor" strokeWidth="7" opacity=".3" strokeLinecap="round" />
+      <rect x="176" y="74" width="30" height="12" rx="3" fill="currentColor" fillOpacity=".18" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="198" cy="114" r="26" fill="currentColor" fillOpacity=".08" stroke="currentColor" strokeWidth="1.4" />
+      <line x1="198" y1="132" x2="208" y2="242" stroke="currentColor" strokeWidth="26" opacity=".2" strokeLinecap="round" />
+
+      <ellipse cx="214" cy="166" rx="16" ry="34" fill={A} fillOpacity=".16" stroke={A} strokeWidth="1.5" strokeDasharray="4 3" />
+      <text className="mono" x="240" y="162" fill={A}>1</text>
+      <circle cx="188" cy="152" r="7" fill={D2} fillOpacity=".35" stroke={D2} strokeWidth="1.5" />
+      <text className="mono" x="174" y="172" textAnchor="end" fill={D2}>2</text>
+      <circle cx="191" cy="80" r="7" fill={D3} fillOpacity=".35" stroke={D3} strokeWidth="1.5" />
+      <text className="mono" x="191" y="60" textAnchor="middle" fill={D3}>3</text>
+      <circle cx="170" cy="134" r="7" fill={HI} fillOpacity=".25" stroke={HI} strokeWidth="1.5" strokeDasharray="3 2" />
+      <text className="mono" x="152" y="130" textAnchor="end" fill={HI}>4</text>
+      <circle cx="80" cy="50" r="7" fill={MOD} fillOpacity=".35" stroke={MOD} strokeWidth="1.5" />
+      <text className="mono" x="96" y="46" fill={MOD}>5</text>
+
+      <text className="mono" x="300" y="48" fill={A}>1 LATERAL DELTOID — DIFFUSE</text>
+      <text x="300" y="70">subacromial · cuff · and referral too</text>
+      <text className="mono" x="300" y="100" fill={D2}>2 BICIPITAL GROOVE</text>
+      <text x="300" y="122">biceps long head · rotate to confirm</text>
+      <text className="mono" x="300" y="152" fill={D3}>3 AC JOINT — POINT TENDER</text>
+      <text x="300" y="174">the one a single finger localizes</text>
+      <text className="mono" x="300" y="204" fill={HI}>4 POSTERIOR (far side)</text>
+      <text x="300" y="226">posterior capsule · scapular control</text>
+      <text className="mono" x="300" y="256" fill={MOD}>5 UP TOWARD THE NECK</text>
+      <text x="300" y="278">cervical referral — screen it</text>
+
+      <text className="mono" x="40" y="296" opacity=".5">anterior view · right shoulder · zone 1 is dashed because it is diffuse</text>
+    </svg>
+  );
+}
+
 const FIGURES: Record<string, () => React.ReactElement> = {
+  "shoulder-pain-map": ShoulderPainMap,
   "elevation-arithmetic": ElevationArithmetic,
   "restraint-by-angle": RestraintByAngle,
   "range-by-plane": RangeByPlane,
@@ -1116,6 +1468,13 @@ const FIGURES: Record<string, () => React.ReactElement> = {
   "ligament-angle": LigamentAngle,
   "meniscus-zones": MeniscusZones,
   "concave-knee-glide": ConcaveKneeGlide,
+  "ottawa-zones": OttawaZones,
+  "ankle-pain-map": AnklePainMap,
+  "arch-windlass": ArchWindlass,
+  "lunge-test": LungeTest,
+  "convex-ankle-glide": ConvexAnkleGlide,
+  "atfl-position": AtflPosition,
+  "achilles-zones": AchillesZones,
 };
 
 /** Renders the figure a `figure` block names, or nothing if the id is unknown — a content

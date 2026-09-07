@@ -315,32 +315,35 @@ export interface PubmedAbstractLookup {
 }
 
 /** Resolves free-form input — a PubMed URL, a bare PMID, a DOI, or a plain-text citation/
- *  title — down to one real PubMed record with its full abstract, for lib/generalizability.ts's
- *  Generalizability Checker (see that file's comment on why the full-text esearch-then-efetch
- *  path lives here rather than reusing searchPubmed/fetchPubmedById above, both of which
- *  return the feed-truncated Article shape). Returns null if nothing resolves — including a
- *  too-short/ambiguous free-text input, which isn't attempted as a search term at all, to
- *  avoid esearch's "no match" fallback silently returning an unrelated top-of-database
- *  result for something like a stray word or a mistyped fragment. Never throws. */
-export async function resolvePubmedAbstract(input: string): Promise<PubmedAbstractLookup | null> {
+ *  title — down to one PMID. Returns null if nothing resolves, including a too-short or
+ *  ambiguous free-text input, which isn't attempted as a search term at all: esearch's
+ *  "no match" fallback would otherwise return an unrelated top-of-database result for a
+ *  stray word or a mistyped fragment. Never throws.
+ *
+ *  Lifted out of resolvePubmedAbstract below so lookupStudyMetadata can reuse the same
+ *  resolution without also fetching an abstract it must not return — see that function. */
+export async function resolvePmid(input: string): Promise<string | null> {
   const trimmed = input.trim();
   if (!trimmed) return null;
 
-  let pmid: string | null = null;
   const urlMatch = trimmed.match(PUBMED_URL_RE);
-  if (urlMatch) {
-    pmid = urlMatch[1];
-  } else if (BARE_PMID_RE.test(trimmed)) {
-    pmid = trimmed;
-  } else {
-    const doiMatch = trimmed.match(DOI_RE);
-    if (doiMatch || trimmed.length >= 8) {
-      const term = doiMatch ? `${doiMatch[0]}[DOI]` : trimmed;
-      const searchUrl = `${EUTILS}/esearch.fcgi?db=pubmed&retmode=json&retmax=1&term=${encodeURIComponent(term)}`;
-      const searchJson = (await fetchJson(searchUrl)) as { esearchresult?: { idlist?: string[] } } | null;
-      pmid = searchJson?.esearchresult?.idlist?.[0] ?? null;
-    }
-  }
+  if (urlMatch) return urlMatch[1];
+  if (BARE_PMID_RE.test(trimmed)) return trimmed;
+
+  const doiMatch = trimmed.match(DOI_RE);
+  if (!doiMatch && trimmed.length < 8) return null;
+  const term = doiMatch ? `${doiMatch[0]}[DOI]` : trimmed;
+  const searchUrl = `${EUTILS}/esearch.fcgi?db=pubmed&retmode=json&retmax=1&term=${encodeURIComponent(term)}`;
+  const searchJson = (await fetchJson(searchUrl)) as { esearchresult?: { idlist?: string[] } } | null;
+  return searchJson?.esearchresult?.idlist?.[0] ?? null;
+}
+
+/** One real PubMed record with its full abstract, for lib/generalizability.ts's
+ *  Generalizability Checker (see that file's comment on why the esearch-then-efetch path
+ *  lives here rather than reusing searchPubmed/fetchPubmedById above, both of which return
+ *  the feed-truncated Article shape). Never throws. */
+export async function resolvePubmedAbstract(input: string): Promise<PubmedAbstractLookup | null> {
+  const pmid = await resolvePmid(input);
   if (!pmid) return null;
 
   const [summaryJson, efetchXml] = await Promise.all([
@@ -359,6 +362,101 @@ export async function resolvePubmedAbstract(input: string): Promise<PubmedAbstra
     journal: entry.fulljournalname || entry.source || "PubMed",
     url: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
     abstract: meta.get(pmid)?.abstract ?? "",
+  };
+}
+
+/** Bibliographic metadata for one study, for prefilling an appraisal's citation block (see
+ *  components/admin/AppraisalWorkbench.tsx). */
+export interface StudyMetadata {
+  pmid: string;
+  doi: string;
+  title: string;
+  /** "Smith et al." from the record's author list, or "" when it carries none. */
+  authors: string;
+  journal: string;
+  year: number | null;
+  /** The record's own publication type, mapped through lib/evidence.ts — "RCT", "SR", "MA",
+   *  "Review" or "Research". A starting point for the design field, not an answer: the
+   *  appraiser overwrites it with what the paper actually did. */
+  designHint: string;
+}
+
+/** Formats an efetch AuthorList as "Smith et al." / "Smith and Okonkwo" / "Smith". Returns
+ *  "" for a record with no usable author names — a consensus statement or an editorial with
+ *  a corporate author, which is a real case, not a parse failure. */
+function formatAuthors(authorListRaw: unknown): string {
+  const raw = (authorListRaw as { Author?: unknown } | undefined)?.Author;
+  const authors = (Array.isArray(raw) ? raw : raw ? [raw] : []) as { LastName?: unknown }[];
+  // Surnames arrive entity-encoded in efetch XML — "Bulu&#x15f;", "Robles-Garc&#xed;a" —
+  // and an author list is exactly where that shows, since the names carrying diacritics are
+  // the ones a reader would notice mangled. decodeXmlEntities is the same pass the abstract
+  // text already goes through.
+  const surnames = authors.map((a) => decodeXmlEntities(xmlNodeText(a?.LastName))).filter(Boolean);
+  if (surnames.length === 0) return "";
+  if (surnames.length === 1) return surnames[0];
+  if (surnames.length === 2) return `${surnames[0]} and ${surnames[1]}`;
+  return `${surnames[0]} et al.`;
+}
+
+/**
+ * Bibliographic metadata for a DOI, PMID, PubMed URL or plain-text citation — the citation
+ * block of an appraisal, filled from the record rather than retyped (see lib/appraisal.ts
+ * for why an appraisal is entered by hand in the first place).
+ *
+ * **This deliberately does not return the abstract, and must not start.** Metadata is fact:
+ * a title, a journal, a year, an author list, a DOI. The abstract is the publisher's text,
+ * and an appraisal whose fields were filled from it would be exactly the abstract-derived
+ * summary this whole feature exists to avoid — the numbers that matter, attrition above
+ * all, are not in an abstract to begin with. The efetch response fetched below does carry
+ * one, and nothing here reads it.
+ *
+ * Never throws; returns null when nothing resolves.
+ */
+export async function lookupStudyMetadata(input: string): Promise<StudyMetadata | null> {
+  const pmid = await resolvePmid(input);
+  if (!pmid) return null;
+
+  const [summaryJson, efetchXml] = await Promise.all([
+    fetchJson(`${EUTILS}/esummary.fcgi?db=pubmed&retmode=json&id=${pmid}`) as Promise<{
+      result?: Record<string, EsummaryEntry>;
+    } | null>,
+    fetchText(`${EUTILS}/efetch.fcgi?db=pubmed&rettype=abstract&retmode=xml&id=${pmid}`),
+  ]);
+  const entry = summaryJson?.result?.[pmid];
+  if (!entry?.title) return null;
+
+  let authors = "";
+  let designHint = "Research";
+  if (efetchXml) {
+    try {
+      const parsed = xmlParser.parse(stripInlineFormattingTags(efetchXml));
+      const articlesRaw = parsed?.PubmedArticleSet?.PubmedArticle;
+      const art = Array.isArray(articlesRaw) ? articlesRaw[0] : articlesRaw;
+      authors = formatAuthors(art?.MedlineCitation?.Article?.AuthorList);
+      const pubTypeRaw = art?.MedlineCitation?.Article?.PublicationTypeList?.PublicationType;
+      const pubTypes = (Array.isArray(pubTypeRaw) ? pubTypeRaw : pubTypeRaw ? [pubTypeRaw] : [])
+        .map(xmlNodeText)
+        .filter(Boolean);
+      designHint = evidenceLevelFromPublicationTypes(pubTypes) ?? "Research";
+    } catch {
+      // Malformed XML — the esummary half above still gives title, journal, year and DOI,
+      // which is most of the point. Authors and design stay blank for the appraiser to fill.
+    }
+  }
+
+  const isoDate = parsePubDate(entry.pubdate);
+  const year = Number(isoDate.slice(0, 4));
+
+  return {
+    pmid,
+    doi: entry.articleids?.find((id) => id.idtype === "doi")?.value ?? "",
+    // stripHtml rather than the raw value: an esummary title can carry inline <i>/<sup>
+    // markup and the same numeric entities the author names do.
+    title: stripHtml(entry.title).replace(/\.$/, ""),
+    authors,
+    journal: entry.fulljournalname || entry.source || "",
+    year: Number.isFinite(year) && year > 1800 ? year : null,
+    designHint,
   };
 }
 

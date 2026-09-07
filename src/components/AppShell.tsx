@@ -30,7 +30,6 @@ import {
   FileTextIcon,
   NetworkIcon,
   LockIcon,
-  CalendarIcon,
   ActivityIcon,
   DumbbellIcon,
   ChevronRightIcon,
@@ -298,11 +297,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
   // route), so at most one ever matches here.
   const [expandedSection, setExpandedSection] = useState<SidebarSection | null>(() => {
     if (pathname.startsWith("/nexus")) return "nexus";
-    // /wellness/pathologies is the one route whose sidebar home isn't its URL prefix — its
-    // link moved under LimbicPRO (see the wellness section below for why) while the route
-    // itself stayed put, so it's matched exactly here, ahead of the /wellness prefix check,
-    // rather than expanding a section that no longer lists it.
-    if (pathname === "/wellness/pathologies") return "pro";
     if (pathname.startsWith("/pro") || pathname.startsWith("/hep") || pathname.startsWith("/agent")) return "pro";
     if (pathname.startsWith("/connexion")) return "connexion";
     if (pathname.startsWith("/student") || pathname.startsWith("/boards")) return "student";
@@ -413,42 +407,28 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           <>
             {/* Dashboard/Force Lab/Limbic Agent used to be hidden entirely for a non-Pro
                 reader rather than shown-locked — now shown to everyone with the same
-                lock-pill treatment CE Tracker/HEP already had, so a signed-in reader sees
-                the full LimbicPRO toolbox and which pieces of it are still paywalled,
-                rather than some tools just silently not existing for them. */}
+                lock-pill treatment Exercise Programs already had, so a signed-in reader sees
+                what LimbicPRO contains and which pieces of it are still paywalled, rather
+                than some tools just silently not existing for them. */}
+            {/* First row on purpose, and the reason the rest of this section is short. The
+                rows below are the tools you open and keep working in; everything that is
+                looked up rather than worked in — screening rules, documentation templates,
+                pathologies, the movement lab, the CE log, and the two clinic-admin views —
+                lives on the Toolbox page, which describes each one instead of just naming
+                it. See lib/clinician-toolbox.ts for the full list. */}
+            <NavLink href="/pro/toolbox" icon={<GridIcon />} label="Toolbox" bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/dashboard" icon={<LayoutDashboardIcon />} label="Dashboard" locked={!isPro} bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/force-lab" icon={<ZapIcon />} label="Force Lab" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            {isPro && clinicMembership?.isAdmin && (
-              <>
-                <NavLink href="/pro/dashboard?tab=team" icon={<UsersIcon />} label="Team Dashboard" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/pro/clinic-report" icon={<FileTextIcon />} label="Clinic Report" bold={false} onNavigate={onNavigate} />
-              </>
-            )}
             <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            {/* Outcome Measures/Screening & Decision Support/Special Tests are free to any
-                signed-in user now (see lib/session.ts hasClinicalReferenceAccess and each
-                page's own gate) — no longer wrapped in {(isPro || isStudent) && ...}, which
-                used to hide this whole block (CE Tracker/HEP included) from a plain
-                signed-in reader who was neither Pro nor a Limbic Student. */}
+            {/* Outcome Measures and Special Tests are free to any signed-in user (see
+                lib/session.ts hasClinicalReferenceAccess and each page's own gate) — not
+                wrapped in {(isPro || isStudent) && ...}, which used to hide this whole block
+                (Exercise Programs included) from a plain signed-in reader who was neither
+                Pro nor a Limbic Student. They stay in the sidebar rather than moving to the
+                Toolbox with the other reference tools because they are the two you open with
+                a patient in front of you, where an extra click is a real cost. */}
             <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Outcome Measures" bold={false} onNavigate={onNavigate} />
-            {/* Decision Rules and Red Flag Screening used to be two separate sidebar rows/
-                routes — merged into one link since /pro/decision-rules itself already
-                hosts both as tabs (see components/pro/ScreeningDecisionTabs.tsx) and
-                /pro/red-flags is now just a redirect there. */}
-            <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Screening & Decision Support" bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" bold={false} onNavigate={onNavigate} />
-            {/* Moved off the Health and Wellness hub's card grid — plain-language condition
-                explanations are reference reading, so they sit with the other reference
-                tools here. The /wellness/pathologies route itself is unchanged. */}
-            <NavLink href="/wellness/pathologies" icon={<BodyIcon />} label="Common Pathologies" bold={false} onNavigate={onNavigate} />
-            {/* Now a tab on Exercise Programs (see app/(app)/hep/page.tsx) rather than its
-                own page — this is a second entry into that page, same pattern as Team
-                Dashboard's /pro/dashboard?tab=team below. Kept as its own row, unlocked and
-                free to any signed-in user, since the Builder tab it sits next to still needs
-                a license and shows a lock pill (see Exercise Programs below) — a reader with
-                neither would otherwise have no unlocked way into this from the sidebar. */}
-            <NavLink href="/hep?tab=movement-lab" icon={<DumbbellIcon />} label="Movement Lab" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
             <NavLink href="/hep" icon={<BandageIcon />} label="Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
           </>
         )}

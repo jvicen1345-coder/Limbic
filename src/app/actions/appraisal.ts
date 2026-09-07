@@ -14,6 +14,7 @@ import {
   type AppraisalInput,
 } from "@/lib/appraisal";
 import { draftAppraisal, DRAFT_FAILED_MESSAGE, type AppraisalDraft } from "@/lib/appraisal-draft";
+import { lookupStudyMetadata, resolvePubmedAbstract, type StudyMetadata } from "@/lib/pubmed";
 
 /**
  * Admin-only actions behind /admin/appraisals (see lib/appraisal.ts for the design, and
@@ -36,6 +37,14 @@ export interface AppraisalActionResult {
    *  into its fields. Never persisted by that action: a draft the appraiser has not looked
    *  at yet is not something to save on their behalf. */
   draft?: AppraisalDraft;
+  /** Set only by lookupStudyMetadataAction — what PubMed returned, for the editor to show
+   *  before anything is filled in. Never applied server-side; see that action. */
+  metadata?: StudyMetadata;
+  /** Set only by fetchStudyAbstractAction — PubMed's abstract, for the editor to display as
+   *  reference while the appraiser transcribes numbers. Transient in every sense: it is not
+   *  written to the appraisal, not part of AppraisalInput, and cannot reach the drafting
+   *  step. See that action. */
+  abstract?: string;
 }
 
 /** Parses a number the way a form field should: an empty string is "not reported", which is
@@ -184,6 +193,73 @@ export async function draftAppraisalAction(payload: { input: Partial<AppraisalIn
   const draft = await draftAppraisal(input, runAppraisalChecks(input));
   if (!draft) return { ok: false, error: DRAFT_FAILED_MESSAGE };
   return { ok: true, draft };
+}
+
+/**
+ * Looks up a study's citation details from a DOI, PMID, PubMed URL, or title text.
+ *
+ * Returns what it found; it never writes anything and never fills the form itself. That is
+ * the point: a plain-title search goes through esearch, which answers a near-miss with its
+ * best guess rather than with nothing — searching a real paper's exact title can and does
+ * return a *different* paper. Filling six citation fields from that silently would put the
+ * wrong study under an appraisal, which is worse than typing them. So the editor shows the
+ * record and the appraiser confirms it (see components/admin/AppraisalWorkbench.tsx).
+ *
+ * Metadata only: the underlying lookup deliberately does not return the abstract, for the
+ * reasons in lib/appraisal.ts and on lookupStudyMetadata itself.
+ */
+export async function lookupStudyMetadataAction(query: string): Promise<AppraisalActionResult> {
+  const admin = await requireAdminUser();
+  if (!admin) return { ok: false, error: "Not authorised." };
+
+  const trimmed = str(query);
+  if (!trimmed) return { ok: false, error: "Enter a DOI, PMID, PubMed link, or the study's title." };
+
+  const metadata = await lookupStudyMetadata(trimmed);
+  if (!metadata) {
+    return {
+      ok: false,
+      error: "Nothing matched on PubMed. A DOI or PMID is exact; a title only finds records PubMed indexes.",
+    };
+  }
+  return { ok: true, metadata };
+}
+
+/**
+ * PubMed's abstract for one PMID, to show beside the form as read-only reference.
+ *
+ * This is the deliberate, narrow exception to "no publisher text in this feature", and the
+ * shape of it is the whole safeguard. The text is *fetched by the app from PubMed's public
+ * record*, never pasted in — so it structurally cannot be a paywalled full text, which is
+ * the thing that would breach a subscriber agreement. It is requested only when the
+ * appraiser asks for it, on a record they have already identified.
+ *
+ * Where it goes is nowhere. It is returned to the editor and held in component state: it is
+ * not a field on AppraisalInput, so it cannot be saved to StudyAppraisal, cannot be
+ * published, and cannot reach draftAppraisalAction — that action's signature takes
+ * AppraisalInput, and the type has no place to put an abstract. That is a compile-time
+ * guarantee rather than a convention, which is the right strength for this particular rule.
+ *
+ * What it is for is transcription: reading a population or a follow-up period off the record
+ * while filling the form, without a second tab. What it is *not* for is filling the form
+ * from — the numbers that decide every verdict, attrition above all, are usually not in an
+ * abstract, which is the entire reason this feature asks a human to read the paper.
+ */
+export async function fetchStudyAbstractAction(pmid: string): Promise<AppraisalActionResult> {
+  const admin = await requireAdminUser();
+  if (!admin) return { ok: false, error: "Not authorised." };
+
+  const trimmed = str(pmid);
+  if (!trimmed) return { ok: false, error: "Look the study up first — the abstract is fetched from its record." };
+
+  const record = await resolvePubmedAbstract(trimmed);
+  if (!record) return { ok: false, error: "Could not reach that record on PubMed." };
+  if (!record.abstract) {
+    // A real and common state for older records and for editorials, not a failure — say so
+    // rather than showing an empty pane that reads like something broke.
+    return { ok: false, error: "PubMed has no abstract on file for this record." };
+  }
+  return { ok: true, abstract: record.abstract };
 }
 
 /** Publishes a saved appraisal. Re-reads the row rather than trusting the payload, so what

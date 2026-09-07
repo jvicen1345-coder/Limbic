@@ -15,14 +15,8 @@ import { conditionIntelligenceMap } from "@/lib/condition-intelligence";
 import { mcidValues } from "@/lib/outcome-benchmarks";
 import { detectRedFlags } from "@/lib/red-flag-detector";
 import { goalBank } from "@/lib/goal-bank";
-import { getWeeklyResearchDigest as getWeeklyResearchDigestFeed, type WeeklyResearchDigest } from "@/lib/dashboard-research";
 import type { ClinicalPatient, OutcomeMeasureEntry, PatientHEPAssignment, ClinicalNote, RedFlagAlert, SessionExerciseLog } from "@/generated/prisma/client";
 import { parseHepExercises, type HepTemplateExercise } from "@/lib/hep-templates";
-
-// Type-only re-export so callers (ResearchFeedPanel.tsx, ClinicianDashboard.tsx) can import
-// WeeklyResearchDigest from this action file instead of reaching into lib/dashboard-research
-// directly — erased at compile time, so it doesn't violate "use server"'s runtime-exports-only rule.
-export type { WeeklyResearchDigest };
 
 /**
  * LimbicPRO Clinician Dashboard (/pro/dashboard) server actions.
@@ -1182,14 +1176,6 @@ export async function getEpisodeLengthStats(): Promise<EpisodeLengthStats> {
    Tracker (/pro/ce-tracker) is the one place renewal date/progress is shown.
    ============================================================================ */
 
-/** Thin wrapper around lib/dashboard-research.ts's own getWeeklyResearchDigest — kept here
- *  too (re-exported under the same name) so every dashboard data-fetch this feature spec
- *  asked for lives in this one actions file, matching where the rest of them live. */
-export async function getWeeklyResearchDigest(specialty: string): Promise<WeeklyResearchDigest> {
-  const user = await requireProUser();
-  if (!user) return { specialtyLabel: "Your Specialty", articles: [], rangeStart: "", rangeEnd: "" };
-  return getWeeklyResearchDigestFeed(specialty);
-}
 
 export interface ClinicalQuestionRecord {
   id: string;

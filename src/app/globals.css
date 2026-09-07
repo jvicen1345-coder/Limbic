@@ -846,6 +846,13 @@ html[data-theme="dark"] .card.elev-lg {
   border-radius: var(--radius-lg);
   background: var(--color-card-surface);
   box-shadow: var(--shadow-lg);
+  /* Matches .tour-highlight above, so the card and the ring it belongs to travel together
+     between steps instead of the ring gliding while the card teleports. Opacity covers the
+     first step, which fades in once measured rather than appearing centred and jumping. */
+  transition: top 0.3s ease, left 0.3s ease, opacity 0.2s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-tooltip, .tour-highlight { transition: opacity 0.2s ease; }
 }
 .tour-progress { display: flex; gap: 4px; margin-bottom: 12px; }
 .tour-progress-seg { height: 3px; flex: 1; border-radius: 2px; background: var(--color-neutral-200); transition: background 0.2s ease; }
@@ -9076,20 +9083,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-note-preview { font-size: 12.5px; margin-top: 4px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .clindash-note-full { font-size: 12.5px; margin-top: 4px; line-height: 1.5; white-space: pre-wrap; }
 
-/* — Research feed (right column) — */
-.clindash-research-sub { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: -6px 0 10px; }
-.clindash-research-list { display: flex; flex-direction: column; gap: 8px; }
-.clindash-research-item {
-  display: block;
-  padding: 8px 10px;
-  border-radius: var(--radius-md);
-  background: var(--color-neutral-100);
-  color: inherit;
-  text-decoration: none;
-}
-.clindash-research-item-meta { font-size: var(--fs-10); color: var(--color-accent-700); margin-bottom: 3px; }
-.clindash-research-item-title { font-family: var(--font-heading); font-size: 12.5px; line-height: 1.3; }
-.clindash-research-see-all { display: block; font-size: 12px; margin-top: 10px; text-align: center; }
+/* — Quick tools (right column) — */
 .clindash-quick-tools { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
 
 /* — Zone 3: Practice Metrics — */
@@ -9272,7 +9266,11 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-morning-date { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 18px; }
 
 .clindash-eod-card { padding: 20px; margin-bottom: 20px; }
-.clindash-eod-header { font-family: var(--font-heading); font-size: 16px; margin-bottom: 12px; }
+/* Label only — .card-kicker carries the type. It used to set its own 16px heading font,
+   which matched nothing else on the screen: too big and too plain to read as a card label
+   like "Today's Patients" beside it, and directly above the "Morning Rounds" h1, which it
+   competed with rather than deferring to. */
+.clindash-eod-header { margin-bottom: 12px; }
 .clindash-eod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .clindash-eod-stat-value { font-family: var(--font-heading); font-size: 22px; }
 .clindash-eod-stat-value--danger { color: var(--color-danger); }
@@ -9482,25 +9480,6 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 
 .clindash-ce-progress-bar { height: 7px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; margin: 12px 0 6px; }
 .clindash-ce-progress-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
-
-.clindash-digest-header-row { margin-bottom: 4px; }
-.clindash-digest-title { font-family: var(--font-heading); font-size: 15px; }
-.clindash-digest-subtitle { font-size: var(--fs-11); color: var(--color-neutral-700); margin: 2px 0 10px; }
-.clindash-digest-item { padding: 10px 0; border-top: 1px solid var(--color-divider); }
-.clindash-digest-item:first-child { border-top: none; }
-.clindash-digest-item-title {
-  font-family: var(--font-heading);
-  font-size: 12.5px;
-  line-height: 1.35;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  color: inherit;
-  text-decoration: none;
-}
-.clindash-digest-item-meta { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 4px; }
-.clindash-digest-placeholder { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-style: italic; padding: 10px 0; border-top: 1px solid var(--color-divider); }
 
 .clindash-question-log { margin-top: 16px; }
 .clindash-question-card {
@@ -14449,3 +14428,165 @@ button.playbook-maskwrap:focus-visible {
 .boards-tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
 .boards-tabs::-webkit-scrollbar { display: none; }
 .boards-tab { flex: 1 0 auto; }
+
+/* ============================================================================
+   Appraisal citation lookup and outcome-measure picker — the two entry shortcuts on
+   /admin/appraisals (see components/admin/AppraisalWorkbench.tsx). Appended at the end of
+   the file per COORDINATION.md.
+   ============================================================================ */
+.appraisal-lookup {
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-secondary);
+}
+.appraisal-lookup-row { display: flex; gap: 8px; align-items: stretch; }
+.appraisal-lookup-row input {
+  font: inherit;
+  font-size: 13.5px;
+  padding: 7px 9px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  flex: 1;
+  min-width: 0;
+}
+.appraisal-lookup-row input:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+.appraisal-lookup-row .appraisal-btn { flex-shrink: 0; }
+
+.appraisal-lookup-result {
+  margin-top: 12px;
+  padding: 11px 12px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+.appraisal-lookup-title { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.4; color: var(--color-text); }
+.appraisal-lookup-meta { font-size: 12.5px; color: var(--color-neutral-700); margin: 5px 0 0; line-height: 1.45; }
+
+.appraisal-measure { margin-bottom: 14px; }
+.appraisal-measure-summary {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  margin: 8px 0 0;
+  padding-left: 10px;
+  border-left: 2px solid var(--color-neutral-300);
+  max-width: 64ch;
+}
+/* A measure with no agreed MCID is the case worth noticing while entering numbers — the
+   magnitude check will come back "not entered" rather than passing or failing. */
+.appraisal-measure-summary[data-no-mcid="true"] {
+  border-left-color: var(--color-warn, #8A6D1F);
+  color: var(--color-text);
+}
+
+/* ============================================================================
+   Read-only PubMed abstract pane on /admin/appraisals (see AbstractPane in
+   components/admin/AppraisalWorkbench.tsx). Styled as reference material rather than as
+   content: a muted panel with its own label and footnote, deliberately not looking like the
+   fields around it, because everything else on that page is something the appraiser typed
+   and this is the one thing that isn't. Appended at the end of the file per COORDINATION.md.
+   ============================================================================ */
+.appraisal-abstract { margin-bottom: 16px; }
+.appraisal-abstract-empty {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  margin: 0 0 14px;
+  max-width: 64ch;
+  line-height: 1.55;
+}
+.appraisal-abstract-pane {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px dashed var(--color-neutral-400);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-secondary);
+}
+.appraisal-abstract-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  margin: 0 0 8px;
+}
+.appraisal-abstract-text {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--color-text);
+  margin: 0;
+  max-width: 72ch;
+  /* Long abstracts scroll inside the pane rather than pushing the number fields — the
+     whole point is having both on screen at once. */
+  max-height: 320px;
+  overflow-y: auto;
+}
+.appraisal-abstract-foot {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  margin: 10px 0 0;
+  padding-top: 9px;
+  border-top: 1px solid var(--color-neutral-300);
+  max-width: 68ch;
+}
+/* Clinical-notes form: the "Note" label sits opposite a link out to the full documentation
+   templates (see ClinicalNotesSection.tsx). */
+.clindash-note-label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.clindash-note-templates-link { font-size: var(--fs-11-5); color: var(--color-accent); text-decoration: none; }
+.clindash-note-templates-link:hover { text-decoration: underline; }
+
+/* Clinician's Tool Chest (see app/(app)/pro/toolbox/page.tsx) — the grouped view of what
+   LimbicPRO contains. Reuses .pro-tools-grid / .pro-tool-card from the overview hub; only
+   the grouping and the lock pill are new. */
+.toolbox-title { font-size: 26px; margin: 0 0 4px; }
+.toolbox-subtitle { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 6px; max-width: 62ch; line-height: 1.5; }
+.toolbox-group { margin-top: 22px; }
+.toolbox-group-head { border-bottom: 1px solid var(--color-divider); padding-bottom: 7px; }
+.toolbox-group-title { font-size: 16px; margin: 0; }
+.toolbox-group-blurb { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 2px 0 0; }
+.toolbox-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+/* A locked card is dimmer but still legible — its description is the reason to subscribe,
+   so greying it into unreadability would defeat the point of showing it at all. */
+.pro-tool-card--locked { border-left-color: var(--color-neutral-300); }
+.toolbox-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  font-size: var(--fs-10);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+}
+
+/* Clinical Toolbox on a phone (see app/(app)/pro/toolbox/page.tsx). The grid is already one
+   column below 860px, but at a full-size card the page runs about four screens of scrolling
+   on a 390px viewport — which works against a page whose whole job is to be scannable.
+   Measured at 2611px of scroll height before this block.
+
+   Tightened rather than gutted: the description is what tells a reader deciding on LimbicPRO
+   what a locked tool actually does, so it is clamped to two lines instead of hidden, and the
+   card keeps its "Open" affordance. Scoped to .toolbox-group so the /pro overview hub's own
+   cards, which are fewer and carry longer copy, are unaffected. */
+@media (max-width: 640px) {
+  .toolbox-group .pro-tools-grid { gap: 9px; margin: 14px 0; }
+  .toolbox-group { margin-top: 16px; }
+  .toolbox-group .pro-tool-card { padding: 11px 13px; gap: 2px; }
+  .toolbox-group .pro-tool-card-desc {
+    line-height: 1.45;
+    /* Two lines, then an ellipsis. -webkit-line-clamp is the only cross-browser way to do
+       this today; -webkit-box is what makes it apply, and is well supported everywhere. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .toolbox-group .pro-tool-card-footer { margin-top: 3px; }
+}

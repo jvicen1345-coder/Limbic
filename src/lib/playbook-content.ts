@@ -30,6 +30,7 @@
  * saying what its numbers are sourced from and what a reader should verify.
  */
 
+import { ANKLE_PLAYBOOK } from "@/lib/playbooks/ankle";
 import { HIP_PLAYBOOK } from "@/lib/playbooks/hip";
 import { JOINT_MOBILIZATION_PLAYBOOK } from "@/lib/playbooks/joint-mobilization";
 import { KNEE_PLAYBOOK } from "@/lib/playbooks/knee";
@@ -164,7 +165,13 @@ export interface Playbook {
   footer: string;
 }
 
-export const PLAYBOOKS: Playbook[] = [SHOULDER_PLAYBOOK, HIP_PLAYBOOK, KNEE_PLAYBOOK, JOINT_MOBILIZATION_PLAYBOOK];
+export const PLAYBOOKS: Playbook[] = [
+  SHOULDER_PLAYBOOK,
+  HIP_PLAYBOOK,
+  KNEE_PLAYBOOK,
+  ANKLE_PLAYBOOK,
+  JOINT_MOBILIZATION_PLAYBOOK,
+];
 
 export function getPlaybook(slug: string): Playbook | undefined {
   return PLAYBOOKS.find((playbook) => playbook.slug === slug);
