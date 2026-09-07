@@ -13,14 +13,11 @@ import {
   type PatientDetail,
   type PatientListEntry,
   type PeerComparisonBenchmark,
-  type WeeklyResearchDigest,
 } from "@/app/actions/clinician-dashboard";
-import { getDashboardResearchFeedAction } from "@/app/actions/dashboard-research";
-import type { Article } from "@/lib/types";
 import { DailyBriefBar } from "./DailyBriefBar";
 import { PatientPanel } from "./PatientPanel";
 import { PatientWorkspace } from "./PatientWorkspace";
-import { ResearchFeedPanel } from "./ResearchFeedPanel";
+import { DashboardToolsPanel } from "./DashboardToolsPanel";
 import { PracticeMetrics } from "./PracticeMetrics";
 import { IntakeInboxCard } from "./IntakeInboxCard";
 import type { IntakeInboxData } from "@/app/actions/intake";
@@ -33,11 +30,9 @@ export interface ClinicianDashboardProps {
   summary: DashboardSummary;
   initialPatients: PatientListEntry[];
   availableHEPs: AvailableHEP[];
-  defaultResearchArticles: Article[];
   todaysPatients: PatientListEntry[];
   outcomeReminderPatients: PatientListEntry[];
   episodeLengthStats: EpisodeLengthStats;
-  weeklyDigest: WeeklyResearchDigest;
   peerBenchmarks: PeerComparisonBenchmark[];
   clinicianName: string;
   clinicianCredential: string;
@@ -73,11 +68,9 @@ export function ClinicianDashboard({
   summary,
   initialPatients,
   availableHEPs,
-  defaultResearchArticles,
   todaysPatients,
   outcomeReminderPatients,
   episodeLengthStats,
-  weeklyDigest,
   peerBenchmarks,
   clinicianName,
   clinicianCredential,
@@ -102,7 +95,6 @@ export function ClinicianDashboard({
   // .then() after the fetch resolves, never synchronously in the effect body itself —
   // required by this repo's react-hooks/set-state-in-effect lint rule).
   const [fetchedDetail, setFetchedDetail] = useState<PatientDetail | null>(null);
-  const [fetchedResearch, setFetchedResearch] = useState<Article[] | null>(null);
   const [visitAlreadyLoggedToday, setVisitAlreadyLoggedToday] = useState(false);
   const [redFlagAlerts, setRedFlagAlerts] = useState<{ id: string; description: string }[]>([]);
   const [detailFor, setDetailFor] = useState<string | null>(null);
@@ -137,16 +129,14 @@ export function ClinicianDashboard({
     let cancelled = false;
     Promise.all([
       getPatientDetail(selectedPatientId),
-      getDashboardResearchFeedAction(selectedPatientId),
       hasLoggedVisitRecently(selectedPatientId),
       // Runs on every open and every onChanged-triggered refetch (e.g. after saving an
       // outcome) — exactly the "after any outcome entry is saved or a patient record is
       // opened" trigger the Red Flag Monitor spec calls for, without a separate effect.
       checkRedFlags(selectedPatientId),
-    ]).then(([detail, research, loggedToday, redFlags]) => {
+    ]).then(([detail, loggedToday, redFlags]) => {
       if (cancelled) return;
       setFetchedDetail(detail);
-      setFetchedResearch(research);
       setVisitAlreadyLoggedToday(loggedToday);
       setRedFlagAlerts(redFlags.ok ? redFlags.alerts : []);
       setDetailFor(selectedPatientId);
@@ -159,7 +149,6 @@ export function ClinicianDashboard({
   const detailIsCurrent = selectedPatientId !== null && detailFor === selectedPatientId;
   const patientDetail = detailIsCurrent ? fetchedDetail : null;
   const loadingDetail = selectedPatientId !== null && !detailIsCurrent;
-  const researchArticles = detailIsCurrent && fetchedResearch ? fetchedResearch : defaultResearchArticles;
   const initiallyOpenOutcomes = detailIsCurrent && pendingOutcomeOpenFor === selectedPatientId;
   const showVisitBanner = detailIsCurrent && !visitAlreadyLoggedToday && visitBannerHandledFor !== selectedPatientId;
   const isMilestonePatient = patientDetail != null && outcomeReminderPatients.some((p) => p.id === patientDetail.id);
@@ -268,7 +257,7 @@ export function ClinicianDashboard({
 
         <div className="clindash-col-research">
           <IntakeInboxCard data={intakeInbox} patients={initialPatients} onChanged={() => router.refresh()} />
-          <ResearchFeedPanel articles={researchArticles} patientLabel={patientLabel} weeklyDigest={weeklyDigest} />
+          <DashboardToolsPanel patientLabel={patientLabel} />
         </div>
       </div>
 
