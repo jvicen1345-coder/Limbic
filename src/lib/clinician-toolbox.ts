@@ -1,10 +1,19 @@
-/** Everything under LimbicPRO, as one grouped list — the source for the Tool Chest page
- *  (app/(app)/pro/toolbox/page.tsx).
+/** Everything under LimbicPRO, as one grouped list — the source for the Clinical Toolbox
+ *  page (app/(app)/pro/toolbox/page.tsx).
  *
  *  The sidebar had grown to a dozen rows of equal weight, in the order they happened to be
  *  added: a caseload dashboard next to a lab-value lookup next to a CE log. That reads as a
  *  list of links rather than a set of tools, and gives no answer to "what is in here" short
  *  of clicking every row. Grouping them by *when you'd reach for them* does.
+ *
+ *  This list stays complete even as the sidebar shrinks around it. Seven tools came out of
+ *  the sidebar when it was trimmed to the ones you open and keep working in (see the note in
+ *  components/AppShell.tsx's LimbicPRO section); five of those kept another way in — Screening
+ *  from the dashboard's Quick Tools, Documentation Templates from its clinical-notes form,
+ *  CE Tracker from the /pro overview, and Movement Lab and Team Dashboard as tabs on the pages
+ *  they belong to. Common Pathologies and Clinic Report did not: this page is now their only
+ *  entry point, so dropping either entry from this file orphans a real page, which is exactly
+ *  how /pro/documentation and /pro/guidelines went unreachable before.
  *
  *  Descriptions are each page's own summary line where it has one, rather than freshly
  *  invented copy — a hub that describes a tool differently from the tool itself is a hub

@@ -6,15 +6,16 @@ import { toolboxFor } from "@/lib/clinician-toolbox";
 import { ChevronRightIcon, LockIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
-  title: "Tool Chest",
+  title: "Clinical Toolbox",
 };
 
 /** One page answering "what is in LimbicPRO, and when would I use it".
  *
- *  The sidebar lists the same tools, but as a dozen rows of equal weight in the order they
+ *  The sidebar used to list the same tools, as a dozen rows of equal weight in the order they
  *  were added — a caseload dashboard beside a lab-value lookup beside a CE log. Nothing there
- *  says which of those you'd want mid-session versus at the end of the week, and a reader who
- *  hasn't clicked every row doesn't know what half of them are.
+ *  said which of those you'd want mid-session versus at the end of the week, and a reader who
+ *  hadn't clicked every row didn't know what half of them were. It now carries only the tools
+ *  you open and keep working in, and this page is where the rest of them live.
  *
  *  Grouped by when you'd reach for a tool rather than by what it costs. A locked card still
  *  shows what the tool does — a reader deciding whether LimbicPRO is worth it is exactly the
@@ -29,7 +30,7 @@ export default async function ClinicianToolboxPage() {
 
   return (
     <div className="screen-pad pro-wide-page">
-      <h1 className="toolbox-title">Clinician&rsquo;s Tool Chest</h1>
+      <h1 className="toolbox-title">Clinical Toolbox</h1>
       <p className="toolbox-subtitle">
         Everything in LimbicPRO, grouped by when you&rsquo;d reach for it.
         {!user.isPro && " Tools marked PRO need a subscription; the rest are yours already."}
