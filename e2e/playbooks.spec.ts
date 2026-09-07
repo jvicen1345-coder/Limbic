@@ -156,7 +156,12 @@ test.describe("Playbook page", () => {
       // One tick box per item, but an item may span several rows.
       const boxes = page.locator(".playbook-check-table input[type=checkbox]");
       await expect(boxes).toHaveCount(items.length);
-      await expect(page.locator(".playbook-check-table tbody tr")).toHaveCount(playbookChecklistRows(items).length);
+      // :not(.playbook-row-group) throughout: a grouped checklist prints a full-width phase
+      // heading above the first item of each phase, and those are not rows a reader ticks,
+      // recalls or is counted against.
+      await expect(page.locator(".playbook-check-table tbody tr:not(.playbook-row-group)")).toHaveCount(
+        playbookChecklistRows(items).length,
+      );
       await expect(page.locator(".playbook-progress span").first()).toHaveText(`0 / ${items.length}`);
 
       await boxes.first().check();
@@ -207,10 +212,11 @@ test.describe("Playbook recall", () => {
       await checklist.locator(".playbook-tbl-recall").first().click();
       await expect(page.locator(".playbook-recallbar")).toBeVisible();
       await expect(checklist.locator(".playbook-mask-on")).toHaveCount(checklistRows);
-      await expect(checklist.locator("tbody tr").first().locator("td").nth(2)).not.toHaveClass(/playbook-mask-on/);
+      const firstRow = checklist.locator("tbody tr:not(.playbook-row-group)").first();
+      await expect(firstRow.locator("td").nth(2)).not.toHaveClass(/playbook-mask-on/);
 
       // Clicking a hidden cell checks it, and only then offers to record it as missed.
-      const cell = checklist.locator("tbody tr").first().locator("td").last();
+      const cell = firstRow.locator("td").last();
       await expect(cell.locator(".playbook-missbtn")).toHaveCount(0);
       await cell.locator("button.playbook-maskwrap").click();
       await expect(cell).not.toHaveClass(/playbook-mask-on/);
@@ -231,7 +237,7 @@ test.describe("Playbook recall", () => {
       await page.locator(".playbook-recall-toggle").click();
       await expect(page.locator(".playbook-recall-toggle")).toHaveText("Recall all");
       await expect(page.locator("figure.playbook-labels-hidden")).toHaveCount(figures.length);
-      await expect(checklist.locator("tbody tr").first().locator("td").nth(2)).not.toHaveClass(/playbook-mask-on/);
+      await expect(firstRow.locator("td").nth(2)).not.toHaveClass(/playbook-mask-on/);
 
       // Drilling the misses blanks only what was marked, wherever it is.
       await page.locator(".playbook-recallbar button", { hasText: "Hide missed" }).click();

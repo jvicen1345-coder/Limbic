@@ -15,211 +15,294 @@ export const SHOULDER_PLAYBOOK: Playbook = {
   slug: "shoulder",
   name: "Shoulder Examination",
   title: "Shoulder Examination Playbook",
-  eyebrow: "Musculoskeletal practice · examination & treatment",
+  eyebrow: "Musculoskeletal practice · examination, treatment & provenance",
   summary:
-    "A full shoulder screen in the order you'd perform it: what each test is looking for, the number that separates normal from a finding, and the treatment that finding points to. Bring a goniometer.",
+    "A full shoulder screen in the order you'd perform it, built for the competency exam and for what comes after it. Every value says where it came from: what your program teaches, what the literature measured, and — where those two part company — both, so you can write the answer you are marked on without believing something that isn't so.",
   stamp: [
-    { value: "28", label: "exam items" },
-    { value: "5", label: "movement syndromes" },
-    { value: "3", label: "irritability levels" },
-    { value: "1", label: "goniometer required" },
+    { value: "32", label: "exam items" },
+    { value: "81", label: "sourced values" },
+    { value: "15", label: "convention or contested" },
+    { value: "3", label: "values retired" },
   ],
   sections: [
     {
       id: "checklist",
-      navLabel: "28 Items",
+      navLabel: "32 Items",
       title: "The examination sequence",
       note: "check-off saves in this browser",
       blocks: [
         {
           kind: "lede",
-          text: "Twenty-eight items, in the order they're performed — posture and AROM first, then PROM and length, then strength, then special tests, then treatment. The last column is the finding itself: the number or observation that turns the test into information.",
+          text: "Thirty-two capabilities, grouped by the question each phase of the examination answers. Every item is written as something you can do rather than something you can name, because that is the only version you can check honestly. The last column is the finding — the number or observation that turns a maneuver into information — with the source it comes from, since several of the values taught as settled are not.",
+        },
+        {
+          kind: "provkey",
+          entries: [
+            {
+              body: "**How to read a value.** Anything **unmarked** is a finding traced to a published source you can read for free. The citation sits next to it so you can check it yourself rather than take our word for it.",
+            },
+            {
+              prov: "c",
+              body: "**nobody has tested it.** A rule of thumb taught everywhere, used everywhere, and never measured against evidence. Keep using it and expect it on the exam — just do not defend it as a finding. The note beside each one says whether it traces to a named clinician or to no one at all.",
+            },
+            {
+              prov: "x",
+              body: "**it has been tested, and the studies disagree.** Evidence exists on both sides, so the range is the honest answer and any single number is a choice someone made. Quote the range, not the figure.",
+            },
+            {
+              body: "Where the taught answer and the measured one differ, write the taught answer in the exam and know why it is shaky.",
+            },
+          ],
         },
         {
           kind: "checklist",
           items: [
             {
-              id: "flexion-arom",
-              name: "Shoulder flexion AROM + critical events",
-              how: "Stand behind/quadrant. Call the 4 critical events out loud as they happen.",
-              finding: "Humeral head depression · GH ER · scapular upward rotation · scapular posterior tilt (+ thoracic ext)",
-            },
-            {
-              id: "scapular-assist",
-              name: "Scapular assist test",
-              how: "Manually add upward rotation / adduction / posterior tilt during painful AROM.",
-              finding: "Change in *quantity, quality, or symptoms* = positive",
-            },
-            {
-              id: "arom-er-90",
-              name: "AROM ER @ 90°",
-              how: "Abduct to 90° with the elbow at 90° and take into external rotation. Watch *where the range comes from*: scapular posterior tilt, thoracic extension and rotation, scapular retraction, humeral head anterior translation.",
+              id: "cervical-screen",
+              group: "Should I be examining this shoulder at all?",
+              name: "Cervical and thoracic screen",
+              how: "Cervical AROM in all planes with overpressure, Spurling's, and an upper limb neurodynamic test. Ask whether the shoulder symptom changes.",
               finding:
-                "**Normal:** ~90° of ER, equal to the other side, with the humeral head staying centred and the scapula posteriorly tilting.\n**Faulty:** the head translates anteriorly (distal humerus drops back) or the scapula retracts and anteriorly tilts to supply the range.\n**Throwers:** add IR to get the total arc — arc loss >5° or IR loss 10–25° vs the other side is GIRD, then screen proximally (single-leg stance, hip IR/ER, core, glute med).",
+                "Reproduction of the shoulder complaint from the neck sends you proximal before you examine the shoulder further. A clear screen does not exclude cervical contribution, it just lowers it.",
             },
             {
-              // One checkable item covering both manoeuvres, as the source has it — a single
-              // checkbox spanning two rows — rather than two items, which would change the
-              // count the progress bar reads against.
+              id: "red-flags",
+              name: "Red flag screen",
+              how: "Trauma history, night pain and its pattern, constitutional symptoms, visible mass or deformity, unexplained atrophy, and prior cancer.",
+              finding:
+                "Trauma with a blocked passive rotation suggests fracture or unreduced dislocation. Night pain unrelated to position, with constitutional symptoms, needs referral rather than a movement diagnosis.",
+            },
+            {
+              id: "classify-history",
+              name: "Classify the presentation from the history",
+              how: "Sort the complaint into instability, stiffness, pain with elevation, or weakness before touching the patient.",
+              finding:
+                "This choice determines which cluster you run later. Running every test you know is the alternative, and it degrades your post-test probability rather than improving it.",
+            },
+
+            {
+              id: "standing-posture",
+              group: "What is the resting state?",
+              name: "Standing posture",
+              how: "Observe from front, side and back. Note thoracic curvature, head position, and whether the resting position changes when the patient is cued to stand tall.",
+              finding:
+                "Record what you see, but hold it loosely: the link between static posture and shoulder pain is far weaker than it is usually taught. A posture that changes with a cue is more informative than the posture itself.",
+            },
+            {
+              id: "scapular-resting",
+              name: "Scapular resting position",
+              how: "Medial border orientation, distance from the spine, and the vertebral level of the inferior angle.",
+              finding:
+                "Medial border roughly parallel to the spine, 2–3 inches from it [[src|Sahrmann]], inferior angle at T7 [[prov:c]] [[src|no traceable source]]. The inferior angle sits closest to **T8**, range T4–T11 [[src|Cooperstein 2015]], and bone-pin measurement gives 41° internal rotation, 13.5° anterior tilt, 5° upward rotation at rest [[src|Ludewig 2009]]. The distance figure has no normative study behind it.",
+            },
+            {
+              id: "head-alignment",
+              name: "Humeral head resting alignment",
+              how: "Supine or standing, judge how much of the head sits anterior to the acromion.",
+              finding:
+                "[[prov:c]] More than a third anterior is the conventional threshold for calling it anteriorly positioned. Treat it as a clinical convention rather than a measured norm — it has no published accuracy data.",
+            },
+
+            {
+              id: "arom-all-planes",
+              group: "What can they do on their own?",
+              name: "Active range of motion, all planes",
+              how: "Flexion, abduction, extension, and rotation at 0° and at 90°. Watch where the range comes from, not only how much there is.",
+              finding:
+                "Flexion 180°, abduction 180°, extension 60°, IR 70°, ER 90° [[src|AAOS 1965]]. A community cohort of 2,404 people averaged flexion 158–162°, abduction 148–152° and ER 55–61°, and lost roughly 40° of flexion and abduction across the adult age range [[src|Gill 2020]]. The textbook figures are a ceiling, not an expectation. Compare sides, and age-match, before comparing to a table.",
+            },
+            {
+              id: "scapulohumeral-rhythm",
+              name: "Scapulohumeral rhythm",
+              how: "Watch elevation from behind through the full arc and name where the scapular contribution changes.",
+              finding:
+                "**2:1** — two degrees of glenohumeral motion for every one of scapular [[src|Inman 1944]]. That holds only as an average across the whole arc. It is nearer **4:1** through the first 25–30° and closer to **5:4** after [[src|Poppen & Walker 1976, quoted inconsistently by later sources]], and it varies by plane — 2.1:1 in abduction, 2.4:1 in flexion, 2.2:1 in the scapular plane [[src|Ludewig 2009]].",
+            },
+            {
+              id: "painful-arc",
+              name: "Painful arc",
+              how: "Abduct actively through the full range and mark where pain starts and stops.",
+              finding:
+                "[[prov:x]] Classically 60–120° [[src|Cyriax]]. Accuracy varies widely between studies: sensitivity 0.33 to 0.76 and specificity 0.61 to 0.81 [[src|Calis 2000; Park 2005]]. Useful inside a cluster, weak alone.",
+            },
+            {
               id: "hbh-hbb",
-name: "Hand behind head\n*flexion + ER*",
-              how: "Stand behind the patient, palm to the back of the head. Measure the middle finger against the spinous process, both sides, then add overpressure at end range.",
+              name: "Functional composites",
+              how: "Hand behind head, then hand behind back climbing from the lumbar spine. Measure against a spinal landmark on both sides, then add overpressure at end range.",
               finding:
-                "Symmetric side to side. Positive is clearly less reach, or symptoms with the overpressure — follow up with flexion and ER ROM.",
-              also: [
-                {
-                  name: "Hand behind back\n*IR + extension + adduction*",
-                  how: "The hand climbs from the lumbar spine as high up the back as it reaches. Overpressure: one hand on the scapula, the other on the forearm, body driving the elbow in.",
-                  finding:
-                    "Compare the level reached. Positive is clearly less reach, or symptoms with the overpressure — follow up with extension and IR ROM, the back-pocket motion.",
-                },
-              ],
+                "Hand behind head is flexion, abduction and ER. Hand behind back is IR, extension and adduction. Positive is a clear side-to-side difference in reach, or symptoms reproduced by the overpressure.",
+            },
+
+            {
+              id: "prom-vs-arom",
+              group: "What can I do to them?",
+              name: "Passive range, compared to active",
+              how: "Repeat each restricted motion passively and record the difference.",
+              finding:
+                "Passive exceeding active points to weakness or pain inhibition rather than a mechanical block. The size of that gap is one of the criteria that sets irritability [[src|McClure & Michener 2015]].",
             },
             {
-              id: "prom-flexion",
-              name: "PROM flexion — total & pure GH",
-              how: "Supine. Total = let scapula move; pure = fixate scapula. Goni: axis greater tuberosity, stationary arm midline of trunk, moving arm lateral epicondyle.",
-              finding: "Pure GH < 120° = limited → capsular EF = inferior capsule; muscular EF = teres major",
+              id: "end-feel",
+              name: "End feel",
+              how: "Take each passive motion to its limit and classify what stops it.",
+              finding:
+                "Firm and leathery suggests capsule, springy suggests muscle, hard suggests bone, and empty means pain stopped you before tissue did. An empty end feel changes the plan more than any measurement.",
             },
             {
-              id: "scapular-ur",
-              name: "Scapular upward rotation PROM + treatment",
-              how: "Sidelying. Cranial hand: thumb on coracoid, fingers on posterior scapula, blocks superior migration and anterior tilt. Caudal hand: catches inferior angle, drives upward rotation.",
-              finding: "Normal 60° upward rotation",
+              id: "capsular-pattern",
+              name: "Capsular pattern",
+              how: "Compare the proportional loss across ER, abduction and IR.",
+              finding:
+                "[[prov:c]] The glenohumeral capsular pattern is ER limited most, then abduction, then IR [[src|Cyriax]]. Worth recognizing, but the evidence that capsular patterns reliably identify capsular pathology is weak — treat a matching pattern as a hint, not a diagnosis.",
             },
             {
-              id: "prom-rotation",
-              name: "PROM IR / ER + anterior glide comment",
-              how: "ER: block anterior shoulder with your forearm. IR: 90° abd (45° if unable), stabilize scapula from anterior tilt, watch for scapular compensation.",
-              finding: "Total arc 165–180°; GIRD = arc loss >5° or IR loss 10–25° vs opposite",
+              id: "accessory-motion",
+              name: "Accessory motion at all four joints",
+              how: "Glide the glenohumeral joint in the resting position, then assess acromioclavicular, sternoclavicular and scapulothoracic mobility.",
+              finding:
+                "Open-packed at about 55° abduction with 30° horizontal adduction. [[prov:c]] [[src|no traceable source]] That exact pairing has no primary source. Measured, the resting position depends on what you are testing — about 50° for physiological movement but 24° for accessory glides [[src|Lin 2007]]. The defensible range is 30–60°.",
+            },
+
+            {
+              id: "pec-minor-length",
+              group: "What is short?",
+              name: "Pectoralis minor length",
+              how: "Supine, arms at the sides, no downward pressure. Measure acromion to table. Or measure the muscle directly, from the caudal edge of the 4th rib at the sternum to the inferomedial coracoid, and divide by height.",
+              finding:
+                "Acromion-to-table over 2.6 cm means a short pectoralis minor [[src|the cutoff tested by Lewis & Valentine 2007]]. The measure is reliable, ICC 0.90–0.93, but that cutoff had specificity **0%** and a likelihood ratio of **1** — every subject tested positive, symptomatic or not [[src|Lewis & Valentine 2007]]. Use the index instead: PMI = (length ÷ height) × 100 [[src|Borstad 2008]], intrarater ICC 0.95–0.97 [[src|Rosa 2016]]. The two papers land the rib end differently — Borstad a finger-width lateral to the sternum, Rosa at the sternum — so pick one and stay with it. No validated cutoff for *short* exists, so compare sides.",
             },
             {
-              id: "horizontal-adduction",
-              name: "Horizontal adduction for posterior capsule",
-              how: "Supine, 90/90. Stabilize scapula from passing the mid-axillary line, take to end feel, measure with goni.",
-              finding: "Should *at least* reach elbow to nose/midline; less = tight",
+              id: "lat-posterior-length",
+              name: "Latissimus and posterior shoulder length",
+              how: "Latissimus: supine with the pelvis strapped, raise the arm and stop at the first substitution. Posterior shoulder: supine at 90° elevation, stabilize the scapula, take into horizontal adduction.",
+              finding:
+                "Horizontal adduction is the more trustworthy of the two — ICC 0.88, minimal detectable change 10.2° [[src|Hall 2020]], so a difference under about ten degrees is measurement noise. The latissimus test has inter-rater ICC of 0.33 [[src|Dawood 2018]]; use it for your own repeated measures, not to hand off to a colleague.",
+            },
+
+            {
+              id: "cuff-mmt",
+              group: "What is weak?",
+              name: "Rotator cuff manual muscle testing",
+              how: "Supraspinatus in the full can position, 90° scaption with 45° external rotation. Infraspinatus with resisted ER at 0° elevation and the humerus pre-positioned in 45° of internal rotation — that pre-position is part of the test. Subscapularis with the Gerber push-off.",
+              finding:
+                "These positions maximize cuff EMG while limiting synergists [[src|Kelly 1996]]. Two cautions: neither empty nor full can is actually supraspinatus-specific — both activate eight or nine other muscles equally [[src|Boettcher 2009]] — and no resisted-rotation test separates teres minor from infraspinatus [[src|Jenp 1996]]. For teres minor specifically use Hornblower's: arm elevated to 90° in the scapular plane, elbow at 90°, resist active ER. Inability to externally rotate against resistance was 100% sensitive and 93% specific for irreparable teres minor degeneration [[src|Walch 1998]] — in 54 surgical patients against advanced fatty degeneration, so those figures belong to that population, not to routine shoulder pain.",
             },
             {
-              id: "pec-length",
-              name: "Muscle length: pec minor & pec major",
-              how: "Pec minor: measure posterior acromion to table. Pec major sternal: 120° abd + full ER; clavicular: 90° abd.",
-              finding: "Pec minor ≤ 2.54 cm (1 in) · Sternal: arm touches table · Clavicular: arm even with table",
+              id: "scapular-mmt",
+              name: "Scapular muscle testing",
+              how: "Prone for the trapezius pair and the position that isolates serratus anterior. Stabilize below the scapula so the trunk cannot supply the motion.",
+              finding:
+                "Prone positions isolate lower from middle trapezius [[src|Kendall]]. They do not — the modified Kendall trapezius tests are not region-specific: the lower trapezius test produced the greatest activation of all three trapezius regions [[src|Henderson 2021]]. Grade what you feel, but do not claim you isolated a region.",
             },
             {
-              id: "static-resisted",
-              name: "Static resisted: IR, ER, abduction",
-              how: "Seated, arm at side, you stabilize distal humerus. Abduction tested at 15°.",
-              finding: "(+) decreased resistance from pain and/or weakness",
+              id: "mmt-grading",
+              name: "Grade on the 0–5 scale",
+              how: "0 none, 1 trace, 2 full range with gravity eliminated, 3 full range against gravity, 4 holds against some resistance, 5 holds against full resistance.",
+              finding:
+                "The 0–5 scale as defined, plus and minus grades included [[src|StatPearls]]; it descends from Lovett and Wright, 1912–16, and the MRC memorandum of 1943. Rasch analysis found the categories unequal, with 78.6% of muscle groups showing disordered thresholds — grades 1 to 3 too narrow, grade 4 far too broad [[src|Vanhoutte 2012]]. The MRC proposed 4−, 4 and 4+ but never defined the boundaries, and adding a 4+ grade made examiners agree *less* — agreement fell from 64% to 48% [[src|O'Neill 2017]]. Use them if your program requires them, but do not mistake the extra symbol for extra precision.",
             },
             {
-              id: "mmt-supra-infra",
-              name: "MMT supraspinatus & infraspinatus",
-              how: "Supra: 90° elevation in scapular plane. Infra: 0° scaption with 45° IR, push into IR.",
-              finding: "Supra in IR = more EMG but more irritating; ER = less EMG, less irritating",
+              id: "weakness-vs-inhibition",
+              name: "Distinguish weakness from inhibition",
+              how: "Retest the weak motion after reducing the provocation — a different position, less range, or with the scapula supported.",
+              finding:
+                "Strength that returns when the provocation is removed was inhibited, not weak, and it needs a different treatment than loading.",
+            },
+
+            {
+              id: "bony-palpation",
+              group: "Where is it?",
+              name: "Bony landmark palpation",
+              how: "Run one repeatable sequence rather than hunting. Rotate the humerus under your fingers instead of moving your hand around the bone.",
+              finding:
+                "You should be able to find every landmark without looking, and name what attaches to it. Tenderness means little until it agrees with something else you found.",
             },
             {
-              id: "mmt-subscap",
-              name: "Prone MMT subscapularis",
-              how: "Hand behind back, lifted off spine, palm facing posterior; force into palm toward the spine.",
-              finding: "Watch activation pattern and scapular compensation. Can be irritating — caution.",
+              id: "soft-tissue-palpation",
+              name: "Soft tissue palpation",
+              how: "Palpate each cuff tendon in the position that brings it out from under the acromion, then the biceps tendon and the AC joint line.",
+              finding:
+                "Connect every tender structure back to the test that implicated it. Isolated tenderness with no corroborating test is a finding you should be willing to discard.",
+            },
+
+            {
+              id: "special-tests-by-category",
+              group: "What is it?",
+              name: "Perform the special tests by category",
+              how: "Subacromial, instability, labral, acromioclavicular and biceps. Know the set-up and the positive for each.",
+              finding: "Performing them is the low bar. Knowing which ones are worth performing is the competency.",
             },
             {
-              id: "mmt-traps",
-              name: "MMT lower & middle trapezius",
-              how: "Both: watch for excessive humeral head anterior translation; maintain retraction (lower trap adds posterior tilt).",
-              finding: "Lower trap = retraction + upward rotation + posterior tilt + thoracic extension",
+              id: "interpret-lr",
+              name: "Interpret likelihood ratios",
+              how: "Read a test result as a shift in probability rather than a yes or no.",
+              finding:
+                "+LR above 10 or −LR below 0.1 is a large shift; 5–10 moderate; 2–5 small but sometimes important; 1–2 rarely matters. The bands are usually credited to [[src|Jaeschke 1994]], though they are also attributed to Sackett and reproduced widely without citation — a convention either way, not a law.",
             },
             {
-              id: "lat-length",
-              name: "Muscle length latissimus dorsi",
-              how: "End-range total GH flexion.",
-              finding: "(+) muscular end feel with rib cage flaring / lumbar extension",
+              id: "build-cluster",
+              name: "Build a cluster from your hypothesis",
+              how: "Choose three tests that together answer the question the history raised, and run those.",
+              finding:
+                "Hawkins-Kennedy, painful arc and resisted ER all positive gives +LR 10.56 for impingement; painful arc, drop arm and resisted ER all positive gives +LR 15.57 for a full-thickness tear [[src|Park 2005]]. No single shoulder test can be recommended as diagnostic on its own, and clusters improve accuracy only modestly [[src|Hegedus 2012]].",
+            },
+
+            {
+              id: "movement-diagnosis",
+              group: "What do I call it?",
+              name: "State a movement diagnosis",
+              how: "Name the direction of susceptibility and the impairments producing it, rather than only the structure that hurts.",
+              finding: "A structural label tells you what is irritated. A movement diagnosis tells you what to change.",
             },
             {
-              id: "mmt-serratus",
-              name: "MMT serratus anterior",
-              how: "Sitting ~130° flexion, lead with thumb, press forward to encourage upward rotation + abduction.",
-              finding: "75% force into shoulder extension + 25% into downward rotation at inferior angle; ends when scapula downwardly rotates",
+              id: "recognize-syndromes",
+              name: "Recognize the common syndromes",
+              how: "Match the pattern of findings to the recognized shoulder movement syndromes and name the impairments driving each.",
+              finding:
+                "The syndrome is a shorthand for a cluster of impairments. If you cannot list the impairments, you have not made the diagnosis.",
             },
             {
-              id: "sps-cluster",
-              name: "Subacromial pain syndrome cluster — all 3",
-              how: "Hawkins-Kennedy + painful arc + painful/weak resisted ER.",
-              finding: "All 3 (+) → +LR 10.56 · all 3 (−) → −LR 0.17",
+              id: "relative-stiffness",
+              name: "Identify relative stiffness",
+              how: "Ask which segment moves first, and which one should have.",
+              finding:
+                "Motion goes where it is easiest. The painful tissue is often the flexible one compensating for a stiff neighbor, which is why treating the painful site alone tends to fail.",
+            },
+
+            {
+              id: "dose-from-irritability",
+              group: "What do I do about it?",
+              name: "Set the dose from irritability",
+              how: "Grade irritability before choosing intervention intensity.",
+              finding:
+                "High: pain ≥7/10, consistent night pain, AROM less than PROM, pain before end range — minimize stress. Moderate: pain 4–6/10, intermittent night pain, AROM close to PROM, pain at end range. Low: pain ≤3/10, no night pain, AROM equals PROM, pain only with overpressure — moderate to high stress [[src|McClure & Michener, STAR 2015]].",
             },
             {
-              id: "drop-arm",
-              name: "Full-thickness supraspinatus tear",
-              how: "Drop arm test: passive 90° abd + IR, hold, then lower slowly.",
-              finding: "Sp 88, +LR 2.25 · (+) arm drops or no smooth eccentric control",
+              id: "match-intervention",
+              name: "Match intervention to impairment",
+              how: "For each intervention chosen, state which finding it addresses.",
+              finding: "If you cannot name the impairment an intervention targets, it is in the plan for the wrong reason.",
             },
             {
-              id: "ir-lag",
-              name: "Full-thickness subscapularis tear",
-              how: "Internal rotation lag sign: hand behind back, you lift it off, patient holds.",
-              finding: "Sp 96, Sn 97 · (+) can't keep hand off the back",
+              id: "mobilize-with-rationale",
+              name: "Mobilize with a stated rationale",
+              how: "Choose joint or soft tissue technique, direction, grade and dosage — and say why each.",
+              finding:
+                "Direction follows the restricted glide. Grade follows irritability. Dosage follows the response you get on reassessment.",
             },
             {
-              id: "er-lag",
-              name: "Full-thickness infraspinatus tear",
-              how: "ER lag sign: elbow 90°, shoulder abducted 20°, max ER, patient holds.",
-              finding: "(+) arm falls into internal rotation",
-            },
-            {
-              id: "apprehension",
-              name: "Anterior instability — apprehension / relocation",
-              how: "Supine 90/90 on your thigh, palpate anterior shoulder, take into ER; back off, add posterior glide, re-enter ER.",
-              finding: "(+) apprehension or fear (not pain) that eases with the posterior glide",
-            },
-            {
-              id: "biceps-load",
-              name: "SLAP tear",
-              how: "Biceps Load II: 120° abd, elbow 90°, forearm supinated, end-range ER, resist elbow flexion.",
-              finding: "Sn 90, Sp 97, +LR 26.38, −LR 0.11 · (+) deep shoulder pain",
-            },
-            {
-              id: "palpation",
-              name: "Palpation of the RTC tendons",
-              how: "Deltopectoral triangle → bicipital groove at 20° IR → ER to lesser tubercle (subscap) → more IR to greater tubercle (supra) → infraspinatus in flexion/adduction/IR.",
-              finding: "Use active rotation to bring each tendon under your finger",
-            },
-            {
-              id: "posterior-glide",
-              name: "GH posterior glide — assess & treat by irritability",
-              how: "Open packed ~50° abd, slight horizontal adduction + ER; hand lateral to coracoid; force **posterolateral**.",
-              finding: "For limited IR / horizontal adduction with capsular end feel",
-            },
-            {
-              id: "inferior-glide",
-              name: "GH inferior glide — assess & treat by irritability",
-              how: "Wedge/towel blocks scapula & acromion but not the humeral head; hand lateral to acromion; force inferior with slight lateral component; drive from hips.",
-              finding: "For limited flexion / abduction with capsular end feel",
-            },
-            {
-              id: "ex-flexion",
-              name: "Exercise: flexion ROM, high vs low irritability",
-              how: "High: supported/pain-free AAROM, high reps, patient-controlled. Low: sustained end-range, maximize total end-range time.",
-              finding: "Reassess after each round of 3 bouts",
-            },
-            {
-              id: "ex-ir",
-              name: "Exercise: IR ROM, high vs low irritability",
-              how: `Supine IR keeping the humeral head from popping up — cue "swivel around an axis." Low: add horizontal adduction stretch for posterior capsule.`,
-              finding: "Motion must be spin, not anterior glide",
-            },
-            {
-              id: "ex-er",
-              name: "Exercise: ER ROM, high vs low irritability",
-              how: "Prone ER: synchronize finger extension → wrist extension as the arm swivels laterally. Avoid lat and deltoid compensation.",
-              finding: "High: pain-free AAROM only. Low: end-range holds.",
-            },
-            {
-              id: "ex-posterior-tilt",
-              name: "Exercise: scapular posterior tilt + thoracic extension",
-              how: "Load lower trap / serratus with the thorax extended; keep elbow in front of the mid-axillary line during functional retraining.",
-              finding: "Scapular upward rotation is what keeps the cuff out of impingement",
+              id: "reassessment-marker",
+              name: "Define the reassessment marker",
+              how: "Before treating, name the one finding you will recheck, and what result would change your mind.",
+              finding: "A marker chosen after the fact is a justification. A marker chosen in advance is a test.",
             },
           ],
+        },
+        {
+          kind: "callout",
+          tone: "note",
+          lead: "Give the taught answer on the exam.",
+          body: "Where a value carries both, the first is what your program examines on and the second is what the literature shows. They diverge more often than a curriculum lets on: the inferior angle sits nearer T8 than T7, the 2.6 cm pectoralis minor cutoff has zero specificity, the can tests are not supraspinatus-specific, the trapezius tests are not region-specific, 2:1 rhythm is an average that describes no particular part of the range, and the plus and minus strength grades reduce agreement rather than refining it. Write the conventional answer, and know which ground you are standing on.",
         },
         { kind: "heading", text: "The same items, grouped by patient position" },
         {
@@ -276,28 +359,99 @@ name: "Hand behind head\n*flexion + ER*",
             {
               value: "2 : 1",
               label:
-                "Scapulohumeral rhythm — 2° GH for every 1° scapular. Written *2:1* as a ratio of motion, but some sources write the same relationship as *1:2* (scapula to humerus) — check which way the question is phrased.",
+                "Scapulohumeral rhythm [[src|Inman 1944]]. True only as an average over the whole arc. It is roughly **4:1** through the first 25–30° and nearer **5:4** after that, and it changes by plane — 2.1:1 in abduction, 2.4:1 in flexion, 2.2:1 in the scapular plane [[src|Ludewig 2009]]. The early-range figures trace to Poppen & Walker 1976, quoted inconsistently by later sources — treat them as approximate.",
             },
-            { value: "120° + 60°", label: "GH abduction + scapular upward rotation = 180° elevation" },
-            { value: "first 30°", label: "Of elevation is mostly humeral (setting phase)" },
-            { value: "35–40°", label: "GH external rotation during full elevation" },
-            { value: "25° / 25° / 20°", label: "SC joint elevation / posterior rotation / retraction" },
-            { value: "30° & 20°", label: "AC joint upward rotation & posterior tilt (0–5° ER)" },
-            { value: "6° → 22–23°", label: "Scapular posterior tilt: 6° in first 90°, +16° after" },
-            { value: "5°", label: "Superior tilt of the glenoid (passive stability)" },
-            { value: "T2 – T7", label: "Scapula on the thorax: superior angle T2, root of the *scapular* spine T3, inferior angle T7" },
-            { value: "2.5–3 in", label: "Vertebral border to the spine, borders parallel to it or slightly upwardly rotated" },
-            { value: "30° & 9°", label: "At rest the scapula sits 30° anterior to the frontal plane — the scapular plane — with 9° of anterior tilt" },
-            { value: "> 15–20°", label: "Scapular internal rotation beyond this is excessive — medial border lifts; palpate the triangle below the scapular spine" },
-            { value: "> ⅓", label: "Of humeral head anterior to acromion = anterior glide" },
-            { value: "≤ ½ in", label: "Inferior angle protrusion past posterolateral thorax in full elevation" },
-            { value: "165–180°", label: "Normal total arc of IR + ER" },
-            { value: "2.54 cm", label: "Pec minor length — acromion to table" },
-            { value: "> 1 in", label: "Lateral translation of scapular border in passive flexion = short teres major" },
-            { value: "2%", label: "Of shoulder dislocations are posterior" },
-            { value: "60–120°", label: "Where a painful arc lives during abduction" },
-            { value: "~50°", label: "Abduction for the open-packed position used in mobilization" },
+            {
+              value: "+39°",
+              label:
+                "Scapular upward rotation gained through elevation — an increase of 39°, from 11° early in the range to 50°. Resting upward rotation is only 5.4°. Not the 60° usually taught. [[src|Ludewig 2009, bone pin]]",
+            },
+            {
+              value: "+21°",
+              label:
+                "Scapular posterior tilt through full elevation, from 13° anterior to 8° posterior. Most of it arrives after 90°. [[src|Ludewig 2009; McClure 2001]]",
+            },
+            {
+              value: "41° / 13.5° / 5°",
+              label: "Scapular resting position: internal rotation, anterior tilt, upward rotation [[src|Ludewig 2009]]",
+            },
+            {
+              value: "6° · 16° · 31°",
+              label:
+                "Sternoclavicular contribution through elevation — elevation, retraction, posterior axial rotation. The clavicle rotates far more than it elevates. [[src|Ludewig 2009]]",
+            },
+            {
+              value: "11° · 19° · 8°",
+              label: "Acromioclavicular contribution — upward rotation, posterior tilt, internal rotation [[src|Ludewig 2009]]",
+            },
+            {
+              value: "+10–51°",
+              label:
+                "The *increase* in glenohumeral external rotation through elevation, not an absolute angle. How much depends on the plane you elevate in. [[src|Ludewig 2009]]",
+            },
+            {
+              value: "T8",
+              label:
+                "T7 [[prov:c]] [[src|no traceable source]] The inferior angle sits closest to **T8**, range T4–T11, with 85% at or within one level of it. [[src|Cooperstein 2015 meta-analysis]]",
+            },
+            {
+              value: "158° / 150° / 58°",
+              label:
+                "What a community population of 2,404 people actually reaches in flexion, abduction and ER. The textbook 180/180/90 is a ceiling, not an expectation. These are means pooled across all ages — the same study found flexion and abduction fall by roughly 40° across the adult age range, so age-match before you call a range restricted. [[src|Gill 2020]]",
+            },
+            {
+              value: "160–210°",
+              label:
+                "Total rotational arc at 90° abduction. Side-to-side difference should stay within **5°** — pitchers outside that had 2.5 times the *odds* of shoulder injury. GIRD, a **20°** internal rotation loss, was *not* itself significant in that study; total rotation was the variable that mattered. [[src|Wilk 2011]]",
+            },
+            {
+              value: "50° vs 24°",
+              label:
+                "Glenohumeral resting position — about 50° abduction for physiological movement but only 24° for accessory glides. Which one you want depends on what you are testing. [[src|Lin 2007]]",
+            },
+            {
+              value: "0–10°",
+              label:
+                "[[prov:x]] Superior inclination of the glenoid. Measured values vary with imaging method and reference axis, so treat any single figure with suspicion. [[src|Kircher 2017; Chalmers 2019]]",
+            },
+            {
+              value: "60–120°",
+              label:
+                "Where a painful arc lives in abduction [[src|Cyriax]]. Sensitivity ranges 0.33 to 0.76 and specificity 0.61 to 0.81 across studies — useful in a cluster, weak alone. [[src|Calis 2000; Park 2005]]",
+            },
+            {
+              value: "2–4%",
+              label: "Of shoulder dislocations are posterior, and they are widely acknowledged to be under-diagnosed [[src|StatPearls]]",
+            },
+            {
+              value: "> ⅓",
+              label:
+                "[[prov:c]] Of the humeral head anterior to the acromion is called anterior position [[src|Sahrmann]]. No study supports the threshold, and palpation of humeral head position has inter-rater ICC of only 0.48–0.68. [[src|Konieczka 2017]]",
+            },
+            {
+              value: "≤ ½ in",
+              label: "[[prov:c]] Inferior angle protrusion past the posterolateral thorax in full elevation [[src|Sahrmann]]",
+            },
+            {
+              value: "~3 in & 30°",
+              label:
+                "[[prov:c]] Scapula from the midline, and its angle anterior to the frontal plane [[src|Sahrmann]]. Bone-pin measurement puts resting internal rotation nearer 41°. [[src|Ludewig 2009]]",
+            },
+            {
+              value: "120° + 60°",
+              label:
+                "[[prov:c]] The familiar arithmetic for 180° of elevation. It is the 2:1 ratio multiplied out, not something anyone measured, and the scapular half overstates the 39° that was.",
+            },
+            {
+              value: "first 30°",
+              label:
+                "[[prov:c]] The setting phase — elevation here is mostly humeral, with a small and inconsistent scapular contribution [[src|Inman 1944]]",
+            },
           ],
+        },
+        {
+          kind: "footnote",
+          text: "**Three values have been removed from this section.** \"Scapular internal rotation over 15–20° is excessive\" has no published threshold and sits below the healthy resting mean of roughly 30–41°, so it would call every normal shoulder abnormal. \"More than 1 inch of lateral scapular translation indicates a short teres major\" could not be traced to any source, published or textbook. And the 2.54 cm pectoralis minor cutoff has a measured specificity of zero. None of them belong in a reference.",
         },
         {
           kind: "figure",
@@ -818,17 +972,17 @@ name: "Hand behind head\n*flexion + ER*",
               body: "How far a negative result argues against it. Under 0.1 is a large shift, 0.1–0.2 moderate, 0.2–0.5 small, around 1 changes nothing.",
             },
           ],
-          note: "Both ratios come from the same two numbers: +LR is Sn ÷ (1 − Sp), and −LR is (1 − Sn) ÷ Sp. Most single tests land in the small range, which is the whole argument for using clusters.",
+          note: "Both ratios come from the same two numbers: +LR is Sn ÷ (1 − Sp), and −LR is (1 − Sn) ÷ Sp. The last column answers the question you actually have at the bedside, with the figures underneath it. Most single tests barely move the needle, which is the whole argument for clusters.",
         },
         {
           kind: "callout",
           tone: "note",
           lead: "Subacromial pain syndrome.",
-          body: "Any 3 of 5 positives suggests SPS: painful arc, Neer's, Hawkins-Kennedy, pain/weakness with resisted ER, empty can. The *most predictive* cluster is Hawkins-Kennedy + painful arc + painful/weak resisted ER — all three positive gives +LR 10.56, all three negative gives −LR 0.17. Run all three before you commit to the diagnosis.",
+          body: "Any 3 of 5 positives suggests SPS: painful arc, Neer's, Hawkins-Kennedy, pain/weakness with resisted ER, empty can. The *most predictive* cluster is Hawkins-Kennedy + painful arc + painful/weak resisted ER — all three positive gives +LR 10.56, all three negative gives −LR 0.17. Run all three before you commit to the diagnosis. A second cluster answers a different question: painful arc + drop arm + resisted ER, all three positive, gives +LR 15.57 for a *full-thickness tear* [[src|Park 2005]]. Hold both against the broader finding that no single shoulder test can be recommended as diagnostic on its own, and that clusters improve accuracy only modestly [[src|Hegedus 2012]].",
         },
         {
           kind: "table",
-          columns: ["Test", "What it compresses or contracts", "Set-up", "Positive", "Stats"],
+          columns: ["Test", "What it compresses or contracts", "Set-up", "Positive", "Does it change your mind?"],
           // Five columns of prose plus one of bare figures: left to size itself, the stats
           // column wraps to one character per line while the tissue column sprawls.
           widths: ["15%", "25%", "26%", "21%", "13%"],
@@ -842,7 +996,10 @@ name: "Hand behind head\n*flexion + ER*",
               },
               "Active abduction; note *where* in the range, not just that it hurts",
               "Pain through the middle of the arc — roughly 60–120° — easing above and below it",
-              { text: "cluster", variant: "num" },
+              {
+                text: "**Small shift, and contested**\n[[src|Sn 33-76 · Sp 61-81 · +LR 1.7-3.9]]",
+                variant: "num",
+              },
             ],
             [
               { text: "Neer's", variant: "name" },
@@ -852,7 +1009,10 @@ name: "Hand behind head\n*flexion + ER*",
               },
               "Passive full flexion held in IR; add OP with one hand on the scapula and the other in the axilla",
               "Reproduction of symptoms",
-              { text: "—", variant: "num" },
+              {
+                text: "**Barely moves the needle**\n[[src|Sn 78 · Sp 58 · +LR 1.86]]",
+                variant: "num",
+              },
             ],
             [
               { text: "Hawkins-Kennedy", variant: "name" },
@@ -862,7 +1022,10 @@ name: "Hand behind head\n*flexion + ER*",
               },
               "Flexion to 90° + horizontal adduction, stabilize the top of the shoulder, internally rotate",
               "Limited range or shoulder pain",
-              { text: "cluster", variant: "num" },
+              {
+                text: "**Barely moves the needle**\n[[src|Sn 74 · Sp 57 · +LR 1.70]]",
+                variant: "num",
+              },
             ],
             [
               { text: "Full can / empty can", variant: "name" },
@@ -872,28 +1035,40 @@ name: "Hand behind head\n*flexion + ER*",
               },
               "90° scaption thumbs up, resist; then thumbs down, retest",
               "Weaker or more painful in the empty can position",
-              { text: "Not specific alone", variant: "num" },
+              {
+                text: "**Barely moves the needle**\n[[src|empty Sn 69 · Sp 62 · full Sn 70 · Sp 81]]",
+                variant: "num",
+              },
             ],
             [
               { text: "Resisted ER", variant: "name" },
               { text: "**Infraspinatus + teres minor**, contractile", variant: "tissue" },
               "Seated, arm at side, you stabilize the distal humerus; resist into IR",
               "Pain or give-way weakness",
-              { text: "cluster", variant: "num" },
+              {
+                text: "**Small shift; best of the cluster**\n[[src|Sn 42 · Sp 90 · +LR 4.20]]",
+                variant: "num",
+              },
             ],
             [
               { text: "Resisted IR", variant: "name" },
               { text: "**Subscapularis**, contractile", variant: "tissue" },
               "Same position; resist outward into ER",
               "Pain or weakness",
-              { text: "Highly Sp, moderately Sn", variant: "num" },
+              {
+                text: "**Rules in, cannot rule out**\n[[src|lift-off Sn 33 · Sp 94 · bear hug Sn 55 · Sp 94]]",
+                variant: "num",
+              },
             ],
             [
               { text: "Resisted abduction", variant: "name" },
               { text: "**Supraspinatus**, contractile, at the angle where the tendon is least shortened", variant: "tissue" },
               "Abduct 15°, stabilize the top of the shoulder, apply an adduction force",
               "Pain or weakness",
-              { text: "—", variant: "num" },
+              {
+                text: "**Small shift**\n[[src|Sn 44 · Sp 90 · +LR 4.20]]",
+                variant: "num",
+              },
             ],
             { group: "Full-thickness tear — which tendon is gone" },
             [
@@ -901,28 +1076,40 @@ name: "Hand behind head\n*flexion + ER*",
               { text: "**Supraspinatus** under eccentric load, with infraspinatus assisting the lower", variant: "tissue" },
               "Passive 90° abduction + IR, patient holds, then lowers slowly",
               "Arm drops, or loses smooth eccentric control",
-              { text: "Sp 88 · +LR 2.25", variant: "num" },
+              {
+                text: "**Rules in, cannot rule out**\n[[src|Sn 21 · Sp 92 · +LR 2.62]]",
+                variant: "num",
+              },
             ],
             [
               { text: "ER lag sign", variant: "name" },
               { text: "**Infraspinatus** (posterior supraspinatus contributes at this angle)", variant: "tissue" },
               "Elbow 90°, shoulder abducted 20°, maximal ER, patient holds",
               "Arm falls back into internal rotation",
-              { text: "—", variant: "num" },
+              {
+                text: "**Large shift when positive**\n[[src|Sn 56 · Sp 98]]",
+                variant: "num",
+              },
             ],
             [
               { text: "Hornblower's sign", variant: "name" },
               { text: "**Teres minor**, with infraspinatus — the ER pair that fails last", variant: "tissue" },
               "90° scaption, elbow 90°, ER against resistance",
               "Cannot externally rotate; may abduct to compensate",
-              { text: "Sp 95 · Sn 92", variant: "num" },
+              {
+                text: "**Large shift, narrow population**\n[[src|Sn 100 · Sp 93, but n=54 surgical patients with severe disease]]",
+                variant: "num",
+              },
             ],
             [
               { text: "IR lag sign", variant: "name" },
               { text: "**Subscapularis** — the only cuff muscle that can hold the hand off the back", variant: "tissue" },
               "Hand behind back, examiner lifts it off, patient holds",
               "Cannot keep the hand off the back; pain",
-              { text: "Sp 96 · Sn 97", variant: "num" },
+              {
+                text: "**No verified source**\n[[src|not checked against a primary study]]",
+                variant: "num",
+              },
             ],
             { group: "Biceps and labrum" },
             [
@@ -933,14 +1120,20 @@ name: "Hand behind head\n*flexion + ER*",
               },
               "90° flexion, elbow extended, forearm supinated; resist while palpating the tendon",
               "Pain, popping or crepitus at the groove",
-              { text: "Sn 90", variant: "num" },
+              {
+                text: "**Not worth doing alone**\n[[src|Sn 20-69 · Sp 55-88 · every +LR under 2.3]]",
+                variant: "num",
+              },
             ],
             [
               { text: "Biceps Load II", variant: "name" },
               { text: "**Superior labrum at the biceps anchor** — the long head pulls directly on the lesion", variant: "tissue" },
               "120° abduction, elbow 90°, forearm supinated, end-range ER; resist elbow flexion",
               "Deep shoulder pain with the resisted flexion",
-              { text: "Sn 90 · Sp 97 · +LR 26.38 · −LR 0.11", variant: "num" },
+              {
+                text: "**Contested — do not trust the headline**\n[[src|originator Sn 90 · Sp 97; replication Sn 28-30]]",
+                variant: "num",
+              },
             ],
             [
               { text: "Sulcus sign", variant: "name" },
@@ -950,7 +1143,10 @@ name: "Hand behind head\n*flexion + ER*",
               },
               "Seated, grasp the elbow, inferior traction; measure acromion to humeral head in cm; repeat supine at 20° abduction",
               "Visible sulcus / inferior laxity",
-              { text: "Sp 93 · +LR 2.43", variant: "num" },
+              {
+                text: "**Rules in, cannot rule out**\n[[src|Sn 28 · Sp 97]]",
+                variant: "num",
+              },
             ],
             { group: "Instability and internal impingement" },
             [
@@ -961,7 +1157,10 @@ name: "Hand behind head\n*flexion + ER*",
               },
               "Supine 90/90 resting on your thigh; palpate anteriorly, take into ER; back off, add a posterior glide, re-enter ER",
               "Apprehension or fear — not pain — that settles with the posterior glide",
-              { text: "—", variant: "num" },
+              {
+                text: "**Large shift when positive**\n[[src|apprehension DOR 53.6 · surprise Sn 64 · Sp 99]]",
+                variant: "num",
+              },
             ],
             [
               { text: "Posterior impingement [[pill:a|same manoeuvre]]", variant: "name" },
@@ -978,7 +1177,10 @@ name: "Hand behind head\n*flexion + ER*",
               { text: "**Posterior capsule and labrum**", variant: "tissue" },
               "Supine, 90° flexion, elbow 90°, IR; axial compressive force through the GH joint",
               "Pain and apprehension",
-              { text: "—", variant: "num" },
+              {
+                text: "**No verified source**\n[[src|not checked against a primary study]]",
+                variant: "num",
+              },
             ],
             { group: "Acromioclavicular joint" },
             [
@@ -986,9 +1188,57 @@ name: "Hand behind head\n*flexion + ER*",
               { text: "**AC joint capsule and intra-articular disc**", variant: "tissue" },
               "Cupped hands over the clavicle and the spine of the scapula, squeeze",
               "Local pain at the joint line, not referred",
-              { text: "—", variant: "num" },
+              {
+                text: "**Contested — studies disagree on direction**\n[[src|cross-body Sn 77 · Sp 79, but pooled +LR 0.86]]",
+                variant: "num",
+              },
             ],
           ],
+        },
+        { kind: "heading", text: "Where the studies disagree" },
+        {
+          kind: "lede",
+          text: "These are the tests whose published accuracy moves so much between studies that quoting one number would be misleading. The pattern in the last three is worth naming: the study that introduced the test reports excellent accuracy, and independent replication does not reproduce it.",
+        },
+        {
+          kind: "table",
+          columns: ["Test", "What different studies found", "What to make of it"],
+          rows: [
+            [
+              { text: "Painful arc", variant: "name" },
+              "Sensitivity 0.33 in one study and 0.76 in another, against similar reference standards",
+              "Sensitivity that swings by half means a negative result carries no reliable weight. Keep it as a cluster component.",
+            ],
+            [
+              { text: "Cross-body adduction", variant: "name" },
+              "+LR 3.67 in the original AC study; a later systematic review pooled it at 0.86",
+              "The two disagree about *direction*, not just size — one says a positive argues for AC pathology, the other says slightly against.",
+            ],
+            [
+              { text: "O'Brien active compression", variant: "name" },
+              "Sensitivity from 0.39 to 1.00 and specificity from 0.10 to 0.98 across studies; pooled diagnostic odds ratio 1.19",
+              "A pooled odds ratio of about 1 means no diagnostic value for SLAP lesions. The wide textbook ranges should not be reproduced without this.",
+            ],
+            [
+              { text: "Crank test", variant: "name" },
+              "Originating study +LR 13.6; independent replications 1.06 to 1.48; sensitivity from 0.09 to 0.91",
+              "Classic originator-replication gap. Use the replication figures.",
+            ],
+            [
+              { text: "Biceps Load II", variant: "name" },
+              "Originating study sensitivity 0.90; independent studies 0.28–0.30",
+              "One of the largest originator-replication gaps in the shoulder literature.",
+            ],
+            [
+              { text: "Anterior slide", variant: "name" },
+              "Sensitivity from 0.10 to 1.00; pooled +LR 0.67",
+              "A pooled +LR below 1 means a positive test argues slightly *against* the diagnosis. Not usable as published.",
+            ],
+          ],
+        },
+        {
+          kind: "footnote",
+          text: "The labral tests are the weakest group in the section, and the systematic reviews say so directly: no single test is sensitive or specific enough to determine the presence of a SLAP lesion, and the impressive figures all come from low-quality studies by the authors who introduced the test. [[src|Dessaur & Magarey 2008; Gismervik 2017]]",
         },
         {
           kind: "figure",
@@ -1598,5 +1848,6 @@ name: "Hand behind head\n*flexion + ER*",
     },
   ],
   footer:
-    "**About this guide.** Compiled from a shoulder examination and treatment sequence covering functional tasks and biomechanics, movement system syndromes, posture through manual muscle testing, special tests, and palpation through soft tissue mobilization. Normative values, sensitivity/specificity and likelihood ratios are reproduced as stated in those source materials — verify against current literature before using them to weight a clinical decision. Items 25–28, the irritability-graded exercise progressions, are assembled from the irritability framework and treatment principles rather than quoted as a fixed exercise list.",
+    "**About this guide.** The examination sequence, the organizing structure and all diagrams are original. Clinical values are drawn from the published sources named inline, principally: AAOS *Joint Motion* (1965) and Gill et al. (2020) for range of motion; Inman et al. (1944), Poppen & Walker (1976) and Ludewig et al. (2009) for shoulder complex kinematics; Cooperstein et al. (2015) for scapular landmark levels; Kircher et al. (2017) and Chalmers et al. (2019) for glenoid inclination; Konieczka et al. (2017) for humeral head palpation reliability; Sahrmann for the movement-system criteria marked as convention; Lin et al. (2007) for the glenohumeral resting position; Lewis & Valentine (2007), Borstad (2008), Rosa et al. (2016), Hall et al. (2020) and Dawood et al. (2018) for muscle length testing; Kelly et al. (1996), Boettcher et al. (2009) and Henderson et al. (2021) for manual muscle testing; Vanhoutte et al. (2012) and O'Neill et al. (2017) for the grading scale; Jenp et al. (1996) and Walch et al. (1998) for rotator cuff differentiation; Park et al. (2005), Hegedus et al. (2008, 2012), Alqunaee et al. (2012), Dessaur & Magarey (2008), Lo et al. (2004) and Chronopoulos et al. (2004) for diagnostic accuracy; Jaeschke et al. (1994) for likelihood ratio bands; Wilk et al. (2011) for rotational deficit thresholds; and McClure & Michener (2015) for the irritability framework. Where a value in common circulation could not be traced to a primary source, it is marked as convention rather than presented as data. Reviewed against the literature in September 2026 — clinical evidence moves, so re-check anything load-bearing before relying on it after roughly a year. This is an educational aid, not clinical guidance: it is written for students learning an examination sequence, it does not replace supervised instruction or current practice guidelines, and no part of it should be used to make a treatment decision on its own.",
+
 };

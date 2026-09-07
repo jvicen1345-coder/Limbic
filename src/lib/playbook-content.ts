@@ -33,6 +33,7 @@
 import { HIP_PLAYBOOK } from "@/lib/playbooks/hip";
 import { JOINT_MOBILIZATION_PLAYBOOK } from "@/lib/playbooks/joint-mobilization";
 import { KNEE_PLAYBOOK } from "@/lib/playbooks/knee";
+import type { PlaybookProvenance } from "@/lib/playbook-inline";
 import { SHOULDER_PLAYBOOK } from "@/lib/playbooks/shoulder";
 
 /** A cell's presentation: `name` is the row's subject (bolded first column), `num` renders
@@ -63,6 +64,11 @@ export interface PlaybookChecklistItem extends PlaybookChecklistRow {
   /** Stable across edits — it keys the reader's saved check-off state, so renumbering the
    *  list must not silently re-map what they've already ticked. */
   id: string;
+  /** Set on the first item of a phase to print a full-width heading above it — the question
+   *  that phase of the examination answers. A heading is not itself a row: it carries no tick
+   *  box and nothing to recall, so playbookChecklistRows below ignores it and the indices
+   *  recall keys on stay stable whether or not the list is grouped. */
+  group?: string;
   /** Further rows under the same tick box and number: two ways of testing one thing that you
    *  either do together or not at all, so one box covers both. */
   also?: PlaybookChecklistRow[];
@@ -126,7 +132,10 @@ export type PlaybookBlock =
   /** A glossary of the statistics a section's tables quote — Sn, Sp, +LR, −LR — so a
    *  reader can weigh a number instead of just reading it. */
   | { kind: "statkey"; entries: PlaybookStatKeyEntry[]; note?: string }
-  | { kind: "cases"; items: PlaybookCase[] };
+  | { kind: "cases"; items: PlaybookCase[] }
+  /** The legend explaining how to read a value's provenance: what an unmarked value means,
+   *  and what each of the Convention and Contested badges is claiming. */
+  | { kind: "provkey"; entries: { prov?: PlaybookProvenance; body: string }[] };
 
 export interface PlaybookSection {
   /** Anchor id and nav target. */

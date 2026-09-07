@@ -18,6 +18,18 @@ export function PlaybookInline({ text }: { text: string }) {
                 {node.text}
               </span>
             );
+          case "prov":
+            return (
+              <span key={i} className={`playbook-prov playbook-prov-${node.kind}`}>
+                {node.kind === "c" ? "Convention" : "Contested"}
+              </span>
+            );
+          case "src":
+            return (
+              <span key={i} className="playbook-src">
+                {node.text}
+              </span>
+            );
           case "break":
             return <br key={i} />;
           default:
