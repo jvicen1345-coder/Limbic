@@ -123,22 +123,47 @@ function matchesWordPrefix(haystack: string, term: string): boolean {
   }
 }
 
+/**
+ * A search term plus the singular forms it might be a plural of.
+ *
+ * Word-prefix matching already handles a singular query against plural content — "kick"
+ * matches "Flutter Kicks", because the stored word merely has to *start* with the term. The
+ * reverse does not work, and the reverse is what clinicians actually type: real requests from
+ * the Movement Lab queue included "mini crunches", "banded lateral delt raises" and "straight
+ * bar bicep curls", none of which matched entries stored as crunch, raise and curl.
+ *
+ * Deliberately crude — strip a trailing plural ending rather than stem properly. A real
+ * stemmer would collapse distinct clinical words ("glide"/"gliding", "flexion"/"flexor") and
+ * the resulting false matches cost more here than the few plurals it would additionally catch.
+ * Every variant only ever adds matches, so this can never remove a result that used to appear.
+ */
+function termVariants(term: string): string[] {
+  if (term.length <= 3) return [term];
+  if (term.endsWith("ies")) return [term, `${term.slice(0, -3)}y`];
+  if (term.endsWith("es")) return [term, term.slice(0, -2), term.slice(0, -1)];
+  if (term.endsWith("s")) return [term, term.slice(0, -1)];
+  return [term];
+}
+
 /** Fields a free-text term is matched against, ordered by how strongly a hit in each one
  *  suggests the clinician found what they were after. `indications` is in here because
  *  searching by condition ("plantar", "ACL", "sciatica") is how a clinician actually looks
  *  for an exercise, and `aka` because they type the name they were taught rather than the
  *  one this bank happens to use. Every field below matches on a word prefix rather than a
- *  bare substring — see matchesWordPrefix for why. */
+ *  bare substring — see matchesWordPrefix for why — and against the term's singular forms
+ *  as well as the term itself, so a plural query finds singular content. */
 function searchScore(ex: MovementExercise, term: string): number {
+  const terms = termVariants(term);
+  const hit = (haystack: string) => terms.some((t) => matchesWordPrefix(haystack, t));
   const name = ex.name.toLowerCase();
   if (name === term) return 100;
-  if (name.startsWith(term)) return 80;
-  if (matchesWordPrefix(name, term)) return 60;
-  if (ex.aka?.some((a) => matchesWordPrefix(a.toLowerCase(), term))) return 50;
-  if (ex.indications.some((i) => matchesWordPrefix(i.toLowerCase(), term))) return 40;
-  if (ex.targets.some((t) => matchesWordPrefix(t.toLowerCase(), term))) return 30;
-  if (matchesWordPrefix(ex.region.toLowerCase(), term) || matchesWordPrefix(ex.category.toLowerCase(), term)) return 20;
-  if (matchesWordPrefix(ex.cue.toLowerCase(), term) || matchesWordPrefix(ex.setup.toLowerCase(), term)) return 10;
+  if (terms.some((t) => name.startsWith(t))) return 80;
+  if (hit(name)) return 60;
+  if (ex.aka?.some((a) => hit(a.toLowerCase()))) return 50;
+  if (ex.indications.some((i) => hit(i.toLowerCase()))) return 40;
+  if (ex.targets.some((t) => hit(t.toLowerCase()))) return 30;
+  if (hit(ex.region.toLowerCase()) || hit(ex.category.toLowerCase())) return 20;
+  if (hit(ex.cue.toLowerCase()) || hit(ex.setup.toLowerCase())) return 10;
   return 0;
 }
 
