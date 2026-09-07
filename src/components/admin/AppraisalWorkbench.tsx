@@ -22,6 +22,7 @@ import {
   unpublishAppraisalAction,
   deleteAppraisalDraftAction,
   lookupStudyMetadataAction,
+  fetchStudyAbstractAction,
 } from "@/app/actions/appraisal";
 import type { StudyMetadata } from "@/lib/pubmed";
 
@@ -337,6 +338,98 @@ function CitationLookup({
   );
 }
 
+/**
+ * PubMed's abstract, shown beside the form while numbers are being transcribed.
+ *
+ * Three things make this safe to have, and all three are structural rather than advisory.
+ * The app fetches it from the public record, so nothing a subscriber agreement covers can
+ * get in — there is no paste target here. It is held in this component's state and in no
+ * other place: not on AppraisalInput, so it cannot be saved, published, or handed to the
+ * drafting step, which takes AppraisalInput and has nowhere to put it. And it is fetched
+ * only when asked for, on a record already identified.
+ *
+ * It stays collapsed by default. The pane is for checking a population or a follow-up period
+ * without a second tab, not for working from — an appraisal built out of an abstract has no
+ * attrition figure, no interval, and nothing this feature exists to surface.
+ */
+function AbstractPane({
+  pmid,
+  pending,
+  run,
+}: {
+  pmid: string;
+  pending: boolean;
+  run: (fn: () => void) => void;
+}) {
+  const [text, setText] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  // Which record the held text belongs to, so changing the PMID cannot leave the previous
+  // study's abstract on screen next to the new one's numbers.
+  const [loadedFor, setLoadedFor] = useState("");
+
+  const stale = text !== null && loadedFor !== pmid;
+
+  const load = () =>
+    run(async () => {
+      setError(null);
+      const result = await fetchStudyAbstractAction(pmid);
+      if (!result.ok || !result.abstract) {
+        setError(result.error ?? "Could not load the abstract.");
+        setText(null);
+        return;
+      }
+      setText(result.abstract);
+      setLoadedFor(pmid);
+      setOpen(true);
+    });
+
+  if (!pmid.trim()) {
+    return (
+      <p className="appraisal-abstract-empty">
+        Look the study up above and its abstract can be shown here for reference while you enter the numbers.
+      </p>
+    );
+  }
+
+  return (
+    <div className="appraisal-abstract">
+      <div className="appraisal-actions" style={{ marginTop: 0 }}>
+        {text === null || stale ? (
+          <button type="button" className="appraisal-btn" onClick={load} disabled={pending}>
+            {pending ? "Loading…" : stale ? "Load this record's abstract" : "Show the PubMed abstract"}
+          </button>
+        ) : (
+          <button type="button" className="appraisal-btn" onClick={() => setOpen((v) => !v)} disabled={pending}>
+            {open ? "Hide the abstract" : "Show the abstract"}
+          </button>
+        )}
+        <span className="appraisal-actions-note">Reference only. Never saved, published, or sent to the draft.</span>
+      </div>
+
+      {error ? (
+        <p className="appraisal-message" data-kind="error">
+          {error}
+        </p>
+      ) : null}
+
+      {text !== null && !stale && open ? (
+        <div className="appraisal-abstract-pane">
+          <p className="appraisal-abstract-label">PubMed abstract — reference, not part of your appraisal</p>
+          {/* Selectable so a term can be checked, but never an input and never a source the
+              form reads: every field on this page is typed by the appraiser. */}
+          <p className="appraisal-abstract-text">{text}</p>
+          <p className="appraisal-abstract-foot">
+            Fetched from PubMed&rsquo;s record for PMID {loadedFor}. The numbers that decide this appraisal&rsquo;s
+            verdicts — how many were randomised against how many were analysed, the confidence interval, whether the
+            primary outcome was switched — are usually not in an abstract. That is what the paper is for.
+          </p>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function AppraisalForm({
   row,
   pending,
@@ -553,6 +646,7 @@ function AppraisalForm({
           Randomised and analysed are two different numbers, and the gap between them is usually the part an abstract
           leaves out. The MCID is what turns a significant result into a meaningful one — or doesn&rsquo;t.
         </p>
+        <AbstractPane pmid={input.pmid} pending={pending} run={run} />
         <MeasurePicker
           measureId={measureId}
           onPick={(id) => {
