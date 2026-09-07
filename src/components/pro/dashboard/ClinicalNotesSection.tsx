@@ -3,7 +3,9 @@
 import { useState, useTransition } from "react";
 import { addClinicalNote, type PatientDetail } from "@/app/actions/clinician-dashboard";
 import { CLINICAL_NOTE_TYPES } from "@/lib/clinician-dashboard-types";
+import { noteScaffold, isUntouchedScaffold } from "@/lib/note-scaffolds";
 import { PlusIcon } from "@/components/icons";
+import Link from "next/link";
 
 export function ClinicalNotesSection({ patient, onChanged }: { patient: PatientDetail; onChanged: () => void }) {
   const [pending, startTransition] = useTransition();
@@ -13,6 +15,26 @@ export function ClinicalNotesSection({ patient, onChanged }: { patient: PatientD
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  /** Opening the form seeds the box with the current type's headings, and changing type
+   *  reseeds it — but only over an empty box or a scaffold nobody has typed into. Replacing a
+   *  half-written note because someone corrected the type dropdown would lose real work. */
+  const openForm = () => {
+    setError(null);
+    setFormOpen((wasOpen) => {
+      if (!wasOpen) setContent((current) => (isUntouchedScaffold(current) ? noteScaffold(noteType) : current));
+      return !wasOpen;
+    });
+  };
+
+  const changeNoteType = (next: string) => {
+    setNoteType(next);
+    setContent((current) => (isUntouchedScaffold(current) ? noteScaffold(next) : current));
+  };
+
+  /** A scaffold with nothing filled in is not a note. Without this, the headings alone would
+   *  satisfy the old `content.trim()` check and save as a record that looks complete. */
+  const nothingWritten = isUntouchedScaffold(content);
 
   const handleAdd = () => {
     setError(null);
@@ -34,7 +56,7 @@ export function ClinicalNotesSection({ patient, onChanged }: { patient: PatientD
         <div className="card-kicker" style={{ margin: 0 }}>
           Clinical Notes
         </div>
-        <button type="button" className="btn btn-ghost" style={{ fontSize: 12 }} onClick={() => setFormOpen((v) => !v)}>
+        <button type="button" className="btn btn-ghost" style={{ fontSize: 12 }} onClick={openForm}>
           <PlusIcon size={13} />
           Add Note
         </button>
@@ -76,7 +98,7 @@ export function ClinicalNotesSection({ patient, onChanged }: { patient: PatientD
             </div>
             <div className="field" style={{ margin: 0 }}>
               <label htmlFor="cn-type">Note type</label>
-              <select className="input" id="cn-type" value={noteType} onChange={(e) => setNoteType(e.target.value)}>
+              <select className="input" id="cn-type" value={noteType} onChange={(e) => changeNoteType(e.target.value)}>
                 {CLINICAL_NOTE_TYPES.map((t) => (
                   <option key={t} value={t}>
                     {t}
@@ -86,7 +108,17 @@ export function ClinicalNotesSection({ patient, onChanged }: { patient: PatientD
             </div>
           </div>
           <div className="field" style={{ margin: 0 }}>
-            <label htmlFor="cn-content">Note</label>
+            <div className="clindash-note-label-row">
+              <label htmlFor="cn-content" style={{ margin: 0 }}>
+                Note
+              </label>
+              {/* The full worked templates, with a prompt under every heading. Linked from
+                  here because this is the moment a clinician wants one — the page is
+                  otherwise only reachable from the sidebar. */}
+              <Link href="/pro/documentation" className="clindash-note-templates-link">
+                Full templates
+              </Link>
+            </div>
             <textarea
               className="input"
               id="cn-content"
@@ -98,7 +130,7 @@ export function ClinicalNotesSection({ patient, onChanged }: { patient: PatientD
           </div>
           {error && <p style={{ fontSize: 12, color: "var(--color-danger)", margin: 0 }}>{error}</p>}
           <div className="clindash-inline-form-actions">
-            <button type="button" className="btn btn-primary" disabled={pending || !content.trim()} onClick={handleAdd}>
+            <button type="button" className="btn btn-primary" disabled={pending || nothingWritten} onClick={handleAdd}>
               {pending ? "Saving…" : "Save Note"}
             </button>
             <button type="button" className="btn btn-secondary" onClick={() => setFormOpen(false)} disabled={pending}>
