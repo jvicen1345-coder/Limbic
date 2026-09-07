@@ -415,6 +415,11 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
                 /pro/red-flags is now just a redirect there. */}
             <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Screening & Decision Support" bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" bold={false} onNavigate={onNavigate} />
+            {/* /pro/documentation has existed since the PRO toolbox shipped but nothing in
+                the app linked to it — reachable only by typing the URL, which is the same as
+                not existing. Sits with the other reference tools; the clinical-notes form on
+                the dashboard links to it too, from the point where a clinician wants one. */}
+            <NavLink href="/pro/documentation" icon={<FileTextIcon />} label="Documentation Templates" bold={false} onNavigate={onNavigate} />
             {/* Moved off the Health and Wellness hub's card grid — plain-language condition
                 explanations are reference reading, so they sit with the other reference
                 tools here. The /wellness/pathologies route itself is unchanged. */}
