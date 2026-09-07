@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { getIntakeInbox } from "@/app/actions/intake";
 import { getCurrentUser } from "@/lib/session";
 import { credentialFromName } from "@/lib/meta";
-import { getResearchFeedArticles } from "@/lib/dashboard-research";
 import {
   getDashboardSummary,
   getActivePatients,
@@ -10,7 +9,6 @@ import {
   getTodaysPatients,
   getPatientsWithOutcomeReminders,
   getEpisodeLengthStats,
-  getWeeklyResearchDigest,
   getPeerComparisonBenchmarks,
 } from "@/app/actions/clinician-dashboard";
 import { getClinicMembershipInfo, getClinicPatientsTodayCount } from "@/app/actions/clinic-pro";
@@ -50,11 +48,9 @@ export default async function ClinicianDashboardPage() {
     summary,
     patients,
     availableHEPs,
-    defaultResearch,
     todaysPatients,
     outcomeReminderPatients,
     episodeLengthStats,
-    weeklyDigest,
     peerBenchmarks,
     clinicMembership,
     clinicPatientsToday,
@@ -64,11 +60,9 @@ export default async function ClinicianDashboardPage() {
     getDashboardSummary(),
     getActivePatients(),
     getAvailableHEPs(),
-    getResearchFeedArticles(user.specialty),
     getTodaysPatients(),
     getPatientsWithOutcomeReminders(),
     getEpisodeLengthStats(),
-    getWeeklyResearchDigest(user.specialty),
     getPeerComparisonBenchmarks(),
     getClinicMembershipInfo(),
     getClinicPatientsTodayCount(),
@@ -86,11 +80,9 @@ export default async function ClinicianDashboardPage() {
         summary={summary}
         initialPatients={patients}
         availableHEPs={availableHEPs}
-        defaultResearchArticles={defaultResearch}
         todaysPatients={todaysPatients}
         outcomeReminderPatients={outcomeReminderPatients}
         episodeLengthStats={episodeLengthStats}
-        weeklyDigest={weeklyDigest}
         peerBenchmarks={peerBenchmarks}
         clinicianName={user.name}
         clinicianCredential={credential ?? ""}
