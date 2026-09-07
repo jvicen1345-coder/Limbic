@@ -14498,3 +14498,8 @@ button.playbook-maskwrap:focus-visible {
   border-top: 1px solid var(--color-neutral-300);
   max-width: 68ch;
 }
+/* Clinical-notes form: the "Note" label sits opposite a link out to the full documentation
+   templates (see ClinicalNotesSection.tsx). */
+.clindash-note-label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.clindash-note-templates-link { font-size: var(--fs-11-5); color: var(--color-accent); text-decoration: none; }
+.clindash-note-templates-link:hover { text-decoration: underline; }
