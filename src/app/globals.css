@@ -9266,7 +9266,11 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-morning-date { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 18px; }
 
 .clindash-eod-card { padding: 20px; margin-bottom: 20px; }
-.clindash-eod-header { font-family: var(--font-heading); font-size: 16px; margin-bottom: 12px; }
+/* Label only — .card-kicker carries the type. It used to set its own 16px heading font,
+   which matched nothing else on the screen: too big and too plain to read as a card label
+   like "Today's Patients" beside it, and directly above the "Morning Rounds" h1, which it
+   competed with rather than deferring to. */
+.clindash-eod-header { margin-bottom: 12px; }
 .clindash-eod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .clindash-eod-stat-value { font-family: var(--font-heading); font-size: 22px; }
 .clindash-eod-stat-value--danger { color: var(--color-danger); }
