@@ -14421,3 +14421,57 @@ button.playbook-maskwrap:focus-visible {
   .playbook-taught-set { color: #543a86; break-inside: avoid; page-break-inside: avoid; }
   .playbook-taught-set .playbook-taught-input { height: auto !important; }
 }
+
+/* ============================================================================
+   Appraisal citation lookup and outcome-measure picker — the two entry shortcuts on
+   /admin/appraisals (see components/admin/AppraisalWorkbench.tsx). Appended at the end of
+   the file per COORDINATION.md.
+   ============================================================================ */
+.appraisal-lookup {
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-secondary);
+}
+.appraisal-lookup-row { display: flex; gap: 8px; align-items: stretch; }
+.appraisal-lookup-row input {
+  font: inherit;
+  font-size: 13.5px;
+  padding: 7px 9px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  flex: 1;
+  min-width: 0;
+}
+.appraisal-lookup-row input:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+.appraisal-lookup-row .appraisal-btn { flex-shrink: 0; }
+
+.appraisal-lookup-result {
+  margin-top: 12px;
+  padding: 11px 12px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+.appraisal-lookup-title { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.4; color: var(--color-text); }
+.appraisal-lookup-meta { font-size: 12.5px; color: var(--color-neutral-700); margin: 5px 0 0; line-height: 1.45; }
+
+.appraisal-measure { margin-bottom: 14px; }
+.appraisal-measure-summary {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  margin: 8px 0 0;
+  padding-left: 10px;
+  border-left: 2px solid var(--color-neutral-300);
+  max-width: 64ch;
+}
+/* A measure with no agreed MCID is the case worth noticing while entering numbers — the
+   magnitude check will come back "not entered" rather than passing or failing. */
+.appraisal-measure-summary[data-no-mcid="true"] {
+  border-left-color: var(--color-warn, #8A6D1F);
+  color: var(--color-text);
+}

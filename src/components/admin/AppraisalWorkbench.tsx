@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { cloneElement, isValidElement, useId, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { SPECIALTY_META } from "@/lib/meta";
 import type { Specialty } from "@/lib/types";
@@ -14,13 +14,16 @@ import {
   type CheckVerdict,
   type SourceAccess,
 } from "@/lib/appraisal";
+import { OUTCOME_MEASURES, findOutcomeMeasure, measureSummary } from "@/lib/outcome-measures";
 import {
   saveAppraisalAction,
   draftAppraisalAction,
   publishAppraisalAction,
   unpublishAppraisalAction,
   deleteAppraisalDraftAction,
+  lookupStudyMetadataAction,
 } from "@/app/actions/appraisal";
+import type { StudyMetadata } from "@/lib/pubmed";
 
 export interface AppraisalRow {
   id: string;
@@ -90,6 +93,17 @@ function blankRow(): AppraisalRow {
   };
 }
 
+/**
+ * One labelled control with an optional hint.
+ *
+ * The hint is associated with `aria-describedby` rather than being wrapped inside the
+ * `<label>`. A wrapping label contributes *all* of its text to the control's accessible
+ * name, so the hints here — which mention other fields by name, as in "Only needed if there
+ * is no DOI or PMID" — ended up inside the names of the controls they sit under: a screen
+ * reader announced that box as "Link Only needed if there is no DOI or PMID", and the DOI
+ * field and the Link field both answered to "DOI". Name and description are different
+ * things, and this keeps them apart.
+ */
 function Field({
   label,
   hint,
@@ -98,15 +112,24 @@ function Field({
 }: {
   label: string;
   hint?: string;
-  children: React.ReactNode;
+  children: React.ReactElement<{ id?: string; "aria-describedby"?: string }>;
   wide?: boolean;
 }) {
+  const id = useId();
+  const hintId = hint ? `${id}-hint` : undefined;
+  const control = isValidElement(children) ? cloneElement(children, { id, "aria-describedby": hintId }) : children;
   return (
-    <label className={wide ? "appraisal-field appraisal-field-wide" : "appraisal-field"}>
-      <span className="appraisal-field-label">{label}</span>
-      {children}
-      {hint ? <span className="appraisal-field-hint">{hint}</span> : null}
-    </label>
+    <div className={wide ? "appraisal-field appraisal-field-wide" : "appraisal-field"}>
+      <label className="appraisal-field-label" htmlFor={id}>
+        {label}
+      </label>
+      {control}
+      {hint ? (
+        <span className="appraisal-field-hint" id={hintId}>
+          {hint}
+        </span>
+      ) : null}
+    </div>
   );
 }
 
@@ -177,6 +200,143 @@ export function AppraisalWorkbench({ rows }: { rows: AppraisalRow[] }) {
   );
 }
 
+/**
+ * Citation lookup. Six of this form's fields are bibliographic — pure transcription, and
+ * the place a typo actually costs a reader (a mistyped DOI is a dead link out).
+ *
+ * The found record is shown and applied only on an explicit click, never automatically. A
+ * DOI or PMID is exact, but a title goes through PubMed's search, which answers a near-miss
+ * with its best guess: searching a real paper's exact title genuinely can return a different
+ * paper. Silently filling a citation block from that would put the wrong study under an
+ * appraisal. One extra click is the whole cost of never doing that.
+ */
+/** Fills the effect units, the MCID and its source from lib/outcome-measures.ts, for the
+ *  eleven measures Limbic already carries figures for. The summary line under it is the
+ *  reason this is worth more than saving two fields of typing: for the TUG, the 6MWT, the
+ *  Berg and the 30-second sit-to-stand there is no single agreed MCID, and the picker says
+ *  so instead of handing over a number that would then drive the magnitude verdict. */
+function MeasurePicker({ measureId, onPick }: { measureId: string; onPick: (id: string) => void }) {
+  const measure = findOutcomeMeasure(measureId);
+  return (
+    <div className="appraisal-measure">
+      <div className="appraisal-field appraisal-field-wide">
+        <label className="appraisal-field-label" htmlFor="appraisal-measure-select">
+          Outcome measure
+        </label>
+        <select
+          id="appraisal-measure-select"
+          aria-describedby="appraisal-measure-hint"
+          value={measureId}
+          onChange={(e) => onPick(e.target.value)}
+        >
+          <option value="">Choose a measure to fill units and MCID…</option>
+          {OUTCOME_MEASURES.map((m) => (
+            <option key={m.id} value={m.id}>
+              {m.abbreviation} — {m.name}
+            </option>
+          ))}
+        </select>
+        <span className="appraisal-field-hint" id="appraisal-measure-hint">
+          Optional. Fills the units and the MCID; the MCID source is still yours to write, since it asks where you
+          got the number.
+        </span>
+      </div>
+      {measure ? (
+        <p className="appraisal-measure-summary" data-no-mcid={measure.mcid === null}>
+          {measureSummary(measure)}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function CitationLookup({
+  pending,
+  onApply,
+  run,
+}: {
+  pending: boolean;
+  onApply: (metadata: StudyMetadata) => void;
+  run: (fn: () => void) => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [found, setFound] = useState<StudyMetadata | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const search = () =>
+    run(async () => {
+      setError(null);
+      setFound(null);
+      const result = await lookupStudyMetadataAction(query);
+      if (!result.ok || !result.metadata) {
+        setError(result.error ?? "Lookup failed.");
+        return;
+      }
+      setFound(result.metadata);
+    });
+
+  return (
+    <div className="appraisal-lookup">
+      <div className="appraisal-field appraisal-field-wide">
+        <label className="appraisal-field-label" htmlFor="appraisal-lookup-input">
+          Look up the citation
+        </label>
+        <div className="appraisal-lookup-row">
+          <input
+            id="appraisal-lookup-input"
+            aria-describedby="appraisal-lookup-hint"
+            value={query}
+            placeholder="DOI, PMID, PubMed link, or the study's title"
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                search();
+              }
+            }}
+          />
+          <button type="button" className="appraisal-btn" onClick={search} disabled={pending || !query.trim()}>
+            {pending ? "Looking…" : "Find"}
+          </button>
+        </div>
+        <span className="appraisal-field-hint" id="appraisal-lookup-hint">
+          Fills the title, authors, journal, year, DOI and PMID. Never the abstract — the numbers that matter
+          aren&rsquo;t in one anyway.
+        </span>
+      </div>
+
+      {error ? <p className="appraisal-message" data-kind="error">{error}</p> : null}
+
+      {found ? (
+        <div className="appraisal-lookup-result">
+          <p className="appraisal-lookup-title">{found.title}</p>
+          <p className="appraisal-lookup-meta">
+            {[found.authors, found.journal, found.year, found.designHint].filter(Boolean).join(" · ")}
+          </p>
+          <p className="appraisal-lookup-meta">
+            {found.doi ? `doi ${found.doi}` : "no DOI on record"} · PMID {found.pmid}
+          </p>
+          <div className="appraisal-actions">
+            <button
+              type="button"
+              className="appraisal-btn appraisal-btn-primary"
+              onClick={() => {
+                onApply(found);
+                setFound(null);
+                setQuery("");
+              }}
+              disabled={pending}
+            >
+              Use this citation
+            </button>
+            <span className="appraisal-actions-note">Check it is the right paper before filling.</span>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function AppraisalForm({
   row,
   pending,
@@ -197,6 +357,11 @@ function AppraisalForm({
   const input = row.input;
   const setInput = <K extends keyof AppraisalInput>(key: K, value: AppraisalInput[K]) =>
     onChange({ ...row, input: { ...input, [key]: value } });
+
+  // Which measure the picker is showing. Editor-local rather than stored on the appraisal:
+  // what matters to a reader is the MCID and its source, which are real fields, and an
+  // appraisal may legitimately use a measure this library does not carry.
+  const [measureId, setMeasureId] = useState("");
 
   // Recomputed on every keystroke from the same pure function the server and the published
   // article use. There is no second implementation to drift.
@@ -291,6 +456,27 @@ function AppraisalForm({
 
       <section className="appraisal-section">
         <h2 className="appraisal-section-title">The study</h2>
+        <CitationLookup
+          pending={pending}
+          run={run}
+          onApply={(m) =>
+            onChange({
+              ...row,
+              input: {
+                ...input,
+                title: m.title,
+                // Every field below is overwritten only when the record actually carries a
+                // value, so a lookup can top up a partly-filled form without blanking work.
+                authors: m.authors || input.authors,
+                journal: m.journal || input.journal,
+                year: m.year ?? input.year,
+                doi: m.doi || input.doi,
+                pmid: m.pmid || input.pmid,
+                design: input.design || m.designHint,
+              },
+            })
+          }
+        />
         <div className="appraisal-grid">
           <Field label="Title" wide>
             <input value={input.title} onChange={(e) => setInput("title", e.target.value)} />
@@ -367,6 +553,29 @@ function AppraisalForm({
           Randomised and analysed are two different numbers, and the gap between them is usually the part an abstract
           leaves out. The MCID is what turns a significant result into a meaningful one — or doesn&rsquo;t.
         </p>
+        <MeasurePicker
+          measureId={measureId}
+          onPick={(id) => {
+            setMeasureId(id);
+            const measure = findOutcomeMeasure(id);
+            if (!measure) return;
+            onChange({
+              ...row,
+              input: {
+                ...input,
+                effectUnit: measure.unit,
+                // Left null for a measure with no agreed MCID rather than filled with
+                // something plausible — see lib/outcome-measures.ts. The appraiser can still
+                // type one; they just have to mean it.
+                mcid: measure.mcid,
+                // MCID source is deliberately not filled. It asks where *you* got the
+                // number, and this picker is not an answer to that — prefilling it would
+                // satisfy the publish guard with a provenance nobody can follow. The note
+                // shown under the picker is the context; the citation stays the appraiser's.
+              },
+            });
+          }}
+        />
         <div className="appraisal-grid">
           <Field label="Randomised (n)">
             <input inputMode="numeric" value={numberValue(input.nRandomised)} onChange={onNumber("nRandomised")} />

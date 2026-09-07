@@ -14,6 +14,7 @@ import {
   type AppraisalInput,
 } from "@/lib/appraisal";
 import { draftAppraisal, DRAFT_FAILED_MESSAGE, type AppraisalDraft } from "@/lib/appraisal-draft";
+import { lookupStudyMetadata, type StudyMetadata } from "@/lib/pubmed";
 
 /**
  * Admin-only actions behind /admin/appraisals (see lib/appraisal.ts for the design, and
@@ -36,6 +37,9 @@ export interface AppraisalActionResult {
    *  into its fields. Never persisted by that action: a draft the appraiser has not looked
    *  at yet is not something to save on their behalf. */
   draft?: AppraisalDraft;
+  /** Set only by lookupStudyMetadataAction — what PubMed returned, for the editor to show
+   *  before anything is filled in. Never applied server-side; see that action. */
+  metadata?: StudyMetadata;
 }
 
 /** Parses a number the way a form field should: an empty string is "not reported", which is
@@ -184,6 +188,36 @@ export async function draftAppraisalAction(payload: { input: Partial<AppraisalIn
   const draft = await draftAppraisal(input, runAppraisalChecks(input));
   if (!draft) return { ok: false, error: DRAFT_FAILED_MESSAGE };
   return { ok: true, draft };
+}
+
+/**
+ * Looks up a study's citation details from a DOI, PMID, PubMed URL, or title text.
+ *
+ * Returns what it found; it never writes anything and never fills the form itself. That is
+ * the point: a plain-title search goes through esearch, which answers a near-miss with its
+ * best guess rather than with nothing — searching a real paper's exact title can and does
+ * return a *different* paper. Filling six citation fields from that silently would put the
+ * wrong study under an appraisal, which is worse than typing them. So the editor shows the
+ * record and the appraiser confirms it (see components/admin/AppraisalWorkbench.tsx).
+ *
+ * Metadata only: the underlying lookup deliberately does not return the abstract, for the
+ * reasons in lib/appraisal.ts and on lookupStudyMetadata itself.
+ */
+export async function lookupStudyMetadataAction(query: string): Promise<AppraisalActionResult> {
+  const admin = await requireAdminUser();
+  if (!admin) return { ok: false, error: "Not authorised." };
+
+  const trimmed = str(query);
+  if (!trimmed) return { ok: false, error: "Enter a DOI, PMID, PubMed link, or the study's title." };
+
+  const metadata = await lookupStudyMetadata(trimmed);
+  if (!metadata) {
+    return {
+      ok: false,
+      error: "Nothing matched on PubMed. A DOI or PMID is exact; a title only finds records PubMed indexes.",
+    };
+  }
+  return { ok: true, metadata };
 }
 
 /** Publishes a saved appraisal. Re-reads the row rather than trusting the payload, so what
