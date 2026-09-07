@@ -91,3 +91,56 @@ export async function signUpAndEnterApp(page: Page, email: string) {
   await signUp(page, email);
   await completeFirstRun(page);
 }
+
+/** Sets one column on a signed-up account directly, and waits out the lock if it has to.
+ *
+ * Some surfaces are gated on state a fresh sign-up doesn't have — a licence on file, a paid
+ * tier — and the real routes to it (Profile → Credentials, Stripe checkout) are not what the
+ * test is about. This is the smallest way in. The dev server and this process share the same
+ * local SQLite file (see playwright.config.ts), so the write is visible to the next request.
+ *
+ * Goes through @libsql/client rather than lib/db.ts because that module imports the Prisma
+ * client from the generated `@/generated/prisma/client`, which Playwright's TS loader can't
+ * resolve — and this needs one UPDATE, not an ORM.
+ *
+ * That second connection is why it retries. SQLite takes a file-level write lock, and the dev
+ * server holds the same file while serving the sign-up that just ran; under fullyParallel two
+ * workers can also reach this line at once. Either produces SQLITE_BUSY. `PRAGMA busy_timeout`
+ * makes SQLite wait for the lock instead of failing immediately, and the retry covers the case
+ * where it waits the whole timeout out.
+ *
+ * `column` is interpolated into the SQL because a column name can't be bound as a parameter.
+ * Every caller passes a literal from this repo, and the assertion below keeps it that way.
+ */
+export async function setUserColumn(email: string, column: string, value: string) {
+  if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(column)) throw new Error(`unsafe column name: ${column}`);
+  const { createClient } = await import("@libsql/client");
+  let lastError: unknown;
+
+  for (let attempt = 0; ; attempt++) {
+    const db = createClient({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
+    try {
+      await db.execute("PRAGMA busy_timeout = 10000");
+      const result = await db.execute({ sql: `UPDATE User SET ${column} = ? WHERE email = ?`, args: [value, email] });
+      if (result.rowsAffected === 1) return;
+      // Zero rows means the sign-up's row isn't visible on this connection yet, so it's
+      // retryable like SQLITE_BUSY rather than fatal. Letting it through silently would
+      // surface much later as a confusing locked page instead of the one under test, which
+      // is why it's checked at all.
+      lastError = new Error(`no User row for ${email} (UPDATE affected 0 rows)`);
+    } catch (error) {
+      if (!String(error).includes("SQLITE_BUSY")) throw error;
+      lastError = error;
+    } finally {
+      db.close();
+    }
+    if (attempt >= 4) throw lastError;
+    await new Promise((resolve) => setTimeout(resolve, 250 * 2 ** attempt));
+  }
+}
+
+/** Puts an account on the paid LimbicStudent tier — what Limbic Boards and the playbooks are
+ *  gated on (studentTier in lib/session.ts). */
+export async function grantLimbicStudent(email: string) {
+  await setUserColumn(email, "studentTier", "limbicStudent");
+}
