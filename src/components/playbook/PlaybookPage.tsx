@@ -9,17 +9,25 @@ import {
   PlaybookRecallToggle,
   PlaybookSectionRecall,
 } from "@/components/playbook/PlaybookRecall";
+import {
+  PlaybookTaughtBar,
+  PlaybookTaughtProvider,
+  PlaybookTaughtToggle,
+} from "@/components/playbook/PlaybookTaught";
 import { playbookRecallGroups } from "@/lib/playbook-recall";
+import { playbookTaughtCells } from "@/lib/playbook-taught";
 
 /** Renders a whole playbook (see lib/playbook-content.ts) — masthead, a sticky rail of
  *  section anchors, then each section's blocks in order.
  *
- *  Still a server component: the interactive parts — the checklist, and recall mode's
- *  controls (PlaybookRecall.tsx) — are client components rendered from here, so the section
- *  anchors stay plain links that work before hydration and with JavaScript off. */
+ *  Still a server component: the interactive parts — the checklist, recall mode's controls
+ *  (PlaybookRecall.tsx) and the taught lane (PlaybookTaught.tsx) — are client components
+ *  rendered from here, so the section anchors stay plain links that work before hydration and
+ *  with JavaScript off. */
 export function PlaybookPage({ playbook, breadcrumb }: { playbook: Playbook; breadcrumb: BreadcrumbItem[] }) {
   return (
     <PlaybookRecallProvider slug={playbook.slug} groups={playbookRecallGroups(playbook)}>
+    <PlaybookTaughtProvider slug={playbook.slug} cells={playbookTaughtCells(playbook)}>
     <div className="playbook">
       <div className="playbook-wrap">
         <Breadcrumb items={breadcrumb} />
@@ -39,6 +47,7 @@ export function PlaybookPage({ playbook, breadcrumb }: { playbook: Playbook; bre
           </div>
         </header>
         <PlaybookRecallBar />
+        <PlaybookTaughtBar />
         <PlaybookPrintDetails />
       </div>
 
@@ -50,6 +59,7 @@ export function PlaybookPage({ playbook, breadcrumb }: { playbook: Playbook; bre
             </a>
           ))}
           <PlaybookRecallToggle />
+          <PlaybookTaughtToggle />
         </div>
       </nav>
 
@@ -73,6 +83,7 @@ export function PlaybookPage({ playbook, breadcrumb }: { playbook: Playbook; bre
         </footer>
       </div>
     </div>
+    </PlaybookTaughtProvider>
     </PlaybookRecallProvider>
   );
 }

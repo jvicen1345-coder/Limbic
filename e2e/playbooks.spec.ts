@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { PLAYBOOKS, playbookChecklist, playbookChecklistRows, type PlaybookBlock } from "@/lib/playbook-content";
 import { parsePlaybookInline } from "@/lib/playbook-inline";
+import { playbookTaughtCells } from "@/lib/playbook-taught";
 import { signUpAndEnterApp } from "./helpers";
 
 /**
@@ -254,4 +255,73 @@ test.describe("Playbook recall", () => {
       expect(label).toContain("Item");
     });
   }
+});
+
+/** The taught lane (components/playbook/PlaybookTaught.tsx). Only the shoulder is exercised
+ *  in the browser: the lane hangs off every maskable cell of every playbook by the same code
+ *  path, so a second region would re-test the same thing at the cost of another sign-up. What
+ *  is worth checking per playbook is the id map below, which is data. */
+test.describe("Playbook taught lane", () => {
+  test("every taught cell has a unique id and something to label it with", () => {
+    for (const playbook of PLAYBOOKS) {
+      const cells = playbookTaughtCells(playbook);
+      expect(cells.length, `no taught cells in ${playbook.slug}`).toBeGreaterThan(0);
+      const ids = cells.map((cell) => cell.id);
+      expect(new Set(ids).size, `duplicate taught cell id in ${playbook.slug}`).toBe(ids.length);
+      for (const cell of cells) {
+        expect(cell.row.trim(), `unlabelled taught cell ${cell.id} in ${playbook.slug}`).not.toBe("");
+        expect(cell.id, `malformed taught cell id in ${playbook.slug}`).toMatch(/^[^|]+\|c\d+\|r\d+$/);
+      }
+    }
+  });
+
+  test("opens a line under every cell, keeps what is typed, and stays out of recall's way", async ({ page }) => {
+    await signUpAndEnterApp(page, `pw-taught-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`);
+    await page.goto("/student/playbooks/shoulder");
+    await expect(page.getByRole("heading", { name: "Shoulder Examination Playbook" })).toBeVisible();
+
+    // Nothing is open, nothing is filled, and the bar stays down until one or the other.
+    const toggle = page.locator(".playbook-taught-toggle");
+    await expect(toggle).toHaveText("Taught");
+    await expect(page.locator(".playbook-taught-input")).toHaveCount(0);
+    await expect(page.locator(".playbook-taughtbar")).toHaveCount(0);
+
+    // The switch opens a lane on every maskable cell at once — the same cells recall blanks.
+    await toggle.click();
+    await expect(page.locator(".playbook-taughtbar")).toBeVisible();
+    const taughtCells = playbookTaughtCells(PLAYBOOKS.find((p) => p.slug === "shoulder")!).length;
+    await expect(page.locator(".playbook-taught-input")).toHaveCount(taughtCells);
+
+    // A line commits when the reader moves on, and the guide's own text is untouched by it.
+    const checklist = page.locator("#checklist");
+    const firstRow = checklist.locator("tbody tr:not(.playbook-row-group)").first();
+    const finding = firstRow.locator("td").last();
+    const before = (await finding.locator(".playbook-maskwrap").innerText()).trim();
+    await finding.locator(".playbook-taught-input").fill("Our program marks the cervical screen as optional.");
+    await page.locator("h1").click();
+    await expect(toggle).toHaveText("Taught (1)");
+    expect((await finding.locator(".playbook-maskwrap").innerText()).trim()).toBe(before);
+
+    // Closed, the empty lanes go and the filled one stays — a note is part of the page.
+    await toggle.click();
+    await expect(page.locator(".playbook-taught-input")).toHaveCount(0);
+    await expect(page.locator(".playbook-taught-set")).toHaveCount(1);
+
+    // And it survives a reload, because that is the whole point of writing it down.
+    await page.reload();
+    await expect(page.locator(".playbook-taught-set")).toContainText("Our program marks the cervical screen as optional.");
+
+    // Blanked for recall, the reader's own line goes with the answer — it would give it away.
+    await page.locator(".playbook-recall-toggle").click();
+    await expect(finding).toHaveClass(/playbook-mask-on/);
+    await expect(page.locator(".playbook-taught-set")).toHaveCount(0);
+    await finding.locator("button.playbook-maskwrap").click();
+    await expect(page.locator(".playbook-taught-set")).toHaveCount(1);
+
+    // Clearing empties every lane at once, and the count goes with them.
+    await page.locator(".playbook-recall-toggle").click();
+    await page.locator(".playbook-taughtbar button", { hasText: "Clear my lines" }).click();
+    await expect(page.locator(".playbook-taught-set")).toHaveCount(0);
+    await expect(toggle).toHaveText("Taught");
+  });
 });

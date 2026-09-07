@@ -68,3 +68,18 @@ export function parsePlaybookInline(source: string): PlaybookInlineNode[] {
   }
   return nodes;
 }
+
+/** The same source flattened to plain text — the pills, provenance badges and citations drop
+ *  out, leaving what the cell says. Used when a reader copies their own lines out and wants
+ *  the guide's wording beside them. */
+export function playbookInlineText(source: string): string {
+  return parsePlaybookInline(source)
+    .map((node) => {
+      if (node.type === "break") return " ";
+      if (node.type === "prov") return "";
+      return node.text;
+    })
+    .join("")
+    .replace(/\s+/g, " ")
+    .trim();
+}

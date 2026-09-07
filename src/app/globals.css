@@ -14308,3 +14308,109 @@ button.playbook-maskwrap:focus-visible {
   color: var(--color-neutral-700);
   margin: -4px 0 14px;
 }
+
+/* ---------- playbook: the taught lane ----------
+   A reader's own line under a cell, in the atrium purple so it never reads as part of the
+   guide's own text. Empty lanes only exist while the lane is switched on; a filled one stays
+   on the page, and prints with it. */
+.playbook-taught-toggle {
+  flex-shrink: 0;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  padding: 4px 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.playbook-taught-toggle:hover { color: var(--pb-d3); border-color: var(--pb-d3); }
+.playbook-taught-toggle[aria-pressed="true"] { background: var(--pb-d3); border-color: var(--pb-d3); color: var(--pb-surface); }
+
+.playbook-taughtbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  margin: 12px 0 0;
+  padding: 9px 13px;
+  background: color-mix(in srgb, var(--pb-d3) 11%, var(--pb-surface));
+  border-radius: var(--radius-sm);
+  font-size: 12.6px;
+  line-height: 1.5;
+  color: var(--pb-ink-2);
+}
+.playbook-taughtbar span:first-child { flex: 1 1 30ch; }
+.playbook-taught-count { font-family: var(--pb-mono); font-size: var(--fs-10-5); color: var(--pb-d3); }
+.playbook-taughtbar button {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-d3);
+  background: transparent;
+  border: 1px solid var(--pb-d3);
+  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  cursor: pointer;
+}
+.playbook-taughtbar button:hover { background: var(--pb-surface); }
+.playbook-taughtbar button[disabled] { opacity: 0.45; cursor: default; }
+
+/* Tag and line sit on one row: with every lane open at once, a stacked label would half
+   again the height of every table on the page. A lane with something in it earns the rule
+   above it; an empty one stays as quiet as an empty line can be. */
+.playbook-taught {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 6px 0 0;
+  color: var(--pb-d3);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.playbook-taught-set {
+  padding-top: 5px;
+  border-top: 1px dashed color-mix(in srgb, var(--pb-d3) 45%, transparent);
+}
+.playbook-taught-tag {
+  flex: 0 0 auto;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-9-5);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--pb-d3);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+.playbook-taught-input {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 1.45em;
+  resize: none;
+  overflow: hidden;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1.5;
+}
+.playbook-taught-input::placeholder { color: var(--pb-d3); opacity: 0.5; }
+.playbook-taught-input:focus { outline: none; }
+.playbook-taught-input:focus-visible { outline: 2px solid var(--pb-d3); outline-offset: 3px; border-radius: 2px; }
+
+/* A reader's own lines are part of what they take into the lab, so they print — but only the
+   ones with something in them. An open lane is several hundred empty fields, and an empty
+   field on paper is just a rule under every cell. */
+@media print {
+  .playbook-taughtbar { display: none !important; }
+  .playbook-taught:not(.playbook-taught-set) { display: none !important; }
+  .playbook-taught-set { color: #543a86; break-inside: avoid; page-break-inside: avoid; }
+  .playbook-taught-set .playbook-taught-input { height: auto !important; }
+}
