@@ -15,6 +15,7 @@ import { LimbicStudentGate } from "@/components/student/LimbicStudentGate";
 import { todayDateKey, NPTE_THREE_QUESTION_BENCHMARK_SECONDS } from "@/lib/board-content";
 import { getBoardsDailyContent, getBoardsProgress } from "@/lib/boards-progress";
 import { dayIndexForDateKey, caseForDayIndex } from "@/lib/cases-static";
+import { playbookSummaries } from "@/lib/playbook-content";
 import { computeBestStreak, last7DateKeys } from "@/lib/games";
 import type { SavedSharpeningProgress } from "@/components/DailySharpeningSession";
 import { getTimeZone } from "@/lib/user-time-zone";
@@ -230,6 +231,7 @@ export default async function BoardsHubPage() {
             progress={progress}
             examDays={examDays}
             hasExamDate={user.npteExamDate != null}
+            playbooks={playbookSummaries()}
             dailyGamesSection={
               <div className="boards-daily-games">
                 <DailyGamesSection />

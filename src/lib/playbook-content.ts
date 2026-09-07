@@ -187,3 +187,25 @@ export function playbookChecklist(playbook: Playbook): PlaybookChecklistItem[] {
   }
   return [];
 }
+
+/** A playbook reduced to what a listing needs. The content modules are several thousand
+ *  lines between them, so anything that renders a list of playbooks in the browser — the
+ *  Study Guide tab of Limbic Boards, say (components/BoardsTabs.tsx) — takes this instead of
+ *  the playbooks themselves, and the bank stays on the server where it belongs. */
+export interface PlaybookSummary {
+  slug: string;
+  name: string;
+  summary: string;
+  sections: number;
+  items: number;
+}
+
+export function playbookSummaries(): PlaybookSummary[] {
+  return PLAYBOOKS.map((playbook) => ({
+    slug: playbook.slug,
+    name: playbook.name,
+    summary: playbook.summary,
+    sections: playbook.sections.length,
+    items: playbookChecklist(playbook).length,
+  }));
+}

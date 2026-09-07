@@ -127,7 +127,19 @@ function NavLink({
       {locked ? (
         <span
           className="tag tag-accent"
-          style={{ marginLeft: "auto", background: "var(--color-bg)", display: "inline-flex", alignItems: "center", gap: 3 }}
+          /* .tag sets overflow-wrap:anywhere for the long labels it carries elsewhere; this
+             one is a two-word lock badge on a nav row, and wrapping it just makes the row
+             two lines tall. */
+          style={{
+            marginLeft: "auto",
+            background: "var(--color-bg)",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 3,
+            flexShrink: 0,
+            whiteSpace: "nowrap",
+            overflowWrap: "normal",
+          }}
         >
           <LockIcon size={10} />
           {lockLabel}
@@ -364,8 +376,18 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             {isStudent && (
               <NavLink href="/student/study-guide" icon={<FileTextIcon />} label="Study Guide" bold={false} onNavigate={onNavigate} />
             )}
+            {/* The playbooks are Boards' study guide and sit behind the same paid line the
+                rest of its prep tools do, so the link carries the badge Boards does. */}
             {isStudent && (
-              <NavLink href="/student/playbooks" icon={<BandageIcon />} label="Playbooks" bold={false} onNavigate={onNavigate} />
+              <NavLink
+                href="/student/playbooks"
+                icon={<BandageIcon />}
+                label="Playbooks"
+                locked={!isVerifiedStudent}
+                lockLabel="STUDENT+"
+                bold={false}
+                onNavigate={onNavigate}
+              />
             )}
             <NavLink href="/student/resources" icon={<ListIcon />} label="NPTE Resources" bold={false} onNavigate={onNavigate} />
           </>
