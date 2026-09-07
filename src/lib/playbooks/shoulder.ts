@@ -19,7 +19,7 @@ export const SHOULDER_PLAYBOOK: Playbook = {
   summary:
     "A full shoulder screen in the order you'd perform it: what each test is looking for, the number that separates normal from a finding, and the treatment that finding points to. Bring a goniometer.",
   stamp: [
-    { value: "28", label: "exam items" },
+    { value: "30", label: "exam items" },
     { value: "5", label: "movement syndromes" },
     { value: "3", label: "irritability levels" },
     { value: "1", label: "goniometer required" },
@@ -27,197 +27,208 @@ export const SHOULDER_PLAYBOOK: Playbook = {
   sections: [
     {
       id: "checklist",
-      navLabel: "28 Items",
+      navLabel: "30 Items",
       title: "The examination sequence",
       note: "check-off saves in this browser",
       blocks: [
         {
           kind: "lede",
-          text: "Twenty-eight items, in the order they're performed — posture and AROM first, then PROM and length, then strength, then special tests, then treatment. The last column is the finding itself: the number or observation that turns the test into information.",
+          text: "Thirty items, in the order they're performed. Two screens run ahead of everything else — the symptoms that do not belong to a shoulder at all, and the neck, which is this region's most common mimic — then posture and AROM, then PROM and length, then strength, then special tests, then treatment. The last column is the finding itself: the number or observation that turns the test into information.",
         },
         {
           kind: "checklist",
           items: [
             {
+              id: "red-flags",
+              name: "Red flag screen, before you examine",
+              how: "Ask about the symptoms that do not belong to a shoulder: chest pain or pressure, breathlessness, symptoms that arrive with exertion and settle with rest, unexplained weight loss, night pain unrelated to position, fever, and a history of cancer. Note any trauma, a first-time dislocation, and a smoking history.",
+              finding: "**A shoulder that hurts with no movement that provokes it is the one to escalate.** Left shoulder or jaw pain on exertion is cardiac until cleared · right shoulder-tip pain with abdominal symptoms is diaphragmatic · constant night pain with weight loss or a smoking history raises an apical lung lesion · a hot, swollen joint with fever is septic. None of these improves with anything else on this page",
+            },
+            {
+              id: "cervical-screen",
+              name: "Clear the cervical spine",
+              how: "Active cervical range in every plane, with overpressure if it is symptom-free, then Spurling's, then the C4–T1 myotomes, dermatomes and reflexes. Add an upper limb neurodynamic test if the symptoms are described as burning, tingling or numb.",
+              finding: "**Reproducing the shoulder symptoms from the neck moves the problem to the neck.** Symptoms below the elbow, any sensory or reflex change, or symptoms that vary with neck position are cervical findings — everything that follows is then a comparison rather than the diagnosis",
+            },
+            {
               id: "flexion-arom",
-              name: "Shoulder flexion AROM + critical events",
-              how: "Stand behind/quadrant. Call the 4 critical events out loud as they happen.",
-              finding: "Humeral head depression · GH ER · scapular upward rotation · scapular posterior tilt (+ thoracic ext)",
+              name: "Shoulder flexion AROM, and the four critical events",
+              how: "Stand behind the patient or in the quadrant, where the scapula and the thorax are both in view, and watch the arm go up. Call the four events out loud as they happen: humeral head depression, glenohumeral external rotation, scapular upward rotation, and scapular posterior tilt with thoracic extension.",
+              finding: "**All four events, and symmetrical with the other side.** A missing event names the fault — no head depression is a cuff problem, no upward rotation is a serratus and lower trapezius problem, no posterior tilt is a pec minor and thoracic problem",
             },
             {
               id: "scapular-assist",
               name: "Scapular assist test",
-              how: "Manually add upward rotation / adduction / posterior tilt during painful AROM.",
-              finding: "Change in *quantity, quality, or symptoms* = positive",
+              how: "Repeat the painful active elevation while you manually add upward rotation, adduction and posterior tilt to the scapula.",
+              finding: "**A change in the *quantity*, the *quality*, or the *symptoms* is positive** — and a positive hands you the first exercise, because the correction you just applied is the one to train",
             },
             {
               id: "arom-er-90",
-              name: "AROM ER @ 90°",
-              how: "Abduct to 90° with the elbow at 90° and take into external rotation. Watch *where the range comes from*: scapular posterior tilt, thoracic extension and rotation, scapular retraction, humeral head anterior translation.",
+              name: "Active external rotation at 90° of abduction",
+              how: "Abduct to 90° with the elbow at 90° and take the arm into external rotation, watching *where the range comes from*: scapular posterior tilt, thoracic extension and rotation, scapular retraction, or humeral head anterior translation.",
               finding:
-                "**Normal:** ~90° of ER, equal to the other side, with the humeral head staying centred and the scapula posteriorly tilting.\n**Faulty:** the head translates anteriorly (distal humerus drops back) or the scapula retracts and anteriorly tilts to supply the range.\n**Throwers:** add IR to get the total arc — arc loss >5° or IR loss 10–25° vs the other side is GIRD, then screen proximally (single-leg stance, hip IR/ER, core, glute med).",
+                "**Normal** is about 90° of external rotation, equal to the other side, with the head staying centred and the scapula tilting posteriorly.\n**Faulty** is the head translating anteriorly — the distal humerus drops back — or the scapula retracting and tilting anteriorly to supply the range.\n**In throwers**, add internal rotation to get the total arc: an arc loss over 5°, or an internal rotation loss of 10–25° against the other side, is GIRD, and it obligates a proximal screen — single-leg stance, hip internal and external rotation, core, gluteus medius",
             },
             {
               // One checkable item covering both manoeuvres, as the source has it — a single
-              // checkbox spanning two rows — rather than two items, which would change the
-              // count the progress bar reads against.
+              // checkbox spanning two rows — rather than two items.
               id: "hbh-hbb",
-name: "Hand behind head\n*flexion + ER*",
-              how: "Stand behind the patient, palm to the back of the head. Measure the middle finger against the spinous process, both sides, then add overpressure at end range.",
+              name: "Hand behind head\n*flexion + ER*",
+              how: "Stand behind the patient with your palm at the back of their head. Measure the middle finger against the spinous process it reaches, on both sides, then add overpressure at end range.",
               finding:
-                "Symmetric side to side. Positive is clearly less reach, or symptoms with the overpressure — follow up with flexion and ER ROM.",
+                "**Symmetrical side to side.** Positive is clearly less reach, or symptoms with the overpressure — either one obligates a follow-up of flexion and external rotation range",
               also: [
                 {
                   name: "Hand behind back\n*IR + extension + adduction*",
-                  how: "The hand climbs from the lumbar spine as high up the back as it reaches. Overpressure: one hand on the scapula, the other on the forearm, body driving the elbow in.",
+                  how: "The hand climbs from the lumbar spine as high up the back as it will reach. For overpressure, one hand takes the scapula and the other the forearm, with your body driving the elbow in.",
                   finding:
-                    "Compare the level reached. Positive is clearly less reach, or symptoms with the overpressure — follow up with extension and IR ROM, the back-pocket motion.",
+                    "**Compare the level reached.** Positive is clearly less reach, or symptoms with the overpressure — follow up with extension and internal rotation range, the back-pocket motion",
                 },
               ],
             },
             {
               id: "prom-flexion",
-              name: "PROM flexion — total & pure GH",
-              how: "Supine. Total = let scapula move; pure = fixate scapula. Goni: axis greater tuberosity, stationary arm midline of trunk, moving arm lateral epicondyle.",
-              finding: "Pure GH < 120° = limited → capsular EF = inferior capsule; muscular EF = teres major",
+              name: "PROM flexion — total, then pure glenohumeral",
+              how: "Supine. Take total flexion with the scapula free, then repeat it with the scapula fixated for the pure glenohumeral figure. Goniometer: axis at the greater tuberosity, stationary arm along the midline of the trunk, moving arm to the lateral epicondyle.",
+              finding: "**Pure glenohumeral flexion under 120° is limited.** The end feel then names the tissue: capsular is the inferior capsule, muscular is teres major",
             },
             {
               id: "scapular-ur",
-              name: "Scapular upward rotation PROM + treatment",
-              how: "Sidelying. Cranial hand: thumb on coracoid, fingers on posterior scapula, blocks superior migration and anterior tilt. Caudal hand: catches inferior angle, drives upward rotation.",
-              finding: "Normal 60° upward rotation",
+              name: "Scapular upward rotation PROM, and the treatment it becomes",
+              how: "Sidelying. The cranial hand takes the coracoid with the thumb and the posterior scapula with the fingers, blocking superior migration and anterior tilt; the caudal hand catches the inferior angle and drives upward rotation.",
+              finding: "**About 60° of upward rotation.** The hold that measures it is the hold that mobilizes it — assess and treat without changing position",
             },
             {
               id: "prom-rotation",
-              name: "PROM IR / ER + anterior glide comment",
-              how: "ER: block anterior shoulder with your forearm. IR: 90° abd (45° if unable), stabilize scapula from anterior tilt, watch for scapular compensation.",
-              finding: "Total arc 165–180°; GIRD = arc loss >5° or IR loss 10–25° vs opposite",
+              name: "PROM internal and external rotation",
+              how: "External rotation with your forearm blocking the anterior shoulder. Internal rotation at 90° of abduction — 45° if they cannot reach it — with the scapula stabilized against anterior tilt, watching for scapular compensation.",
+              finding: "**A total arc of 165–180°.** GIRD is an arc loss over 5°, or an internal rotation loss of 10–25° against the other side",
             },
             {
               id: "horizontal-adduction",
-              name: "Horizontal adduction for posterior capsule",
-              how: "Supine, 90/90. Stabilize scapula from passing the mid-axillary line, take to end feel, measure with goni.",
-              finding: "Should *at least* reach elbow to nose/midline; less = tight",
+              name: "Horizontal adduction, for the posterior capsule",
+              how: "Supine at 90/90. Stabilize the scapula so it does not pass the mid-axillary line, take the arm to its end feel, and measure with a goniometer.",
+              finding: "**The elbow should at least reach the midline.** Less than that is a tight posterior capsule — the restriction that drives the head anteriorly and superiorly as the arm elevates",
             },
             {
               id: "pec-length",
-              name: "Muscle length: pec minor & pec major",
-              how: "Pec minor: measure posterior acromion to table. Pec major sternal: 120° abd + full ER; clavicular: 90° abd.",
-              finding: "Pec minor ≤ 2.54 cm (1 in) · Sternal: arm touches table · Clavicular: arm even with table",
+              name: "Muscle length: pec minor and pec major",
+              how: "Pec minor: supine, measure from the posterior acromion to the table. Pec major sternal head: 120° of abduction with full external rotation. Clavicular head: 90° of abduction.",
+              finding: "**Pec minor within 2.54 cm (1 inch) of the table.** The sternal head should let the arm touch the table; the clavicular head should let it come even with it",
             },
             {
               id: "static-resisted",
-              name: "Static resisted: IR, ER, abduction",
-              how: "Seated, arm at side, you stabilize distal humerus. Abduction tested at 15°.",
-              finding: "(+) decreased resistance from pain and/or weakness",
+              name: "Static resisted internal rotation, external rotation and abduction",
+              how: "Seated, arm at the side, with you stabilizing the distal humerus. Abduction is tested at 15°.",
+              finding: "**Positive is reduced resistance from pain, from weakness, or from both** — which is what separates a contractile problem from the passive restriction the PROM measured",
             },
             {
               id: "mmt-supra-infra",
-              name: "MMT supraspinatus & infraspinatus",
-              how: "Supra: 90° elevation in scapular plane. Infra: 0° scaption with 45° IR, push into IR.",
-              finding: "Supra in IR = more EMG but more irritating; ER = less EMG, less irritating",
+              name: "MMT supraspinatus and infraspinatus",
+              how: "Supraspinatus at 90° of elevation in the scapular plane. Infraspinatus at 0° of scaption with 45° of internal rotation, pushing into internal rotation.",
+              finding: "Testing supraspinatus in internal rotation produces more EMG activity but is more irritating; external rotation gives less of both. **Choose by irritability, and record which position you used** — the grades are not comparable across the two",
             },
             {
               id: "mmt-subscap",
               name: "Prone MMT subscapularis",
-              how: "Hand behind back, lifted off spine, palm facing posterior; force into palm toward the spine.",
-              finding: "Watch activation pattern and scapular compensation. Can be irritating — caution.",
+              how: "Prone, hand behind the back and lifted off the spine with the palm facing posteriorly; apply force into the palm, toward the spine.",
+              finding: "Watch the activation pattern and the scapular compensation rather than the raw grade. **This one is irritating** — it goes late in the sequence, or not at all in an angry shoulder",
             },
             {
               id: "mmt-traps",
-              name: "MMT lower & middle trapezius",
-              how: "Both: watch for excessive humeral head anterior translation; maintain retraction (lower trap adds posterior tilt).",
-              finding: "Lower trap = retraction + upward rotation + posterior tilt + thoracic extension",
+              name: "MMT lower and middle trapezius",
+              how: "For both, hold the retraction and watch for excessive anterior translation of the humeral head; the lower trapezius adds posterior tilt to the retraction.",
+              finding: "**Lower trapezius is retraction plus upward rotation plus posterior tilt plus thoracic extension** — four jobs at once, which is why it appears in almost every faulty elevation on this page",
             },
             {
               id: "lat-length",
-              name: "Muscle length latissimus dorsi",
-              how: "End-range total GH flexion.",
-              finding: "(+) muscular end feel with rib cage flaring / lumbar extension",
+              name: "Muscle length: latissimus dorsi",
+              how: "Take end-range total glenohumeral flexion and watch the trunk rather than the arm.",
+              finding: "**Positive is a muscular end feel with the rib cage flaring or the lumbar spine extending** — the lat borrowing its range from the spine",
             },
             {
               id: "mmt-serratus",
               name: "MMT serratus anterior",
-              how: "Sitting ~130° flexion, lead with thumb, press forward to encourage upward rotation + abduction.",
-              finding: "75% force into shoulder extension + 25% into downward rotation at inferior angle; ends when scapula downwardly rotates",
+              how: "Sitting at about 130° of flexion, leading with the thumb, pressing forward to encourage upward rotation and abduction.",
+              finding: "Apply 75% of the force into shoulder extension and 25% into downward rotation at the inferior angle. **The test ends when the scapula downwardly rotates**",
             },
             {
               id: "sps-cluster",
-              name: "Subacromial pain syndrome cluster — all 3",
-              how: "Hawkins-Kennedy + painful arc + painful/weak resisted ER.",
-              finding: "All 3 (+) → +LR 10.56 · all 3 (−) → −LR 0.17",
+              name: "Subacromial pain syndrome cluster — all three",
+              how: "Hawkins-Kennedy, painful arc, and painful or weak resisted external rotation. The cluster is the unit of information here, not any one of its parts.",
+              finding: "**All three positive → +LR 10.56. All three negative → −LR 0.17.** A single one of them, on its own, moves the probability very little",
             },
             {
               id: "drop-arm",
-              name: "Full-thickness supraspinatus tear",
-              how: "Drop arm test: passive 90° abd + IR, hold, then lower slowly.",
-              finding: "Sp 88, +LR 2.25 · (+) arm drops or no smooth eccentric control",
+              name: "Drop arm test — full-thickness supraspinatus tear",
+              how: "Passive 90° of abduction with internal rotation; the patient holds it, then lowers the arm slowly.",
+              finding: "**Positive is the arm dropping, or losing smooth eccentric control on the way down.** Sp 88, +LR 2.25 — specific rather than sensitive, so a positive is the useful result",
             },
             {
               id: "ir-lag",
-              name: "Full-thickness subscapularis tear",
-              how: "Internal rotation lag sign: hand behind back, you lift it off, patient holds.",
-              finding: "Sp 96, Sn 97 · (+) can't keep hand off the back",
+              name: "Internal rotation lag sign — full-thickness subscapularis tear",
+              how: "Hand behind the back; you lift it away from the spine and the patient holds it there.",
+              finding: "**Positive is an inability to keep the hand off the back.** Sn 97, Sp 96 — unusually strong on both counts for a shoulder test",
             },
             {
               id: "er-lag",
-              name: "Full-thickness infraspinatus tear",
-              how: "ER lag sign: elbow 90°, shoulder abducted 20°, max ER, patient holds.",
-              finding: "(+) arm falls into internal rotation",
+              name: "External rotation lag sign — full-thickness infraspinatus tear",
+              how: "Elbow at 90°, shoulder abducted to 20°, taken to maximal external rotation; the patient holds it there.",
+              finding: "**Positive is the arm falling back into internal rotation.** The posterior supraspinatus contributes at this angle, so a lag here is not purely infraspinatus",
             },
             {
               id: "apprehension",
-              name: "Anterior instability — apprehension / relocation",
-              how: "Supine 90/90 on your thigh, palpate anterior shoulder, take into ER; back off, add posterior glide, re-enter ER.",
-              finding: "(+) apprehension or fear (not pain) that eases with the posterior glide",
+              name: "Apprehension and relocation — anterior instability",
+              how: "Supine at 90/90 resting on your thigh; palpate anteriorly and take the arm into external rotation, then back off, add a posterior glide, and re-enter external rotation.",
+              finding: "**Positive is apprehension or fear — not pain — that settles with the posterior glide.** Pain alone at end-range external rotation is a different finding and does not make this test positive",
             },
             {
               id: "biceps-load",
-              name: "SLAP tear",
-              how: "Biceps Load II: 120° abd, elbow 90°, forearm supinated, end-range ER, resist elbow flexion.",
-              finding: "Sn 90, Sp 97, +LR 26.38, −LR 0.11 · (+) deep shoulder pain",
+              name: "Biceps Load II — SLAP tear",
+              how: "120° of abduction, elbow at 90°, forearm supinated, taken to end-range external rotation; resist elbow flexion from there.",
+              finding: "**Positive is deep shoulder pain with the resisted flexion.** Sn 90, Sp 97, +LR 26.38, −LR 0.11 — the strongest pair of ratios on this page",
             },
             {
               id: "palpation",
-              name: "Palpation of the RTC tendons",
-              how: "Deltopectoral triangle → bicipital groove at 20° IR → ER to lesser tubercle (subscap) → more IR to greater tubercle (supra) → infraspinatus in flexion/adduction/IR.",
-              finding: "Use active rotation to bring each tendon under your finger",
+              name: "Palpation of the rotator cuff tendons",
+              how: "Work from the deltopectoral triangle to the bicipital groove at 20° of internal rotation; external rotation then brings the lesser tubercle and subscapularis under your finger, more internal rotation brings the greater tubercle and supraspinatus, and flexion with adduction and internal rotation brings infraspinatus.",
+              finding: "**Use active rotation to bring each tendon to your finger** rather than chasing it around the humerus — the landmark moves, your hand stays put",
             },
             {
               id: "posterior-glide",
-              name: "GH posterior glide — assess & treat by irritability",
-              how: "Open packed ~50° abd, slight horizontal adduction + ER; hand lateral to coracoid; force **posterolateral**.",
-              finding: "For limited IR / horizontal adduction with capsular end feel",
+              name: "Glenohumeral posterior glide — assess, then treat by irritability",
+              how: "Open packed at about 50° of abduction with slight horizontal adduction and external rotation; the hand sits lateral to the coracoid and the force runs **posterolaterally**, along the treatment plane rather than straight back.",
+              finding: "**For limited internal rotation or horizontal adduction with a capsular end feel.** The direction comes from the restriction, the grade from the irritability",
             },
             {
               id: "inferior-glide",
-              name: "GH inferior glide — assess & treat by irritability",
-              how: "Wedge/towel blocks scapula & acromion but not the humeral head; hand lateral to acromion; force inferior with slight lateral component; drive from hips.",
-              finding: "For limited flexion / abduction with capsular end feel",
+              name: "Glenohumeral inferior glide — assess, then treat by irritability",
+              how: "A wedge or towel blocks the scapula and acromion but not the humeral head; the hand sits lateral to the acromion, the force runs inferiorly with a slight lateral component, and it is driven from your hips rather than your arms.",
+              finding: "**For limited flexion or abduction with a capsular end feel.** A hard end feel that does not change across three bouts is a referral question, not a reason to push harder",
             },
             {
               id: "ex-flexion",
-              name: "Exercise: flexion ROM, high vs low irritability",
-              how: "High: supported/pain-free AAROM, high reps, patient-controlled. Low: sustained end-range, maximize total end-range time.",
-              finding: "Reassess after each round of 3 bouts",
+              name: "Exercise: flexion range, high versus low irritability",
+              how: "High irritability: supported, pain-free active-assisted range, high repetitions, patient-controlled. Low irritability: sustained end-range positions, maximizing total end-range time.",
+              finding: "**Reassess after each round of three bouts.** The range you gained is the only argument for continuing with the same dose",
             },
             {
               id: "ex-ir",
-              name: "Exercise: IR ROM, high vs low irritability",
-              how: `Supine IR keeping the humeral head from popping up — cue "swivel around an axis." Low: add horizontal adduction stretch for posterior capsule.`,
-              finding: "Motion must be spin, not anterior glide",
+              name: "Exercise: internal rotation range, high versus low irritability",
+              how: `Supine internal rotation, keeping the humeral head from popping up — the cue is "swivel around an axis." At low irritability, add the horizontal adduction stretch for the posterior capsule.`,
+              finding: "**The motion has to be spin, not anterior glide.** A head that translates forward is the fault you came to fix, being rehearsed",
             },
             {
               id: "ex-er",
-              name: "Exercise: ER ROM, high vs low irritability",
-              how: "Prone ER: synchronize finger extension → wrist extension as the arm swivels laterally. Avoid lat and deltoid compensation.",
-              finding: "High: pain-free AAROM only. Low: end-range holds.",
+              name: "Exercise: external rotation range, high versus low irritability",
+              how: "Prone external rotation, synchronizing finger extension into wrist extension as the arm swivels laterally, and avoiding latissimus and deltoid compensation.",
+              finding: "High irritability: pain-free active-assisted range only. Low irritability: end-range holds",
             },
             {
               id: "ex-posterior-tilt",
-              name: "Exercise: scapular posterior tilt + thoracic extension",
-              how: "Load lower trap / serratus with the thorax extended; keep elbow in front of the mid-axillary line during functional retraining.",
-              finding: "Scapular upward rotation is what keeps the cuff out of impingement",
+              name: "Exercise: scapular posterior tilt and thoracic extension",
+              how: "Load the lower trapezius and serratus with the thorax extended, and keep the elbow in front of the mid-axillary line through the functional retraining.",
+              finding: "**Scapular upward rotation is what keeps the cuff out of impingement** — and the posterior tilt with thoracic extension is what allows the upward rotation",
             },
           ],
         },
@@ -231,8 +242,13 @@ name: "Hand behind head\n*flexion + ER*",
           columns: ["Position", "Everything you do there", "Why it lands here"],
           rows: [
             [
+              { text: "Before you touch them", variant: "name" },
+              "The red flag screen **1** · clearing the cervical spine **2**",
+              "Both are questions about whether this is a shoulder problem at all. They cost two minutes and they are the only items here that can end the examination rather than direct it.",
+            ],
+            [
               { text: "Standing", variant: "name" },
-              "Posture from the front, side and back · flexion AROM with the four critical events **1** · scapular assist test **2** · ER @ 90° **3** · hand behind head and hand behind back **4**",
+              "Posture from the front, side and back · flexion AROM with the four critical events **3** · scapular assist test **4** · ER @ 90° **5** · hand behind head and hand behind back **6**",
               "Everything that needs gravity and a freely moving scapula. Stand behind or in the quadrant so you can see the scapula and the thorax at once.",
             ],
             [
@@ -242,22 +258,22 @@ name: "Hand behind head\n*flexion + ER*",
             ],
             [
               { text: "Seated", variant: "name" },
-              "Static resisted IR, ER, abduction **10** · MMT supraspinatus, infraspinatus, teres minor **11** · serratus anterior at ~130° **15** · palpation of the RTC tendons **22** · painful arc, Neer's, Hawkins-Kennedy, full and empty can **16** · drop arm **17** · ER lag **19** · Hornblower's · IR lag **18** · Speed's · sulcus sign · AC shear",
+              "Static resisted IR, ER, abduction **12** · MMT supraspinatus, infraspinatus, teres minor **13** · serratus anterior at ~130° **17** · palpation of the RTC tendons **24** · painful arc, Neer's, Hawkins-Kennedy, full and empty can **18** · drop arm **19** · ER lag **21** · Hornblower's · IR lag **20** · Speed's · sulcus sign · AC shear",
               "The whole contractile and special-test block. Almost every provocation test is seated or standing, so batch them rather than sitting the patient up twice.",
             ],
             [
               { text: "Supine", variant: "name" },
-              "PROM flexion total and pure GH **5** · abduction · IR and ER **7** · horizontal adduction **8** · pec minor and pec major length **9** · subscapularis length · apprehension and relocation **20** · posterior apprehension · Biceps Load II **21** · GH posterior and inferior glides **23 24** · traction · AC and SC mobilizations · supine STM and PROM",
+              "PROM flexion total and pure GH **7** · abduction · IR and ER **9** · horizontal adduction **10** · pec minor and pec major length **11** · subscapularis length · apprehension and relocation **22** · posterior apprehension · Biceps Load II **23** · GH posterior and inferior glides **25 26** · traction · AC and SC mobilizations · supine STM and PROM",
               "The longest block by far. Every passive measurement and most of the treatment happens here, so set the bolster once and work through it.",
             ],
             [
               { text: "Sidelying", variant: "name" },
-              "Scapular upward rotation PROM and mobilization **6** · scapulothoracic mobilization · STM to posterior cuff, latissimus, teres major, upper trap",
+              "Scapular upward rotation PROM and mobilization **8** · scapulothoracic mobilization · STM to posterior cuff, latissimus, teres major, upper trap",
               "The only position that gives you the scapula from both edges at once. Pair the assessment and the treatment in the same roll.",
             ],
             [
               { text: "Prone", variant: "name" },
-              "MMT subscapularis **12** · MMT lower and middle trapezius **13** · latissimus length **14** · posterior-to-anterior humeral mobilization · prone ER exercise **27**",
+              "MMT subscapularis **14** · MMT lower and middle trapezius **15** · latissimus length **16** · posterior-to-anterior humeral mobilization · prone ER exercise **29**",
               "Last, because it is the hardest position to leave. The scapular MMTs and the prone ER retraining belong together.",
             ],
           ],
@@ -312,6 +328,220 @@ name: "Hand behind head\n*flexion + ER*",
           title: "Which restraint is loaded at which angle",
           caption:
             "**Read the arc as the arm rising.** The restraint that matters changes with the angle, which is why an apprehension test is done at 90° and why a patient can feel stable at their side and unstable overhead. The posterior capsule is thinner than the anterior capsule throughout — stiffness there shows up as lost internal rotation.",
+        },
+      ],
+    },
+    {
+      id: "screen",
+      navLabel: "Screen",
+      title: "What has to be cleared first",
+      blocks: [
+        {
+          kind: "lede",
+          text: "The shoulder is the joint most often used as a referral site by something that is not a shoulder, and it sits directly below the region that most often mimics it. Two screens run before the examination proper: the symptoms that belong to another system, and the neck.",
+        },
+        {
+          kind: "heading",
+          text: "The symptoms that do not belong to a shoulder",
+        },
+        {
+          kind: "table",
+          columns: ["What you hear", "What it may be", "What gives it away", "What you do"],
+          widths: ["26%", "22%", "30%", "22%"],
+          rows: [
+            [
+              { text: "Left shoulder, arm or jaw pain that arrives with exertion and eases with rest", variant: "name" },
+              "Cardiac referral",
+              "**No shoulder movement reproduces it.** It tracks with effort, not with position, and may come with breathlessness, nausea or sweating",
+              "Same-day medical referral",
+            ],
+            [
+              { text: "Right shoulder-tip pain with abdominal or digestive symptoms", variant: "name" },
+              "Diaphragmatic irritation — gallbladder, liver, or subphrenic",
+              "Unaffected by shoulder movement; follows meals, or comes with abdominal signs",
+              "Medical referral",
+            ],
+            [
+              { text: "Constant deep pain, night pain unrelated to position, weight loss, a smoking history", variant: "name" },
+              "Apical lung tumour, or metastatic disease",
+              "**Pain that is not modulated by position or movement at all.** May come with ulnar-sided hand symptoms or a drooping eyelid on the same side",
+              "Urgent medical referral",
+            ],
+            [
+              { text: "Hot, swollen, exquisitely painful joint with fever", variant: "name" },
+              "Septic arthritis",
+              "Systemically unwell, and every direction hurts — actively and passively alike",
+              "Emergency referral",
+            ],
+            [
+              { text: "Trauma, a squared-off deltoid, the arm held slightly abducted and externally rotated", variant: "name" },
+              "Anterior dislocation, unreduced",
+              "Visible deformity and a refusal to move the arm at all",
+              "Imaging before any test",
+            ],
+            [
+              { text: "Recent trauma, an inability to lift the arm, bruising over the chest wall", variant: "name" },
+              "Fracture, or an acute massive cuff tear",
+              "The two present alike in the first days, and the difference is not clinical",
+              "Radiograph before you decide which",
+            ],
+            [
+              { text: "Numbness, tingling or weakness in a nerve or root distribution", variant: "name" },
+              "Cervical radiculopathy, brachial plexus or peripheral nerve",
+              "**Symptoms below the elbow**, or any sensory or reflex change",
+              "The cervical screen below",
+            ],
+          ],
+        },
+        {
+          kind: "callout",
+          tone: "warn",
+          lead: "One line ties most of this table together.",
+          body: "A shoulder problem is a movement problem: some position or motion makes it worse and some other one makes it better. Pain that no movement changes — that arrives with exertion, or at night regardless of how the arm is placed, or that is simply constant — is the pattern worth stopping for, whatever else the examination shows. It is also the pattern most easily lost, because a patient with a genuine stiff shoulder can have all of this as well.",
+        },
+        {
+          kind: "heading",
+          text: "Clearing the cervical spine",
+        },
+        {
+          kind: "lede",
+          text: "The neck refers into the shoulder often enough that a shoulder examination which never tested it is incomplete. It costs about two minutes.",
+        },
+        {
+          kind: "table",
+          columns: ["Step", "How it is performed", "What a positive means"],
+          widths: ["24%", "38%", "38%"],
+          rows: [
+            [
+              { text: "Active cervical range", variant: "name" },
+              "All planes, with overpressure added only if the motion is symptom-free",
+              "**Reproduction of the shoulder symptoms from the neck moves the problem to the neck**",
+            ],
+            [
+              { text: "Spurling's test", variant: "name" },
+              "Extension with ipsilateral sidebend and rotation, then gentle axial compression",
+              "Reproduced radicular symptoms. Specific rather than sensitive — a positive rules in, a negative does not rule out",
+            ],
+            [
+              { text: "Cervical distraction", variant: "name" },
+              "Manual distraction through the occiput and mandible",
+              "**Relief** of the symptoms supports a cervical source — the one test on this page where getting better is the positive",
+            ],
+            [
+              { text: "Cervical rotation", variant: "name" },
+              "Measured rotation toward the involved side",
+              "Less than 60° is the fourth item of the cluster below",
+            ],
+            [
+              { text: "Upper limb neurodynamic test 1", variant: "name" },
+              "Median-biased sequence, confirmed with a distal sensitizer",
+              "Symptom reproduction that **changes when the sensitizer is added** — otherwise it is a stretch, not a neural finding",
+            ],
+            [
+              { text: "Myotomes, dermatomes, reflexes", variant: "name" },
+              "C4–T1 resisted testing, light touch, and the biceps, brachioradialis and triceps reflexes",
+              "Any weakness in a myotomal pattern, or any sensory or reflex change, is a nerve finding and not a cuff finding",
+            ],
+          ],
+        },
+        {
+          kind: "footnote",
+          text: "Wainner's cluster for cervical radiculopathy is these four together: a positive Spurling's, a positive upper limb neurodynamic test 1, cervical rotation under 60° toward the involved side, and relief with distraction. Three of four gives a +LR around 6; all four around 30. As with the subacromial cluster, the four together are worth far more than any one of them.",
+        },
+      ],
+    },
+    {
+      id: "patterns",
+      navLabel: "Pain Map",
+      title: "Where it hurts → what to test",
+      blocks: [
+        {
+          kind: "lede",
+          text: "Location narrows the shoulder less sharply than it narrows the knee, because so much of what hurts here refers into the deltoid rather than sitting over the structure at fault. That is itself the useful fact: pain over the lateral deltoid says almost nothing about which tissue produced it, and pain that is genuinely point-tender usually does.",
+        },
+        {
+          kind: "table",
+          columns: ["Pain location", "Candidate source", "The test that addresses it", "The finding that confirms it"],
+          rows: [
+            { group: "Lateral" },
+            [
+              { text: "Lateral deltoid, diffuse, hard to point to", variant: "name" },
+              "Subacromial pain syndrome, or a cuff tendinopathy",
+              "The three-test cluster · painful arc",
+              "**All three positive → +LR 10.56.** The diffuse deltoid ache is referred, so palpating where it hurts finds nothing",
+            ],
+            [
+              { text: "Lateral deltoid with weakness rather than pain", variant: "name" },
+              "Full-thickness cuff tear",
+              "Drop arm · the lag signs",
+              "A lag or a drop — **weakness that is not explained by pain** is the distinction that matters",
+            ],
+            { group: "Anterior" },
+            [
+              { text: "Anterior, in the bicipital groove", variant: "name" },
+              "Long head of biceps tendinopathy",
+              "Palpation at 20° of internal rotation · Speed's",
+              "Point tenderness that moves with the humerus as you rotate it — if it stays put, it is not the tendon",
+            ],
+            [
+              { text: "Deep and anterior, with a catch or a click", variant: "name" },
+              "SLAP lesion",
+              "Biceps Load II",
+              "Deep pain with resisted flexion at end-range external rotation. Sn 90, Sp 97",
+            ],
+            [
+              { text: "Anterior, with apprehension at end-range ER", variant: "name" },
+              "Anterior instability",
+              "Apprehension and relocation",
+              "**Fear, not pain**, that settles with the posterior glide",
+            ],
+            { group: "Superior" },
+            [
+              { text: "Point-tender over the AC joint", variant: "name" },
+              "Acromioclavicular joint",
+              "Cross-body adduction · AC shear · palpation",
+              "The one shoulder location a patient can point to with a single finger, and it is usually right",
+            ],
+            { group: "Posterior" },
+            [
+              { text: "Posterior, with a tight cross-body reach", variant: "name" },
+              "Posterior capsule tightness",
+              "Horizontal adduction measurement · internal rotation range",
+              "The elbow failing to reach the midline, and an arc loss over 5°",
+            ],
+            [
+              { text: "Posterior and scapular, worse late in the day", variant: "name" },
+              "Scapular control and the periscapular muscles",
+              "Scapular assist test · MMT lower and middle trapezius, serratus",
+              "A change in symptoms when you assist the scapula — which also names the exercise",
+            ],
+            { group: "Not the shoulder" },
+            [
+              { text: "Into the trapezius ridge and up toward the neck", variant: "name" },
+              "Cervical referral",
+              "The cervical screen",
+              "Reproduction from the neck. **Shoulder tests can be positive at the same time** — a positive cluster does not clear the neck",
+            ],
+            [
+              { text: "Below the elbow, or with any numbness", variant: "name" },
+              "Nerve — root, plexus or peripheral",
+              "Neurological screen · upper limb neurodynamic test",
+              "Sensory or reflex change. No shoulder diagnosis on this page produces numbness",
+            ],
+            [
+              { text: "Anywhere, but no position changes it", variant: "name" },
+              "Not a musculoskeletal problem",
+              "The red flag screen",
+              "**Pain that no movement modulates.** This is the row that ends the examination",
+            ],
+          ],
+        },
+        {
+          kind: "figure",
+          figureId: "shoulder-pain-map",
+          title: "Where the finger lands, and how much it narrows",
+          caption:
+            "**The shoulder is the region where location helps least, and knowing that is the point.** Subacromial pain, cuff tendinopathy and a cervical referral can all present as a diffuse ache over the lateral deltoid, which is why the cluster and the neck screen carry the weight here rather than palpation. The two places a finger genuinely localizes are the AC joint on top and the bicipital groove in front — and even the groove has to be confirmed by rotating the humerus under the finger.",
         },
       ],
     },
@@ -453,6 +683,7 @@ name: "Hand behind head\n*flexion + ER*",
         {
           kind: "table",
           columns: ["Motion", "Normal", "Position & goniometer", "End feel", "First suspects when it's short"],
+          widths: ["16%", "10%", "30%", "16%", "28%"],
           rows: [
             [
               { text: "Flexion", variant: "name" },
@@ -606,6 +837,7 @@ name: "Hand behind head\n*flexion + ER*",
         {
           kind: "table",
           columns: ["Muscle", "Position & what you stabilize", "Normal", "Short means", "What fakes a result"],
+          widths: ["14%", "28%", "14%", "22%", "22%"],
           rows: [
             [
               { text: "Pectoralis minor", variant: "name" },
@@ -671,6 +903,7 @@ name: "Hand behind head\n*flexion + ER*",
         {
           kind: "table",
           columns: ["Pure GH flexion (scapula fixed)", "End feel", "Other finding", "Structure", "Treat with"],
+          widths: ["20%", "14%", "22%", "20%", "24%"],
           rows: [
             [
               { text: "< 120°", variant: "num" },
@@ -739,6 +972,7 @@ name: "Hand behind head\n*flexion + ER*",
         {
           kind: "table",
           columns: ["Muscle", "Position", "Resistance", "Watch"],
+          widths: ["18%", "26%", "26%", "30%"],
           rows: [
             [
               { text: "Supraspinatus", variant: "name" },
@@ -831,7 +1065,7 @@ name: "Hand behind head\n*flexion + ER*",
           columns: ["Test", "What it compresses or contracts", "Set-up", "Positive", "Stats"],
           // Five columns of prose plus one of bare figures: left to size itself, the stats
           // column wraps to one character per line while the tissue column sprawls.
-          widths: ["15%", "25%", "26%", "21%", "13%"],
+          widths: ["14%", "22%", "22%", "20%", "22%"],
           rows: [
             { group: "Compression under the coracoacromial arch" },
             [
@@ -1283,6 +1517,7 @@ name: "Hand behind head\n*flexion + ER*",
         {
           kind: "table",
           columns: ["What you found", "What it means", "First three things", "Reassess with"],
+          widths: ["24%", "24%", "30%", "22%"],
           rows: [
             [
               { text: "Painful arc + Hawkins-Kennedy + painful or weak resisted ER", variant: "name" },
@@ -1326,6 +1561,7 @@ name: "Hand behind head\n*flexion + ER*",
         {
           kind: "table",
           columns: ["Mobilization", "Set-up", "Force direction", "Use when"],
+          widths: ["18%", "32%", "24%", "26%"],
           rows: [
             [
               { text: "GH posterior glide", variant: "name" },
@@ -1398,6 +1634,7 @@ name: "Hand behind head\n*flexion + ER*",
         {
           kind: "table",
           columns: ["Target", "High irritability", "Low irritability", "Cue that earns the point"],
+          widths: ["18%", "26%", "26%", "30%"],
           rows: [
             [
               { text: "Flexion ROM", variant: "name" },
@@ -1598,5 +1835,5 @@ name: "Hand behind head\n*flexion + ER*",
     },
   ],
   footer:
-    "**About this guide.** Compiled from a shoulder examination and treatment sequence covering functional tasks and biomechanics, movement system syndromes, posture through manual muscle testing, special tests, and palpation through soft tissue mobilization. Normative values, sensitivity/specificity and likelihood ratios are reproduced as stated in those source materials — verify against current literature before using them to weight a clinical decision. Items 25–28, the irritability-graded exercise progressions, are assembled from the irritability framework and treatment principles rather than quoted as a fixed exercise list.",
+    "**About this guide.** Compiled from a shoulder examination and treatment sequence covering functional tasks and biomechanics, movement system syndromes, posture through manual muscle testing, special tests, and palpation through soft tissue mobilization. Normative values, sensitivity/specificity and likelihood ratios are reproduced as stated in those source materials — verify against current literature before using them to weight a clinical decision. Items 27–30, the irritability-graded exercise progressions, are assembled from the irritability framework and treatment principles rather than quoted as a fixed exercise list.\n**Three parts of this page are not from those materials.** The red flag screen, the cervical screen, and the pain map were added afterwards because the source sequence did not carry them: it assumed a shoulder that had already been triaged. They are standard curriculum content — the referral patterns are the conventional ones and Wainner's cluster is as published — and they are the parts to check hardest against your own course, since your program may screen differently.\n**The neck is the omission worth naming.** A shoulder examination that never tested the cervical spine cannot distinguish a cuff problem from a referral, and the two can be present at once — a positive subacromial cluster does not clear the neck."
 };

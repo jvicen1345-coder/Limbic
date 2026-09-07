@@ -24,7 +24,7 @@ export const KNEE_PLAYBOOK: Playbook = {
   summary:
     "A full knee screen in the order you'd perform it: what the effusion tells you before you touch anything, the number that separates normal from a finding, and the structure each test actually loads. Bring a goniometer and a tape measure.",
   stamp: [
-    { value: "32", label: "exam items" },
+    { value: "33", label: "exam items" },
     { value: "4", label: "pain locations" },
     { value: "3", label: "ligament batteries" },
     { value: "0–3+", label: "effusion grades" },
@@ -32,13 +32,13 @@ export const KNEE_PLAYBOOK: Playbook = {
   sections: [
     {
       id: "checklist",
-      navLabel: "32 Items",
+      navLabel: "33 Items",
       title: "The examination sequence",
       note: "check-off saves in this browser",
       blocks: [
         {
           kind: "lede",
-          text: "Thirty-two items in the order they're performed — standing, then walking, then supine, then prone. Two things run ahead of everything else at the knee: whether this needs an X-ray at all, and how fast the joint swelled. The last column is the finding itself.",
+          text: "Thirty-three items in the order they're performed — standing, then walking, then supine, then prone. Two things run ahead of everything else at the knee: whether this needs an X-ray at all, and how fast the joint swelled. The last column is the finding itself.",
         },
         {
           kind: "checklist",

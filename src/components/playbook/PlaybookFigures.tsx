@@ -1398,7 +1398,50 @@ function AchillesZones() {
   );
 }
 
+/** Five pain zones at the shoulder — and how little most of them narrow the list. */
+function ShoulderPainMap() {
+  return (
+    <svg
+      viewBox="0 0 620 306"
+      role="img"
+      aria-label="Anterior view of a right shoulder with five pain zones: the lateral deltoid, which is diffuse and shared by several sources; the bicipital groove; the acromioclavicular joint; the posterior shoulder on the far side; and referral up toward the neck."
+    >
+      <rect x="52" y="70" width="52" height="180" rx="10" fill="currentColor" fillOpacity=".05" stroke="currentColor" strokeWidth="1.2" opacity=".5" />
+      <line x1="76" y1="30" x2="82" y2="74" stroke="currentColor" strokeWidth="20" opacity=".16" strokeLinecap="round" />
+      <line x1="104" y1="88" x2="176" y2="82" stroke="currentColor" strokeWidth="7" opacity=".3" strokeLinecap="round" />
+      <rect x="176" y="74" width="30" height="12" rx="3" fill="currentColor" fillOpacity=".18" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="198" cy="114" r="26" fill="currentColor" fillOpacity=".08" stroke="currentColor" strokeWidth="1.4" />
+      <line x1="198" y1="132" x2="208" y2="242" stroke="currentColor" strokeWidth="26" opacity=".2" strokeLinecap="round" />
+
+      <ellipse cx="214" cy="166" rx="16" ry="34" fill={A} fillOpacity=".16" stroke={A} strokeWidth="1.5" strokeDasharray="4 3" />
+      <text className="mono" x="240" y="162" fill={A}>1</text>
+      <circle cx="188" cy="152" r="7" fill={D2} fillOpacity=".35" stroke={D2} strokeWidth="1.5" />
+      <text className="mono" x="174" y="172" textAnchor="end" fill={D2}>2</text>
+      <circle cx="191" cy="80" r="7" fill={D3} fillOpacity=".35" stroke={D3} strokeWidth="1.5" />
+      <text className="mono" x="191" y="60" textAnchor="middle" fill={D3}>3</text>
+      <circle cx="170" cy="134" r="7" fill={HI} fillOpacity=".25" stroke={HI} strokeWidth="1.5" strokeDasharray="3 2" />
+      <text className="mono" x="152" y="130" textAnchor="end" fill={HI}>4</text>
+      <circle cx="80" cy="50" r="7" fill={MOD} fillOpacity=".35" stroke={MOD} strokeWidth="1.5" />
+      <text className="mono" x="96" y="46" fill={MOD}>5</text>
+
+      <text className="mono" x="300" y="48" fill={A}>1 LATERAL DELTOID — DIFFUSE</text>
+      <text x="300" y="70">subacromial · cuff · and referral too</text>
+      <text className="mono" x="300" y="100" fill={D2}>2 BICIPITAL GROOVE</text>
+      <text x="300" y="122">biceps long head · rotate to confirm</text>
+      <text className="mono" x="300" y="152" fill={D3}>3 AC JOINT — POINT TENDER</text>
+      <text x="300" y="174">the one a single finger localizes</text>
+      <text className="mono" x="300" y="204" fill={HI}>4 POSTERIOR (far side)</text>
+      <text x="300" y="226">posterior capsule · scapular control</text>
+      <text className="mono" x="300" y="256" fill={MOD}>5 UP TOWARD THE NECK</text>
+      <text x="300" y="278">cervical referral — screen it</text>
+
+      <text className="mono" x="40" y="296" opacity=".5">anterior view · right shoulder · zone 1 is dashed because it is diffuse</text>
+    </svg>
+  );
+}
+
 const FIGURES: Record<string, () => React.ReactElement> = {
+  "shoulder-pain-map": ShoulderPainMap,
   "elevation-arithmetic": ElevationArithmetic,
   "restraint-by-angle": RestraintByAngle,
   "range-by-plane": RangeByPlane,

@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import { playbookChecklistRows, type PlaybookChecklistItem } from "@/lib/playbook-content";
 import { PlaybookInline } from "@/components/playbook/PlaybookInline";
 import { PlaybookGroupBar, PlaybookMaskCell, useRecall } from "@/components/playbook/PlaybookRecall";
+import { playbookInlineText } from "@/lib/playbook-inline";
 import { RECALL_CHECKLIST_COLUMNS } from "@/lib/playbook-recall";
 
 /** The examination sequence as a check-off list with a progress bar.
@@ -117,7 +118,7 @@ export function PlaybookChecklist({
                         type="checkbox"
                         checked={isChecked(item.id)}
                         onChange={() => toggle(item.id)}
-                        aria-label={item.name}
+                        aria-label={playbookInlineText(item.name)}
                       />
                     </td>
                     <td className="playbook-idx" rowSpan={1 + (item.also?.length ?? 0)}>

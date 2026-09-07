@@ -55,3 +55,14 @@ export function parsePlaybookInline(source: string): PlaybookInlineNode[] {
   }
   return nodes;
 }
+
+/** The same source as plain text — markup stripped, line breaks flattened to spaces. For
+ *  the places that need a string rather than nodes: an `aria-label`, a `title`, anywhere
+ *  the delimiters would otherwise be read out literally by a screen reader. */
+export function playbookInlineText(source: string): string {
+  return parsePlaybookInline(source)
+    .map((node) => (node.type === "break" ? " " : node.text))
+    .join("")
+    .replace(/\s+/g, " ")
+    .trim();
+}
