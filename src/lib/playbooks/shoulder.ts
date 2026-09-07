@@ -470,6 +470,220 @@ export const SHOULDER_PLAYBOOK: Playbook = {
       ],
     },
     {
+      id: "screen",
+      navLabel: "Screen",
+      title: "What has to be cleared first",
+      blocks: [
+        {
+          kind: "lede",
+          text: "The checklist opens with two screening items because they gate everything after them. This section is the detail behind them: the symptoms that belong to another system, and the cervical examination in full. Neither is a shoulder finding, and both are quicker than the tests they precede.",
+        },
+        {
+          kind: "heading",
+          text: "The symptoms that do not belong to a shoulder",
+        },
+        {
+          kind: "table",
+          columns: ["What you hear", "What it may be", "What gives it away", "What you do"],
+          widths: ["26%", "22%", "30%", "22%"],
+          rows: [
+            [
+              { text: "Left shoulder, arm or jaw pain that arrives with exertion and eases with rest", variant: "name" },
+              "Cardiac referral",
+              "**No shoulder movement reproduces it.** It tracks with effort, not with position, and may come with breathlessness, nausea or sweating",
+              "Same-day medical referral",
+            ],
+            [
+              { text: "Right shoulder-tip pain with abdominal or digestive symptoms", variant: "name" },
+              "Diaphragmatic irritation — gallbladder, liver, or subphrenic",
+              "Unaffected by shoulder movement; follows meals, or comes with abdominal signs",
+              "Medical referral",
+            ],
+            [
+              { text: "Constant deep pain, night pain unrelated to position, weight loss, a smoking history", variant: "name" },
+              "Apical lung tumour, or metastatic disease",
+              "**Pain that is not modulated by position or movement at all.** May come with ulnar-sided hand symptoms or a drooping eyelid on the same side",
+              "Urgent medical referral",
+            ],
+            [
+              { text: "Hot, swollen, exquisitely painful joint with fever", variant: "name" },
+              "Septic arthritis",
+              "Systemically unwell, and every direction hurts — actively and passively alike",
+              "Emergency referral",
+            ],
+            [
+              { text: "Trauma, a squared-off deltoid, the arm held slightly abducted and externally rotated", variant: "name" },
+              "Anterior dislocation, unreduced",
+              "Visible deformity and a refusal to move the arm at all",
+              "Imaging before any test",
+            ],
+            [
+              { text: "Recent trauma, an inability to lift the arm, bruising over the chest wall", variant: "name" },
+              "Fracture, or an acute massive cuff tear",
+              "The two present alike in the first days, and the difference is not clinical",
+              "Radiograph before you decide which",
+            ],
+            [
+              { text: "Numbness, tingling or weakness in a nerve or root distribution", variant: "name" },
+              "Cervical radiculopathy, brachial plexus or peripheral nerve",
+              "**Symptoms below the elbow**, or any sensory or reflex change",
+              "The cervical screen below",
+            ],
+          ],
+        },
+        {
+          kind: "callout",
+          tone: "warn",
+          lead: "One line ties most of this table together.",
+          body: "A shoulder problem is a movement problem: some position or motion makes it worse and some other one makes it better. Pain that no movement changes — that arrives with exertion, or at night regardless of how the arm is placed, or that is simply constant — is the pattern worth stopping for, whatever else the examination shows. It is also the pattern most easily lost, because a patient with a genuine stiff shoulder can have all of this as well.",
+        },
+        {
+          kind: "heading",
+          text: "The cervical screen in full",
+        },
+        {
+          kind: "lede",
+          text: "The checklist item covers active range, Spurling's and a neurodynamic test. Two more steps are worth adding, because together the four make a cluster with a likelihood ratio worth quoting.",
+        },
+        {
+          kind: "table",
+          columns: ["Step", "How it is performed", "What a positive means"],
+          widths: ["24%", "38%", "38%"],
+          rows: [
+            [
+              { text: "Active cervical range", variant: "name" },
+              "All planes, with overpressure added only if the motion is symptom-free",
+              "**Reproduction of the shoulder symptoms from the neck moves the problem to the neck**",
+            ],
+            [
+              { text: "Spurling's test", variant: "name" },
+              "Extension with ipsilateral sidebend and rotation, then gentle axial compression",
+              "Reproduced radicular symptoms. Specific rather than sensitive — a positive rules in, a negative does not rule out",
+            ],
+            [
+              { text: "Cervical distraction", variant: "name" },
+              "Manual distraction through the occiput and mandible",
+              "**Relief** of the symptoms supports a cervical source — the one test here where getting better is the positive",
+            ],
+            [
+              { text: "Cervical rotation", variant: "name" },
+              "Measured rotation toward the involved side",
+              "Less than 60° is the fourth item of the cluster below",
+            ],
+            [
+              { text: "Upper limb neurodynamic test 1", variant: "name" },
+              "Median-biased sequence, confirmed with a distal sensitizer",
+              "Symptom reproduction that **changes when the sensitizer is added** — otherwise it is a stretch, not a neural finding",
+            ],
+            [
+              { text: "Myotomes, dermatomes, reflexes", variant: "name" },
+              "C4–T1 resisted testing, light touch, and the biceps, brachioradialis and triceps reflexes",
+              "Any weakness in a myotomal pattern, or any sensory or reflex change, is a nerve finding and not a cuff finding",
+            ],
+          ],
+        },
+        {
+          kind: "footnote",
+          text: "Wainner's cluster for cervical radiculopathy is four of these together: a positive Spurling's, a positive upper limb neurodynamic test 1, cervical rotation under 60° toward the involved side, and relief with distraction. Three of four gives a +LR around 6; all four around 30. As with the subacromial cluster, the four together are worth far more than any one of them — and as the checklist item says, a clear screen lowers the probability of a cervical contribution rather than excluding it.",
+        },
+      ],
+    },
+    {
+      id: "patterns",
+      navLabel: "Pain Map",
+      title: "Where it hurts → what to test",
+      blocks: [
+        {
+          kind: "lede",
+          text: "Location narrows the shoulder less sharply than it narrows the knee or the foot, because so much of what hurts here refers into the deltoid rather than sitting over the structure at fault. That is itself the useful fact: pain over the lateral deltoid says almost nothing about which tissue produced it, and pain that is genuinely point-tender usually does.",
+        },
+        {
+          kind: "table",
+          columns: ["Pain location", "Candidate source", "The test that addresses it", "The finding that confirms it"],
+          rows: [
+            { group: "Lateral" },
+            [
+              { text: "Lateral deltoid, diffuse, hard to point to", variant: "name" },
+              "Subacromial pain syndrome, or a cuff tendinopathy",
+              "The three-test cluster · painful arc",
+              "The cluster, not any single test. The diffuse deltoid ache is referred, so palpating where it hurts finds nothing",
+            ],
+            [
+              { text: "Lateral deltoid with weakness rather than pain", variant: "name" },
+              "Full-thickness cuff tear",
+              "Drop arm · the lag signs",
+              "A lag or a drop — **weakness that is not explained by pain** is the distinction that matters",
+            ],
+            { group: "Anterior" },
+            [
+              { text: "Anterior, in the bicipital groove", variant: "name" },
+              "Long head of biceps tendinopathy",
+              "Palpation at 20° of internal rotation · Speed's",
+              "Point tenderness that moves with the humerus as you rotate it — if it stays put, it is not the tendon",
+            ],
+            [
+              { text: "Deep and anterior, with a catch or a click", variant: "name" },
+              "SLAP lesion",
+              "Biceps Load II",
+              "Deep pain with resisted flexion at end-range external rotation",
+            ],
+            [
+              { text: "Anterior, with apprehension at end-range ER", variant: "name" },
+              "Anterior instability",
+              "Apprehension and relocation",
+              "**Fear, not pain**, that settles with the posterior glide",
+            ],
+            { group: "Superior" },
+            [
+              { text: "Point-tender over the AC joint", variant: "name" },
+              "Acromioclavicular joint",
+              "Cross-body adduction · AC shear · palpation",
+              "The one shoulder location a patient can point to with a single finger, and it is usually right",
+            ],
+            { group: "Posterior" },
+            [
+              { text: "Posterior, with a tight cross-body reach", variant: "name" },
+              "Posterior capsule tightness",
+              "Horizontal adduction measurement · internal rotation range",
+              "The elbow failing to reach the midline, and a total arc loss against the other side",
+            ],
+            [
+              { text: "Posterior and scapular, worse late in the day", variant: "name" },
+              "Scapular control and the periscapular muscles",
+              "Scapular assist test · MMT lower and middle trapezius, serratus",
+              "A change in symptoms when you assist the scapula — which also names the exercise",
+            ],
+            { group: "Not the shoulder" },
+            [
+              { text: "Into the trapezius ridge and up toward the neck", variant: "name" },
+              "Cervical referral",
+              "The cervical screen",
+              "Reproduction from the neck. **Shoulder tests can be positive at the same time** — a positive cluster does not clear the neck",
+            ],
+            [
+              { text: "Below the elbow, or with any numbness", variant: "name" },
+              "Nerve — root, plexus or peripheral",
+              "Neurological screen · upper limb neurodynamic test",
+              "Sensory or reflex change. No shoulder diagnosis on this page produces numbness",
+            ],
+            [
+              { text: "Anywhere, but no position changes it", variant: "name" },
+              "Not a musculoskeletal problem",
+              "The red flag screen",
+              "**Pain that no movement modulates.** This is the row that ends the examination",
+            ],
+          ],
+        },
+        {
+          kind: "figure",
+          figureId: "shoulder-pain-map",
+          title: "Where the finger lands, and how much it narrows",
+          caption:
+            "**The shoulder is the region where location helps least, and knowing that is the point.** Subacromial pain, cuff tendinopathy and a cervical referral can all present as a diffuse ache over the lateral deltoid, which is why the cluster and the neck screen carry the weight here rather than palpation. The two places a finger genuinely localizes are the AC joint on top and the bicipital groove in front — and even the groove has to be confirmed by rotating the humerus under the finger.",
+        },
+      ],
+    },
+    {
       id: "posture",
       navLabel: "Posture",
       title: "Posture → the measurement it obligates",
@@ -1848,6 +2062,6 @@ export const SHOULDER_PLAYBOOK: Playbook = {
     },
   ],
   footer:
-    "**About this guide.** The examination sequence, the organizing structure and all diagrams are original. Clinical values are drawn from the published sources named inline, principally: AAOS *Joint Motion* (1965) and Gill et al. (2020) for range of motion; Inman et al. (1944), Poppen & Walker (1976) and Ludewig et al. (2009) for shoulder complex kinematics; Cooperstein et al. (2015) for scapular landmark levels; Kircher et al. (2017) and Chalmers et al. (2019) for glenoid inclination; Konieczka et al. (2017) for humeral head palpation reliability; Sahrmann for the movement-system criteria marked as convention; Lin et al. (2007) for the glenohumeral resting position; Lewis & Valentine (2007), Borstad (2008), Rosa et al. (2016), Hall et al. (2020) and Dawood et al. (2018) for muscle length testing; Kelly et al. (1996), Boettcher et al. (2009) and Henderson et al. (2021) for manual muscle testing; Vanhoutte et al. (2012) and O'Neill et al. (2017) for the grading scale; Jenp et al. (1996) and Walch et al. (1998) for rotator cuff differentiation; Park et al. (2005), Hegedus et al. (2008, 2012), Alqunaee et al. (2012), Dessaur & Magarey (2008), Lo et al. (2004) and Chronopoulos et al. (2004) for diagnostic accuracy; Jaeschke et al. (1994) for likelihood ratio bands; Wilk et al. (2011) for rotational deficit thresholds; and McClure & Michener (2015) for the irritability framework. Where a value in common circulation could not be traced to a primary source, it is marked as convention rather than presented as data. Reviewed against the literature in September 2026 — clinical evidence moves, so re-check anything load-bearing before relying on it after roughly a year. This is an educational aid, not clinical guidance: it is written for students learning an examination sequence, it does not replace supervised instruction or current practice guidelines, and no part of it should be used to make a treatment decision on its own.",
+    "**About this guide.** The examination sequence, the organizing structure and all diagrams are original. Clinical values are drawn from the published sources named inline, principally: AAOS *Joint Motion* (1965) and Gill et al. (2020) for range of motion; Inman et al. (1944), Poppen & Walker (1976) and Ludewig et al. (2009) for shoulder complex kinematics; Cooperstein et al. (2015) for scapular landmark levels; Kircher et al. (2017) and Chalmers et al. (2019) for glenoid inclination; Konieczka et al. (2017) for humeral head palpation reliability; Sahrmann for the movement-system criteria marked as convention; Lin et al. (2007) for the glenohumeral resting position; Lewis & Valentine (2007), Borstad (2008), Rosa et al. (2016), Hall et al. (2020) and Dawood et al. (2018) for muscle length testing; Kelly et al. (1996), Boettcher et al. (2009) and Henderson et al. (2021) for manual muscle testing; Vanhoutte et al. (2012) and O'Neill et al. (2017) for the grading scale; Jenp et al. (1996) and Walch et al. (1998) for rotator cuff differentiation; Park et al. (2005), Hegedus et al. (2008, 2012), Alqunaee et al. (2012), Dessaur & Magarey (2008), Lo et al. (2004) and Chronopoulos et al. (2004) for diagnostic accuracy; Jaeschke et al. (1994) for likelihood ratio bands; Wilk et al. (2011) for rotational deficit thresholds; and McClure & Michener (2015) for the irritability framework. Where a value in common circulation could not be traced to a primary source, it is marked as convention rather than presented as data. The screening section and the pain map were added separately from that sourcing pass: the cervical radiculopathy cluster and its likelihood ratios are from Wainner et al. (2003), and the visceral, vascular and systemic referral patterns are standard differential-diagnosis content rather than values traced to a single study. Reviewed against the literature in September 2026 — clinical evidence moves, so re-check anything load-bearing before relying on it after roughly a year. This is an educational aid, not clinical guidance: it is written for students learning an examination sequence, it does not replace supervised instruction or current practice guidelines, and no part of it should be used to make a treatment decision on its own.",
 
 };

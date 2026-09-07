@@ -25,7 +25,7 @@ export const HIP_PLAYBOOK: Playbook = {
   summary:
     "A full hip screen in the order you'd perform it: the question that narrows the list, the number that separates normal from a finding, and the mobilization, soft tissue technique or exercise that finding points to. Bring a goniometer and a mobilization belt.",
   stamp: [
-    { value: "34", label: "exam items" },
+    { value: "36", label: "exam items" },
     { value: "12", label: "differential entries" },
     { value: "5", label: "pain locations" },
     { value: "3", label: "irritability levels" },
@@ -33,13 +33,13 @@ export const HIP_PLAYBOOK: Playbook = {
   sections: [
     {
       id: "checklist",
-      navLabel: "34 Items",
+      navLabel: "36 Items",
       title: "The examination sequence",
       note: "check-off saves in this browser",
       blocks: [
         {
           kind: "lede",
-          text: "Thirty-four items in the order they're performed. Two things drive the order: position — standing, then sitting, then supine, then sidelying, then prone — and irritability, which keeps the provocative tests until the end. The last column is the finding itself: the number or observation that turns the item into information.",
+          text: "Thirty-six items in the order they're performed. Two things drive the order: position — standing, then sitting, then supine, then sidelying, then prone — and irritability, which keeps the provocative tests until the end. The last column is the finding itself: the number or observation that turns the item into information.",
         },
         {
           kind: "checklist",
