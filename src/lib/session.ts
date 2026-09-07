@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
@@ -114,8 +115,13 @@ export function hasFreeAccess(user: { email: string | null; licenseEmail: string
  *  isWellnessPlus columns, and anything the Stripe webhook does with them, should stay
  *  exactly what they'd be without the grant. The parallel identity-based gates (Boards, the
  *  Student Atrium, etc. — see hasStudentAccess below) aren't fields on this object, so
- *  they're handled separately. */
-export async function getCurrentUser(): Promise<User | null> {
+ *  they're handled separately.
+ *
+ *  React cache is request-scoped here, not a persistent user cache: layout, page, nested
+ *  layouts, and server helpers share the same cookie verification + Prisma lookup during
+ *  one render, while a later request still observes suspension, billing, and profile
+ *  changes immediately. */
+export const getCurrentUser = cache(async function getCurrentUser(): Promise<User | null> {
   const userId = await readUserIdFromCookie();
   if (!userId) return null;
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -140,7 +146,7 @@ export async function getCurrentUser(): Promise<User | null> {
     studentTier: admin || comped.includes("limbicStudent") ? "limbicStudent" : user.studentTier,
     isWellnessPlus: user.isWellnessPlus || admin || comped.includes("wellnessPlus"),
   };
-}
+});
 
 /**
  * Any .edu email counts as a student account — matches how most PT programs actually issue

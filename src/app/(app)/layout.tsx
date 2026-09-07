@@ -1,8 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser, hasStudentAccess, hasLicenseAccess } from "@/lib/session";
-import { isSiteAdmin } from "@/lib/admin";
-import { prisma } from "@/lib/db";
-import { getAptaNewsArticles } from "@/lib/articles";
+import { getCurrentUser, hasStudentAccess, hasLicenseAccess, isAdminEmail } from "@/lib/session";
 import { SPECIALTY_META } from "@/lib/meta";
 import { AppShell } from "@/components/AppShell";
 import { OnboardingRoleModal } from "@/components/OnboardingRoleModal";
@@ -22,11 +19,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // all until this resolves (see components/OnboardingRoleModal.tsx).
   if (!user.hasCompletedOnboarding) return <OnboardingRoleModal />;
 
-  const [aptaArticles, savedCount, nexusRequestCount, isAdmin, clinicMembership, timeZone] = await Promise.all([
-    getAptaNewsArticles(),
-    prisma.savedArticle.count({ where: { userId: user.id } }),
-    prisma.connection.count({ where: { recipientId: user.id, status: "pending" } }),
-    isSiteAdmin(),
+  // Only data that changes the shell's structure stays on the blocking path. The three
+  // numeric badges load after hydration from /api/navigation-badges, so a cold Google News
+  // RSS request can never hold up the authenticated shell. Clinic membership still belongs
+  // here because it controls which clinic navigation renders; time zone stays because child
+  // pages key calendar-day data from the same server value.
+  const [clinicMembership, timeZone] = await Promise.all([
     getClinicMembershipInfo(),
     // Resolved here as well as in each page that keys something on a calendar date, so
     // TimeZoneSync below can tell whether the zone the server just rendered against is the
@@ -35,13 +33,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   ]);
 
   const hasLicense = hasLicenseAccess(user);
-
-  // Same "since you were last here" cutoff the Home feed's own New badges use (see
-  // lib/session.ts recordHomeVisit/lib/feed.ts isNew) — the nav badge's job is "how many
-  // News items appeared since your last visit," not "how many exist right now," so a
-  // reader who's already seen all of today's articles doesn't keep seeing a stuck count.
-  const sinceVisit = user.lastVisitedAt?.getTime() ?? 0;
-  const newAptaCount = aptaArticles.filter((a) => new Date(a.date).getTime() > sinceVisit).length;
+  // This is derivable from the already-loaded user. Calling isSiteAdmin() here would read
+  // the session again (request-cached now, but still unnecessary work on the hot path).
+  const isAdmin = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
 
   return (
     <AppShell
@@ -54,9 +48,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       isStudent={hasStudentAccess(user)}
       isVerifiedStudent={user.studentTier === "limbicStudent"}
       isAdmin={isAdmin}
-      aptaCount={newAptaCount}
-      nexusRequestCount={nexusRequestCount}
-      savedCount={savedCount}
       zoneTwoOrder={zoneTwoOrder(user.userRole)}
       clinicMembership={clinicMembership}
     >
