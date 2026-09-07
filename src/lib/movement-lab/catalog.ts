@@ -21,6 +21,7 @@ import { MOVEMENT_REGIONS } from "@/lib/movement-lab/types";
 import { CERVICAL_EXERCISES } from "@/lib/movement-lab/exercises/cervical";
 import { THORACIC_EXERCISES } from "@/lib/movement-lab/exercises/thoracic";
 import { LUMBAR_CORE_EXERCISES } from "@/lib/movement-lab/exercises/lumbar-core";
+import { BACK_EXERCISES } from "@/lib/movement-lab/exercises/back";
 import { SHOULDER_EXERCISES } from "@/lib/movement-lab/exercises/shoulder";
 import { UPPER_LIMB_EXERCISES } from "@/lib/movement-lab/exercises/upper-limb";
 import { HIP_EXERCISES } from "@/lib/movement-lab/exercises/hip";
@@ -36,6 +37,7 @@ export const MOVEMENT_EXERCISES: MovementExercise[] = [
   ...CERVICAL_EXERCISES,
   ...THORACIC_EXERCISES,
   ...LUMBAR_CORE_EXERCISES,
+  ...BACK_EXERCISES,
   ...SHOULDER_EXERCISES,
   ...UPPER_LIMB_EXERCISES,
   ...HIP_EXERCISES,
