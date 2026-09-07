@@ -14503,3 +14503,30 @@ button.playbook-maskwrap:focus-visible {
 .clindash-note-label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
 .clindash-note-templates-link { font-size: var(--fs-11-5); color: var(--color-accent); text-decoration: none; }
 .clindash-note-templates-link:hover { text-decoration: underline; }
+
+/* Clinician's Tool Chest (see app/(app)/pro/toolbox/page.tsx) — the grouped view of what
+   LimbicPRO contains. Reuses .pro-tools-grid / .pro-tool-card from the overview hub; only
+   the grouping and the lock pill are new. */
+.toolbox-title { font-size: 26px; margin: 0 0 4px; }
+.toolbox-subtitle { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 6px; max-width: 62ch; line-height: 1.5; }
+.toolbox-group { margin-top: 22px; }
+.toolbox-group-head { border-bottom: 1px solid var(--color-divider); padding-bottom: 7px; }
+.toolbox-group-title { font-size: 16px; margin: 0; }
+.toolbox-group-blurb { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 2px 0 0; }
+.toolbox-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+/* A locked card is dimmer but still legible — its description is the reason to subscribe,
+   so greying it into unreadability would defeat the point of showing it at all. */
+.pro-tool-card--locked { border-left-color: var(--color-neutral-300); }
+.toolbox-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  font-size: var(--fs-10);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+}

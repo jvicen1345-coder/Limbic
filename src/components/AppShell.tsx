@@ -394,6 +394,10 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
                 lock-pill treatment CE Tracker/HEP already had, so a signed-in reader sees
                 the full LimbicPRO toolbox and which pieces of it are still paywalled,
                 rather than some tools just silently not existing for them. */}
+            {/* First row on purpose: a dozen sibling rows in the order they were added is a
+                list of links, not a set of tools. The Tool Chest is the one page that says
+                what is in here and when you'd want each piece — see app/(app)/pro/toolbox. */}
+            <NavLink href="/pro/toolbox" icon={<GridIcon />} label="Tool Chest" bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/dashboard" icon={<LayoutDashboardIcon />} label="Dashboard" locked={!isPro} bold={false} onNavigate={onNavigate} />
             <NavLink href="/pro/force-lab" icon={<ZapIcon />} label="Force Lab" locked={!isPro} bold={false} onNavigate={onNavigate} />
             {isPro && clinicMembership?.isAdmin && (
