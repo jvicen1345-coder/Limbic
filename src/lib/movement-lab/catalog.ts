@@ -126,7 +126,65 @@ function matchesWordPrefix(haystack: string, term: string): boolean {
 }
 
 /**
- * A search term plus the singular forms it might be a plural of.
+ * True when `term` appears in `haystack` as a complete word — stricter than
+ * matchesWordPrefix, which only requires the stored word to *start* with the term.
+ *
+ * Used exclusively for the de-pluralised forms below, and that restriction is the whole
+ * point. Stripping the "s" off a query shortens it, and a shortened term prefix-matches far
+ * too much: "lats" became "lat", which prefix-matches "lateral", so a search for the
+ * latissimus returned the Lateral Band Walk, Lateral Bound and Lateral Step-Down ahead of any
+ * back exercise. Requiring the stripped form to be a whole word keeps the plural fix working
+ * — "curls" still finds "Biceps Curl", "crunches" still finds "Mini crunch" — while refusing
+ * the accidental prefixes that the stripping itself created.
+ */
+function matchesWholeWord(haystack: string, word: string): boolean {
+  let from = 0;
+  for (;;) {
+    const at = haystack.indexOf(word, from);
+    if (at === -1) return false;
+    const before = at === 0 || !/[a-z0-9]/.test(haystack[at - 1]);
+    const afterIndex = at + word.length;
+    const after = afterIndex >= haystack.length || !/[a-z0-9]/.test(haystack[afterIndex]);
+    if (before && after) return true;
+    from = at + 1;
+  }
+}
+
+/**
+ * Everyday shorthand for the muscles, mapped to the clinical word the bank actually stores.
+ *
+ * `targets` is written in full ("Latissimus dorsi", "Gluteus maximus", "Quadriceps"), which is
+ * right for a clinical record and wrong for a search box: nobody types "latissimus". Stripping
+ * a plural does not bridge the gap either, and for the lats it actively misfires — "lats"
+ * shortens to "lat", which prefix-matches *lateral*, so the search returned the Lateral Band
+ * Walk and Lateral Step-Down instead of a single back exercise.
+ *
+ * Mapped rather than stemmed, because these are irregular by nature — no rule turns "pecs"
+ * into "pectoralis". Kept to the shorthand that is genuinely in daily use; a term that only
+ * appears in a textbook does not need an entry here.
+ */
+const MUSCLE_SYNONYMS: Readonly<Record<string, string>> = {
+  lats: "latissimus",
+  quad: "quadriceps",
+  quads: "quadriceps",
+  glute: "gluteus",
+  glutes: "gluteus",
+  ham: "hamstring",
+  hams: "hamstring",
+  pec: "pectoralis",
+  pecs: "pectoralis",
+  delt: "deltoid",
+  delts: "deltoid",
+  trap: "trapezius",
+  traps: "trapezius",
+  abs: "abdominis",
+  calves: "calf",
+  cuff: "rotator cuff",
+};
+
+/**
+ * The singular forms a term might be a plural of. The term itself is matched separately, by
+ * prefix; these are matched as whole words only (see matchesWholeWord).
  *
  * Word-prefix matching already handles a singular query against plural content — "kick"
  * matches "Flutter Kicks", because the stored word merely has to *start* with the term. The
@@ -137,14 +195,13 @@ function matchesWordPrefix(haystack: string, term: string): boolean {
  * Deliberately crude — strip a trailing plural ending rather than stem properly. A real
  * stemmer would collapse distinct clinical words ("glide"/"gliding", "flexion"/"flexor") and
  * the resulting false matches cost more here than the few plurals it would additionally catch.
- * Every variant only ever adds matches, so this can never remove a result that used to appear.
  */
 function termVariants(term: string): string[] {
-  if (term.length <= 3) return [term];
-  if (term.endsWith("ies")) return [term, `${term.slice(0, -3)}y`];
-  if (term.endsWith("es")) return [term, term.slice(0, -2), term.slice(0, -1)];
-  if (term.endsWith("s")) return [term, term.slice(0, -1)];
-  return [term];
+  if (term.length <= 3) return [];
+  if (term.endsWith("ies")) return [`${term.slice(0, -3)}y`];
+  if (term.endsWith("es")) return [term.slice(0, -2), term.slice(0, -1)];
+  if (term.endsWith("s")) return [term.slice(0, -1)];
+  return [];
 }
 
 /** Fields a free-text term is matched against, ordered by how strongly a hit in each one
@@ -155,11 +212,15 @@ function termVariants(term: string): string[] {
  *  bare substring — see matchesWordPrefix for why — and against the term's singular forms
  *  as well as the term itself, so a plural query finds singular content. */
 function searchScore(ex: MovementExercise, term: string): number {
-  const terms = termVariants(term);
-  const hit = (haystack: string) => terms.some((t) => matchesWordPrefix(haystack, t));
+  const singulars = termVariants(term);
+  const synonym = MUSCLE_SYNONYMS[term];
+  const hit = (haystack: string) =>
+    matchesWordPrefix(haystack, term) ||
+    (synonym !== undefined && matchesWordPrefix(haystack, synonym)) ||
+    singulars.some((s) => matchesWholeWord(haystack, s));
   const name = ex.name.toLowerCase();
   if (name === term) return 100;
-  if (terms.some((t) => name.startsWith(t))) return 80;
+  if (name.startsWith(term) || singulars.some((s) => name === s)) return 80;
   if (hit(name)) return 60;
   if (ex.aka?.some((a) => hit(a.toLowerCase()))) return 50;
   if (ex.indications.some((i) => hit(i.toLowerCase()))) return 40;
