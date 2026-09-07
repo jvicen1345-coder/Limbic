@@ -236,28 +236,55 @@ function searchScore(ex: MovementExercise, term: string): number {
  * "shoulder band" narrows rather than widens. An OR-match would return every shoulder
  * exercise plus every band exercise, which at this bank's size is no better than no search.
  */
-export function searchExercises(query: string, filters: MovementFilters = {}): MovementExercise[] {
+/** A search hit with the strength of the match kept, rather than thrown away. */
+export interface ScoredMovementExercise {
+  exercise: MovementExercise;
+  /** Summed across the query's words, so it grows with the number of words matched. */
+  score: number;
+  /** How many words the query had, so `score / terms` compares across queries of any length. */
+  terms: number;
+}
+
+/**
+ * The ranked search, with each hit's score kept.
+ *
+ * Callers that just want the list should use `searchExercises`. This exists for the one
+ * caller that has to tell a real match from a loose one rather than simply showing the best
+ * few: the admin request queue asks "is this requested exercise now in the bank?", and the
+ * honest answer differs depending on whether the query matched an exercise's *name* or merely
+ * something it happens to treat. `score / terms` makes that judgement possible — the bands in
+ * `searchScore` mean an average at or above 50 was matched on name or alias, while lower
+ * averages matched only an indication, a target or a region.
+ */
+export function searchExercisesScored(
+  query: string,
+  filters: MovementFilters = {},
+): ScoredMovementExercise[] {
   const filtered = filterExercises(MOVEMENT_EXERCISES, filters);
   const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  if (terms.length === 0) return filtered;
+  if (terms.length === 0) return filtered.map((exercise) => ({ exercise, score: 0, terms: 0 }));
 
-  const scored: { ex: MovementExercise; score: number }[] = [];
-  for (const ex of filtered) {
+  const scored: ScoredMovementExercise[] = [];
+  for (const exercise of filtered) {
     let total = 0;
     let matchedAll = true;
     for (const term of terms) {
-      const score = searchScore(ex, term);
+      const score = searchScore(exercise, term);
       if (score === 0) {
         matchedAll = false;
         break;
       }
       total += score;
     }
-    if (matchedAll) scored.push({ ex, score: total });
+    if (matchedAll) scored.push({ exercise, score: total, terms: terms.length });
   }
 
   // Ties broken by name so the order is stable between renders rather than depending on the
   // sort implementation — a list that reshuffles as you type is hard to click.
-  scored.sort((a, b) => b.score - a.score || a.ex.name.localeCompare(b.ex.name));
-  return scored.map((s) => s.ex);
+  scored.sort((a, b) => b.score - a.score || a.exercise.name.localeCompare(b.exercise.name));
+  return scored;
+}
+
+export function searchExercises(query: string, filters: MovementFilters = {}): MovementExercise[] {
+  return searchExercisesScored(query, filters).map((s) => s.exercise);
 }
