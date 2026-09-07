@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { freshEmail, signUpAndEnterApp } from "./helpers";
+import { OUTCOME_MEASURES, measureSummary } from "../src/lib/outcome-measures";
 
 /**
  * The reader-facing half of Limbic Appraisals (see lib/appraisal.ts, lib/appraisals-feed.ts).
@@ -148,5 +149,49 @@ test.describe("appraisals", () => {
     // The publish/unpublish split is pointless if a draft is readable by anyone holding the id.
     const draftResponse = await page.goto(`/article/appraisal-${ids.draft}`);
     expect(draftResponse?.status()).toBe(404);
+  });
+});
+
+/**
+ * The outcome-measure reference the appraisal form's picker fills from
+ * (src/lib/outcome-measures.ts). Pure data assertions with no page and no database — the
+ * same shape as movement-lab.spec.ts's data tests, and deliberately so: this file's browser
+ * test already costs the suite one account and one write connection, and these need neither.
+ *
+ * The invariant that matters is the last one. A measure with no agreed MCID must carry null,
+ * not a plausible number, because whatever sits in that field drives the clinical-magnitude
+ * verdict in runAppraisalChecks() — the strongest claim an appraisal makes.
+ */
+test.describe("outcome measure reference", () => {
+  test("every measure is uniquely identified and internally consistent", () => {
+    const ids = OUTCOME_MEASURES.map((m) => m.id);
+    expect(new Set(ids).size).toBe(ids.length);
+
+    for (const m of OUTCOME_MEASURES) {
+      expect(m.name, `${m.id} needs a name`).toBeTruthy();
+      expect(m.abbreviation, `${m.id} needs an abbreviation`).toBeTruthy();
+      // Units are prefilled into the effect-unit field so the MCID and the effect are always
+      // compared in the same terms; a measure without them would silently break that.
+      expect(m.unit, `${m.id} needs units`).toBeTruthy();
+      // The checks compare against Math.abs(effect), so a negative MCID would invert the
+      // magnitude verdict rather than failing loudly.
+      if (m.mcid !== null) expect(m.mcid, `${m.id} MCID must be a positive magnitude`).toBeGreaterThan(0);
+      if (m.mdc !== null) expect(m.mdc, `${m.id} MDC must be a positive magnitude`).toBeGreaterThan(0);
+      // Every record names the component its figures came from, so a number that looks wrong
+      // can be checked against what the app already shows a clinician.
+      expect(m.origin, `${m.id} needs an origin`).toContain("calculators/");
+    }
+  });
+
+  test("a measure with no agreed MCID says why, and never carries a number", () => {
+    const withoutMcid = OUTCOME_MEASURES.filter((m) => m.mcid === null);
+    // If this ever hits zero, either the literature moved or someone filled a blank in with
+    // a plausible-looking value — both worth stopping on.
+    expect(withoutMcid.length).toBeGreaterThan(0);
+
+    for (const m of withoutMcid) {
+      expect(m.mcidNote, `${m.id} must explain why there is no MCID`).toBeTruthy();
+      expect(measureSummary(m), `${m.id} must say so on screen`).toContain("No single MCID");
+    }
   });
 });
