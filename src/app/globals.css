@@ -14530,3 +14530,28 @@ button.playbook-maskwrap:focus-visible {
   background: var(--color-neutral-100);
   color: var(--color-neutral-700);
 }
+
+/* Clinical Toolbox on a phone (see app/(app)/pro/toolbox/page.tsx). The grid is already one
+   column below 860px, but at a full-size card the page runs about four screens of scrolling
+   on a 390px viewport — which works against a page whose whole job is to be scannable.
+   Measured at 2611px of scroll height before this block.
+
+   Tightened rather than gutted: the description is what tells a reader deciding on LimbicPRO
+   what a locked tool actually does, so it is clamped to two lines instead of hidden, and the
+   card keeps its "Open" affordance. Scoped to .toolbox-group so the /pro overview hub's own
+   cards, which are fewer and carry longer copy, are unaffected. */
+@media (max-width: 640px) {
+  .toolbox-group .pro-tools-grid { gap: 9px; margin: 14px 0; }
+  .toolbox-group { margin-top: 16px; }
+  .toolbox-group .pro-tool-card { padding: 11px 13px; gap: 2px; }
+  .toolbox-group .pro-tool-card-desc {
+    line-height: 1.45;
+    /* Two lines, then an ellipsis. -webkit-line-clamp is the only cross-browser way to do
+       this today; -webkit-box is what makes it apply, and is well supported everywhere. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .toolbox-group .pro-tool-card-footer { margin-top: 3px; }
+}
