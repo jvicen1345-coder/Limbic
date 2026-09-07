@@ -11,6 +11,7 @@ import { getQuestionsForRegion } from "@/app/actions/boards-tagging";
 import { subscribeToStudentTierAction, subscribeToProAction } from "@/app/actions/pro";
 import type { BoardQuestion } from "@/lib/board-content";
 import { ChevronRightIcon, XIcon } from "@/components/icons";
+import { PlainText } from "@/components/PlainText";
 import { AutoRenewalTerms } from "@/components/AutoRenewalTerms";
 
 type View = "anterior" | "posterior";
@@ -123,13 +124,19 @@ function MuscleEntry({ muscle }: { muscle: (typeof ATLAS_CONTENT)[string]["keyMu
     <div className="atlas-muscle-entry">
       <div className="atlas-muscle-name">{muscle.name}</div>
       <div>
-        <strong>Origin:</strong> {muscle.origin}
+        <strong>
+          <PlainText>Origin</PlainText>:
+        </strong>{" "}
+        <PlainText>{muscle.origin}</PlainText>
       </div>
       <div>
-        <strong>Insertion:</strong> {muscle.insertion}
+        <strong>
+          <PlainText>Insertion</PlainText>:
+        </strong>{" "}
+        <PlainText>{muscle.insertion}</PlainText>
       </div>
       <div>
-        <strong>Action:</strong> {muscle.action}
+        <strong>Action:</strong> <PlainText>{muscle.action}</PlainText>
       </div>
       <div>
         <strong>Nerve:</strong> {muscle.nerve} ({muscle.rootLevel})
@@ -371,10 +378,10 @@ function AtlasContentPanel({
             <div className="atlas-list-entry" key={c.name}>
               <div className="atlas-list-entry-name">{c.name}</div>
               <div>
-                <strong>Mechanism:</strong> {c.mechanism}
+                <strong>Mechanism:</strong> <PlainText>{c.mechanism}</PlainText>
               </div>
               <div>
-                <strong>Board pearl:</strong> {c.boardPearl}
+                <strong>Board pearl:</strong> <PlainText>{c.boardPearl}</PlainText>
               </div>
             </div>
           ))}
@@ -388,13 +395,16 @@ function AtlasContentPanel({
             <div className="atlas-list-entry" key={t.name}>
               <div className="atlas-list-entry-name">{t.name}</div>
               <div>
-                <strong>Assesses:</strong> {t.assesses}
+                <strong>Assesses:</strong> <PlainText>{t.assesses}</PlainText>
               </div>
               <div>
-                <strong>Sensitivity / Specificity:</strong> {t.sensitivity} / {t.specificity}
+                <strong>
+                  <PlainText>Sensitivity</PlainText> / <PlainText>Specificity</PlainText>:
+                </strong>{" "}
+                {t.sensitivity} / {t.specificity}
               </div>
               <div>
-                <strong>Positive:</strong> {t.positive}
+                <strong>Positive:</strong> <PlainText>{t.positive}</PlainText>
               </div>
             </div>
           ))}
@@ -407,7 +417,9 @@ function AtlasContentPanel({
           {zone.outcomemeasures.map((o) => (
             <div className="atlas-list-entry" key={o.name}>
               <div className="atlas-list-entry-name">{o.name}</div>
-              <div>{o.description}</div>
+              <div>
+                <PlainText>{o.description}</PlainText>
+              </div>
               <div>
                 <strong>MDC / cutoff:</strong> {o.mdcOrCutoff}
               </div>
@@ -421,7 +433,9 @@ function AtlasContentPanel({
           <div className="card-kicker">Board Pearls</div>
           <ul className="atlas-pearls-list">
             {zone.boardPearls.map((p) => (
-              <li key={p}>{p}</li>
+              <li key={p}>
+                <PlainText>{p}</PlainText>
+              </li>
             ))}
           </ul>
         </section>
@@ -450,6 +464,10 @@ function AtlasContentPanel({
   return (
     <div key={zoneKey} className="atlas-panel">
       <h2 className="atlas-panel-title">{zone.name}</h2>
+      {/* Without this line a reader has no way to know the dotted words do anything — the
+          underline is deliberately quiet so it doesn't compete with the prose, which also
+          makes it easy to miss. See components/PlainText.tsx. */}
+      <p className="atlas-plain-hint">Tap any underlined word for a plain-English explanation.</p>
 
       {firstMuscle && (
         <section className="atlas-panel-section" id="muscles">

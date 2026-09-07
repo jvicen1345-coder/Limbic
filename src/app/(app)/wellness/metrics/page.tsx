@@ -1,11 +1,10 @@
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/db";
 import { BodyMetricsCard } from "@/components/vitals/BodyMetricsCard";
 import { BmiCalculatorCard } from "@/components/metrics/BmiCalculatorCard";
 import { MaxHeartRateCalculatorCard } from "@/components/metrics/MaxHeartRateCalculatorCard";
 import { HrvCalculatorCard } from "@/components/metrics/HrvCalculatorCard";
 import { Vo2MaxCalculatorCard } from "@/components/metrics/Vo2MaxCalculatorCard";
-import type { WellnessProfile } from "@/lib/vitals";
+import { getWellnessProfile, getWellnessProfileSyncedAt } from "@/lib/wellness-profile";
 
 /** Pure calculator inputs — tracking/trends now live on the Overview page's "Trends" tab
  *  (see app/(app)/wellness/page.tsx), RPE moved to the Exercise Library page's Rep
@@ -18,16 +17,10 @@ export default async function MetricsPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const row = await prisma.vitalsProfile.findUnique({ where: { userId: user.id } });
-  const profile: WellnessProfile = {
-    age: row?.age ?? null,
-    heightFeet: row?.heightFeet ?? null,
-    heightInches: row?.heightInches ?? null,
-    weightLbs: row?.weightLbs ?? null,
-    biologicalSex: row?.biologicalSex ?? null,
-    activityLevel: row?.activityLevel ?? null,
-    wellnessGoal: row?.wellnessGoal ?? null,
-  };
+  const [profile, googleHealthSyncedAt] = await Promise.all([
+    getWellnessProfile(user.id),
+    getWellnessProfileSyncedAt(user.id),
+  ]);
 
   return (
     <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>
@@ -41,7 +34,7 @@ export default async function MetricsPage() {
 
       <BodyMetricsCard
         initial={profile}
-        googleHealthSyncedAt={row?.googleHealthSyncedAt ? row.googleHealthSyncedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : null}
+        googleHealthSyncedAt={googleHealthSyncedAt ? googleHealthSyncedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : null}
       />
 
       <div id="calculators" className="wellness-section-label" style={{ marginTop: 8 }}>

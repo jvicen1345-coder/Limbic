@@ -11,7 +11,7 @@ export default function WellnessLoading() {
       </div>
 
       <div className="wellness-quick-actions">
-        {[1, 2, 3].map((i) => (
+        {[1, 2].map((i) => (
           <div key={i} className="wellness-quick-action">
             <div className="skeleton-line" style={{ width: "60%", height: 13 }} />
           </div>

@@ -3,8 +3,8 @@
    dialed in during design iteration (project/PT News.dc.html's <style> block) baked
    directly into :root instead of layered on top. Structure and component classes are
    otherwise unchanged, so anything styled with .card/.btn/.tag/etc. keeps its exact
-   shape and behavior. Caprasimo/Figtree are loaded via next/font in app/layout.tsx
-   (--font-caprasimo/--font-figtree), not a CSS @import — see the comment there for why.
+   shape and behavior. The heading face (Plus Jakarta Sans) is loaded via next/font in
+   app/layout.tsx (--font-jakarta), not a CSS @import — see the comment there for why.
    Light is still the default palette below; dark mode is a second token block further
    down, gated on `html[data-theme="dark"]` (see components/ThemeToggle.tsx and the inline
    script in app/layout.tsx that sets the attribute before first paint). Because every
@@ -136,8 +136,19 @@
   --color-accent-2-800: #0b4760;
   --color-accent-2-900: #072e3f;
 
-  --font-heading: var(--font-caprasimo), system-ui, sans-serif;
-  --font-heading-weight: 400;
+  /* Plus Jakarta Sans, a humanist sans in the same family as the system stack --font-body
+     resolves to, rather than a display face pulling against it. It replaced Caprasimo,
+     which read as a poster font in the 143 places this token is used — including article
+     titles and nav labels, where it cost real legibility. */
+  --font-heading: var(--font-jakarta), system-ui, sans-serif;
+  --font-heading-weight: 700;
+  /* The "Limbic" logotype, heavier than an ordinary heading. It needs its own token because
+     the wordmark appears in five places that had drifted to three different weights — and
+     the three in AppShell.tsx had none at all, inheriting body 400. That went unnoticed
+     while the heading face was Caprasimo, which ships only weight 400 and is heavy by
+     design; the moment a normal-weight family replaced it, the logotype quietly became
+     light text. */
+  --font-wordmark-weight: 800;
   /* Same native system-UI font stack Facebook's web app renders body text with — no
      webfont download, just each OS's own UI font (San Francisco on macOS/iOS, Segoe UI on
      Windows, Roboto on Android/Chrome OS, sans-serif as the final fallback). Replaces the
@@ -289,14 +300,12 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  /* Matches --font-heading-weight (400) — the only weight Caprasimo actually ships (see
-     app/layout.tsx). This used to be hardcoded to 800 for extra emphasis on real headings,
-     but Caprasimo has no bold font file to back that up, so the browser was faking it with
-     synthetic/faux bold — which renders visibly blurry, especially white-on-dark in dark
-     mode (light text already "bleeds" more against a dark background than dark text does
-     against light, and synthetic bold's crude stroke-thickening makes that far worse).
-     Caprasimo is already a heavy display face at 400 by design, so real weight matches the
-     actual font file and reads crisp in both themes. */
+  /* Always --font-heading-weight, never a hardcoded number. The reason predates the
+     current face: this was once hardcoded to 800 against Caprasimo, which shipped only
+     weight 400, so the browser faked the rest with synthetic bold — visibly blurry, worst
+     white-on-dark where light text already bleeds against the background. Plus Jakarta Sans
+     is variable and has real masters through 800, so that particular trap is gone, but
+     going through the token keeps the weight in one place if the face changes again. */
   font-weight: var(--font-heading-weight);
   line-height: 1.12;
   letter-spacing: -0.015em;
@@ -546,8 +555,8 @@ html[data-theme="dark"] .card.elev-lg {
 .hero-card-save-wrap .btn-ghost:hover { background: rgba(255, 255, 255, 0.18); }
 .hero-card-title {
   font-family: var(--font-heading);
-  /* var(--font-heading-weight), not a hardcoded 800 — Caprasimo only ships weight 400 (see
-     app/layout.tsx), so anything heavier is the browser's blurry synthetic bold. */
+  /* var(--font-heading-weight), not a hardcoded 800 — see the h1-h6 rule near the top of
+     this file for why heading weight always goes through the token. */
   font-weight: var(--font-heading-weight);
   font-size: 22px;
   line-height: 1.25;
@@ -837,6 +846,13 @@ html[data-theme="dark"] .card.elev-lg {
   border-radius: var(--radius-lg);
   background: var(--color-card-surface);
   box-shadow: var(--shadow-lg);
+  /* Matches .tour-highlight above, so the card and the ring it belongs to travel together
+     between steps instead of the ring gliding while the card teleports. Opacity covers the
+     first step, which fades in once measured rather than appearing centred and jumping. */
+  transition: top 0.3s ease, left 0.3s ease, opacity 0.2s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-tooltip, .tour-highlight { transition: opacity 0.2s ease; }
 }
 .tour-progress { display: flex; gap: 4px; margin-bottom: 12px; }
 .tour-progress-seg { height: 3px; flex: 1; border-radius: 2px; background: var(--color-neutral-200); transition: background 0.2s ease; }
@@ -1966,7 +1982,11 @@ html[data-theme="dark"] .nav-founding-link-active {
 }
 .crossword-clue-item:hover { background: var(--color-neutral-100); }
 .crossword-clue-item-active { background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card-surface)); border-left-color: var(--color-accent); }
-.crossword-clue-item-done { opacity: 0.5; text-decoration: line-through; }
+/* "Every square has a letter", not "this entry is correct" — see isClueFilled in
+   components/CrosswordGame.tsx for why the distinction matters. Dimmed so the eye skips to
+   unfinished clues, but no strike-through: a line through a wrong answer would read as the
+   confirmation this state deliberately withholds. */
+.crossword-clue-item-filled { opacity: 0.55; }
 .crossword-clue-num { font-weight: 700; min-width: 20px; flex-shrink: 0; text-align: right; color: var(--color-neutral-700); }
 
 /* — Mini Crossword completion overlay — a centered card over a dimmed backdrop, not a
@@ -4549,7 +4569,7 @@ html[data-theme="dark"] .nav-founding-link-active {
    column is dropped rather than shown as four identical, unmissable cards. */
 .anatomy-connect-columns-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
-/* Part 6 — "Your Stats" inherits the body face here instead of the Caprasimo display font
+/* Part 6 — "Your Stats" inherits the body face here instead of the heading face
    .games-stats-title sets globally. Scoped to this game rather than fixing the shared rule,
    which also titles the games index, Differential and Rehab Sequence. Family only: size and
    weight still come from .games-stats-title. */
@@ -6455,7 +6475,7 @@ html[data-theme="dark"] .app-root--atrium {
   padding: 84px 24px 64px;
 }
 .legal-header { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
-.legal-header-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; }
+.legal-header-name { font-family: var(--font-heading); font-weight: var(--font-wordmark-weight); font-size: 18px; }
 
 .legal-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; margin: 0 0 6px; }
 .legal-updated { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 36px; }
@@ -6556,7 +6576,7 @@ html[data-theme="dark"] .app-root--atrium {
   border-bottom: 1px solid var(--color-divider);
 }
 .landing-nav-brand { display: flex; align-items: center; gap: 9px; }
-.landing-nav-wordmark { font-family: var(--font-heading); font-weight: 800; font-size: 20px; color: var(--color-text); }
+.landing-nav-wordmark { font-family: var(--font-heading); font-weight: var(--font-wordmark-weight); font-size: 20px; color: var(--color-text); }
 .landing-nav-actions { display: flex; align-items: center; gap: 10px; }
 @media (max-width: 640px) {
   .landing-nav { flex-direction: column; align-items: stretch; padding: 14px 20px; }
@@ -6581,9 +6601,9 @@ html[data-theme="dark"] .app-root--atrium {
   .landing-hero { min-height: 80vh; padding: 48px 20px; }
 }
 .landing-hero-headline {
-  /* Overrides the sitewide h1,h2,h3... base rule (font-family: var(--font-heading), i.e.
-     Caprasimo) — this is the one heading on the site meant to read as body copy, not a
-     display headline, so it points at --font-body instead. */
+  /* Overrides the sitewide h1,h2,h3... base rule (font-family: var(--font-heading)) —
+     this is the one heading on the site meant to read as body copy, not a display
+     headline, so it points at --font-body instead. */
   font-family: var(--font-body);
   font-weight: 800;
   font-size: clamp(30px, 5.4vw, 54px);
@@ -9063,20 +9083,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-note-preview { font-size: 12.5px; margin-top: 4px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .clindash-note-full { font-size: 12.5px; margin-top: 4px; line-height: 1.5; white-space: pre-wrap; }
 
-/* — Research feed (right column) — */
-.clindash-research-sub { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: -6px 0 10px; }
-.clindash-research-list { display: flex; flex-direction: column; gap: 8px; }
-.clindash-research-item {
-  display: block;
-  padding: 8px 10px;
-  border-radius: var(--radius-md);
-  background: var(--color-neutral-100);
-  color: inherit;
-  text-decoration: none;
-}
-.clindash-research-item-meta { font-size: var(--fs-10); color: var(--color-accent-700); margin-bottom: 3px; }
-.clindash-research-item-title { font-family: var(--font-heading); font-size: 12.5px; line-height: 1.3; }
-.clindash-research-see-all { display: block; font-size: 12px; margin-top: 10px; text-align: center; }
+/* — Quick tools (right column) — */
 .clindash-quick-tools { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
 
 /* — Zone 3: Practice Metrics — */
@@ -9259,7 +9266,11 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-morning-date { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 18px; }
 
 .clindash-eod-card { padding: 20px; margin-bottom: 20px; }
-.clindash-eod-header { font-family: var(--font-heading); font-size: 16px; margin-bottom: 12px; }
+/* Label only — .card-kicker carries the type. It used to set its own 16px heading font,
+   which matched nothing else on the screen: too big and too plain to read as a card label
+   like "Today's Patients" beside it, and directly above the "Morning Rounds" h1, which it
+   competed with rather than deferring to. */
+.clindash-eod-header { margin-bottom: 12px; }
 .clindash-eod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .clindash-eod-stat-value { font-family: var(--font-heading); font-size: 22px; }
 .clindash-eod-stat-value--danger { color: var(--color-danger); }
@@ -9405,17 +9416,6 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 .clindash-benchmark-pill--warn { background: color-mix(in srgb, #c9853a 16%, transparent); color: #c9853a; }
 .clindash-benchmark-pill--bad { background: color-mix(in srgb, var(--color-danger) 14%, transparent); color: var(--color-danger); }
 
-.clindash-treatment-ideas-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-.clindash-treatment-idea-row {
-  font-size: 13px;
-  line-height: 1.5;
-  padding: 8px 12px;
-  border-left: 3px solid var(--color-accent);
-  background: var(--color-neutral-100);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
-}
-.clindash-treatment-ideas-actions { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
-
 .clindash-alert-banner {
   padding: 12px 14px;
   border-radius: var(--radius-md);
@@ -9480,25 +9480,6 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
 
 .clindash-ce-progress-bar { height: 7px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; margin: 12px 0 6px; }
 .clindash-ce-progress-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
-
-.clindash-digest-header-row { margin-bottom: 4px; }
-.clindash-digest-title { font-family: var(--font-heading); font-size: 15px; }
-.clindash-digest-subtitle { font-size: var(--fs-11); color: var(--color-neutral-700); margin: 2px 0 10px; }
-.clindash-digest-item { padding: 10px 0; border-top: 1px solid var(--color-divider); }
-.clindash-digest-item:first-child { border-top: none; }
-.clindash-digest-item-title {
-  font-family: var(--font-heading);
-  font-size: 12.5px;
-  line-height: 1.35;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  color: inherit;
-  text-decoration: none;
-}
-.clindash-digest-item-meta { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 4px; }
-.clindash-digest-placeholder { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-style: italic; padding: 10px 0; border-top: 1px solid var(--color-divider); }
 
 .clindash-question-log { margin-top: 16px; }
 .clindash-question-card {
@@ -10340,7 +10321,7 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   padding: 16px 24px;
   border-bottom: 1px solid var(--color-divider);
 }
-.programs-page-logo { display: flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; color: var(--color-text); text-decoration: none; }
+.programs-page-logo { display: flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-weight: var(--font-wordmark-weight); font-size: 18px; color: var(--color-text); text-decoration: none; }
 .programs-page-home-link { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-neutral-700); text-decoration: none; }
 .programs-page-home-link:hover { color: var(--color-accent); }
 .programs-page-content { max-width: 1180px; margin: 0 auto; padding: 32px 24px 64px; }
@@ -12515,10 +12496,12 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
   background: color-mix(in srgb, var(--color-accent) 7%, var(--color-card-surface));
 }
-/* Plain text glyphs (+ ↗ ⚡), not icon components — one line of markup each and they
-   inherit the button's own font, so they stay aligned with the label at any text size. */
+/* Plain text glyphs (+ ↗), not icon components — one line of markup each and they inherit
+   the button's own font, so they stay aligned with the label at any text size. Both are
+   plain typographic characters that take the button's own color; the --brand modifier that
+   used to tint Ask Limbic Agent's bolt went with that button, and the bolt was never
+   actually tinted anyway — U+26A1 renders with emoji presentation, which ignores `color`. */
 .wellness-quick-action-glyph { font-size: 14px; line-height: 1; flex-shrink: 0; }
-.wellness-quick-action-glyph--brand { color: var(--color-accent); }
 @media (max-width: 640px) {
   .wellness-quick-actions { flex-direction: column; }
   .wellness-quick-action { width: 100%; }
@@ -12743,6 +12726,7 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
   .wellness-article-row { flex-wrap: wrap; gap: 4px 10px; }
   .wellness-article-row-title { flex-basis: 100%; white-space: normal; }
   .wellness-article-row-meta { width: 100%; justify-content: space-between; text-align: left; }
+}
 
 /* Inline links inside legal prose (/terms, /privacy, /dmca). The global `a` rule only
    underlines on hover, which is fine for nav and cards but too quiet inside a wall of
@@ -12877,4 +12861,1672 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
   color: var(--color-accent-700);
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+/* Tap-once score buttons on the outcome-measure calculators (see ItemScoreRow in
+   components/pro/calculators/CalcModal.tsx). Replaces a <select> per item: one tap instead
+   of two, the whole 0-5 range visible at once, and each value in a stable column position
+   so an examiner transcribing thirty items off a paper form can run straight down it.
+   Appended, scoped, overrides nothing. */
+.pro-score-row { display: flex; gap: 4px; flex-shrink: 0; }
+.pro-score-btn {
+  min-width: 34px;
+  padding: 6px 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-neutral-700);
+  background: var(--color-surface);
+  border: 1px solid var(--color-neutral-400);
+  border-radius: var(--radius-sm, 5px);
+  cursor: pointer;
+}
+.pro-score-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.pro-score-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+.pro-score-btn--on,
+.pro-score-btn--on:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+}
+@media (max-width: 560px) {
+  .pro-item-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .pro-score-btn { min-width: 40px; padding: 8px 0; }
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+   Health and Wellness — profile setup prompt and the Trends tab's Recovery
+   block (see app/(app)/wellness/page.tsx, components/wellness/RecoverySection.tsx).
+   Appended as its own scoped block, per COORDINATION.md.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* — Setup prompt — shown on the hub only while the profile can't drive the calculators.
+   Wraps the same BodyMetricsCard the Metrics page uses, so the fields are entered where
+   the reader already is rather than on a page they have to be sent to first. */
+.wellness-profile-setup {
+  padding: 18px 20px 4px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-card-surface));
+}
+.wellness-profile-setup-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.wellness-profile-setup-kicker {
+  font-size: var(--fs-11);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.wellness-profile-setup-copy {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  margin: 0 0 4px;
+}
+/* The wrapped card is already inside a bordered container — drop its own frame so the
+   prompt reads as one block rather than a card nested in a card. */
+.wellness-profile-setup .card {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+@media (max-width: 560px) {
+  .wellness-profile-setup { padding: 16px 16px 4px; }
+  .wellness-profile-setup-head { flex-direction: column; gap: 4px; }
+}
+
+/* — Recovery — sleep and mood on the Trends tab. */
+.wellness-recovery { margin-top: 22px; }
+.wellness-recovery-heading { margin-bottom: 10px; }
+.wellness-recovery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 720px) { .wellness-recovery-grid { grid-template-columns: 1fr; } }
+.wellness-recovery-card {
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+}
+.wellness-recovery-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.wellness-recovery-card-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+}
+.wellness-recovery-card-note { font-size: var(--fs-11); color: var(--color-neutral-700); white-space: nowrap; }
+/* Wraps rather than scrolls — sleep shows up to three stats and mood up to three, and at
+   narrow widths a second row reads better than a cramped single one. */
+.wellness-recovery-stats { display: flex; flex-wrap: wrap; gap: 18px 26px; }
+.wellness-recovery-stat { min-width: 0; }
+.wellness-recovery-stat-value {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 22px;
+  line-height: 1.15;
+}
+.wellness-recovery-stat-label { font-size: 12px; color: var(--color-neutral-700); margin-top: 3px; }
+.wellness-recovery-caption {
+  font-size: var(--fs-11);
+  font-style: italic;
+  color: var(--color-neutral-700);
+  line-height: 1.5;
+  margin: 12px 0 0;
+}
+
+/* Edit / Delete on one logged entry in the Session Exercises history
+   (SessionExerciseSection.tsx). Pushed to the right of the "Visit N · date" line the
+   entry already had, so correcting a past session doesn't cost the list a second row. */
+.clindash-session-exercise-actions { display: flex; gap: 10px; margin-left: auto; }
+.clindash-session-exercise-action {
+  font-size: var(--fs-11-5);
+  color: var(--color-accent-700);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.clindash-session-exercise-action:hover:not(:disabled) { text-decoration: underline; }
+.clindash-session-exercise-action:disabled { opacity: 0.5; cursor: default; }
+.clindash-session-exercise-action--danger { color: var(--color-danger); }
+
+/* ============================================================================
+   Article study breakdown (components/ArticleBreakdown.tsx) — the five labelled
+   fields that stand in for the publisher's abstract as a research article's body
+   copy. Sits inside .article-prose, so the label/value rows deliberately reset the
+   prose paragraph spacing rather than inherit it.
+   ============================================================================ */
+.article-breakdown { display: flex; flex-direction: column; gap: 16px; }
+.article-breakdown-row { display: flex; flex-direction: column; gap: 4px; }
+.article-breakdown-label {
+  font-size: var(--fs-10-5);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-accent-700);
+}
+.article-breakdown-value { margin: 0; font-size: 15px; line-height: 1.6; }
+.article-breakdown-findings { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.article-breakdown-findings li { font-size: 15px; line-height: 1.6; }
+/* Set apart from the breakdown itself: this is provenance, not part of the study. */
+.article-breakdown-note {
+  margin: 4px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-divider);
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  font-style: italic;
+}
+.article-breakdown-failed { margin: 0; font-size: 15px; line-height: 1.6; color: var(--color-neutral-700); }
+
+/* First-reader-only state, while the one Anthropic call for this article is in flight —
+   every reader after that gets the cached breakdown server-rendered with no loading step. */
+.article-breakdown-loading { display: flex; flex-direction: column; gap: 12px; }
+.article-breakdown-loading-bar {
+  height: 46px;
+  border-radius: 8px;
+  background: var(--color-divider);
+  animation: article-breakdown-pulse 1.4s ease-in-out infinite;
+}
+.article-breakdown-loading-bar:nth-child(3) { width: 70%; }
+@keyframes article-breakdown-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .article-breakdown-loading-bar { animation: none; }
+}
+
+/* No screen-reader-only utility existed in this file before this; scoped to the breakdown
+   rather than introduced as a global one, so nothing else silently depends on it. */
+.article-breakdown-loading .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================================
+   Horizontal tab rails: keep a sideways swipe sideways.
+
+   .sliding-tabs, .sub-tabs and .boards-tabs are all `overflow-x: auto` strips, and
+   none of them told the browser what a touch gesture on them means. Two separate
+   things followed from that, and they need different treatments.
+
+   Scroll chaining, fixed for all three: swipe to the end of the rail and the leftover
+   scroll is handed to the ancestor, which scrolls vertically — so the page lurches
+   exactly when the rail stops. `overscroll-behavior-x: contain` ends the gesture at the
+   rail's own edge. It costs nothing on a rail that doesn't overflow, so it is unconditional.
+
+   Axis locking, gated: `touch-action: pan-x` is what stops a diagonal thumb swipe from
+   scrolling the page while it scrolls the rail. It also stops a finger landing on the rail
+   from scrolling the page vertically at all, which is a poor trade on a rail that fits its
+   box and has nothing to swipe. So it applies only where the rail really does overflow —
+   components/SlidingTabs.tsx measures itself and sets data-scrollable (Clinical Reference
+   runs 573px past a 390px viewport, Home 241px; Exercise Programs and the wellness exercise
+   library are both 0). .sub-tabs and .boards-tabs have no such measurement and so get the
+   chaining fix only; give them the same treatment if a swipe on them ever reads as jumpy.
+   ============================================================================ */
+.sliding-tabs,
+.sub-tabs,
+.boards-tabs { overscroll-behavior-x: contain; }
+.sliding-tabs[data-scrollable="true"] { touch-action: pan-x; }
+
+/* ============================================================================
+   Appraisal workbench — /admin/appraisals (see components/admin/AppraisalWorkbench.tsx,
+   lib/appraisal.ts). Admin-only surface, so it is deliberately plain: a dense entry form
+   whose job is to be quick to fill in from a paper open beside it, not to look like the
+   reader-facing feed. Appended at the end of the file per COORDINATION.md.
+   ============================================================================ */
+.appraisal-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.appraisal-btn {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 14px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.appraisal-btn:hover:not(:disabled) { border-color: var(--color-accent); }
+.appraisal-btn:disabled { opacity: 0.5; cursor: default; }
+.appraisal-btn-primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+.appraisal-btn-danger { color: var(--color-danger, #9E2B25); }
+
+.appraisal-status-pill {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--color-surface-secondary);
+  color: var(--color-neutral-700);
+}
+.appraisal-status-pill[data-status="published"] {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.appraisal-empty {
+  font-size: 13.5px;
+  color: var(--color-neutral-700);
+  max-width: 60ch;
+  line-height: 1.6;
+}
+
+.appraisal-list { list-style: none; margin: 0; padding: 0; }
+.appraisal-list-row { border-top: 1px solid var(--color-neutral-300); }
+.appraisal-list-open {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 14px 2px;
+  cursor: pointer;
+}
+.appraisal-list-open:hover { background: var(--color-neutral-200); }
+.appraisal-list-title { display: block; font-size: 15px; font-weight: 600; color: var(--color-text); }
+.appraisal-list-meta { display: block; font-size: 12px; color: var(--color-neutral-700); margin-top: 3px; }
+.appraisal-list-flag {
+  display: block;
+  font-size: 12px;
+  color: var(--color-danger, #9E2B25);
+  margin-top: 5px;
+  line-height: 1.45;
+}
+
+.appraisal-preamble {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-neutral-700);
+  max-width: 66ch;
+  margin: 0 0 22px;
+}
+
+.appraisal-section {
+  border-top: 1px solid var(--color-neutral-300);
+  padding-top: 18px;
+  margin-top: 22px;
+}
+.appraisal-section-title { font-size: 15px; margin: 0 0 6px; }
+.appraisal-section-note {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--color-neutral-700);
+  max-width: 64ch;
+  margin: 0 0 14px;
+}
+
+.appraisal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+.appraisal-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.appraisal-field-wide { grid-column: 1 / -1; }
+.appraisal-field-label { font-size: 12px; font-weight: 600; color: var(--color-text); }
+.appraisal-field-hint { font-size: 11.5px; color: var(--color-neutral-700); line-height: 1.45; }
+.appraisal-field input,
+.appraisal-field select {
+  font: inherit;
+  font-size: 13.5px;
+  padding: 7px 9px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  width: 100%;
+  min-width: 0;
+}
+.appraisal-field input:focus-visible,
+.appraisal-field select:focus-visible,
+.appraisal-notes:focus-visible,
+.appraisal-para:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+
+.appraisal-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text);
+  grid-column: 1 / -1;
+}
+.appraisal-check input { width: 16px; height: 16px; }
+
+.appraisal-checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.appraisal-check-row { display: grid; grid-template-columns: 92px 1fr; gap: 12px; align-items: baseline; }
+.appraisal-check-verdict {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.appraisal-check-body { font-size: 13px; line-height: 1.55; color: var(--color-text); }
+
+.appraisal-notes,
+.appraisal-para {
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1.6;
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  resize: vertical;
+}
+.appraisal-para { margin-top: 10px; }
+
+.appraisal-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.appraisal-actions-note { font-size: 12px; color: var(--color-neutral-700); }
+.appraisal-actions-final {
+  border-top: 1px solid var(--color-neutral-300);
+  padding-top: 16px;
+  margin-top: 24px;
+}
+
+.appraisal-blockers {
+  margin: 22px 0 0;
+  padding: 12px 14px 12px 30px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-secondary);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--color-neutral-700);
+}
+
+.appraisal-message { font-size: 13px; margin: 14px 0 0; }
+.appraisal-message[data-kind="error"] { color: var(--color-danger, #9E2B25); }
+.appraisal-message[data-kind="ok"] { color: var(--color-success, #24614F); }
+
+@media (max-width: 640px) {
+  .appraisal-grid { grid-template-columns: minmax(0, 1fr); }
+  .appraisal-check-row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+
+/* ============================================================================
+   Client intake — the public form at /intake and the dashboard card that reviews
+   what comes back (components/IntakeForm.tsx, IntakeInboxCard.tsx).
+
+   The public page styles itself standalone: whoever opens it has no Limbic account
+   and never sees the app shell, so .intake-page owns its own background and
+   centring rather than inheriting .app-main's.
+   ============================================================================ */
+.intake-page {
+  min-height: 100dvh;
+  background: var(--color-page-bg, var(--color-neutral-100));
+  padding: 32px 16px 64px;
+  display: flex;
+  justify-content: center;
+}
+.intake-card {
+  width: 100%;
+  max-width: 760px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+.intake-masthead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.intake-title { font-family: var(--font-heading); font-size: 24px; margin: 0; }
+.intake-brand { font-size: 13px; color: var(--color-neutral-700); }
+.intake-intro { font-size: 14px; line-height: 1.55; margin: 10px 0 16px; }
+.intake-note { font-size: 13px; color: var(--color-neutral-700); line-height: 1.55; margin: 0; }
+
+.intake-privacy {
+  background: var(--color-accent-100);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 24px;
+}
+.intake-privacy-title {
+  font-size: var(--fs-10-5);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-accent-700);
+  margin-bottom: 6px;
+}
+.intake-privacy p { font-size: 12.5px; line-height: 1.5; margin: 0 0 6px; }
+.intake-privacy p:last-child { margin-bottom: 0; }
+
+.intake-form { display: flex; flex-direction: column; gap: 26px; }
+.intake-section { display: flex; flex-direction: column; gap: 12px; }
+.intake-section-title {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  margin: 0;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--color-divider);
+}
+.intake-prompt { font-size: 13px; font-weight: 600; margin: 4px 0 0; }
+.intake-field { display: flex; flex-direction: column; gap: 5px; }
+.intake-field > span { font-size: 12.5px; font-weight: 600; }
+.intake-field textarea.input { resize: vertical; }
+.intake-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.intake-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.intake-options { display: grid; gap: 8px 14px; }
+.intake-options-2 { grid-template-columns: repeat(2, 1fr); }
+.intake-options-3 { grid-template-columns: repeat(3, 1fr); }
+/* Whole row is the hit target, not just the 22px control — this is filled on a phone far
+   more often than at a desk. */
+.intake-check { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; min-height: 32px; }
+.intake-check input { flex-shrink: 0; }
+.intake-error { font-size: 13px; color: var(--color-danger); margin: 0; }
+.intake-submit-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.intake-submit-note { font-size: 12px; color: var(--color-neutral-700); }
+.intake-done { text-align: center; padding: 28px 0 8px; }
+.intake-done-title { font-family: var(--font-heading); font-size: 19px; margin: 0 0 8px; }
+.intake-done-body { font-size: 13.5px; color: var(--color-neutral-700); line-height: 1.55; margin: 0; }
+
+@media (max-width: 700px) {
+  .intake-card { padding: 20px 16px; }
+  .intake-grid-2, .intake-grid-3 { grid-template-columns: 1fr; }
+  .intake-options-2, .intake-options-3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 420px) {
+  .intake-options-2, .intake-options-3 { grid-template-columns: 1fr; }
+}
+
+/* — Dashboard side — */
+.intake-inbox { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.intake-empty { font-size: 12.5px; color: var(--color-neutral-700); margin: 0; line-height: 1.5; }
+.intake-fresh-link { background: var(--color-neutral-100); border-radius: var(--radius-md); padding: 10px 12px; }
+.intake-fresh-link-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin-bottom: 6px; }
+.intake-fresh-link-row { display: flex; gap: 8px; }
+.intake-fresh-link-row .input { font-size: 11.5px; }
+
+.intake-submission { border-top: 1px solid var(--color-divider); padding: 10px 0; }
+.intake-submission:first-of-type { border-top: none; }
+.intake-submission-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.intake-submission-name { font-weight: 600; font-size: 13px; }
+.intake-submission-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.intake-answers { display: flex; flex-direction: column; gap: 3px; margin-top: 7px; }
+.intake-answer-line { display: flex; gap: 8px; font-size: 12px; line-height: 1.45; }
+.intake-answer-label {
+  flex: 0 0 76px;
+  font-weight: 700;
+  font-size: var(--fs-10-5);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-accent-700);
+  padding-top: 1px;
+}
+.intake-answer-value { flex: 1; }
+.intake-attach-note { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 0; line-height: 1.45; }
+.intake-open-link { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 0; }
+.intake-open-link-label { font-size: 12.5px; font-weight: 600; }
+.intake-open-link-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.intake-open-link-actions { display: flex; gap: 10px; flex-shrink: 0; }
+
+/* Session date + patient delete — see SessionExerciseSection.tsx and PatientWorkspace.tsx. */
+.clindash-session-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* Delete is not Discharge. Discharge is the ordinary end of a course of treatment and gets
+   the muted outline above; this one destroys the record, so it reads as destructive from
+   across the header rather than only in its confirmation dialog. */
+.clindash-delete-patient-btn {
+  color: var(--color-danger);
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 45%, transparent);
+}
+.clindash-delete-patient-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+}
+.clindash-delete-patient-error { font-size: var(--fs-11-5); color: var(--color-danger); margin: 8px 0 0; }
+
+@media (max-width: 640px) {
+  .clindash-session-form-row { grid-template-columns: 1fr; }
+}
+/* ============================================================================
+   Limbic Playbooks — app/(app)/student/playbooks, components/playbook/*
+   ----------------------------------------------------------------------------
+   A playbook is a long-form regional examination reference: a check-off sequence,
+   normative numbers, routing tables, diagrams and a drill. It reads as a document
+   rather than a dashboard, so it runs wider and denser than the rest of Limbic
+   Student and sets its own type scale — but every colour is a Limbic token, and
+   the surfaces come from the warm --atrium-* family the /student chrome already
+   uses (see .app-root--atrium above), so it sits inside the section rather than
+   beside it.
+
+   The --pb-* variables below are the only colours the SVG figures in
+   components/playbook/PlaybookFigures.tsx know about; the figures never name a
+   hex, so re-tinting a playbook is an edit here and nowhere else.
+   ============================================================================ */
+
+.playbook {
+  --pb-surface: var(--atrium-surface, var(--color-surface));
+  --pb-surface-2: var(--atrium-surface-2, var(--color-neutral-200));
+  --pb-line: var(--atrium-border, var(--color-divider));
+  --pb-line-soft: color-mix(in srgb, var(--pb-line) 55%, transparent);
+  --pb-ink-2: var(--color-neutral-700);
+
+  /* Diagram palette: three separable hues, plus the three irritability signals. */
+  --pb-accent: var(--atrium-blue, var(--color-accent));
+  --pb-accent-soft: color-mix(in srgb, var(--pb-accent) 12%, var(--pb-surface));
+  --pb-accent-ink: var(--color-accent-700);
+  --pb-d2: var(--color-accent-2);
+  --pb-d3: var(--atrium-purple, #9b7fd4);
+  --pb-hi: var(--color-danger);
+  --pb-mod: var(--atrium-tint, var(--color-warn));
+  --pb-low: var(--color-success);
+
+  --pb-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  color: var(--color-text);
+  padding-bottom: 72px;
+}
+
+.playbook-wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+
+/* ---------- masthead ---------- */
+.playbook-masthead {
+  border-bottom: 2px solid var(--color-text);
+  padding: 22px 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.playbook-eyebrow {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pb-accent);
+  margin: 0 0 10px;
+}
+.playbook-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.06;
+  margin: 0;
+  text-wrap: balance;
+}
+.playbook-summary { margin: 10px 0 0; max-width: 56ch; color: var(--pb-ink-2); font-size: 14.5px; line-height: 1.5; }
+.playbook-stamp {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11-5);
+  line-height: 1.7;
+  color: var(--pb-ink-2);
+  text-align: right;
+  white-space: nowrap;
+}
+.playbook-stamp b { color: var(--color-text); font-weight: 600; }
+
+/* ---------- sticky section rail ---------- */
+.playbook-nav {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--atrium-bg, var(--color-bg));
+  border-bottom: 1px solid var(--pb-line);
+  margin-bottom: 30px;
+}
+.playbook-navrow {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 9px 22px;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.playbook-navrow a {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 5px 9px;
+  border-radius: var(--radius-sm);
+}
+.playbook-navrow a:hover { color: var(--pb-accent); background: var(--pb-accent-soft); text-decoration: none; }
+
+/* ---------- sections ---------- */
+.playbook-section { margin: 0 0 48px; scroll-margin-top: 56px; }
+.playbook-sechead {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px solid var(--pb-line);
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+.playbook-secnum { font-family: var(--pb-mono); font-size: 12px; font-weight: 600; color: var(--pb-accent); letter-spacing: 0.05em; }
+.playbook-sechead h2 { font-size: 21px; font-weight: 600; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+.playbook-sechead-note { margin-left: auto; font-size: 12px; color: var(--pb-ink-2); font-family: var(--pb-mono); }
+.playbook-h3 { font-size: 15.5px; font-weight: 600; margin: 24px 0 10px; color: var(--color-text); }
+.playbook-lede { max-width: 68ch; color: var(--pb-ink-2); margin: 0 0 16px; font-size: 14px; line-height: 1.55; }
+.playbook-footnote { font-size: 12.5px; color: var(--pb-ink-2); margin: 12px 0 0; max-width: 72ch; line-height: 1.5; }
+
+/* ---------- tables ----------
+   The horizontal scroll lives on the wrapper, never on the page — several of these
+   tables are five columns of prose and will not fit a phone. */
+.playbook-tablewrap {
+  overflow-x: auto;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 14px;
+}
+.playbook-table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13.4px; }
+.playbook-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--pb-surface-2);
+  z-index: 1;
+  font-family: var(--pb-mono);
+  font-weight: 600;
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--pb-line);
+}
+.playbook-table tbody td { padding: 9px 12px; border-bottom: 1px solid var(--pb-line-soft); vertical-align: top; line-height: 1.5; }
+.playbook-table tbody tr:last-child td { border-bottom: none; }
+.playbook-table tbody tr:hover { background: var(--pb-accent-soft); }
+.playbook-cell-name { font-weight: 600; min-width: 150px; }
+.playbook-cell-num { font-family: var(--pb-mono); font-variant-numeric: tabular-nums; font-size: 12.6px; }
+.playbook-cell-tissue { color: var(--pb-ink-2); min-width: 210px; }
+.playbook-cell-tissue strong { color: var(--color-text); font-weight: 600; }
+.playbook-row-group td {
+  background: var(--pb-surface-2);
+  padding: 7px 12px;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pb-accent-ink);
+  border-bottom: 1px solid var(--pb-line);
+}
+.playbook-row-group:hover td { background: var(--pb-surface-2); }
+
+/* ---------- checklist ---------- */
+.playbook-check-table td:first-child { width: 34px; text-align: center; }
+.playbook-check-table td:nth-child(2) { width: 34px; }
+.playbook-check-table input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--pb-accent); cursor: pointer; margin-top: 2px; }
+.playbook-idx { font-family: var(--pb-mono); font-size: var(--fs-11-5); color: var(--pb-ink-2); font-variant-numeric: tabular-nums; }
+.playbook-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 0;
+  font-family: var(--pb-mono);
+  font-size: 12px;
+  color: var(--pb-ink-2);
+}
+.playbook-progress-track {
+  flex: 1;
+  height: 5px;
+  background: var(--pb-surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--pb-line-soft);
+}
+.playbook-progress-fill { display: block; height: 100%; background: var(--pb-accent); transition: width 0.25s ease; }
+.playbook-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- numbers grid ---------- */
+.playbook-numgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 1px;
+  background: var(--pb-line);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.playbook-numcell { background: var(--pb-surface); padding: 13px 14px; }
+.playbook-numcell-value {
+  font-family: var(--pb-mono);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--pb-accent);
+  font-variant-numeric: tabular-nums;
+}
+.playbook-numcell-label { font-size: 12.5px; color: var(--pb-ink-2); margin-top: 3px; line-height: 1.4; }
+
+/* ---------- stats key ----------
+   The glossary above the special-tests table: what Sn / Sp / +LR / -LR actually mean,
+   so the numbers in that table can be weighed rather than just read. */
+.playbook-statkey {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--pb-line);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin: 18px 0 14px;
+}
+.playbook-skcell { background: var(--pb-surface); padding: 11px 14px; display: flex; gap: 11px; align-items: baseline; }
+.playbook-skcell b {
+  font-family: var(--pb-mono);
+  font-size: 12.5px;
+  color: var(--pb-accent);
+  min-width: 38px;
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+}
+.playbook-skcell span { font-size: 12.8px; color: var(--pb-ink-2); line-height: 1.45; }
+.playbook-skcell em { color: var(--color-text); font-style: normal; font-weight: 600; }
+.playbook-statnote { font-size: 12.4px; color: var(--pb-ink-2); margin: 0 0 4px; max-width: 72ch; line-height: 1.5; }
+
+/* ---------- provenance ----------
+   Every clinical value in a playbook says what stands behind it: an unmarked value is
+   traced to a published source named beside it, and the two badges mark the ones that
+   aren't. Convention is taught everywhere and was never measured; Contested has been
+   measured and the studies disagree. Both are outlined rather than filled so they read as
+   an annotation on the value, not as another status pill. */
+.playbook-prov {
+  display: inline-block;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-9-5);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+  vertical-align: 1px;
+  border: 1px solid currentColor;
+  margin-right: 5px;
+}
+.playbook-prov-c { color: var(--pb-mod); }
+.playbook-prov-x { color: var(--pb-hi); }
+
+/* The citation itself — quiet, and allowed to break, since some run long. */
+.playbook-src {
+  font-family: var(--pb-mono);
+  font-size: 10.8px;
+  color: var(--pb-ink-2);
+  opacity: 0.9;
+  overflow-wrap: break-word;
+}
+
+.playbook-provkey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: baseline;
+  margin: 0 0 26px;
+  padding: 12px 16px;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  font-size: 12.4px;
+  line-height: 1.5;
+  color: var(--pb-ink-2);
+}
+.playbook-provkey strong { color: var(--color-text); }
+
+/* ---------- callouts ---------- */
+.playbook-callout {
+  border-left: 3px solid var(--pb-accent);
+  background: var(--pb-accent-soft);
+  padding: 12px 16px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 16px 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.playbook-callout-warn { border-left-color: var(--pb-mod); background: color-mix(in srgb, var(--pb-mod) 14%, var(--pb-surface)); }
+
+/* ---------- figures ---------- */
+.playbook-figure {
+  margin: 20px 0;
+  padding: 18px 18px 14px;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  box-shadow: var(--shadow-sm);
+}
+.playbook-figure svg {
+  display: block;
+  width: 100%;
+  max-width: 660px;
+  height: auto;
+  margin: 0 auto;
+  color: var(--pb-ink-2);
+  overflow: visible;
+}
+.playbook-figure text { font-family: var(--font-body); font-size: 12px; fill: currentColor; }
+.playbook-figure text.mono { font-family: var(--pb-mono); font-size: 10.5px; letter-spacing: 0.06em; }
+.playbook-figtitle {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pb-accent);
+  margin: 0 0 14px;
+}
+.playbook-figure figcaption { margin: 14px auto 0; font-size: 12.5px; line-height: 1.55; color: var(--pb-ink-2); max-width: 72ch; }
+.playbook-figure figcaption strong { color: var(--color-text); font-weight: 600; }
+
+/* ---------- irritability cards ---------- */
+.playbook-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+.playbook-card {
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  padding: 15px 16px;
+  border-top: 3px solid var(--pb-line);
+}
+.playbook-card-h { border-top-color: var(--pb-hi); }
+.playbook-card-m { border-top-color: var(--pb-mod); }
+.playbook-card-l { border-top-color: var(--pb-low); }
+.playbook-card h4 { margin: 0 0 3px; font-size: 14px; font-weight: 600; }
+.playbook-card-sub { font-family: var(--pb-mono); font-size: var(--fs-11-5); margin: 0 0 10px; color: var(--pb-ink-2); }
+.playbook-card ul { margin: 0; padding-left: 17px; font-size: 13px; color: var(--pb-ink-2); }
+.playbook-card li { margin-bottom: 4px; line-height: 1.45; }
+
+/* ---------- pills ---------- */
+.playbook-pill {
+  display: inline-block;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+.playbook-pill-h { background: color-mix(in srgb, var(--pb-hi) 16%, var(--pb-surface)); color: var(--pb-hi); }
+.playbook-pill-m { background: color-mix(in srgb, var(--pb-mod) 18%, var(--pb-surface)); color: var(--pb-mod); }
+.playbook-pill-l { background: color-mix(in srgb, var(--pb-low) 16%, var(--pb-surface)); color: var(--pb-low); }
+.playbook-pill-a { background: var(--pb-accent-soft); color: var(--pb-accent-ink); }
+
+/* ---------- drill ---------- */
+.playbook-drill {
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  margin-bottom: 7px;
+  overflow: hidden;
+}
+.playbook-drill summary {
+  cursor: pointer;
+  padding: 11px 14px;
+  font-weight: 500;
+  font-size: 14px;
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.45;
+}
+.playbook-drill summary::-webkit-details-marker { display: none; }
+.playbook-drill summary::before { content: "?"; font-family: var(--pb-mono); color: var(--pb-accent); font-weight: 600; font-size: 12px; margin-top: 2px; }
+.playbook-drill summary:hover { background: var(--pb-accent-soft); }
+.playbook-drill[open] summary { border-bottom: 1px solid var(--pb-line-soft); }
+.playbook-drill-answer { padding: 11px 14px 13px 36px; font-size: 13.5px; color: var(--pb-ink-2); line-height: 1.55; }
+
+.playbook-footer {
+  border-top: 1px solid var(--pb-line);
+  padding-top: 16px;
+  font-size: 12.4px;
+  color: var(--pb-ink-2);
+  max-width: 70ch;
+  line-height: 1.55;
+}
+.playbook-footer strong { color: var(--pb-ink-2); font-weight: 600; }
+
+/* ---------- index cards (student/playbooks) ---------- */
+.playbook-hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 20px; }
+.playbook-hub-card {
+  /* .specialty-explore-btn (above) tints itself from --specialty-accent and otherwise
+     falls back to the Atrium gold, which would leave a gold button inside a blue-edged
+     card — set the same accent the border uses so the two agree. */
+  --specialty-accent: var(--color-accent);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-left: 4px solid var(--color-accent);
+}
+.playbook-hub-card-name { font-size: 17px; font-weight: 600; margin: 0; }
+.playbook-hub-card-desc { font-size: 13px; color: var(--color-neutral-700); margin: 0; line-height: 1.5; }
+.playbook-hub-card-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-variant-numeric: tabular-nums; }
+
+@media (max-width: 700px) {
+  .playbook-statkey { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .playbook-wrap { padding: 0 14px; }
+  .playbook-navrow { padding: 9px 14px; }
+  .playbook-stamp { text-align: left; }
+  .playbook-masthead { padding-top: 14px; }
+  .playbook-drill-answer { padding-left: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .playbook-progress-fill { transition: none; }
+}
+
+/* A playbook with many sections overflows the jump nav: 15 entries don't fit one row at
+   any desktop width, and a sideways-scrolling nav hides the sections furthest from the
+   masthead — exactly the ones a reader can't reach by scrolling either. Above the phone
+   breakpoint the row wraps instead; below it, it stays a single swipeable strip, which is
+   the better shape on a narrow screen. Playbooks whose nav already fits are unaffected. */
+@media (min-width: 900px) {
+  .playbook-navrow { flex-wrap: wrap; }
+}
+
+/* ============================================================================
+   Playbook recall mode (components/playbook/PlaybookRecall.tsx)
+
+   A playbook is a reference until you can answer it without reading it, so every answer
+   on the page can be blanked and checked. Everything below is scoped to .playbook-* and
+   appended rather than woven into the block above it.
+   ============================================================================ */
+
+.playbook-recall-toggle {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  padding: 4px 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.playbook-recall-toggle:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+.playbook-recall-toggle[aria-pressed="true"] { background: var(--pb-accent); border-color: var(--pb-accent); color: var(--pb-surface); }
+
+.playbook-sec-recall {
+  margin-left: auto;
+  flex-shrink: 0;
+  align-self: center;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.playbook-sechead-note + .playbook-sec-recall { margin-left: 12px; }
+.playbook-sec-recall:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+.playbook-sec-recall[aria-pressed="true"] { background: var(--pb-accent); border-color: var(--pb-accent); color: var(--pb-surface); }
+
+.playbook-recallbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  margin: 16px 0 0;
+  padding: 9px 13px;
+  background: var(--pb-accent-soft);
+  border-radius: var(--radius-sm);
+  font-size: 12.6px;
+  line-height: 1.5;
+  color: var(--pb-ink-2);
+}
+.playbook-recallbar button {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-accent-ink);
+  background: transparent;
+  border: 1px solid var(--pb-accent);
+  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  cursor: pointer;
+}
+.playbook-recallbar button:hover { background: var(--pb-surface); }
+.playbook-recallbar button[disabled] { opacity: 0.45; cursor: default; }
+
+/* The chips are only worth the row's height once the group is switched on. */
+.playbook-colmask {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0 0 8px;
+}
+.playbook-colmask .playbook-cmlabel,
+.playbook-colmask .playbook-chip { display: none; }
+.playbook-colmask-open .playbook-cmlabel,
+.playbook-colmask-open .playbook-chip { display: inline-block; }
+.playbook-cmlabel {
+  font-family: var(--pb-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  margin-right: 3px;
+}
+.playbook-chip {
+  font-family: var(--pb-mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px dashed var(--pb-line);
+  border-radius: 999px;
+  padding: 3px 10px;
+  cursor: pointer;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.playbook-chip:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+.playbook-chip[aria-pressed="true"] {
+  background: var(--pb-accent);
+  border-color: var(--pb-accent);
+  border-style: solid;
+  color: var(--pb-surface);
+}
+.playbook-tbl-recall {
+  flex-shrink: 0;
+  font-family: var(--pb-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+.playbook-tbl-recall:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+.playbook-tbl-recall[aria-pressed="true"] { background: var(--pb-accent); border-color: var(--pb-accent); color: var(--pb-surface); }
+
+/* The blanked cells themselves. The wrapper is a button when it is hiding something, so it
+   is reachable by keyboard and announces itself; it is styled back down to look like the
+   text it replaces. */
+.playbook-maskwrap { display: block; }
+button.playbook-maskwrap {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.playbook-mask-on { border-radius: var(--radius-sm); }
+.playbook-mask-on .playbook-maskwrap { filter: blur(5.5px); user-select: none; transition: filter 0.16s ease; }
+.playbook-mask-on:hover { background: var(--pb-accent-soft); }
+/* A blur hides a paragraph but not "60°" — a short answer keeps its shape through it, so it
+   is blanked with a panel instead. */
+.playbook-mask-solid .playbook-maskwrap {
+  filter: none;
+  color: transparent;
+  background: var(--pb-surface-2);
+  box-shadow: inset 0 0 0 1px var(--pb-line-soft);
+  border-radius: var(--radius-sm);
+}
+.playbook-missbtn {
+  display: inline-block;
+  margin-top: 7px;
+  font-family: var(--pb-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px dashed var(--pb-line);
+  border-radius: 999px;
+  padding: 2px 9px;
+  cursor: pointer;
+}
+.playbook-missbtn:hover { color: var(--pb-hi); border-color: var(--pb-hi); }
+.playbook-missbtn-on { color: var(--pb-hi); border-color: var(--pb-hi); border-style: solid; }
+.playbook-missed { box-shadow: inset 3px 0 0 var(--pb-hi); }
+/* A ticked box and a missed answer are different states, so they get different marks. */
+.playbook-row-missed td:first-child { box-shadow: inset 3px 0 0 var(--pb-mod); }
+.playbook-flagcount { font-family: var(--pb-mono); font-size: var(--fs-11-5); color: var(--pb-hi); }
+
+/* A diagram with its labels blanked is a name-the-anatomy question; the caption gives the
+   answer away, so it goes with them. */
+.playbook-labels-hidden { cursor: pointer; }
+.playbook-labels-hidden svg text {
+  filter: blur(3.5px);
+  opacity: 0.6;
+  cursor: pointer;
+  transition: filter 0.16s ease, opacity 0.16s ease;
+}
+.playbook-labels-hidden svg text.playbook-label-shown { filter: none; opacity: 1; }
+.playbook-labels-hidden figcaption { filter: blur(5px); user-select: none; }
+
+
+/* A case answer is several labelled lines rather than one paragraph. */
+.playbook-case .playbook-drill-answer p { margin: 0 0 7px; }
+.playbook-case .playbook-drill-answer p:last-child { margin-bottom: 0; }
+.playbook-case .playbook-drill-answer b { color: var(--color-text); }
+
+/* ---------- focus ---------- */
+.playbook-navrow a:focus-visible,
+.playbook-recall-toggle:focus-visible,
+.playbook-sec-recall:focus-visible,
+.playbook-tbl-recall:focus-visible,
+.playbook-chip:focus-visible,
+.playbook-missbtn:focus-visible,
+.playbook-recallbar button:focus-visible,
+button.playbook-maskwrap:focus-visible {
+  outline: 2px solid var(--pb-accent);
+  outline-offset: 1px;
+  border-radius: var(--radius-sm);
+}
+.playbook-drill summary:focus-visible { outline: 2px solid var(--pb-accent); outline-offset: -2px; }
+
+/* A wide diagram squashed to phone width is unreadable; it scrolls in its own frame. */
+@media (max-width: 700px) {
+  .playbook-figure { overflow-x: auto; }
+  .playbook-figure svg { min-width: 540px; }
+}
+
+/* ---------- narrow screens: every table becomes a stack of cards ----------
+   A five-column table of prose cannot fit a phone, and a sideways-scrolling table hides
+   the last column — which in these tables is always the finding. Below this width each row
+   becomes a card with the column name printed above each value, so nothing is off-screen. */
+@media (max-width: 860px) {
+  .playbook-tablewrap { border: none; background: transparent; box-shadow: none; overflow-x: visible; }
+  .playbook-table { display: block; min-width: 0; }
+  .playbook-table thead { display: none; }
+  .playbook-table tbody { display: block; }
+  .playbook-table tbody tr {
+    display: block;
+    background: var(--pb-surface);
+    border: 1px solid var(--pb-line);
+    border-radius: var(--radius-sm);
+    padding: 11px 13px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  .playbook-table tbody tr:hover { background: var(--pb-surface); }
+  .playbook-table tbody tr.playbook-row-group {
+    background: var(--pb-surface-2);
+    padding: 7px 13px;
+    margin-bottom: 8px;
+    box-shadow: none;
+  }
+  .playbook-table tbody tr.playbook-row-group:hover { background: var(--pb-surface-2); }
+  .playbook-table tbody td { display: block; border: none; padding: 5px 0; }
+  .playbook-table tbody td:first-child { padding-top: 0; }
+  .playbook-table tbody td:last-child { padding-bottom: 0; }
+  .playbook-table tbody td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-family: var(--pb-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pb-ink-2);
+    margin-bottom: 3px;
+  }
+  .playbook-cell-name { font-size: 15px; min-width: 0; }
+  .playbook-cell-tissue { min-width: 0; }
+  .playbook-check-table .playbook-check-ck,
+  .playbook-check-table .playbook-idx {
+    display: inline-block;
+    width: auto;
+    text-align: left;
+    vertical-align: middle;
+    padding: 0;
+  }
+  .playbook-check-table .playbook-idx { margin-left: 9px; margin-right: 2px; }
+  .playbook-row-missed td:first-child { box-shadow: none; }
+  .playbook-row-missed { border-left: 3px solid var(--pb-mod); }
+}
+
+/* ---------- print ----------
+   A playbook is something people take into a lab, so it has to print: no controls, nothing
+   blanked, no sticky header floating over the page, and drill answers open. */
+@media print {
+  .playbook-nav,
+  .playbook-recallbar,
+  .playbook-colmask,
+  .playbook-recall-toggle,
+  .playbook-sec-recall,
+  .playbook-progress,
+  .playbook-missbtn {
+    display: none !important;
+  }
+  .playbook-mask-on .playbook-maskwrap,
+  .playbook-mask-solid .playbook-maskwrap {
+    filter: none !important;
+    color: inherit !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    user-select: auto !important;
+  }
+  .playbook-mask-on { background: transparent !important; }
+  .playbook-labels-hidden svg text { filter: none !important; opacity: 1 !important; }
+  .playbook-labels-hidden figcaption { filter: none !important; }
+  .playbook-wrap { max-width: none; padding: 0; }
+  .playbook-table thead th { position: static; }
+  .playbook-tablewrap { overflow: visible; box-shadow: none; }
+  .playbook-figure { box-shadow: none; }
+  .playbook-table tbody tr,
+  .playbook-figure,
+  .playbook-numcell,
+  .playbook-card,
+  .playbook-drill {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .playbook-section h2,
+  .playbook-h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .playbook-mask-on .playbook-maskwrap,
+  .playbook-labels-hidden svg text { transition: none; }
+}
+
+/* A table that declares column widths gets a fixed layout, so the widths are the widths;
+   without one the browser sizes columns from their content, which is right for most of
+   these tables and wrong where a short column would otherwise be squeezed to nothing. The
+   stacked-card layout below 860px replaces the table box entirely, so neither applies there. */
+.playbook-table-fixed { table-layout: fixed; }
+.playbook-check-table .playbook-check-ck { text-align: center; padding-left: 12px; padding-right: 2px; }
+.playbook-check-table .playbook-idx { text-align: right; padding-left: 2px; padding-right: 14px; white-space: nowrap; }
+
+/* The stacked-card layout replaces the table box, but a <col> width still reaches the cells
+   underneath it — a row that spans fewer columns than the colgroup declares ends up wearing
+   the first column's width, which on the checklist is 34px and renders a heading one letter
+   per line. Neutralise the columns and let each cell fill its card. */
+@media (max-width: 860px) {
+  .playbook-table col { width: auto; }
+  .playbook-table tbody td { width: auto; }
+  .playbook-check-table .playbook-check-ck,
+  .playbook-check-table .playbook-idx { width: auto; }
+}
+
+/* `.playbook-check-table td:first-child` above assumes the first cell of every row is the
+   tick box, which held until a checklist item could carry further rows under one box: those
+   rows start at the Item column, which then wears the tick box's 34px and centring and
+   renders a heading one letter per line. Match on what the cell is rather than where it sits. */
+.playbook-check-table td:first-child.playbook-cell-name { width: auto; text-align: left; }
+/* Same assumption, one column over: an `also` row's second cell is How it's performed, not
+   the row number, so it must not inherit the number column's width either. */
+.playbook-check-table td:nth-child(2):not(.playbook-idx) { width: auto; text-align: left; }
+/* The "Limbic" logotype in the app shell — desktop sidebar, mobile top bar, and mobile
+   drawer (see AppShell.tsx, which sets only the size inline, since the three differ). One
+   class rather than three inline styles: the weight is the whole point of this rule, and an
+   inline style carrying a family but no weight is exactly how the wordmark ended up
+   rendering at body weight in the first place. */
+.app-wordmark {
+  font-family: var(--font-heading);
+  font-weight: var(--font-wordmark-weight);
+  color: var(--color-text);
+}
+
+/* Plain-language terms — the tappable jargon in the Atlas (see components/PlainText.tsx and
+   lib/plain-language.ts). Deliberately quiet: a dotted underline in the body colour, not a
+   link colour, because these sit inside running prose a clinician reads too and should not
+   compete with it. */
+.plain-term {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: help;
+  text-decoration: underline dotted var(--color-accent-500);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+.plain-term:hover { text-decoration-color: var(--color-accent-700); background: var(--color-accent-100); }
+.plain-term[aria-expanded="true"] { background: var(--color-accent-100); }
+.plain-term:focus-visible { outline: 2px solid var(--color-accent-500); outline-offset: 2px; border-radius: 2px; }
+.plain-term-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+/* Fixed, and portalled to <body> — see components/PlainText.tsx for why an absolutely
+   positioned child of the word could not work inside the Atlas's scrolling panel. */
+.plain-term-pop {
+  position: fixed;
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 32px));
+  padding: 11px 13px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 28px -14px rgba(0, 0, 0, 0.45);
+  text-align: left;
+  white-space: normal;
+  cursor: auto;
+}
+.plain-term-pop-word {
+  font-size: var(--fs-11);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+}
+.plain-term-pop-what { font-size: 13px; line-height: 1.45; color: var(--color-text); font-weight: 400; }
+.plain-term-pop-eg {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--color-neutral-700);
+  font-style: italic;
+  font-weight: 400;
+  padding-top: 5px;
+  border-top: 1px solid var(--color-divider);
+}
+.atlas-plain-hint {
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  margin: -4px 0 14px;
+}
+
+/* ---------- playbook: the taught lane ----------
+   A reader's own line under a cell, in the atrium purple so it never reads as part of the
+   guide's own text. Empty lanes only exist while the lane is switched on; a filled one stays
+   on the page, and prints with it. */
+.playbook-taught-toggle {
+  flex-shrink: 0;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  padding: 4px 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.playbook-taught-toggle:hover { color: var(--pb-d3); border-color: var(--pb-d3); }
+.playbook-taught-toggle[aria-pressed="true"] { background: var(--pb-d3); border-color: var(--pb-d3); color: var(--pb-surface); }
+
+.playbook-taughtbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  margin: 12px 0 0;
+  padding: 9px 13px;
+  background: color-mix(in srgb, var(--pb-d3) 11%, var(--pb-surface));
+  border-radius: var(--radius-sm);
+  font-size: 12.6px;
+  line-height: 1.5;
+  color: var(--pb-ink-2);
+}
+.playbook-taughtbar span:first-child { flex: 1 1 30ch; }
+.playbook-taught-count { font-family: var(--pb-mono); font-size: var(--fs-10-5); color: var(--pb-d3); }
+.playbook-taughtbar button {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-d3);
+  background: transparent;
+  border: 1px solid var(--pb-d3);
+  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  cursor: pointer;
+}
+.playbook-taughtbar button:hover { background: var(--pb-surface); }
+.playbook-taughtbar button[disabled] { opacity: 0.45; cursor: default; }
+
+/* Tag and line sit on one row: with every lane open at once, a stacked label would half
+   again the height of every table on the page. A lane with something in it earns the rule
+   above it; an empty one stays as quiet as an empty line can be. */
+.playbook-taught {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 6px 0 0;
+  color: var(--pb-d3);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.playbook-taught-set {
+  padding-top: 5px;
+  border-top: 1px dashed color-mix(in srgb, var(--pb-d3) 45%, transparent);
+}
+.playbook-taught-tag {
+  flex: 0 0 auto;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-9-5);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--pb-d3);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+.playbook-taught-input {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 1.45em;
+  resize: none;
+  overflow: hidden;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1.5;
+}
+.playbook-taught-input::placeholder { color: var(--pb-d3); opacity: 0.5; }
+.playbook-taught-input:focus { outline: none; }
+.playbook-taught-input:focus-visible { outline: 2px solid var(--pb-d3); outline-offset: 3px; border-radius: 2px; }
+
+/* A reader's own lines are part of what they take into the lab, so they print — but only the
+   ones with something in them. An open lane is several hundred empty fields, and an empty
+   field on paper is just a rule under every cell. */
+@media print {
+  .playbook-taughtbar { display: none !important; }
+  .playbook-taught:not(.playbook-taught-set) { display: none !important; }
+  .playbook-taught-set { color: #543a86; break-inside: avoid; page-break-inside: avoid; }
+  .playbook-taught-set .playbook-taught-input { height: auto !important; }
+}
+
+/* ============================================================================
+   Appraisal citation lookup and outcome-measure picker — the two entry shortcuts on
+   /admin/appraisals (see components/admin/AppraisalWorkbench.tsx). Appended at the end of
+   the file per COORDINATION.md.
+   ============================================================================ */
+.appraisal-lookup {
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-secondary);
+}
+.appraisal-lookup-row { display: flex; gap: 8px; align-items: stretch; }
+.appraisal-lookup-row input {
+  font: inherit;
+  font-size: 13.5px;
+  padding: 7px 9px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  flex: 1;
+  min-width: 0;
+}
+.appraisal-lookup-row input:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+.appraisal-lookup-row .appraisal-btn { flex-shrink: 0; }
+
+.appraisal-lookup-result {
+  margin-top: 12px;
+  padding: 11px 12px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+.appraisal-lookup-title { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.4; color: var(--color-text); }
+.appraisal-lookup-meta { font-size: 12.5px; color: var(--color-neutral-700); margin: 5px 0 0; line-height: 1.45; }
+
+.appraisal-measure { margin-bottom: 14px; }
+.appraisal-measure-summary {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  margin: 8px 0 0;
+  padding-left: 10px;
+  border-left: 2px solid var(--color-neutral-300);
+  max-width: 64ch;
+}
+/* A measure with no agreed MCID is the case worth noticing while entering numbers — the
+   magnitude check will come back "not entered" rather than passing or failing. */
+.appraisal-measure-summary[data-no-mcid="true"] {
+  border-left-color: var(--color-warn, #8A6D1F);
+  color: var(--color-text);
+}
+
+/* ============================================================================
+   Read-only PubMed abstract pane on /admin/appraisals (see AbstractPane in
+   components/admin/AppraisalWorkbench.tsx). Styled as reference material rather than as
+   content: a muted panel with its own label and footnote, deliberately not looking like the
+   fields around it, because everything else on that page is something the appraiser typed
+   and this is the one thing that isn't. Appended at the end of the file per COORDINATION.md.
+   ============================================================================ */
+.appraisal-abstract { margin-bottom: 16px; }
+.appraisal-abstract-empty {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  margin: 0 0 14px;
+  max-width: 64ch;
+  line-height: 1.55;
+}
+.appraisal-abstract-pane {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px dashed var(--color-neutral-400);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-secondary);
+}
+.appraisal-abstract-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  margin: 0 0 8px;
+}
+.appraisal-abstract-text {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--color-text);
+  margin: 0;
+  max-width: 72ch;
+  /* Long abstracts scroll inside the pane rather than pushing the number fields — the
+     whole point is having both on screen at once. */
+  max-height: 320px;
+  overflow-y: auto;
+}
+.appraisal-abstract-foot {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  margin: 10px 0 0;
+  padding-top: 9px;
+  border-top: 1px solid var(--color-neutral-300);
+  max-width: 68ch;
+}
+/* Clinical-notes form: the "Note" label sits opposite a link out to the full documentation
+   templates (see ClinicalNotesSection.tsx). */
+.clindash-note-label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.clindash-note-templates-link { font-size: var(--fs-11-5); color: var(--color-accent); text-decoration: none; }
+.clindash-note-templates-link:hover { text-decoration: underline; }
+
+/* Clinician's Tool Chest (see app/(app)/pro/toolbox/page.tsx) — the grouped view of what
+   LimbicPRO contains. Reuses .pro-tools-grid / .pro-tool-card from the overview hub; only
+   the grouping and the lock pill are new. */
+.toolbox-title { font-size: 26px; margin: 0 0 4px; }
+.toolbox-subtitle { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 6px; max-width: 62ch; line-height: 1.5; }
+.toolbox-group { margin-top: 22px; }
+.toolbox-group-head { border-bottom: 1px solid var(--color-divider); padding-bottom: 7px; }
+.toolbox-group-title { font-size: 16px; margin: 0; }
+.toolbox-group-blurb { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 2px 0 0; }
+.toolbox-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+/* A locked card is dimmer but still legible — its description is the reason to subscribe,
+   so greying it into unreadability would defeat the point of showing it at all. */
+.pro-tool-card--locked { border-left-color: var(--color-neutral-300); }
+.toolbox-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  font-size: var(--fs-10);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
 }

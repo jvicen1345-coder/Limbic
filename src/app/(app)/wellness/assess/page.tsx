@@ -1,10 +1,9 @@
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/db";
 import { ASSESSMENTS } from "@/lib/assessments-static";
 import { AssessmentLogButton } from "@/components/metrics/AssessmentLogButton";
 import { AssessmentScoreCard } from "@/components/metrics/AssessmentScoreCard";
 import { PlayIcon } from "@/components/icons";
-import type { WellnessProfile } from "@/lib/vitals";
+import { getWellnessProfile } from "@/lib/wellness-profile";
 
 function youtubeSearchUrl(testName: string): string {
   const query = `${testName} physical therapy`.toLowerCase();
@@ -15,16 +14,7 @@ export default async function AssessYourselfPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const row = await prisma.vitalsProfile.findUnique({ where: { userId: user.id } });
-  const profile: WellnessProfile = {
-    age: row?.age ?? null,
-    heightFeet: row?.heightFeet ?? null,
-    heightInches: row?.heightInches ?? null,
-    weightLbs: row?.weightLbs ?? null,
-    biologicalSex: row?.biologicalSex ?? null,
-    activityLevel: row?.activityLevel ?? null,
-    wellnessGoal: row?.wellnessGoal ?? null,
-  };
+  const profile = await getWellnessProfile(user.id);
 
   return (
     <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>

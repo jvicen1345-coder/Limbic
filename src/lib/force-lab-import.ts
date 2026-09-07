@@ -8,10 +8,10 @@ const client = new Anthropic();
 // clinical-AI feature, vision included.
 const MODEL = "claude-opus-5";
 
-/** Strips a ```json ... ``` (or bare ```) code fence, same defensive parse as
- *  lib/pre-visit-brief.ts's own stripCodeFence — the extraction prompt below says "return
- *  only valid JSON" but a vision response is exactly as likely to wrap it in a fence as a
- *  text-only one. */
+/** Strips a ```json ... ``` (or bare ```) code fence — the extraction prompt below says
+ *  "return only valid JSON" but a vision response is exactly as likely to wrap it in a
+ *  fence as a text-only one. Duplicated rather than shared: lib/syllabus-parser.ts and
+ *  lib/slide-parser.ts each keep their own copy for the same reason. */
 function stripCodeFence(text: string): string {
   const fenced = text.trim().match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
   return fenced ? fenced[1] : text;

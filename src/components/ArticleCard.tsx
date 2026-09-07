@@ -66,9 +66,7 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
         <span className={article.typeTagClass}>{article.specialtyLabel}</span>
         {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
         <OpenAccessPill doi={article.doi} />
-        <span>
-          {article.source} · {article.readMins} min
-        </span>
+        <span>{article.source}</span>
       </div>
       {extraTags.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
@@ -118,9 +116,7 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
         <div className="card-meta">
           <span className={article.typeTagClass}>{article.specialtyLabel}</span>
           {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
-          <span>
-            {article.source} · {article.readMins} min
-          </span>
+          <span>{article.source}</span>
         </div>
         <ThreadsTeaser articleId={article.id} />
       </div>
@@ -141,9 +137,7 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
           <OpenAccessPill doi={article.doi} />
         </div>
         <div className="hero-card-topright">
-          <span className="hero-card-meta-pill">
-            {article.dateLabel} · {article.readMins} min
-          </span>
+          <span className="hero-card-meta-pill">{article.dateLabel}</span>
           <span className="hero-card-save-wrap" onClick={(e) => e.stopPropagation()}>
             <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
           </span>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalcModal, CalcCardShell, LicensedInstrumentNotice } from "./CalcModal";
+import { CalcModal, CalcCardShell, LicensedInstrumentNotice, ItemScoreRow } from "./CalcModal";
 
 /** The LEFS is 20 items, each 0-4, summed out of 80. Like the DASH and unlike the ODI,
  *  the item *is* the text — there are no section headings to label rows with — so rows are
@@ -49,25 +49,17 @@ export function LefsCalculator() {
         </p>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {Array.from({ length: LEFS_ITEM_COUNT }, (_, i) => (
-            <div className="pro-item-row" key={i}>
-              <span className="pro-item-row-label">Item {i + 1}</span>
-              <select
-                className="input pro-item-row-select"
-                aria-label={`Item ${i + 1} response`}
-                value={scores[i]}
-                onChange={(e) => {
-                  const next = [...scores];
-                  next[i] = Number(e.target.value);
-                  setScores(next);
-                }}
-              >
-                {[0, 1, 2, 3, 4].map((score) => (
-                  <option key={score} value={score}>
-                    {score}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <ItemScoreRow
+              key={i}
+              label={`Item ${i + 1}`}
+              scores={[0, 1, 2, 3, 4]}
+              value={scores[i]}
+              onChange={(next) => {
+                const updated = [...scores];
+                updated[i] = next ?? 0;
+                setScores(updated);
+              }}
+            />
           ))}
         </div>
         <div className="pro-calc-result" style={{ marginTop: 14 }}>

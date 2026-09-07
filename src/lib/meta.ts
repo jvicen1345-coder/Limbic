@@ -49,6 +49,18 @@ export function formatDate(iso: string): string {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+/** Same date with the year — for the article detail page's byline (see
+ *  components/ArticleReadingPane.tsx). formatDate above deliberately omits the year and
+ *  stays that way: it labels feed cards and row lists, where the year is noise on the
+ *  recent items that make up nearly all of them. On the article page it's the opposite.
+ *  A reader appraising a study needs to know whether it's from this year or from 2015 —
+ *  that single fact changes how much weight the findings carry — and "Apr 1" alone leaves
+ *  them guessing, or quietly assuming it's recent. */
+export function formatDateWithYear(iso: string): string {
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+}
+
 export function firstName(name: string): string {
   return name.replace(/^Dr\.\s*/, "").split(" ")[0];
 }

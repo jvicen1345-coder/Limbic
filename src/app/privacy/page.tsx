@@ -19,7 +19,7 @@ export default function PrivacyPage() {
         <li>Payment information: payment processing is handled by Stripe. Limbic does not store credit card numbers or payment details directly.</li>
         <li>
           Wellness data you track about yourself: height, weight, age, activity level, sleep, mood, vitals, and
-          other self-reported metrics you enter into Limbic Vitals, or that you choose to sync from a connected
+          other self-reported metrics you enter into Limbic Metrics, or that you choose to sync from a connected
           fitness or health account (see Section 5). This data is used to personalize your own wellness experience
           and is not used to provide medical care.
         </li>
@@ -123,7 +123,7 @@ export default function PrivacyPage() {
         <li>Turso: hosts Limbic&rsquo;s production database.</li>
         <li>Resend: delivers account emails such as password resets.</li>
         <li>Google: if you sign in with Google or connect a Google Health account, Google processes the associated authentication or health data. See Google&rsquo;s privacy policy at policies.google.com/privacy.</li>
-        <li>Strava and Fitbit: if you connect one of these accounts from your Activity Log, Limbic receives your recent activity data from that provider to sync into your Limbic Vitals log.</li>
+        <li>Strava and Fitbit: if you connect one of these accounts from your Activity Log, Limbic receives your recent activity data from that provider to sync into your Limbic Metrics log.</li>
         <li>PubMed and Unpaywall: research articles and full-text links are sourced from these public research APIs. No account data is sent to them.</li>
         <li>YouTube and Pexels: power the Clips and article-image features respectively. No account data is sent to them.</li>
       </ul>

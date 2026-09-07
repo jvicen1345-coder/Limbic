@@ -7,9 +7,11 @@ import { BackButton } from "@/components/BackButton";
 import { ArticleImage } from "@/components/ArticleImage";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { ArticleResearchPanel } from "@/components/ArticleResearchPanel";
+import { ArticleBreakdown } from "@/components/ArticleBreakdown";
 import { EVIDENCE_LEVEL_META } from "@/lib/evidence";
 import { slugifyTopic } from "@/lib/topic-slug";
 import { getOaStatusLabel, type UnpaywallResult } from "@/lib/unpaywall-shared";
+import type { ArticleBreakdown as ArticleBreakdownData } from "@/lib/article-breakdown-shared";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { EvidenceLevel } from "@/lib/types";
 
@@ -45,11 +47,15 @@ export function ArticleReadingPane({
   related,
   unpaywallResult,
   hasResearchAccess,
+  breakdown,
+  hasBreakdown,
 }: {
   article: DecoratedArticle;
   related: DecoratedArticle[];
   unpaywallResult: UnpaywallResult | null;
   hasResearchAccess: boolean;
+  breakdown: ArticleBreakdownData | null;
+  hasBreakdown: boolean;
 }) {
   const evidenceMeta = article.evidenceLevel ? EVIDENCE_LEVEL_META[article.evidenceLevel] : null;
 
@@ -90,24 +96,27 @@ export function ArticleReadingPane({
         <h1 className="article-hero-title">{article.title}</h1>
 
         <div className="article-hero-journal">{article.source}</div>
-        <div className="article-hero-datemeta">
-          {article.dateLabel} · {article.readMins} min read
-        </div>
+        {/* Year included here, unlike the feed cards — see formatDateWithYear in lib/meta.ts.
+            The read-time that used to follow it is gone, here and on every other Article
+            surface. estimateReadMins divides the word count by 200 and floors the result at
+            2, and a journal abstract is 200-500 words: the quotient lands under 2.5, rounds
+            to 1 or 2, and the floor catches whatever's left. Every research article in the
+            feed therefore read "2 min" — as did the AOPT guidelines, off a one-line blurb —
+            and it takes a 500-word abstract to reach 3. A number with two reachable values,
+            one of them near-universal, tells a reader nothing. Wellness articles keep
+            theirs: WellnessArticle.readMins is hand-set per article (see
+            lib/articles-static.ts) and renders from /wellness/[id], not here. */}
+        <div className="article-hero-datemeta">{article.dateLabelWithYear}</div>
       </div>
 
       <hr className="article-hero-divider" />
 
+      {/* A research article's body is its breakdown — the abstract itself is deliberately
+          not rendered here or anywhere else on the page (see lib/article-breakdown.ts).
+          Authored seed articles still render their own paragraphs below, unchanged. */}
       <div className="article-prose">
-        {article.fullAbstract ? (
-          article.fullAbstract
-            .split("\n")
-            .map((p) => p.trim())
-            .filter((p) => p.length > 0)
-            .map((para, i) => (
-              <p key={i} className={i === 0 ? "article-lede" : undefined}>
-                {para}
-              </p>
-            ))
+        {hasBreakdown ? (
+          <ArticleBreakdown articleId={article.id} initial={breakdown} />
         ) : article.body && article.body.length > 0 ? (
           article.body.map((para, i) => (
             <p key={i} className={i === 0 ? "article-lede" : undefined}>
@@ -233,7 +242,7 @@ export function ArticleReadingPane({
                   <hr className="article-related-divider" />
                   <div className="article-related-title">{rel.title}</div>
                   <div className="article-related-meta">
-                    {rel.source} · {rel.readMins} min
+                    {rel.source}
                   </div>
                   <div className="article-related-date">{rel.dateLabel}</div>
                 </div>

@@ -13,15 +13,14 @@ import {
   type PatientDetail,
   type PatientListEntry,
   type PeerComparisonBenchmark,
-  type WeeklyResearchDigest,
 } from "@/app/actions/clinician-dashboard";
-import { getDashboardResearchFeedAction } from "@/app/actions/dashboard-research";
-import type { Article } from "@/lib/types";
 import { DailyBriefBar } from "./DailyBriefBar";
 import { PatientPanel } from "./PatientPanel";
 import { PatientWorkspace } from "./PatientWorkspace";
-import { ResearchFeedPanel } from "./ResearchFeedPanel";
+import { DashboardToolsPanel } from "./DashboardToolsPanel";
 import { PracticeMetrics } from "./PracticeMetrics";
+import { IntakeInboxCard } from "./IntakeInboxCard";
+import type { IntakeInboxData } from "@/app/actions/intake";
 import { PreparePatientModal } from "./PreparePatientModal";
 import { DischargeModal } from "./DischargeModal";
 import { TeamOverview } from "./TeamOverview";
@@ -31,11 +30,9 @@ export interface ClinicianDashboardProps {
   summary: DashboardSummary;
   initialPatients: PatientListEntry[];
   availableHEPs: AvailableHEP[];
-  defaultResearchArticles: Article[];
   todaysPatients: PatientListEntry[];
   outcomeReminderPatients: PatientListEntry[];
   episodeLengthStats: EpisodeLengthStats;
-  weeklyDigest: WeeklyResearchDigest;
   peerBenchmarks: PeerComparisonBenchmark[];
   clinicianName: string;
   clinicianCredential: string;
@@ -49,6 +46,10 @@ export interface ClinicianDashboardProps {
    *  and isAdmin true is the only case that adds the tab bar/Team Overview tab. */
   isClinicAdmin: boolean;
   clinicPatientsToday: number | null;
+  /** Pending client intakes and the links still waiting to be used (see
+   *  app/actions/intake.ts). Server-loaded like the rest of this page's data; the card
+   *  calls router.refresh() after acting, same as every other mutation here. */
+  intakeInbox: IntakeInboxData;
   /** Force Lab's Dynamometer Unit Preference (see User.forceUnit, getUserForceUnit in
    *  app/actions/force-lab.ts) — threaded down to the active patient workspace's Force Lab
    *  section so its peak-force display matches the clinician's own preference. */
@@ -67,11 +68,9 @@ export function ClinicianDashboard({
   summary,
   initialPatients,
   availableHEPs,
-  defaultResearchArticles,
   todaysPatients,
   outcomeReminderPatients,
   episodeLengthStats,
-  weeklyDigest,
   peerBenchmarks,
   clinicianName,
   clinicianCredential,
@@ -80,6 +79,7 @@ export function ClinicianDashboard({
   isClinicAdmin,
   clinicPatientsToday,
   forceUnit,
+  intakeInbox,
 }: ClinicianDashboardProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -95,7 +95,6 @@ export function ClinicianDashboard({
   // .then() after the fetch resolves, never synchronously in the effect body itself —
   // required by this repo's react-hooks/set-state-in-effect lint rule).
   const [fetchedDetail, setFetchedDetail] = useState<PatientDetail | null>(null);
-  const [fetchedResearch, setFetchedResearch] = useState<Article[] | null>(null);
   const [visitAlreadyLoggedToday, setVisitAlreadyLoggedToday] = useState(false);
   const [redFlagAlerts, setRedFlagAlerts] = useState<{ id: string; description: string }[]>([]);
   const [detailFor, setDetailFor] = useState<string | null>(null);
@@ -130,16 +129,14 @@ export function ClinicianDashboard({
     let cancelled = false;
     Promise.all([
       getPatientDetail(selectedPatientId),
-      getDashboardResearchFeedAction(selectedPatientId),
       hasLoggedVisitRecently(selectedPatientId),
       // Runs on every open and every onChanged-triggered refetch (e.g. after saving an
       // outcome) — exactly the "after any outcome entry is saved or a patient record is
       // opened" trigger the Red Flag Monitor spec calls for, without a separate effect.
       checkRedFlags(selectedPatientId),
-    ]).then(([detail, research, loggedToday, redFlags]) => {
+    ]).then(([detail, loggedToday, redFlags]) => {
       if (cancelled) return;
       setFetchedDetail(detail);
-      setFetchedResearch(research);
       setVisitAlreadyLoggedToday(loggedToday);
       setRedFlagAlerts(redFlags.ok ? redFlags.alerts : []);
       setDetailFor(selectedPatientId);
@@ -152,7 +149,6 @@ export function ClinicianDashboard({
   const detailIsCurrent = selectedPatientId !== null && detailFor === selectedPatientId;
   const patientDetail = detailIsCurrent ? fetchedDetail : null;
   const loadingDetail = selectedPatientId !== null && !detailIsCurrent;
-  const researchArticles = detailIsCurrent && fetchedResearch ? fetchedResearch : defaultResearchArticles;
   const initiallyOpenOutcomes = detailIsCurrent && pendingOutcomeOpenFor === selectedPatientId;
   const showVisitBanner = detailIsCurrent && !visitAlreadyLoggedToday && visitBannerHandledFor !== selectedPatientId;
   const isMilestonePatient = patientDetail != null && outcomeReminderPatients.some((p) => p.id === patientDetail.id);
@@ -185,6 +181,16 @@ export function ClinicianDashboard({
   };
 
   const handlePatientDischarged = () => {
+    router.refresh();
+    setRefreshTick((t) => t + 1);
+  };
+
+  /** The deleted patient can't stay selected — its detail fetch would 404 and the workspace
+   *  would sit on a record that no longer exists. Deselecting first drops the workspace back
+   *  to Morning Rounds, and the refresh then rebuilds the patient list without it. */
+  const handlePatientDeleted = () => {
+    setSelectedPatientId(null);
+    setPendingOutcomeOpenFor(null);
     router.refresh();
     setRefreshTick((t) => t + 1);
   };
@@ -226,6 +232,7 @@ export function ClinicianDashboard({
               availableHEPs={availableHEPs}
               onChanged={handleChanged}
               onOpenDischargeModal={() => setDischargeModalOpen(true)}
+              onPatientDeleted={handlePatientDeleted}
               onPrepareForPatient={() => setPrepareModalOpen(true)}
               todaysPatients={todaysPatients}
               outcomeReminderPatients={outcomeReminderPatients}
@@ -249,7 +256,8 @@ export function ClinicianDashboard({
         </div>
 
         <div className="clindash-col-research">
-          <ResearchFeedPanel articles={researchArticles} patientLabel={patientLabel} weeklyDigest={weeklyDigest} />
+          <IntakeInboxCard data={intakeInbox} patients={initialPatients} onChanged={() => router.refresh()} />
+          <DashboardToolsPanel patientLabel={patientLabel} />
         </div>
       </div>
 

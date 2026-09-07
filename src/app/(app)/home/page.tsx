@@ -180,12 +180,12 @@ export default async function HomePage() {
   const lastReadArticleMeta = lastReadArticle ? articles.find((a) => a.id === lastReadArticle.articleId) : null;
   const continueReading = lastReadArticleMeta
     ? (() => {
-        const remainingMins = lastReadArticleMeta.readMins * (1 - lastReadArticle!.scrollProgress);
+        const pct = Math.round(lastReadArticle!.scrollProgress * 100);
         return {
           articleId: lastReadArticleMeta.id,
           title: lastReadArticleMeta.title,
           progress: lastReadArticle!.scrollProgress,
-          remainingLabel: remainingMins < 1 ? "< 1 min left" : `${Math.ceil(remainingMins)} min left`,
+          progressLabel: pct < 1 ? "Just started" : `${pct}% read`,
         };
       })()
     : null;
@@ -208,7 +208,7 @@ export default async function HomePage() {
 
   const ceEvents = articles
     .filter((a) => a.type === "ce")
-    .map((a) => ({ id: a.id, date: a.date, title: a.title, source: a.source, readMins: a.readMins }));
+    .map((a) => ({ id: a.id, date: a.date, title: a.title, source: a.source }));
 
   // Independent of each other, so run concurrently rather than making the og-image scrape
   // (always runs) wait behind the Nexus lookups (only when nexusOptIn is set), or vice

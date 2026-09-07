@@ -12,7 +12,7 @@ import type { WellnessArticle } from "@/lib/types";
 import { MacroCalculatorCard } from "@/components/metrics/MacroCalculatorCard";
 import { NutritionSyncCard } from "@/components/vitals/NutritionSyncCard";
 import { NUTRITION_SOURCES } from "@/lib/nutrition-macros";
-import type { WellnessProfile } from "@/lib/vitals";
+import { getWellnessProfile } from "@/lib/wellness-profile";
 import { getTimeZone } from "@/lib/user-time-zone";
 
 const TODAY_NUTRITION_METRICS = ["caloriesConsumed", "proteinConsumedG", "carbsConsumedG", "fatConsumedG"] as const;
@@ -37,7 +37,7 @@ export default async function NutritionPage() {
   const startOfToday = new Date(todayLocalDateStr() + "T00:00:00");
   const [articlePool, profile, todaysNutritionLogs] = await Promise.all([
     getWellnessArticles(),
-    prisma.vitalsProfile.findUnique({ where: { userId: user.id } }),
+    getWellnessProfile(user.id),
     prisma.metricsLog.findMany({
       where: { userId: user.id, metric: { in: [...TODAY_NUTRITION_METRICS] }, loggedAt: { gte: startOfToday } },
       orderBy: { loggedAt: "desc" },
@@ -52,19 +52,9 @@ export default async function NutritionPage() {
   // second paid tier wasn't part of this spec's Step 1 migration, so this reuses the same
   // isPro flag /pro already gates on (see app/actions/pro.ts).
   const isWellnessPlus = user.isPro || user.studentTier !== "none";
-  const goal = profile?.wellnessGoal as WellnessGoal | undefined;
+  const goal = (profile.wellnessGoal as WellnessGoal | null) ?? undefined;
 
   const dailyTip = nutritionTipForDate(todayDateKey(await getTimeZone(user)));
-
-  const wellnessProfile: WellnessProfile = {
-    age: profile?.age ?? null,
-    heightFeet: profile?.heightFeet ?? null,
-    heightInches: profile?.heightInches ?? null,
-    weightLbs: profile?.weightLbs ?? null,
-    biologicalSex: profile?.biologicalSex ?? null,
-    activityLevel: profile?.activityLevel ?? null,
-    wellnessGoal: profile?.wellnessGoal ?? null,
-  };
 
   return (
     <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>
@@ -155,7 +145,7 @@ export default async function NutritionPage() {
         Macro Calculator
       </div>
       <div style={{ marginBottom: 24 }}>
-        <MacroCalculatorCard profile={wellnessProfile} />
+        <MacroCalculatorCard profile={profile} />
       </div>
 
       <div className="nutrition-cards-grid">

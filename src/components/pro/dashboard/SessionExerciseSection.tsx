@@ -1,12 +1,18 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { addSessionExerciseLog, type PatientDetail } from "@/app/actions/clinician-dashboard";
+import {
+  addSessionExerciseLog,
+  updateSessionExerciseLog,
+  deleteSessionExerciseLog,
+  type PatientDetail,
+} from "@/app/actions/clinician-dashboard";
 import { ExerciseListEditor, ExerciseListDisplay } from "./HepExerciseList";
 import { parseHepExercises, type HepTemplateExercise } from "@/lib/hep-templates";
 import { computeExerciseProgression, type ExerciseProgressionTrend } from "@/lib/exercise-progression";
 import { FORCE_LAB_GREEN, FORCE_LAB_RED } from "@/lib/force-lab-units";
 import { PlusIcon } from "@/components/icons";
+import { formatSessionDate, toSessionDateInput, todaySessionDate } from "@/lib/session-date";
 
 function TrendBadge({ trend }: { trend: ExerciseProgressionTrend }) {
   if (trend === "up") return <span style={{ color: FORCE_LAB_GREEN, fontSize: 12, fontWeight: 700 }}>↑ progressing</span>;
@@ -15,34 +21,160 @@ function TrendBadge({ trend }: { trend: ExerciseProgressionTrend }) {
   return null;
 }
 
+/** Which entry the inline form below is currently editing — `logId: null` is the "Log
+ *  Session" new-entry form, an id is a correction to that existing row. */
+type SessionDraft = {
+  logId: string | null;
+  visitNumber: string;
+  sessionDate: string;
+  exercises: HepTemplateExercise[];
+};
+
+/** The one inline form, shared by the new-session and edit-a-past-session paths so both
+ *  offer the same fields. The parent keys this on the draft's logId, which matters:
+ *  ExerciseListEditor seeds its rows from props once on mount, so switching straight from
+ *  one session's edit form to another's has to remount rather than re-render. */
+function SessionForm({
+  draft,
+  pending,
+  error,
+  onSave,
+  onCancel,
+}: {
+  draft: SessionDraft;
+  pending: boolean;
+  error: string | null;
+  onSave: (visitNumber: string, sessionDate: string, exercises: HepTemplateExercise[]) => void;
+  onCancel: () => void;
+}) {
+  const [visitNumber, setVisitNumber] = useState(draft.visitNumber);
+  const [sessionDate, setSessionDate] = useState(draft.sessionDate);
+  const [exercises, setExercises] = useState<HepTemplateExercise[]>(draft.exercises);
+  const fieldId = `se-visit-${draft.logId ?? "new"}`;
+  const dateId = `se-date-${draft.logId ?? "new"}`;
+
+  return (
+    <div className="clindash-inline-form">
+      <div className="clindash-session-form-row">
+        <div className="field" style={{ margin: 0 }}>
+          <label htmlFor={fieldId}>Visit number</label>
+          <input
+            className="input"
+            id={fieldId}
+            type="number"
+            min="1"
+            value={visitNumber}
+            onChange={(e) => setVisitNumber(e.target.value)}
+          />
+        </div>
+        {/* Defaults to today, so logging a session as it happens is unchanged — but a
+            session written up days later belongs on the day it happened, and the
+            progression below sorts by exactly this date. */}
+        <div className="field" style={{ margin: 0 }}>
+          <label htmlFor={dateId}>Session date</label>
+          <input
+            className="input"
+            id={dateId}
+            type="date"
+            max={todaySessionDate()}
+            value={sessionDate}
+            onChange={(e) => setSessionDate(e.target.value)}
+          />
+        </div>
+      </div>
+      <ExerciseListEditor exercises={exercises} onChange={setExercises} />
+      {error && <p style={{ fontSize: 12, color: "var(--color-danger)", margin: 0 }}>{error}</p>}
+      <div className="clindash-inline-form-actions">
+        <button
+          type="button"
+          className="btn btn-primary"
+          disabled={pending}
+          onClick={() => onSave(visitNumber, sessionDate, exercises)}
+        >
+          {pending ? "Saving…" : draft.logId ? "Save Changes" : "Save Session"}
+        </button>
+        <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={pending}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** What was actually done with the patient in clinic, one entry per visit — distinct from
  *  HEPSection above it (what the patient does on their own at home). Kept as history, newest
- *  first, same "log entries, don't overwrite" shape as ClinicalNotesSection just below this
- *  one, so a clinician can look back at what was worked on in a past session. */
+ *  first, same "log entries" shape as ClinicalNotesSection just below this one, so a
+ *  clinician can look back at what was worked on in a past session. Past entries are
+ *  editable in place (see updateSessionExerciseLog): a session is often written up after
+ *  the fact, and the numbers feed the progression trend below, so a wrong weight is worth
+ *  correcting rather than logging a second time. Each entry carries the date the session
+ *  happened rather than the date it was typed, so a week of visits can be entered in one
+ *  sitting and still land in the right order. */
 export function SessionExerciseSection({ patient, onChanged }: { patient: PatientDetail; onChanged: () => void }) {
   const [pending, startTransition] = useTransition();
-  const [formOpen, setFormOpen] = useState(false);
-  const [visitNumber, setVisitNumber] = useState(String(patient.visitCount || 1));
-  const [exercises, setExercises] = useState<HepTemplateExercise[]>([]);
+  const [draft, setDraft] = useState<SessionDraft | null>(null);
+  /** Kept apart from `error` above, which belongs to whichever form is open: a delete can
+   *  be triggered from a row other than the one being edited, and its failure shouldn't
+   *  appear inside that unrelated form. */
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const progression = useMemo(() => computeExerciseProgression(patient.sessionExerciseLogs), [patient.sessionExerciseLogs]);
 
-  const handleSave = () => {
+  const openNew = () => {
     setError(null);
+    setDraft((current) =>
+      current && current.logId === null
+        ? null
+        : { logId: null, visitNumber: String(patient.visitCount || 1), sessionDate: todaySessionDate(), exercises: [] }
+    );
+  };
+
+  const openEdit = (log: PatientDetail["sessionExerciseLogs"][number]) => {
+    setError(null);
+    setDraft({
+      logId: log.id,
+      visitNumber: String(log.visitNumber),
+      sessionDate: toSessionDateInput(log.loggedAt),
+      exercises: parseHepExercises(log.exercises),
+    });
+  };
+
+  const handleSave = (visitNumber: string, sessionDate: string, exercises: HepTemplateExercise[]) => {
+    if (!draft) return;
     const cleaned = exercises.filter((ex) => ex.name.trim().length > 0);
     if (cleaned.length === 0) {
       setError("Add at least one exercise.");
       return;
     }
+    if (!sessionDate) {
+      setError("Pick the date this session happened.");
+      return;
+    }
+    setError(null);
     startTransition(async () => {
-      const result = await addSessionExerciseLog(patient.id, Number(visitNumber), cleaned);
+      const result = draft.logId
+        ? await updateSessionExerciseLog(draft.logId, Number(visitNumber), cleaned, sessionDate)
+        : await addSessionExerciseLog(patient.id, Number(visitNumber), cleaned, sessionDate);
       if (!result.ok) {
         setError(result.error);
         return;
       }
-      setExercises([]);
-      setFormOpen(false);
+      setDraft(null);
+      onChanged();
+    });
+  };
+
+  const handleDelete = (logId: string) => {
+    if (!window.confirm("Delete this logged session? This can't be undone.")) return;
+    setDeleteError(null);
+    startTransition(async () => {
+      const result = await deleteSessionExerciseLog(logId);
+      if (!result.ok) {
+        setDeleteError(result.error);
+        return;
+      }
+      if (draft?.logId === logId) setDraft(null);
       onChanged();
     });
   };
@@ -53,7 +185,7 @@ export function SessionExerciseSection({ patient, onChanged }: { patient: Patien
         <div className="card-kicker" style={{ margin: 0 }}>
           Session Exercises
         </div>
-        <button type="button" className="btn btn-ghost" style={{ fontSize: 12 }} onClick={() => setFormOpen((v) => !v)}>
+        <button type="button" className="btn btn-ghost" style={{ fontSize: 12 }} onClick={openNew}>
           <PlusIcon size={13} />
           Log Session
         </button>
@@ -67,9 +199,38 @@ export function SessionExerciseSection({ patient, onChanged }: { patient: Patien
             <div className="clindash-session-exercise-item" key={log.id}>
               <div className="clindash-note-item-top">
                 <span>Visit {log.visitNumber}</span>
-                <span>{new Date(log.loggedAt).toLocaleDateString()}</span>
+                <span>{formatSessionDate(log.loggedAt)}</span>
+                <span className="clindash-session-exercise-actions">
+                  <button
+                    type="button"
+                    className="clindash-session-exercise-action"
+                    disabled={pending}
+                    onClick={() => (draft?.logId === log.id ? setDraft(null) : openEdit(log))}
+                  >
+                    {draft?.logId === log.id ? "Close" : "Edit"}
+                  </button>
+                  <button
+                    type="button"
+                    className="clindash-session-exercise-action clindash-session-exercise-action--danger"
+                    disabled={pending}
+                    onClick={() => handleDelete(log.id)}
+                  >
+                    Delete
+                  </button>
+                </span>
               </div>
-              <ExerciseListDisplay exercises={parseHepExercises(log.exercises)} emptyText="" />
+              {draft?.logId === log.id ? (
+                <SessionForm
+                  key={log.id}
+                  draft={draft}
+                  pending={pending}
+                  error={error}
+                  onSave={handleSave}
+                  onCancel={() => setDraft(null)}
+                />
+              ) : (
+                <ExerciseListDisplay exercises={parseHepExercises(log.exercises)} emptyText="" />
+              )}
             </div>
           ))}
         </div>
@@ -96,30 +257,17 @@ export function SessionExerciseSection({ patient, onChanged }: { patient: Patien
         </details>
       )}
 
-      {formOpen && (
-        <div className="clindash-inline-form">
-          <div className="field" style={{ margin: 0 }}>
-            <label htmlFor="se-visit">Visit number</label>
-            <input
-              className="input"
-              id="se-visit"
-              type="number"
-              min="1"
-              value={visitNumber}
-              onChange={(e) => setVisitNumber(e.target.value)}
-            />
-          </div>
-          <ExerciseListEditor exercises={exercises} onChange={setExercises} />
-          {error && <p style={{ fontSize: 12, color: "var(--color-danger)", margin: 0 }}>{error}</p>}
-          <div className="clindash-inline-form-actions">
-            <button type="button" className="btn btn-primary" disabled={pending} onClick={handleSave}>
-              {pending ? "Saving…" : "Save Session"}
-            </button>
-            <button type="button" className="btn btn-secondary" onClick={() => setFormOpen(false)} disabled={pending}>
-              Cancel
-            </button>
-          </div>
-        </div>
+      {deleteError && <p style={{ fontSize: 12, color: "var(--color-danger)", margin: "8px 0 0" }}>{deleteError}</p>}
+
+      {draft && draft.logId === null && (
+        <SessionForm
+          key="new"
+          draft={draft}
+          pending={pending}
+          error={error}
+          onSave={handleSave}
+          onCancel={() => setDraft(null)}
+        />
       )}
     </div>
   );

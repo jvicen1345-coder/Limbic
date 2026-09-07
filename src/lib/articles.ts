@@ -7,6 +7,7 @@ import { RETRACTION_WATCH_ARTICLES } from "@/lib/retraction-watch-data";
 import { fetchAptaNews } from "@/lib/apta-news";
 import { ORTHOPT_CPG_SEED } from "@/lib/orthopt-cpg-static";
 import { defaultEvidenceLevelForType } from "@/lib/evidence";
+import { getPublishedAppraisals, getAppraisalArticleById, isAppraisalArticleId } from "@/lib/appraisals-feed";
 
 export { WELLNESS_VIDEOS };
 
@@ -44,7 +45,11 @@ const LIVE_TYPES: ArticleType[] = ["research", "industry", "product"];
  * curated source (same bar as ORTHOPT_CPG_SEED below — real, with real links) exists.
  */
 export async function getArticles(): Promise<Article[]> {
-  const [live, pubmedResearch] = await Promise.all([fetchLiveArticles(), fetchPubmedResearch()]);
+  const [live, pubmedResearch, appraisals] = await Promise.all([
+    fetchLiveArticles(),
+    fetchPubmedResearch(),
+    getPublishedAppraisals(),
+  ]);
   const liveByType: Record<ArticleType, Article[]> = {
     research: pubmedResearch,
     guideline: [],
@@ -61,6 +66,12 @@ export async function getArticles(): Promise<Article[]> {
     seen.add(a.id);
     result.push(a);
   };
+
+  // Limbic's own appraisals lead the research section. They are the only articles in this
+  // feed the platform wrote itself (see lib/appraisals-feed.ts), and a piece written for
+  // this audience about a study someone chose deliberately outranks the top of a generic
+  // PubMed query — which is what the rest of `research` is.
+  appraisals.forEach(add);
 
   for (const type of LIVE_TYPES) {
     liveByType[type].forEach(add);
@@ -100,6 +111,12 @@ export async function getAptaNewsArticles(): Promise<Article[]> {
 }
 
 export async function getArticleById(id: string): Promise<Article | null> {
+  // Resolved directly rather than through getArticles() below so a published appraisal
+  // stays reachable by a saved link even once it has aged out of the merged feed.
+  if (isAppraisalArticleId(id)) {
+    const appraisal = await getAppraisalArticleById(id);
+    return appraisal ? withEvidenceLevel([appraisal])[0] : null;
+  }
   if (id.startsWith("rw-")) {
     return (await getUnderReviewArticles()).find((a) => a.id === id) ?? null;
   }

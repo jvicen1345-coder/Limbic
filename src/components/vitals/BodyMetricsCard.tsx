@@ -21,7 +21,19 @@ function toNumberOrNull(value: string): number | null {
  *  can also arrive from a connected Google Health account (see
  *  lib/google-health-metrics-sync.ts) — googleHealthSyncedAt just labels where the current
  *  values came from; editing and saving here always overwrites them, same as it always has. */
-export function BodyMetricsCard({ initial, googleHealthSyncedAt }: { initial: WellnessProfile; googleHealthSyncedAt?: string | null }) {
+export function BodyMetricsCard({
+  initial,
+  googleHealthSyncedAt,
+  compact = false,
+}: {
+  initial: WellnessProfile;
+  googleHealthSyncedAt?: string | null;
+  /** Drops the card's own heading and intro line for a caller that already supplies both —
+   *  the Overview hub's setup prompt (see app/(app)/wellness/page.tsx), which wraps this and
+   *  explains up front what the fields unlock. The fields, validation, and save are
+   *  identical either way; only the two lines above them are omitted. */
+  compact?: boolean;
+}) {
   const [age, setAge] = useState(initial.age?.toString() ?? "");
   const [heightFeet, setHeightFeet] = useState(initial.heightFeet?.toString() ?? "");
   const [heightInches, setHeightInches] = useState(initial.heightInches?.toString() ?? "");
@@ -50,10 +62,14 @@ export function BodyMetricsCard({ initial, googleHealthSyncedAt }: { initial: We
 
   return (
     <div id="body-metrics" className="card elev-sm" style={{ marginBottom: 18 }}>
-      <div className="card-kicker">Your body metrics</div>
-      <p className="card-body" style={{ marginTop: 2 }}>
-        A few details to personalize your wellness tracking, all optional, all private to you.
-      </p>
+      {!compact && (
+        <>
+          <div className="card-kicker">Your body metrics</div>
+          <p className="card-body" style={{ marginTop: 2 }}>
+            A few details to personalize your wellness tracking, all optional, all private to you.
+          </p>
+        </>
+      )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 12 }}>
         <div style={{ display: "flex", gap: 12 }}>

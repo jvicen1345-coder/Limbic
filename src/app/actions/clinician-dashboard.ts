@@ -6,23 +6,17 @@ import { getCurrentUser } from "@/lib/session";
 import {
   generateClinicalBrief,
   generatePatientBrief,
-  generateTreatmentIdeas as generateTreatmentIdeasBrief,
   generateDischargeSummary as generateDischargeSummaryBrief,
 } from "@/lib/pre-visit-brief";
 import { REASSESSMENT_INTERVAL_VISITS, REASSESSMENT_STALE_DAYS } from "@/lib/clinician-dashboard-types";
+import { parseSessionDateInput } from "@/lib/session-date";
 import { todayLocalDateStr } from "@/lib/today";
 import { conditionIntelligenceMap } from "@/lib/condition-intelligence";
 import { mcidValues } from "@/lib/outcome-benchmarks";
 import { detectRedFlags } from "@/lib/red-flag-detector";
 import { goalBank } from "@/lib/goal-bank";
-import { getWeeklyResearchDigest as getWeeklyResearchDigestFeed, type WeeklyResearchDigest } from "@/lib/dashboard-research";
 import type { ClinicalPatient, OutcomeMeasureEntry, PatientHEPAssignment, ClinicalNote, RedFlagAlert, SessionExerciseLog } from "@/generated/prisma/client";
 import { parseHepExercises, type HepTemplateExercise } from "@/lib/hep-templates";
-
-// Type-only re-export so callers (ResearchFeedPanel.tsx, ClinicianDashboard.tsx) can import
-// WeeklyResearchDigest from this action file instead of reaching into lib/dashboard-research
-// directly — erased at compile time, so it doesn't violate "use server"'s runtime-exports-only rule.
-export type { WeeklyResearchDigest };
 
 /**
  * LimbicPRO Clinician Dashboard (/pro/dashboard) server actions.
@@ -304,6 +298,31 @@ export interface AddOutcomeInput {
   notes?: string;
 }
 
+/** Remove a patient outright — the counterpart to dischargePatient above, which only flips
+ *  a status and leaves the record in place.
+ *
+ *  This is for a record that shouldn't exist: a duplicate, a test entry, someone entered
+ *  against the wrong clinician. Discharge is still the right answer for a real course of
+ *  treatment that has finished, and the UI says so.
+ *
+ *  Everything hanging off the patient goes with it — outcomes, notes, goals, HEP
+ *  assignments, session logs, visit logs, briefs, alerts, referral source, discharge
+ *  summary — via the onDelete: Cascade the schema already declares on each of those
+ *  relations. Three relations are SetNull rather than Cascade and so survive with their
+ *  patient link cleared: ForceLabAssessment, ThreeRepMaxTest and IntakeSubmission. That is
+ *  the schema's existing choice, not one made here, and the confirmation the clinician sees
+ *  says as much rather than promising a cleaner sweep than actually happens. */
+export async function deletePatient(patientId: string): Promise<ClinicianDashboardResult> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const patient = await requireOwnedPatient(user.id, patientId);
+  if (!patient) return { ok: false, error: "Patient not found." };
+
+  await prisma.clinicalPatient.delete({ where: { id: patientId } });
+  revalidatePath("/pro/dashboard");
+  return { ok: true };
+}
+
 export async function addOutcomeEntry(
   patientId: string,
   data: AddOutcomeInput
@@ -477,7 +496,8 @@ export async function assignHEP(
 export async function addSessionExerciseLog(
   patientId: string,
   visitNumber: number,
-  exercises: HepTemplateExercise[]
+  exercises: HepTemplateExercise[],
+  sessionDate?: string
 ): Promise<ClinicianDashboardResult<{ log: SessionExerciseLog }>> {
   const user = await requireProUser();
   if (!user) return { ok: false, error: "Not authorized." };
@@ -488,12 +508,88 @@ export async function addSessionExerciseLog(
   const cleaned = exercises.filter((ex) => ex.name.trim().length > 0);
   if (cleaned.length === 0) return { ok: false, error: "Add at least one exercise." };
 
+  // Omitted means "now" — the column's own default, and what every caller did before the
+  // date became settable. Supplied and unparseable is a mistake worth reporting rather than
+  // silently filing the session under today.
+  let loggedAt: Date | undefined;
+  if (sessionDate) {
+    const parsed = parseSessionDateInput(sessionDate);
+    if (!parsed) return { ok: false, error: "That session date isn't a real past date." };
+    loggedAt = parsed;
+  }
+
   const log = await prisma.sessionExerciseLog.create({
-    data: { userId: user.id, patientId, visitNumber: Math.round(visitNumber), exercises: cleaned as object },
+    data: {
+      userId: user.id,
+      patientId,
+      visitNumber: Math.round(visitNumber),
+      exercises: cleaned as object,
+      ...(loggedAt ? { loggedAt } : {}),
+    },
   });
 
   revalidatePath("/pro/dashboard");
   return { ok: true, log };
+}
+
+/** Correct a session that was already logged — a clinician writing up a visit from memory
+ *  gets the weight or the rep count wrong often enough that append-only history was the
+ *  wrong shape here. Overwrites the row in place rather than superseding it with a new one:
+ *  computeExerciseProgression reads every log for a patient, so a correction kept as a
+ *  second row for the same visit would show up as a phantom progression step between the
+ *  wrong numbers and the right ones. Same ownership check as addSessionExerciseLog.
+ *
+ *  The date is correctable too, and for the same reason the numbers are: a session entered
+ *  a few days late is easy to file against the wrong day. Passing no date leaves loggedAt
+ *  exactly as it was. */
+export async function updateSessionExerciseLog(
+  logId: string,
+  visitNumber: number,
+  exercises: HepTemplateExercise[],
+  sessionDate?: string
+): Promise<ClinicianDashboardResult<{ log: SessionExerciseLog }>> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const existing = await prisma.sessionExerciseLog.findUnique({ where: { id: logId } });
+  if (!existing || existing.userId !== user.id) return { ok: false, error: "Session not found." };
+
+  if (!Number.isFinite(visitNumber) || visitNumber <= 0) return { ok: false, error: "A visit number is required." };
+  const cleaned = exercises.filter((ex) => ex.name.trim().length > 0);
+  if (cleaned.length === 0) return { ok: false, error: "Add at least one exercise." };
+
+  // loggedAt moves only when a date was actually supplied. It records when the visit
+  // happened, not when the write did, so a correction to the numbers alone must never drag
+  // a past session forward to today.
+  let loggedAt: Date | undefined;
+  if (sessionDate) {
+    const parsed = parseSessionDateInput(sessionDate);
+    if (!parsed) return { ok: false, error: "That session date isn't a real past date." };
+    loggedAt = parsed;
+  }
+
+  const log = await prisma.sessionExerciseLog.update({
+    where: { id: logId },
+    data: {
+      visitNumber: Math.round(visitNumber),
+      exercises: cleaned as object,
+      ...(loggedAt ? { loggedAt } : {}),
+    },
+  });
+
+  revalidatePath("/pro/dashboard");
+  return { ok: true, log };
+}
+
+/** Remove a session logged in error — e.g. logged against the wrong patient. */
+export async function deleteSessionExerciseLog(logId: string): Promise<ClinicianDashboardResult> {
+  const user = await requireProUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+  const existing = await prisma.sessionExerciseLog.findUnique({ where: { id: logId } });
+  if (!existing || existing.userId !== user.id) return { ok: false, error: "Session not found." };
+
+  await prisma.sessionExerciseLog.delete({ where: { id: logId } });
+  revalidatePath("/pro/dashboard");
+  return { ok: true };
 }
 
 /** Active patients where visitCount is a multiple of REASSESSMENT_INTERVAL_VISITS (and
@@ -785,50 +881,6 @@ export async function getConditionIntelligence(condition: string): Promise<Condi
   return conditionIntelligenceMap[condition] ?? null;
 }
 
-/** "What should I try next?" on the active patient workspace — generates without
- *  overwriting: every call creates a fresh TreatmentIdea row (see
- *  components/pro/dashboard/TreatmentIdeasCard.tsx, which shows today's most recent row if
- *  one exists before offering to generate, same "don't call the model again for nothing"
- *  reasoning as the pre-visit brief). */
-export async function generateTreatmentIdeas(patientId: string): Promise<ClinicianDashboardResult<{ ideas: string[] }>> {
-  const user = await requireProUser();
-  if (!user) return { ok: false, error: "Not authorized." };
-  const context = await loadBriefContext(user.id, patientId);
-  if (!context) return { ok: false, error: "Patient not found." };
-
-  const ideas = await generateTreatmentIdeasBrief(context);
-  if (!ideas) return { ok: false, error: "Limbic Agent isn't available right now. Try again in a moment." };
-
-  await prisma.treatmentIdea.create({ data: { userId: user.id, patientId, ideas } });
-  revalidatePath("/pro/dashboard");
-  return { ok: true, ideas };
-}
-
-export interface TreatmentIdeaRecord {
-  id: string;
-  ideas: string[];
-  generatedAt: Date;
-}
-
-/** Today's most recently generated treatment ideas for this patient, if any — lets
- *  TreatmentIdeasCard show a saved result instead of an empty "generate" prompt on
- *  reopen, same pattern as PreVisitBriefSection's savedToday lookup. */
-export async function getTodaysTreatmentIdeas(patientId: string): Promise<TreatmentIdeaRecord | null> {
-  const user = await requireProUser();
-  if (!user) return null;
-  const patient = await requireOwnedPatient(user.id, patientId);
-  if (!patient) return null;
-
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  const row = await prisma.treatmentIdea.findFirst({
-    where: { patientId, generatedAt: { gte: startOfToday } },
-    orderBy: { generatedAt: "desc" },
-  });
-  if (!row) return null;
-  return { id: row.id, ideas: row.ideas as unknown as string[], generatedAt: row.generatedAt };
-}
-
 /** Runs lib/red-flag-detector.ts's checks against this patient's current outcome/visit
  *  data and persists any newly-detected pattern as a RedFlagAlert — "newly-detected" means
  *  no existing row (dismissed or not) already carries that exact (flagType, description)
@@ -996,8 +1048,8 @@ async function loadDischargeContext(userId: string, patientId: string) {
 
 /** Step 1 of the "Before You Discharge" modal — generates and saves a draft (confirmed:
  *  false) DischargeSummary, which confirmDischargeSummary later finalizes. Every call
- *  creates a fresh row (same "Regenerate creates, doesn't overwrite" reasoning as
- *  generateTreatmentIdeas) — the modal only ever shows the most recent one. */
+ *  creates a fresh row rather than overwriting the last — the modal only ever shows the
+ *  most recent one. */
 export async function generateDischargeSummaryAction(patientId: string): Promise<ClinicianDashboardResult<{ summary: string }>> {
   const user = await requireProUser();
   if (!user) return { ok: false, error: "Not authorized." };
@@ -1124,14 +1176,6 @@ export async function getEpisodeLengthStats(): Promise<EpisodeLengthStats> {
    Tracker (/pro/ce-tracker) is the one place renewal date/progress is shown.
    ============================================================================ */
 
-/** Thin wrapper around lib/dashboard-research.ts's own getWeeklyResearchDigest — kept here
- *  too (re-exported under the same name) so every dashboard data-fetch this feature spec
- *  asked for lives in this one actions file, matching where the rest of them live. */
-export async function getWeeklyResearchDigest(specialty: string): Promise<WeeklyResearchDigest> {
-  const user = await requireProUser();
-  if (!user) return { specialtyLabel: "Your Specialty", articles: [], rangeStart: "", rangeEnd: "" };
-  return getWeeklyResearchDigestFeed(specialty);
-}
 
 export interface ClinicalQuestionRecord {
   id: string;
