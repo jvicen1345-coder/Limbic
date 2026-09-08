@@ -16,6 +16,14 @@
  * for everyone (LimbicPRO's Toolbox shows locked cards with their descriptions intact,
  * deliberately, see app/(app)/pro/toolbox/page.tsx) rather than visited.
  *
+ * Prefer a target that FITS THE VIEWPORT. The player centres one that does and draws a ring
+ * around it; a target taller than the screen is scrolled to its top instead, so the reader
+ * at least sees where the region begins rather than its middle. That degradation is a
+ * backstop, not a licence: a ring with no visible bottom still says less than one around
+ * something whole. Point at a heading, a card, or one group where you can. The Home feed
+ * grid (1603px against a 720px viewport) is the case the backstop exists for — the step is
+ * genuinely about the whole feed, so there is nothing smaller that would be honest.
+ *
  * A step whose target never appears is skipped rather than shown against a blank screen:
  * sidebar items are hidden below 800px, and several targets are role-gated. That is handled
  * in the player, but it is why every tour below opens with a step the reader can always see.
@@ -158,8 +166,8 @@ const PRO_TOUR: Tour = {
       title: "Start at the Toolbox",
       description:
         "Every PRO tool on one page, grouped by when you'd reach for it rather than by what it costs. A locked card still tells you what the tool does.",
-      target: '[data-tour="toolbox-groups"]',
-      position: "top",
+      target: '[data-tour="toolbox-intro"]',
+      position: "bottom",
       route: "/pro/toolbox",
     },
     {
@@ -175,7 +183,7 @@ const PRO_TOUR: Tour = {
       id: "lookup",
       title: "Look it up",
       description:
-        "Screening rules, lab values, pathologies and documentation templates. Reference you open mid-session and close again.",
+        "Lab values, practice guidelines, documentation templates and plain-language pathologies. Reference you open mid-session and close again — the screening rules live one group up.",
       target: '[data-tour="toolbox-group-look-it-up"]',
       position: "bottom",
       route: "/pro/toolbox",
