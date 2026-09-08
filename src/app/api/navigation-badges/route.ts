@@ -10,7 +10,7 @@ const PRIVATE_HEADERS = { "Cache-Control": "private, no-store" };
  * Nonessential AppShell counts. Keeping these behind a client-initiated request means a
  * cold Google News RSS lookup for APTA-related reporting cannot delay authenticated page
  * HTML. The personalized response itself is never cached; getAptaNewsArticles' underlying
- * fetch retains its existing shared 30-minute `live-news` cache.
+ * fetch retains its existing shared 30-minute `live-news` aggregation cache.
  */
 export async function GET() {
   const user = await getCurrentUser();

@@ -1,5 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
+/** Allow a parallel agent to keep :3000. Unset in CI so the suite still uses the usual port. */
+const e2ePort = process.env.PLAYWRIGHT_PORT ?? "3000";
+const e2eOrigin = `http://localhost:${e2ePort}`;
+
 /** Runs against a real local server + the local SQLite dev.db (same DATABASE_URL a
  *  contributor already uses per README's "Local development" section) — there's no mocked
  *  backend, so the server needs a working `.env` (copy `.env.example`) before `npm test`.
@@ -56,7 +60,7 @@ export default defineConfig({
    * timing tight enough to matter in the first place. */
   globalSetup: "./e2e/global-setup.ts",
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: e2eOrigin,
     trace: "on-first-retry",
   },
   projects: [
@@ -79,8 +83,10 @@ export default defineConfig({
     // before invoking this, but it's idempotent, so running it again just prints "No
     // pending migrations" — cheaper than a second, subtly different build command to keep
     // in sync with package.json.
-    command: process.env.CI ? "npm run build && npm run start" : "npm run dev",
-    url: "http://localhost:3000",
+    command: process.env.CI
+      ? `npm run build && npm run start -- --port ${e2ePort}`
+      : `npm run dev -- --port ${e2ePort}`,
+    url: e2eOrigin,
     // Never reuse in CI: a stale server from an earlier step would silently serve different
     // code than the one this config just built.
     reuseExistingServer: !process.env.CI,

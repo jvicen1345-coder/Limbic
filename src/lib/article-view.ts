@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/db";
-import { getArticles, getArticleById } from "@/lib/articles";
+import { getArticleById, getArticleContextPoolForId } from "@/lib/articles";
+import { fetchPubmedResearch } from "@/lib/pubmed";
 import { decorateArticle, type DecoratedArticle } from "@/lib/feed";
 import { recordArticleRead } from "@/lib/reading";
 import { buildThreadsWeb } from "@/lib/threads";
@@ -9,6 +10,7 @@ import { extractDoiFromUrl, type UnpaywallResult } from "@/lib/unpaywall";
 import { getCachedUnpaywall } from "@/lib/unpaywall-cache";
 import { getTimeZone } from "@/lib/user-time-zone";
 import { breakdownSourceText, type ArticleBreakdown } from "@/lib/article-breakdown-shared";
+import type { Article } from "@/lib/types";
 
 export interface ArticleViewData {
   article: DecoratedArticle;
@@ -31,6 +33,17 @@ export interface ArticleViewData {
   hasBreakdown: boolean;
 }
 
+function mergeContextPool(base: Article[], extra: Article[]): Article[] {
+  const seen = new Set(base.map((a) => a.id));
+  const merged = [...base];
+  for (const a of extra) {
+    if (seen.has(a.id)) continue;
+    seen.add(a.id);
+    merged.push(a);
+  }
+  return merged;
+}
+
 /** Everything the article detail page needs for one article, in one place — used both by
  *  the server-rendered page (the first article a reader lands on) and by
  *  app/actions/article.ts's swapArticleAction (every article reached afterward via a
@@ -38,12 +51,19 @@ export interface ArticleViewData {
  *  paths can never quietly drift apart from each other. Returns null for an unknown
  *  article id; the caller decides what that means (404 vs. a swap error message). */
 export async function buildArticleView(articleId: string, userId: string, isAdmin: boolean): Promise<ArticleViewData | null> {
-  const [raw, allArticles, savedRows] = await Promise.all([
+  const [raw, contextPool, savedRows] = await Promise.all([
     getArticleById(articleId),
-    getArticles(),
+    getArticleContextPoolForId(articleId),
     prisma.savedArticle.findMany({ where: { userId }, select: { articleId: true } }),
   ]);
   if (!raw) return null;
+
+  // Product threads count related studies. live- ids don't reveal type up front, so
+  // industry news skips PubMed and equipment news adds the cached research snapshot here.
+  const allArticles =
+    raw.type === "product"
+      ? mergeContextPool(contextPool, await fetchPubmedResearch())
+      : contextPool;
 
   // Only attempt Unpaywall for live articles — seed articles are not real publications
   // and do not have real DOIs or publisher URLs to look up.

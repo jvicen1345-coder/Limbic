@@ -95,19 +95,50 @@ export async function getUnderReviewArticles(): Promise<Article[]> {
 }
 
 /**
- * Live news from apta.org/news (see lib/apta-news.ts for why this is scraped rather than
- * an API/RSS feed, and the real risk that it may not work in production either). Two real
- * tiers (see lib/apta-news.ts) and no fabricated fallback behind them (same reasoning as
- * getArticles() above), so this can come back sparse or empty if both tiers genuinely
- * have nothing, rather than ever showing invented news. Kept separate from
- * getArticles() — this is its own feed, not a category within the main one.
+ * Third-party reporting about APTA via Google News (see lib/apta-news.ts). No fabricated
+ * fallback, so this can come back sparse or empty rather than ever showing invented news.
+ * Kept separate from getArticles() — this is its own feed, not a category within the
+ * main one.
  */
 export async function getAptaNewsArticles(): Promise<Article[]> {
   const live = await fetchAptaNews();
-  // Tier 1 (direct scrape) and tier 2 (Google News) each come back in their own order —
-  // concatenating them isn't sorted, so this guarantees "most recently posted first"
-  // regardless of which tier contributed.
   return withEvidenceLevel(live.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+}
+
+function mergeArticleLists(...lists: Article[][]): Article[] {
+  const seen = new Set<string>();
+  const result: Article[] = [];
+  for (const list of lists) {
+    for (const a of list) {
+      if (seen.has(a.id)) continue;
+      seen.add(a.id);
+      result.push(a);
+    }
+  }
+  return withEvidenceLevel(result);
+}
+
+/** Related/threads pool for one article id, chosen from the id prefix so a research
+ *  article does not wait on Google News, and an APTA/live story does not wait on PubMed
+ *  unless the opened article is equipment news (product threads count related studies). */
+export async function getArticleContextPoolForId(articleId: string): Promise<Article[]> {
+  if (articleId.startsWith("apta-")) {
+    return getAptaNewsArticles();
+  }
+  if (articleId.startsWith("rw-")) {
+    return getUnderReviewArticles();
+  }
+  if (articleId.startsWith("cpg-")) {
+    return withEvidenceLevel([...ORTHOPT_CPG_SEED]);
+  }
+  if (articleId.startsWith("pubmed-") || isAppraisalArticleId(articleId)) {
+    const [pubmedResearch, appraisals] = await Promise.all([fetchPubmedResearch(), getPublishedAppraisals()]);
+    return mergeArticleLists(appraisals, pubmedResearch, ORTHOPT_CPG_SEED);
+  }
+  if (articleId.startsWith("live-")) {
+    return fetchLiveArticles().then((live) => withEvidenceLevel(live));
+  }
+  return [];
 }
 
 export async function getArticleById(id: string): Promise<Article | null> {
@@ -135,14 +166,20 @@ export async function getArticleById(id: string): Promise<Article | null> {
     // touches, so look this one PMID up directly instead of 404ing on a valid article.
     return fetchPubmedById(id.slice("pubmed-".length));
   }
+  if (id.startsWith("live-")) {
+    const live = await fetchLiveArticles();
+    return live.find((a) => a.id === id) ?? null;
+  }
   // ORTHOPT_CPG_SEED only — these are real, curated AOPT guidelines that getArticles()
   // also surfaces, resolved here directly so the lookup doesn't depend on a live fetch.
   // The fabricated SEED_ARTICLES that used to be checked alongside them are deleted.
   const seedMatch = ORTHOPT_CPG_SEED.find((a) => a.id === id);
   if (seedMatch) return withEvidenceLevel([seedMatch])[0];
 
-  const articles = await getArticles();
-  return articles.find((a) => a.id === id) ?? null;
+  // Classified ids are handled above. Do not scan the full Home pool for unknown ids —
+  // that used to couple every missed bookmark to a live news + PubMed refresh, and
+  // fabricated seed rows are gone, so there is nothing left to find there.
+  return null;
 }
 
 export async function getWellnessArticles(): Promise<WellnessArticle[]> {

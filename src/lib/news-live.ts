@@ -1,6 +1,7 @@
 import "server-only";
 import Parser from "rss-parser";
 import { createHash } from "node:crypto";
+import { unstable_cache } from "next/cache";
 import type { Article, ArticleType, Specialty, WellnessArticle } from "@/lib/types";
 import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
 
@@ -64,13 +65,13 @@ async function fetchXml(url: string): Promise<string | null> {
       signal: controller.signal,
       headers: { "User-Agent": USER_AGENT, Accept: "application/rss+xml, application/xml, text/xml" },
       // Live news should never be served stale-forever, but 10min was actually shorter
-      // than fetchLiveArticles()'s own in-memory cache below (15min) — since that
-      // in-memory layer returns early and skips this fetch entirely while it's still
-      // warm, this fetch-level cache never got a chance to serve a hit at all; by the
-      // time the outer cache expired, this one always had too. Widened to 30min and
-      // aligned with CACHE_TTL_MS below so the two layers actually agree. Tagged so the
-      // Home refresh button (see app/actions/home.ts) can force a fresh pull on demand
-      // via updateTag, without waiting out either window.
+      // than the aggregation cache below (15min) — since that outer layer returns early
+      // and skips this fetch entirely while it's still warm, this fetch-level cache
+      // never got a chance to serve a hit at all; by the time the outer cache expired,
+      // this one always had too. Widened to 30min and aligned with the aggregation
+      // `revalidate` so the two layers actually agree. Tagged so the Home refresh
+      // button (see app/actions/home.ts) can force a fresh pull on demand via
+      // updateTag, without waiting out either window.
       next: { revalidate: 1800, tags: ["live-news"] },
     });
     if (!res.ok) return null;
@@ -297,48 +298,37 @@ function itemToArticle(item: RawItem, defaultType: ArticleType): Article | null 
   };
 }
 
-let cache: { at: number; articles: Article[] } | null = null;
-// Aligned with fetchXml's own revalidate window above — this outer cache used to
-// outlive that inner one (15min vs 10min), which meant the inner fetch-level cache
-// could never actually serve a hit: by the time this one expired, that one always had
-// too, so every "cache miss" here was guaranteed to also be a network round trip there.
-const CACHE_TTL_MS = 30 * 60 * 1000;
-
-/** Lets the Home refresh button (see app/actions/home.ts) force a genuinely fresh
- *  fetchLiveArticles() call on the next request instead of waiting out CACHE_TTL_MS —
- *  this in-memory cache sits in front of (and isn't cleared by) the fetch()-level
- *  updateTag("live-news") below, so both need invalidating together. */
-export function invalidateLiveArticlesCache(): void {
-  cache = null;
-}
-
 /** Fetches and normalizes live articles across every non-calendar category. Never throws —
- *  a source that fails to load simply contributes zero articles for that category. */
-export async function fetchLiveArticles(): Promise<Article[]> {
-  if (cache && Date.now() - cache.at < CACHE_TTL_MS) return cache.articles;
+ *  a source that fails to load simply contributes zero articles for that category.
+ *
+ *  Cached across requests (not just this process) so badge/article/search callers share
+ *  one snapshot. Tagged `live-news` so the Home refresh button's updateTag still forces a
+ *  fresh pull — the previous in-memory Map sat in front of that tag and hid refreshes. */
+export const fetchLiveArticles = unstable_cache(
+  async (): Promise<Article[]> => {
+    const results = await Promise.all(
+      CATEGORY_QUERIES.map(async ({ type, query }) => {
+        const items = await fetchGoogleNewsRss(query);
+        return items
+          .map((item) => itemToArticle(item, type))
+          .filter((a): a is Article => a !== null);
+      })
+    );
 
-  const results = await Promise.all(
-    CATEGORY_QUERIES.map(async ({ type, query }) => {
-      const items = await fetchGoogleNewsRss(query);
-      return items
-        .map((item) => itemToArticle(item, type))
-        .filter((a): a is Article => a !== null);
-    })
-  );
-
-  const seen = new Set<string>();
-  const articles: Article[] = [];
-  for (const list of results) {
-    for (const a of list) {
-      if (seen.has(a.id)) continue;
-      seen.add(a.id);
-      articles.push(a);
+    const seen = new Set<string>();
+    const articles: Article[] = [];
+    for (const list of results) {
+      for (const a of list) {
+        if (seen.has(a.id)) continue;
+        seen.add(a.id);
+        articles.push(a);
+      }
     }
-  }
-
-  cache = { at: Date.now(), articles };
-  return articles;
-}
+    return articles;
+  },
+  ["live-articles-aggregation"],
+  { revalidate: 1800, tags: ["live-news"] }
+);
 
 // Several distinct topical queries, merged and deduped, rather than one fixed search — a
 // single query's top results barely change run to run, which would defeat the Health &

@@ -1,3 +1,5 @@
+import "server-only";
+
 /** Case of the Day's static case bank (see app/(app)/games/case/page.tsx,
  *  components/CaseOfDayGame.tsx) — general educational quiz content only. Every case is a
  *  composite/illustrative scenario written for teaching pattern recognition, not a real

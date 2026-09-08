@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import type { Article } from "@/lib/types";
 import { classify, fetchGoogleNewsRss, stripHtml, sourceName, toIsoDate, estimateReadMins } from "@/lib/news-live";
 
@@ -76,7 +77,15 @@ async function fetchAptaNewsFromGoogleNews(limit = 12): Promise<Article[]> {
 }
 
 /** The APTA News feed. A thin pass-through today, kept as the module's public entry point
- *  so lib/articles.ts doesn't need to know how the section is sourced. */
+ *  so lib/articles.ts doesn't need to know how the section is sourced. Cached so News,
+ *  navigation badges, and apta- article lookups share one snapshot; tagged `live-news`
+ *  so Home refresh still busts it, and `apta-news` so a dedicated warm job can too. */
 export async function fetchAptaNews(limit = 12): Promise<Article[]> {
-  return fetchAptaNewsFromGoogleNews(limit);
+  return getCachedAptaNews(limit);
 }
+
+const getCachedAptaNews = unstable_cache(
+  async (limit: number): Promise<Article[]> => fetchAptaNewsFromGoogleNews(limit),
+  ["apta-news-aggregation"],
+  { revalidate: 1800, tags: ["live-news", "apta-news"] }
+);
