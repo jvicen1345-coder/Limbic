@@ -10,7 +10,7 @@ re-reading found.
 | 1 · Scope | `scope.md` | done — 35 competencies, twelve sections matching the shoulder |
 | 2 · Source bank | `sources.md` | 13 papers read; 4 values recorded untraceable; 5 minor items open |
 | 3 · Draft | `draft.md` | done — 12 sections, 63 citations, 11 references |
-| 4 · Adversarial verification | `verification.md` | pass 1 done — 4 defects in 63 claims, all fixed |
+| 4 · Adversarial verification | `verification.md` | done — 5 defects, all fixed (pass 1 transcription, pass 2 selective quotation) |
 | 5 · Build the page | — | not started |
 
 `lookup.py` queries Europe PMC and prints title, authors, journal, ids, whether the full text

@@ -96,16 +96,54 @@ by less than a degree, which is the whole argument. Added.
 
 ---
 
-## What this pass does not cover
+## Pass 2 — selective quotation
 
-Sensitivity to selective quotation. Every figure above is correctly transcribed, but a guide can
-mislead with only true numbers by choosing which to carry. The clearest risk here is the CPG
-section: it is quoted almost entirely for what it recommends, and a reader should also know how
-thin some of the underlying evidence is. Worth a second pass before the page is built.
+Pass 1 checked whether each number was transcribed correctly. Pass 2 asked the harder question:
+does the draft mislead using only true numbers, by choosing which ones to carry? The CPG section
+was the predicted risk, and it was the actual one.
 
-Nor does it cover the four values recorded as untraceable in `sources.md` — by definition there is
-nothing to check them against. Their correctness is the correctness of the search, not of a
-transcription.
+**Defect 5 — a dose the guideline declines to recommend · Koc 2025 · material omission**
 
-**Next:** a second adversarial pass focused on selective quotation and on the CPG section, then
-step 5, building the page.
+The draft quoted the manual therapy dose as "1–3 times per week for 6–12 weeks", correctly and
+with the Grade A beside it. What it omitted sits two pages earlier in the same guideline: the
+dosage systematic review it draws on (10 studies, 768 participants) found **five of ten studies
+at high risk of bias**, and concluded that **"recommending a specific manual therapy dosage for
+those with hip OA could not be made"**.
+
+Both statements are in the guideline. Quoting only the first turns a summary of what studies
+happened to use into a prescription, which is the difference between reporting evidence and
+laundering it. **Fixed:** the dose stays, with its own caveat row.
+
+**Also added, because leaving them out flattered the recommendations:**
+
+- Higher versus lower force actually differ in what they achieve — high-force long-axis
+  distraction moved ROM (flexion 10.6°, extension 8.0°, abduction 6.4°, adduction 3.3°, ER 5.6°,
+  IR 7.6°) where low and medium force did not, while low force had the largest effect on pain
+  pressure threshold (d = 2.0). That is more useful than the Grade A alone, and it was missing.
+- Manual therapy's benefits are described by the guideline as "the recognized short-term
+  benefits"; long-term follow-up is an open gap. The draft implied durability it does not claim.
+- Dry needling's three weeks is the ceiling of the evidence, not a course length, and it has
+  mostly been tested standalone rather than alongside exercise.
+- Patient education is a B because the literature is thin since 2017, not because it underperformed.
+  A grade that reflects volume of evidence reads as a verdict on the intervention unless you say
+  otherwise.
+- Exercise's 1–5×/week, 30–120 min, 5–16 weeks is the span studies used, not a titration.
+
+**Structural fix:** the section now opens by saying what a grade does *not* tell you — effect
+size, durability, or confidence in a dose — because every letter in it was being read as all
+three.
+
+---
+
+## What these passes still do not cover
+
+The four values recorded as untraceable in `sources.md` cannot be checked against anything; their
+correctness is the correctness of the search, not of a transcription. If a free source for
+normative hip ROM or the Sutlive variables exists and was missed, no amount of re-reading this
+draft will surface it.
+
+Nor has anything here been checked for **omission at the level of scope** — a competency in
+`scope.md` that the draft covers thinly because the evidence was easy to find for something else.
+Worth a look when the page is built and the sections can be seen at their finished lengths.
+
+**Next:** step 5, building the page from `docs/joint-playbook-template.html`.
