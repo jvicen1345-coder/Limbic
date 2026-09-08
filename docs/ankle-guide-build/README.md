@@ -4,9 +4,9 @@ Follows `docs/joint-playbook-template.md`, same five steps as the hip and knee b
 
 | Step | File | State |
 |---|---|---|
-| 1 · Scope | — | not started |
+| 1 · Scope | `scope.md` | done — 39 competencies in examination order |
 | 2 · Source bank | `sources.md` | 3 guidelines assessed: ankle and Achilles usable, heel pain excluded; era check done |
-| 3 · Draft | — | not started |
+| 3 · Draft | `draft.md` | done — 12 sections, 4 sources, 34 graded recommendations |
 | 4 · Adversarial verification | — | not started |
 | 5 · Build the page | — | not started |
 
