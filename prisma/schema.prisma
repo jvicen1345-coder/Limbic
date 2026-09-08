@@ -2162,6 +2162,17 @@ model UnpaywallCache {
   checkedAt      DateTime @default(now())
 }
 
+// Publisher preview images used by Home (see lib/article-image-cache.ts). A row is keyed by
+// the article's stable id but also records sourceUrl, so an upstream id accidentally reused
+// for a different URL is treated as a miss. Null imageUrl is a deliberate negative cache:
+// blocked/missing og:image pages should not delay or be re-requested on every Home visit.
+model ArticleImageCache {
+  articleId String   @id
+  sourceUrl String
+  imageUrl  String?
+  checkedAt DateTime @default(now())
+}
+
 // A course syllabus a student pasted in for Limbic AI to extract assignments/exams from
 // (see lib/syllabus-parser.ts, app/actions/syllabus.ts) — powers the Atrium's This Week
 // card (app/(app)/student/page.tsx) and the assignments management page

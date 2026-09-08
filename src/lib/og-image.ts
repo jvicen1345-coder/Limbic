@@ -4,9 +4,8 @@ import type { Article } from "@/lib/types";
 /**
  * Fetches the real `og:image` an article's own page declares — the same image the
  * publisher uses for its own social-media previews — rather than attaching any
- * fabricated or generic stand-in. Used only for the small handful of articles shown in
- * the home page's revolving news card, not the whole feed, since it's one extra network
- * request per article.
+ * fabricated or generic stand-in. Home calls this only from its bounded post-response
+ * cache warmer (lib/article-image-cache.ts), never while a reader is waiting on the page.
  *
  * Only reads the first chunk of each page (bounded to look for `</head>`, where og:image
  * always lives) rather than downloading full article HTML, and fails silently — a
@@ -33,6 +32,15 @@ function isUnresolvableRedirect(url: string): boolean {
   }
 }
 
+export function canFetchArticleOgImage(article: Article): boolean {
+  if (!article.sourceUrl || isUnresolvableRedirect(article.sourceUrl)) return false;
+  try {
+    return !new URL(article.sourceUrl).pathname.toLowerCase().endsWith(".pdf");
+  } catch {
+    return false;
+  }
+}
+
 // A handful of known "og:image" values are a *site's* generic social-preview branding,
 // not anything specific to the article — PubMed uses the exact same image on every single
 // article page regardless of PMID (verified directly against pubmed.ncbi.nlm.nih.gov).
@@ -49,12 +57,9 @@ async function fetchOgImage(url: string): Promise<string | null> {
     const res = await fetch(url, {
       signal: controller.signal,
       headers: { "User-Agent": "Mozilla/5.0 (compatible; LimbicPTNews/1.0)" },
-      // A publisher's og:image essentially never changes after an article is posted, so
-      // there's no freshness reason to keep re-scraping every hour — widened from 1hr to
-      // 24hr since this is the single biggest per-request cost on Home (up to ~16 of
-      // these run in parallel per load) and a cache miss here is a real network round
-      // trip to an arbitrary third-party server, not just a DB read.
-      next: { revalidate: 86400 },
+      // ArticleImageCache is now the durable cache. Avoid asking Next's fetch cache to
+      // retain the entire publisher page when this parser intentionally reads only HEAD.
+      cache: "no-store",
     });
     if (!res.ok || !res.body) return null;
 
@@ -83,13 +88,19 @@ async function fetchOgImage(url: string): Promise<string | null> {
   }
 }
 
+/** Resolves one article's publisher image. The caller decides whether this work belongs on
+ *  a response path; Home deliberately invokes it only from an `after()` cache warmer. */
+export async function findArticleOgImage(article: Article): Promise<string | null> {
+  if (!article.sourceUrl || !canFetchArticleOgImage(article)) return null;
+  return fetchOgImage(article.sourceUrl);
+}
+
 /** Attaches a real `image` to each article that has a `sourceUrl` and a discoverable
  *  og:image, leaving the rest untouched. Never throws. */
 export async function attachRealImages(articles: Article[]): Promise<Article[]> {
   return Promise.all(
     articles.map(async (a) => {
-      if (!a.sourceUrl || isUnresolvableRedirect(a.sourceUrl)) return a;
-      const image = await fetchOgImage(a.sourceUrl);
+      const image = await findArticleOgImage(a);
       return image ? { ...a, image } : a;
     })
   );
