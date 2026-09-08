@@ -87,8 +87,8 @@ therapy, and does it depend on where you are working?**
 | **Lateral ankle sprain 2021** | **A** | Lymphatic drainage, active and passive soft tissue and joint mobilization, and anterior-to-posterior talar mobilization **within pain-free movement**, alongside exercise |
 | **Lateral ankle sprain 2021** | **A** | Graded joint mobilizations, manipulations, and weight-bearing and non-weight-bearing mobilization with movement, to improve dorsiflexion and dynamic balance **in the short term**, in chronic instability |
 | **Lateral ankle sprain 2021** | **B** | Multiple interventions *may* supplement balance training, combining exercise and manual therapy, guided by patient values and clinician judgement |
-| **Total knee arthroplasty 2026** | *moderate* | *May* use manual therapy with exercise and/or devices to augment active-assistive exercise for ROM in the early postoperative period |
-| **Total knee arthroplasty 2026** | *moderate* | *May* use manual therapy among several options to decrease pain, **time frame not specified** |
+| **Total knee arthroplasty 2026** | *moderate* quality / ***weak*** strength | *May* use manual therapy with exercise and/or devices to augment active-assistive exercise for ROM in the early postoperative period. Strength ♦♦◊◊, "downgraded due to limited evidence" |
+| **Total knee arthroplasty 2026** | *moderate* quality / ***weak*** strength | *May* use manual therapy among several options to decrease pain, **time frame not specified**. Strength ♦♦◊◊, "downgraded due to low certainty of evidence" |
 | **Achilles midportion 2024** | **F** | *May* use manual therapy directed at manipulating and/or mobilizing muscles, joints and connective tissues where there are **mobility deficits** |
 | **Knee meniscal and cartilage 2018** | **&mdash;** | **No manual therapy recommendation at all.** |
 
@@ -101,8 +101,13 @@ cartilage guideline. A student taught "manual therapy is evidence-based" has bee
 that is true in two of these five documents and unsupported in a third.
 
 **Note the two grading scales.** Four of these guidelines use letters A-F; the arthroplasty
-guideline uses Evidence Quality high/moderate/low. They are not interchangeable and a *moderate* is
-not a *B*. An earlier version of this harvest reported "no manual therapy recommendation" for the
+guideline reports **Evidence Quality and Recommendation Strength as two separate ratings**. They are
+not interchangeable and a *moderate* is not a *B*. **Correction made during verification:** an
+earlier version of this table recorded only the arthroplasty guideline's *moderate* evidence
+quality. Both of its manual therapy recommendations carry **Recommendation Strength: weak ♦♦◊◊**,
+downgraded in the guideline's own words "due to limited evidence" (ROM) and "due to low certainty of
+evidence" (pain). Quoting the evidence quality alone made both look stronger than the guideline
+rates them. An earlier version of this harvest reported "no manual therapy recommendation" for the
 arthroplasty guideline purely because the extraction looked for a letter prefix — the
 recommendation was there in a different format. Recorded because it is the same class of error as
 the talar tilt appendix hit: **the search found nothing and the absence was almost believed.**

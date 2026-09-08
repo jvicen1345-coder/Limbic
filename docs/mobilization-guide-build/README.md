@@ -8,8 +8,8 @@ needs rethinking rather than copying.
 |---|---|---|
 | 1 · Scope | `scope.md` | done — 28 competencies, template IDs kept, headings redesigned |
 | 2 · Source bank | `sources.md` | done — 5 guidelines as one manual-therapy table, 12 papers read, 4 recorded untraceable |
-| 3 · Draft | — | not started |
-| 4 · Adversarial verification | — | not started |
+| 3 · Draft | `draft.md` | done — 12 sections, 16 references, 0 unmarked rows |
+| 4 · Adversarial verification | `verification.md` | done — 6 defects, all fixed; 1 corrected at origin |
 | 5 · Build the page | — | not started |
 
 ## The rules inherited from the previous three builds
