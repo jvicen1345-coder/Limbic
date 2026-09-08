@@ -16,12 +16,13 @@
  * for everyone (LimbicPRO's Toolbox shows locked cards with their descriptions intact,
  * deliberately, see app/(app)/pro/toolbox/page.tsx) rather than visited.
  *
- * Anchor a step on something that FITS THE VIEWPORT. The player scrolls a target to the
- * centre of the screen and draws a ring around it, so an element taller than the viewport
- * gives a ring running off every edge and a reader looking at the middle of a page while the
- * card describes the top of it. Measured against a 720px viewport: the toolbox's stack of
- * groups is 1274px and the Home feed grid 1603px. Point at a heading, a card, or one group
- * — never at a container of everything.
+ * Prefer a target that FITS THE VIEWPORT. The player centres one that does and draws a ring
+ * around it; a target taller than the screen is scrolled to its top instead, so the reader
+ * at least sees where the region begins rather than its middle. That degradation is a
+ * backstop, not a licence: a ring with no visible bottom still says less than one around
+ * something whole. Point at a heading, a card, or one group where you can. The Home feed
+ * grid (1603px against a 720px viewport) is the case the backstop exists for — the step is
+ * genuinely about the whole feed, so there is nothing smaller that would be honest.
  *
  * A step whose target never appears is skipped rather than shown against a blank screen:
  * sidebar items are hidden below 800px, and several targets are role-gated. That is handled

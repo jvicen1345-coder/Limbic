@@ -14,6 +14,7 @@ const SETTLE_TIMEOUT_MS = 700;
  *  are role-gated, and the sidebar is display:none below 800px. */
 const TARGET_WAIT_MS = 2500;
 
+
 /** Kept clear of every edge, so a clamped card never sits flush against the viewport. */
 const EDGE_MARGIN = 20;
 
@@ -37,6 +38,20 @@ function getTooltipStyle(step: TourStep, targetRect: DOMRect | null, cardHeight:
 
   let top: number;
   let left: number;
+
+  // A target taller than the screen has no "above" or "below" — the player has scrolled it
+  // to its top, so the part the reader is meant to look at is the part the card would land
+  // on. Put the card at the bottom instead and leave that clear.
+  if (viewportH > 0 && targetRect.height > viewportH) {
+    return {
+      top: Math.max(EDGE_MARGIN, viewportH - cardHeight - EDGE_MARGIN),
+      left: Math.max(
+        EDGE_MARGIN,
+        Math.min(targetRect.left + targetRect.width / 2 - TOOLTIP_WIDTH / 2, viewportW - TOOLTIP_WIDTH - EDGE_MARGIN),
+      ),
+    };
+  }
+
   switch (step.position) {
     case "right":
       top = targetRect.top + targetRect.height / 2 - 100;
@@ -175,7 +190,17 @@ export function LimbicTour({
     const startedWaiting = performance.now();
 
     const measure = (el: Element) => {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      // Centring is right for a target that fits. For one taller than the viewport it is
+      // exactly wrong: centring a 1603px region in a 720px window puts its middle on screen,
+      // so the card describes something the reader is looking at the middle of, with a ring
+      // running off both edges and no clue where it starts. Align those to their top so the
+      // reader at least sees where the region begins.
+      // scrollIntoView both times, rather than a window.scrollTo for the tall case: the app
+      // scrolls an inner container, not the document, so scrolling the window moves nothing
+      // — measured, the ring stayed 1056px below the fold. scrollIntoView finds whichever
+      // ancestor actually scrolls.
+      const height = el.getBoundingClientRect().height;
+      el.scrollIntoView({ behavior: "smooth", block: height > window.innerHeight ? "start" : "center" });
       let prev: DOMRect | null = null;
       let stableFrames = 0;
       const startedAt = performance.now();
