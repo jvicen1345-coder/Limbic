@@ -14665,3 +14665,23 @@ button.playbook-maskwrap:focus-visible {
   .tour-menu-row { flex-direction: column; align-items: flex-start; gap: 10px; }
   .tour-menu-start { width: 100%; }
 }
+
+/* The two actions on the Home Exercise Program section header (see
+   components/pro/dashboard/HEPSection.tsx). "Update HEP" assigns; the link beside it goes to
+   the builder, and is styled as a link rather than a second button so the assign action stays
+   the obvious one. */
+.clindash-hep-actions { display: flex; align-items: center; gap: 4px; }
+.clindash-hep-build {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  /* Neutral, not accent. Rendered in accent it matched "Update HEP" exactly and the two read
+     as a pair of equal choices, when assigning is the one you came here to do and building is
+     the detour. */
+  color: var(--color-neutral-700);
+  white-space: nowrap;
+  padding: 4px 2px;
+}
+.clindash-hep-build:hover { color: var(--color-accent); text-decoration: underline; }
