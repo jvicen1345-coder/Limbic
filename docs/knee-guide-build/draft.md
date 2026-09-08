@@ -145,7 +145,7 @@ examine. Both change how the numbers should be used rather than merely qualifyin
 | Thessaly | **`No traceable source`** for its accuracy in this bank, and it was noted as more influenced by anterior knee pain. `src: Rinonapoli 2025` |
 | Patellofemoral tests | **`No traceable source`** for the accuracy of any of them. Use them to reproduce and localise the symptom, not to confirm a diagnosis. |
 | Varus and valgus stress | **`No traceable source`** for accuracy in this bank. Graded by end feel and opening compared to the other side. `Convention` |
-| Interpreting a likelihood ratio | `Convention` — the familiar bands (+LR over 10 decisive, 2–5 a small shift) are a teaching heuristic, not a value traced to any source here. What *is* sourced: a rule with a &minus;LR of 0.12 and a +LR of 1.56 is a rule-out. `src: Kazemi 2023` |
+| Interpreting a likelihood ratio | `Convention` — the familiar bands (+LR over 10 decisive, 2–5 a small shift) are a teaching heuristic, not a value traced to any source here. The **numbers** are sourced — &minus;LR 0.12, +LR 1.56, AUC 0.54 `src: Kazemi 2023` — while the **word** "rule-out" is the reading those numbers force, not a phrase the paper uses. Worth separating, since the paper's own summary word is a different one. |
 | The section's honest summary | No single knee test is reliable enough to diagnose alone. `src: Rinonapoli 2025` |
 
 ---
@@ -188,15 +188,17 @@ only place in this guide where an evidence grade can be attached to a recommenda
 | Strength training — **high** | Design, implement and teach progressive strength training beginning in the **early postacute** period, to improve function, strength and ROM. `src: Bove 2026` |
 | Cryotherapy and positioning — **high** | Prescribe cryotherapy and teach elevation of the surgical limb at **30–90&deg; of knee flexion** in the early postoperative period. `src: Bove 2026` |
 | Digital health tools — **high** | Consider them either alongside in-clinic care or as an alternative to it. `src: Bove 2026` |
-| Continuous passive motion — **high, against** | Do **not** use CPM after primary uncomplicated arthroplasty. `src: Bove 2026` |
+| Continuous passive motion — **high, against** | Do **not** use CPM after primary uncomplicated arthroplasty. The stated reasoning: the preponderance of evidence shows **no consistent long-term improvement in function, ROM or quality of life**, and it **may increase patient discomfort**. `src: Bove 2026` |
 | NMES — **moderate** | Apply to the quadriceps **at least daily**, from the early postoperative period, **at the highest tolerable intensity**, for strength, gait and performance outcomes. `src: Bove 2026` |
 | Range of motion exercise — **moderate** | Include passive, active-assistive and active ROM exercise. `src: Bove 2026` |
-| Manual therapy — **moderate** | May be used with exercise and/or devices to augment active-assistive exercise for ROM early. `src: Bove 2026` |
-| Pain — **moderate** | Cryotherapy early; TENS in acute and subacute phases, Kinesio taping in the acute phase, manual therapy and psychologically informed techniques for pain after arthroplasty. `src: Bove 2026` |
+| Manual therapy — **moderate** | *May* be used with exercise and/or devices to augment active-assistive exercise for ROM early — with the guideline's own caveat that **effectiveness may vary depending on therapist skill and the techniques used**. `src: Bove 2026` |
+| Pain — **moderate** | Two separate recommendations, both moderate. *Should* teach and encourage **cryotherapy** for early postoperative pain. *May* use **TENS** (acute and subacute), **Kinesio taping** (acute), **manual therapy** and **psychologically informed techniques** — the last two with **no time frame specified** in the guideline. `src: Bove 2026` |
 | Activity — **moderate** | Encourage early activity and progress it against safety, functional tolerance, physiological response and shared goals. `src: Bove 2026` |
 | Delivery — **moderate** | Group-based or individual sessions are both acceptable. `src: Bove 2026` |
-| Bracing and splinting — **moderate, against** | Do **not** routinely brace or splint early to gain knee ROM. `src: Bove 2026` |
+| Bracing and splinting — **moderate, against** | Do **not** routinely brace or splint early to gain knee ROM: it **may prolong bedrest and limit natural movement patterns, restricting early mobility and gait training**. But the guideline also records a potential benefit — bracing into extension **may have short-term effects on pain and function** — so this is a recommendation against *routine* use, not a prohibition. `src: Bove 2026` |
+| Swelling — **moderate, hedged** | Kinesio taping *may* be considered after uncomplicated arthroplasty to reduce swelling, **"however, evidence is mixed regarding its benefit"** — the guideline's own words, and the reason this is a *may* rather than a *should*. `src: Bove 2026` |
 | Swelling — **low, against** | Do **not** routinely use manual lymphatic drainage, compression dressings or CPM for swelling; they are unproven. `src: Bove 2026` |
+| Read the harms, not only the grades | The guideline states benefits, risks, harms and costs **for every recommendation**, and those are where the clinical judgement lives. A grade tells you how much evidence exists; the harm statement tells you what it costs to be wrong. `src: Bove 2026` |
 | What is striking about that list | **The strongest evidence in it is negative.** The high-quality recommendation is what to stop doing, and the moderate and low grades add bracing, splinting, lymphatic drainage and compression to the same list. `src: Bove 2026` |
 | The reassessment marker | Name it before you treat. Extension lag, effusion grade, a timed functional measure — whichever the impairment was. `Convention` |
 
