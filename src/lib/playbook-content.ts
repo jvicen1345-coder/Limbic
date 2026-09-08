@@ -164,13 +164,40 @@ export interface Playbook {
   footer: string;
 }
 
-export const PLAYBOOKS: Playbook[] = [
+/** Written, but withheld until every value in them is traced to a primary source.
+ *
+ *  Between them these carry 175 checklist items and 96 numbers cells, and not one of them
+ *  cites anything: no [[src|…]], no [[prov:…]], not even a year in prose. They assert joint
+ *  norms, special-test thresholds and mobilization grades in the same confident voice as the
+ *  shoulder guide next door, which earns that voice by naming a source for each and marking
+ *  what is only convention.
+ *
+ *  The shoulder guide's own first draft is the reason this is not a formality: it carried 37
+ *  errors across 545 claims — about one in fourteen — including a fabricated citation and two
+ *  references to studies that do not exist, none of which re-reading found. These four have
+ *  had exactly the verification that draft had, which is none, so they are held back rather
+ *  than sold. Verify a region, then move it into PLAYBOOKS.
+ *
+ *  They stay in the codebase and in ALL_PLAYBOOKS so the data-integrity tests keep them
+ *  structurally sound while the checking happens. */
+export const UNVERIFIED_PLAYBOOKS: Playbook[] = [
   HIP_PLAYBOOK,
   KNEE_PLAYBOOK,
   ANKLE_PLAYBOOK,
   JOINT_MOBILIZATION_PLAYBOOK,
 ];
 
+/** What the app renders and links to. Empty while every region is being verified — the
+ *  shoulder is served whole from content/playbooks instead (see
+ *  app/(app)/student/guides/shoulder-examination/route.ts). */
+export const PLAYBOOKS: Playbook[] = [];
+
+/** Every playbook the codebase holds, published or not. For checks that should hold whatever
+ *  a playbook's publication state is. */
+export const ALL_PLAYBOOKS: Playbook[] = [...PLAYBOOKS, ...UNVERIFIED_PLAYBOOKS];
+
+/** Published only — a withheld playbook's slug must not resolve, or the route would serve
+ *  what the hub declines to list. */
 export function getPlaybook(slug: string): Playbook | undefined {
   return PLAYBOOKS.find((playbook) => playbook.slug === slug);
 }

@@ -36,6 +36,14 @@ export default async function PlaybooksHubPage() {
       ) : user.studentTier !== "limbicStudent" ? (
         <LimbicStudentGate toolName="Playbooks" />
       ) : (
+        <>
+        {/* Said out loud rather than quietly shipping a shorter list: four regions were here
+            last week and a student who used them deserves to know where they went. */}
+        <p className="playbook-hub-note">
+          <b>Four regional playbooks are withdrawn while they are checked.</b> Hip, knee, ankle and joint mobilization
+          were written without a source behind each value. They come back one region at a time, once every number in
+          them is traced to a paper you can read.
+        </p>
         <div className="playbook-hub-grid">
           {/* The shoulder guide is a fixed HTML asset served whole rather than a playbook
               built from lib/playbooks — see the route handler for why. It navigates in place
@@ -67,6 +75,7 @@ export default async function PlaybooksHubPage() {
             </div>
           ))}
         </div>
+        </>
       )}
     </div>
   );
