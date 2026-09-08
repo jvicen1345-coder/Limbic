@@ -302,15 +302,25 @@ nothing here cites it. An orphaned reference is a defect; an ambiguous one is wo
 
 ---
 
-## Figures — candidates, not yet drawn
+## Figures
 
-Per the template guide: draw only where a sentence has failed. Two candidates so far.
+**Drawn: the Ober test, pattern 7 (a mechanism shown twice - what the test is named for, and what
+actually moves it).** A step chart across the four cadaveric conditions, both versions of the test
+on one axis, with the iliotibial-band segment picked out in `--hi` because it is the step that
+does nothing. The figure exists because the prose version of this argument needs four numbers and
+a comparison to land, and a reader has to hold all of them at once; drawn, the two flat red
+segments against the steep rises make the point before the caption is read.
 
-- **Pattern 7 (a mechanism shown twice, intact then failed):** the Ober test with the ITB intact
-  and transected, drawn against the structures that *did* change it — gluteus medius/minimus and
-  capsule, with the 5.00° / 11.20° / 13.20° values on one axis. This is the figure that carries
-  §5's whole argument.
-- **Pattern 5 (what a test loads versus what its name implies):** FADIR as both an impingement
-  test and a piriformis length position, showing why a positive does not distinguish them.
+Conventions followed: `currentColor` for the axis and zero line, `--accent` and `--d2` for the two
+measured series, `--hi` for the fault, `role="img"` with an `aria-label` carrying the claim rather
+than describing the shapes, short `<text>` labels so Recall can lift them individually, and the
+legend in `.figgrid` below the SVG rather than inside it.
 
-Neither is drawn. Both need §12 verification to survive first.
+Measured rather than eyeballed, at 320, 390, 500, 768 and 1280px: zero labels escape the viewBox
+and zero overlap each other. The first attempt failed that check - at narrow widths the CSS lifts
+figure text to 16px and the annotation collided with the 5.00&deg; label - so the annotation moved
+into the empty band between the two series, where it is vertically isolated at every width.
+
+**Not drawn: FADIR as both an impingement test and a piriformis length position** (pattern 5, what
+a test loads versus what its name implies). The sentence says it faster, which by the template's
+own rule means it should stay a sentence.
