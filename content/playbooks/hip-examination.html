@@ -2084,7 +2084,7 @@ a{color:var(--accent)}
   var boxes = document.querySelectorAll('input[data-ck]');
   var countEl = document.getElementById('ckcount');
   var fillEl = document.getElementById('ckfill');
-  var KEY = 'JOINT-comp-v1';
+  var KEY = 'hip-comp-v1';
   var state = {};
   try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { state = {}; }
 
@@ -2108,7 +2108,7 @@ a{color:var(--accent)}
 (function(){
   var body = document.body;
   var globalBtn = document.getElementById('recallBtn');
-  var KEY = 'JOINT-recall-v3';
+  var KEY = 'hip-recall-v3';
   var groups = [];   // one per table or grid: {sec, cols:[{id, chip, cells}]}
 
   function wrap(el){
@@ -2241,7 +2241,7 @@ a{color:var(--accent)}
   });
 
   // ---- what you got wrong ----
-  var MKEY = 'JOINT-missed-v1';
+  var MKEY = 'hip-missed-v1';
   var missed = {};
   try {
     (JSON.parse(localStorage.getItem(MKEY) || '[]') || []).forEach(function(id){ missed[id] = 1; });
@@ -2554,7 +2554,7 @@ a{color:var(--accent)}
   try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e) {}
   if(!saved){
     var legacy = null;
-    try { legacy = localStorage.getItem('JOINT-recall-v2') || localStorage.getItem('JOINT-recall-v1'); } catch(e) {}
+    try { legacy = localStorage.getItem('hip-recall-v2') || localStorage.getItem('hip-recall-v1'); } catch(e) {}
     if(legacy === '1') saved = { secs: sections.map(function(s){ return s.id; }), cols: [] };
     else if(legacy){ try { saved = { secs: JSON.parse(legacy) || [], cols: [] }; } catch(e) {} }
   }
@@ -2601,7 +2601,7 @@ a{color:var(--accent)}
 
 
 (function(){
-  var KEY = 'JOINT-add-v1';
+  var KEY = 'hip-add-v1';
   var store = {};
   try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { store = {}; }
   function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} render(); }
@@ -3247,7 +3247,7 @@ a{color:var(--accent)}
 (function(){
   var host = document.getElementById('planner');
   if(!host) return;
-  var MKEY = 'JOINT-missed-v1';
+  var MKEY = 'hip-missed-v1';
 
   var METHOD = {
     number: {
