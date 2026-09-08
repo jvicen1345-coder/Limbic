@@ -1,6 +1,6 @@
 import "server-only";
 import { fetchTopicPhoto } from "@/lib/pexels";
-import { fetchBundledTopicPhoto } from "@/lib/topic-photos";
+import { fetchBundledTopicPhoto, topicPhotoHints } from "@/lib/topic-photos";
 import { SPECIALTY_META } from "@/lib/meta";
 import type { Article } from "@/lib/types";
 
@@ -8,17 +8,11 @@ import type { Article } from "@/lib/types";
 // mentions one — a much more specific (and more visually relevant) Pexels result than
 // searching the specialty alone every time. Checked against the title in this order, first
 // match wins, so more specific terms (e.g. "acl") are listed ahead of generic ones.
-const TOPIC_KEYWORDS = [
-  "acl", "rotator cuff", "plantar fasciitis", "knee", "shoulder", "hip", "spine",
-  "low back", "back pain", "neck", "ankle", "elbow", "wrist", "vestibular", "stroke",
-  "balance", "gait", "concussion", "sports injury", "post-surgical",
-];
-
 /** The specific anatomical/topical term from an article's title, when one's recognizable —
  *  used both to build the Pexels query and to pick a tag-matched bundled photo below. */
 function matchedTopic(article: Article): string | null {
-  const titleLower = article.title.toLowerCase();
-  return TOPIC_KEYWORDS.find((kw) => titleLower.includes(kw)) ?? null;
+  const [first] = topicPhotoHints(article);
+  return first === article.specialty ? null : first;
 }
 
 /** Builds a Pexels search query out of an article — a specific anatomical/topical term from
@@ -44,9 +38,7 @@ export async function attachTopicImages<T extends Article>(articles: T[]): Promi
       if (a.image) return a;
       const pexelsImage = await fetchTopicPhoto(topicQueryFor(a), a.id);
       if (pexelsImage) return { ...a, image: pexelsImage };
-      const topic = matchedTopic(a);
-      const tagHints = topic ? [topic, a.specialty] : [a.specialty];
-      return { ...a, image: fetchBundledTopicPhoto(tagHints, a.id) };
+      return { ...a, image: fetchBundledTopicPhoto(topicPhotoHints(a), a.id) };
     })
   );
 }

@@ -193,9 +193,9 @@ export function HomeFeed({
     );
   }, [articles, filter, topicParam]);
 
-  // Every visible card needs a real picture — no more falling back to a blank card just
-  // to hit a count (see page.tsx's resolveHomeImages, which searches deeper into the
-  // ranked pool specifically so this doesn't come up short).
+  // Every article arrives with a real picture: a cached publisher image or a synchronous
+  // bundled Commons fallback (see lib/article-image-cache.ts). Keep the guard because this
+  // client component's prop type still correctly treats image as optional.
   const withImage = useMemo(() => filtered.filter((a) => a.image), [filtered]);
 
   // The hero picks first — top of rank, restricted to HERO_ELIGIBLE_TYPES — precisely so
@@ -235,7 +235,7 @@ export function HomeFeed({
     setPinnedHeroKey(heroPinKey);
     setPinnedHeroPool(rawHeroPool);
   }
-  // Falls back to the fresh pool on the rare batch where the very first pin for this key
+  // Falls back to the fresh pool on the rare feed where the very first pin for this key
   // came up empty (no eligible research/guideline articles yet) — pinnedHeroPool otherwise
   // never updates again until the key changes, so this keeps trying each refresh instead
   // of permanently showing no hero for the rest of that key's lifetime.
@@ -278,10 +278,9 @@ export function HomeFeed({
       seenImages.add(a.image);
       picked.push(a);
     }
-    // gridTarget is a floor this tries to hit, but never at the cost of a repeated picture —
-    // a reader seeing the same photo on two cards at once is worse than seeing one fewer
-    // card, so a thin/unlucky batch that can't find gridTarget distinct images just shows
-    // fewer instead of backfilling with a duplicate (the old behavior here).
+    // gridTarget is a floor this tries to hit, but never at the cost of a repeated picture.
+    // The bundled fallback assigns distinct URLs while its pool has capacity; this remains
+    // a defensive guard for duplicate images supplied by a publisher.
     return picked;
   }, [orderedForGrid, heroIds, heroImages, gridTarget]);
 
