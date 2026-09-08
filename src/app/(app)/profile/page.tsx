@@ -128,10 +128,16 @@ export default async function ProfilePage() {
       </CollapsibleCard>
 
       <CollapsibleCard title="Platform Tour" style={{ marginBottom: 18 }}>
-        <p className="card-body" style={{ marginTop: 2, marginBottom: 12 }}>
-          Replay the guided tour to rediscover Limbic features.
+        <p className="card-body" style={{ marginTop: 2, marginBottom: 14 }}>
+          Replay the welcome tour, or take a longer walkthrough of one section.
         </p>
-        <ReplayTourButton />
+        <TourMenu
+          toursSeen={
+            Array.isArray(user.toursSeen)
+              ? (user.toursSeen as unknown[]).filter((t): t is string => typeof t === "string")
+              : []
+          }
+        />
       </CollapsibleCard>
 
       <CollapsibleCard title="About you" style={{ marginBottom: 18 }}>
