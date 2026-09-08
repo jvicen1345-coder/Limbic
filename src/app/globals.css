@@ -14817,3 +14817,43 @@ button.playbook-maskwrap:focus-visible {
   }
   .toolbox-chips::-webkit-scrollbar { display: none; }
 }
+
+/* ── Clinical Toolbox, second pass on the visuals (see components/pro/ToolboxBrowser.tsx) ──
+
+   The page was fifteen filled accent cards and nothing else: the loudest element on the
+   page, repeated until it stopped meaning anything, with no visual rest and the group
+   headings quieter than the content they label. So the emphasis is inverted here — the card
+   goes quiet and the icon carries the accent — which also fixes the icon tile, which was
+   within a few points of the card colour in both themes (#fcfdfe on #dbe7fb light,
+   #1a2136 on #1c2b4c dark) and read as a hole punched in the card rather than a badge.
+
+   Scoped to .toolbox-group throughout. The /pro overview hub uses the same .pro-tool-card
+   with six cards in open space, where a filled card is doing a different job. */
+.toolbox-group .pro-tool-card {
+  background: var(--color-neutral-100);
+  /* Replaces the 3px accent bar the shared card carries. On every one of fifteen cards that
+     bar signalled nothing; its only real job was to grey out for a locked card, a state most
+     readers never see. */
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+}
+.toolbox-group .pro-tool-card:hover { border-color: var(--color-accent-400); }
+.toolbox-group .toolbox-card-icon {
+  background: var(--color-accent-200);
+  color: var(--color-accent);
+}
+/* A locked card stays legible — its description is the reason to subscribe — but drops the
+   colour, so the eye sorts open from locked before it reads a word. */
+.toolbox-group .pro-tool-card--locked { border-color: var(--color-divider); }
+.toolbox-group .pro-tool-card--locked .toolbox-card-icon {
+  background: var(--color-neutral-200, var(--color-divider));
+  color: var(--color-neutral-700);
+}
+/* Cards in a row stretch to the tallest, but the footer sat wherever each description
+   happened to end, so "Open" stepped up and down across a row. */
+.toolbox-group .pro-tool-card-footer { margin-top: auto; }
+
+/* The heading has to read as a level above the grid under it, or the eye lands on the cards
+   and skips the structure the page is built on. */
+.toolbox-group-title { font-size: 17.5px; letter-spacing: -0.01em; }
+.toolbox-group-head { padding-bottom: 8px; }
