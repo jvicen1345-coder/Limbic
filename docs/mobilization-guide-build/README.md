@@ -6,7 +6,7 @@ needs rethinking rather than copying.
 
 | Step | File | State |
 |---|---|---|
-| 1 · Scope | — | not started — needs rethinking, see below |
+| 1 · Scope | `scope.md` | done — 28 competencies, template IDs kept, headings redesigned |
 | 2 · Source bank | `sources.md` | in progress — 5 guidelines harvested into one manual-therapy table |
 | 3 · Draft | — | not started |
 | 4 · Adversarial verification | — | not started |
