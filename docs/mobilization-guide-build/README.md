@@ -7,7 +7,7 @@ needs rethinking rather than copying.
 | Step | File | State |
 |---|---|---|
 | 1 · Scope | — | not started — needs rethinking, see below |
-| 2 · Source bank | `sources.md` | in progress |
+| 2 · Source bank | `sources.md` | in progress — 5 guidelines harvested into one manual-therapy table |
 | 3 · Draft | — | not started |
 | 4 · Adversarial verification | — | not started |
 | 5 · Build the page | — | not started |

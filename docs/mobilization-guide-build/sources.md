@@ -74,6 +74,45 @@ grade III is, or whether two clinicians would produce the same one.
 
 ---
 
+## Manual therapy across five guidelines — one table
+
+Harvested from the five guideline PDFs already held, front matter first and era headers respected.
+It answers a question none of the individual guides can: **how good is the evidence for manual
+therapy, and does it depend on where you are working?**
+
+| Guideline | Grade | What is recommended |
+|---|---|---|
+| **Hip OA 2025** | **A** | Soft tissue and/or joint mobilization, including high- and low-force long-axis distraction and mobilization with movement, to increase ROM, decrease pain and improve function in mild-to-moderate hip OA |
+| **Hip OA 2025** | **F** | *May* modify procedures and **force amplitude** to the patient's bony hip morphology and tissue tolerance/irritability |
+| **Lateral ankle sprain 2021** | **A** | Lymphatic drainage, active and passive soft tissue and joint mobilization, and anterior-to-posterior talar mobilization **within pain-free movement**, alongside exercise |
+| **Lateral ankle sprain 2021** | **A** | Graded joint mobilizations, manipulations, and weight-bearing and non-weight-bearing mobilization with movement, to improve dorsiflexion and dynamic balance **in the short term**, in chronic instability |
+| **Lateral ankle sprain 2021** | **B** | Multiple interventions *may* supplement balance training, combining exercise and manual therapy, guided by patient values and clinician judgement |
+| **Total knee arthroplasty 2026** | *moderate* | *May* use manual therapy with exercise and/or devices to augment active-assistive exercise for ROM in the early postoperative period |
+| **Total knee arthroplasty 2026** | *moderate* | *May* use manual therapy among several options to decrease pain, **time frame not specified** |
+| **Achilles midportion 2024** | **F** | *May* use manual therapy directed at manipulating and/or mobilizing muscles, joints and connective tissues where there are **mobility deficits** |
+| **Knee meniscal and cartilage 2018** | **&mdash;** | **No manual therapy recommendation at all.** |
+
+### What the table says
+
+**The evidence for manual therapy is regional, not general.** It reaches **Grade A** at the hip and
+the ankle, drops to **expert opinion (F)** for Achilles tendinopathy, sits at *moderate* on a
+different scale after knee arthroplasty, and is **absent entirely** from the knee meniscal and
+cartilage guideline. A student taught "manual therapy is evidence-based" has been told something
+that is true in two of these five documents and unsupported in a third.
+
+**Note the two grading scales.** Four of these guidelines use letters A-F; the arthroplasty
+guideline uses Evidence Quality high/moderate/low. They are not interchangeable and a *moderate* is
+not a *B*. An earlier version of this harvest reported "no manual therapy recommendation" for the
+arthroplasty guideline purely because the extraction looked for a letter prefix — the
+recommendation was there in a different format. Recorded because it is the same class of error as
+the talar tilt appendix hit: **the search found nothing and the absence was almost believed.**
+
+**Where dose is specified, it is never by grade number.** Force amplitude relative to tissue
+tolerance (hip), within pain-free movement (ankle), in the short term (ankle), early postoperative
+period (arthroplasty), where mobility deficits exist (Achilles). Not one says "grade III".
+
+---
+
 ## A conflation to avoid
 
 Searching guideline text for `grade III` returns **Kellgren-Lawrence Grade III hip osteoarthritis**
