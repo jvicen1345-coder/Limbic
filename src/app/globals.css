@@ -3632,13 +3632,21 @@ html[data-theme="dark"] .nav-founding-link-active {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  margin-bottom: 24px;
 }
 @media (min-width: 1024px) {
   .assess-page-layout {
     display: grid;
-    grid-template-columns: minmax(0, 65%) minmax(0, 35%);
+    grid-template-columns: minmax(0, 13fr) minmax(0, 7fr);
     gap: 24px;
     align-items: start;
+    padding-top: 24px;
+  }
+  .assess-video-cell { position: relative; }
+  .assess-right-panel-heading {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
   }
 }
 .assess-test-card { border-left: 3px solid var(--color-accent); }
@@ -13063,6 +13071,63 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
   border: 0;
 }
 
+.collapsible-card {
+  padding: 0;
+  gap: 0;
+}
+
+.collapsible-card-summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 18px;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 17px;
+  /* gap: var(--space-2); */
+}
+
+.collapsible-card-summary::-webkit-details-marker {
+  display: none;
+}
+
+.collapsible-card-summary::after {
+  content: "+";
+  float: right;
+  font-size: 20px;
+  transition: transform 180ms ease;
+}
+
+.collapsible-card[open] .collapsible-card-summary::after {
+  content: "−";
+  transform: rotate(180deg);
+}
+
+.collapsible-card-content {
+  padding: 0 18px 18px;
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 220ms ease,
+    opacity 160ms ease;
+}
+
+.collapsible-card-content > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.collapsible-card[open] .collapsible-card-content {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collapsible-card-content,
+  .collapsible-card-summary::after {
+    transition: none;
+  }
+}
 /* ============================================================================
    Horizontal tab rails: keep a sideways swipe sideways.
 
