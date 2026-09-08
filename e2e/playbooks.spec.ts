@@ -418,3 +418,19 @@ test.describe("Retired shoulder playbook", () => {
     await expect(page.locator("#refs li")).toHaveCount(82);
   });
 });
+
+/** The guide is reached by ordinary navigation, so it has to offer a way back — it is a
+ *  standalone document and carries none of Limbic's own chrome. */
+test("the served guide links back into Limbic", async ({ page }) => {
+  const email = `pw-guideback-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+  await signUpAndEnterApp(page, email);
+  await grantLimbicStudent(email);
+
+  await page.goto("/student/playbooks");
+  await page.getByRole("link", { name: "Open" }).first().click();
+  await page.waitForURL(/\/student\/guides\/shoulder-examination$/);
+
+  await page.getByRole("link", { name: /Limbic/ }).first().click();
+  await page.waitForURL(/\/student\/playbooks$/);
+  await expect(page.getByRole("heading", { name: "Playbooks" })).toBeVisible();
+});

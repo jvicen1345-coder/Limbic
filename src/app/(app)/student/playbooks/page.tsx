@@ -38,8 +38,8 @@ export default async function PlaybooksHubPage() {
       ) : (
         <div className="playbook-hub-grid">
           {/* The shoulder guide is a fixed HTML asset served whole rather than a playbook
-              built from lib/playbooks — see the route handler for why. It opens in its own
-              tab because it is a complete document with its own navigation. */}
+              built from lib/playbooks — see the route handler for why. It navigates in place
+              like every other card; the document carries its own link back to this hub. */}
           <div className="playbook-hub-card playbook-hub-card-guide">
             <h2 className="playbook-hub-card-name">Shoulder Examination</h2>
             <p className="playbook-hub-card-desc">
@@ -48,15 +48,10 @@ export default async function PlaybooksHubPage() {
               linked, a taught lane for what your own program says, and a practice plan built from what you miss.
             </p>
             <span className="playbook-hub-card-meta">12 sections · 32 exam items · 82 references</span>
-            <a
-              href="/student/guides/shoulder-examination"
-              target="_blank"
-              rel="noopener"
-              className="specialty-explore-btn"
-            >
+            <Link href="/student/guides/shoulder-examination" className="specialty-explore-btn">
               Open
               <ChevronRightIcon size={14} />
-            </a>
+            </Link>
           </div>
           {PLAYBOOKS.map((playbook) => (
             <div className="playbook-hub-card" key={playbook.slug}>
