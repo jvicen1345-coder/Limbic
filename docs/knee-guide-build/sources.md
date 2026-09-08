@@ -143,7 +143,15 @@ each deserves a second angle before that determination is made in the guide.
   quantification and effusion's relationship to quadriceps inhibition, not the reliability or
   accuracy of the hand tests students are examined on.
 
-**Second pass done for both, both still empty.** Patellofemoral returned quadriceps morphology,
+**Knee ROM norms — searched, not found.** A search for normative goniometric knee range in
+healthy adults returns a flossing RCT, a case report and a TKA gait study. Exactly as with the
+hip, the classic normative tables are paywalled at the table. See the cross-joint note below.
+
+**Quadriceps limb symmetry index — searched, no threshold source.** Returns post-ACL-reconstruction
+cohorts using an LSI cutoff rather than any study establishing one. A widely used threshold whose
+origin this build cannot reach is a convention, not a measurement, and goes in marked as such.
+
+**Second pass done for the two below, both still empty.** Patellofemoral returned quadriceps morphology,
 ankle-mobility and video-assessment work; effusion returned MRI volumetry and ACL-related
 quadriceps inhibition. Neither returned accuracy or reliability for the bedside tests students
 are examined on. Both now go into the guide flagged in place, the way four hip values did.
@@ -160,3 +168,22 @@ strength norms and limb symmetry index · knee OA diagnostic criteria.
 
 Expect several of these to end as **untraceable**, as four hip values did. That determination is
 content, and it gets written down in place rather than left as a silence.
+
+---
+
+## A cross-joint finding, worth stating once
+
+Normative range of motion could not be traced to a freely readable primary source **for the hip
+or for the knee**. In both cases the search returns athlete cohorts, post-surgical series and
+intervention trials, while the tables everyone actually quotes — Boone and Azen, the AAOS and AMA
+figures, Roach and Miles — are paywalled at precisely the table.
+
+That is not two coincidences. The numbers a physiotherapy student memorises for joint range are,
+as far as a reader without institutional access is concerned, **conventions with no reachable
+origin**. The hip guide says so in place and cites Roach 1991 beside it for the one thing that
+*is* free and matters most: measured against a national probability sample, textbook values were
+off by **as much as 18&deg;**.
+
+The knee guide will say the same, and the ankle build should expect the same result rather than
+spending the search again from scratch. If a free normative source for any of these ever turns
+up, it upgrades several rows across three guides at once.
