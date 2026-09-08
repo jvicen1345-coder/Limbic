@@ -23,10 +23,34 @@
  *  Client-safe: the page renders these as links and needs no server data beyond the two
  *  access flags it passes in. */
 
+/** The icon each card shows. A key rather than a component so this file stays plain data —
+ *  components/pro/ToolboxBrowser.tsx maps these onto the real icons, and its map is typed
+ *  Record<ToolboxIcon, ...> so adding a key here without drawing it fails to compile.
+ *
+ *  Where a tool also had a sidebar row before the trim, its key resolves to the icon that row
+ *  used, so the two surfaces do not disagree about what a tool looks like. */
+export type ToolboxIcon =
+  | "dashboard"
+  | "force"
+  | "agent"
+  | "team"
+  | "report"
+  | "tests"
+  | "screening"
+  | "outcomes"
+  | "exercise"
+  | "movement"
+  | "reference"
+  | "guidelines"
+  | "documents"
+  | "pathologies"
+  | "ce";
+
 export interface ToolboxEntry {
   name: string;
   href: string;
   description: string;
+  icon: ToolboxIcon;
   /** Needs a LimbicPRO subscription. Everything else is free to any signed-in reader — see
    *  lib/session.ts hasClinicalReferenceAccess and each page's own gate. */
   pro?: boolean;
@@ -48,6 +72,7 @@ export const CLINICIAN_TOOLBOX: ToolboxGroup[] = [
     tools: [
       {
         name: "Clinician Dashboard",
+        icon: "dashboard",
         href: "/pro/dashboard",
         description:
           "Your whole caseload in one place — conditions, outcome measures, goals, home programs, session logs and clinical notes.",
@@ -55,12 +80,14 @@ export const CLINICIAN_TOOLBOX: ToolboxGroup[] = [
       },
       {
         name: "Force Lab",
+        icon: "force",
         href: "/pro/force-lab",
         description: "Import and analyze handheld dynamometer data. Track patient strength over time.",
         pro: true,
       },
       {
         name: "Limbic Agent",
+        icon: "agent",
         href: "/agent",
         description:
           "Clinical decision support at the point of care — evidence-based answers meant to support your judgment, not replace it.",
@@ -68,12 +95,14 @@ export const CLINICIAN_TOOLBOX: ToolboxGroup[] = [
       },
       {
         name: "Team Dashboard",
+        icon: "team",
         href: "/pro/dashboard?tab=team",
         description: "Caseloads across everyone in your clinic.",
         clinicAdmin: true,
       },
       {
         name: "Clinic Report",
+        icon: "report",
         href: "/pro/clinic-report",
         description: "Outcomes rolled up across the clinic, with CE compliance.",
         clinicAdmin: true,
@@ -86,18 +115,21 @@ export const CLINICIAN_TOOLBOX: ToolboxGroup[] = [
     tools: [
       {
         name: "Special Tests",
+        icon: "tests",
         href: "/pro/special-tests",
         description:
           "Organized by body region, with performance technique, positive finding, and diagnostic accuracy.",
       },
       {
         name: "Screening & Decision Support",
+        icon: "screening",
         href: "/pro/decision-rules",
         description:
           "Evidence-based decision rules and red flag screening, to guide clinical reasoning and imaging decisions.",
       },
       {
         name: "Outcome Measures",
+        icon: "outcomes",
         href: "/pro/calculators",
         description: "Validated outcome measures and functional assessments, scored and interpreted in real time.",
       },
@@ -109,12 +141,14 @@ export const CLINICIAN_TOOLBOX: ToolboxGroup[] = [
     tools: [
       {
         name: "Exercise Programs",
+        icon: "exercise",
         href: "/hep",
         description: "Build and assign home programs, and attach them to a patient record.",
         pro: true,
       },
       {
         name: "Movement Lab",
+        icon: "movement",
         href: "/hep?tab=movement-lab",
         description: "The exercise bank and phased protocols the builder draws on — filterable by region and equipment.",
       },
@@ -126,21 +160,25 @@ export const CLINICIAN_TOOLBOX: ToolboxGroup[] = [
     tools: [
       {
         name: "Clinical Reference",
+        icon: "reference",
         href: "/pro/lab-values",
         description: "Lab values and medications, with what each one means for what you had planned today.",
       },
       {
         name: "Clinical Practice Guidelines",
+        icon: "guidelines",
         href: "/pro/guidelines",
         description: "Published CPGs, summarized to their recommendations and the strength of evidence behind them.",
       },
       {
         name: "Documentation Templates",
+        icon: "documents",
         href: "/pro/documentation",
         description: "Evaluation, progress, discharge and prior-auth templates — copy, customize, and use.",
       },
       {
         name: "Common Pathologies",
+        icon: "pathologies",
         href: "/wellness/pathologies",
         description: "Plain-language condition explanations, written to be read with a patient rather than about one.",
       },
@@ -152,6 +190,7 @@ export const CLINICIAN_TOOLBOX: ToolboxGroup[] = [
     tools: [
       {
         name: "CE Tracker",
+        icon: "ce",
         href: "/pro/ce-tracker",
         description: "Log continuing education toward license renewal, with certificates and progress against your requirement.",
         pro: true,
