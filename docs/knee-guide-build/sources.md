@@ -79,9 +79,46 @@ Status: **in progress.** Nothing below has been drafted into content yet.
 
 ---
 
+## Fracture screening
+
+### Kazemi SM, Khorram R, Fayyazishishavan E, et al. Diagnostic accuracy of the Ottawa Knee Rule for diagnosis of fracture in patients with knee trauma: a systematic review and meta-analysis.
+*Arch Acad Emerg Med* 2023;11(1):e30 · PMID 37215241 · PMC10197917 · **free full text**
+
+- **Supports** — **18 studies, 6,702 patients**, random-effects pooling, QUADAS-2 quality
+  assessment. Pooled **sensitivity 0.98 (95% CI 0.96-0.99)**, **specificity 0.43 (0.42-0.45)**,
+  **+LR 1.56 (1.39-1.75)**, **&minus;LR 0.12 (0.05-0.26)**, and an HSROC **AUC of 0.54**.
+- **Does not support** — the rule as a way of *finding* fractures, despite the abstract's own
+  conclusion calling this "high diagnostic performance". Read the numbers: a +LR of 1.56 barely
+  moves probability, and an AUC of 0.54 is close to chance discrimination. The entire value sits
+  in the &minus;LR of 0.12 — **it is a rule-out and nothing else**, which is exactly what a
+  screening rule designed to avoid unnecessary radiographs should be.
+- **How this goes in the guide** — as the red-flag row, quoted with both directions, and with the
+  gap between the authors' summary word and their own AUC pointed out rather than smoothed over.
+  A student who takes "high diagnostic performance" at face value will over-read a positive rule.
+
+---
+
+## Searched and not yet found
+
+Recorded so the search is not silently repeated, and so nothing gets quoted from memory in the
+meantime. These are **not yet** declared untraceable — one search is not an exhaustive one, and
+each deserves a second angle before that determination is made in the guide.
+
+- **Patellofemoral pain — accuracy of any clinical test.** A targeted search for sensitivity and
+  specificity of patellofemoral tests returned video-assessment agreement, muscle-stiffness and
+  4D-CT instability work; nothing giving diagnostic accuracy for a bedside test.
+- **Clinical effusion tests** (sweep/stroke, ballottement) — searches return MRI volumetric
+  quantification and effusion's relationship to quadriceps inhibition, not the reliability or
+  accuracy of the hand tests students are examined on.
+
+If the second pass also comes up empty, both go into the guide flagged in place, the way four hip
+values did.
+
+---
+
 ## Still to chase
 
-Ottawa knee rules · Thessaly, Apley, Ege and joint-line-tenderness figures from a source that
+Thessaly, Apley, Ege and joint-line-tenderness figures from a source that
 reports them · patellofemoral pain diagnosis and the Dutch anterior knee pain
 guideline (Collins 2026 appraisal, abstract only) · knee ROM norms from a free source · Q angle ·
 patellar apprehension · effusion tests (sweep, ballottement) · joint line tenderness · quadriceps

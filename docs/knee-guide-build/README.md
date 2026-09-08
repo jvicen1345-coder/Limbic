@@ -7,7 +7,7 @@ text of a named paper carries that exact value.
 | Step | File | State |
 |---|---|---|
 | 1 · Scope | `scope.md` | done — competencies in examination order |
-| 2 · Source bank | `sources.md` | in progress — 4 papers read (2 with quotable figures) |
+| 2 · Source bank | `sources.md` | in progress — 5 papers read, 3 with quotable figures |
 | 3 · Draft | — | not started |
 | 4 · Adversarial verification | — | not started |
 | 5 · Build the page | — | not started |
