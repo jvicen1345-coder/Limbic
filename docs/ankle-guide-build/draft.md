@@ -247,12 +247,18 @@ textbook and measured values, and explicitly **not** as an ankle figure.
 
 ---
 
-## Figures — candidates
+## Figures
 
-- **Pattern 5 (what a test loads versus what its name implies):** the Ottawa Ankle Rules' zones
-  drawn against where patients actually point. The malleolar posterior edges and the fifth
-  metatarsal base are the rule; the lateral ligament is where it hurts.
-- **Pattern 1 (a value that is not constant):** the OAR specificity range, 7.8% to 68%, drawn
-  against its narrow sensitivity band. The asymmetry is the argument.
+**Drawn: the Ottawa Ankle Rules' two ranges, pattern 1 (a value that is not constant across its
+range).** Sensitivity as a narrow band from 92% to 100%; specificity as a bar running 7.8% to 68%,
+on one axis. The asymmetry is the whole argument, and it is legible before the caption: one number
+is settled and the other is not.
 
-Neither drawn. Both wait on verification.
+Measured at 320, 390, 500, 768 and 1280px. The first attempt failed - the two series labels were
+right-anchored outside the plot and ran past the left edge of the viewBox once the stylesheet
+scales figure text to 16px at narrow widths. Moved inside the plot above their bars; final state is
+zero escapes and zero overlaps at all five widths.
+
+**Not drawn: the Ottawa zones against where patients point** (pattern 5). It is a good idea and a
+sentence carries it - the malleolar edges, navicular and fifth metatarsal base are the rule, and
+none of them is where the patient points - so by the template's rule it stays a sentence.

@@ -1,0 +1,3364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<title>Ankle Examination Playbook</title>
+<style>
+  html{color-scheme:light dark}
+  body{margin:0; font:14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif}
+  img{max-width:100%}
+  [hidden]{display:none !important}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
+<style>
+:root{
+  /* Limbic's light palette (see src/app/globals.css :root) rather than the teal this guide
+     shipped with: --paper is --color-bg, --surface --color-surface, --surface-2
+     --color-neutral-200, --ink --color-text, --line --color-divider, --accent
+     --color-accent with --color-accent-200/-700 either side of it.
+
+     The three status colours are the exception, and deliberately. Limbic's --color-warn
+     (#e0741f) and --color-success (#1f9d5e) sit around 3:1 against white, which is fine for
+     the badges and bars the app uses them on and not fine for the 9.5px uppercase text this
+     guide sets in them. --mod and --low are darkened members of those same hues; --hi is
+     --color-danger unchanged, which already clears 5:1. */
+  --paper:#f4f4f0;
+  --surface:#ffffff;
+  --surface-2:#f2f5fa;
+  --ink:#1a1a1a;
+  --ink-2:#33405c;
+  --muted:#6b6860;
+  --muted-solid:#6b6860;
+  --line:#e2e0d8;
+  --line-soft:#eceae3;
+  --accent:#3b6fe0;
+  --accent-soft:#dbe7fb;
+  --accent-ink:#1f4494;
+  --d2:#1f8fb8;
+  --d3:#7b4fbf;
+  --edit:#6d4aa8;
+  --edit-soft:#f0eafb;
+  --hi:#b0413e;
+  --hi-soft:#f7e3e2;
+  --mod:#a3560f;
+  --mod-soft:#fbeedd;
+  --low:#16794a;
+  --low-soft:#e2f2ea;
+  --shadow:0 1px 0 rgba(15,32,39,.06), 0 8px 24px -18px rgba(15,32,39,.5);
+  --radius:4px;
+  /* Limbic's two faces: Plus Jakarta Sans for headings, and for body the same native
+     system-UI stack the app sets on --font-body, which downloads nothing. The monospace
+     chrome keeps its role but drops IBM Plex for the system mono, so the whole guide now
+     pulls one webfont family where it used to pull three. */
+  --font-head:"Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-body:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --maxw:1120px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0d1220;
+    --surface:#1a2338;
+    --surface-2:#212a44;
+    --ink:#e7ecf7;
+    --ink-2:#c4cde4;
+    --muted:#9aa8c9;
+    --muted-solid:#9aa8c9;
+    --line:#2b3550;
+    --line-soft:#222b42;
+    --accent:#6d9bf5;
+    --accent-soft:#1c2b4c;
+    --accent-ink:#b0c8fa;
+    --d2:#4dd1ee;
+    --d3:#b79be6;
+    --edit:#c9afec;
+    --edit-soft:#2b2346;
+    --hi:#e08883;
+    --hi-soft:#33222a;
+    --mod:#f7ab6c;
+    --mod-soft:#33291c;
+    --low:#7fe8b2;
+    --low-soft:#172a20;
+    --shadow:0 1px 0 rgba(0,0,0,.4), 0 10px 26px -20px #000;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0d1220;
+  --surface:#1a2338;
+  --surface-2:#212a44;
+  --ink:#e7ecf7;
+  --ink-2:#c4cde4;
+  --muted:#9aa8c9;
+  --muted-solid:#9aa8c9;
+  --line:#2b3550;
+  --line-soft:#222b42;
+  --accent:#6d9bf5;
+  --accent-soft:#1c2b4c;
+  --accent-ink:#b0c8fa;
+  --d2:#4dd1ee;
+  --d3:#b79be6;
+  --edit:#c9afec;
+  --edit-soft:#2b2346;
+  --hi:#e08883;
+  --hi-soft:#33222a;
+  --mod:#f7ab6c;
+  --mod-soft:#33291c;
+  --low:#7fe8b2;
+  --low-soft:#172a20;
+  --shadow:0 1px 0 rgba(0,0,0,.4), 0 10px 26px -20px #000;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px 96px}
+
+/* ---------- masthead ---------- */
+.masthead{
+  border-bottom:2px solid var(--ink);
+  padding:38px 0 20px;
+  display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; justify-content:space-between;
+}
+.ver{display:inline-block; margin-left:10px; padding-left:10px; border-left:1px solid var(--line);
+  color:var(--muted-solid); letter-spacing:.1em}
+@media (max-width:560px){ .ver{display:block; margin:6px 0 0; padding:0; border-left:0} }
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--accent); margin:0 0 10px;
+}
+h1{
+  font-family:var(--font-head);
+  font-weight:700; font-size:clamp(30px,5.2vw,48px); line-height:1.02;
+  letter-spacing:-.022em; margin:0; text-wrap:balance;
+}
+.masthead p{margin:10px 0 0; max-width:72ch; color:var(--ink-2); font-size:14.5px}
+
+/* ---------- nav ---------- */
+nav{
+  position:sticky; top:0; z-index:20;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+  margin-bottom:34px;
+}
+.navrow{
+  max-width:var(--maxw); margin:0 auto; padding:9px 22px;
+  display:flex; align-items:center; gap:10px;
+}
+nav a.here{color:var(--accent); background:var(--accent-soft); border-radius:5px}
+@media print{ nav a.here{background:transparent} }
+.navlinks{
+  display:flex; gap:4px 6px; flex:1 1 auto; min-width:0; flex-wrap:wrap;
+}
+#navpick{display:none}
+@media (max-width:900px){
+  .navlinks{display:none}
+  #navpick{
+    display:block; flex:1 1 auto; min-width:0; max-width:100%;
+    font-family:var(--font-mono); font-size:11.5px;
+    letter-spacing:.05em; text-transform:uppercase; color:var(--muted-solid);
+    background:transparent; border:1px solid var(--line); border-radius:6px;
+    padding:5px 8px; cursor:pointer;
+  }
+  #navpick:focus{outline:2px solid var(--accent); outline-offset:1px}
+}
+@media print{ #navpick{display:none} }
+nav a{
+  font-family:var(--font-mono);
+  font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--muted-solid); text-decoration:none; white-space:nowrap;
+  padding:5px 9px; border-radius:3px;
+}
+nav a:hover{color:var(--accent); background:var(--accent-soft)}
+nav a:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+
+/* ---------- sections ---------- */
+section{margin:0 0 54px; scroll-margin-top:60px}
+.sechead{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:18px}
+@media (max-width:620px){
+  .sechead{gap:8px 10px}
+  .sechead h2{flex:1 1 100%; order:2; font-size:19px}
+  .sechead .secnum{order:1}
+  .sechead .note{order:3; flex:1 1 auto; margin-left:0; font-size:11px}
+  .sechead .sec-recall{order:4; margin-left:auto}
+}
+.secnum{
+  font-family:var(--font-mono); font-size:12px; font-weight:600;
+  color:var(--accent); letter-spacing:.05em;
+}
+h2{
+  font-family:var(--font-head); font-weight:600; font-size:22px; letter-spacing:-.012em;
+  margin:0; text-wrap:balance;
+}
+.sechead .note{margin-left:auto; font-size:12px; color:var(--muted-solid); font-family:var(--font-mono)}
+h3{
+  font-family:var(--font-head); font-weight:600; font-size:15.5px; letter-spacing:-.005em;
+  margin:26px 0 10px; color:var(--ink);
+}
+p.lede{max-width:68ch; color:var(--ink-2); margin:0 0 16px}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); box-shadow:var(--shadow)}
+table{border-collapse:collapse; width:100%; min-width:0; font-size:13.6px; table-layout:auto}
+table.fixed{table-layout:fixed}
+thead th{
+  position:sticky; top:0; background:var(--surface-2); z-index:1;
+  font-family:var(--font-mono); font-weight:600; font-size:10.5px;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--ink-2);
+  text-align:left; padding:9px 12px; border-bottom:1px solid var(--line);
+}
+tbody td{padding:9px 12px; border-bottom:1px solid var(--line-soft); vertical-align:top; overflow-wrap:break-word}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--accent-soft)}
+td strong{font-weight:600}
+.num{font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:12.8px}
+.tight{white-space:nowrap}
+td.name{font-weight:600; min-width:120px}
+tr.group td{
+  background:var(--surface-2); padding:7px 12px;
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--accent-ink); border-bottom:1px solid var(--line);
+}
+tr.group:hover td{background:var(--surface-2)}
+td.tissue{color:var(--ink-2); min-width:160px}
+td.tissue b{color:var(--ink); font-weight:600}
+
+/* ---------- checklist ---------- */
+.check-table{table-layout:fixed}
+.check-table td.ck{width:34px; text-align:center; padding-left:12px; padding-right:2px}
+td.idx{width:42px; text-align:right; padding-left:2px; padding-right:14px; white-space:nowrap; font-size:12px}
+input[type=checkbox]{width:15px; height:15px; accent-color:var(--accent); cursor:pointer; margin-top:2px}
+.idx{font-family:var(--font-mono); font-size:11.5px; color:var(--muted-solid); font-variant-numeric:tabular-nums}
+.progressbar{
+  display:flex; align-items:center; gap:12px; margin:14px 0 0;
+  font-family:var(--font-mono); font-size:12px; color:var(--muted-solid);
+}
+.track{flex:1; height:5px; background:var(--surface-2); border-radius:99px; overflow:hidden; border:1px solid var(--line-soft)}
+.fill{height:100%; width:0%; background:var(--accent); transition:width .25s ease}
+
+/* ---------- numbers grid ---------- */
+.numgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden}
+@media (max-width:1000px){ .numgrid{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:560px){ .numgrid{grid-template-columns:1fr} }
+.numcell{background:var(--surface); padding:14px 15px; display:flex; flex-direction:column; gap:4px}
+.numcell .v{font-family:var(--font-mono); font-size:19px; font-weight:600; letter-spacing:-.01em; color:var(--accent); font-variant-numeric:tabular-nums}
+.numcell .k{font-size:12.6px; color:var(--ink-2); line-height:1.4}
+
+/* ---------- irritability ---------- */
+.irr{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px}
+.irrcard{border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); padding:15px 16px; border-top:3px solid var(--line)}
+.irrcard.h{border-top-color:var(--hi)}
+.irrcard.m{border-top-color:var(--mod)}
+.irrcard.l{border-top-color:var(--low)}
+.irrcard h4{margin:0 0 3px; font-family:var(--font-head); font-size:14px; font-weight:600}
+.irrcard .ef{font-family:var(--font-mono); font-size:11.5px; margin:0 0 10px; color:var(--muted-solid)}
+.irrcard ul{margin:0; padding-left:17px; font-size:13.2px; color:var(--ink-2)}
+.irrcard li{margin-bottom:4px}
+.pill{display:inline-block; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; padding:2px 7px; border-radius:99px; white-space:nowrap}
+.pill.h{background:var(--hi-soft); color:var(--hi)}
+.pill.m{background:var(--mod-soft); color:var(--mod)}
+.pill.l{background:var(--low-soft); color:var(--low)}
+.pill.a{background:var(--accent-soft); color:var(--accent-ink)}
+
+/* ---------- figures ---------- */
+figure{
+  margin:22px 0; padding:18px 18px 14px;
+  border:1px solid var(--line); border-radius:var(--radius);
+  background:var(--surface); box-shadow:var(--shadow);
+}
+figure svg{display:block; width:100%; max-width:660px; height:auto; margin:0 auto; color:var(--ink-2); overflow:visible}
+@media (max-width:700px){
+  figure{overflow-x:hidden}
+  figure svg{min-width:0}
+}
+figure text{font-family:var(--font-body); font-size:12px; fill:currentColor}
+figure text.mono{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em}
+figure text.big{font-family:var(--font-mono); font-size:13px; font-weight:600}
+@media (max-width:700px){
+  figure text{font-size:15px}
+  figure text.mono{font-size:13.5px}
+  figure text.big{font-size:16px}
+}
+@media (max-width:460px){
+  figure text{font-size:18px}
+  figure text.mono{font-size:16px}
+  figure text.big{font-size:19px}
+}
+.figgrid.mobonly{display:none}
+@media (max-width:640px){
+  .svglegend{display:none}
+  .figgrid.mobonly{display:grid}
+}
+.figgrid{display:grid; gap:12px 18px; margin:14px auto 0; max-width:660px; text-align:left}
+.figgrid.c3{grid-template-columns:repeat(3,1fr)}
+.figgrid > div{min-width:0}
+.figgrid .lbl{font-family:var(--font-mono); font-size:10px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--accent); display:block; margin-bottom:2px}
+.figgrid .t1{font-size:12.6px; line-height:1.45; color:var(--ink-2)}
+.figgrid .t2{font-size:12.2px; line-height:1.45; color:var(--muted-solid)}
+.figgrid .em{color:var(--accent)}
+@media (max-width:640px){
+  .figgrid.c3{grid-template-columns:1fr; gap:10px}
+  .figgrid > div{border-left:2px solid var(--line); padding-left:11px}
+  .figgrid > div{order:initial !important}
+}
+figcaption{margin:14px auto 0; font-size:12.6px; line-height:1.55; color:var(--muted-solid); max-width:72ch}
+figcaption b{color:var(--ink-2); font-weight:600}
+.figtitle{
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--accent); margin:0 0 14px;
+}
+
+/* ---------- narrow screens: tables become stacked cards ---------- */
+@media (max-width:860px){
+  .tablewrap{border:none; background:transparent; box-shadow:none; overflow-x:visible}
+  table{display:block}
+  thead{display:none}
+  tbody{display:block}
+  tbody tr{
+    display:block; background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:11px 13px; margin-bottom:10px; box-shadow:var(--shadow);
+  }
+  tbody tr:hover{background:var(--surface)}
+  tbody tr.group{
+    background:var(--surface-2); padding:7px 13px; margin-bottom:8px; box-shadow:none;
+  }
+  tbody tr.group:hover{background:var(--surface-2)}
+  tbody td{display:block; border:none; padding:5px 0}
+  tbody td:first-child{padding-top:0}
+  tbody td:last-child{padding-bottom:0}
+  tbody td[data-label]::before{
+    content:attr(data-label); display:block;
+    font-family:var(--font-mono); font-size:9.5px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--muted-solid); margin-bottom:3px;
+  }
+  td.name{font-size:15px; min-width:0}
+  td.tissue{min-width:0}
+  .check-table td.ck,
+  .check-table td.idx{display:inline-block; width:auto; text-align:left; vertical-align:middle; padding:0}
+  .check-table td.idx{margin-left:9px; margin-right:2px}
+}
+
+/* ---------- stats key ---------- */
+.statkey{
+  display:grid; grid-template-columns:repeat(2,1fr); gap:1px;
+  background:var(--line); border:1px solid var(--line);
+  border-radius:var(--radius); overflow:hidden; margin:18px 0 14px;
+}
+@media (max-width:700px){ .statkey{grid-template-columns:1fr} }
+.skcell{background:var(--surface); padding:11px 14px; display:flex; gap:11px; align-items:baseline}
+.skcell b{
+  font-family:var(--font-mono); font-size:12.5px; color:var(--accent);
+  min-width:38px; flex-shrink:0; letter-spacing:.03em;
+}
+.skcell span{font-size:12.8px; color:var(--ink-2); line-height:1.45}
+.skcell em{color:var(--ink); font-style:normal; font-weight:600}
+.src{font-family:var(--font-mono); font-size:10.8px; color:var(--muted-solid); opacity:.9; overflow-wrap:break-word}
+#importBar{display:flex; flex-wrap:wrap; gap:12px; align-items:center}
+#pdfPick{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase;
+  padding:4px 11px; border-radius:5px; border:1px solid var(--edit); background:transparent; color:var(--edit); cursor:pointer}
+#pdfPick:hover{background:var(--edit); color:var(--surface)}
+#pdfPick[disabled]{opacity:.5; cursor:default}
+#pdfStatus{font-family:var(--font-mono); font-size:10.5px; color:var(--muted-solid)}
+#importPanel{margin:0 0 26px; border:1px solid var(--edit); border-radius:8px; overflow:hidden}
+#importPanel header{padding:11px 16px; background:var(--edit-soft); font-size:13px; line-height:1.5; color:var(--ink)}
+.impRow{display:grid; grid-template-columns:1fr auto; gap:12px; align-items:start; padding:12px 16px; border-top:1px solid var(--line-soft)}
+.impRow .lab{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted-solid); margin-bottom:4px}
+.impRow .cand{font-size:13px; line-height:1.55; color:var(--edit)}
+.impRow .acts{display:flex; gap:6px}
+.impRow button{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.06em; text-transform:uppercase;
+  padding:3px 9px; border-radius:5px; border:1px solid var(--line); background:transparent; color:var(--muted-solid); cursor:pointer; white-space:nowrap}
+.impRow button.use{border-color:var(--edit); color:var(--edit)}
+.impRow button.use:hover{background:var(--edit); color:var(--surface)}
+.impRow.done{opacity:.5}
+@media print{ #importBar, #importPanel{display:none} }
+#refs{margin-top:44px; padding-top:26px; border-top:2px solid var(--ink)}
+#refs h2{font-family:var(--font-head); font-size:22px; margin:0 0 6px}
+#refs h3{font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--accent); margin:26px 0 10px; font-weight:400}
+#refs ol{margin:0; padding:0; list-style:none; counter-reset:r}
+#refs li{counter-increment:r; padding:9px 0 9px 34px; border-top:1px solid var(--line-soft); position:relative; font-size:13.2px; line-height:1.55}
+#refs li::before{content:counter(r); position:absolute; left:0; top:10px; font-family:var(--font-mono);
+  font-size:11px; color:var(--muted-solid)}
+#refs .au{color:var(--ink)}
+#refs .ti{font-style:italic}
+#refs .jo{font-family:var(--font-mono); font-size:11.5px; color:var(--muted-solid)}
+#refs .nt{display:block; color:var(--muted-solid); font-size:12.4px; margin-top:2px}
+#refs a{color:var(--accent); text-decoration:none; border-bottom:1px solid var(--accent-soft)}
+#refs a:hover{border-bottom-color:var(--accent)}
+@media print{ #refs a{border:0; color:inherit} }
+.cx{position:relative}
+.locked{cursor:default}
+.lanetag{display:block; margin-bottom:3px; width:max-content}
+.addwrap .add{margin-top:0}
+.addwrap{display:none; margin-top:7px; position:relative}
+.addwrap.has, .addwrap.editing{display:block}
+.add{color:var(--edit); outline:none; min-height:1.35em; padding-right:46px; line-height:1.5;
+  white-space:normal; overflow-wrap:break-word; word-break:normal; font-weight:400}
+.addwrap{max-width:100%; min-width:0}
+.add:empty::before{content:attr(data-ph); opacity:.5}
+.addclear{position:absolute; top:1px; right:0; border:0; background:transparent; color:var(--edit); cursor:pointer;
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase; opacity:0; padding:0}
+.addwrap:hover .addclear, .addwrap.editing .addclear, .addwrap:focus-within .addclear{opacity:.75}
+.addclear:hover{opacity:1; text-decoration:underline}
+/* a focused control has to be visible, or keyboard users tab into nothing */
+.addclear:focus-visible{opacity:1; text-decoration:underline; outline:2px solid var(--edit); outline-offset:2px; border-radius:3px}
+#editCount{font-family:var(--font-mono); font-size:10.5px; color:var(--edit)}
+#copyEdits, #resetEdits{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase;
+  padding:3px 9px; border-radius:5px; border:1px solid var(--line); background:transparent; color:var(--muted-solid); cursor:pointer}
+#copyEdits:hover, #resetEdits:hover{border-color:var(--edit); color:var(--edit)}
+@media print{ .addclear, #copyEdits, #resetEdits, .provkey span:has(#copyEdits), .provkey span:has(#resetEdits){display:none} .add{color:#6d4aa8} }
+.tag{display:inline-block; font-family:var(--font-mono); font-size:9.5px; letter-spacing:.07em;
+  text-transform:uppercase; padding:1px 6px; border-radius:3px; white-space:nowrap; margin-right:6px}
+.tag.t{background:var(--edit-soft); color:var(--edit)}
+/* the name column is narrow - a nowrap tag pushes it sideways */
+td.name .tag, td.name .pill{white-space:normal}
+.prov{display:inline-block; font-family:var(--font-mono); font-size:9.5px; letter-spacing:.07em;
+  text-transform:uppercase; padding:1px 6px; border-radius:99px; white-space:nowrap; vertical-align:1px;
+  border:1px solid currentColor; margin-right:5px}
+.prov.c{color:var(--mod)}
+.prov.x{color:var(--hi)}
+.prov-lifted{margin-right:6px; vertical-align:2px}
+#keybar{gap:10px 22px}
+.howrow{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:0 0 26px; align-items:start}
+@media (max-width:820px){ .howrow{grid-template-columns:1fr} }
+.howto{border:1px solid var(--line); border-radius:8px; background:var(--surface)}
+.howto > summary{
+  list-style:none; cursor:pointer; padding:11px 16px;
+  font-family:var(--font-mono); font-size:11.5px; letter-spacing:.05em;
+  color:var(--muted-solid);
+}
+.howto > summary::-webkit-details-marker{display:none}
+.howto > summary::before{content:"\25B8 "; color:var(--accent)}
+.howto[open] > summary::before{content:"\25BE "}
+.howto > summary:hover{color:var(--accent)}
+.howbody{padding:0 16px 14px; border-top:1px solid var(--line-soft)}
+.howbody p{margin:12px 0 0; font-size:12.8px; line-height:1.6; color:var(--muted-solid); max-width:88ch}
+.howbody b{color:var(--ink)}
+.howctl{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+@media print{ .howrow{display:none} }
+.provkey{display:flex; flex-wrap:wrap; gap:14px; align-items:baseline; margin:0 0 26px;
+  padding:12px 16px; border:1px solid var(--line); border-radius:8px; background:var(--surface);
+  font-size:12.4px; line-height:1.5; color:var(--muted-solid)}
+.provkey b{color:var(--ink)}
+.statnote{font-size:12.4px; color:var(--muted-solid); margin:0 0 4px; max-width:72ch}
+
+/* ---------- recall mode ---------- */
+.navdiv{
+  flex-shrink:0; width:1px; height:18px; background:var(--line);
+}
+/* the page-wide control is the primary one, so it is the only recall button that is filled */
+.recall-toggle{
+  flex-shrink:0;
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--accent-ink); font-weight:500;
+  background:var(--accent-soft); border:1px solid var(--accent); border-radius:3px;
+  padding:4px 11px; cursor:pointer; white-space:nowrap;
+}
+.recall-toggle:hover{color:var(--accent); border-color:var(--accent)}
+.recall-toggle:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.recall-toggle[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--paper)}
+/* a per-section control is secondary - no border until you go looking for it */
+.sec-recall{
+  margin-left:auto; flex-shrink:0; align-self:center;
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted-solid);
+  background:transparent; border:1px solid transparent; border-radius:3px;
+  padding:3px 9px; cursor:pointer; white-space:nowrap;
+}
+.sec-recall:hover{border-color:var(--accent)}
+.sechead .note + .sec-recall{margin-left:12px}
+.sec-recall:hover{color:var(--accent); border-color:var(--accent)}
+.sec-recall:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.sec-recall[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--paper)}
+.recallbar{display:none}
+body.recall-active .recallbar{
+  display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center;
+  margin:16px 0 -10px; padding:9px 13px;
+  background:var(--accent-soft); border-radius:var(--radius);
+  font-size:12.6px; color:var(--ink-2);
+}
+.recallbar button{
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--accent-ink); background:transparent;
+  border:1px solid var(--accent); border-radius:3px; padding:3px 9px; cursor:pointer;
+}
+.recallbar button:hover{background:var(--surface)}
+
+/* column chips - which columns are hidden */
+.colmask{
+  display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+  justify-content:flex-end; margin:0 0 8px;
+}
+.colmask .cmlabel, .colmask .chip{display:none}
+.colmask.open .cmlabel, .colmask.open .chip{display:inline-block}
+.tbl-recall{
+  flex-shrink:0;
+  font-family:var(--font-mono); font-size:9.5px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--muted-solid);
+  background:transparent; border:1px solid transparent; border-radius:99px;
+  padding:3px 10px; cursor:pointer;
+}
+.tbl-recall:hover{color:var(--accent); border-color:var(--accent)}
+.tbl-recall:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.tbl-recall[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--paper)}
+.cmlabel{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted-solid); margin-right:3px;
+}
+.chip{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.05em;
+  text-transform:uppercase; color:var(--muted-solid);
+  background:transparent; border:1px dashed var(--line); border-radius:99px;
+  padding:3px 10px; cursor:pointer;
+  max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.chip:hover{color:var(--accent); border-color:var(--accent)}
+.chip:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.chip[aria-pressed="true"]{
+  background:var(--accent); border-color:var(--accent); border-style:solid; color:var(--paper);
+}
+
+/* the blurred cells themselves */
+.maskwrap{display:block}
+.mask-on{cursor:pointer; border-radius:3px}
+.mask-on .maskwrap{filter:blur(5.5px); user-select:none; transition:filter .16s ease}
+.mask-on:hover{background:var(--accent-soft)}
+.mask-on .maskwrap:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px}
+.mask-on.shown{background:transparent; cursor:default}
+.missed{box-shadow:inset 3px 0 0 var(--hi)}
+tr.row-missed td:first-child{box-shadow:inset 3px 0 0 var(--mod)}
+#flagCount{font-family:var(--font-mono); font-size:11.5px; color:var(--hi)}
+/* short answers leak through a blur - block them out instead */
+.mask-on.solid .maskwrap{
+  filter:none; color:transparent; background:var(--surface-2);
+  box-shadow:inset 0 0 0 1px var(--line-soft); border-radius:3px;
+}
+.mask-on.solid.shown .maskwrap{color:inherit; background:transparent; box-shadow:none}
+/* figures: hide the labels and the caption that gives them away */
+figure.labels-hidden{cursor:pointer}
+figure.labels-hidden svg text{
+  opacity:.6; cursor:pointer; pointer-events:all;
+  transition:opacity .16s ease;
+}
+figure.labels-hidden svg text.shown,
+figure.labels-hidden.labels-shown svg text{filter:none; opacity:1}
+figure.labels-hidden figcaption{filter:blur(5px); user-select:none; cursor:pointer}
+figure.labels-hidden.labels-shown figcaption,
+figure.labels-hidden.caption-shown figcaption{filter:none; user-select:auto; cursor:default}
+@media (prefers-reduced-motion: reduce){ figure.labels-hidden svg text{transition:none} }
+.missbtn{
+  display:none; margin-top:7px;
+  font-family:var(--font-mono); font-size:9.5px; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--muted-solid);
+  background:transparent; border:1px dashed var(--line); border-radius:99px;
+  padding:2px 9px; cursor:pointer;
+}
+.mask-on.shown .missbtn{display:inline-block}
+.missbtn:hover{color:var(--hi); border-color:var(--hi)}
+.missed .missbtn{color:var(--hi); border-color:var(--hi); border-style:solid}
+.recallbar button[disabled]{opacity:.45; cursor:default}
+.mask-on.shown .maskwrap{filter:none; user-select:auto}
+@media (prefers-reduced-motion: reduce){ .mask-on .maskwrap{transition:none} }
+
+/* ---------- print ---------- */
+@media print{
+  :root,
+  :root:not([data-theme="light"]),
+  :root[data-theme="dark"]{
+    --paper:#fff; --surface:#fff; --surface-2:#f2f5fa;
+    --ink:#1a1a1a; --ink-2:#33405c; --muted:#6b6860; --muted-solid:#6b6860;
+    --line:#cfccc2; --line-soft:#e2e0d8;
+    --accent:#3b6fe0; --accent-soft:#eaf1fd; --accent-ink:#1f4494;
+    --d2:#1f8fb8; --d3:#7b4fbf; --edit:#6d4aa8; --edit-soft:#f0eafb;
+    --hi:#b0413e; --hi-soft:#f7e3e2; --mod:#a3560f; --mod-soft:#fbeedd;
+    --low:#16794a; --low-soft:#e2f2ea; --shadow:none;
+  }
+  nav, .recallbar, .colmask, .recall-toggle, .sec-recall, .progressbar, .missbtn{display:none !important}
+  figure.labels-hidden svg text{filter:none !important; opacity:1 !important}
+  figure.labels-hidden figcaption{filter:none !important}
+  .mask-on .maskwrap{filter:none !important; user-select:auto !important}
+  .mask-on{background:transparent !important}
+  /* a closed dropdown prints as a heading with nothing under it - open them all */
+  details > summary ~ *{display:revert !important}
+  details{break-inside:avoid}
+  details > summary{list-style:none}
+  details > summary::marker, details > summary::-webkit-details-marker{content:""; display:none}
+  body{font-size:10pt; background:#fff}
+  .wrap{max-width:none; padding:0}
+  .masthead{padding-top:0}
+  section{margin-bottom:26px}
+  .tablewrap{overflow:visible; box-shadow:none}
+  figure{box-shadow:none}
+  thead th{position:static}
+  tr, figure, .numcell, .irrcard, details{break-inside:avoid; page-break-inside:avoid}
+  h2, h3{break-after:avoid; page-break-after:avoid}
+  details .ans{border-top:1px solid var(--line-soft)}
+  a{color:inherit; text-decoration:none}
+}
+
+
+.skip{position:absolute; left:-9999px; top:0; z-index:60;
+  font-family:var(--font-mono); font-size:12px; padding:9px 14px;
+  background:var(--accent); color:var(--paper); border-radius:0 0 6px 0; text-decoration:none}
+.skip:focus{left:0}
+@media print{ .skip{display:none} }
+/* ---------- back to top ---------- */
+#toTop{
+  position:fixed; z-index:25;
+  right:18px; bottom:18px;
+  bottom:calc(18px + env(safe-area-inset-bottom, 0px));
+  display:inline-flex; align-items:center; justify-content:center;
+  width:34px; height:34px; padding:0;
+  color:var(--muted-solid); background:var(--surface);
+  border:1px solid var(--line); border-radius:99px; cursor:pointer;
+  opacity:0; transform:translateY(6px); pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease, color .16s ease, border-color .16s ease;
+}
+/* quiet by color, not by transparency - a faded control fails contrast */
+#toTop.on{opacity:1; transform:none; pointer-events:auto}
+#toTop.on:hover, #toTop.on:focus-visible{color:var(--accent); border-color:var(--accent); background:var(--accent-soft)}
+#toTop:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+@media (max-width:640px){
+  #toTop{right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); width:40px; height:40px}
+}
+@media (prefers-reduced-motion: reduce){ #toTop{transition:none} }
+@media print{ #toTop{display:none !important} }
+
+/* ---------- practice planner ---------- */
+.planner{margin:14px 0 18px}
+.plan-empty{font-family:var(--font-mono); font-size:12px; color:var(--muted-solid);
+  border:1px dashed var(--line); border-radius:var(--radius); padding:20px 18px; text-align:center}
+.plan-head{display:flex; flex-wrap:wrap; gap:10px 16px; align-items:baseline; margin-bottom:12px}
+.plan-count{font-family:var(--font-mono); font-size:11px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--hi)}
+.plan-where{font-size:12.6px; color:var(--muted-solid)}
+.plan-group{border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px;
+  margin-bottom:12px; background:var(--surface)}
+.plan-kind{font-family:var(--font-mono); font-size:10px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--accent); margin-bottom:2px}
+.plan-how{font-size:13px; line-height:1.5; color:var(--ink-2); margin:0 0 10px}
+.plan-items{display:flex; flex-wrap:wrap; gap:6px}
+.plan-item{font-size:12.2px; line-height:1.35; text-align:left; background:var(--surface-2);
+  border:1px solid var(--line-soft); border-radius:5px; padding:4px 9px; cursor:pointer;
+  color:var(--ink-2); font-family:inherit; max-width:100%}
+.plan-item:hover{border-color:var(--accent); color:var(--accent)}
+.plan-item:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.plan-item .ps{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.05em;
+  text-transform:uppercase; color:var(--muted-solid); display:block}
+.plan-flash{animation:planflash 1.4s ease-out}
+@keyframes planflash{0%,40%{background:var(--hi-soft)} 100%{background:transparent}}
+@media (prefers-reduced-motion: reduce){ .plan-flash{animation:none; outline:2px solid var(--hi)} }
+@media print{ .planner, #plannerNote{display:none} }
+
+/* ---------- citation links and accuracy figures ---------- */
+a.cite{color:inherit; text-decoration:none; border-bottom:1px dotted var(--line);
+  border-radius:2px; padding-bottom:1px}
+a.cite:hover{color:var(--accent); border-bottom-color:var(--accent); background:var(--accent-soft)}
+a.cite:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+#refs li{scroll-margin-top:86px}
+#refs li:target{background:var(--accent-soft); border-radius:5px;
+  box-shadow:0 0 0 6px var(--accent-soft), inset 3px 0 0 var(--accent)}
+.backrefs{margin-left:7px; white-space:nowrap}
+.backrefs a{font-family:var(--font-mono); font-size:9.5px; color:var(--accent);
+  text-decoration:none; border:1px solid var(--line); border-radius:3px; padding:0 4px}
+.backrefs a:hover{border-color:var(--accent); background:var(--accent-soft)}
+/* an accuracy figure is not a source, and should not be dressed as one */
+.stat{font-family:var(--font-mono); font-size:10px; letter-spacing:.02em;
+  color:var(--ink-2); background:var(--surface-2); border-radius:3px; padding:1px 6px;
+  white-space:normal}
+/* a note that no source exists, and a textbook there is no free source to link */
+.nosrc{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.04em;
+  text-transform:uppercase; color:var(--mod); border:1px dashed var(--mod);
+  border-radius:3px; padding:1px 6px; white-space:normal}
+.book{border-bottom:1px dotted var(--line); cursor:help}
+@media print{ .backrefs{display:none} a.cite{border-bottom:0} }
+
+/* ---------- filter ---------- */
+.navrow{flex-wrap:wrap}
+.navfind{display:flex; align-items:center; gap:8px; flex:0 0 auto}
+#findBox{
+  font-family:var(--font-mono); font-size:11px;
+  letter-spacing:.05em; color:var(--ink); background:var(--surface);
+  border:1px solid var(--line); border-radius:6px; padding:5px 9px; width:132px;
+  transition:width .16s ease, border-color .16s ease;
+}
+#findBox::placeholder{color:var(--muted-solid); text-transform:uppercase; letter-spacing:.07em}
+#findBox:focus{outline:none; border-color:var(--accent); width:190px}
+#findCount{
+  font-family:var(--font-mono); font-size:10px;
+  letter-spacing:.05em; text-transform:uppercase; color:var(--accent); white-space:nowrap;
+}
+#findCount:empty{display:none}
+.f-out{display:none !important}
+.f-hit{box-shadow:inset 3px 0 0 var(--accent)}
+body.filtering section > p.lede,
+body.filtering .provkey,
+body.filtering .masthead,
+body.filtering .howrow,
+body.filtering .progressbar,
+body.filtering .recallbar{display:none}
+body.filtering .f-none{
+  font-family:var(--font-mono); font-size:12px;
+  letter-spacing:.04em; color:var(--muted-solid); padding:26px 2px;
+}
+@media (max-width:900px){
+  .navfind{order:3; flex:1 1 100%; margin-top:2px}
+  #findBox{flex:1 1 auto; width:auto}
+  #findBox:focus{width:auto}
+}
+@media print{ .navfind{display:none} }
+/* ---------- callout ---------- */
+.callout{
+  border-left:3px solid var(--accent); background:var(--accent-soft);
+  padding:13px 16px; border-radius:0 var(--radius) var(--radius) 0; margin:16px 0;
+  font-size:13.6px; color:var(--ink);
+}
+.callout b{font-weight:600}
+.callout.warn{border-left-color:var(--mod); background:var(--mod-soft)}
+
+/* ---------- cases ---------- */
+.cases{display:flex; flex-direction:column; gap:10px; margin-bottom:22px}
+details.case{
+  border:1px solid var(--line); border-radius:var(--radius);
+  background:var(--surface); box-shadow:var(--shadow); margin:0; overflow:hidden;
+}
+details.case > summary.stem{
+  display:block; padding:13px 44px 13px 16px; margin:0;
+  font-size:14px; line-height:1.5; font-weight:400; position:relative;
+}
+details.case > summary.stem::before{content:none}
+details.case > summary.stem::after{
+  content:"▾"; position:absolute; right:16px; top:13px;
+  font-size:12px; color:var(--accent);
+}
+details.case[open] > summary.stem::after{content:"▴"}
+details.case[open] > summary.stem{border-bottom:1px solid var(--line-soft)}
+.case .stem b{font-family:var(--font-head); font-weight:600}
+.caseans{display:grid; grid-template-columns:auto 1fr; gap:7px 16px; margin:0;
+  padding:13px 16px 15px}
+.caseans > div{display:contents}
+.caseans dt{
+  font-family:var(--font-mono); font-size:9.5px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--accent); padding-top:3px; white-space:nowrap;
+}
+.caseans dd{margin:0; font-size:13.4px; line-height:1.5; color:var(--ink-2)}
+@media (max-width:600px){
+  .caseans{grid-template-columns:1fr; gap:2px}
+  .caseans dt{padding-top:8px}
+}
+
+/* ---------- drill ---------- */
+details{border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); margin-bottom:7px; overflow:hidden}
+summary{cursor:pointer; padding:11px 14px; font-weight:500; font-size:14px; list-style:none; display:flex; gap:10px; align-items:flex-start}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"?"; font-family:var(--font-mono); color:var(--accent); font-weight:600; font-size:12px; margin-top:2px}
+summary:hover{background:var(--accent-soft)}
+summary:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+details[open] summary{border-bottom:1px solid var(--line-soft)}
+details .ans{padding:11px 14px 13px 36px; font-size:13.6px; color:var(--ink-2)}
+
+footer{border-top:1px solid var(--line); padding-top:16px; font-size:12.4px; color:var(--muted-solid); max-width:70ch}
+footer b{color:var(--ink-2)}
+a{color:var(--accent)}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+@media (max-width:640px){
+  .stamp{text-align:left}
+  body{font-size:14.5px}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the guide</a>
+<nav>
+  <div class="navrow">
+    <a href="/student/playbooks" title="Back to Limbic Playbooks">&larr; Limbic</a>
+    <span class="navdiv" aria-hidden="true"></span>
+    <button class="recall-toggle" id="recallBtn" aria-pressed="false" title="Blur every blurrable area on the page - press again to clear it">Recall all</button>
+    <span class="navdiv" aria-hidden="true"></span>
+    <select id="navpick" aria-label="Jump to a section"></select>
+    <div class="navlinks">
+    <a href="#checklist">13 Items</a>
+    <a href="#numbers">Numbers</a>
+    <a href="#posture">Posture</a>
+    <a href="#arom">AROM</a>
+    <a href="#prom">PROM &amp; Length</a>
+    <a href="#mmt">MMT</a>
+    <a href="#special">Special Tests</a>
+    <a href="#syndromes">Syndromes</a>
+    <a href="#palpation">Palpation</a>
+    <a href="#treatment">Mobs &amp; Exercise</a>
+    <a href="#drill">Drill</a>
+    <a href="#refs">Refs</a>
+    </div>
+    <div class="navfind">
+      <input type="search" id="findBox" autocomplete="off" spellcheck="false"
+             placeholder="Filter" aria-label="Filter the page by word or number"
+             aria-describedby="findCount">
+      <span id="findCount" role="status" aria-live="polite"></span>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">Physical therapy &middot; the lateral ankle screen, in order <span class="ver">Version 1.0 &middot; September 2026</span></p>
+      <h1>Ankle Examination Playbook</h1>
+      <p>A full lateral ankle screen in the order you would perform it, with every value marked for what
+      it is worth. This is the best-evidenced joint in the series - two freely readable graded
+      guidelines carry 34 current recommendations between them - and it is also the one where the
+      honest prognosis is worst: <b>40% of people who seek care for a first sprain develop chronic
+      instability</b>, and full recovery "may take months or years to obtain, and cannot be expected
+      in all patients". The best evidence here is for <b>prevention</b>, which is why prevention is
+      the argument rather than an afterthought. And the special tests are recommended without any
+      published accuracy at all, which the guide says plainly rather than filling in.
+      <b>This is a study aid for examination preparation, not a clinical reference</b> - check any
+      value against current literature before it weights a decision about a patient.</p>
+    </div>
+  </header>
+
+  <div class="provkey">
+    <span><b>How to read a value.</b> Unmarked means traced to a source you can read for free, with the citation beside it.</span>
+    <span><span class="prov c">Convention</span> nobody has tested it.</span>
+    <span><span class="prov x">Contested</span> tested, and the studies disagree - quote the range.</span>
+  </div>
+
+<div class="howrow">
+    <details class="howto">
+      <summary>Making it yours - your own lines, and importing from a PDF</summary>
+      <div class="howbody">
+        <p><b>The <span class="tag t">Taught</span> lane is yours and starts empty.</b> Nothing is pre-filled, because what your program teaches is yours to state rather than ours to guess. <b>Double-click any box</b> and a purple line opens beneath it - type what your instructor said. The guide's own text is never editable; your line sits under it, saves in this browser, and prints with the page.</p>
+        <p class="howctl"><span id="editCount"></span> <button type="button" id="copyEdits">Copy my lines</button> <button type="button" id="resetEdits">Clear my lines</button></p>
+
+        <p><b>Have your course handout as a PDF?</b> Pull your program's wording straight into the taught lanes. The file is read <b>in your browser</b> and never uploaded anywhere - not to this site, not to anyone - and you review every suggestion before it lands.</p>
+        <p class="howctl">
+          <input type="file" id="pdfFile" accept="application/pdf" hidden>
+          <button type="button" id="pdfPick">Choose PDF</button> <span id="pdfStatus"></span></p>
+      </div>
+    </details>
+
+    <details class="howto">
+      <summary>Recall mode - how the quizzing works</summary>
+      <div class="howbody">
+        <p><b>Recall all</b> in the nav blanks the page - every table column, callout, card and diagram label. The first column of each table stays readable, since it names what you are being asked about, as do headings and callouts. A section heading or a single table's own <b>Recall</b> hides just that answer column, and the <b>Hide</b> chips let you pick from there. On a diagram, click a label to lift that entry. Click a hidden cell to check it, mark the ones you miss, and <b>Hide missed</b> then blanks only those. Case answers in the drill re-hide every time a case is opened, so nothing is spoiled by looking.</p>
+        <p class="howctl">
+          <button type="button" id="revealAll">Reveal all</button>
+          <button type="button" id="drillMissed" title="Blur only the cells you marked missed, everywhere on the page">Hide missed</button>
+          <button type="button" id="clearMissed">Clear missed</button></p>
+
+        <p><b>The markers stay readable while an answer is hidden.</b> A blurred cell still tells you whether what it hides is measured, convention or contested - so the question is not only "what is the number" but "how much is that number worth". A contested value has no single answer to recall; the range is the answer.</p>
+      </div>
+    </details>
+  </div>
+  <div id="importPanel" hidden></div>
+
+<main id="main">
+
+  <section id="checklist">
+    <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2></div>
+    <p class="lede">One decision comes before everything else - whether this ankle needs a radiograph. Get it early, and apply the rule entire.</p>
+    
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="name">Apply the Ottawa Ankle Rules first</td>
+        <td>Malleolar zones, navicular, base of the fifth metatarsal, and ability to bear weight for four steps.</td>
+        <td data-imp="Ottawa|malleolar|navicular|entirety">
+          <b>And apply them in their entirety.</b> Omitting malleolar tenderness and relying on weight bearing alone dropped sensitivity to <b>88%</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What the rules are for</td>
+        <td>Deciding about imaging, not finding fractures.</td>
+        <td data-imp="ruling out|pooled|post-test|imaging">
+          <b>Ruling out.</b> Pooled sensitivity <b>0.92</b>, specificity <b>0.35</b>, &minus;LR <b>0.13</b>; a negative leaves roughly a <b>1%</b> post-test probability of fracture. <span class="src">Sharifi Razavi 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Red flags</td>
+        <td>History and inspection.</td>
+        <td data-imp="syndesmotic|Achilles rupture|neurovascular|infection">
+          Fracture, syndesmotic injury, Achilles rupture, infection, neurovascular compromise. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Screen above</td>
+        <td>Palpate the fibula along its whole length and check the knee.</td>
+        <td data-imp="fibula|Maisonneuve|proximal|knee">
+          <b>A Maisonneuve fracture is missed by looking only where it hurts.</b> <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Classify from the history</td>
+        <td>Mechanism, time since injury, and first sprain or recurrence.</td>
+        <td data-imp="mechanism|recurrence|prevention|first">
+          <b>First or repeat changes the plan</b>, because the prevention evidence differs for each. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Resting state</td>
+        <td>Swelling and where it sits, ecchymosis, point tenderness, standing posture.</td>
+        <td data-imp="swelling|ecchymosis|point tenderness|baseline">
+          Swelling is a <b>Grade A</b> documented measure, at baseline and two or more times. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What they can do alone</td>
+        <td>Gait and weight bearing, active range, lunge, balance, hopping.</td>
+        <td data-imp="lunge|eyes-closed|Star Excursion|hopping">
+          The guideline names the instruments: <b>weight-bearing lunge, eyes-closed single-limb balance, Star Excursion Balance Test, timed single-limb hopping</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What you do to them</td>
+        <td>Passive range, talar translation, talar inversion, accessory glide.</td>
+        <td data-imp="talar translation|talar inversion|accessory|passive">
+          <b>Talar translation and talar inversion are Grade A</b> documented measures, not optional extras. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What is short</td>
+        <td>Gastrocnemius against soleus; plantar fascia and the windlass.</td>
+        <td data-imp="gastrocnemius|soleus|windlass|crosses">
+          Knee straight then bent - the difference is the gastrocnemius, because it crosses the knee. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What is weak</td>
+        <td>The four directions, fibularis specifically, and the hip.</td>
+        <td data-imp="fibularis|abduction|external rotation|directions">
+          In chronic instability, <b>hip abduction, extension and external rotation</b> are documented measures at <b>Grade C</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Where is it</td>
+        <td>Lateral ligaments, deltoid, syndesmosis, fibula, fifth metatarsal base, Achilles.</td>
+        <td data-imp="deltoid|syndesmosis|metatarsal|tenderness">
+          Point tenderness is one of the seven findings used to classify severity. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What is it</td>
+        <td>Anterior drawer, plus reverse anterolateral drawer and anterolateral talar palpation.</td>
+        <td data-imp="anterior drawer|anterolateral|palpation|alone">
+          <b>Grade B</b> - and note the drawer is explicitly <b>not enough on its own</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What you do about it</td>
+        <td>Prevent, then treat by phase.</td>
+        <td data-imp="prevent|phase|graded|guidelines">
+          <b>Two graded guidelines apply here</b>, the most evidence any section in these four guides rests on. <span class="src">Martin 2021</span> <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="progressbar"><span id="ckcount">0 / 0</span><span class="track"><span class="fill" id="ckfill"></span></span><span id="flagCount"></span></div>
+  </section>
+
+  <section id="numbers">
+    <div class="sechead"><span class="secnum">02</span><h2>Numbers worth knowing cold</h2></div>
+    <p class="lede">The ankle has the strongest evidence in this series and still no published accuracy for its special tests. That contrast is the section - and so is the prognosis, which is worse than most people assume.</p>
+    
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="name">Ottawa Ankle Rules, pooled</td>
+        <td>Meta-analysis across studies.</td>
+        <td data-imp="pooled|likelihood|diagnostic odds|meta-analysis">
+          <b>Sn 0.92 (95% CI 0.91-0.93)</b>, <b>Sp 0.35 (0.34-0.36)</b>, <b>+LR 1.76 (1.46-2.13)</b>, <b>&minus;LR 0.13 (0.09-0.19)</b>, <b>DOR 16.21 (10.15-25.89)</b>. <span class="src">Sharifi Razavi 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What that buys you</td>
+        <td>Read the two directions separately.</td>
+        <td data-imp="negative|radiography|probability|direction">
+          A negative drops fracture probability to about <b>1%</b>, which is why it safely reduces radiography. A positive barely moves it. <b>Rule-out, not rule-in.</b> <span class="src">Sharifi Razavi 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The specificity is not one number</td>
+        <td>Ask across how many studies.</td>
+        <td data-imp="spread|varies|setting|studies">
+          Reported across studies as <b>7.8% to 68%</b> against a sensitivity of <b>92%-100%</b> - a fourteen-fold spread. A single pooled specificity hides how much it varies by setting. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Apply them entire</td>
+        <td>Do not shortcut to the weight-bearing question.</td>
+        <td data-imp="shortcut|malleolar|bear weight|whole">
+          Dropping malleolar tenderness and using only inability to bear weight and take four steps gave sensitivity <b>88%</b> - worse than the whole rule. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">In children</td>
+        <td>Compare the two rules.</td>
+        <td data-imp="low-risk|children|inferior|population">
+          The low-risk ankle rules' sensitivity of <b>85.7%</b> is <b>inferior</b> to the Ottawa rules' <b>100%</b> in that population. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What implementing them achieves</td>
+        <td>Beyond the diagnosis.</td>
+        <td data-imp="cost|wait time|length of stay|outcomes">
+          Reduced cost, wait time, length of stay (median <b>20 minutes</b>) and imaging, <b>without sacrificing outcomes</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">How often a first sprain becomes chronic instability</td>
+        <td>Ask the prognosis question out loud.</td>
+        <td data-imp="chronic instability|prospective|first-time|sought care">
+          <b>40%.</b> In the only prospective study to date, chronic ankle instability was present in <b>40% of people who sought care for a first-time lateral ankle sprain</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">And that is probably an underestimate elsewhere</td>
+        <td>Compare study designs.</td>
+        <td data-imp="retrospective|underrepresented|care-seeking|burden">
+          The guideline attributes much lower retrospective estimates to care-seeking behaviour, and says the true burden is <b>likely underrepresented</b> in retrospective designs. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Return to participation</td>
+        <td>Set the expectation early.</td>
+        <td data-imp="return|participation|demands|weeks">
+          <b>1 day to a little more than 3 weeks</b>, depending on the demands of the activity or sport. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Full recovery is a different question</td>
+        <td>Do not let the first number stand for the second.</td>
+        <td data-imp="full recovery|months or years|expected|symptoms">
+          The guideline's own words: <b>full recovery with no symptoms or limitations may take months or years to obtain, and cannot be expected in all patients</b>. Return to sport is not recovery. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Does severity predict the course?</td>
+        <td>Resist the grading instinct.</td>
+        <td data-imp="severity|conflicting|clinical course|mild">
+          <b>The evidence conflicts.</b> The guideline states there is conflicting evidence for the role of injury severity in the clinical course - a mild sprain is not a promise. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Recurrence rates</td>
+        <td>Ask about previous sprains every time.</td>
+        <td data-imp="recurrent|collegiate|professional|soccer">
+          Nearly <b>12%</b> of reported sprains in collegiate athletes were recurrent; <b>14.2%</b> of professional football and basketball players report a history of recurrence; <b>13.7%</b> of elite soccer players sustain one. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Modifiable risk for a repeat sprain</td>
+        <td>Two things you can change.</td>
+        <td data-imp="prophylactic|balance training|risk factor|subsequent">
+          <b>Not using prophylactic bracing</b> and <b>not doing a balance-training programme</b> are both risk factors for a subsequent sprain. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What predicts chronic instability at 6 months</td>
+        <td>Test it at two weeks.</td>
+        <td data-imp="jumping|landing|postural control|predicts">
+          <b>Inability to complete jumping and landing tasks within 2 weeks</b> of injury, poorer dynamic postural control, and lower self-reported function. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">An early MRI finding that predicts a slow course</td>
+        <td>If imaging was done, read it for prognosis.</td>
+        <td data-imp="bone marrow|contusion|walking|sport">
+          A medial joint bone marrow contusion on tibia and/or talus within two weeks meant <b>25 versus 16 days</b> to normal walking (P = .0002) and <b>92 versus 56 days</b> to sport (P = .0001). <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Laxity and function come apart</td>
+        <td>Do not read one from the other.</td>
+        <td data-imp="laxity|improved|drawer|significantly">
+          Over six weeks, self-reported function improved significantly while <b>anterior drawer laxity did not change at all</b> (P > .05). <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Anterior drawer accuracy</td>
+        <td>Ask for the figure before you rely on one.</td>
+        <td data-imp="accuracy|published|recommends|figure">
+          <b>There is none published here.</b> <span class="src">no traceable source</span> The guideline recommends the test at Grade B and does not report its accuracy.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Talar tilt accuracy</td>
+        <td>Same question.</td>
+        <td data-imp="talar tilt|appendix|query|finding">
+          <b>None.</b> <span class="src">no traceable source</span> Its only appearance in the guideline is inside the <b>literature search-strategy appendix</b> - a list of query terms, not a finding.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Normal ankle ROM</td>
+        <td>Goniometry against the other side.</td>
+        <td data-imp="goniometr|normative|other side|convention">
+          <span class="prov c">Convention</span> No free normative source, as at the hip and knee. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What is traceable about that</td>
+        <td>Compare textbook to measured.</td>
+        <td data-imp="textbook|probability sample|argument|degrees">
+          Against a national probability sample, textbook values for hip and knee were off by <b>as much as 18&deg;</b>. That paper does not cover the ankle, so it supports the argument here and is <b>not</b> an ankle figure. <span class="src">Roach 1991</span>
+        </td>
+      </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure>
+      <p class="figtitle">One number is settled; the other is not</p>
+      <svg viewBox="0 0 620 300" role="img" aria-label="Ottawa Ankle Rules accuracy across studies. Sensitivity sits in a narrow band from 92 to 100 percent. Specificity ranges hugely, from 7.8 to 68 percent. The rule is consistently good at ruling fracture out and inconsistently poor at ruling it in.">
+        <line x1="110" y1="76" x2="110" y2="236" stroke="currentColor" stroke-width="1" opacity=".35"></line>
+        <line x1="340" y1="76" x2="340" y2="236" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".25"></line>
+        <line x1="570" y1="76" x2="570" y2="236" stroke="currentColor" stroke-width="1" opacity=".35"></line>
+
+        <rect x="533" y="98" width="37" height="26" rx="3" fill="var(--accent)" fill-opacity=".25" stroke="var(--accent)" stroke-width="1.8"></rect>
+        <rect x="146" y="178" width="277" height="26" rx="3" fill="var(--hi)" fill-opacity=".18" stroke="var(--hi)" stroke-width="1.8"></rect>
+
+        <text class="mono" x="112" y="92" text-anchor="start" fill="var(--accent)">sensitivity</text>
+        <text class="mono" x="112" y="172" text-anchor="start" fill="var(--hi)">specificity</text>
+
+        <text class="mono" x="551" y="88" text-anchor="middle">92&ndash;100%</text>
+        <text class="mono" x="284" y="196" text-anchor="middle">7.8&ndash;68%</text>
+
+        <text class="mono" x="110" y="256" text-anchor="middle" opacity=".7">0%</text>
+        <text class="mono" x="340" y="256" text-anchor="middle" opacity=".7">50%</text>
+        <text class="mono" x="570" y="256" text-anchor="middle" opacity=".7">100%</text>
+
+        <text class="mono" x="284" y="284" text-anchor="middle" opacity=".8">a fourteen-fold spread</text>
+      </svg>
+      <div class="figgrid c3">
+        <div><b>Sensitivity</b> &mdash; narrow and high across every study. This is why a negative rule is trustworthy.</div>
+        <div><b>Specificity</b> &mdash; anywhere from 7.8% to 68% depending on the setting. This is why a positive rule means little.</div>
+        <div><b>The asymmetry is the point.</b> A pooled specificity of 0.35 is a real number that hides how much it moves.</div>
+      </div>
+      <figcaption><b>Across studies the Ottawa Ankle Rules' sensitivity stays between 92% and 100%, while their specificity ranges from 7.8% to 68%.</b> A rule that is consistently good in one direction and wildly inconsistent in the other is a screening tool, and the meta-analytic figures agree: pooled &minus;LR 0.13 takes a negative result to roughly a 1% post-test probability of fracture, while pooled +LR 1.76 barely moves a positive one <span class="src">Martin 2021</span> <span class="src">Sharifi Razavi 2026</span>.</figcaption>
+    </figure>
+  </section>
+
+  <section id="posture">
+    <div class="sechead"><span class="secnum">03</span><h2>Posture and resting alignment</h2></div>
+    <p class="lede">Short, because little here is measured - but two of its items are Grade A documented measures rather than impressions.</p>
+    
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="name">Swelling</td>
+        <td>Figure-of-eight or circumference, same landmarks each time.</td>
+        <td data-imp="figure-of-eight|circumference|document|episode">
+          <b>Grade A</b>: assess and document, at baseline and <b>two or more times</b> over an episode of care. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Where the swelling sits</td>
+        <td>Lateral, medial or diffuse; whether it tracks distally.</td>
+        <td data-imp="lateral|diffuse|tracks|inversion">
+          Diffuse or medial swelling after an inversion injury should raise the question of a deltoid or syndesmotic injury. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Ecchymosis and point tenderness</td>
+        <td>Inspect and palpate.</td>
+        <td data-imp="ecchymosis|palpate|classification|decision">
+          Both feed the Ottawa decision and the <b>Grade B</b> severity classification. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Standing foot posture</td>
+        <td>Weight-bearing alignment and hindfoot position.</td>
+        <td data-imp="hindfoot|weight-bearing|threshold|posture">
+          <span class="prov c">Convention</span> No threshold making a posture abnormal is traceable here. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="arom">
+    <div class="sechead"><span class="secnum">04</span><h2>Active range and what they can do alone</h2></div>
+    <p class="lede">The guideline names the specific instruments rather than the domains, which is unusual and useful: use the ones it names and your measurements compare to something.</p>
+    
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="name">Active range, four directions</td>
+        <td>Dorsiflexion, plantarflexion, inversion, eversion.</td>
+        <td data-imp="dorsiflexion|plantarflexion|inversion|eversion">
+          Compare sides; the norms are convention <span class="prov c">Convention</span> and the other ankle is the better reference.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Dorsiflexion, specifically</td>
+        <td>Weight-bearing lunge: knee to wall, heel down, measure the distance.</td>
+        <td data-imp="lunge|knee to wall|heel|distance">
+          <b>The weight-bearing lunge test is the instrument the guideline names</b> for dorsiflexion. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Single-limb balance</td>
+        <td>Static, firm surface, <b>eyes closed</b>. Time it.</td>
+        <td data-imp="static|firm surface|eyes closed|time">
+          Named specifically - eyes closed on a firm surface, not simply "balance". <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Dynamic balance</td>
+        <td>Star Excursion Balance Test.</td>
+        <td data-imp="Star Excursion|anteromedial|posterolateral|reach">
+          In the <b>anterior, anteromedial, posteromedial and posterolateral</b> reach directions. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hopping</td>
+        <td>Single-limb hopping under timed conditions.</td>
+        <td data-imp="single-limb|timed|hopping|appropriate">
+          <b>Grade B</b>, where appropriate. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why hopping matters beyond function</td>
+        <td>Use it as a prognostic test at two weeks.</td>
+        <td data-imp="prognostic|two weeks|discharge|predicted">
+          <b>Inability to complete jumping and landing tasks within two weeks predicted chronic instability at six months.</b> It is prognostic, not only a discharge criterion. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Gait and weight bearing</td>
+        <td>Can they bear weight and take four steps?</td>
+        <td data-imp="four steps|bear weight|part|rule">
+          That question is <b>part of the Ottawa rule</b>, not separate from it. <span class="src">Sharifi Razavi 2026</span>
+        </td>
+      </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="prom">
+    <div class="sechead"><span class="secnum">05</span><h2>Passive range, end feel and length</h2></div>
+    <p class="lede">Two of the passive measures here are Grade A documented findings. The rest is convention, and the section says which is which.</p>
+    
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="name">Passive against active</td>
+        <td>Compare each direction.</td>
+        <td data-imp="passive|guarding|inhibition|exceeding">
+          Passive exceeding active points to weakness, guarding or pain inhibition. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Talar translation</td>
+        <td>Anterior glide of the talus on the tibia.</td>
+        <td data-imp="translation|anterior glide|talus|document">
+          <b>Grade A</b>: assess and document at baseline and two or more times. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Talar inversion</td>
+        <td>Inversion stress at the talocrural joint.</td>
+        <td data-imp="inversion stress|talocrural|document|baseline">
+          <b>Grade A</b>: assess and document at baseline and two or more times. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Accessory glide</td>
+        <td>Talocrural anterior-posterior, subtalar, distal tibiofibular.</td>
+        <td data-imp="talocrural|subtalar|tibiofibular|comparison">
+          <span class="prov c">Convention</span> Graded by comparison with the other side rather than by a cited figure.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Gastrocnemius against soleus</td>
+        <td>Dorsiflexion with the knee straight, then bent.</td>
+        <td data-imp="knee straight|bent|contribution|crosses">
+          <b>The difference between the two is the gastrocnemius contribution</b>, because it crosses the knee. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Plantar fascia</td>
+        <td>Windlass mechanism on great toe extension.</td>
+        <td data-imp="windlass|great toe|extension|fascia">
+          <span class="prov c">Convention</span> Note this guide does not cover plantar heel pain - see section 08 for why.
+        </td>
+      </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="mmt">
+    <div class="sechead"><span class="secnum">06</span><h2>Strength</h2></div>
+    <p class="lede">The interesting recommendation in this section is not about the ankle at all.</p>
+    
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="name">The four directions</td>
+        <td>Against resistance, compared side to side.</td>
+        <td data-imp="resistance|side to side|norms|directions">
+          <span class="prov c">Convention</span> No reachable strength norms. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Fibularis specifically</td>
+        <td>Resisted eversion in slight plantarflexion.</td>
+        <td data-imp="evertors|dry needling|proprioceptive|eversion">
+          The evertors are the lateral ligament's active partner. The guideline supports <b>dry needling of the fibularis group</b> with proprioceptive training in chronic instability, at <b>Grade C</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hip strength</td>
+        <td>Abduction, extension and external rotation.</td>
+        <td data-imp="abduction|extension|external rotation|episode">
+          <b>Grade C</b> in chronic ankle instability: assess and document, two or more times over an episode of care. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why the hip is in an ankle guide</td>
+        <td>Because the guideline puts it there.</td>
+        <td data-imp="distal|proximal|graded|theory">
+          A distal problem with a proximal contribution is <b>not a theory here - it is a graded recommendation</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="special">
+    <div class="sechead"><span class="secnum">07</span><h2>Special tests</h2></div>
+    <p class="lede">The best-evidenced joint in this series recommends its special tests without publishing their accuracy. That is an unusual and honest position for a guideline to take, and this section says so rather than filling the gap.</p>
+    
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="name">The recommended set - Grade B</td>
+        <td>Anterior drawer, plus reverse anterolateral drawer and anterolateral talar palpation.</td>
+        <td data-imp="reverse anterolateral|palpation|addition|diagnosis">
+          Use them <b>in addition to</b> a thorough history and physical examination to aid diagnosis of a lateral ankle sprain. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Note what that recommendation does</td>
+        <td>Read the phrase "in addition to".</td>
+        <td data-imp="traditional|enough|added|instead">
+          <b>The traditional drawer is not enough on its own.</b> The other two are added to it, not offered instead of it. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Accuracy of any of the three</td>
+        <td>Ask for a figure.</td>
+        <td data-imp="accuracy|published|quantified|figure">
+          <b>None published.</b> <span class="src">no traceable source</span> Recommended, not quantified.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Talar tilt</td>
+        <td>Ask the same question.</td>
+        <td data-imp="talar tilt|appendix|search strategy|appearance">
+          <b>None</b>, and its only appearance in the guideline is in a <b>search-strategy appendix</b>. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What the drawer does not tell you</td>
+        <td>Do not read stability from laxity.</td>
+        <td data-imp="independently|stable|lax|six weeks">
+          Laxity and function move independently - function improved significantly over six weeks while drawer laxity did not change. <b>A stable-feeling ankle can have a lax drawer, and the reverse.</b> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Classifying an acute sprain - Grade B</td>
+        <td>Seven clinical findings, together.</td>
+        <td data-imp="haemorrhaging|ligamentous|total ankle motion|classify">
+          <b>Level of function, ligamentous laxity, haemorrhaging, point tenderness, total ankle motion, swelling and pain.</b> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Identifying chronic instability - Grade B</td>
+        <td>A questionnaire and a test battery.</td>
+        <td data-imp="Cumberland|Identification|performance tests|controls">
+          Use the <b>Cumberland Ankle Instability Tool</b> or the <b>Identification of Functional Ankle Instability</b>, plus functional performance tests with established validity to separate people with instability from healthy controls. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The point of that row</td>
+        <td>Notice what is absent from it.</td>
+        <td data-imp="questionnaire|absent|laxity test|students">
+          <b>Chronic ankle instability is identified by a questionnaire and performance tests, not by a laxity test.</b> That surprises most students.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Interpreting a likelihood ratio</td>
+        <td>Convert to a probability shift.</td>
+        <td data-imp="likelihood|bands|sourced|rule-out">
+          <span class="prov c">Convention</span> for the familiar bands. What is sourced: a rule with &minus;LR 0.13 and +LR 1.76 is a rule-out. <span class="src">Sharifi Razavi 2026</span>
+        </td>
+      </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="syndromes">
+    <div class="sechead"><span class="secnum">08</span><h2>Syndromes and what you call it</h2></div>
+    <p class="lede">The naming problem at the ankle is not a misnamed test - it is that an acute sprain is treated as a self-limiting nuisance when two in five care-seekers do not fully recover.</p>
+    
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="name">Acute lateral ankle sprain</td>
+        <td>Classify with the seven findings from section 07.</td>
+        <td data-imp="acute|lateral|classify|findings">
+          <b>Grade B.</b> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Chronic ankle instability</td>
+        <td>Identified by CAIT or IdFAI plus functional performance tests.</td>
+        <td data-imp="CAIT|IdFAI|performance|questionnaire">
+          <b>Grade B</b> - a questionnaire-and-performance diagnosis rather than a laxity one. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">How common it is after a first sprain</td>
+        <td>Ask the prognosis question.</td>
+        <td data-imp="40|prospective|complication|modal">
+          <b>40%</b> of people who sought care for a first-time sprain, in the only prospective study. <b>Not a rare complication - the modal bad outcome.</b> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why that reframes the acute sprain</td>
+        <td>Decide what the acute visit is for.</td>
+        <td data-imp="reframes|prevention|main event|afterthought">
+          If two in five care-seekers develop chronic instability, <b>the prevention recommendations in section 10 are the main event rather than an afterthought</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Midportion Achilles tendinopathy</td>
+        <td>Load-related midportion pain and stiffness.</td>
+        <td data-imp="midportion|tendinopathy|loading|rest">
+          Managed by <b>loading first</b>, and explicitly <b>not</b> by rest - see section 10. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Plantar heel pain</td>
+        <td>Deliberately not covered.</td>
+        <td data-imp="plantar heel|draft|confidential|omitting">
+          <b>The only reachable guideline for it is a confidential stakeholder-review draft</b>, watermarked on every page as not for reproduction or circulation. This guide does not quote drafts, and says so rather than quietly omitting the region.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Movement diagnosis</td>
+        <td>Name the fault and its direction under load.</td>
+        <td data-imp="movement fault|direction|under load|name">
+          <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Relative stiffness</td>
+        <td>Look at the knee and the midfoot.</td>
+        <td data-imp="stiff|midfoot|borrows|knee">
+          A stiff ankle borrows from both. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="palpation">
+    <div class="sechead"><span class="secnum">09</span><h2>Palpation</h2></div>
+    <p class="lede">Palpation at the ankle is unusually consequential, because part of it is a Grade A imaging decision rather than a soft finding.</p>
+    
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="name">The malleoli</td>
+        <td>Posterior edge and tip of each, 6cm proximally.</td>
+        <td data-imp="malleoli|posterior edge|Ottawa zone|proximally">
+          <b>This is an Ottawa zone.</b> Dropping malleolar tenderness from the rule cost 12 points of sensitivity. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The fibula along its length</td>
+        <td>And the base of the fifth metatarsal, and the navicular.</td>
+        <td data-imp="fibula|fifth metatarsal|navicular|points">
+          Ottawa zones, and none of them is where the patient points. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Lateral ligaments</td>
+        <td>ATFL, then CFL, then PTFL.</td>
+        <td data-imp="ATFL|CFL|PTFL|localise">
+          <span class="prov c">Convention</span> Tenderness localises; it does not grade. 
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Deltoid ligament</td>
+        <td>Medial, below and anterior to the medial malleolus.</td>
+        <td data-imp="deltoid|medial malleolus|inversion|syndesmotic">
+          Medial tenderness after an inversion injury raises the question of a deltoid or syndesmotic injury. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Point tenderness</td>
+        <td>Record it.</td>
+        <td data-imp="record|seven|severity|classifying">
+          One of the seven findings the guideline names for classifying severity - <b>Grade B</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles</td>
+        <td>Midportion against insertion.</td>
+        <td data-imp="midportion|insertion|scope|tendinopathy">
+          The guideline covers <b>midportion only</b>; insertional tendinopathy is outside its scope and outside this guide's. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What palpation cannot do</td>
+        <td>Know its ceiling.</td>
+        <td data-imp="grade|confirm|instability|ceiling">
+          It cannot grade a ligament or confirm instability. <b>Chronic instability is a questionnaire-and-performance diagnosis.</b> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="treatment">
+    <div class="sechead"><span class="secnum">10</span><h2>Prevention, mobilisation, exercise and dose</h2></div>
+    <p class="lede">The best-evidenced section in any of these four guides, and the only one containing Grade A prevention - which matters more than it sounds, because 40% of people who seek care for a first sprain go on to chronic instability. Every letter below comes from a front-matter Summary of Recommendations, checked by position, so it is the current revision rather than a superseded one.</p>
+    
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="name">Prevention, first sprain - A</td>
+        <td>Before anything has happened.</td>
+        <td data-imp="prophylactic bracing|first-time|risk factors|prevention">
+          <b>Prophylactic bracing</b> to reduce the risk of a first-time sprain, particularly in those with risk factors. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Prevention, never-injured - C</td>
+        <td>Balance training as primary prevention.</td>
+        <td data-imp="balance training|never|weaker|primary">
+          May be recommended to people who have <b>not</b> yet sprained. Note the weaker grade than bracing. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Prevention, after a first sprain - A</td>
+        <td>The combination, not either alone.</td>
+        <td data-imp="combination|proprioceptive|impairments|subsequent">
+          <b>Prophylactic bracing and proprioceptive, balance-focused exercise</b>, targeted at the impairments found on examination, to reduce subsequent injury. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Acute - A</td>
+        <td>External support and weight bearing.</td>
+        <td data-imp="braces|taping|progressive|affected">
+          Advise <b>braces or taping</b> and <b>progressive weight bearing</b> on the affected limb. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Acute - A</td>
+        <td>A structured exercise programme.</td>
+        <td data-imp="protected|postural re-education|social barriers|structured">
+          Protected active ROM, stretching, neuromuscular training, postural re-education and balance training, <b>in clinic and at home</b>, matched to severity, impairments, preferences, learning needs and social barriers. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Acute manual therapy - A</td>
+        <td>Within pain-free movement.</td>
+        <td data-imp="lymphatic|soft tissue|anterior-to-posterior|gait">
+          <b>Lymphatic drainage, active and passive soft tissue and joint mobilisation, and anterior-to-posterior talar mobilisation</b>, alongside exercise, to reduce swelling, improve pain-free mobility and normalise gait. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Return to work - B</td>
+        <td>Plan it rather than wait for it.</td>
+        <td data-imp="return-to-work|work-hardening|occupational|schedule">
+          A return-to-work schedule, a brace early in rehabilitation, occupational or sport-related training, and/or a work-hardening programme. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Acute - A, against</td>
+        <td>One thing to stop doing.</td>
+        <td data-imp="ultrasound|stop|against|acute">
+          <b>Do not use ultrasound</b> for the management of acute ankle sprains. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Acute - C</td>
+        <td>The weaker acute options.</td>
+        <td data-imp="ice|diathermy|laser|NSAID">
+          Ice with a therapeutic exercise programme; pulsed shortwave diathermy for oedema and gait deviation; low-level laser for early pain; NSAIDs where practice acts allow. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Chronic instability - A</td>
+        <td>The core intervention.</td>
+        <td data-imp="neuromuscular|dynamic postural|perceived|function">
+          <b>Proprioceptive and neuromuscular exercise</b>, to improve dynamic postural stability and patient-perceived stability during function. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Chronic instability - A</td>
+        <td>Manual therapy, with a stated target.</td>
+        <td data-imp="mobilisation with movement|manipulation|short term|dorsiflexion">
+          <b>Graded joint mobilisations, manipulations, and weight-bearing and non-weight-bearing mobilisation with movement</b>, to improve weight-bearing dorsiflexion and dynamic balance <b>in the short term</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Chronic instability - B, against</td>
+        <td>The brace is an adjunct, never the plan.</td>
+        <td data-imp="stand-alone|adjunct|contrast|postural">
+          <b>Do not use bracing or taping as a stand-alone intervention</b> to improve balance and postural stability. Grade A <i>with</i> exercise, Grade B <i>against</i> alone - the contrast is the teaching point. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Chronic instability - B and C</td>
+        <td>Supplementing balance training.</td>
+        <td data-imp="supplement|values|judgement|needling">
+          Multiple interventions may supplement balance training, guided by the patient's values and goals and the clinician's judgement (<b>B</b>); dry needling of the fibularis group with proprioceptive training (<b>C</b>). <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Psychological - E</td>
+        <td>Address the beliefs as well as the joint.</td>
+        <td data-imp="motivational interviewing|self-efficacy|correlates|beliefs">
+          <b>Psychologically informed techniques such as motivational interviewing</b>, to maximise self-efficacy and address psychological correlates of injury adjustment and recovery. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Outcome measures - A</td>
+        <td>Validated, and named.</td>
+        <td data-imp="PROMIS|Foot and Ankle Ability|Lower Extremity|validated">
+          <b>PROMIS</b> physical function and pain interference scales, the <b>Foot and Ankle Ability Measure</b>, and the <b>Lower Extremity Functional Scale</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Coping and fear - C</td>
+        <td>When recovery stalls, measure why.</td>
+        <td data-imp="Self-Efficacy|Kinesiophobia|fear-avoidance|stalls">
+          <b>Pain Self-Efficacy Questionnaire</b> acutely and post-acutely; <b>TSK-11</b> and <b>FABQ</b> for fear of movement, reinjury and fear-avoidance in chronic instability. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - A</td>
+        <td>Load it.</td>
+        <td data-imp="tendon loading|as high as tolerated|first-line|decrease pain">
+          <b>Tendon loading exercise, with loads as high as tolerated, as first-line treatment</b>, to improve function and decrease pain in midportion Achilles tendinopathy. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - B</td>
+        <td>What not to advise.</td>
+        <td data-imp="complete rest|not indicated|pain tolerance|continue">
+          <b>Complete rest is not indicated.</b> Patients should continue their activities <b>within their pain tolerance</b>. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - B</td>
+        <td>Education alongside the loading.</td>
+        <td data-imp="pain science|pathoanatomic|education|combined">
+          With either a <b>pain-science or a pathoanatomic focus</b>, combined with tendon-loading exercise. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - C</td>
+        <td>The adjuncts.</td>
+        <td data-imp="heel lifts|temporarily|multimodal|adjunct">
+          Heel lifts to temporarily reduce dorsiflexion during activity; multimodal treatment to enhance the benefits of exercise. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - C, against</td>
+        <td>Two to avoid.</td>
+        <td data-imp="low-level laser|ultrasound alone|avoid|against">
+          Do <b>not</b> use low-level laser therapy; do <b>not</b> use therapeutic ultrasound alone. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - the recommendation that reversed</td>
+        <td>Check which revision you were taught.</td>
+        <td data-imp="elastic tape|reversed|revision|current">
+          The <b>2018</b> guideline said <i>should not</i> use therapeutic elastic tape (F); the <b>2024</b> revision says <i>may</i> (E). <b>The current position is may.</b> Quoting the older one would contradict the guideline while citing it. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - D</td>
+        <td>A guideline declining to recommend.</td>
+        <td data-imp="orthoses|contradictory|declining|information">
+          <b>No recommendation is possible on orthoses</b>, because the evidence is contradictory. That is information, not a gap. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The reassessment marker</td>
+        <td>Name it before you treat.</td>
+        <td data-imp="reassessment|marker|Grade|baseline">
+          <b>Swelling, ROM, talar translation, talar inversion and single-leg balance</b> are the Grade A set, at baseline and <b>two or more times</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="drill">
+    <div class="sechead"><span class="secnum">11</span><h2>Rapid drill</h2></div>
+    <p class="lede">Two ways to rehearse. The cases work the whole chain from presentation to reassessment marker; the single facts test one value at a time, and most test whether you know what a value is worth as well as what it is.</p>
+    <h3>What to practice</h3>
+    <p class="lede">Built from the cells you marked missed while running recall. Nothing here is pre-filled - if this is empty, go and quiz yourself first. The practice method is chosen by <em>what the item is</em>, not by what kind of learner you are: a number, a pair of hands and a decision are three different jobs and they need three different kinds of rehearsal.</p>
+    <div id="planner" class="planner"></div>
+    <div class="callout" id="plannerNote">
+      <b>Why this is not a learning-styles quiz.</b> Sorting students into visual, auditory or kinesthetic learners and matching teaching to the label is one of the most durable ideas in education that the evidence does not support - the studies that test it properly find no benefit from the match <span class="src">Pashler 2008</span>. What does hold up is the method fitting the material: retrieving a fact from memory beats re-reading it, and spacing the attempts beats massing them <span class="src">Dunlosky 2013</span>. So the plan below sorts your misses by the kind of thing they are.
+    </div>
+
+    <h3>Cases - work the whole chain</h3>
+    <p class="lede">Open a case, then work down the prompts - answer each out loud and click to check. Answers are hidden every time a case opens, so nothing is spoiled by looking.</p>
+
+    <div class="cases">
+      <details class="case">
+        <summary class="stem"><b>Netball player, 19.</b> Inverted her ankle two days ago landing from a jump. Swollen laterally, bruising tracking into the foot. She can weight bear but limps. Tender over the ATFL. She wants to know when she can play.</summary>
+        <dl class="caseans">
+          <div><dt>Ottawa first</dt><dd>Palpate the posterior edge and tip of both malleoli, the navicular and the base of the fifth metatarsal, and ask whether she could bear weight for four steps. Apply it entire - dropping malleolar tenderness costs 12 points of sensitivity <span class="src">Martin 2021</span>. A negative rule leaves about a 1% probability of fracture <span class="src">Sharifi Razavi 2026</span>.</dd></div>
+          <div><dt>Classify it</dt><dd>Level of function, ligamentous laxity, haemorrhaging, point tenderness, total ankle motion, swelling and pain - the seven findings, Grade B <span class="src">Martin 2021</span>.</dd></div>
+          <div><dt>The answer to her question</dt><dd>Return to participation runs <b>1 day to a little more than 3 weeks</b> depending on the demands of the sport. But full recovery with no symptoms "may take months or years to obtain, and cannot be expected in all patients" <span class="src">Martin 2021</span>. Do not let the first number stand for the second.</dd></div>
+          <div><dt>The number she should hear</dt><dd><b>40%</b> of people who seek care for a first sprain develop chronic ankle instability <span class="src">Martin 2021</span>. That is what makes the next row the important one.</dd></div>
+          <div><dt>First three</dt><dd>External support and progressive weight bearing (A); a structured exercise programme with protected ROM, neuromuscular training and balance work, in clinic and at home (A); manual therapy within pain-free range including anterior-to-posterior talar mobilisation and lymphatic drainage (A) <span class="src">Martin 2021</span>. No ultrasound (A, against).</dd></div>
+          <div><dt>Reassess</dt><dd>Swelling, ROM, talar translation, talar inversion and single-leg balance - the Grade A set, at baseline and at least twice more. And test jumping and landing at two weeks, because failing it predicts instability at six months <span class="src">Martin 2021</span>.</dd></div>
+        </dl>
+      </details>
+
+      <details class="case">
+        <summary class="stem"><b>Recreational footballer, 27.</b> Fourth sprain of the same ankle in three years. "It just gives way." Anterior drawer feels lax but so does the other side. He has a brace he wears for matches and does no other rehabilitation.</summary>
+        <dl class="caseans">
+          <div><dt>Is the drawer the diagnosis?</dt><dd>No. Chronic ankle instability is identified with a discriminative instrument - the <b>Cumberland Ankle Instability Tool</b> or the <b>Identification of Functional Ankle Instability</b> - plus functional performance tests with established validity, Grade B <span class="src">Martin 2021</span>. It is a questionnaire-and-performance diagnosis, not a laxity one.</dd></div>
+          <div><dt>Why the lax drawer does not settle it</dt><dd>Laxity and function move independently: over six weeks function improved significantly while drawer laxity did not change at all <span class="src">Martin 2021</span>. And no accuracy figure for the drawer is published anyway <span class="src">no traceable source</span>.</dd></div>
+          <div><dt>The brace</dt><dd>Here is the contrast worth learning. Bracing is <b>Grade A</b> as prophylaxis <i>combined with</i> proprioceptive and balance exercise - and <b>Grade B against</b> as a <i>stand-alone</i> intervention for balance and postural stability <span class="src">Martin 2021</span>. He is doing the half that does not work alone.</dd></div>
+          <div><dt>What to add</dt><dd>Proprioceptive and neuromuscular exercise for dynamic postural stability (A); manual therapy including weight-bearing mobilisation with movement to improve dorsiflexion and balance in the short term (A) <span class="src">Martin 2021</span>.</dd></div>
+          <div><dt>Look proximally</dt><dd>Assess and document hip abduction, extension and external rotation strength, Grade C in chronic instability <span class="src">Martin 2021</span>. Also consider fear of reinjury with the TSK-11 or FABQ (C).</dd></div>
+        </dl>
+      </details>
+
+      <details class="case">
+        <summary class="stem"><b>Runner, 44.</b> Six months of midportion Achilles pain, worst starting a run and easing as he warms up. He has stopped running entirely for eight weeks on advice and is no better. He asks about orthotics and a night splint.</summary>
+        <dl class="caseans">
+          <div><dt>The advice he was given</dt><dd>Wrong, and the guideline says so directly: <b>complete rest is not indicated</b>, and patients should continue activities within their pain tolerance, Grade B <span class="src">Chimenti 2024</span>.</dd></div>
+          <div><dt>First-line treatment</dt><dd><b>Tendon loading exercise with loads as high as tolerated</b>, Grade A, to improve function and decrease pain - either eccentric or heavy-load slow-speed work <span class="src">Chimenti 2024</span>.</dd></div>
+          <div><dt>Orthotics</dt><dd>The guideline makes <b>no recommendation</b>, Grade D, because the evidence is contradictory <span class="src">Chimenti 2024</span>. A guideline declining to recommend is information, not a gap.</dd></div>
+          <div><dt>The night splint</dt><dd>Recommended against in the body of the guideline for midportion tendinopathy <span class="src">Chimenti 2024</span>.</dd></div>
+          <div><dt>What else is worth adding</dt><dd>Education with a pain-science or pathoanatomic focus, combined with the loading, Grade B <span class="src">Chimenti 2024</span>. Heel lifts may temporarily reduce dorsiflexion during activity (C). Not low-level laser, not ultrasound alone (C, against).</dd></div>
+        </dl>
+      </details>
+    </div>
+
+    <h3>Single facts</h3>
+
+    <details><summary>Give the Ottawa Ankle Rules' pooled sensitivity and specificity. What is a negative worth?</summary><div class="ans">Pooled <b>Sn 0.92 (0.91-0.93)</b>, <b>Sp 0.35 (0.34-0.36)</b>, &minus;LR <b>0.13</b>. A negative leaves roughly a <b>1%</b> post-test probability of fracture, which is why the rules safely reduce radiography. A positive barely moves it - +LR 1.76 <span class="src">Sharifi Razavi 2026</span>.</div></details>
+
+    <details><summary>Why must the rules be applied in their entirety?</summary><div class="ans">Because a partial application is measurably worse. Omitting malleolar tenderness and relying on inability to bear weight and take four steps gave sensitivity <b>88%</b>, against 92%-100% for the whole rule <span class="src">Martin 2021</span>.</div></details>
+
+    <details><summary>In children, which performs better - the low-risk ankle rules or the Ottawa rules?</summary><div class="ans">The Ottawa rules. The low-risk ankle rules' sensitivity of <b>85.7%</b> is inferior to the Ottawa rules' <b>100%</b> in that population <span class="src">Martin 2021</span>.</div></details>
+
+    <details><summary>What is the anterior drawer test's sensitivity?</summary><div class="ans">Not published here. <span class="src">no traceable source</span> The guideline recommends it at Grade B - alongside the reverse anterolateral drawer test and anterolateral talar palpation - and reports no accuracy for any of the three <span class="src">Martin 2021</span>. The same goes for talar tilt, whose only appearance in the guideline is inside a literature search-strategy appendix.</div></details>
+
+    <details><summary>Function improved over six weeks. What happened to drawer laxity?</summary><div class="ans"><b>Nothing.</b> Ankle laxity did not change significantly on the anterior drawer test (P &gt; .05) despite significant improvement in self-reported function <span class="src">Martin 2021</span>. A stable-feeling ankle can have a lax drawer, and the reverse.</div></details>
+
+    <details><summary>How is chronic ankle instability actually identified?</summary><div class="ans">With a discriminative <b>questionnaire</b> - the Cumberland Ankle Instability Tool or the Identification of Functional Ankle Instability - <b>plus functional performance tests</b> with established validity to separate people with instability from healthy controls. Grade B <span class="src">Martin 2021</span>. Not with a laxity test.</div></details>
+
+    <details><summary>What proportion of people who seek care for a first ankle sprain develop chronic instability?</summary><div class="ans"><b>40%</b>, in the only prospective study performed to date. The guideline adds that retrospective designs likely <b>underrepresent</b> the true burden, because of care-seeking behaviour <span class="src">Martin 2021</span>.</div></details>
+
+    <details><summary>Return to participation takes 1 to 3 weeks. How long does full recovery take?</summary><div class="ans">Possibly far longer, and possibly never: "full recovery with no symptoms or limitations may take <b>months or years</b> to obtain, and <b>cannot be expected in all patients</b>" <span class="src">Martin 2021</span>. Return to sport is not recovery.</div></details>
+
+    <details><summary>Does injury severity predict the clinical course?</summary><div class="ans"><b>The evidence conflicts</b>, by the guideline's own statement <span class="src">Martin 2021</span>. A mild sprain is not a promise of a quick course.</div></details>
+
+    <details><summary>Bracing for chronic ankle instability - Grade A or Grade B against? Explain both.</summary><div class="ans">Both, and the contrast is the point. <b>Grade A</b> as prophylaxis <i>combined with</i> proprioceptive and balance-focused exercise. <b>Grade B against</b> as a <i>stand-alone</i> intervention to improve balance and postural stability <span class="src">Martin 2021</span>. The brace is an adjunct, never the plan.</div></details>
+
+    <details><summary>Name the four Star Excursion Balance Test reach directions the guideline specifies.</summary><div class="ans"><b>Anterior, anteromedial, posteromedial and posterolateral</b> <span class="src">Martin 2021</span>. It also names the weight-bearing lunge test for dorsiflexion and static single-limb balance on a firm surface with eyes closed.</div></details>
+
+    <details><summary>Which hip movements should be tested in chronic ankle instability, and at what grade?</summary><div class="ans"><b>Abduction, extension and external rotation</b>, assessed and documented two or more times over an episode of care - <b>Grade C</b> <span class="src">Martin 2021</span>. The proximal contribution to a distal problem is a graded recommendation here, not a theory.</div></details>
+
+    <details><summary>What is first-line treatment for midportion Achilles tendinopathy, and at what load?</summary><div class="ans"><b>Tendon loading exercise, with loads as high as tolerated</b>, Grade A - either eccentric or heavy-load slow-speed <span class="src">Chimenti 2024</span>.</div></details>
+
+    <details><summary>Is rest indicated for Achilles tendinopathy?</summary><div class="ans"><b>No.</b> "Complete rest is not indicated", and patients should continue their activities within their pain tolerance - Grade B <span class="src">Chimenti 2024</span>.</div></details>
+
+    <details><summary>Elastic tape for Achilles tendinopathy - should not, or may? Which revision said which?</summary><div class="ans">The <b>2018</b> guideline said <i>should not</i> (F). The <b>2024</b> revision says <i>may</i> (E). <b>The current position is may</b> <span class="src">Chimenti 2024</span>. Quoting the older one would contradict the guideline while citing it.</div></details>
+
+    <details><summary>What does the Achilles guideline say about orthoses?</summary><div class="ans">That <b>no recommendation can be made</b>, Grade D, because the evidence is contradictory <span class="src">Chimenti 2024</span>. A guideline declining to recommend is itself information.</div></details>
+
+    <details><summary>What predicts chronic ankle instability at six months?</summary><div class="ans"><b>Inability to complete jumping and landing tasks within 2 weeks</b> of the injury, poorer dynamic postural control, and lower self-reported function <span class="src">Martin 2021</span>. Which makes a two-week hop test a prognostic act, not a discharge one.</div></details>
+
+    <details><summary>What is the normal ankle range of motion?</summary><div class="ans">No figure here is defensible. <span class="prov c">Convention</span> <span class="src">no traceable source</span> - the same result as at the hip and knee. What is traceable is that textbook hip and knee values were off by as much as 18&deg; against a measured population sample <span class="src">Roach 1991</span>, and that paper does not cover the ankle.</div></details>
+
+    <details><summary>Why is plantar heel pain absent from this guide?</summary><div class="ans">Because the only reachable guideline for it is a <b>confidential stakeholder-review draft</b>, watermarked on all 49 pages as not for reproduction or circulation. A draft's values may differ from what was finally published, and quoting it here would be exactly the circulation it asks against.</div></details>
+
+  </section>
+
+
+  <section id="refs">
+    <h2>References</h2>
+    <p class="lede">Four sources, each cited at least once above, <b>all four free to read in full</b> -
+    the first time in this series that has been true. Two are graded clinical practice guidelines
+    openly hosted by the Academy of Orthopaedic Physical Therapy. Where a value is marked convention,
+    or flagged as having no traceable source, it appears in no entry below, because nothing supports
+    it. Each note records what the paper cannot support as well as what it can.</p>
+
+        <h3>Guidelines</h3>
+    <ol>
+      <li><span class="au">Martin RL, Davenport TE, Fraser JJ, Sawdon-Bea J, Carcia CR, Carroll LA, Kivlan BR, Carreira D</span> <span class="ti"><a href="https://www.orthopt.org/uploads/content_files/files/jospt.2021.0302.pdf" target="_blank" rel="noopener">Ankle Stability and Movement Coordination Impairments: Lateral Ankle Ligament Sprains Revision 2021</a></span>. <span class="jo">J Orthop Sports Phys Ther 2021;51(4):CPG1-CPG80</span><span class="nt">Openly hosted by the Academy of Orthopaedic Physical Therapy, all 80 pages free and graded. The spine of this guide: 23 current recommendations taken from its front-matter Summary of Recommendations, plus the Ottawa figures, the named measurement instruments, the classification and instability criteria, and the prognosis. Its body reprints 2013 recommendations beside the 2021 ones, so every letter quoted here was confirmed by position to come from the current set. It <b>recommends</b> the anterior drawer test at Grade B without publishing accuracy for it, which is why no sensitivity appears beside it in this guide.</span></li>
+      <li><span class="au">Chimenti RL, Neville C, Houck J, Cuddeford T, Carreira D, Martin RL</span> <span class="ti"><a href="https://www.orthopt.org/uploads/content_files/files/chimenti_et_al_2024_achilles_pain_stiffness_and_muscle_power_deficits_midportion_achilles_tendinopathy_revision_2024.pdf" target="_blank" rel="noopener">Achilles Pain, Stiffness, and Muscle Power Deficits: Midportion Achilles Tendinopathy Revision 2024</a></span>. <span class="jo">J Orthop Sports Phys Ther 2024</span><span class="nt">Openly hosted, free, 32 pages. Eleven current recommendations from its front-matter summary. Source for tendon loading at loads as high as tolerated as first-line treatment, and for the statement that complete rest is not indicated. Note its therapeutic elastic tape recommendation <b>reversed direction</b> between revisions - 2018 said should not, 2024 says may - so the era header matters. Scope is <b>midportion</b> tendinopathy only; insertional tendinopathy is outside it.</span></li>
+    </ol>
+
+    <h3>Fracture screening</h3>
+    <ol>
+      <li><span class="au">Sharifi Razavi D, Seiri M, Farrokhi M</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13412104/" target="_blank" rel="noopener">Revisiting the diagnostic accuracy of Ottawa Ankle Rules for ankle fractures: a systematic review and meta-analysis</a></span>. <span class="jo">Arch Acad Emerg Med 2026;14(1):e24</span><span class="nt">Free full text. Pooled sensitivity 0.92 and specificity 0.35, +LR 1.76, &minus;LR 0.13, DOR 16.21. Unlike the equivalent knee meta-analysis, this paper reads its own numbers correctly - it frames the rules as a screening tool for ruling out fracture rather than claiming high diagnostic performance in both directions.</span></li>
+    </ol>
+
+    <h3>Range of motion</h3>
+    <ol>
+      <li><span class="au">Roach KE, Miles TP</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/1881956/" target="_blank" rel="noopener">Normal hip and knee active range of motion: the relationship to age</a></span>. <span class="jo">Phys Ther 1991;71(9):656-665</span><span class="nt">Cited once, for the size of the gap between textbook and measured values - as much as 18&deg; against a national probability sample. <b>It covers the hip and knee only</b>, so it supports the argument that normative tables are unreliable and is explicitly <b>not</b> an ankle figure.</span></li>
+    </ol>
+
+
+    <!-- These two are cited by the practice planner text above and apply to any joint.
+         Keep them. -->
+    <h3>How to study this</h3>
+    <ol>
+      <li><span class="au">Pashler H, McDaniel M, Rohrer D, Bjork R</span>. <span class="ti"><a href="https://bjorklab.psych.ucla.edu/wp-content/uploads/sites/13/2016/07/Pashler_McDaniel_Rohrer_Bjork_2009_PSPI.pdf" target="_blank" rel="noopener">Learning styles: concepts and evidence</a></span>. <span class="jo">Psychol Sci Public Interest 2008;9(3):105-119</span><span class="nt">Studies designed to test the style-matching prediction properly find no benefit. This is why the planner sorts by item, not by learner.</span></li>
+      <li><span class="au">Dunlosky J, Rawson KA, Marsh EJ, Nathan MJ, Willingham DT</span>. <span class="ti"><a href="https://acs.ist.psu.edu/ist521/dunloskyRMNW13.pdf" target="_blank" rel="noopener">Improving students' learning with effective learning techniques</a></span>. <span class="jo">Psychol Sci Public Interest 2013;14(1):4-58</span><span class="nt">Practice testing and distributed practice rate high utility; re-reading and highlighting rate low.</span></li>
+    </ol>
+  </section>
+
+  </main>
+  <footer>
+    <b>About this guide.</b> <span class="ver" style="margin:0 8px 0 0; padding:0; border:0">Version 1.0 &middot; September 2026.</span>
+    The examination sequence, the section order and the wording are original. Every clinical value
+    is drawn from the four published sources listed above and attributed where it appears -
+    principally Martin and colleagues 2021 for the lateral ankle sprain and chronic instability
+    content and the whole of section 10, Chimenti and colleagues 2024 for midportion Achilles
+    tendinopathy, and Sharifi Razavi and colleagues 2026 for the Ottawa Ankle Rules.
+    Every graded recommendation quoted here was taken from its guideline's front-matter Summary of
+    Recommendations and confirmed by position to be the <b>current</b> revision. Both guidelines
+    reprint superseded recommendations in their bodies, and in one case the direction reversed
+    between revisions, so this was checked rather than assumed.
+    Values marked <b>Convention</b> are named as such because no research stands behind them, and
+    three are flagged as having <b>no traceable source</b>: normative ankle range of motion, and the
+    diagnostic accuracy of the anterior drawer and talar tilt tests - the latter two because the
+    guideline recommends the tests without publishing figures for them.
+    <b>Plantar heel pain is deliberately absent.</b> The only reachable guideline for it is a
+    confidential stakeholder-review draft, watermarked on every page as not for reproduction or
+    circulation, and this guide does not quote drafts.
+    Verify against current literature before letting any of it weight a clinical decision.
+  </footer>
+</div>
+
+<button type="button" id="toTop" aria-label="Back to top" title="Back to top">
+  <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false">
+    <path d="M8 13.5V3.2M8 2.5 3 7.5M8 2.5l5 5" fill="none" stroke="currentColor"
+          stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>
+</button>
+
+<script>
+(function(){
+  var el = document.getElementById('ligsvg');
+  if (!el) return;
+  var wide = '0 0 620 300', narrow = '-16 14 350 250';
+  var mq = window.matchMedia('(max-width:640px)');
+  function fit(){ el.setAttribute('viewBox', mq.matches ? narrow : wide); }
+  fit();
+  mq.addEventListener ? mq.addEventListener('change', fit) : mq.addListener(fit);
+})();
+</script>
+<script>
+(function(){
+  document.querySelectorAll('table').forEach(function(t){
+    var heads = Array.prototype.map.call(t.querySelectorAll('thead th'), function(h){ return h.textContent.trim(); });
+    if(!heads.length) return;
+    t.querySelectorAll('tbody tr').forEach(function(tr){
+      if(tr.classList.contains('group')) return;
+      var cells = Array.prototype.slice.call(tr.children);
+      var span = cells.reduce(function(n,td){ return n + (td.colSpan || 1); }, 0);
+      var i = Math.max(0, heads.length - span);
+      cells.forEach(function(td){
+        var h = heads[i] || '';
+        if(h && h !== '#' && td.textContent.trim()) td.setAttribute('data-label', h);
+        i += td.colSpan || 1;
+      });
+    });
+  });
+})();
+
+(function(){
+  var boxes = document.querySelectorAll('input[data-ck]');
+  var countEl = document.getElementById('ckcount');
+  var fillEl = document.getElementById('ckfill');
+  var KEY = 'JOINT-comp-v1';
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { state = {}; }
+
+  function render(){
+    var done = 0;
+    boxes.forEach(function(b){ if (b.checked) done++; });
+    countEl.textContent = done + ' / ' + boxes.length;
+    fillEl.style.width = (done / boxes.length * 100) + '%';
+  }
+  boxes.forEach(function(b){
+    var id = b.getAttribute('data-ck');
+    if (state[id]) b.checked = true;
+    b.addEventListener('change', function(){
+      state[id] = b.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+      render();
+    });
+  });
+  render();
+})();
+(function(){
+  var body = document.body;
+  var globalBtn = document.getElementById('recallBtn');
+  var KEY = 'JOINT-recall-v3';
+  var groups = [];   // one per table or grid: {sec, cols:[{id, chip, cells}]}
+
+  function wrap(el){
+    if(!el || el.classList.contains('mask') || !el.textContent.trim()) return false;
+    var w = document.createElement('span');
+    w.className = 'maskwrap';
+    while(el.firstChild) w.appendChild(el.firstChild);
+    el.appendChild(w);
+    el.classList.add('mask');
+    if(el.textContent.trim().length <= 16) el.classList.add('solid');
+    el._wrap = w;
+    w.setAttribute('tabindex','-1');
+    w.addEventListener('click', function(){
+      if(el.classList.contains('mask-on')) el.classList.toggle('shown');
+    });
+    w.addEventListener('keydown', function(e){
+      if(!el.classList.contains('mask-on')) return;
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); el.classList.toggle('shown'); }
+    });
+    return true;
+  }
+
+  function setCol(col, on){
+    col.chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+    if(col.apply){ col.apply(on); return; }
+    col.cells.forEach(function(el){
+      el.classList.toggle('mask-on', on);
+      el.classList.remove('shown');
+      var w = el._wrap;
+      if(!w) return;
+      w.setAttribute('tabindex', on ? '0' : '-1');
+      if(on){
+        w.setAttribute('role','button');
+        w.setAttribute('aria-label','Hidden for recall - activate to reveal');
+      } else {
+        w.removeAttribute('role');
+        w.removeAttribute('aria-label');
+      }
+    });
+  }
+
+  function buildBar(sec, key, before, entries){
+    var bar = document.createElement('div');
+    bar.className = 'colmask';
+    bar.innerHTML = '<span class="cmlabel">Hide</span>';
+    var cols = [];
+    entries.forEach(function(entry){
+      if(!entry.cells.length && !entry.apply) return;
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chip';
+      chip.setAttribute('aria-pressed','false');
+      chip.title = 'Hide "' + entry.label + '" and recall it';
+      chip.textContent = entry.label;
+      var col = { id: key + '|' + entry.key, chip: chip, cells: entry.cells, apply: entry.apply, cue: !!entry.cue };
+      chip.addEventListener('click', function(){
+        setCol(col, chip.getAttribute('aria-pressed') !== 'true');
+        save();
+      });
+      bar.appendChild(chip);
+      cols.push(col);
+    });
+    if(!cols.length) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tbl-recall';
+    btn.setAttribute('aria-pressed','false');
+    btn.title = 'Quiz this table on its own';
+    btn.textContent = 'Recall';
+    bar.appendChild(btn);
+    before.parentNode.insertBefore(bar, before);
+    var g = { sec: sec, key: key, cols: cols, bar: bar, btn: btn, open: false };
+    btn.addEventListener('click', function(){
+      setGroupOpen(g, !g.open);
+      sync();
+      save();
+    });
+    groups.push(g);
+  }
+
+  // one table on its own: show its chips and hide its answer column by default
+  function setGroupOpen(g, on){
+    g.open = on;
+    g.bar.classList.toggle('open', on);
+    g.btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    g.btn.textContent = on ? 'Recall on' : 'Recall';
+    g.cols.forEach(function(col, i){ setCol(col, on && i === g.cols.length - 1); });
+  }
+
+  // ---- tables: one chip per column ----
+  document.querySelectorAll('.tablewrap table').forEach(function(t, ti){
+    var ths = t.querySelectorAll('thead th');
+    if(!ths.length) return;
+    var sec = t.closest('section');
+    if(!sec) return;
+    var heads = Array.prototype.map.call(ths, function(th){ return th.textContent.trim(); });
+    var byCol = {};
+    t.querySelectorAll('tbody tr').forEach(function(tr){
+      if(tr.classList.contains('group')) return;
+      var cells = Array.prototype.slice.call(tr.children);
+      var span = cells.reduce(function(n, td){ return n + (td.colSpan || 1); }, 0);
+      var i = Math.max(0, heads.length - span);
+      cells.forEach(function(td){
+        var h = heads[i];
+        if(h && h !== '#' && wrap(td)){ (byCol[i] = byCol[i] || []).push(td); }
+        i += td.colSpan || 1;
+      });
+    });
+    var entries = heads.map(function(h, i){
+      return { key: 'c' + i, label: h, cells: byCol[i] || [] };
+    }).filter(function(e){ return e.label && e.label !== '#'; });
+    if(entries.length) entries[0].cue = true;   // the column that names the row stays readable
+    buildBar(sec, sec.id + ':t' + ti, t.closest('.tablewrap'), entries);
+  });
+
+  // ---- numbers grid: value or label ----
+  document.querySelectorAll('.numgrid').forEach(function(grid, gi){
+    var sec = grid.closest('section');
+    if(!sec) return;
+    var vals = [], labs = [];
+    grid.querySelectorAll('.numcell').forEach(function(cell){
+      var v = cell.querySelector('.v'), k = cell.querySelector('.k');
+      if(wrap(v)) vals.push(v);
+      if(wrap(k)) labs.push(k);
+    });
+    buildBar(sec, sec.id + ':g' + gi, grid, [
+      { key: 'v', label: 'Value', cells: vals },
+      { key: 'k', label: 'What it is', cells: labs }
+    ]);
+  });
+
+  // ---- what you got wrong ----
+  var MKEY = 'JOINT-missed-v1';
+  var missed = {};
+  try {
+    (JSON.parse(localStorage.getItem(MKEY) || '[]') || []).forEach(function(id){ missed[id] = 1; });
+  } catch(e) {}
+
+  function saveMissed(){
+    try { localStorage.setItem(MKEY, JSON.stringify(Object.keys(missed))); } catch(e) {}
+  }
+
+  groups.forEach(function(g){
+    g.cols.forEach(function(col){
+      col.cells.forEach(function(el, ri){
+        var cid = col.id + '|r' + ri;
+        el.setAttribute('data-cid', cid);
+        if(missed[cid]) el.classList.add('missed');
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'missbtn';
+        b.textContent = missed[cid] ? 'missed - clear' : 'mark missed';
+        b.addEventListener('click', function(ev){
+          ev.stopPropagation();
+          if(missed[cid]){ delete missed[cid]; el.classList.remove('missed'); b.textContent = 'mark missed'; }
+          else { missed[cid] = 1; el.classList.add('missed'); b.textContent = 'missed - clear'; }
+          saveMissed();
+          updateMissed();
+          flagRows();
+        });
+        if(el._wrap) el._wrap.appendChild(b);
+      });
+    });
+  });
+
+  var drillBtn = document.getElementById('drillMissed');
+  var clearBtn = document.getElementById('clearMissed');
+
+  function flagRows(){
+    document.querySelectorAll('tr.row-missed').forEach(function(tr){ tr.classList.remove('row-missed'); });
+    document.querySelectorAll('.missed').forEach(function(el){
+      var tr = el.closest('tr');
+      if(tr) tr.classList.add('row-missed');
+    });
+    var flag = document.getElementById('flagCount');
+    if(flag){
+      var n = document.querySelectorAll('#checklist tr.row-missed').length;
+      flag.textContent = n ? n + ' flagged from recall' : '';
+    }
+  }
+
+  function updateMissed(){
+    var n = Object.keys(missed).length;
+    drillBtn.textContent = n ? 'Hide missed (' + n + ')' : 'Hide missed';
+    drillBtn.disabled = !n;
+    clearBtn.disabled = !n;
+  }
+
+  drillBtn.addEventListener('click', function(){
+    groups.forEach(function(g){ g.cols.forEach(function(col){ setCol(col, false); }); });
+    document.querySelectorAll('.mask[data-cid]').forEach(function(el){
+      var on = !!missed[el.getAttribute('data-cid')];
+      el.classList.toggle('mask-on', on);
+      el.classList.remove('shown');
+      var w = el._wrap;
+      if(w){
+        w.setAttribute('tabindex', on ? '0' : '-1');
+        if(on){ w.setAttribute('role','button'); w.setAttribute('aria-label','Missed earlier - activate to reveal'); }
+        else { w.removeAttribute('role'); w.removeAttribute('aria-label'); }
+      }
+    });
+    groups.forEach(function(g){
+      var has = g.cols.some(function(col){
+        return col.cells.some(function(el){ return missed[el.getAttribute('data-cid')]; });
+      });
+      if(has){
+        g.open = true;
+        g.bar.classList.add('open');
+        g.btn.setAttribute('aria-pressed','true');
+        g.btn.textContent = 'Recall on';
+      }
+    });
+    sync();
+    save();
+  });
+
+  clearBtn.addEventListener('click', function(){
+    missed = {};
+    saveMissed();
+    document.querySelectorAll('.missed').forEach(function(el){ el.classList.remove('missed'); });
+    document.querySelectorAll('.missbtn').forEach(function(b){ b.textContent = 'mark missed'; });
+    updateMissed();
+    flagRows();
+  });
+
+  // ---- figures: hide the labels, name the anatomy ----
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  document.querySelectorAll('figure').forEach(function(fig, fi){
+    var svg = fig.querySelector('svg');
+    if(!svg || svg.querySelectorAll('text').length < 3) return;
+    var sec = fig.closest('section');
+    if(!sec) return;
+
+    var fid = 'lblblur' + fi;
+    var defs = svg.querySelector('defs');
+    if(!defs){
+      defs = document.createElementNS(SVGNS, 'defs');
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    var filt = document.createElementNS(SVGNS, 'filter');
+    filt.setAttribute('id', fid);
+    filt.setAttribute('x', '-25%'); filt.setAttribute('y', '-60%');
+    filt.setAttribute('width', '150%'); filt.setAttribute('height', '220%');
+    var blur = document.createElementNS(SVGNS, 'feGaussianBlur');
+    blur.setAttribute('in', 'SourceGraphic');
+    blur.setAttribute('stdDeviation', '3.2');
+    filt.appendChild(blur);
+    defs.appendChild(filt);
+
+    function paintLabels(){
+      var hidden = fig.classList.contains('labels-hidden');
+      svg.querySelectorAll('text').forEach(function(t){
+        if(!hidden || t.classList.contains('shown')) t.removeAttribute('filter');
+        else t.setAttribute('filter', 'url(#' + fid + ')');
+      });
+    }
+    fig._paintLabels = paintLabels;
+    // a legend entry is several <text> lines - group them so one click lifts the whole block
+    function blockFor(t){
+      if(!fig._blocks){
+        var items = Array.prototype.map.call(svg.querySelectorAll('text'), function(el){
+          var b;
+          try { b = el.getBBox(); } catch(err){ b = { x:0, y:0, width:0, height:0 }; }
+          return { el: el, x1: b.x, x2: b.x + b.width, y1: b.y, y2: b.y + b.height };
+        });
+        items.sort(function(a, b){ return a.y1 - b.y1; });
+        var clusters = [];
+        items.forEach(function(it){
+          for(var i = 0; i < clusters.length; i++){
+            var last = clusters[i][clusters[i].length - 1];
+            var sameColumn = it.x1 < last.x2 + 6 && last.x1 < it.x2 + 6;
+            var gap = it.y1 - last.y2;
+            // lines of one entry nearly touch; separate entries sit a clear line apart
+            if(sameColumn && gap < 9 && gap > -30){ clusters[i].push(it); return; }
+          }
+          clusters.push([it]);
+        });
+        fig._blocks = clusters.map(function(c){ return c.map(function(i){ return i.el; }); });
+      }
+      for(var i = 0; i < fig._blocks.length; i++){
+        if(fig._blocks[i].indexOf(t) !== -1) return fig._blocks[i];
+      }
+      return [t];
+    }
+
+    var cap = fig.querySelector('figcaption');
+    if(cap){
+      cap.setAttribute('tabindex','0');
+      cap.addEventListener('click', function(){
+        if(fig.classList.contains('labels-hidden')) fig.classList.toggle('caption-shown');
+      });
+      cap.addEventListener('keydown', function(e){
+        if(!fig.classList.contains('labels-hidden')) return;
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fig.classList.toggle('caption-shown'); }
+      });
+    }
+
+    svg.addEventListener('click', function(e){
+      if(!fig.classList.contains('labels-hidden')) return;
+      var t = e.target.closest ? e.target.closest('text') : null;
+      if(!t) return;
+      e.stopPropagation();
+      var block = blockFor(t);
+      var on = !t.classList.contains('shown');
+      block.forEach(function(el){ el.classList.toggle('shown', on); });
+      paintLabels();
+    });
+    buildBar(sec, sec.id + ':f' + fi, fig, [{
+      key: 'labels',
+      label: 'Labels',
+      cells: [],
+      apply: function(on){
+        fig.classList.toggle('labels-hidden', on);
+        fig.classList.remove('labels-shown');
+        fig.classList.remove('caption-shown');
+        svg.querySelectorAll('text.shown').forEach(function(t){ t.classList.remove('shown'); });
+        paintLabels();
+      }
+    }]);
+  });
+
+  // ---- callouts, cards and the stats key: answers that were sitting outside the tables ----
+  document.querySelectorAll('section').forEach(function(sec, si){
+    var head = sec.querySelector('.sechead');
+    if(!head) return;
+    var targets = [].slice.call(sec.querySelectorAll(
+      '.irrcard .ef, .irrcard li, .skcell span, .caseans dd'
+    ));
+    var cells = targets.filter(function(el){ return wrap(el); });
+    if(!cells.length) return;
+    var anchor = document.createElement('div');
+    head.insertAdjacentElement('afterend', anchor);
+    buildBar(sec, sec.id + ':n' + si, anchor, [{ key: 'notes', label: 'Notes', cells: cells }]);
+    anchor.remove();
+  });
+
+  // ---- section and global switches ----
+  var sections = [];
+  groups.forEach(function(g){ if(sections.indexOf(g.sec) === -1) sections.push(g.sec); });
+
+  sections.forEach(function(sec){
+    var head = sec.querySelector('.sechead');
+    if(!head) return;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'sec-recall';
+    b.setAttribute('aria-pressed','false');
+    b.title = 'Quiz this section - hides the answer column, then pick which columns to hide';
+    b.textContent = 'Recall';
+    b.addEventListener('click', function(){
+      setSection(sec, !sectionOpen(sec));
+      save();
+    });
+    sec._recallBtn = b;
+    head.appendChild(b);
+  });
+
+  function setSection(sec, on){
+    groups.forEach(function(g){ if(g.sec === sec) setGroupOpen(g, on); });
+    sync();
+  }
+
+  function sectionOpen(sec){
+    return groups.some(function(g){ return g.sec === sec && g.open; });
+  }
+
+  function sync(){
+    sections.forEach(function(sec){
+      var on = sectionOpen(sec);
+      sec.classList.toggle('recall', on);
+      if(sec._recallBtn){
+        sec._recallBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        sec._recallBtn.textContent = on ? 'Recall on' : 'Recall';
+      }
+    });
+    var anyOpen = groups.some(function(g){ return g.open; });
+    body.classList.toggle('recall-active', anyOpen);
+    globalBtn.setAttribute('aria-pressed', anyOpen ? 'true' : 'false');
+    globalBtn.textContent = 'Recall all';
+  }
+
+  function save(){
+    var on = [];
+    groups.forEach(function(g){
+      g.cols.forEach(function(col){
+        if(col.chip.getAttribute('aria-pressed') === 'true') on.push(col.id);
+      });
+    });
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        tables: groups.filter(function(g){ return g.open; }).map(function(g){ return g.key; }),
+        cols: on
+      }));
+    } catch(e) {}
+  }
+
+  function everythingHidden(){
+    return groups.length && groups.every(function(g){
+      return g.open && g.cols.every(function(col){
+        return col.cue || col.chip.getAttribute('aria-pressed') === 'true';
+      });
+    });
+  }
+
+  globalBtn.addEventListener('click', function(){
+    if(everythingHidden()){
+      groups.forEach(function(g){ setGroupOpen(g, false); });
+    } else {
+      // everything hideable on the page, first columns and diagram labels included
+      groups.forEach(function(g){
+        g.open = true;
+        g.bar.classList.add('open');
+        g.btn.setAttribute('aria-pressed','true');
+        g.btn.textContent = 'Recall on';
+        g.cols.forEach(function(col){ setCol(col, !col.cue); });
+      });
+    }
+    sync();
+    save();
+  });
+  document.getElementById('revealAll').addEventListener('click', function(){
+    document.querySelectorAll('.mask-on').forEach(function(el){ el.classList.add('shown'); });
+    document.querySelectorAll('figure.labels-hidden').forEach(function(f){
+      f.querySelectorAll('svg text').forEach(function(t){ t.classList.add('shown'); });
+      f.classList.add('labels-shown');
+      if(f._paintLabels) f._paintLabels();
+    });
+  });
+
+  // shuffle how the cases are presented; DOM order stays fixed so saved marks stay attached
+  (function(){
+    var cases = [].slice.call(document.querySelectorAll('.cases .case'));
+    var order = cases.map(function(_, i){ return i; });
+    for(var i = order.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = order[i]; order[i] = order[j]; order[j] = t;
+    }
+    cases.forEach(function(c, i){ c.style.order = order[i]; });
+  })();
+
+  // ---- restore ----
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e) {}
+  if(!saved){
+    var legacy = null;
+    try { legacy = localStorage.getItem('JOINT-recall-v2') || localStorage.getItem('JOINT-recall-v1'); } catch(e) {}
+    if(legacy === '1') saved = { secs: sections.map(function(s){ return s.id; }), cols: [] };
+    else if(legacy){ try { saved = { secs: JSON.parse(legacy) || [], cols: [] }; } catch(e) {} }
+  }
+  if(saved){
+    if(saved.tables){
+      groups.forEach(function(g){ if(saved.tables.indexOf(g.key) !== -1) setGroupOpen(g, true); });
+    } else if(saved.secs){
+      saved.secs.forEach(function(id){
+        var sec = document.getElementById(id);
+        if(sec) setSection(sec, true);
+      });
+    }
+    if(saved.cols && saved.cols.length){
+      groups.forEach(function(g){
+        if(!g.open) return;
+        g.cols.forEach(function(col){ setCol(col, saved.cols.indexOf(col.id) !== -1); });
+      });
+    }
+  }
+  if(!saved){
+    for(var gi = 0; gi < groups.length; gi++){
+      if(groups[gi].key === 'drill:n10' || /drill:n\d+$/.test(groups[gi].key)){
+        setGroupOpen(groups[gi], true);
+        break;
+      }
+    }
+  }
+
+  sync();
+  updateMissed();
+  flagRows();
+
+  window.addEventListener('beforeprint', function(){
+    document.querySelectorAll('details:not([open])').forEach(function(d){
+      d.open = true; d.setAttribute('data-reclose','1');
+    });
+  });
+  window.addEventListener('afterprint', function(){
+    document.querySelectorAll('details[data-reclose]').forEach(function(d){
+      d.open = false; d.removeAttribute('data-reclose');
+    });
+  });
+})();
+
+
+(function(){
+  var KEY = 'JOINT-add-v1';
+  var store = {};
+  try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { store = {}; }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} render(); }
+  function slug(t){ return t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,44); }
+  function clean(el){
+    var c = el.cloneNode(true);
+    c.querySelectorAll('button, .missbtn, .addwrap, .prov, .tag, .src').forEach(function(x){ x.remove(); });
+    return (c.textContent || '').replace(/\s+/g,' ').trim();
+  }
+  var items = [], seen = {}, locked = 0;
+
+  function attach(host, cell, id, after){
+    var wrap = document.createElement('div'); wrap.className = 'addwrap';
+    var tag = document.createElement('span'); tag.className = 'tag t lanetag'; tag.textContent = 'Taught';
+    var body = document.createElement('div'); body.className = 'add';
+    body.setAttribute('data-ph','what your program teaches');
+    body.setAttribute('role','textbox');
+    body.setAttribute('aria-label','What your program teaches here');
+    var clr = document.createElement('button'); clr.type = 'button';
+    clr.className = 'addclear'; clr.textContent = 'clear';
+    clr.setAttribute('aria-label','Clear this taught note');
+    wrap.appendChild(tag); wrap.appendChild(body); wrap.appendChild(clr);
+    if (after && after.parentNode) after.parentNode.insertBefore(wrap, after.nextSibling);
+    else host.appendChild(wrap);
+    if (store[id]) { body.innerHTML = store[id]; wrap.classList.add('has'); }
+
+    body.addEventListener('blur', function(){
+      wrap.classList.remove('editing');
+      body.removeAttribute('contenteditable');
+      var v = body.innerHTML.trim();
+      if (!v) { delete store[id]; wrap.classList.remove('has'); }
+      else { store[id] = v; wrap.classList.add('has'); }
+      save();
+    });
+    body.addEventListener('keydown', function(ev){
+      if (ev.key === 'Escape') { body.innerHTML = store[id] || ''; body.blur(); }
+    });
+    clr.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      body.removeAttribute('contenteditable');
+      delete store[id]; body.innerHTML = '';
+      wrap.classList.remove('has','editing'); save();
+    });
+    cell.addEventListener('dblclick', function(ev){
+      var m = cell.closest('.mask');
+      if (m && m.classList.contains('mask-on') && !m.classList.contains('shown')) return;
+      ev.stopPropagation();
+      wrap.classList.add('editing');
+      body.setAttribute('contenteditable','true');
+      body.focus();
+      var r = document.createRange(); r.selectNodeContents(body); r.collapse(false);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    });
+    items.push({ id: id, body: body, wrap: wrap });
+  }
+
+  document.querySelectorAll('section table tbody tr').forEach(function(tr){
+    if (tr.classList.contains('group')) return;
+    var sec = tr.closest('section') ? tr.closest('section').id : 'x';
+    var lab = clean(tr.querySelector('td.name') || tr.querySelector('td') || tr);
+    if (!lab) return;
+    var base = sec + ':' + slug(lab);
+    if (seen[base]) { seen[base]++; base += '-' + seen[base]; } else seen[base] = 1;
+    Array.prototype.slice.call(tr.children).forEach(function(td, i){
+      if (!td.textContent.trim()) return;
+      // the name column is the row's label, not an answer, and it is too narrow to hold a line
+      if (td.classList.contains('name')) return;
+      td.classList.add('cx');
+      attach(td.querySelector('.maskwrap') || td, td, base + ':c' + i);
+    });
+  });
+  document.querySelectorAll('.numcell').forEach(function(nc){
+    var sec = nc.closest('section') ? nc.closest('section').id : 'x';
+    var k = nc.querySelector('.k'); if (!k) return;
+    var base = sec + ':n' + slug(clean(nc.querySelector('.v') || nc));
+    if (seen[base]) { seen[base]++; base += '-' + seen[base]; } else seen[base] = 1;
+    attach(k, k, base);
+  });
+
+  function render(){
+    var el = document.getElementById('editCount');
+    if (!el) return;
+    var n = Object.keys(store).length;
+    el.textContent = n ? (n + (n === 1 ? ' line added' : ' lines added')) : '';
+  }
+  render();
+  window.__lockStats = { open: items.length, locked: locked };
+  window.playbookAdd = {
+    lanes: function(){
+      return items.map(function(it){
+        var ed = it.wrap.closest('[data-imp]');
+        if (!ed) return null;
+        var tr = it.wrap.closest('tr'), nc = it.wrap.closest('.numcell');
+        var src = tr ? tr.querySelector('td.name') : (nc ? nc.querySelector('.v') : null);
+        var label = src ? clean(src) : '';
+        // some rows are numbered steps - a bare digit is no use as a label in the review panel
+        if (tr && !/[A-Za-z]/.test(label)) {
+          for (var ci = 0; ci < tr.cells.length; ci++) {
+            var alt = clean(tr.cells[ci]);
+            if (/[A-Za-z]/.test(alt) && alt.length > 2) { label = alt.slice(0, 60); break; }
+          }
+        }
+        return { keys: ed.getAttribute('data-imp') || '', label: label, current: it.body.textContent.trim(),
+                 taught: ed.textContent.trim(), set: function(txt){
+                   it.body.textContent = txt; it.wrap.classList.add('has');
+                   store[it.id] = it.body.innerHTML; save();
+                 }, reveal: function(){ ed.scrollIntoView({block:'center'}); } };
+      }).filter(function(x){ return x && x.keys; });
+    }
+  };
+
+  var copy = document.getElementById('copyEdits');
+  if (copy) copy.addEventListener('click', function(){
+    var keys = Object.keys(store);
+    var text = keys.length ? keys.map(function(k){
+      var t = document.createElement('div'); t.innerHTML = store[k];
+      return '## ' + k + '\n' + (t.textContent || '').trim();
+    }).join('\n\n') : 'Nothing added yet.';
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){
+        copy.textContent = 'Copied';
+        setTimeout(function(){ copy.textContent = 'Copy my lines'; }, 1400);
+      }, function(){});
+    }
+  });
+
+  var reset = document.getElementById('resetEdits');
+  if (reset) reset.addEventListener('click', function(){
+    items.forEach(function(it){ it.body.innerHTML = ''; it.wrap.classList.remove('has','editing'); });
+    store = {};
+    try { localStorage.removeItem(KEY); } catch(e) {}
+    render();
+  });
+})();
+(function(){
+  var pick = document.getElementById('pdfPick');
+  var file = document.getElementById('pdfFile');
+  var stat = document.getElementById('pdfStatus');
+  var panel = document.getElementById('importPanel');
+  if (!pick || !file) return;
+
+  function say(t){ if (stat) stat.textContent = t; }
+
+  function loadPdfJs(){
+    return new Promise(function(res, rej){
+      if (window.pdfjsLib) return res(window.pdfjsLib);
+      var sc = document.createElement('script');
+      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      sc.onload = function(){
+        try { window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+          'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; } catch(e) {}
+        res(window.pdfjsLib);
+      };
+      sc.onerror = function(){ rej(new Error('could not load the PDF reader')); };
+      document.head.appendChild(sc);
+    });
+  }
+
+  function sentences(text){
+    // lecture slides carry almost no sentence punctuation, so splitting on full stops
+    // alone turns a whole slide into one passage. Unwrap the soft line breaks a PDF
+    // introduces mid-sentence, then split on the breaks that actually mean something:
+    // blank lines, bullet glyphs, and end-of-sentence marks.
+    return text
+      .replace(/\r/g, '')
+      .replace(/([a-z,;)\u00b0])\n(?=[a-z(])/g, '$1 ')
+      .split(/\n\s*\n|\n|[\u2022\u25CF\u25AA\u25A0\u25E6\u2043\u2219\uE000-\uF8FF]+|(?<=[.;:])\s+/)
+      .map(function(x){ return x.replace(/\s+/g, ' ').trim(); })
+      .filter(function(x){
+        // a slide title is not a taught value - require a phrase, not a label
+        return x.length > 24 && x.length < 340 && x.split(/\s+/).length >= 4;
+      });
+  }
+
+  function tidy(t){
+    return t
+      .replace(/[\uFFFD\uE000-\uF8FF\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')  // control and private-use glyphs
+      .replace(/([a-z]) - (based|related|like|type|dominant|driven)\b/gi, '$1-$2')  // "anterior - based"
+      .replace(/https?:\/\/\S+/g, '')          // a pasted source URL is not a taught value
+      .replace(/\s+([\u00B0%])/g, '$1')          // "120 \u00b0" -> "120\u00b0"
+      .replace(/^\s*(?:\d{1,2}|[\u2022\u25CF\u25AA\-\u2013])\s+(?=[A-Z])/, '')  // a leading bullet or list number
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
+
+  function score(sent, keys){
+    var low = sent.toLowerCase(), hits = 0;
+    keys.forEach(function(k){ if (k && low.indexOf(k) !== -1) hits++; });
+    return hits;
+  }
+
+  pick.addEventListener('click', function(){ file.click(); });
+
+  file.addEventListener('change', function(){
+    var f = file.files && file.files[0];
+    if (!f) return;
+    pick.disabled = true;
+    say('reading ' + f.name + '...');
+    loadPdfJs().then(function(lib){
+      return f.arrayBuffer().then(function(buf){
+        return lib.getDocument({ data: buf }).promise;
+      });
+    }).then(function(doc){
+      var pages = [];
+      var chain = Promise.resolve();
+      for (var i = 1; i <= doc.numPages; i++) {
+        (function(n){
+          chain = chain.then(function(){
+            return doc.getPage(n).then(function(pg){ return pg.getTextContent(); })
+              .then(function(tc){
+                var buf = '', lastY = null;
+                tc.items.forEach(function(it){
+                  var y = (it.transform && it.transform.length > 5) ? it.transform[5] : null;
+                  if (lastY !== null && y !== null && Math.abs(y - lastY) > 2) buf += '\n';
+                  buf += it.str || '';
+                  buf += it.hasEOL ? '\n' : ' ';
+                  if (y !== null) lastY = y;
+                });
+                pages.push(buf);
+              });
+          });
+        })(i);
+      }
+      return chain.then(function(){ return { text: pages.join('\n'), n: doc.numPages }; });
+    }).then(function(out){
+      var sents = sentences(out.text);
+      say(out.n + ' pages, ' + sents.length + ' passages read - nothing left your device');
+      var lanes = (window.playbookAdd && window.playbookAdd.lanes) ? window.playbookAdd.lanes() : [];
+
+      // score every lane against every passage, then let each passage go to one lane only.
+      // without this a single sentence about the trapezius force couple is offered to the
+      // drop arm, the painful arc and four scapular rows at once.
+      var pairs = [];
+      lanes.forEach(function(lane, li){
+        var keys = lane.keys.toLowerCase().split('|').filter(Boolean);
+        sents.forEach(function(sn, si){
+          var sc = score(sn, keys);
+          if (sc < 2) return;
+          // a match built only from short fragments is usually coincidence
+          var low = sn.toLowerCase(), solid = 0;
+          keys.forEach(function(k){ if (k.length >= 6 && low.indexOf(k) !== -1) solid++; });
+          if (!solid) return;
+          pairs.push({ lane: lane, li: li, si: si, text: sn, score: sc + solid, len: sn.length });
+        });
+      });
+      pairs.sort(function(a, b){ return (b.score - a.score) || (a.len - b.len); });
+
+      var usedSent = {}, usedLane = {}, found = [];
+      pairs.forEach(function(pr){
+        if (usedSent[pr.si] || usedLane[pr.li]) return;
+        usedSent[pr.si] = 1; usedLane[pr.li] = 1;
+        found.push({ lane: pr.lane, text: tidy(pr.text), score: pr.score });
+      });
+      render(found, f.name);
+      pick.disabled = false;
+    }).catch(function(err){
+      say('could not read that file - ' + (err && err.message ? err.message : 'unknown error'));
+      pick.disabled = false;
+    });
+    file.value = '';
+  });
+
+  function render(found, name){
+    panel.innerHTML = '';
+    if (!found.length){
+      panel.hidden = false;
+      panel.innerHTML = '<header>Nothing in <b>' + name.replace(/[<>&]/g,'') +
+        '</b> matched a taught value closely enough to suggest. Nothing has been changed - you can still type your own lines by double-clicking any box.</header>';
+      return;
+    }
+    var h = document.createElement('header');
+    h.innerHTML = '<b>' + found.length + ' passage' + (found.length === 1 ? '' : 's') +
+      '</b> from your handout look like they belong in a taught lane. Nothing is saved until you press <b>use</b>.';
+    panel.appendChild(h);
+    found.forEach(function(f){
+      var row = document.createElement('div'); row.className = 'impRow';
+      var left = document.createElement('div');
+      var lab = document.createElement('div'); lab.className = 'lab';
+      lab.textContent = f.lane.label || 'value';
+      var cand = document.createElement('div'); cand.className = 'cand';
+      cand.textContent = f.text;
+      left.appendChild(lab); left.appendChild(cand);
+      var acts = document.createElement('div'); acts.className = 'acts';
+      var use = document.createElement('button'); use.type = 'button'; use.className = 'use'; use.textContent = 'use';
+      var skip = document.createElement('button'); skip.type = 'button'; skip.textContent = 'skip';
+      use.addEventListener('click', function(){
+        f.lane.set(f.text);
+        row.classList.add('done');
+        use.textContent = 'added'; use.disabled = true;
+      });
+      skip.addEventListener('click', function(){ row.remove(); });
+      acts.appendChild(use); acts.appendChild(skip);
+      row.appendChild(left); row.appendChild(acts);
+      panel.appendChild(row);
+    });
+    panel.hidden = false;
+    panel.scrollIntoView({ block: 'nearest' });
+  }
+})();
+(function(){
+  // Provenance markers are metadata, not answers - lift them out of the blur so a
+  // hidden cell still tells you how much the answer it is hiding deserves your confidence.
+  document.querySelectorAll('.mask').forEach(function(cell){
+    var seen = {};
+    cell.querySelectorAll('.maskwrap .prov').forEach(function(b){
+      var kind = b.className.replace('prov','').trim();
+      var wrap = b.closest('.maskwrap');
+      if (!wrap || !wrap.parentNode) return;
+      if (seen[kind]) { b.remove(); return; }   // the same marker twice in one cell reads as a bug
+      seen[kind] = 1;
+      wrap.parentNode.insertBefore(b, wrap);
+      b.classList.add('prov-lifted');
+    });
+  });
+  document.querySelectorAll('.numcell .k .prov').forEach(function(b){
+    var k = b.closest('.k');
+    if (k && k.firstChild !== b) k.insertBefore(b, k.firstChild);
+  });
+})();
+(function(){
+  // The section strip wraps rather than scrolls; below the wrap point it becomes a picker,
+  // so the top bar never needs sideways scrolling.
+  var sel = document.getElementById('navpick');
+  var links = document.querySelectorAll('.navlinks a');
+  if (!sel || !links.length) return;
+  var ph = document.createElement('option');
+  ph.textContent = 'Jump to a section...';
+  ph.value = '';
+  sel.appendChild(ph);
+  links.forEach(function(a){
+    var o = document.createElement('option');
+    o.value = a.getAttribute('href');
+    o.textContent = a.textContent.trim();
+    sel.appendChild(o);
+  });
+  sel.addEventListener('change', function(){
+    if (!sel.value) return;
+    var t = document.querySelector(sel.value);
+    if (t) t.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+})();
+(function(){
+  // A case is a quiz, so opening one must never hand over the answers - even if they were
+  // revealed in an earlier session. Every open re-hides them; click an answer to check it.
+  document.querySelectorAll('details.case').forEach(function(d){
+    function hide(){
+      d.querySelectorAll('.caseans dd.mask').forEach(function(cell){
+        cell.classList.add('mask-on');
+        cell.classList.remove('shown');
+      });
+    }
+    hide();
+    d.addEventListener('toggle', function(){ if (d.open) hide(); });
+  });
+})();
+(function(){
+  // Highlight the section you are actually reading, in the strip and in the picker.
+  var links = [...document.querySelectorAll('nav a[href^="#"]')];
+  var pick  = document.getElementById('navpick');
+  if (!links.length) return;
+  var targets = links.map(function(a){
+    return { a: a, id: a.getAttribute('href'), el: document.querySelector(a.getAttribute('href')) };
+  }).filter(function(t){ return t.el; });
+  if (!targets.length) return;
+
+  function mark(id){
+    targets.forEach(function(t){ t.a.classList.toggle('here', t.id === id); });
+    if (pick) {
+      for (var i = 0; i < pick.options.length; i++) {
+        if (pick.options[i].value === id) { pick.selectedIndex = i; return; }
+      }
+    }
+  }
+  var current = null;
+  function update(){
+    var line = window.scrollY + (window.innerHeight * 0.28);
+    var best = null;
+    targets.forEach(function(t){
+      var top = t.el.getBoundingClientRect().top + window.scrollY;
+      if (top <= line) best = t;
+    });
+    var id = best ? best.id : targets[0].id;
+    if (id !== current) { current = id; mark(id); }
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){ update(); ticking = false; });
+  }, {passive:true});
+  window.addEventListener('resize', update, {passive:true});
+  update();
+})();
+
+/* ---------- filter: narrow the page to rows that mention a word ---------- */
+(function(){
+  var box = document.getElementById('findBox');
+  var out = document.getElementById('findCount');
+  if(!box || !out) return;
+
+  // a unit is one thing a student could be looking for
+  var units = [];
+  function collect(sel, kind){
+    document.querySelectorAll(sel).forEach(function(el){
+      if(units.some(function(u){ return u.el === el; })) return;
+      units.push({el:el, kind:kind, text:''});
+    });
+  }
+  collect('section table tbody tr:not(.group)', 'row');
+  collect('.numcell', 'cell');
+  collect('#refs li', 'ref');
+  collect('#drill details', 'case');
+  collect('.callout', 'note');
+
+  // cache the searchable text once - innerText on every keystroke is far too slow
+  var indexed = false;
+  function norm(t){
+    return t.toLowerCase()
+      .replace(/[\u2010-\u2015\u2212]/g,'-')   // every kind of dash reads as a hyphen
+      .replace(/[\u2018\u2019]/g,"'")
+      .replace(/\s+/g,' ');
+  }
+  function index(){
+    units.forEach(function(u){
+      // innerText returns nothing for a closed <details>, so read the tree itself,
+      // minus the controls this script and the recall system inject into it
+      var c = u.el.cloneNode(true);
+      c.querySelectorAll('button, .missbtn, .addwrap, .colmask, .lanetag').forEach(function(x){ x.remove(); });
+      var sec = u.el.closest('section');
+      var head = sec ? (sec.querySelector('h2') || {}).textContent || '' : '';
+      u.text = norm((c.textContent || '') + ' ' + head);
+    });
+    indexed = true;
+  }
+
+  var containers = ['table','.numgrid','#refs ol','#refs ul','.tablewrap','figure'];
+  var noneMsg = null;
+
+  function clear(){
+    document.body.classList.remove('filtering');
+    document.querySelectorAll('.f-out').forEach(function(e){ e.classList.remove('f-out'); });
+    document.querySelectorAll('.f-hit').forEach(function(e){ e.classList.remove('f-hit'); });
+    if(noneMsg){ noneMsg.remove(); noneMsg = null; }
+    out.textContent = '';
+  }
+
+  function run(q){
+    q = norm(q).trim();
+    if(q.length < 2){ clear(); return; }
+    if(!indexed) index();
+    document.body.classList.add('filtering');
+    if(noneMsg){ noneMsg.remove(); noneMsg = null; }
+
+    var terms = q.split(/\s+/);
+    var hits = 0;
+    units.forEach(function(u){
+      var match = terms.every(function(t){ return u.text.indexOf(t) !== -1; });
+      u.el.classList.toggle('f-out', !match);
+      u.el.classList.toggle('f-hit', match);
+      if(match) hits++;
+    });
+
+    // a group header only earns its place if a row under it survived
+    document.querySelectorAll('section table tbody tr.group').forEach(function(tr){
+      var keep = false, n = tr.nextElementSibling;
+      while(n && !n.classList.contains('group')){
+        if(!n.classList.contains('f-out')) { keep = true; break; }
+        n = n.nextElementSibling;
+      }
+      tr.classList.toggle('f-out', !keep);
+    });
+
+    // fold away anything left holding nothing
+    containers.forEach(function(sel){
+      document.querySelectorAll(sel).forEach(function(c){
+        var live = c.querySelectorAll(':scope tbody tr:not(.f-out), :scope .numcell:not(.f-out), :scope li:not(.f-out)');
+        var self = !c.classList.contains('f-out');
+        if(c.matches('figure')){ c.classList.add('f-out'); return; }
+        c.classList.toggle('f-out', live.length === 0 && self);
+      });
+    });
+
+    var live = 0;
+    document.querySelectorAll('section').forEach(function(sec){
+      var n = sec.querySelectorAll('.f-hit:not(.f-out)').length;
+      sec.classList.toggle('f-out', n === 0);
+      if(n) live++;
+    });
+
+    out.textContent = hits ? hits + ' in ' + live + (live === 1 ? ' section' : ' sections') : 'no match';
+    if(!hits){
+      noneMsg = document.createElement('p');
+      noneMsg.className = 'f-none';
+      noneMsg.textContent = 'Nothing on the page mentions "' + q + '". Try a shorter word, or a number without its unit.';
+      var main = document.querySelector('main') || document.body;
+      main.appendChild(noneMsg);
+    }
+  }
+
+  var timer = null;
+  box.addEventListener('input', function(){
+    clearTimeout(timer);
+    var v = box.value;
+    timer = setTimeout(function(){ run(v); }, 130);
+  });
+  box.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){ box.value = ''; clear(); box.blur(); }
+  });
+  // the browser's own clear button fires search, not input, in some engines
+  box.addEventListener('search', function(){ if(!box.value) clear(); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)
+       && !document.activeElement.isContentEditable){
+      e.preventDefault(); box.focus(); box.select();
+    }
+  });
+})();
+
+/* ---------- wire every citation to its entry in the reference list ---------- */
+(function(){
+  var list = document.querySelectorAll('#refs li');
+  if(!list.length) return;
+
+  var COMBINING = new RegExp('[\\u0300-\\u036f]', 'g');
+  function fold(t){
+    return t.normalize ? t.normalize('NFD').replace(COMBINING,'').toLowerCase()
+                       : t.toLowerCase();
+  }
+
+  // index the reference list by surname + year
+  var byKey = {}, bySurname = {};
+  list.forEach(function(li, i){
+    if(!li.id) li.id = 'r' + (i + 1);
+    var au = (li.querySelector('.au') || {}).textContent || '';
+    var jo = (li.querySelector('.jo') || {}).textContent || '';
+    var yr = (jo.match(/(19|20)\d{2}/) || [])[0];
+    // "Lewis JS, Valentine RE" -> lewis, valentine ; "AAOS" -> aaos
+    // every name word counts, so "van den Dolder PA" is also findable as "Dolder"
+    var names = [];
+    au.split(',').forEach(function(part){
+      part.trim().split(/\s+/).forEach(function(w){
+        w = w.replace(/[^A-Za-zÀ-ɏ'’\-]/g,'');
+        // skip author initials (short all-caps) but keep organizations like AAOS
+        if(w.length >= 2 && (w !== w.toUpperCase() || w.length >= 4)) names.push(fold(w));
+      });
+    });
+    names.forEach(function(nm){
+      if(yr && !byKey[nm + '|' + yr]) byKey[nm + '|' + yr] = li.id;
+      if(bySurname[nm] === undefined) bySurname[nm] = li.id;
+      else if(bySurname[nm] !== li.id) bySurname[nm] = null;   // ambiguous, do not link
+    });
+  });
+
+  // Latin Extended-A is in the letter class, so "Caliş" reads as one word
+  var LO = "A-Za-z\\u00C0-\\u024F'\\u2019\\-", UP = "A-Z\\u00C0-\\u024F";
+  var AUTHOR = new RegExp('([' + UP + '][' + LO + ']+(?:\\s*&\\s*[' + UP + '][' + LO + ']+)?)(\\s+)((?:19|20)\\d{2})', 'g');
+  var STAT   = /(\bSn\b|\bSp\b|\+LR|\bDOR\b|\bICC\b)/;
+  var NOSRC  = /no traceable source|not checked against|could not be traced|no .{0,24}value exists|no normative study/i;
+  var backrefs = {}, linked = 0, unlinked = [];
+
+  document.querySelectorAll('.src').forEach(function(span, idx){
+    var txt = span.textContent;
+
+    // an accuracy figure carrying no citation is not a source - restyle, do not link
+    if(STAT.test(txt) && !AUTHOR.test(txt)){
+      AUTHOR.lastIndex = 0;
+      span.className = 'stat';
+      return;
+    }
+    AUTHOR.lastIndex = 0;
+    if(span.querySelector('*')) return;              // leave anything already marked up alone
+
+    // an editorial note about the absence of a source is not a citation either
+    if(NOSRC.test(txt)){ span.className = 'nosrc'; return; }
+
+    // a citation with no year - "AAOS", "Alqunaee pooled" - still has an entry if the name is unique
+    if(!/(19|20)\d{2}/.test(txt)){
+      var word = (txt.match(/[A-ZÀ-Þ][A-Za-zÀ-ÿ'’\-]+/) || [])[0];
+      var yid = word ? bySurname[fold(word)] : null;
+      if(yid){
+        if(!span.id) span.id = 'c' + idx;
+        var ya = document.createElement('a');
+        ya.className = 'cite'; ya.href = '#' + yid;
+        ya.title = 'Jump to this reference';
+        ya.textContent = word;
+        span.textContent = '';
+        span.appendChild(ya);
+        span.appendChild(document.createTextNode(txt.slice(txt.indexOf(word) + word.length)));
+        (backrefs[yid] = backrefs[yid] || []).push(span.id);
+        linked++;
+      } else {
+        // a textbook, with no free source to point at
+        span.className = 'book';
+        span.title = 'Textbook or consensus document - no freely readable source to link';
+      }
+      return;
+    }
+
+    var frag = document.createDocumentFragment(), last = 0, m, hit = false;
+    while((m = AUTHOR.exec(txt))){
+      var first = m[1].split(/\s*&\s*/)[0];
+      var id = byKey[fold(first) + '|' + m[3]];
+      if(!id){ unlinked.push(m[1] + ' ' + m[3]); continue; }
+      if(m.index > last) frag.appendChild(document.createTextNode(txt.slice(last, m.index)));
+      if(!span.id) span.id = 'c' + idx;
+      var a = document.createElement('a');
+      a.className = 'cite'; a.href = '#' + id;
+      a.title = 'Jump to this reference';
+      a.textContent = m[0];
+      frag.appendChild(a);
+      (backrefs[id] = backrefs[id] || []).push(span.id);
+      last = m.index + m[0].length; hit = true; linked++;
+    }
+    if(!hit) return;
+    if(last < txt.length) frag.appendChild(document.createTextNode(txt.slice(last)));
+    span.textContent = '';
+    span.appendChild(frag);
+  });
+
+  // and a way back out of the reference list
+  Object.keys(backrefs).forEach(function(id){
+    var li = document.getElementById(id);
+    if(!li) return;
+    var seen = {}, uses = backrefs[id].filter(function(c){
+      if(seen[c]) return false; seen[c] = 1; return true;
+    });
+    var wrap = document.createElement('span');
+    wrap.className = 'backrefs';
+    uses.slice(0, 8).forEach(function(cid, i){
+      var a = document.createElement('a');
+      a.href = '#' + cid; a.textContent = '↑' + (i + 1);
+      a.title = 'Back to where this is cited';
+      wrap.appendChild(a); wrap.appendChild(document.createTextNode(' '));
+    });
+    li.appendChild(wrap);
+  });
+
+  window.playbookCites = { linked: linked, unlinked: unlinked, entries: list.length };
+})();
+
+/* ---------- what to practice, built from the cells marked missed ---------- */
+(function(){
+  var host = document.getElementById('planner');
+  if(!host) return;
+  var MKEY = 'JOINT-missed-v1';
+
+  var METHOD = {
+    number: {
+      label: 'Numbers and thresholds',
+      how: 'Write the value from memory before you look, then check. Getting it wrong and then seeing the answer beats reading it again - that is the part that sticks. Come back to the ones you miss tomorrow, not in ten minutes.'
+    },
+    procedure: {
+      label: 'Things you do with your hands',
+      how: 'Reading a set-up does not transfer to performing it. Get a partner, run the position, and say the set-up out loud while your hands are on them - patient position, your stabilizing hand, the direction of force, what counts as positive. If you cannot narrate it while doing it, you do not have it.'
+    },
+    decision: {
+      label: 'Interpretation and decisions',
+      how: 'Practice these as cases, not as facts. State the finding, then say out loud what it changes about your next move and what it rules out. Use the cases below, or invent one from a patient you saw this week.'
+    }
+  };
+  var ORDER = ['procedure','number','decision'];
+
+  function kindOf(cell){
+    var sec = cell.closest('section'), sid = sec ? sec.id : '';
+    var td = cell.closest('td'), tr = cell.closest('tr'), head = '';
+    if(td && tr && tr.closest('table')){
+      var ths = tr.closest('table').querySelectorAll('thead th');
+      if(ths[td.cellIndex]) head = ths[td.cellIndex].textContent.toLowerCase();
+    }
+    if(/perform|set-?up|position|technique|how it/.test(head)) return 'procedure';
+    if(/make of it|change your mind|interpret|why|means|what to do/.test(head)) return 'decision';
+    if(sid === 'numbers') return 'number';
+    if(sid === 'syndromes' || sid === 'treatment') return 'decision';
+    if(sid === 'palpation' || sid === 'mmt' || sid === 'special') return 'procedure';
+    var t = cell.textContent || '';
+    var digits = (t.match(/\d/g) || []).length;
+    return (digits / Math.max(t.length, 1) > 0.045) ? 'number' : 'decision';
+  }
+
+  // read an element's own words, without the controls this page injects into it
+  function clean(el){
+    if(!el) return '';
+    var c = el.cloneNode(true);
+    c.querySelectorAll('button, .missbtn, .addwrap, .prov, .tag, .lanetag').forEach(function(x){ x.remove(); });
+    return (c.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function labelFor(cell){
+    var tr = cell.closest('tr');
+    if(tr){
+      var t = clean(tr.querySelector('.name'));
+      if(!/[A-Za-z]/.test(t)){                       // a bare step number is not a label
+        for(var i = 0; i < tr.cells.length; i++){
+          var alt = clean(tr.cells[i]);
+          if(/[A-Za-z]/.test(alt) && alt.length > 2){ t = alt.slice(0, 54); break; }
+        }
+      }
+      if(t) return t.slice(0, 60);
+    }
+    var k = cell.closest('.numcell');
+    if(k) return clean(k.querySelector('.k')).slice(0, 54);
+    return clean(cell).slice(0, 44) || 'this item';
+  }
+
+  // the nav already has a short name for each section - a full h2 is too long for a chip
+  var SHORT = {};
+  document.querySelectorAll('nav .navlinks a').forEach(function(a){
+    SHORT[a.getAttribute('href').slice(1)] = a.textContent.trim();
+  });
+  function sectionName(cell){
+    var sec = cell.closest('section');
+    if(!sec) return '';
+    if(SHORT[sec.id]) return SHORT[sec.id];
+    var h = sec.querySelector('h2');
+    return h ? h.textContent.trim() : '';
+  }
+
+  // which column the miss was in - so one row missed in two places reads as two jobs
+  function colName(cell){
+    var td = cell.closest('td'), tr = cell.closest('tr');
+    if(!td || !tr) return '';
+    var tbl = tr.closest('table');
+    if(!tbl) return '';
+    var ths = tbl.querySelectorAll('thead th');
+    var h = ths[td.cellIndex];
+    return h ? h.textContent.replace(/\s+/g,' ').trim() : '';
+  }
+
+  function reveal(cell){
+    var m = cell.closest('.mask');
+    if(m && m.classList.contains('mask-on')) m.classList.add('shown');
+    var d = cell.closest('details');
+    while(d){ d.open = true; d = d.parentElement && d.parentElement.closest('details'); }
+    cell.scrollIntoView({block:'center', behavior:'smooth'});
+    cell.classList.remove('plan-flash');
+    void cell.offsetWidth;
+    cell.classList.add('plan-flash');
+  }
+
+  function build(){
+    host.textContent = '';
+    var missed = {};
+    try { (JSON.parse(localStorage.getItem(MKEY) || '[]') || []).forEach(function(id){ missed[id] = 1; }); }
+    catch(e) {}
+
+    var cells = [].slice.call(document.querySelectorAll('[data-cid]'))
+      .filter(function(el){ return missed[el.getAttribute('data-cid')]; });
+
+    if(!cells.length){
+      var p = document.createElement('p');
+      p.className = 'plan-empty';
+      p.textContent = 'Nothing marked yet. Turn on Recall, work through a section, and mark the ones you miss - this fills itself in.';
+      host.appendChild(p);
+      return;
+    }
+
+    // one entry per item, not per cell: three columns missed on one row is still one thing to practice
+    var items = {}, order = [];
+    cells.forEach(function(el){
+      var sec = sectionName(el), name = labelFor(el), key = sec + '|' + name;
+      var it = items[key];
+      if(!it){ it = items[key] = {el:el, sec:sec, name:name, cols:[], kinds:{}}; order.push(key); }
+      var col = colName(el);
+      if(col && it.cols.indexOf(col) === -1) it.cols.push(col);
+      it.kinds[kindOf(el)] = 1;
+    });
+
+    var groups = {}, secCount = {}, total = 0;
+    order.forEach(function(key){
+      var it = items[key];
+      // a row missed in several columns lands under the most demanding of them
+      var k = ORDER.filter(function(x){ return it.kinds[x]; })[0] || 'decision';
+      (groups[k] = groups[k] || []).push(it);
+      if(it.sec) secCount[it.sec] = (secCount[it.sec] || 0) + 1;
+      total++;
+    });
+
+    var worst = Object.keys(secCount).sort(function(a,b){ return secCount[b] - secCount[a]; });
+    var head = document.createElement('div');
+    head.className = 'plan-head';
+    var c = document.createElement('span');
+    c.className = 'plan-count';
+    c.textContent = total + (total === 1 ? ' item to practice' : ' items to practice');
+    head.appendChild(c);
+    if(worst.length){
+      var w = document.createElement('span');
+      w.className = 'plan-where';
+      w.textContent = 'Heaviest in ' + worst.slice(0, 2).map(function(s){
+        return s + ' (' + secCount[s] + ')';
+      }).join(' and ') + '. Start there.';
+      head.appendChild(w);
+    }
+    host.appendChild(head);
+
+    ORDER.forEach(function(k){
+      if(!groups[k]) return;
+      var g = document.createElement('div');
+      g.className = 'plan-group';
+      var kd = document.createElement('div');
+      kd.className = 'plan-kind';
+      var how = document.createElement('p');
+      how.className = 'plan-how';
+      how.textContent = METHOD[k].how;
+      var list = document.createElement('div');
+      list.className = 'plan-items';
+      groups[k].forEach(function(it){
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'plan-item';
+        var s = document.createElement('span');
+        s.className = 'ps';
+        var cols = it.cols.slice(0, 2).join(', ') + (it.cols.length > 2 ? ' +' + (it.cols.length - 2) : '');
+        s.textContent = it.cols.length ? it.sec + ' · ' + cols : it.sec;
+        btn.appendChild(s);
+        btn.appendChild(document.createTextNode(it.name));
+        btn.addEventListener('click', function(){ reveal(it.el); });
+        list.appendChild(btn);
+      });
+      kd.textContent = METHOD[k].label + ' · ' + groups[k].length;
+      g.appendChild(kd); g.appendChild(how); g.appendChild(list);
+      host.appendChild(g);
+    });
+  }
+
+  build();
+  window.playbookPlanner = { rebuild: build };
+  ['drillMissed','clearMissed'].forEach(function(id){
+    var b = document.getElementById(id);
+    if(b) b.addEventListener('click', function(){ setTimeout(build, 40); });
+  });
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.classList && e.target.classList.contains('missbtn')) setTimeout(build, 40);
+    // Capture phase: the mark-missed handler calls stopPropagation() so the click does not
+    // also re-hide the cell, which means a listener on the way back up never fires and the
+    // planner sat on "Nothing marked yet" while you marked things.
+  }, true);
+})();
+
+/* ---------- name the document and every table for a screen reader ---------- */
+(function(){
+  if(!document.documentElement.lang) document.documentElement.lang = 'en';
+  // 27 tables announced as "table, 5 columns" and nothing else is 27 dead ends
+  document.querySelectorAll('table').forEach(function(t){
+    if(t.getAttribute('aria-label')) return;
+    var n = t.closest('.tablewrap') || t, name = '';
+    while(n && !name){
+      n = n.previousElementSibling;
+      if(n && /^H[23]$/.test(n.tagName)) name = n.textContent.trim();
+    }
+    if(!name){
+      var sec = t.closest('section'), h = sec && sec.querySelector('h2');
+      name = h ? h.textContent.trim() : '';
+    }
+    if(!name) return;
+    t.setAttribute('aria-label', name.replace(/^\d+\s*/, ''));
+  });
+})();
+
+/* ---------- back to top ---------- */
+(function(){
+  var btn = document.getElementById('toTop');
+  if(!btn) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var ticking = false;
+
+  function update(){
+    ticking = false;
+    // one screen down is far enough that the masthead is gone and the button is worth showing
+    btn.classList.toggle('on', window.pageYOffset > window.innerHeight * 0.9);
+  }
+  window.addEventListener('scroll', function(){
+    if(ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(update);
+  }, {passive:true});
+  window.addEventListener('resize', update, {passive:true});
+  update();
+
+  btn.addEventListener('click', function(){
+    window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
+    // send the keyboard back to the top too, not just the viewport
+    var first = document.getElementById('recallBtn') || document.querySelector('h1');
+    if(first){
+      if(!first.hasAttribute('tabindex') && first.tagName === 'H1') first.setAttribute('tabindex','-1');
+      first.focus({preventScroll:true});
+    }
+  });
+})();
+
+/* ---------- printing must not swallow what is inside a closed dropdown ---------- */
+(function(){
+  var forced = [];
+  function open(){
+    forced = [];
+    document.querySelectorAll('details:not([open])').forEach(function(d){
+      d.open = true; forced.push(d);
+    });
+  }
+  function close(){ forced.forEach(function(d){ d.open = false; }); forced = []; }
+  window.addEventListener('beforeprint', open);
+  window.addEventListener('afterprint', close);
+  if(window.matchMedia){
+    var mq = window.matchMedia('print');
+    var fn = function(e){ e.matches ? open() : close(); };
+    mq.addEventListener ? mq.addEventListener('change', fn) : mq.addListener(fn);
+  }
+})();
+
+</script>
+</body>
+</html>
