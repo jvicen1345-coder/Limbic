@@ -867,14 +867,16 @@ a{color:var(--accent)}
 <main id="main">
 
   <section id="checklist">
-    <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2></div>
+    <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2><span class="note">check-off saves in this browser</span></div>
     <p class="lede">The order is the content. A hip screen that opens with special tests has already skipped the two questions that decide whether those tests mean anything.</p>
     
     <div class="tablewrap">
-      <table>
-        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+      <table class="check-table">
+        <colgroup><col style="width:4%"><col style="width:5%"><col style="width:17%"><col style="width:37%"><col style="width:37%"></colgroup>
+        <thead><tr><th scope="col"></th><th scope="col">#</th><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Lumbar and SI screen"></td><td class="idx">1</td>
         <td class="name">Lumbar and SI screen</td>
         <td>Clear the lumbar spine and sacroiliac joint before examining the hip: quadrant, segmental mobility, provocation cluster.</td>
         <td data-imp="lumbar|sacroiliac|referred|screen">
@@ -882,6 +884,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="2" aria-label="Mark done: Red flag screen"></td><td class="idx">2</td>
         <td class="name">Red flag screen</td>
         <td>History and observation for fracture, slipped capital femoral epiphysis, avascular necrosis, septic arthritis and malignancy.</td>
         <td data-imp="slipped capital femoral|adolescent|avascular|malignancy">
@@ -889,6 +892,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="3" aria-label="Mark done: Classify from the history"></td><td class="idx">3</td>
         <td class="name">Classify from the history</td>
         <td>Decide, before you touch: intra-articular, extra-articular, or referred.</td>
         <td data-imp="intra-articular|extra-articular|classify|history">
@@ -896,6 +900,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="4" aria-label="Mark done: Resting state"></td><td class="idx">4</td>
         <td class="name">Resting state</td>
         <td>Standing posture and pelvic alignment, leg length, muscle bulk.</td>
         <td data-imp="pelvic alignment|resting|posture|bulk">
@@ -903,6 +908,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="5" aria-label="Mark done: What they can do alone"></td><td class="idx">5</td>
         <td class="name">What they can do alone</td>
         <td>Gait, single-leg stance, squat, active range in all planes, then a functional composite.</td>
         <td data-imp="chair stand|timed up-and-go|functional|walk">
@@ -910,6 +916,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="6" aria-label="Mark done: What you do to them"></td><td class="idx">6</td>
         <td class="name">What you do to them</td>
         <td>Passive range against active, end feel, capsular pattern, accessory motion.</td>
         <td data-imp="passive range|end feel|accessory|active">
@@ -917,6 +924,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="7" aria-label="Mark done: What is short"></td><td class="idx">7</td>
         <td class="name">What is short</td>
         <td>Thomas, Ober, hamstring length, piriformis length.</td>
         <td data-imp="Thomas|Ober|piriformis|hamstring">
@@ -924,6 +932,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="8" aria-label="Mark done: What is weak"></td><td class="idx">8</td>
         <td class="name">What is weak</td>
         <td>Abductors, extensors, flexors, adductors, graded 0-5 - and weakness separated from inhibition.</td>
         <td data-imp="abductor|adduction|impairment|graded">
@@ -931,6 +940,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="9" aria-label="Mark done: Where is it"></td><td class="idx">9</td>
         <td class="name">Where is it</td>
         <td>Bony then soft-tissue palpation: greater trochanter, adductor origin, ischial tuberosity.</td>
         <td data-imp="greater trochanter|ischial|adductor origin|palpat">
@@ -938,6 +948,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="10" aria-label="Mark done: What is it"></td><td class="idx">10</td>
         <td class="name">What is it</td>
         <td>Special tests by category, interpreted as likelihood ratios, clustered from your hypothesis.</td>
         <td data-imp="likelihood ratio|impingement|cluster|accuracy">
@@ -945,6 +956,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="11" aria-label="Mark done: What you call it"></td><td class="idx">11</td>
         <td class="name">What you call it</td>
         <td>A movement diagnosis, the syndrome it matches, and where the relative stiffness sits.</td>
         <td data-imp="movement diagnosis|syndrome|stiffness|direction">
@@ -952,6 +964,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="12" aria-label="Mark done: What you do"></td><td class="idx">12</td>
         <td class="name">What you do</td>
         <td>Dose from irritability, match intervention to impairment, mobilise with a stated rationale, name the reassessment marker before treating.</td>
         <td data-imp="irritability|reassessment|FABER|marker">

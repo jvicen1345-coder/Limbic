@@ -868,14 +868,16 @@ a{color:var(--accent)}
 <main id="main">
 
   <section id="checklist">
-    <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2></div>
+    <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2><span class="note">check-off saves in this browser</span></div>
     <p class="lede">One decision comes before everything else - whether this ankle needs a radiograph. Get it early, and apply the rule entire.</p>
     
     <div class="tablewrap">
-      <table>
-        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+      <table class="check-table">
+        <colgroup><col style="width:4%"><col style="width:5%"><col style="width:17%"><col style="width:37%"><col style="width:37%"></colgroup>
+        <thead><tr><th scope="col"></th><th scope="col">#</th><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Apply the Ottawa Ankle Rules first"></td><td class="idx">1</td>
         <td class="name">Apply the Ottawa Ankle Rules first</td>
         <td>Malleolar zones, navicular, base of the fifth metatarsal, and ability to bear weight for four steps.</td>
         <td data-imp="Ottawa|malleolar|navicular|entirety">
@@ -883,6 +885,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="2" aria-label="Mark done: What the rules are for"></td><td class="idx">2</td>
         <td class="name">What the rules are for</td>
         <td>Deciding about imaging, not finding fractures.</td>
         <td data-imp="ruling out|pooled|post-test|imaging">
@@ -890,6 +893,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="3" aria-label="Mark done: Red flags"></td><td class="idx">3</td>
         <td class="name">Red flags</td>
         <td>History and inspection.</td>
         <td data-imp="syndesmotic|Achilles rupture|neurovascular|infection">
@@ -897,6 +901,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="4" aria-label="Mark done: Screen above"></td><td class="idx">4</td>
         <td class="name">Screen above</td>
         <td>Palpate the fibula along its whole length and check the knee.</td>
         <td data-imp="fibula|Maisonneuve|proximal|knee">
@@ -904,6 +909,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="5" aria-label="Mark done: Classify from the history"></td><td class="idx">5</td>
         <td class="name">Classify from the history</td>
         <td>Mechanism, time since injury, and first sprain or recurrence.</td>
         <td data-imp="mechanism|recurrence|prevention|first">
@@ -911,6 +917,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="6" aria-label="Mark done: Resting state"></td><td class="idx">6</td>
         <td class="name">Resting state</td>
         <td>Swelling and where it sits, ecchymosis, point tenderness, standing posture.</td>
         <td data-imp="swelling|ecchymosis|point tenderness|baseline">
@@ -918,6 +925,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="7" aria-label="Mark done: What they can do alone"></td><td class="idx">7</td>
         <td class="name">What they can do alone</td>
         <td>Gait and weight bearing, active range, lunge, balance, hopping.</td>
         <td data-imp="lunge|eyes-closed|Star Excursion|hopping">
@@ -925,6 +933,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="8" aria-label="Mark done: What you do to them"></td><td class="idx">8</td>
         <td class="name">What you do to them</td>
         <td>Passive range, talar translation, talar inversion, accessory glide.</td>
         <td data-imp="talar translation|talar inversion|accessory|passive">
@@ -932,6 +941,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="9" aria-label="Mark done: What is short"></td><td class="idx">9</td>
         <td class="name">What is short</td>
         <td>Gastrocnemius against soleus; plantar fascia and the windlass.</td>
         <td data-imp="gastrocnemius|soleus|windlass|crosses">
@@ -939,6 +949,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="10" aria-label="Mark done: What is weak"></td><td class="idx">10</td>
         <td class="name">What is weak</td>
         <td>The four directions, fibularis specifically, and the hip.</td>
         <td data-imp="fibularis|abduction|external rotation|directions">
@@ -946,6 +957,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="11" aria-label="Mark done: Where is it"></td><td class="idx">11</td>
         <td class="name">Where is it</td>
         <td>Lateral ligaments, deltoid, syndesmosis, fibula, fifth metatarsal base, Achilles.</td>
         <td data-imp="deltoid|syndesmosis|metatarsal|tenderness">
@@ -953,6 +965,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="12" aria-label="Mark done: What is it"></td><td class="idx">12</td>
         <td class="name">What is it</td>
         <td>Anterior drawer, plus reverse anterolateral drawer and anterolateral talar palpation.</td>
         <td data-imp="anterior drawer|anterolateral|palpation|alone">
@@ -960,6 +973,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="13" aria-label="Mark done: What you do about it"></td><td class="idx">13</td>
         <td class="name">What you do about it</td>
         <td>Prevent, then treat by phase.</td>
         <td data-imp="prevent|phase|graded|guidelines">

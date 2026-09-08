@@ -8,7 +8,7 @@ Follows `docs/joint-playbook-template.md`, same five steps as the hip and knee b
 | 2 · Source bank | `sources.md` | 3 guidelines assessed: ankle and Achilles usable, heel pain excluded; era check done |
 | 3 · Draft | `draft.md` | done — 12 sections, 4 sources, 34 graded recommendations |
 | 4 · Adversarial verification | `verification.md` | done — 1 defect in 67 claims (a material omission), fixed |
-| 5 · Build the page | `content/playbooks/ankle-examination.html` | built with the Ottawa figure; not yet served |
+| 5 · Build the page | `content/playbooks/ankle-examination.html` | done — built with the Ottawa figure; **served** at `/student/guides/ankle-examination` |
 
 `lookup.py` is the Europe PMC query tool the hip and knee builds used.
 

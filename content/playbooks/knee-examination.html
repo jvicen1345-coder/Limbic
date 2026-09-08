@@ -867,14 +867,16 @@ a{color:var(--accent)}
 <main id="main">
 
   <section id="checklist">
-    <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2></div>
+    <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2><span class="note">check-off saves in this browser</span></div>
     <p class="lede">Two questions come before any special test: is this a knee problem at all, and does it need a radiograph before it needs a hand on it.</p>
     
     <div class="tablewrap">
-      <table>
-        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+      <table class="check-table">
+        <colgroup><col style="width:4%"><col style="width:5%"><col style="width:17%"><col style="width:37%"><col style="width:37%"></colgroup>
+        <thead><tr><th scope="col"></th><th scope="col">#</th><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Screen above and below"></td><td class="idx">1</td>
         <td class="name">Screen above and below</td>
         <td>Clear the hip and lumbar spine before examining the knee.</td>
         <td data-imp="lumbar|referred|screen|hip">
@@ -882,6 +884,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="2" aria-label="Mark done: Decide about imaging early"></td><td class="idx">2</td>
         <td class="name">Decide about imaging early</td>
         <td>Apply the Ottawa Knee Rule before any special test.</td>
         <td data-imp="Ottawa|radiograph|rule-out|pooled">
@@ -889,6 +892,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="3" aria-label="Mark done: Red flags"></td><td class="idx">3</td>
         <td class="name">Red flags</td>
         <td>History and observation for septic arthritis, fracture, extensor mechanism rupture, DVT, malignancy.</td>
         <td data-imp="septic|extensor mechanism|malignancy|fracture">
@@ -896,6 +900,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="4" aria-label="Mark done: Classify from the history"></td><td class="idx">4</td>
         <td class="name">Classify from the history</td>
         <td>Traumatic or atraumatic, mechanical or inflammatory - and how long ago.</td>
         <td data-imp="traumatic|inflammatory|time since|classify">
@@ -903,6 +908,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="5" aria-label="Mark done: Resting state"></td><td class="idx">5</td>
         <td class="name">Resting state</td>
         <td>Standing alignment, effusion, quadriceps bulk.</td>
         <td data-imp="alignment|effusion|quadriceps bulk|resting">
@@ -910,6 +916,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="6" aria-label="Mark done: What they can do alone"></td><td class="idx">6</td>
         <td class="name">What they can do alone</td>
         <td>Gait, active range, extension lag versus fixed flexion, squat, step-down, hop if appropriate.</td>
         <td data-imp="extension lag|step-down|contracture|gait">
@@ -917,6 +924,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="7" aria-label="Mark done: What you do to them"></td><td class="idx">7</td>
         <td class="name">What you do to them</td>
         <td>Passive against active, end feel, patellar mobility, accessory glide.</td>
         <td data-imp="springy block|end feel|patellar|accessory">
@@ -924,6 +932,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="8" aria-label="Mark done: What is short"></td><td class="idx">8</td>
         <td class="name">What is short</td>
         <td>Quadriceps by Ely or prone knee bend, hamstrings, gastrocnemius.</td>
         <td data-imp="prone knee bend|gastrocnemius|hamstring|Ely">
@@ -931,6 +940,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="9" aria-label="Mark done: What is weak"></td><td class="idx">9</td>
         <td class="name">What is weak</td>
         <td>Quadriceps first, then hamstrings, then hip abductors.</td>
         <td data-imp="inhibition|abductor|retest|quadriceps">
@@ -938,6 +948,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="10" aria-label="Mark done: Where is it"></td><td class="idx">10</td>
         <td class="name">Where is it</td>
         <td>Joint line, patellar borders and tendon, tibial tubercle, collateral origins.</td>
         <td data-imp="joint line|tibial tubercle|collateral|palpat">
@@ -945,6 +956,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="11" aria-label="Mark done: What is it"></td><td class="idx">11</td>
         <td class="name">What is it</td>
         <td>Ligament tests, meniscal tests, patellofemoral tests, clustered from the hypothesis.</td>
         <td data-imp="ligament|meniscal|cluster|hypothesis">
@@ -952,6 +964,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="12" aria-label="Mark done: What you do about it"></td><td class="idx">12</td>
         <td class="name">What you do about it</td>
         <td>Dose from irritability, match intervention to impairment, name the reassessment marker before treating.</td>
         <td data-imp="irritability|reassessment|arthroplasty|impairment">

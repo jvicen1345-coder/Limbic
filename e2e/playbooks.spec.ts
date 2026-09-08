@@ -9,6 +9,7 @@ import {
   type PlaybookBlock,
 } from "@/lib/playbook-content";
 import { parsePlaybookInline } from "@/lib/playbook-inline";
+import { GUIDES, guideHref } from "@/lib/guides";
 import { grantLimbicStudent, signUpAndEnterApp } from "./helpers";
 
 /**
@@ -385,28 +386,77 @@ test("the served guide links back into Limbic", async ({ page }) => {
 });
 
 
-/** Four regions are written but withheld until every value in them is traced to a source
- *  (UNVERIFIED_PLAYBOOKS in lib/playbook-content.ts). Publishing one is a deliberate act:
- *  moving it into PLAYBOOKS is what these assert, so it cannot happen by accident. */
-test.describe("Withheld playbooks", () => {
-  test("are not published, and their slugs do not resolve", async ({ page }) => {
-    expect(UNVERIFIED_PLAYBOOKS.length, "nothing left to verify? then update this test").toBeGreaterThan(0);
-    for (const withheld of UNVERIFIED_PLAYBOOKS) {
-      expect(PLAYBOOKS.map((p) => p.slug), `${withheld.slug} is published but unverified`).not.toContain(withheld.slug);
+/** The four regions that were withheld for citing nothing are now served HTML guides built
+ *  from traced sources (lib/guides.ts). Three regressions are worth catching: the files
+ *  falling out of the serverless bundle, which would 500 in production and never locally;
+ *  the gate coming off, which would publish a paid asset; and a hub card claiming a count
+ *  the document does not have.
+ *
+ *  Parameterized over GUIDES, so a new guide is covered by being added to the registry. The
+ *  shoulder is in that registry too and is served by its own handler next door — a static
+ *  segment wins over the dynamic one — so this exercises both routes. */
+test.describe("Served guides", () => {
+  test("the unsourced originals are gone from the data", () => {
+    expect(UNVERIFIED_PLAYBOOKS, "withheld playbooks were deleted, not re-published").toEqual([]);
+    expect(PLAYBOOKS, "no data playbook is published; the guides are served from content/").toEqual([]);
+  });
+
+  test("every guide is gated, served whole, and matches the counts its card claims", async ({ page }) => {
+    const email = `pw-guides-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+    await signUpAndEnterApp(page, email);
+
+    // A .edu sign-in alone is not enough, and the miss is a 404 rather than a redirect —
+    // there is nothing here to upsell, the hub does that.
+    for (const guide of GUIDES) {
+      const locked = await page.request.get(guideHref(guide));
+      expect(locked.status(), `${guide.slug} is readable without a subscription`).toBe(404);
     }
 
-    const email = `pw-withheld-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+    // An unknown slug stays a 404 even for a subscriber, so the allowlist cannot be walked.
+    await grantLimbicStudent(email);
+    const bogus = await page.request.get("/student/guides/elbow-examination");
+    expect(bogus.status()).toBe(404);
+    const traversal = await page.request.get("/student/guides/..%2F..%2Fpackage.json");
+    expect(traversal.status(), "the slug reaches the filesystem").not.toBe(200);
+
+    for (const guide of GUIDES) {
+      const open = await page.request.get(guideHref(guide));
+      expect(open.status(), `${guide.slug} does not open for a subscriber`).toBe(200);
+      expect(open.headers()["content-type"]).toContain("text/html");
+      // Entitlement is per-request, so no shared cache may hold a copy.
+      expect(open.headers()["cache-control"]).toContain("no-store");
+
+      await page.goto(guideHref(guide));
+      // The card's numbers are the document's numbers, or the card is lying.
+      await expect(page.locator("main section[id]"), `${guide.slug} sections`).toHaveCount(guide.sections);
+      await expect(page.locator("input[data-ck]"), `${guide.slug} exam items`).toHaveCount(guide.items);
+      await expect(page.locator("#refs li"), `${guide.slug} references`).toHaveCount(guide.references);
+
+      // Every citation resolves to a reference entry. This is the whole reason these four
+      // were withheld and rebuilt, so it is the one assertion that must not be softened.
+      const cites = await page.evaluate(
+        () => (window as unknown as { playbookCites?: { linked: number; unlinked: string[] } }).playbookCites,
+      );
+      expect(cites?.unlinked, `${guide.slug} has citations resolving to nothing`).toEqual([]);
+      expect(cites?.linked, `${guide.slug} linked citations`).toBeGreaterThan(100);
+
+      // The checklist ticks and the progress bar counts them — it reads "0 / 0" and sets a
+      // NaN width if the checkbox column is ever dropped from the markup again.
+      await page.locator("input[data-ck]").first().check();
+      await expect(page.locator("#ckcount")).toHaveText(`1 / ${guide.items}`);
+    }
+  });
+
+  test("the hub lists every guide, and no withdrawal note", async ({ page }) => {
+    const email = `pw-hub-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
     await signUpAndEnterApp(page, email);
     await grantLimbicStudent(email);
 
-    // A subscriber, so a 404 here is the withholding rather than the paywall.
-    for (const withheld of UNVERIFIED_PLAYBOOKS) {
-      const res = await page.request.get(`/student/playbooks/${withheld.slug}`);
-      expect(res.status(), `${withheld.slug} still resolves`).toBe(404);
-    }
-
-    // And the hub says why it is short rather than quietly showing fewer cards.
     await page.goto("/student/playbooks");
-    await expect(page.locator(".playbook-hub-note")).toContainText("withdrawn while they are checked");
+    await expect(page.locator(".playbook-hub-card")).toHaveCount(GUIDES.length);
+    await expect(page.locator(".playbook-hub-note")).toHaveCount(0);
+    for (const guide of GUIDES) {
+      await expect(page.locator(".playbook-hub-card-name", { hasText: guide.name })).toBeVisible();
+    }
   });
 });

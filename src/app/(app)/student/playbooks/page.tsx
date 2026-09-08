@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { PLAYBOOKS, playbookChecklist } from "@/lib/playbook-content";
+import { GUIDES, guideHref } from "@/lib/guides";
 import { ChevronRightIcon } from "@/components/icons";
 import { StudentGate } from "@/components/student/StudentGate";
 import { LimbicStudentGate } from "@/components/student/LimbicStudentGate";
@@ -37,30 +38,25 @@ export default async function PlaybooksHubPage() {
         <LimbicStudentGate toolName="Playbooks" />
       ) : (
         <>
-        {/* Said out loud rather than quietly shipping a shorter list: four regions were here
-            last week and a student who used them deserves to know where they went. */}
-        <p className="playbook-hub-note">
-          <b>Four regional playbooks are withdrawn while they are checked.</b> Hip, knee, ankle and joint mobilization
-          were written without a source behind each value. They come back one region at a time, once every number in
-          them is traced to a paper you can read.
-        </p>
+        {/* One card per served guide, built from lib/guides.ts so the list and the route
+            allowlist cannot drift apart. These are fixed HTML assets served whole rather
+            than playbooks built from lib/playbooks — see the route handler for why. They
+            navigate in place like every other card; each document carries its own link back
+            to this hub. */}
         <div className="playbook-hub-grid">
-          {/* The shoulder guide is a fixed HTML asset served whole rather than a playbook
-              built from lib/playbooks — see the route handler for why. It navigates in place
-              like every other card; the document carries its own link back to this hub. */}
-          <div className="playbook-hub-card playbook-hub-card-guide">
-            <h2 className="playbook-hub-card-name">Shoulder Examination</h2>
-            <p className="playbook-hub-card-desc">
-              A full shoulder screen in the order you&rsquo;d perform it. Every value says where it came from — what the
-              literature measured, what is only convention, and what the studies still argue about — with 82 sources
-              linked, a taught lane for what your own program says, and a practice plan built from what you miss.
-            </p>
-            <span className="playbook-hub-card-meta">12 sections · 32 exam items · 82 references</span>
-            <Link href="/student/guides/shoulder-examination" className="specialty-explore-btn">
-              Open
-              <ChevronRightIcon size={14} />
-            </Link>
-          </div>
+          {GUIDES.map((guide) => (
+            <div className="playbook-hub-card playbook-hub-card-guide" key={guide.slug}>
+              <h2 className="playbook-hub-card-name">{guide.name}</h2>
+              <p className="playbook-hub-card-desc">{guide.description}</p>
+              <span className="playbook-hub-card-meta">
+                {guide.sections} sections · {guide.items} exam items · {guide.references} references
+              </span>
+              <Link href={guideHref(guide)} className="specialty-explore-btn">
+                Open
+                <ChevronRightIcon size={14} />
+              </Link>
+            </div>
+          ))}
           {PLAYBOOKS.map((playbook) => (
             <div className="playbook-hub-card" key={playbook.slug}>
               <h2 className="playbook-hub-card-name">{playbook.name}</h2>

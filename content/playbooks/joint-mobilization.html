@@ -870,14 +870,16 @@ a{color:var(--accent)}
 <main id="main">
 
   <section id="checklist">
-    <div class="sechead"><span class="secnum">01</span><h2>The reasoning sequence</h2></div>
+    <div class="sechead"><span class="secnum">01</span><h2>The reasoning sequence</h2><span class="note">check-off saves in this browser</span></div>
     <p class="lede">Mobilization is a decision before it is a technique. The sequence below is the decision - and its first two steps disqualify most of the joints you were about to put your hands on.</p>
     
     <div class="tablewrap">
-      <table>
-        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+      <table class="check-table">
+        <colgroup><col style="width:4%"><col style="width:5%"><col style="width:17%"><col style="width:37%"><col style="width:37%"></colgroup>
+        <thead><tr><th scope="col"></th><th scope="col">#</th><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Screen before you touch"></td><td class="idx">1</td>
         <td class="name">Screen before you touch</td>
         <td>History, red flags, and the reason this joint is stiff.</td>
         <td data-imp="screen|harms|rare|silent">
@@ -885,6 +887,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="2" aria-label="Mark done: Is the restriction articular?"></td><td class="idx">2</td>
         <td class="name">Is the restriction articular?</td>
         <td>Compare active with passive, and passive with accessory.</td>
         <td data-imp="articular|guarding|wrong tissue|neural">
@@ -892,6 +895,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="3" aria-label="Mark done: Does the evidence support it here?"></td><td class="idx">3</td>
         <td class="name">Does the evidence support it <i>here</i>?</td>
         <td>Look up the region before you commit.</td>
         <td data-imp="regional|Grade A|absent|arthroplasty">
@@ -899,6 +903,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="4" aria-label="Mark done: What do you expect to change?"></td><td class="idx">4</td>
         <td class="name">What do you expect to change?</td>
         <td>Name it, and name the number you will re-measure.</td>
         <td data-imp="range|pain|same dose|buying">
@@ -906,6 +911,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="5" aria-label="Mark done: Which glide, which direction?"></td><td class="idx">5</td>
         <td class="name">Which glide, which direction?</td>
         <td>Assess accessory motion joint by joint.</td>
         <td data-imp="accessory|direction|before|restricted">
@@ -913,6 +919,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="6" aria-label="Mark done: How hard?"></td><td class="idx">6</td>
         <td class="name">How hard?</td>
         <td>Take up slack, then decide where to stop.</td>
         <td data-imp="exceeding resistance|point of resistance|no resistance|defined">
@@ -920,6 +927,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="7" aria-label="Mark done: How much?"></td><td class="idx">7</td>
         <td class="name">How much?</td>
         <td>Set sessions per week and a review date.</td>
         <td data-imp="dosage|could not be made|risk of bias|6-12 weeks">
@@ -927,6 +935,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="8" aria-label="Mark done: Re-measure immediately"></td><td class="idx">8</td>
         <td class="name">Re-measure immediately</td>
         <td>Same marker, same session, same examiner.</td>
         <td data-imp="immediate|short term|same session|re-test">
@@ -934,6 +943,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="9" aria-label="Mark done: Then load it"></td><td class="idx">9</td>
         <td class="name">Then load it</td>
         <td>Hand the patient the exercise before they leave.</td>
         <td data-imp="alongside exercise|never instead|graded|load">
@@ -941,6 +951,7 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="10" aria-label="Mark done: What you may not claim"></td><td class="idx">10</td>
         <td class="name">What you may not claim</td>
         <td>Three things students are routinely taught to say.</td>
         <td data-imp="grade number|pop|mechanism|traceable">

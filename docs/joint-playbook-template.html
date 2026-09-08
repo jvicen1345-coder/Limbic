@@ -859,12 +859,13 @@ a{color:var(--accent)}
 <main id="main">
 
   <section id="checklist">
-    <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2></div>
+    <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2><span class="note">check-off saves in this browser</span></div>
     <p class="lede">One or two sentences on what this section is for and how to read it.</p>
     
     <div class="tablewrap">
-      <table>
-        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
+      <table class="check-table">
+        <colgroup><col style="width:4%"><col style="width:5%"><col style="width:17%"><col style="width:37%"><col style="width:37%"></colgroup>
+        <thead><tr><th scope="col"></th><th scope="col">#</th><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
       <!-- ONE WORKED ROW. Copy this shape; delete the comments.
            · td.name  is the row label. Never put an answer here - it is the prompt.
@@ -877,6 +878,7 @@ a{color:var(--accent)}
              by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
            · unmarked = traced to a source a reader can reach for free. -->
       <tr>
+        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Example item"></td><td class="idx">1</td>
         <td class="name">Example item</td>
         <td>How it is performed. Keep this operational - what the hands do.</td>
         <td data-imp="example|specific term|another term|test">

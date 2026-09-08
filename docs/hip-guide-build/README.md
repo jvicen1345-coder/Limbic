@@ -11,7 +11,7 @@ re-reading found.
 | 2 · Source bank | `sources.md` | 13 papers read; 4 values recorded untraceable; 5 minor items open |
 | 3 · Draft | `draft.md` | done — 12 sections, 63 citations, 11 references |
 | 4 · Adversarial verification | `verification.md` | done — 5 defects, all fixed (pass 1 transcription, pass 2 selective quotation) |
-| 5 · Build the page | `content/playbooks/hip-examination.html` | built with the Ober figure; not yet served |
+| 5 · Build the page | `content/playbooks/hip-examination.html` | done — built with the Ober figure; **served** at `/student/guides/hip-examination` |
 
 `lookup.py` queries Europe PMC and prints title, authors, journal, ids, whether the full text
 is free, and the abstract verbatim:

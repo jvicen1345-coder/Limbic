@@ -10,7 +10,7 @@ needs rethinking rather than copying.
 | 2 · Source bank | `sources.md` | done — 5 guidelines as one manual-therapy table, 12 papers read, 4 recorded untraceable |
 | 3 · Draft | `draft.md` | done — 12 sections, 16 references, 0 unmarked rows |
 | 4 · Adversarial verification | `verification.md` | done — 6 defects, all fixed; 1 corrected at origin |
-| 5 · Build the page | `content/playbooks/joint-mobilization.html` | done — 132 rows, 173 citations, 18 references, 17 untraceable flags; not served |
+| 5 · Build the page | `content/playbooks/joint-mobilization.html` | done — 132 rows, 173 citations, 18 references, 17 untraceable flags; **served** at `/student/guides/joint-mobilization` |
 
 ## The rules inherited from the previous three builds
 
@@ -93,3 +93,25 @@ reasoning, expressed in invented precision.**
 
 Nothing from the withheld playbook was copied into the new guide. Every value in the new guide comes
 from `sources.md`.
+
+## Published
+
+All four rebuilt guides are now served, gated on the paid LimbicStudent tier, at
+`/student/guides/<slug>` — the same mechanism the shoulder guide uses. The registry in
+`src/lib/guides.ts` is the single source of truth: the route allowlists from it, and the
+Playbooks hub and the Boards study-guide tab build their cards from it, so the list and the
+routes cannot drift apart.
+
+The four unsourced originals in `src/lib/playbooks/` were **deleted**, not left withheld.
+`UNVERIFIED_PLAYBOOKS` is now empty. Leaving them in the tree would have kept a republish one
+edit away, and their content is exactly what this whole build set out to replace.
+
+**One defect was caught in the four guides during publishing, and it had been present since
+the first build.** The template ships the competency-checklist CSS, the `0 / N` progress bar
+and the JavaScript that reads `input[data-ck]` — but its checklist table has no checkbox
+column. The shoulder guide hand-authors that column, so nothing generated from the template
+ever had it. Every one of the four guides therefore carried a nav label ("12 Items"), a
+progress bar and a private localStorage key for a feature with nothing to tick, and the bar
+rendered `0 / 0` at a `NaN%` width. Fixed in all four and in the template, so the next guide
+is not born broken; an e2e assertion now ticks the first box and checks the bar reads
+`1 / N`, which fails loudly if the column is ever dropped again.
