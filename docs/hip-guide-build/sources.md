@@ -80,6 +80,45 @@ Status: **in progress.** Nothing below has been drafted into content yet.
 
 ---
 
+## Muscle length
+
+### Willett GM, Keim SA, Shostrom VK, Lomneth CS. An anatomic investigation of the Ober test.
+*Am J Sports Med* 2016;44(3):696-701 · PMID 26755689 · **abstract only**
+
+The hip's equivalent of the shoulder's can tests: a named test that does not do what its name
+says. Everything below is in the free abstract.
+
+- **Supports** — cadaveric, sequential transection. Ober n=28, modified Ober n=34; 18 limbs
+  taken through every condition (intact → ITB midthigh → gluteus medius/minimus → hip joint
+  capsule). **No significant change in adduction after ITB transection** in either version.
+  Significant change for intact vs gluteus med/min and intact vs hip capsule (both P < .0001),
+  and between those two conditions as well (Ober P < .0001; modified Ober P = .0036).
+  Modified Ober means: **5.00°** after ITB transection, **11.20°** after gluteus med/min,
+  **13.20°** after capsule. Ober means: **−2.20°**, **6.50°**, **9.53°**.
+  Authors' conclusion, verbatim in the abstract: the findings "refute the hypothesis that the
+  ITB plays a role in limiting hip adduction during either version of the Ober test and
+  question the validity of these tests for determining ITB tightness"; the test "assesses
+  tightness of structures proximal to the hip joint … rather than the ITB".
+- **Does not support** — any claim about living subjects, symptomatic hips, or reliability.
+  This is a cadaveric anatomic study.
+
+---
+
+## Capsular pattern
+
+### Bijl D, Dekker J, van Baar ME, Oostendorp RA, Lemmens AM, Bijlsma JW, Voorn TB. Validity of Cyriax's concept capsular pattern for the diagnosis of osteoarthritis of hip and/or knee.
+*Scand J Rheumatol* 1998;27(5):347-351 · PMID 9808397 · **abstract only**
+
+- **Supports** — 200 patients. The capsular pattern of the hip, as Cyriax describes it
+  (limited medial rotation, flexion and abduction), "was not present as a distinct pattern in
+  patients with OA of the hip". For the knee there was an indication of a pattern (flexion and
+  extension) in subgroups. Conclusion: the capsular pattern "cannot be regarded as a valid
+  test for the diagnosis of OA of the hip or knee".
+- **Does not support** — that the capsular pattern is useless as a description, or anything
+  about non-arthritic stiffness. It tested the pattern as a *diagnostic* for OA.
+
+---
+
 ## Still to chase
 
 Ober test — what it actually releases (cadaveric work) · capsular pattern of the hip, and
