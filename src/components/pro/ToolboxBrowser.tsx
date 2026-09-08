@@ -118,10 +118,11 @@ export function ToolboxBrowser({ groups, isPro }: { groups: ToolboxGroup[]; isPr
         </div>
       </div>
 
-      {/* Anchors for the LimbicPRO tour (see lib/tours.ts). Keyed off each group's own title
-          rather than its position, so reordering or adding a group cannot silently point a
-          tour step at the wrong one. */}
-      <div data-tour="toolbox-groups">
+      {/* Per-group tour anchors (see lib/tours.ts), keyed off each group's own title rather
+          than its position, so reordering or adding a group cannot silently point a tour
+          step at the wrong one. A step pointing at this whole stack was removed: it is
+          taller than any viewport, which is not something a highlight ring can show. */}
+      <div>
         {visible.map((group) => (
           <section
             className="toolbox-group"

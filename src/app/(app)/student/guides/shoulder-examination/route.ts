@@ -31,7 +31,14 @@ import { getCurrentUser, hasStudentAccess } from "@/lib/session";
  *     are the one place the mapping is not literal: Limbic's --color-warn and --color-success
  *     sit near 3:1 on white, which is fine for the badges the app uses them on and not fine
  *     for the 9.5px uppercase type this guide sets in them, so those two are darkened members
- *     of the same hues. The reasoning is written into the stylesheet beside the values.
+ *     of the same hues. The reasoning is written into the stylesheet beside the values;
+ *   - `color-scheme: light dark` in place of the `color-scheme: light` the artifact wrapper
+ *     baked in. The document has carried a full dark palette all along, so declaring itself
+ *     light was already wrong, and the palette change above made it visible: the browser
+ *     rendered UA widgets — the nav's own <select> most obviously — light on a dark page,
+ *     and anything applying automatic dark mode (Chrome's flag, Dark Reader and friends)
+ *     read the page as light and darkened it a second time, washing plain text out while
+ *     leaving anything with a background alone.
  *
  * Anything else that diverges is a mistake.
  *
