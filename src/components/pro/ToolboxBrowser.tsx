@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import type { ToolboxGroup, ToolboxIcon } from "@/lib/clinician-toolbox";
+import { toolboxMatches, toolboxTerms, type ToolboxGroup, type ToolboxIcon } from "@/lib/clinician-toolbox";
 import {
   ActivityIcon,
   BandageIcon,
@@ -63,22 +63,13 @@ export function ToolboxBrowser({ groups, isPro }: { groups: ToolboxGroup[]; isPr
 
   const total = useMemo(() => groups.reduce((n, g) => n + g.tools.length, 0), [groups]);
 
-  /* Every term has to match somewhere in the name, the description, or the group's own title
-     — so "screen" finds Screening & Decision Support by name and everything under "Examine
-     and screen" by its group, which is the behaviour you want when you half-remember where a
-     tool lives rather than what it is called. */
+  /* Matching lives in lib/clinician-toolbox.ts so it can be asserted on its own — see
+     toolboxMatches for why a term has to land at the start of a word rather than anywhere. */
   const visible = useMemo(() => {
-    const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+    const terms = toolboxTerms(query);
     return groups
       .filter((g) => activeGroup === ALL || g.title === activeGroup)
-      .map((g) => ({
-        ...g,
-        tools: g.tools.filter((t) => {
-          if (!terms.length) return true;
-          const hay = `${t.name} ${t.description} ${g.title}`.toLowerCase();
-          return terms.every((term) => hay.includes(term));
-        }),
-      }))
+      .map((g) => ({ ...g, tools: g.tools.filter((t) => toolboxMatches(t, g.title, terms)) }))
       .filter((g) => g.tools.length > 0);
   }, [groups, query, activeGroup]);
 
