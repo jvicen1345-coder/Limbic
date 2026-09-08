@@ -81,6 +81,43 @@ management and chronic ankle instability.
   postural control, and lower self-reported function. Not using prophylactic bracing and not
   participating in a balance-training exercise programme are risk factors for a subsequent sprain.
 
+- **Supports — what to measure specifically, Grade A.** Beyond the general list, the guideline
+  names the instruments: dorsiflexion by the **weight-bearing lunge test**; **static single-limb
+  balance on a firm surface with eyes closed**; and dynamic balance by the **Star Excursion
+  Balance Test** in the **anterior, anteromedial, posteromedial and posterolateral** reach
+  directions. In CAI, hip **abduction, extension and external rotation strength** may also be
+  assessed and documented two or more times (Grade C).
+
+- **Supports — classifying chronic instability, Grade B.** Use a reliable and valid discriminative
+  instrument — the **Cumberland Ankle Instability Tool** or the **Identification of Functional
+  Ankle Instability** — together with a battery of functional performance tests with established
+  validity to differentiate people with CAI from healthy controls.
+
+- **Supports — two prognostic findings worth a row each.**
+  **Laxity and function come apart:** over six weeks after a sprain, self-reported function
+  improved significantly while **ankle laxity did not change** on the anterior drawer test
+  (P > .05). A patient can feel much better with an unchanged drawer.
+  **MRI bone marrow contusion predicts a slower course:** a medial joint bone marrow contusion on
+  the tibia and/or talus within two weeks of injury meant **25 versus 16 days** to normal walking
+  (P = .0002) and **92 versus 56 days** to sport (P = .0001).
+
+### A near-miss recorded, because it is the failure mode this file exists to catch
+
+Searching this 80-page PDF for "talar tilt" returns a confident-looking hit. It is inside the
+guideline's **literature search-strategy appendix** — a list of database query terms
+(`talar tilt inversion[tw] OR talar tilt eversion[tw] OR ...`), not a finding, not a
+recommendation, and not a number. Quoting accuracy for the talar tilt test from that passage would
+have produced a fabricated claim attached to a real guideline and a real page.
+
+**So: no Sn/Sp for the anterior drawer or talar tilt tests has been found in this guideline.** It
+*recommends* the anterior drawer test alongside the reverse anterolateral drawer test and
+anterolateral talar palpation at Grade B, without publishing their accuracy in the text read so
+far. Until a figure is found and read, those tests get the recommendation and **no numbers**.
+
+**The general rule this adds:** a full-text search of a guideline hits its appendices, reference
+list and search strategy as readily as its findings. Check what section a match sits in before
+treating it as content.
+
 - **Does not support** — ankle *osteoarthritis*, Achilles tendinopathy, plantar heel pain, or
   medial ankle injury. Its scope is **lateral** ankle ligament sprains and chronic ankle
   instability. Two further hosted guidelines cover Achilles and plantar heel pain and are listed
@@ -100,8 +137,9 @@ so they are not forgotten and not cited before being read.
 
 ## Still to chase
 
-Anterior drawer and talar tilt **accuracy figures** (the guideline discusses both at length; the
-specific Sn/Sp need extracting rather than assuming) · syndesmosis tests · weight-bearing lunge
+Anterior drawer and talar tilt **accuracy figures from a source that actually reports them** —
+see the near-miss above; the guideline recommends the tests without publishing their accuracy ·
+syndesmosis tests · weight-bearing lunge
 test reliability and normative values · the Cumberland Ankle Instability Tool's cut-off ·
 the exact figures behind the jumping-and-landing predictor.
 
