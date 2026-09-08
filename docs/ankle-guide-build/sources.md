@@ -1,0 +1,113 @@
+# Ankle Examination Playbook — verified source bank
+
+Same contract as the hip and knee banks. Every entry was looked up and read. **Supports** is what
+the freely readable text actually says; **Does not support** is what a reader might expect it to
+say and it does not.
+
+Status: **in progress.** Nothing below has been drafted into content yet.
+
+---
+
+## The guideline — and the search rule that found it
+
+The knee build wrongly concluded its guideline was unreachable, because it searched Europe PMC and
+an index page but never the repository. This build followed `README.md` and checked the hosting
+pattern first. **It worked on the first attempt.**
+
+The Academy hosts guideline PDFs at a path ending in the article's own DOI suffix. Martin 2021's
+DOI is `10.2519/jospt.2021.0302`, so:
+
+```
+https://www.orthopt.org/uploads/content_files/files/jospt.2021.0302.pdf   →  HTTP 200, 80 pages
+```
+
+Europe PMC lists this guideline as abstract-only. That was never evidence it could not be read.
+
+*(The same pattern also resolves `jospt.2021.0304.pdf`, which is the 2021 Low Back Pain guideline —
+not ankle, but worth knowing for later work.)*
+
+### Martin RL, Davenport TE, Fraser JJ, Sawdon-Bea J, Carcia CR, Carroll LA, Kivlan BR, Carreira D. Ankle Stability and Movement Coordination Impairments: Lateral Ankle Ligament Sprains Revision 2021.
+*J Orthop Sports Phys Ther* 2021;51(4):CPG1-CPG80 · PMID 33789434 · **free full text, openly hosted, 80 pages**
+
+The best-sourced spine of any guide in this series — better than the hip's. **39 distinct lettered
+recommendations** were extracted, spanning diagnosis, outcome measures, prevention, acute
+management and chronic ankle instability.
+
+- **Supports — the Ottawa Ankle Rules, with a caveat the knee guide's source lacked.**
+  The guideline reports the OAR as having **sensitivity 92%–100% with specificity 7.8%–68%**.
+  That specificity *range* is the finding: it is not one number but a fourteen-fold spread across
+  studies. It also states that **the OAR must be applied in their entirety** — omitting malleolar
+  tenderness and relying on inability to bear weight and take four steps dropped sensitivity to
+  **88%**. In paediatric patients the low-risk ankle rules' sensitivity of **85.7%** is inferior to
+  the OAR's **100%**. Implementation in emergency departments reduced cost, wait time, length of
+  stay (median **20 minutes**) and imaging **without sacrificing outcomes**.
+
+- **Supports — examination, Grade B.** Use special tests *including the reverse anterolateral
+  drawer test and anterolateral talar palpation* **in addition to** the traditional anterior drawer
+  test, alongside history and physical examination, to aid diagnosis of a lateral ankle sprain.
+  Classify acute sprains using level of function, ligamentous laxity, haemorrhaging, point
+  tenderness, total ankle motion, swelling and pain.
+
+- **Supports — what to document, Grade A.** Assess and document **ankle swelling, ROM, talar
+  translation, talar inversion and single-leg balance** at baseline and **two or more times** over
+  an episode of care. Use validated outcome measures — PROMIS physical function and pain
+  interference, the Foot and Ankle Ability Measure, and the LEFS (Grade A). The **CAIT** may be
+  used to identify presence and severity of instability (Grade B). PSEQ, TSK-11 and FABQ may be
+  used for coping and fear-avoidance (Grade C).
+
+- **Supports — prevention, Grade A.** Prophylactic **bracing** to reduce first-time sprain risk,
+  particularly with risk factors; prophylactic bracing **plus** proprioceptive and balance-focused
+  exercise to reduce subsequent injury. Prophylactic balance training for those who have never
+  sprained is only **Grade C**.
+
+- **Supports — acute management.** **A:** advise external supports (brace or taping) and
+  **progressive weight bearing**; repeated intermittent **ice** to reduce pain, reduce analgesic
+  need and improve weight bearing; **rehabilitation with therapeutic exercise for severe sprains**.
+  **A, against:** **do not use ultrasound** for acute ankle sprains. **B:** a return-to-work
+  schedule with early bracing, occupational or sport-related training, and/or work hardening.
+  **C:** pulsed shortwave diathermy for oedema and gait deviation; low-level laser for early pain;
+  NSAIDs where practice acts allow.
+
+- **Supports — chronic ankle instability.** **A:** proprioceptive and neuromuscular exercise for
+  dynamic postural stability and perceived stability; **manual therapy including graded joint
+  mobilisations, manipulations, and weight-bearing and non-weight-bearing mobilisation with
+  movement**, to improve dorsiflexion, proprioception and balance. **B, against:** **do not use
+  bracing or taping as a stand-alone intervention** to improve balance and postural stability.
+  **B:** multiple interventions may supplement balance training, guided by patient values.
+  **C:** dry needling of the fibularis group alongside proprioceptive training.
+
+- **Supports — prognosis.** Predictors of chronic ankle instability at 6 months include
+  **inability to complete jumping and landing tasks within 2 weeks** of injury, poorer dynamic
+  postural control, and lower self-reported function. Not using prophylactic bracing and not
+  participating in a balance-training exercise programme are risk factors for a subsequent sprain.
+
+- **Does not support** — ankle *osteoarthritis*, Achilles tendinopathy, plantar heel pain, or
+  medial ankle injury. Its scope is **lateral** ankle ligament sprains and chronic ankle
+  instability. Two further hosted guidelines cover Achilles and plantar heel pain and are listed
+  below as located-not-yet-read.
+
+---
+
+## Located, not yet read
+
+- `Heel_Pain_Plantar_Fasciitis_Revision_2023.pdf` — hosted by the Academy, free.
+- `chimenti_et_al_2024_achilles_pain_stiffness_and_muscle_power_deficits_midportion_achilles_tendinopathy_revision_2024.pdf` — hosted, free.
+
+Both are in scope for a foot-and-ankle guide and neither has been opened. They are recorded here
+so they are not forgotten and not cited before being read.
+
+---
+
+## Still to chase
+
+Anterior drawer and talar tilt **accuracy figures** (the guideline discusses both at length; the
+specific Sn/Sp need extracting rather than assuming) · syndesmosis tests · weight-bearing lunge
+test reliability and normative values · the Cumberland Ankle Instability Tool's cut-off ·
+the exact figures behind the jumping-and-landing predictor.
+
+## Expected to be untraceable, from the hip and knee builds
+
+Normative ankle range of motion. Both prior joints returned nothing free, and the classic tables
+are paywalled at the table. Confirm briefly rather than searching from scratch, and mark it
+`Convention`. Note that Roach 1991 covers hip and knee only, so it supports the *argument* here
+but is not an ankle figure.

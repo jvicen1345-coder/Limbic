@@ -5,7 +5,7 @@ Follows `docs/joint-playbook-template.md`, same five steps as the hip and knee b
 | Step | File | State |
 |---|---|---|
 | 1 · Scope | — | not started |
-| 2 · Source bank | `sources.md` | not started |
+| 2 · Source bank | `sources.md` | in progress — the graded guideline found and recorded |
 | 3 · Draft | — | not started |
 | 4 · Adversarial verification | — | not started |
 | 5 · Build the page | — | not started |
