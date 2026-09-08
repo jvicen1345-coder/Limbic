@@ -35,11 +35,18 @@ export default async function ClinicianToolboxPage() {
 
   return (
     <div className="screen-pad pro-wide-page">
-      <h1 className="toolbox-title">Clinical Toolbox</h1>
-      <p className="toolbox-subtitle">
-        Everything in LimbicPRO, grouped by when you&rsquo;d reach for it.
-        {!user.isPro && " Tools marked PRO need a subscription; the rest are yours already."}
-      </p>
+      {/* Tour anchor (see lib/tours.ts) — the heading and its one-line summary. The step
+          used to point at the whole stack of groups instead: 1274px against a 720px
+          viewport, so the highlight ran off every edge and scrollIntoView centred it,
+          leaving the reader looking at the middle of the page while the card described the
+          top of it. */}
+      <div data-tour="toolbox-intro">
+        <h1 className="toolbox-title">Clinical Toolbox</h1>
+        <p className="toolbox-subtitle">
+          Everything in LimbicPRO, grouped by when you&rsquo;d reach for it.
+          {!user.isPro && " Tools marked PRO need a subscription; the rest are yours already."}
+        </p>
+      </div>
 
       <ToolboxBrowser groups={groups} isPro={user.isPro} />
     </div>

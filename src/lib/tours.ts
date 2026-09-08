@@ -16,6 +16,13 @@
  * for everyone (LimbicPRO's Toolbox shows locked cards with their descriptions intact,
  * deliberately, see app/(app)/pro/toolbox/page.tsx) rather than visited.
  *
+ * Anchor a step on something that FITS THE VIEWPORT. The player scrolls a target to the
+ * centre of the screen and draws a ring around it, so an element taller than the viewport
+ * gives a ring running off every edge and a reader looking at the middle of a page while the
+ * card describes the top of it. Measured against a 720px viewport: the toolbox's stack of
+ * groups is 1274px and the Home feed grid 1603px. Point at a heading, a card, or one group
+ * — never at a container of everything.
+ *
  * A step whose target never appears is skipped rather than shown against a blank screen:
  * sidebar items are hidden below 800px, and several targets are role-gated. That is handled
  * in the player, but it is why every tour below opens with a step the reader can always see.
@@ -158,8 +165,8 @@ const PRO_TOUR: Tour = {
       title: "Start at the Toolbox",
       description:
         "Every PRO tool on one page, grouped by when you'd reach for it rather than by what it costs. A locked card still tells you what the tool does.",
-      target: '[data-tour="toolbox-groups"]',
-      position: "top",
+      target: '[data-tour="toolbox-intro"]',
+      position: "bottom",
       route: "/pro/toolbox",
     },
     {
@@ -175,7 +182,7 @@ const PRO_TOUR: Tour = {
       id: "lookup",
       title: "Look it up",
       description:
-        "Screening rules, lab values, pathologies and documentation templates. Reference you open mid-session and close again.",
+        "Lab values, practice guidelines, documentation templates and plain-language pathologies. Reference you open mid-session and close again — the screening rules live one group up.",
       target: '[data-tour="toolbox-group-look-it-up"]',
       position: "bottom",
       route: "/pro/toolbox",

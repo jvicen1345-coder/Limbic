@@ -14,25 +14,59 @@ const SETTLE_TIMEOUT_MS = 700;
  *  are role-gated, and the sidebar is display:none below 800px. */
 const TARGET_WAIT_MS = 2500;
 
-function getTooltipStyle(step: TourStep, targetRect: DOMRect | null): CSSProperties {
+/** Kept clear of every edge, so a clamped card never sits flush against the viewport. */
+const EDGE_MARGIN = 20;
+
+/**
+ * Where the card goes for one step.
+ *
+ * The final clamp is the part that matters. Each `position` is a preference, not a promise:
+ * anchoring a card *below* a tall target pushed it past the bottom of the screen, taking its
+ * Back and Next buttons with it — a tour the reader cannot advance, since the overlay means
+ * they cannot scroll to reach them either. It needs the card's real height, because the
+ * descriptions vary enough that a fixed guess would still clip a long one.
+ */
+function getTooltipStyle(step: TourStep, targetRect: DOMRect | null, cardHeight: number): CSSProperties {
   if (!targetRect || step.target === "center") {
     return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
   }
 
   const offset = 20;
+  const viewportH = typeof window === "undefined" ? 0 : window.innerHeight;
+  const viewportW = typeof window === "undefined" ? 0 : window.innerWidth;
 
+  let top: number;
+  let left: number;
   switch (step.position) {
     case "right":
-      return { top: Math.max(20, targetRect.top + targetRect.height / 2 - 100), left: targetRect.right + offset };
+      top = targetRect.top + targetRect.height / 2 - 100;
+      left = targetRect.right + offset;
+      break;
     case "left":
-      return { top: Math.max(20, targetRect.top + targetRect.height / 2 - 100), left: targetRect.left - TOOLTIP_WIDTH - offset };
+      top = targetRect.top + targetRect.height / 2 - 100;
+      left = targetRect.left - TOOLTIP_WIDTH - offset;
+      break;
     case "bottom":
-      return { top: targetRect.bottom + offset, left: Math.max(20, targetRect.left + targetRect.width / 2 - TOOLTIP_WIDTH / 2) };
+      top = targetRect.bottom + offset;
+      left = targetRect.left + targetRect.width / 2 - TOOLTIP_WIDTH / 2;
+      break;
     case "top":
-      return { top: Math.max(20, targetRect.top - offset - 200), left: Math.max(20, targetRect.left + targetRect.width / 2 - TOOLTIP_WIDTH / 2) };
+      top = targetRect.top - offset - cardHeight;
+      left = targetRect.left + targetRect.width / 2 - TOOLTIP_WIDTH / 2;
+      break;
     default:
       return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
   }
+
+  // Clamp last, and to the *measured* card. A viewport shorter than the card itself would
+  // make the lower bound smaller than the upper one, so the top edge wins — a card running
+  // off the bottom is still readable from its start, one running off the top is not.
+  if (viewportH > 0) top = Math.max(EDGE_MARGIN, Math.min(top, viewportH - cardHeight - EDGE_MARGIN));
+  else top = Math.max(EDGE_MARGIN, top);
+  if (viewportW > 0) left = Math.max(EDGE_MARGIN, Math.min(left, viewportW - TOOLTIP_WIDTH - EDGE_MARGIN));
+  else left = Math.max(EDGE_MARGIN, left);
+
+  return { top, left };
 }
 
 /**
@@ -87,6 +121,11 @@ export function LimbicTour({
   const [positioned, setPositioned] = useState(false);
   /** Which direction the reader is moving, so a skipped step is skipped the same way. */
   const direction = useRef<1 | -1>(1);
+  const cardRef = useRef<HTMLDivElement>(null);
+  /** The card's measured height, for the clamp in getTooltipStyle. The initial value is a
+   *  typical card; it is replaced as soon as one renders, and every step re-measures because
+   *  a longer description makes a taller card. */
+  const [cardHeight, setCardHeight] = useState(240);
 
   const step = tour.steps[Math.min(currentStep, tour.steps.length - 1)];
   const isFirst = currentStep === 0;
@@ -203,6 +242,17 @@ export function LimbicTour({
     };
   }, [currentStep, step.target, step.route, pathname, tour.steps.length, goToStep]);
 
+  // Measure the card after each step renders, so the clamp above works off its real height
+  // rather than a guess. Guarded on an actual change, and rounded, so a sub-pixel difference
+  // cannot bounce between two values and re-render forever.
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const measured = cardRef.current?.offsetHeight;
+      if (measured && Math.abs(measured - cardHeight) > 1) setCardHeight(measured);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [currentStep, cardHeight]);
+
   function handleNext() {
     direction.current = 1;
     if (isLast) {
@@ -217,7 +267,7 @@ export function LimbicTour({
     if (!isFirst) goToStep(currentStep - 1);
   }
 
-  const tooltipStyle = getTooltipStyle(step, targetRect);
+  const tooltipStyle = getTooltipStyle(step, targetRect, cardHeight);
 
   return (
     <>
@@ -235,7 +285,7 @@ export function LimbicTour({
         />
       )}
 
-      <div className="tour-tooltip" style={{ ...tooltipStyle, opacity: positioned ? 1 : 0 }}>
+      <div ref={cardRef} className="tour-tooltip" style={{ ...tooltipStyle, opacity: positioned ? 1 : 0 }}>
         <div className="tour-progress">
           {tour.steps.map((s, i) => (
             <div key={s.id} className={i <= currentStep ? "tour-progress-seg tour-progress-seg--done" : "tour-progress-seg"} />
