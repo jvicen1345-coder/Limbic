@@ -14,8 +14,9 @@ export const metadata: Metadata = {
  *  The sidebar used to list the same tools, as a dozen rows of equal weight in the order they
  *  were added — a caseload dashboard beside a lab-value lookup beside a CE log. Nothing there
  *  said which of those you'd want mid-session versus at the end of the week, and a reader who
- *  hadn't clicked every row didn't know what half of them were. It now carries only the tools
- *  you open and keep working in, and this page is where the rest of them live.
+ *  hadn't clicked every row didn't know what half of them were. It is now four rows, and this
+ *  page is the only route to the other eleven — which makes the descriptions below the
+ *  product rather than decoration.
  *
  *  Grouped by when you'd reach for a tool rather than by what it costs. A locked card still
  *  shows what the tool does — a reader deciding whether LimbicPRO is worth it is exactly the

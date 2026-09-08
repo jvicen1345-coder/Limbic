@@ -383,30 +383,25 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         />
         {proExpanded && (
           <>
-            {/* Dashboard/Force Lab/Limbic Agent used to be hidden entirely for a non-Pro
-                reader rather than shown-locked — now shown to everyone with the same
-                lock-pill treatment Exercise Programs already had, so a signed-in reader sees
-                what LimbicPRO contains and which pieces of it are still paywalled, rather
-                than some tools just silently not existing for them. */}
-            {/* First row on purpose, and the reason the rest of this section is short. The
-                rows below are the tools you open and keep working in; everything that is
-                looked up rather than worked in — screening rules, documentation templates,
-                pathologies, the movement lab, the CE log, and the two clinic-admin views —
-                lives on the Toolbox page, which describes each one instead of just naming
-                it. See lib/clinician-toolbox.ts for the full list. */}
-            <NavLink href="/pro/toolbox" icon={<GridIcon />} label="Toolbox" bold={false} onNavigate={onNavigate} />
+            {/* Four rows, in the order you would reach for them. The first three are the
+                ones you can open without already knowing what you want — your caseload, the
+                index of everything, and the one you can just ask. Exercise Programs follows
+                because it is the one workspace with no other way in: Special Tests, Outcome
+                Measures and Force Lab all left this list, but the Dashboard already carries
+                them (Quick Tools for the first two, each patient's Force Lab card for the
+                third, scoped to that patient), while nothing in the app links to /hep except
+                the Toolbox and the /pro overview.
+
+                Everything not listed here lives on the Toolbox page, which describes each
+                tool instead of just naming it — see lib/clinician-toolbox.ts.
+
+                Dashboard and Limbic Agent are shown locked rather than hidden for a non-Pro
+                reader, the same treatment Exercise Programs already had, so a signed-in
+                reader sees what LimbicPRO contains and which pieces are paywalled rather
+                than some tools silently not existing for them. */}
             <NavLink href="/pro/dashboard" icon={<LayoutDashboardIcon />} label="Dashboard" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/force-lab" icon={<ZapIcon />} label="Force Lab" locked={!isPro} bold={false} onNavigate={onNavigate} />
+            <NavLink href="/pro/toolbox" icon={<GridIcon />} label="Toolbox" bold={false} onNavigate={onNavigate} />
             <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            {/* Outcome Measures and Special Tests are free to any signed-in user (see
-                lib/session.ts hasClinicalReferenceAccess and each page's own gate) — not
-                wrapped in {(isPro || isStudent) && ...}, which used to hide this whole block
-                (Exercise Programs included) from a plain signed-in reader who was neither
-                Pro nor a Limbic Student. They stay in the sidebar rather than moving to the
-                Toolbox with the other reference tools because they are the two you open with
-                a patient in front of you, where an extra click is a real cost. */}
-            <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Outcome Measures" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" bold={false} onNavigate={onNavigate} />
             <NavLink href="/hep" icon={<BandageIcon />} label="Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
           </>
         )}
