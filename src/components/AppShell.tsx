@@ -42,6 +42,20 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { StudentVerifiedBadge } from "@/components/StudentVerifiedBadge";
 import { readStoredThemePreference, resolveTheme } from "@/lib/theme-client";
 
+interface NavigationBadges {
+  aptaCount: number;
+  nexusRequestCount: number;
+  savedCount: number;
+}
+
+function isNavigationBadges(value: unknown): value is NavigationBadges {
+  if (!value || typeof value !== "object") return false;
+  const badges = value as Record<string, unknown>;
+  return [badges.aptaCount, badges.nexusRequestCount, badges.savedCount].every(
+    (count) => typeof count === "number" && Number.isInteger(count) && count >= 0,
+  );
+}
+
 function sidebarNavStyle(active: boolean, bold: boolean): React.CSSProperties {
   return {
     display: "flex",
@@ -267,8 +281,10 @@ interface NavContentProps {
   /** True for a site admin account (see lib/admin.ts isSiteAdmin) — gates the Admin section
    *  below, hidden entirely for everyone else. */
   isAdmin: boolean;
-  aptaCount: number;
-  nexusRequestCount: number;
+  /** Populated after mount by /api/navigation-badges; absent while loading or on failure. */
+  aptaCount?: number;
+  /** Populated with the same non-blocking request as aptaCount. */
+  nexusRequestCount?: number;
   /** The seven-section order from lib/user-role.ts zoneTwoOrder(), computed in
    *  app/(app)/layout.tsx off the account's userRole — every section still renders
    *  (isStudent/isAdmin above are the only actual visibility gates), this just changes
@@ -613,9 +629,6 @@ export interface AppShellProps {
   isStudent: boolean;
   isVerifiedStudent: boolean;
   isAdmin: boolean;
-  aptaCount: number;
-  nexusRequestCount: number;
-  savedCount: number;
   /** See lib/user-role.ts zoneTwoOrder() — computed in app/(app)/layout.tsx off the
    *  account's userRole. */
   zoneTwoOrder: ZoneTwoKey[];
@@ -634,14 +647,12 @@ export function AppShell({
   isStudent,
   isVerifiedStudent,
   isAdmin,
-  aptaCount,
-  nexusRequestCount,
-  savedCount,
   zoneTwoOrder,
   clinicMembership,
   children,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [navigationBadges, setNavigationBadges] = useState<NavigationBadges | null>(null);
   const drawerRef = useRef<HTMLElement>(null);
   const navProps = {
     profileName,
@@ -653,8 +664,8 @@ export function AppShell({
     isStudent,
     isVerifiedStudent,
     isAdmin,
-    aptaCount,
-    nexusRequestCount,
+    aptaCount: navigationBadges?.aptaCount,
+    nexusRequestCount: navigationBadges?.nexusRequestCount,
     zoneTwoOrder,
     clinicMembership,
   };
@@ -678,6 +689,25 @@ export function AppShell({
   // ("theme") itself is only ever read fresh on a real page load, not client-side routing.
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", resolveTheme(readStoredThemePreference()));
+  }, []);
+
+  // AppShell persists across ordinary App Router navigations, so one background read per
+  // hard load is enough. These counts used to be awaited by the server layout alongside a
+  // Google News RSS request, delaying the entire authenticated shell. A failed or malformed
+  // response deliberately leaves every count absent rather than showing a false zero.
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetch("/api/navigation-badges", { cache: "no-store", signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) return;
+        const badges: unknown = await response.json();
+        if (!controller.signal.aborted && isNavigationBadges(badges)) setNavigationBadges(badges);
+      })
+      .catch(() => {
+        // Badge data is nonessential chrome. Auth redirects and page content are handled by
+        // the server layout, so a network failure here must not disturb either one.
+      });
+    return () => controller.abort();
   }, []);
 
   // Restores scroll position on reopen by re-centering the active link instead — the drawer
@@ -720,7 +750,7 @@ export function AppShell({
             <LogoIcon size={19} />
             <span className="app-wordmark" style={{ fontSize: 17 }}>Limbic</span>
           </div>
-          <span className="tag tag-neutral">{savedCount} saved</span>
+          {navigationBadges && <span className="tag tag-neutral">{navigationBadges.savedCount} saved</span>}
         </div>
 
         {children}
