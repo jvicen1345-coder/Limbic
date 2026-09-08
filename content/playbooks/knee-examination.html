@@ -818,11 +818,12 @@ a{color:var(--accent)}
       <p class="eyebrow">Physical therapy &middot; the whole knee screen, in order <span class="ver">Version 1.0 &middot; September 2026</span></p>
       <h1>Knee Examination Playbook</h1>
       <p>A full knee screen in the order you would perform it, with every value marked for what it is
-      worth. The knee has a thinner reachable literature than the hip, and this guide is shaped by
-      that rather than hiding it: there is one excellent screening rule, ligament figures from a
-      population pre-selected for surgery, a meniscal test whose accuracy moves with time since
-      injury, and five values with no traceable source at all. Graded evidence exists for
-      arthroplasty and nowhere else, and section 10 says so instead of borrowing confidence from it.
+      worth. The knee's recurring lesson is that a test's accuracy depends on more than the test:
+      the ligament figures come from patients pre-selected for surgery, McMurray's accuracy moves
+      with time since injury <i>and</i> differs sharply between orthopaedic and primary care hands,
+      and the lever sign's result shifts with the surface the leg rests on. Two graded guidelines
+      cover meniscal and cartilage lesions and arthroplasty; ligament management has none, and
+      section 10 says so rather than borrowing confidence it does not have.
       <b>This is a study aid for examination preparation, not a clinical reference</b> - check any
       value against current literature before it weights a decision about a patient.</p>
     </div>
@@ -1056,6 +1057,27 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
+        <td class="name">But McMurray is also contested</td>
+        <td>Ask who performed the test.</td>
+        <td data-imp="primary care|healthy controls|orthopaedic|below">
+          <span class="prov x">Contested</span> In <b>primary care hands</b> against MRI, in 292 patients plus 75 healthy controls, McMurray was <b>Sn 0.58 (0.49-0.67) &middot; Sp 0.56 (0.45-0.66)</b> - far below the orthopaedic figures above. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Which is right?</td>
+        <td>Both, for their own setting.</td>
+        <td data-imp="surgeons|prevalence|mixed population|manoeuvre">
+          Rinonapoli used <b>orthopaedic surgeons</b> in a trauma cohort with roughly 74% prevalence; Blyth used <b>primary care clinicians</b> in a mixed population including healthy controls. Same manoeuvre, different examiners, different people - and <b>the gap between them is wider than the gap between any two tests</b>. <span class="src">Rinonapoli 2025</span> <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What to take from that</td>
+        <td>Weight the examiner and the population, not only the test.</td>
+        <td data-imp="examiner|population|moves|chose">
+          <b>Who performs a test, and on whom, moves its accuracy more than which test you chose.</b> That is the single most useful thing in this guide.
+        </td>
+      </tr>
+      <tr>
         <td class="name">Best meniscal combination</td>
         <td>Run McMurray and Apley together.</td>
         <td data-imp="Apley|combination|false positive|confirmed">
@@ -1063,10 +1085,45 @@ a{color:var(--accent)}
         </td>
       </tr>
       <tr>
-        <td class="name">Other meniscal tests</td>
-        <td>Thessaly, Ege, joint line tenderness, hyper-flexion.</td>
-        <td data-imp="Thessaly|hyper-flexion|anterior knee|influenced">
-          <b>No individual figures.</b> <span class="src">no traceable source</span> They were compared but no accuracy numbers appear in the free text. Thessaly, Ege and hyper-flexion were noted as more influenced by anterior knee pain. <span class="src">Rinonapoli 2025</span>
+        <td class="name">Thessaly</td>
+        <td>Weight-bearing rotation at 20&deg; of flexion.</td>
+        <td data-imp="Thessaly|weight-bearing|reliability|rotation">
+          <b>Sn 0.66 (0.57-0.74) &middot; Sp 0.39 (0.29-0.50)</b>, OR 1.24 (0.71-2.18) against MRI in primary care hands. Reliability is <b>fair, &kappa; 0.54</b>, from one moderate-quality study. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Apley</td>
+        <td>Prone, knee at 90&deg;, compression with rotation.</td>
+        <td data-imp="Apley|compression|prone|direction">
+          <b>Sn 0.53 (0.44-0.62) &middot; Sp 0.53 (0.42-0.63)</b>, OR 1.24 (0.73-2.12). Barely better than a coin in either direction. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Joint line tenderness</td>
+        <td>Palpate the tibiofemoral line with the knee flexed.</td>
+        <td data-imp="joint line|tibiofemoral|sensitive|palpate">
+          <b>Sn 0.77 (0.68-0.84) &middot; Sp 0.26 (0.18-0.36)</b>, OR 1.16 (0.63-2.13) - sensitive, almost non-specific. Reliability <b>poor, &kappa; &le; 0.38</b>. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Joint line tenderness differs by sex</td>
+        <td>Read the figure for the patient in front of you.</td>
+        <td data-imp="men|women|accuracy|differs">
+          In <b>men</b> Sn 0.50-0.58, Sp 0.74-1.00, accuracy 0.63-0.86. In <b>women</b> Sn 0.40-0.49, Sp 0.71-0.98. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The odds ratios are the tell</td>
+        <td>Check whether the interval includes 1.</td>
+        <td data-imp="odds ratio|interval|excludes|includes">
+          <b>Three of those four include 1</b> - Thessaly, Apley and joint line tenderness. Only McMurray's excludes it, and only just, at 1.04 to 3.09. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Ege and hyper-flexion</td>
+        <td>Named but not quantified.</td>
+        <td data-imp="Ege|hyper-flexion|anterior knee|quantified">
+          <b>No individual figures.</b> <span class="src">no traceable source</span> Noted only as more influenced by anterior knee pain. <span class="src">Rinonapoli 2025</span>
         </td>
       </tr>
       <tr>
@@ -1155,8 +1212,8 @@ a{color:var(--accent)}
       <tr>
         <td class="name">Effusion - how much to trust it</td>
         <td>Ask what the reliability is.</td>
-        <td data-imp="reliability|re-measure|record|unknown">
-          <b>Unknown.</b> <span class="src">no traceable source</span> No reliability or accuracy for either hand test. Record what you found and re-measure it yourself rather than citing a grade.
+        <td data-imp="modified stroke|essential|baseline|record">
+          <b>No reliability figure</b> <span class="src">no traceable source</span> - searched twice. But the <b>modified stroke test</b> is named as an essential physical impairment measure to document at baseline and follow-up, so use that one and record it. <span class="src">Logerstedt 2018</span>
         </td>
       </tr>
       <tr>
@@ -1403,8 +1460,8 @@ a{color:var(--accent)}
       <tr>
         <td class="name">Thessaly</td>
         <td>Weight-bearing rotation at 20&deg; of flexion.</td>
-        <td data-imp="Thessaly|weight-bearing|influenced|anterior">
-          <b>No accuracy figure available.</b> <span class="src">no traceable source</span> It was noted as more influenced by anterior knee pain than the others. <span class="src">Rinonapoli 2025</span>
+        <td data-imp="Thessaly|discriminates|reliability|interval">
+          <b>Sn 0.66 &middot; Sp 0.39</b>, OR 1.24 with an interval including 1 - it discriminates poorly. Reliability fair at &kappa; 0.54, which is better than McMurray's or joint line tenderness's. <span class="src">Logerstedt 2018</span>
         </td>
       </tr>
       <tr>
@@ -1586,17 +1643,80 @@ a{color:var(--accent)}
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
       <tr>
-        <td class="name">What this section can and cannot do</td>
-        <td>Ask what graded evidence is reachable.</td>
-        <td data-imp="non-surgical|purpose statement|threshold|guideline">
-          <b>None for non-surgical knee management.</b> <span class="src">no traceable source</span> The knee ligament sprain guideline exists, but its free abstract is a purpose statement carrying no recommendation, grade, dose or threshold. <span class="src">Logerstedt 2017</span>
+        <td class="name">Where grades apply, and where they do not</td>
+        <td>Ask which guideline covers what you are treating.</td>
+        <td data-imp="graded|cartilage|ligament management|purpose statement">
+          <b>Two graded guidelines are reachable</b> - meniscal and articular cartilage lesions <span class="src">Logerstedt 2018</span> and total knee arthroplasty <span class="src">Bove 2026</span>. <b>Ligament management has none</b>: that guideline's free abstract is a purpose statement carrying no recommendation, grade, dose or threshold. <span class="src">Logerstedt 2017</span>
         </td>
       </tr>
       <tr>
-        <td class="name">Where grades do apply</td>
-        <td>Post-arthroplasty only.</td>
-        <td data-imp="post-arthroplasty|evidence quality|grades|full text">
-          From an APTA guideline whose full text is free and grades each recommendation by evidence quality. <span class="src">Bove 2026</span>
+        <td class="name">Meniscal and cartilage - B</td>
+        <td>Supervised and progressed, not handed over as a sheet.</td>
+        <td data-imp="neuromuscular training|hip muscles|progressive|supervised">
+          Progressive <b>range-of-motion exercise, strength training of the knee <i>and hip</i> muscles, and neuromuscular training</b>, for meniscus tears, cartilage lesions, and after surgery for either. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Meniscal - B</td>
+        <td>Electrical stimulation after meniscus procedures.</td>
+        <td data-imp="stimulation|re-education|functional performance|quadriceps">
+          <b>Neuromuscular stimulation and re-education</b> to increase quadriceps strength, functional performance and knee function. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">After meniscectomy - B</td>
+        <td>In-clinic plus home, both supervised.</td>
+        <td data-imp="meniscectomy|home programme|endurance|independent">
+          Supervised in-clinic exercise <b>and</b> a progressed home programme with education for independent performance; strength and functional exercise for quadriceps and hamstring strength and endurance. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Motion after surgery - B</td>
+        <td>Early, progressive, both kinds.</td>
+        <td data-imp="early progressive|active and passive|surgery|motion">
+          Early progressive <b>active and passive</b> knee motion after meniscal or articular cartilage surgery. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Weight bearing - B</td>
+        <td>After cartilage implantation.</td>
+        <td data-imp="weight bearing|chondrocyte|stepwise|implantation">
+          Stepwise progression to full weight bearing <b>by 6 to 8 weeks</b> after matrix-supported autologous chondrocyte implantation. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Weight bearing after meniscal repair - C</td>
+        <td>Note the weaker grade.</td>
+        <td data-imp="meniscal repair|weaker|considered|confidence">
+          Early progressive weight bearing <i>may</i> be considered - a <b>C</b> against the <b>B</b> above, so the confidence is not the same. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Return to activity - C and E</td>
+        <td>Two different strengths of advice.</td>
+        <td data-imp="return to activity|delaying|expert opinion|cartilage">
+          Early progressive return <i>may</i> be used after meniscal repair (<b>C</b>); return <i>may need delaying</i> depending on the type of articular cartilage surgery (<b>E</b>, expert opinion). <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Risk factors - C</td>
+        <td>Ask about age and how long ago.</td>
+        <td data-imp="risk factor|age|predisposing|injury">
+          <b>Age and greater time from injury</b> are predisposing factors for meniscal injury. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Outcome measures - B</td>
+        <td>Pick from the named set.</td>
+        <td data-imp="IKDC|KOOS|questionnaire|activity scale">
+          A validated patient-reported outcome measure, a general health questionnaire and a validated activity scale. <b>IKDC 2000 and KOOS</b> are the named self-report measures. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Essential physical measures</td>
+        <td>Document these at baseline and follow-up.</td>
+        <td data-imp="stroke test|isokinetic|baseline|document">
+          <b>Modified stroke test</b> for effusion, knee active ROM, maximum voluntary isometric or isokinetic quadriceps strength, and joint line tenderness. <span class="src">Logerstedt 2018</span>
         </td>
       </tr>
       <tr>
@@ -1800,15 +1920,21 @@ a{color:var(--accent)}
 
     <details><summary>Where does the limb symmetry threshold come from?</summary><div class="ans">Nowhere reachable. <span class="prov c">Convention</span> <span class="src">no traceable source</span> Cohorts apply a cutoff; none found here establishes one. A threshold whose origin you cannot reach is a convention, not a measurement.</div></details>
 
-    <details><summary>Why is section 10 shorter than the hip guide's treatment section?</summary><div class="ans">Because the reachable evidence is. There is no free graded guideline for non-surgical knee management - the knee ligament sprain guideline's free abstract is a purpose statement carrying no recommendation, grade, dose or threshold <span class="src">Logerstedt 2017</span>. Graded evidence exists for arthroplasty only <span class="src">Bove 2026</span>.</div></details>
+    <details><summary>McMurray is reported at Sn 91% in one study and Sn 0.58 in another. Which is right?</summary><div class="ans">Both, for their own setting. Rinonapoli used <b>orthopaedic surgeons</b> in a trauma cohort with roughly 74% prevalence <span class="src">Rinonapoli 2025</span>; Blyth used <b>primary care clinicians</b> in a mixed population including healthy controls <span class="src">Logerstedt 2018</span>. Same manoeuvre, different examiners, different people - and the gap between them is wider than the gap between any two tests.</div></details>
+
+    <details><summary>Give Thessaly's sensitivity and specificity, and say what its odds ratio tells you.</summary><div class="ans"><b>Sn 0.66, Sp 0.39</b>, OR 1.24 with a confidence interval of 0.71 to 2.18 - <b>it includes 1</b>, so the test barely discriminates. Its reliability is nonetheless the best of the three at &kappa; 0.54, against &kappa; &le; 0.38 for McMurray and joint line tenderness <span class="src">Logerstedt 2018</span>.</div></details>
+
+    <details><summary>Joint line tenderness has a sensitivity of 0.77. Why is that less useful than it sounds?</summary><div class="ans">Because its specificity is <b>0.26</b> and its odds ratio interval includes 1 <span class="src">Logerstedt 2018</span>. It is sensitive and almost non-specific: a negative is somewhat informative, a positive is close to noise. It also performs differently by sex - in men Sp 0.74 to 1.00, in women Sn only 0.40 to 0.49.</div></details>
+
+    <details><summary>Which knee problem has no graded guideline at all?</summary><div class="ans"><b>Ligament management.</b> Meniscal and cartilage lesions have one <span class="src">Logerstedt 2018</span> and arthroplasty has one <span class="src">Bove 2026</span>, but the knee ligament sprain guideline's free abstract is a purpose statement carrying no recommendation, grade, dose or threshold <span class="src">Logerstedt 2017</span>.</div></details>
 
   </section>
 
 
   <section id="refs">
     <h2>References</h2>
-    <p class="lede">Seven sources, each cited at least once above, each read before it was quoted -
-    and six of the seven are free full text. Where a value is marked convention, or flagged as
+    <p class="lede">Eight sources, each cited at least once above, each read before it was quoted -
+    and seven of the eight are free full text. Where a value is marked convention, or flagged as
     having no traceable source, it appears in no entry below, because nothing supports it. Each
     note records what the paper cannot support as well as what it can, which for this guide is
     where most of the work is: three of these papers are quoted mainly for their limits.</p>
@@ -1838,6 +1964,7 @@ a{color:var(--accent)}
     <ol>
       <li><span class="au">Bove AM, Carroll LA, Cone S, Dibblee P, Hensley CP, Lenington K, Manner PA, Scalzitti DA, Tompkins J, Bade MJ</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13403188/" target="_blank" rel="noopener">Clinical practice guideline for physical therapist management of total knee arthroplasty: revision 2026</a></span>. <span class="jo">Phys Ther 2026;106(7):pzag058</span><span class="nt">The only graded guideline this guide can reach, and only via its full text - the abstract is purely descriptive. Source for every grade and dose in section 10, and for the harms beside them. Covers <b>post-arthroplasty management only</b>; it says nothing about examining a knee and is not stretched to.</span></li>
       <li><span class="au">Logerstedt DS, Scalzitti D, Risberg MA, Engebretsen L, Webster KE, Feller J, Snyder-Mackler L, Axe MJ, McDonough CM</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/29089004/" target="_blank" rel="noopener">Knee Stability and Movement Coordination Impairments: Knee Ligament Sprain Revision 2017</a></span>. <span class="jo">J Orthop Sports Phys Ther 2017;47(11):A1-A47</span><span class="nt">Cited once, in section 10, for the single fact it can support: that it exists. Its free abstract is a purpose statement containing no recommendation, no grade, no dose, no threshold and no accuracy figure. Quoting any clinical value from it would attach a real guideline to a number it does not contain.</span></li>
+      <li><span class="au">Logerstedt DS, Scalzitti DA, Bennell KL, Hinman RS, Silvers-Granelli H, Ebert J, Hambly K, Carey JL, Snyder-Mackler L, Axe MJ, McDonough CM</span> <span class="ti"><a href="https://www.orthopt.org/uploads/content_files/files/Knee%20pain%20and%20mobility%20impairments%202018.pdf" target="_blank" rel="noopener">Knee Pain and Mobility Impairments: Meniscal and Articular Cartilage Lesions, Revision 2018</a></span>. <span class="jo">J Orthop Sports Phys Ther 2018;48(2):A1-A50</span><span class="nt">Openly hosted by the Academy of Orthopaedic Physical Therapy, all 50 pages free and graded. Source for the meniscal test accuracy figures (from Blyth et al within it: 292 patients plus 75 healthy controls examined by <b>primary care clinicians</b> against MRI), for their reliability, for joint line tenderness by sex, and for the graded management of meniscal and cartilage lesions. Its McMurray figures are far lower than Rinonapoli's orthopaedic ones - the settings differ, and that contrast is the point rather than a contradiction. Scope is meniscal and articular cartilage lesions: it says nothing about ligaments, patellofemoral pain or osteoarthritis.</span></li>
     </ol>
 
 
@@ -1854,19 +1981,19 @@ a{color:var(--accent)}
   <footer>
     <b>About this guide.</b> <span class="ver" style="margin:0 8px 0 0; padding:0; border:0">Version 1.0 &middot; September 2026.</span>
     The examination sequence, the section order and the wording are original. Every clinical
-    value is drawn from the seven published sources listed above and attributed where it appears -
+    value is drawn from the eight published sources listed above and attributed where it appears -
     principally Kazemi and colleagues 2023 for the Ottawa Knee Rule, Nguyen and colleagues 2025
-    with Norris and colleagues 2025 for the ligament tests, Rinonapoli and colleagues 2025 for the
-    meniscal tests, Roach and Miles 1991 for range of motion, and Bove and colleagues 2026 for the
+    with Norris and colleagues 2025 for the ligament tests, Rinonapoli and colleagues 2025 with
+    Logerstedt and colleagues 2018 for the meniscal tests, Roach and Miles 1991 for range of motion, and Bove and colleagues 2026 for the
     whole of section 10.
     Values marked <b>Convention</b> are named as such because no research stands behind them, and
     five are flagged as having <b>no traceable source</b> at all: normative knee range, the Q
     angle, the accuracy of any patellofemoral test, the reliability of the clinical effusion
     tests, and the origin of the limb symmetry threshold. Two of those were searched twice before
     being flagged. Saying so is deliberate.
-    This guide is also shorter than the hip guide in one section on purpose: no freely readable
-    graded guideline exists for non-surgical knee management, so section 10 carries grades for
-    arthroplasty and says plainly that it can do no more.
+    Section 10 carries grades from two guidelines - meniscal and cartilage lesions, and
+    arthroplasty. Ligament management has no freely readable graded source, and the section says
+    so rather than implying otherwise.
     Verify against current literature before letting any of it weight a clinical decision.
   </footer>
 </div>

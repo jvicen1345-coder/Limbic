@@ -6,11 +6,15 @@ Written against `sources.md` and nothing else. Same four states as the hip guide
 (the named paper's freely readable text carries that exact value), **`Convention`**,
 **`Contested`**, or **`No traceable source`** stated in place.
 
-The knee has a thinner reachable literature than the hip, and this draft is shaped by that.
-There is no free graded examination guideline, no normative range, no bedside criteria set, no Q
-angle threshold, and no accuracy for the patellofemoral or effusion tests. One graded guideline
-exists and it covers arthroplasty only. Rather than hide that behind confident prose, the guide
-says it.
+**Corrected.** An earlier version of this draft claimed the knee had no freely readable graded
+examination guideline. It has one — *Knee Pain and Mobility Impairments: Meniscal and Articular
+Cartilage Lesions, Revision 2018*, openly hosted and 50 pages long — and missing it changed this
+draft's framing throughout. See `sources.md` for the error and how it happened.
+
+What remains true: no normative knee range, no bedside OA criteria set, no Q angle threshold, no
+accuracy for the patellofemoral or effusion tests, and no graded source for **ligament**
+management. What is now sourced rather than flagged: the meniscal tests, their reliability, and
+the graded management of meniscal and cartilage lesions.
 
 ---
 
@@ -57,15 +61,23 @@ population, and a meniscal finding almost nobody is taught.*
 | McMurray, in the first week | **Sn 91% · Sp 55%** at 5–7 days after injury. `src: Rinonapoli 2025` |
 | McMurray, at a month | **Sn 80% · Sp 79%**, with a **PPV of 92%**. `src: Rinonapoli 2025` |
 | The point of those two rows | **A test's operating characteristics move with time since injury.** Early, McMurray is sensitive and non-specific; by four to five weeks it is specific and less sensitive. A positive McMurray in week one means much less than the same positive a month later. `src: Rinonapoli 2025` |
+| But McMurray is also `Contested` | In **primary care hands** against MRI, in 292 patients plus 75 healthy controls, McMurray was **Sn 0.58 (0.49–0.67) · Sp 0.56 (0.45–0.66)** — far below the orthopaedic figures above. `src: Logerstedt 2018` |
+| Which is right? | **Both, for their own setting.** Rinonapoli used orthopaedic surgeons in a trauma cohort with roughly 74% prevalence; Blyth used primary care clinicians in a mixed population including healthy controls. These are the same manoeuvre performed by different examiners on different people, and **the gap between them is wider than the gap between any two tests.** `src: Rinonapoli 2025` `src: Logerstedt 2018` |
+| What to take from that | Who performs a test, and on whom, moves its accuracy more than which test you chose. That is the single most useful thing in this guide. |
 | Best meniscal combination | **McMurray with Apley** gave the best accuracy and minimised false positives, in 255 patients with 188 arthroscopically confirmed tears. `src: Rinonapoli 2025` |
-| Other meniscal tests | **`No traceable source`** for individual figures. Thessaly, Ege, Apley, joint line tenderness and hyper-flexion were compared but no accuracy numbers appear in the free text. Thessaly, Ege and hyper-flexion were noted as more influenced by anterior knee pain. `src: Rinonapoli 2025` |
+| Thessaly | **Sn 0.66 (0.57–0.74) · Sp 0.39 (0.29–0.50)**, OR 1.24 (0.71–2.18) against MRI, in primary care hands. `src: Logerstedt 2018` Reliability is **fair, &kappa; 0.54**, from one moderate-quality study. `src: Logerstedt 2018` |
+| Apley | **Sn 0.53 (0.44–0.62) · Sp 0.53 (0.42–0.63)**, OR 1.24 (0.73–2.12). Barely better than a coin in either direction. `src: Logerstedt 2018` |
+| Joint line tenderness | **Sn 0.77 (0.68–0.84) · Sp 0.26 (0.18–0.36)**, OR 1.16 (0.63–2.13) — sensitive, almost non-specific. `src: Logerstedt 2018` Reliability **poor, &kappa; &le; 0.38**. `src: Logerstedt 2018` |
+| Joint line tenderness differs by sex | In **men** Sn 0.50–0.58, Sp 0.74–1.00, accuracy 0.63–0.86; in **women** Sn 0.40–0.49, Sp 0.71–0.98. `src: Logerstedt 2018` |
+| The odds ratios are the tell | Three of those four have confidence intervals **including 1** — Thessaly, Apley and joint line tenderness. Only McMurray's excludes it, and only just (1.04–3.09). `src: Logerstedt 2018` |
+| Ege and hyper-flexion | **`No traceable source`** for individual figures; noted only as more influenced by anterior knee pain. `src: Rinonapoli 2025` |
 | The honest frame for the whole section | The authors' conclusion: **no single clinical test was sufficiently reliable for independent diagnosis.** `src: Rinonapoli 2025` |
 | Normal knee ROM | **`Convention`.** No free normative source — **`No traceable source`**. The tables everyone quotes are paywalled at the table. |
 | What is traceable about that | Measured against a national probability sample, normative hip **and knee** values differed from textbook estimates **by as much as 18&deg;**, and age-group differences were only 3–5&deg;. `src: Roach 1991` |
 | Q angle | **`Convention`.** Published values are population-specific — separate figures for different national cohorts, for sedentary adults versus athletes — with **no universal norm and no reliability study** reachable — **`No traceable source`**. The familiar 15&deg; is not quoted here. |
 | Knee OA bedside criteria | **`No traceable source`.** The knee has no reachable equivalent to the hip's Grade A criteria set. |
 | Patellofemoral test accuracy | **`No traceable source`.** Searched twice; nothing gives accuracy for a bedside patellofemoral test. |
-| Effusion test reliability | **`No traceable source`.** Searched twice; the literature is MRI volumetry, not the sweep and ballottement tests students are examined on. |
+| Effusion test reliability | **`No traceable source`** for a reliability figure — searched twice. But the **modified stroke test** is named as an essential physical impairment measure to document at baseline and follow-up, so use that one and record it. `src: Logerstedt 2018` |
 | Quadriceps limb symmetry index | **`Convention`.** Widely used as a return-to-sport threshold; the cutoff's origin is not reachable here. Cohorts apply it, none establish it. |
 
 ---
@@ -183,8 +195,17 @@ only place in this guide where an evidence grade can be attached to a recommenda
 
 | Prompt | Answer |
 |---|---|
-| What this section can and cannot do | **`No traceable source`** for graded non-surgical knee management. The knee ligament sprain guideline exists but its free abstract is a purpose statement carrying no recommendation, grade, dose or threshold. `src: Logerstedt 2017` |
-| Where grades do apply | Post-arthroplasty, from an APTA guideline whose full text is free and grades each recommendation by evidence quality. `src: Bove 2026` |
+| Where grades apply, and where they do not | **Two graded guidelines are reachable**: meniscal and articular cartilage lesions `src: Logerstedt 2018`, and total knee arthroplasty `src: Bove 2026`. **Ligament management has none** — that guideline's free abstract is a purpose statement carrying no recommendation, grade, dose or threshold. `src: Logerstedt 2017` |
+| Meniscal and cartilage — **B** | Supervised, progressive **range-of-motion exercise, strength training of the knee *and hip* muscles, and neuromuscular training**, for meniscus tears, cartilage lesions, and after surgery for either. `src: Logerstedt 2018` |
+| Meniscal — **B** | **Neuromuscular stimulation / re-education** after meniscus procedures, to increase quadriceps strength, functional performance and knee function. `src: Logerstedt 2018` |
+| After meniscectomy — **B** | Supervised in-clinic exercise **plus** a supervised, progressed home programme with education for independent performance; strength and functional exercise for quadriceps and hamstring strength and endurance. `src: Logerstedt 2018` |
+| Motion after surgery — **B** | Early progressive **active and passive** knee motion after meniscal or articular cartilage surgery. `src: Logerstedt 2018` |
+| Weight bearing — **B** | Stepwise progression to full weight bearing **by 6 to 8 weeks** after matrix-supported autologous chondrocyte implantation. `src: Logerstedt 2018` |
+| Weight bearing after meniscal repair — **C** | Early progressive weight bearing **may** be considered. Note the weaker grade than the MACI recommendation above. `src: Logerstedt 2018` |
+| Return to activity — **C** and **E** | Early progressive return **may** be used after meniscal repair (**C**); return **may need delaying** depending on the type of articular cartilage surgery (**E**, expert opinion). `src: Logerstedt 2018` |
+| Risk factors — **C** | **Age and greater time from injury** predispose to meniscal injury. `src: Logerstedt 2018` |
+| Outcome measures — **B** | A validated patient-reported outcome measure, a general health questionnaire and a validated activity scale. IKDC 2000 and KOOS are the named self-report measures. `src: Logerstedt 2018` |
+| Essential physical measures | **Modified stroke test** for effusion, knee active ROM, maximum voluntary isometric or isokinetic quadriceps strength, and joint line tenderness. `src: Logerstedt 2018` |
 | Strength training — **high** | Design, implement and teach progressive strength training beginning in the **early postacute** period, to improve function, strength and ROM. `src: Bove 2026` |
 | Cryotherapy and positioning — **high** | Prescribe cryotherapy and teach elevation of the surgical limb at **30–90&deg; of knee flexion** in the early postoperative period. `src: Bove 2026` |
 | Digital health tools — **high** | Consider them either alongside in-clinic care or as an alternative to it. `src: Bove 2026` |
@@ -230,7 +251,7 @@ Recall prompts. Answers are the rows above.
 
 ## 12 · References
 
-Seven sources. Full entries with a supports / does-not-support verdict for each are in
+Eight sources. Full entries with a supports / does-not-support verdict for each are in
 `sources.md`.
 
 1. Kazemi SM, Khorram R, Fayyazishishavan E, et al. Diagnostic accuracy of the Ottawa Knee Rule for diagnosis of fracture in patients with knee trauma: a systematic review and meta-analysis. *Arch Acad Emerg Med* 2023;11(1):e30.
@@ -240,6 +261,7 @@ Seven sources. Full entries with a supports / does-not-support verdict for each 
 5. Roach KE, Miles TP. Normal hip and knee active range of motion: the relationship to age. *Phys Ther* 1991;71(9):656-665.
 6. Bove AM, Carroll LA, Cone S, et al. Clinical practice guideline for physical therapist management of total knee arthroplasty: revision 2026. *Phys Ther* 2026;106(7):pzag058.
 7. Logerstedt DS, Scalzitti D, Risberg MA, et al. Knee Stability and Movement Coordination Impairments: Knee Ligament Sprain Revision 2017. *J Orthop Sports Phys Ther* 2017;47(11):A1-A47.
+8. Logerstedt DS, Scalzitti DA, Bennell KL, Hinman RS, Silvers-Granelli H, Ebert J, Hambly K, Carey JL, Snyder-Mackler L, Axe MJ, McDonough CM. Knee Pain and Mobility Impairments: Meniscal and Articular Cartilage Lesions, Revision 2018. *J Orthop Sports Phys Ther* 2018;48(2):A1-A50.
 
 Entry 7 is cited **once**, in §10, for the fact that it exists and carries nothing quotable. That
 is a real use of a real source, and it is the only honest one available for it.

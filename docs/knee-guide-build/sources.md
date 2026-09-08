@@ -202,6 +202,87 @@ content, and it gets written down in place rather than left as a silence.
 
 ---
 
+## CORRECTION — a guideline I said was unreachable, and was not
+
+**This section records an error in this file's own earlier conclusion.** It is kept rather than
+quietly edited away, because the guide's credibility rests on the same standard applying to me.
+
+I wrote, and built the whole knee guide around, the claim that **no freely readable graded
+examination guideline exists for the knee**. That is false. *Knee Pain and Mobility Impairments:
+Meniscal and Articular Cartilage Lesions, Revision 2018* is openly hosted by the Academy of
+Orthopaedic Physical Therapy, all 50 pages of it, and it is graded.
+
+**How the error happened, precisely.** I searched Europe PMC, found the *Knee Ligament Sprain*
+guideline abstract-only, then checked the Academy's clinical-practice-guideline **index page**,
+found it links no PDFs, and concluded the hip CPG had been reachable only by a lucky direct URL.
+What I did not do was search **this repository**, which already references six openly hosted
+guideline PDFs — the hip one among them. The evidence that my conclusion was wrong was sitting in
+the codebase the whole time, one `grep` away, and I found it only when the ankle build made me
+look for ankle guidelines the same way.
+
+**The lesson, written down so the ankle build inherits it:** when a source is hosted rather than
+indexed, absence from a search engine and absence from an index page are both weak evidence.
+Check what the project already cites before concluding something is unreachable.
+
+### Logerstedt DS, Scalzitti DA, Bennell KL, Hinman RS, Silvers-Granelli H, Ebert J, Hambly K, Carey JL, Snyder-Mackler L, Axe MJ, McDonough CM. Knee Pain and Mobility Impairments: Meniscal and Articular Cartilage Lesions, Revision 2018.
+*J Orthop Sports Phys Ther* 2018;48(2):A1-A50 · **free full text, openly hosted by the Academy**
+
+- **Supports — graded recommendations.** Nineteen distinct lettered recommendations were
+  extracted, covering examination and management of meniscal and articular cartilage lesions.
+  Among them: **B** supervised progressive ROM, progressive strength training of knee *and hip*
+  muscles, and neuromuscular training; **B** neuromuscular stimulation/re-education after meniscus
+  procedures to increase quadriceps strength, functional performance and knee function; **B**
+  supervised in-clinic exercise after arthroscopic meniscectomy plus a supervised home programme;
+  **B** strength and functional exercise for quadriceps and hamstring strength and endurance after
+  meniscectomy; **B** early progressive active and passive knee motion after meniscal or articular
+  cartilage surgery; **B** stepwise progression to full weight bearing by **6 to 8 weeks** after
+  MACI; **B** a validated patient-reported outcome measure, general health questionnaire and
+  activity scale; **C** early progressive weight bearing after meniscal repair; **C** early
+  progressive return to activity after meniscal repair; **C** age and greater time from injury as
+  predisposing factors for meniscal injury; **C** Tegner or Marx activity scales, with stated
+  limitations; **D** physical impairment assessment at baseline and at least one follow-up; **E**
+  delaying return to activity depending on the type of articular cartilage surgery.
+
+- **Supports — meniscal test accuracy, which this file previously recorded as untraceable.**
+  From Blyth et al within the guideline: **292 patients with knee pathology and 75 healthy
+  controls**, examined by **primary care clinicians**, compared against MRI.
+  **McMurray Sn 0.58 (0.49-0.67), Sp 0.56 (0.45-0.66)**, OR 1.79 (1.04-3.09).
+  **Thessaly Sn 0.66 (0.57-0.74), Sp 0.39 (0.29-0.50)**, OR 1.24 (0.71-2.18).
+  **Apley Sn 0.53 (0.44-0.62), Sp 0.53 (0.42-0.63)**, OR 1.24 (0.73-2.12).
+  **Joint line tenderness Sn 0.77 (0.68-0.84), Sp 0.26 (0.18-0.36)**, OR 1.16 (0.63-2.13).
+  Note that three of those four odds ratios have confidence intervals **including 1**.
+
+- **Supports — reliability.** From a systematic review of 4 articles within the guideline:
+  **Thessaly fair reliability, &kappa; = 0.54** (one moderate-quality study); **McMurray and
+  joint-line tenderness poor reliability, &kappa; &le; 0.38** (three low-to-moderate quality
+  studies).
+
+- **Supports — joint line tenderness by sex.** From Haviv et al within the guideline, 134 men and
+  61 women: in **men** Sn 0.50-0.58, Sp 0.74-1.00, accuracy 0.63-0.86; in **women** Sn 0.40-0.49,
+  Sp 0.71-0.98.
+
+- **Supports — essential data elements.** Modified **stroke test** for effusion assessment, knee
+  active ROM, maximum voluntary isometric or isokinetic quadriceps strength testing, and
+  joint-line tenderness to palpation; IKDC 2000 and KOOS; 30-second chair stand, stair climb,
+  timed up-and-go and 6-minute walk early; single-leg hop tests for return to activity.
+
+- **Does not support** — ligament testing, patellofemoral pain, or knee osteoarthritis. Its scope
+  is meniscal and articular cartilage lesions. The `no traceable source` flags for patellofemoral
+  test accuracy, Q angle and normative knee ROM **stand**; only the meniscal ones were wrong.
+
+### What this does to the meniscal figures already in the bank
+
+**McMurray becomes `Contested`, and the reason is the setting.** Rinonapoli reports Sn 91% / Sp
+55% at one week in orthopaedic hands, in a trauma cohort with roughly 74% prevalence. Blyth
+reports Sn 0.58 / Sp 0.56 in **primary care hands** against MRI in a mixed population with healthy
+controls included. Those are not the same test being measured twice; they are the same manoeuvre
+performed by different examiners on different populations, and the gap between them is larger than
+the gap between any two tests. That is the third time in this project that a test's headline
+figure has turned out to depend on who was being examined — and it is the most useful thing the
+knee guide now has to say.
+
+---
+
 ## A cross-joint finding, worth stating once
 
 Normative range of motion could not be traced to a freely readable primary source **for the hip
