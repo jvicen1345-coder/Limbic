@@ -276,6 +276,13 @@ model User {
   hasCompletedTour Boolean   @default(true)
   tourCompletedAt  DateTime?
 
+  /// Ids of the section tours this account has finished or skipped (see lib/tours.ts).
+  /// A JSON array of strings rather than columns, because tours are content: the set of
+  /// them changes with the app, and a migration per tour would be silly. Kept separate from
+  /// hasCompletedTour above, which stays the gate for the one tour that auto-starts — the
+  /// section tours never start on their own, so "seen" is only ever a label in the picker.
+  toursSeen        Json      @default("[]")
+
   // The reader's IANA time zone (e.g. "America/Denver"), reported by their browser and
   // refreshed whenever it changes — see components/TimeZoneSync.tsx, lib/user-time-zone.ts.
   // Every daily-rotating thing in the app is keyed on a calendar date, and those dates used

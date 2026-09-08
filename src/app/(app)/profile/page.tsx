@@ -24,7 +24,7 @@ import { FoundingFunderBadgeCard } from "@/components/FoundingFunderBadgeCard";
 import { UserRoleSection } from "@/components/UserRoleSection";
 import { isUserRole, type UserRole } from "@/lib/user-role";
 import { ThemeSection } from "@/components/ThemeSection";
-import { ReplayTourButton } from "@/components/ReplayTourButton";
+import { TourMenu } from "@/components/TourMenu";
 import { ProgramTimelineSection } from "@/components/ProgramTimelineSection";
 import { dateToLocalIso } from "@/lib/limbic-calendar";
 import { getUserProgram } from "@/app/actions/dpt-programs";
@@ -126,10 +126,16 @@ export default async function ProfilePage() {
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>
         <div className="card-kicker">Platform Tour</div>
-        <p className="card-body" style={{ marginTop: 2, marginBottom: 12 }}>
-          Replay the guided tour to rediscover Limbic features.
+        <p className="card-body" style={{ marginTop: 2, marginBottom: 14 }}>
+          Replay the welcome tour, or take a longer walkthrough of one section.
         </p>
-        <ReplayTourButton />
+        <TourMenu
+          toursSeen={
+            Array.isArray(user.toursSeen)
+              ? (user.toursSeen as unknown[]).filter((t): t is string => typeof t === "string")
+              : []
+          }
+        />
       </div>
 
       <div className="card elev-sm" style={{ marginBottom: 18 }}>

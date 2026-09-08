@@ -14590,3 +14590,78 @@ button.playbook-maskwrap:focus-visible {
   }
   .toolbox-group .pro-tool-card-footer { margin-top: 3px; }
 }
+
+/* ============================================================================
+   Tour picker on Profile (see components/TourMenu.tsx) and the tour card's tour-name
+   kicker. The player's own .tour-overlay/.tour-highlight/.tour-tooltip rules are unchanged
+   and live earlier in this file. Appended at the end per COORDINATION.md.
+   ============================================================================ */
+.tour-kicker {
+  font-size: var(--fs-11);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-accent);
+  margin: 0 0 4px;
+}
+
+.tour-menu { display: flex; flex-direction: column; }
+.tour-menu-heading {
+  font-size: var(--fs-11);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  margin: 18px 0 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-neutral-300);
+}
+.tour-menu-intro {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  margin: 0 0 6px;
+  max-width: 60ch;
+}
+.tour-menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+}
+.tour-menu-row + .tour-menu-row { border-top: 1px solid var(--color-neutral-300); }
+.tour-menu-text { min-width: 0; }
+.tour-menu-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tour-menu-seen {
+  font-size: var(--fs-11);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  background: var(--color-surface-secondary);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.tour-menu-blurb {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  margin: 3px 0 0;
+  max-width: 56ch;
+}
+.tour-menu-start { flex-shrink: 0; }
+
+@media (max-width: 560px) {
+  .tour-menu-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .tour-menu-start { width: 100%; }
+}

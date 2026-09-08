@@ -24,7 +24,9 @@ export default async function MetricsPage() {
 
   return (
     <div className="screen-pad" style={{ maxWidth: 900, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Limbic Metrics</h1>
+      {/* Tour anchor (see lib/tours.ts) — the heading, because it always renders and is
+          exactly what the step is about. */}
+      <h1 data-tour="wellness-metrics" style={{ fontSize: 24, margin: "0 0 4px" }}>Limbic Metrics</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 14px" }}>
         Understand the numbers that matter for your health.
       </p>

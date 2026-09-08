@@ -60,7 +60,9 @@ export default async function ConnexionCaregiverPage() {
 
   return (
     <div className="screen-pad" style={{ maxWidth: 760, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Caregiver Education</h1>
+      {/* Tour anchor (see lib/tours.ts) — the heading, because it always renders and is
+          exactly what the step is about. */}
+      <h1 data-tour="connexion-caregiver" style={{ fontSize: 24, margin: "0 0 4px" }}>Caregiver Education</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 12px" }}>
         Evidence-based guidance for families and caregivers supporting older adults at home.
       </p>

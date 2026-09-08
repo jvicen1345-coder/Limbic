@@ -36,8 +36,16 @@ export default async function ClinicianToolboxPage() {
         {!user.isPro && " Tools marked PRO need a subscription; the rest are yours already."}
       </p>
 
+      {/* Anchors for the LimbicPRO tour (see lib/tours.ts). Keyed off each group's own
+          title rather than its position, so reordering or adding a group cannot silently
+          point a tour step at the wrong one. */}
+      <div data-tour="toolbox-groups">
       {groups.map((group) => (
-        <section className="toolbox-group" key={group.title}>
+        <section
+          className="toolbox-group"
+          key={group.title}
+          data-tour={`toolbox-group-${group.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+        >
           <div className="toolbox-group-head">
             <h2 className="toolbox-group-title">{group.title}</h2>
             <p className="toolbox-group-blurb">{group.blurb}</p>
@@ -73,6 +81,7 @@ export default async function ClinicianToolboxPage() {
           </div>
         </section>
       ))}
+      </div>
     </div>
   );
 }

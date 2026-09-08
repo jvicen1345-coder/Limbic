@@ -15,7 +15,9 @@ export default async function ProSpecialTestsPage({ searchParams }: { searchPara
   return (
     <div className="screen-pad pro-wide-page">
       <FreeToolBanner isPro={user.isPro} />
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Special Tests Library</h1>
+      {/* Tour anchor (see lib/tours.ts) — the heading, because it always renders and is
+          exactly what the step is about. */}
+      <h1 data-tour="pro-special-tests" style={{ fontSize: 24, margin: "0 0 4px" }}>Special Tests Library</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         Organized by body region, with performance technique, positive finding, and diagnostic accuracy.
       </p>
