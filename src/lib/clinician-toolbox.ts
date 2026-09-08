@@ -208,3 +208,32 @@ export function toolboxFor({ isClinicAdmin }: { isClinicAdmin: boolean }): Toolb
     tools: g.tools.filter((t) => !t.clinicAdmin || isClinicAdmin),
   })).filter((g) => g.tools.length > 0);
 }
+
+/** Splits a filter query into the terms every match has to satisfy. Exported so the filter's
+ *  behaviour can be asserted directly (see e2e/toolbox.spec.ts) rather than only through the
+ *  page that calls it. */
+export function toolboxTerms(query: string): string[] {
+  return query.toLowerCase().split(/\s+/).filter(Boolean);
+}
+
+/** Whether a tool matches every term, searching its name, its description, and the title of
+ *  the group it sits in — so half-remembering *where* a tool lives finds it as readily as
+ *  remembering what it is called.
+ *
+ *  Each term has to land at the **start of a word**, not anywhere in the string. Plain
+ *  substring matching looked fine until it was measured against the vocabulary a clinician
+ *  actually types: "ce" matched nine of fifteen tools, because it is inside "eviden(ce)",
+ *  "practi(ce)", "referen(ce)" and "specifi(ci)ty" — the one abbreviation that did match
+ *  matched almost everything, which is worse than matching nothing. Anchoring to a word start
+ *  leaves "ce" on CE Tracker alone while keeping prefixes useful, so "measur" still finds
+ *  Outcome Measures and "documenta" still finds Documentation Templates. */
+export function toolboxMatches(tool: ToolboxEntry, groupTitle: string, terms: string[]): boolean {
+  if (!terms.length) return true;
+  const hay = `${tool.name} ${tool.description} ${groupTitle}`.toLowerCase();
+  return terms.every((term) => {
+    // \b sits before the first letter of a word and after a hyphen or an ampersand too, so
+    // "auth" finds "prior-auth" and "decision" finds "Screening & Decision Support".
+    const pattern = new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`);
+    return pattern.test(hay);
+  });
+}
