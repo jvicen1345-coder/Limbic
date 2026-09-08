@@ -9,7 +9,7 @@ re-reading found.
 |---|---|---|
 | 1 · Scope | `scope.md` | done — 35 competencies, twelve sections matching the shoulder |
 | 2 · Source bank | `sources.md` | 13 papers read; 4 values recorded untraceable; 5 minor items open |
-| 3 · Draft | — | not started |
+| 3 · Draft | `draft.md` | done — 12 sections, 63 citations, 11 references |
 | 4 · Adversarial verification | — | not started |
 | 5 · Build the page | — | not started |
 
