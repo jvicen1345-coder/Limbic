@@ -172,12 +172,31 @@ Both have now been read. See above: the Achilles guideline is usable, the heel p
 
 ---
 
-## Check the era header on every recommendation
+## Era check — done, and resolved
 
-The ankle guideline contains **26 blocks headed "2013 Recommendation" and 27 headed "2021
-Recommendation"**. The 39 recommendations extracted so far did **not** distinguish them, so each
-must have its era confirmed before it reaches the draft. The Achilles guideline is the proof that
-this matters: one of its recommendations reversed direction between revisions.
+The 39 extracted recommendations were re-run with the era header tracked. They split three ways:
+
+| Where it came from | Count | Status |
+|---|---|---|
+| **Front-matter "Summary of Recommendations"** | **18** | **Current. Draft from these.** |
+| Body, headed *2013 Recommendation* | 11 | Prior revision. Do not quote as current. |
+| Body, headed *2021 Recommendation* | 10 | Current, restating the summary |
+
+**The structure, confirmed by position rather than assumed.** "Summary of Recommendations" begins
+on page 2 (character 1930 of the extracted text); the first graded recommendation follows at 3464;
+the first `20XX Recommendation` header does not appear until character 69817, deep in the body. So
+everything graded before that point is the front-matter summary, and the body then works through
+each topic as a *2013* / *2021* pair.
+
+**The rule for this build:** draft from the **front-matter Summary of Recommendations only**. It is
+unambiguously the current set, and it is the same part of the document the hip guide was built
+from. Body recommendations are useful for the reasoning and the harms beside them, but the era
+header must be read before any of them is quoted.
+
+Several 2013 recommendations restate their 2021 counterparts almost word for word — "should not
+use ultrasound" appears in both — which is what makes eyeballing them unsafe. Sameness in most
+cases is exactly what hides the one case that changed, and the Achilles guideline has such a case:
+therapeutic elastic tape went from *should not* (2018, F) to *may* (2024, E).
 
 ## Still to chase
 
