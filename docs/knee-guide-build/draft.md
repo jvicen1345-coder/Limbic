@@ -246,12 +246,17 @@ is a real use of a real source, and it is the only honest one available for it.
 
 ---
 
-## Figures — candidates
+## Figures
 
-- **Pattern 1 (a value that is not constant across its range), and the strongest candidate here:**
-  McMurray's sensitivity and specificity crossing as time since injury increases. Two lines, two
-  timepoints, and the crossing point is the argument.
-- **Pattern 7 (a mechanism shown twice):** extension lag versus fixed flexion contracture — the
-  same limited extension with two different causes, distinguished only by the passive range.
+**Drawn: McMurray at two timepoints, pattern 1 (a value that is not constant across its range).**
+Sensitivity falling 91&rarr;80% against specificity rising 55&rarr;79%, on one axis, at 5-7 days
+and 4-5 weeks. The honest shape is **convergence rather than crossing** — the gap closes from 36
+points to 1 — and drawing it that way is more accurate than forcing an X.
 
-Neither drawn. Both wait on verification.
+It earns its place because the argument is four numbers plus a comparison, and a reader has to
+hold all four at once to see that nothing about the knee changed, only the time since injury.
+Measured at 320, 390, 500, 768 and 1280px: zero labels escape the viewBox, zero overlap, first
+attempt.
+
+**Not drawn: extension lag versus fixed flexion contracture.** The sentence says it faster - two
+clauses, one comparison - which by the template's rule means it stays a sentence.
