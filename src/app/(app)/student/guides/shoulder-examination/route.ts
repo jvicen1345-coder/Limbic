@@ -23,7 +23,15 @@ import { getCurrentUser, hasStudentAccess } from "@/lib/session";
  *     mark-missed handler calls stopPropagation() and the planner therefore never saw the
  *     click that should have rebuilt it;
  *   - a "← Limbic" link at the head of its sticky nav, since the page is reached by ordinary
- *     navigation and otherwise offers no way back into the app.
+ *     navigation and otherwise offers no way back into the app;
+ *   - its palette and type, which are now Limbic's rather than the teal-and-IBM-Plex the
+ *     artifact shipped with. Only the token block at the top of its stylesheet changed, plus
+ *     one inline font-family on a heading — the diff touches nothing outside <style> but that
+ *     one attribute, and no clinical value, no markup and no script. The three status colours
+ *     are the one place the mapping is not literal: Limbic's --color-warn and --color-success
+ *     sit near 3:1 on white, which is fine for the badges the app uses them on and not fine
+ *     for the 9.5px uppercase type this guide sets in them, so those two are darkened members
+ *     of the same hues. The reasoning is written into the stylesheet beside the values.
  *
  * Anything else that diverges is a mistake.
  *
