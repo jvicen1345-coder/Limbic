@@ -49,6 +49,38 @@ Status: **in progress.** Nothing below has been drafted into content yet.
   It also carries no likelihood ratios, no confidence intervals, and no reliability data.
 - **The useful shape** — pivot shift is the specific one (94.4%) and the least sensitive (65.9%);
   Lachman is the balanced one. That ordering is the teaching point, not the decimals.
+- **Do not quote the lever sign from this paper alone.** See Norris 2025 below, which measured the
+  same test in a general traumatic-knee cohort and reached the opposite conclusion — and which
+  names this study's exact design as the reason figures like these are inflated.
+
+### Norris R, Price A, Byrne J, Pulford S, van Melick N, Maddox TW, Boswell W, Kerin C, Oldershaw RA. The lever sign test demonstrates limited clinical utility for diagnosing full-thickness anterior cruciate ligament tears after a traumatic knee injury.
+*Orthop J Sports Med* 2025;13(5):23259671251334775 · PMID 40376390 · PMC12078951 · **free full text**
+
+The knee's Trendelenburg: a test two good papers disagree about, where the disagreement is the
+content. This one is the stronger of the pair, and it explains the other.
+
+- **Supports** — cohort study, level 2, **101 participants after traumatic knee injury**, **MRI as
+  the reference standard**, index testing performed **more than 3 weeks after injury**.
+  Interrater reliability was better on a soft surface but reached only **moderate agreement,
+  &kappa; = 0.529 (95% CI 0.368-0.691)**. **At best, +LR 3.02 (1.60-5.69) and &minus;LR 0.45
+  (0.28-0.73)** — which is a small shift in either direction.
+  Sensitivity was higher on a **soft** surface and specificity higher on a **hard** one, and test
+  outcomes were significantly affected by **the surface used and the examiner's fist position**.
+  Effusion grade, force applied and pain reported were **not** associated with a correct result.
+  Conclusion: **limited clinical utility** for diagnosing full-thickness ACL tears.
+- **Why it beats Nguyen 2025 on this one test** — its own Background says it directly: existing
+  systematic reviews identified the lever sign as the best test for ruling out an ACL tear, but
+  those "included studies have methodological limitations that could bias the test outcome,
+  potentially overestimating its clinical utility". Nguyen's cohort was **165 patients already
+  indicated for arthroscopy**; Norris used MRI in a general traumatic-knee population. That is
+  the difference between a spectrum enriched for disease and one a clinician actually sees.
+- **Does not support** — a verdict on the other ACL tests; it studied the lever sign only. Nor
+  does it apply to the first three weeks after injury, since index testing began after that.
+
+**How this goes in the guide:** `Contested`, with both figures quoted and the reason for the gap
+named. And the operational finding gets its own row, because it is the kind of thing nobody is
+taught: **the lever sign's result depends on the surface the leg rests on and where the examiner
+puts their fist.** A test whose answer moves with the plinth is a test to interpret loosely.
 
 ---
 
@@ -111,8 +143,10 @@ each deserves a second angle before that determination is made in the guide.
   quantification and effusion's relationship to quadriceps inhibition, not the reliability or
   accuracy of the hand tests students are examined on.
 
-If the second pass also comes up empty, both go into the guide flagged in place, the way four hip
-values did.
+**Second pass done for both, both still empty.** Patellofemoral returned quadriceps morphology,
+ankle-mobility and video-assessment work; effusion returned MRI volumetry and ACL-related
+quadriceps inhibition. Neither returned accuracy or reliability for the bedside tests students
+are examined on. Both now go into the guide flagged in place, the way four hip values did.
 
 ---
 
