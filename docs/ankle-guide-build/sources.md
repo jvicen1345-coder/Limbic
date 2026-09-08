@@ -125,15 +125,59 @@ treating it as content.
 
 ---
 
-## Located, not yet read
+## The other two hosted guidelines: one usable, one deliberately not
 
-- `Heel_Pain_Plantar_Fasciitis_Revision_2023.pdf` — hosted by the Academy, free.
-- `chimenti_et_al_2024_achilles_pain_stiffness_and_muscle_power_deficits_midportion_achilles_tendinopathy_revision_2024.pdf` — hosted, free.
+### Chimenti RL, Neville C, Houck J, Cuddeford T, Carreira D, Martin RL. Achilles Pain, Stiffness, and Muscle Power Deficits: Midportion Achilles Tendinopathy Revision 2024.
+*J Orthop Sports Phys Ther* · **free full text, openly hosted, 32 pages** · no access restriction on the document
 
-Both are in scope for a foot-and-ankle guide and neither has been opened. They are recorded here
-so they are not forgotten and not cited before being read.
+**Usable.** 25 distinct lettered recommendations. The headline is **A: tendon loading exercise
+with loads as high as tolerated, as first-line treatment** to improve function and decrease pain,
+and **A: mechanical loading either as eccentric or heavy-load slow-speed work**. **B:** education
+and counselling, with either a pain-science or pathoanatomic focus, combined with loading; and
+**B: complete rest is not indicated** — patients should continue activities within pain tolerance.
+**B:** iontophoresis with dexamethasone in acute midportion tendinopathy. **C, against:** low-level
+laser; therapeutic ultrasound alone; night splints. **C:** heel lifts to temporarily reduce
+dorsiflexion; plantar flexor stretching with knee flexed and extended where dorsiflexion is
+limited; multimodal treatment to enhance exercise. **D:** no recommendation possible on orthoses,
+because the evidence is contradictory. **F:** manual therapy, dry needling, neuromuscular exercise.
+
+- **The recommendation that reversed, and why the year header matters.** Therapeutic elastic tape
+  appears twice with opposite advice. The **2018** recommendation was **F: should *not* use** it.
+  The **2024** recommendation is **E: *may* use** it. Both are weak grades, and the direction
+  flipped between revisions. A extraction that ignored the era header would have put a flat
+  self-contradiction into the guide with both halves correctly cited. **The 2024 recommendation is
+  the current one.**
+
+### Heel Pain — Plantar Fasciitis: Revision 2023 — **not used, deliberately**
+
+The URL resolves and the PDF downloads, but **every one of its 49 pages is watermarked**: *"This
+document is strictly confidential and solely for selective stakeholder review. This draft document
+may not be reproduced or circulated."*
+
+It is not used here, for two independent reasons. It is a **draft under stakeholder review**, so
+its values may differ from whatever was finally published — quoting them as the guideline would
+misstate the guideline. And it asks not to be reproduced or circulated, which quoting it into a
+paid study guide would do.
+
+**A note for the project, not for the guide:** `src/lib/orthopt-cpg-static.ts:100` links this same
+PDF to users, described as "AOPT's third revision of the heel pain / plantar fasciitis guideline".
+That is a product decision rather than a sourcing one, so it has been left alone and raised with
+the user instead of changed unilaterally.
 
 ---
+
+## Located, not yet read
+
+Both have now been read. See above: the Achilles guideline is usable, the heel pain draft is not.
+
+---
+
+## Check the era header on every recommendation
+
+The ankle guideline contains **26 blocks headed "2013 Recommendation" and 27 headed "2021
+Recommendation"**. The 39 recommendations extracted so far did **not** distinguish them, so each
+must have its era confirmed before it reaches the draft. The Achilles guideline is the proof that
+this matters: one of its recommendations reversed direction between revisions.
 
 ## Still to chase
 

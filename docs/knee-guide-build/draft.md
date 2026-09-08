@@ -203,8 +203,8 @@ only place in this guide where an evidence grade can be attached to a recommenda
 | Weight bearing — **B** | Stepwise progression to full weight bearing **by 6 to 8 weeks** after matrix-supported autologous chondrocyte implantation. `src: Logerstedt 2018` |
 | Weight bearing after meniscal repair — **C** | Early progressive weight bearing **may** be considered. Note the weaker grade than the MACI recommendation above. `src: Logerstedt 2018` |
 | Return to activity — **C** and **E** | Early progressive return **may** be used after meniscal repair (**C**); return **may need delaying** depending on the type of articular cartilage surgery (**E**, expert opinion). `src: Logerstedt 2018` |
-| Risk factors — **C** | **Age and greater time from injury** predispose to meniscal injury. `src: Logerstedt 2018` |
-| Outcome measures — **B** | A validated patient-reported outcome measure, a general health questionnaire and a validated activity scale. IKDC 2000 and KOOS are the named self-report measures. `src: Logerstedt 2018` |
+| Risk factors — **C** | **Age and greater time from injury** predispose to meniscal injury. A **2010 recommendation retained** in the 2018 revision — still current, but resting on the older evidence set. `src: Logerstedt 2018` |
+| Outcome measures — **B** | A validated patient-reported outcome measure, a general health questionnaire and a validated activity scale. IKDC 2000 and KOOS are the named self-report measures. Also a **2010 recommendation retained** in 2018. `src: Logerstedt 2018` |
 | Essential physical measures | **Modified stroke test** for effusion, knee active ROM, maximum voluntary isometric or isokinetic quadriceps strength, and joint line tenderness. `src: Logerstedt 2018` |
 | Strength training — **high** | Design, implement and teach progressive strength training beginning in the **early postacute** period, to improve function, strength and ROM. `src: Bove 2026` |
 | Cryotherapy and positioning — **high** | Prescribe cryotherapy and teach elevation of the surgical limb at **30–90&deg; of knee flexion** in the early postoperative period. `src: Bove 2026` |

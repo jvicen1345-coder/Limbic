@@ -270,6 +270,24 @@ Check what the project already cites before concluding something is unreachable.
   is meniscal and articular cartilage lesions. The `no traceable source` flags for patellofemoral
   test accuracy, Q angle and normative knee ROM **stand**; only the meniscal ones were wrong.
 
+### Retained versus superseded recommendations — check the year on every one
+
+These guidelines reprint prior recommendations alongside new ones. The 2018 knee revision contains
+**9 blocks headed "2010 Recommendation" and 18 headed "2018 Recommendation"**, and a first
+extraction cannot tell them apart. Three rows in this guide came from 2010-headed blocks: risk
+factors, outcome measures, and the strength-and-function half of the post-meniscectomy row.
+
+Reading the surrounding text shows those three are **retained** — reprinted as still-current
+guidance, the way the hip guideline reprints its 2017 recommendations inside the 2025 revision —
+so they are not wrong. But they now say which revision they came from, because the reader deserves
+to know a recommendation rests on the older evidence set.
+
+**Why this is not cosmetic:** the Achilles tendinopathy guideline in the ankle bank contains a
+recommendation that **reversed direction** between revisions — 2018 said *should not* use
+therapeutic elastic tape (F), 2024 says *may* use it (E). An extraction that ignores the year
+header would have produced a guide contradicting itself, with both halves correctly cited.
+**Check the era header above every graded recommendation before quoting it.**
+
 ### What this does to the meniscal figures already in the bank
 
 **McMurray becomes `Contested`, and the reason is the setting.** Rinonapoli reports Sn 91% / Sp
