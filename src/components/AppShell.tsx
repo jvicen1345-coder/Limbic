@@ -400,7 +400,10 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
                 reader sees what LimbicPRO contains and which pieces are paywalled rather
                 than some tools silently not existing for them. */}
             <NavLink href="/pro/dashboard" icon={<LayoutDashboardIcon />} label="Dashboard" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/toolbox" icon={<GridIcon />} label="Toolbox" bold={false} onNavigate={onNavigate} />
+            {/* ListIcon, not GridIcon: the Toolbox sits directly under the Dashboard now, and
+                LayoutDashboardIcon is itself a four-part grid — stacked, the two marks read as
+                the same icon. A list is also the honest description of what the page is. */}
+            <NavLink href="/pro/toolbox" icon={<ListIcon />} label="Toolbox" bold={false} onNavigate={onNavigate} />
             <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" locked={!isPro} bold={false} onNavigate={onNavigate} />
             <NavLink href="/hep" icon={<BandageIcon />} label="Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
           </>
