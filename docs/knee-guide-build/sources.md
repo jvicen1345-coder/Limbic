@@ -26,9 +26,30 @@ Status: **in progress.** Nothing below has been drafted into content yet.
 ### Bove AM, Carroll LA, Cone S, Dibblee P, Hensley CP, Lenington K, Manner PA, Scalzitti DA, Tompkins J, Bade MJ. Clinical practice guideline for physical therapist management of total knee arthroplasty: revision 2026.
 *Phys Ther* 2026;106(7):pzag058 · PMID 42506877 · PMC13403188 · **free full text**
 
-- Located and free, **not yet read for values.** Covers post-arthroplasty management. Useful for
-  a post-surgical sub-section at most; it is not a knee examination guideline and must not be
-  quoted as though it were.
+**Read from the free full text, not the abstract** — the abstract is purely descriptive, saying
+only that twenty recommendations were formulated. The full text carries them with an explicit
+**Evidence Quality** on each, so this is the one graded guideline the knee build can actually use.
+
+- **Supports** — an APTA guideline development group (physical therapists, an orthopaedic surgeon,
+  an occupational therapist) based on a systematic review. Fourteen recommendations were extracted
+  with their evidence quality, among them:
+  **high** — do **not** use continuous passive motion after primary uncomplicated TKA;
+  prescribe cryotherapy and teach limb elevation at 30-90&deg; of knee flexion early;
+  progressive strength training from the early postacute period; digital health tools as an
+  addition or alternative to in-clinic care.
+  **moderate** — do **not** routinely brace or splint early to gain ROM; passive, active-assistive
+  and active ROM exercise; manual therapy to augment active-assistive exercise; cryotherapy for
+  early pain; TENS, Kinesio taping and psychologically informed techniques for pain; early
+  progressive physical activity; **daily NMES to quadriceps at the highest tolerable intensity**;
+  group or individual sessions.
+  **low** — do **not** routinely use manual lymphatic drainage, compression dressings or CPM for
+  swelling, as they are unproven.
+- **Does not support** — anything about **examining** a knee. This is post-arthroplasty
+  management. It gives the guide a properly graded post-surgical sub-section and nothing more,
+  and must not be stretched to cover the examination sections the way a knee examination
+  guideline would.
+- **Worth noting for teaching** — an unusual number of its strongest recommendations are
+  *negative*. The highest-quality evidence in the guideline says what to stop doing.
 
 ---
 
@@ -150,6 +171,16 @@ hip, the classic normative tables are paywalled at the table. See the cross-join
 **Quadriceps limb symmetry index — searched, no threshold source.** Returns post-ACL-reconstruction
 cohorts using an LSI cutoff rather than any study establishing one. A widely used threshold whose
 origin this build cannot reach is a convention, not a measurement, and goes in marked as such.
+
+**Knee OA clinical diagnostic criteria — searched, not found.** Returns epidemiology reviews,
+sarcopenia cross-sections and MRI/biomechanics work; no accuracy study for a bedside criteria set
+equivalent to the hip's Grade A criteria. The knee has no reachable counterpart to hip IR < 24&deg;.
+
+**Q angle — searched, and the result is the finding.** What exists is population-specific
+descriptive anatomy: quadriceps angle in healthy North Indian adults, Q angle in sedentary adults
+versus amateur athletes. No universal norm and no reliability study surfaced. A measurement whose
+published values are reported per-population, with no reachable threshold, is a `Convention` and
+the guide will say so rather than quoting the familiar 15&deg;.
 
 **Second pass done for the two below, both still empty.** Patellofemoral returned quadriceps morphology,
 ankle-mobility and video-assessment work; effusion returned MRI volumetry and ACL-related

@@ -7,7 +7,7 @@ text of a named paper carries that exact value.
 | Step | File | State |
 |---|---|---|
 | 1 · Scope | `scope.md` | done — competencies in examination order |
-| 2 · Source bank | `sources.md` | in progress — 6 papers read, 4 with quotable figures; 2 values untraceable |
+| 2 · Source bank | `sources.md` | in progress — 7 papers read, 5 usable; 5 values untraceable |
 | 3 · Draft | — | not started |
 | 4 · Adversarial verification | — | not started |
 | 5 · Build the page | — | not started |
@@ -28,8 +28,10 @@ The knee has no equivalent that this build can reach.
   CPG was reachable by direct URL rather than from that index, and the same trick does not
   produce a knee equivalent.
 - **Bove 2026**, the total knee arthroplasty CPG revision (Phys Ther 106(7), PMC13403188), *is*
-  free full text — but it covers post-arthroplasty management, which is a narrow slice of a knee
-  examination guide rather than its spine.
+  free full text, and its full text — unlike its purely descriptive abstract — carries fourteen
+  recommendations each with an explicit evidence quality. It is the one graded guideline this
+  build can use. But it covers post-arthroplasty management, so it earns a properly graded
+  post-surgical sub-section and cannot be stretched across the examination sections.
 
 So the knee's treatment section will not be able to do what the hip's does. That is a fact about
 the literature this build can reach, not a gap to paper over, and the guide will say so rather
