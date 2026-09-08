@@ -285,8 +285,8 @@ test.describe("Playbook taught lane", () => {
     const email = `pw-taught-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
     await signUpAndEnterApp(page, email);
     await grantLimbicStudent(email);
-    await page.goto("/student/playbooks/shoulder");
-    await expect(page.getByRole("heading", { name: "Shoulder Examination Playbook" })).toBeVisible();
+    await page.goto("/student/playbooks/hip");
+    await expect(page.getByRole("heading", { name: "Hip Examination Playbook" })).toBeVisible();
 
     // Nothing is open, nothing is filled, and the bar stays down until one or the other.
     const toggle = page.locator(".playbook-taught-toggle");
@@ -297,7 +297,7 @@ test.describe("Playbook taught lane", () => {
     // The switch opens a lane on every maskable cell at once — the same cells recall blanks.
     await toggle.click();
     await expect(page.locator(".playbook-taughtbar")).toBeVisible();
-    const taughtCells = playbookTaughtCells(PLAYBOOKS.find((p) => p.slug === "shoulder")!).length;
+    const taughtCells = playbookTaughtCells(PLAYBOOKS.find((p) => p.slug === "hip")!).length;
     await expect(page.locator(".playbook-taught-input")).toHaveCount(taughtCells);
 
     // A line commits when the reader moves on, and the guide's own text is untouched by it.
@@ -349,13 +349,13 @@ test.describe("Playbook access", () => {
 
     // A direct link to one playbook upsells rather than dead-ends, and still renders none
     // of the guide itself.
-    await page.goto("/student/playbooks/shoulder");
+    await page.goto("/student/playbooks/hip");
     await expect(page.getByRole("link", { name: "Upgrade to LimbicStudent" })).toBeVisible();
     await expect(page.locator(".playbook-check-table")).toHaveCount(0);
 
     // And the moment they subscribe, both open.
     await grantLimbicStudent(email);
-    await page.goto("/student/playbooks/shoulder");
+    await page.goto("/student/playbooks/hip");
     await expect(page.locator(".playbook-check-table")).toBeVisible();
   });
 });
@@ -397,5 +397,24 @@ test.describe("Shoulder guide asset", () => {
     const cites = await page.evaluate(() => (window as unknown as { playbookCites?: { linked: number; unlinked: string[] } }).playbookCites);
     expect(cites?.unlinked, "every citation resolves to a reference").toEqual([]);
     expect(cites?.linked).toBeGreaterThan(150);
+  });
+});
+
+/** The shoulder playbook was retired in favour of the guide served whole from content/
+ *  (see the asset test above). Its slug still has to lead somewhere: students bookmark a
+ *  playbook URL and a dead one looks like the product lost a region. */
+test.describe("Retired shoulder playbook", () => {
+  test("its old URL leads to the served guide, and it is gone from the data", () => {
+    expect(PLAYBOOKS.map((p) => p.slug)).not.toContain("shoulder");
+  });
+
+  test("a subscriber following the old link lands on the guide", async ({ page }) => {
+    const email = `pw-retired-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+    await signUpAndEnterApp(page, email);
+    await grantLimbicStudent(email);
+
+    await page.goto("/student/playbooks/shoulder");
+    await page.waitForURL(/\/student\/guides\/shoulder-examination$/);
+    await expect(page.locator("#refs li")).toHaveCount(82);
   });
 });

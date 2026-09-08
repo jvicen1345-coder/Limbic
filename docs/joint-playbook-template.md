@@ -84,9 +84,16 @@ answer cell with the decision or the number; provenance and caveats follow.
 | Table rows | The content |
 | `#refs` groups and entries | The sources you actually cite |
 | `<footer>` | What is original, what is sourced, principal sources by author and year |
+| **localStorage keys** (6, all in the scripts) | `JOINT-comp-v1`, `JOINT-recall-v1/v2/v3`, `JOINT-missed-v1`, `JOINT-add-v1` |
 
 Section IDs are referenced by the nav, the filter and the planner. If you rename one, rename
 it everywhere.
+
+**The storage keys are not optional.** On claude.ai every artifact has its own origin, so the
+keys never collided no matter what they were called. Served from one site they share an
+origin: two guides carrying the same keys share check-off state, recall state, missed cells
+and taught lanes, and a student ticking off the knee watches the shoulder's progress bar move.
+The template ships them as `JOINT-*` so a miss is obvious rather than silent.
 
 ---
 

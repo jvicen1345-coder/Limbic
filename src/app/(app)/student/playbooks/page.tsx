@@ -41,7 +41,7 @@ export default async function PlaybooksHubPage() {
               built from lib/playbooks — see the route handler for why. It opens in its own
               tab because it is a complete document with its own navigation. */}
           <div className="playbook-hub-card playbook-hub-card-guide">
-            <h2 className="playbook-hub-card-name">Shoulder Examination Playbook</h2>
+            <h2 className="playbook-hub-card-name">Shoulder Examination</h2>
             <p className="playbook-hub-card-desc">
               A full shoulder screen in the order you&rsquo;d perform it. Every value says where it came from — what the
               literature measured, what is only convention, and what the studies still argue about — with 82 sources

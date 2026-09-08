@@ -3673,7 +3673,10 @@ a{color:var(--accent)}
   });
   document.addEventListener('click', function(e){
     if(e.target && e.target.classList && e.target.classList.contains('missbtn')) setTimeout(build, 40);
-  });
+    // Capture phase: the mark-missed handler calls stopPropagation() so the click does not
+    // also re-hide the cell, which means a listener on the way back up never fires and the
+    // planner sat on "Nothing marked yet" while you marked things.
+  }, true);
 })();
 
 /* ---------- name the document and every table for a screen reader ---------- */

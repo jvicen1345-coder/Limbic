@@ -1329,7 +1329,7 @@ a{color:var(--accent)}
   var boxes = document.querySelectorAll('input[data-ck]');
   var countEl = document.getElementById('ckcount');
   var fillEl = document.getElementById('ckfill');
-  var KEY = 'shoulder-comp-v1';
+  var KEY = 'JOINT-comp-v1';
   var state = {};
   try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { state = {}; }
 
@@ -1353,7 +1353,7 @@ a{color:var(--accent)}
 (function(){
   var body = document.body;
   var globalBtn = document.getElementById('recallBtn');
-  var KEY = 'shoulder-recall-v3';
+  var KEY = 'JOINT-recall-v3';
   var groups = [];   // one per table or grid: {sec, cols:[{id, chip, cells}]}
 
   function wrap(el){
@@ -1486,7 +1486,7 @@ a{color:var(--accent)}
   });
 
   // ---- what you got wrong ----
-  var MKEY = 'shoulder-missed-v1';
+  var MKEY = 'JOINT-missed-v1';
   var missed = {};
   try {
     (JSON.parse(localStorage.getItem(MKEY) || '[]') || []).forEach(function(id){ missed[id] = 1; });
@@ -1799,7 +1799,7 @@ a{color:var(--accent)}
   try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e) {}
   if(!saved){
     var legacy = null;
-    try { legacy = localStorage.getItem('shoulder-recall-v2') || localStorage.getItem('shoulder-recall-v1'); } catch(e) {}
+    try { legacy = localStorage.getItem('JOINT-recall-v2') || localStorage.getItem('JOINT-recall-v1'); } catch(e) {}
     if(legacy === '1') saved = { secs: sections.map(function(s){ return s.id; }), cols: [] };
     else if(legacy){ try { saved = { secs: JSON.parse(legacy) || [], cols: [] }; } catch(e) {} }
   }
@@ -1846,7 +1846,7 @@ a{color:var(--accent)}
 
 
 (function(){
-  var KEY = 'shoulder-add-v1';
+  var KEY = 'JOINT-add-v1';
   var store = {};
   try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { store = {}; }
   function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} render(); }
@@ -2492,7 +2492,7 @@ a{color:var(--accent)}
 (function(){
   var host = document.getElementById('planner');
   if(!host) return;
-  var MKEY = 'shoulder-missed-v1';
+  var MKEY = 'JOINT-missed-v1';
 
   var METHOD = {
     number: {
@@ -2680,7 +2680,10 @@ a{color:var(--accent)}
   });
   document.addEventListener('click', function(e){
     if(e.target && e.target.classList && e.target.classList.contains('missbtn')) setTimeout(build, 40);
-  });
+    // Capture phase: the mark-missed handler calls stopPropagation() so the click does not
+    // also re-hide the cell, which means a listener on the way back up never fires and the
+    // planner sat on "Nothing marked yet" while you marked things.
+  }, true);
 })();
 
 /* ---------- name the document and every table for a screen reader ---------- */

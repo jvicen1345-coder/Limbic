@@ -373,7 +373,7 @@ export function BoardsTabs({
               target="_blank"
               rel="noopener"
             >
-              <span className="boards-guide-card-name">Shoulder Examination Playbook</span>
+              <span className="boards-guide-card-name">Shoulder Examination</span>
               <span className="boards-guide-card-desc">
                 A full shoulder screen in the order you&rsquo;d perform it, with every value marked as measured,
                 convention or contested, and 82 sources linked.

@@ -12,8 +12,14 @@ import { getCurrentUser, hasStudentAccess } from "@/lib/session";
  * the studies still argue about. Re-expressing that in another content model would mean
  * re-typing several hundred sourced figures, and a paraphrase that drifts by one decimal is
  * indistinguishable from the real thing until a student quotes it in an exam. So the bytes
- * are the deliverable: the file is committed verbatim and returned unmodified. Do not
- * reformat, minify, or "tidy" content/playbooks/shoulder-examination.html.
+ * are the deliverable: nothing here parses, rewrites or re-renders the file, and no clinical
+ * value in it has been touched. Do not reformat, minify, or "tidy"
+ * content/playbooks/shoulder-examination.html.
+ *
+ * It carries one deliberate change from the artifact it came from, made with the author's
+ * say-so: the practice planner's click listener was moved to the capture phase, because the
+ * mark-missed handler calls stopPropagation() and the planner therefore never saw the click
+ * that should have rebuilt it. Anything else that diverges is a mistake.
  *
  * It is a complete HTML document with its own stylesheet, scripts and dark-mode palette,
  * which is why it is a route handler rather than a page — there is no Limbic shell to render

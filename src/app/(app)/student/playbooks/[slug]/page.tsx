@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { PLAYBOOKS, getPlaybook } from "@/lib/playbook-content";
 import { PlaybookPage } from "@/components/playbook/PlaybookPage";
 import { LimbicStudentGate } from "@/components/student/LimbicStudentGate";
+
+/** Retired: every value in the served guide is traced to a source, and the ported
+ *  playbook that carried this slug was built from an older draft that was not. */
+const RETIRED_SHOULDER_SLUG = "shoulder";
 
 export function generateStaticParams() {
   return PLAYBOOKS.map((playbook) => ({ slug: playbook.slug }));
@@ -27,6 +31,12 @@ export default async function PlaybookDetailPage({ params }: { params: Promise<{
   if (!user || !hasStudentAccess(user)) notFound();
 
   const { slug } = await params;
+
+  // The shoulder playbook was retired in favour of the sourced guide served whole from
+  // content/playbooks (see student/guides/shoulder-examination/route.ts). Anyone holding a
+  // link to the old one gets the real thing rather than a 404.
+  if (slug === RETIRED_SHOULDER_SLUG) redirect("/student/guides/shoulder-examination");
+
   const playbook = getPlaybook(slug);
   if (!playbook) notFound();
 

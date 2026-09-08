@@ -35,7 +35,6 @@ import { HIP_PLAYBOOK } from "@/lib/playbooks/hip";
 import { JOINT_MOBILIZATION_PLAYBOOK } from "@/lib/playbooks/joint-mobilization";
 import { KNEE_PLAYBOOK } from "@/lib/playbooks/knee";
 import type { PlaybookProvenance } from "@/lib/playbook-inline";
-import { SHOULDER_PLAYBOOK } from "@/lib/playbooks/shoulder";
 
 /** A cell's presentation: `name` is the row's subject (bolded first column), `num` renders
  *  in tabular-figure monospace so measurements line up down the column, `tissue` is the
@@ -166,7 +165,6 @@ export interface Playbook {
 }
 
 export const PLAYBOOKS: Playbook[] = [
-  SHOULDER_PLAYBOOK,
   HIP_PLAYBOOK,
   KNEE_PLAYBOOK,
   ANKLE_PLAYBOOK,
