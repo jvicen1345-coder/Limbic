@@ -365,6 +365,21 @@ export function BoardsTabs({
           </div>
 
           <div className="boards-guide-grid">
+            {/* Served whole from content/playbooks rather than built from lib/playbooks, so
+                it links out to its own document rather than into a playbook page. */}
+            <a
+              className="boards-guide-card"
+              href="/student/guides/shoulder-examination"
+              target="_blank"
+              rel="noopener"
+            >
+              <span className="boards-guide-card-name">Shoulder Examination Playbook</span>
+              <span className="boards-guide-card-desc">
+                A full shoulder screen in the order you&rsquo;d perform it, with every value marked as measured,
+                convention or contested, and 82 sources linked.
+              </span>
+              <span className="boards-guide-card-meta">12 sections · 32 exam items · 82 references</span>
+            </a>
             {playbooks.map((playbook) => (
               <Link className="boards-guide-card" key={playbook.slug} href={`/student/playbooks/${playbook.slug}`}>
                 <span className="boards-guide-card-name">{playbook.name}</span>

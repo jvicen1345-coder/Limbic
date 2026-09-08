@@ -133,7 +133,9 @@ test.describe("Playbook page", () => {
       await page.goto("/student/playbooks");
       await page
         .locator(".playbook-hub-card")
-        .filter({ has: page.getByRole("heading", { name: playbook.name, exact: true }) })
+        // Matched on where the card leads, not on its heading: the hub also carries guides
+        // served as fixed assets, whose names are deliberately close to a playbook's.
+        .filter({ has: page.locator(`a[href="/student/playbooks/${playbook.slug}"]`) })
         .getByRole("link", { name: "Open" })
         .click();
       await page.waitForURL(new RegExp(`/student/playbooks/${playbook.slug}$`));
@@ -355,5 +357,45 @@ test.describe("Playbook access", () => {
     await grantLimbicStudent(email);
     await page.goto("/student/playbooks/shoulder");
     await expect(page.locator(".playbook-check-table")).toBeVisible();
+  });
+});
+
+/** The shoulder guide is served as a fixed asset (content/playbooks/shoulder-examination.html,
+ *  see app/(app)/student/guides/shoulder-examination/route.ts). Two regressions are worth
+ *  catching: the file falling out of the serverless bundle, which would 500 in production and
+ *  never locally; and the gate coming off, which would publish a paid asset. */
+test.describe("Shoulder guide asset", () => {
+  const URL = "/student/guides/shoulder-examination";
+
+  test("is served whole to a subscriber and hidden from everyone else", async ({ page }) => {
+    const email = `pw-guide-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+    await signUpAndEnterApp(page, email);
+
+    // A .edu sign-in alone is not enough, and the miss is a 404 rather than a redirect —
+    // there is nothing here to upsell, the hub does that.
+    const locked = await page.request.get(URL);
+    expect(locked.status()).toBe(404);
+
+    await grantLimbicStudent(email);
+    const open = await page.request.get(URL);
+    expect(open.status()).toBe(200);
+    expect(open.headers()["content-type"]).toContain("text/html");
+    // Entitlement is per-request, so no shared cache may hold a copy.
+    expect(open.headers()["cache-control"]).toContain("no-store");
+
+    // The document arrives whole, not truncated or re-rendered.
+    const html = await open.text();
+    expect(html).toContain("<title>Shoulder Examination Playbook</title>");
+    expect(html).toContain('<section id="refs">');
+    expect(html.length).toBeGreaterThan(300_000);
+
+    // And it runs: the scripts that build recall, the citation links and the taught lanes
+    // all key off markup in that file, so if it were altered these counts move.
+    await page.goto(URL);
+    await expect(page.locator("#refs li")).toHaveCount(82);
+    await expect(page.locator("input[data-ck]")).toHaveCount(32);
+    const cites = await page.evaluate(() => (window as unknown as { playbookCites?: { linked: number; unlinked: string[] } }).playbookCites);
+    expect(cites?.unlinked, "every citation resolves to a reference").toEqual([]);
+    expect(cites?.linked).toBeGreaterThan(150);
   });
 });
