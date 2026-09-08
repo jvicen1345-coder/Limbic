@@ -1,7 +1,13 @@
 "use client";
 
-import { useState, type MutableRefObject } from "react";
-import type { AvailableHEP, DashboardSummary, PatientDetail, PatientListEntry } from "@/app/actions/clinician-dashboard";
+import { useState, useTransition, type MutableRefObject } from "react";
+import {
+  deletePatient,
+  type AvailableHEP,
+  type DashboardSummary,
+  type PatientDetail,
+  type PatientListEntry,
+} from "@/app/actions/clinician-dashboard";
 import { bodyRegionTagClass } from "@/lib/clinician-dashboard-types";
 import { PreVisitBriefSection } from "./PreVisitBriefSection";
 import { OutcomeMeasuresSection, type OutcomeMeasuresSectionHandle } from "./OutcomeMeasuresSection";
@@ -12,7 +18,6 @@ import { MorningRounds } from "./MorningRounds";
 import { VisitLogBanner } from "./VisitLogBanner";
 import { OutcomeMilestoneBanner } from "./OutcomeMilestoneBanner";
 import { ConditionIntelligenceCard } from "./ConditionIntelligenceCard";
-import { TreatmentIdeasCard } from "./TreatmentIdeasCard";
 import { ClinicalAlertBanner } from "./ClinicalAlertBanner";
 import { PatientGoalsSection } from "./PatientGoalsSection";
 import { ForceLabSummary } from "./ForceLabSummary";
@@ -29,6 +34,7 @@ function ActiveWorkspace({
   availableHEPs,
   onChanged,
   onOpenDischargeModal,
+  onPatientDeleted,
   onPrepareForPatient,
   showVisitBanner,
   onVisitLogged,
@@ -45,6 +51,7 @@ function ActiveWorkspace({
   availableHEPs: AvailableHEP[];
   onChanged: () => void;
   onOpenDischargeModal: () => void;
+  onPatientDeleted: () => void;
   onPrepareForPatient: () => void;
   showVisitBanner: boolean;
   onVisitLogged: () => void;
@@ -61,6 +68,32 @@ function ActiveWorkspace({
     patient.status === "active" && patient.totalVisits - patient.visitCount <= DISCHARGE_SUMMARY_EARLY_ACCESS_VISITS_REMAINING;
   const progressPercent = patient.totalVisits > 0 ? Math.min(100, Math.round((patient.visitCount / patient.totalVisits) * 100)) : 0;
   const [editOpen, setEditOpen] = useState(false);
+  const [deleting, startDelete] = useTransition();
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  /** Deliberately a different gesture from Discharge. Discharge ends a course of treatment
+   *  and keeps the record; this destroys it, along with every outcome, note, goal, HEP
+   *  assignment and session log attached to it. The patient code is spelled out in the
+   *  prompt, so a mis-click while the wrong patient is open is caught before it costs a
+   *  caseload, and the prompt is honest about what survives. */
+  const handleDelete = () => {
+    const confirmed = window.confirm(
+      `Delete ${patient.patientCode} for good?\n\n` +
+        "Their outcomes, notes, goals, HEP assignments and logged sessions go with them. " +
+        "Force Lab and 3RM results are kept, but stop being linked to any patient.\n\n" +
+        "This can't be undone. To close out a finished course of treatment instead, use Discharge."
+    );
+    if (!confirmed) return;
+    setDeleteError(null);
+    startDelete(async () => {
+      const result = await deletePatient(patient.id);
+      if (!result.ok) {
+        setDeleteError(result.error);
+        return;
+      }
+      onPatientDeleted();
+    });
+  };
 
   return (
     <div>
@@ -106,8 +139,13 @@ function ActiveWorkspace({
               Discharge
             </button>
           )}
+          <button type="button" className="btn clindash-delete-patient-btn" onClick={handleDelete} disabled={deleting}>
+            {deleting ? "Deleting…" : "Delete"}
+          </button>
         </div>
       </div>
+
+      {deleteError && <p className="clindash-delete-patient-error">{deleteError}</p>}
 
       {editOpen && <EditPatientForm patient={patient} onChanged={onChanged} onClose={() => setEditOpen(false)} />}
 
@@ -116,8 +154,6 @@ function ActiveWorkspace({
       <ConditionIntelligenceCard condition={patient.condition} outcomeActionsRef={outcomeActionsRef} />
 
       <PreVisitBriefSection patient={patient} />
-
-      <TreatmentIdeasCard patientId={patient.id} />
 
       {patient.status === "discharged" && patient.confirmedDischargeSummary && (
         <div className="clindash-section">
@@ -177,6 +213,7 @@ export function PatientWorkspace({
   availableHEPs,
   onChanged,
   onOpenDischargeModal,
+  onPatientDeleted,
   onPrepareForPatient,
   todaysPatients,
   outcomeReminderPatients,
@@ -201,6 +238,7 @@ export function PatientWorkspace({
   availableHEPs: AvailableHEP[];
   onChanged: () => void;
   onOpenDischargeModal: () => void;
+  onPatientDeleted: () => void;
   onPrepareForPatient: () => void;
   todaysPatients: PatientListEntry[];
   outcomeReminderPatients: PatientListEntry[];
@@ -231,6 +269,7 @@ export function PatientWorkspace({
             availableHEPs={availableHEPs}
             onChanged={onChanged}
             onOpenDischargeModal={onOpenDischargeModal}
+            onPatientDeleted={onPatientDeleted}
             onPrepareForPatient={onPrepareForPatient}
             showVisitBanner={showVisitBanner}
             onVisitLogged={onVisitLogged}

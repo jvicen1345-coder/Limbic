@@ -1,10 +1,24 @@
 import { defineConfig, devices } from "@playwright/test";
 
-/** Runs against a real local dev server + the local SQLite dev.db (same DATABASE_URL a
+/** Runs against a real local server + the local SQLite dev.db (same DATABASE_URL a
  *  contributor already uses per README's "Local development" section) — there's no mocked
- *  backend, so `npm run dev` needs a working `.env` (copy `.env.example`) before `npm test`.
- *  `webServer` starts that dev server itself if one isn't already running on :3000, and
- *  reuses it otherwise (so `npm run dev` + `npm test` in two terminals works too). */
+ *  backend, so the server needs a working `.env` (copy `.env.example`) before `npm test`.
+ *
+ *  Which server depends on where this runs, and that difference is the point:
+ *
+ *  Locally, `webServer` starts `next dev` if nothing is already on :3000 and reuses it
+ *  otherwise, so `npm run dev` + `npm test` in two terminals still works and a failing test
+ *  can be re-run against the same hot server you were just editing against.
+ *
+ *  Under CI it builds first and serves the build. `next dev` compiles each route on first
+ *  request, and with fullyParallel every worker signs up at once and hits those routes cold
+ *  together — so the suite was really measuring compile contention, and the helpers' waits
+ *  had been stretched twice (25s on the first onboarding gate, 20s on the last) to absorb it.
+ *  They still weren't enough: runs failed intermittently on main itself, on tests unrelated
+ *  to the change under test, which is worse than a slow suite because it teaches everyone to
+ *  re-run rather than read the failure. `next start` serves a finished build with no
+ *  on-demand compilation, which removes that whole class of failure rather than widening a
+ *  timeout again — and it tests what actually ships. */
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -61,9 +75,16 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev",
+    // `npm run build` is apply-migrations + next build. CI already ran the migration step
+    // before invoking this, but it's idempotent, so running it again just prints "No
+    // pending migrations" — cheaper than a second, subtly different build command to keep
+    // in sync with package.json.
+    command: process.env.CI ? "npm run build && npm run start" : "npm run dev",
     url: "http://localhost:3000",
-    reuseExistingServer: true,
-    timeout: 60_000,
+    // Never reuse in CI: a stale server from an earlier step would silently serve different
+    // code than the one this config just built.
+    reuseExistingServer: !process.env.CI,
+    // The CI budget has to cover a full production build, not just a server boot.
+    timeout: process.env.CI ? 300_000 : 60_000,
   },
 });

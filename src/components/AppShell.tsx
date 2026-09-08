@@ -30,7 +30,6 @@ import {
   FileTextIcon,
   NetworkIcon,
   LockIcon,
-  CalendarIcon,
   ActivityIcon,
   DumbbellIcon,
   ChevronRightIcon,
@@ -128,7 +127,19 @@ function NavLink({
       {locked ? (
         <span
           className="tag tag-accent"
-          style={{ marginLeft: "auto", background: "var(--color-bg)", display: "inline-flex", alignItems: "center", gap: 3 }}
+          /* .tag sets overflow-wrap:anywhere for the long labels it carries elsewhere; this
+             one is a two-word lock badge on a nav row, and wrapping it just makes the row
+             two lines tall. */
+          style={{
+            marginLeft: "auto",
+            background: "var(--color-bg)",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 3,
+            flexShrink: 0,
+            whiteSpace: "nowrap",
+            overflowWrap: "normal",
+          }}
         >
           <LockIcon size={10} />
           {lockLabel}
@@ -286,11 +297,6 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
   // route), so at most one ever matches here.
   const [expandedSection, setExpandedSection] = useState<SidebarSection | null>(() => {
     if (pathname.startsWith("/nexus")) return "nexus";
-    // /wellness/pathologies is the one route whose sidebar home isn't its URL prefix — its
-    // link moved under LimbicPRO (see the wellness section below for why) while the route
-    // itself stayed put, so it's matched exactly here, ahead of the /wellness prefix check,
-    // rather than expanding a section that no longer lists it.
-    if (pathname === "/wellness/pathologies") return "pro";
     if (pathname.startsWith("/pro") || pathname.startsWith("/hep") || pathname.startsWith("/agent")) return "pro";
     if (pathname.startsWith("/connexion")) return "connexion";
     if (pathname.startsWith("/student") || pathname.startsWith("/boards")) return "student";
@@ -370,6 +376,19 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
             {isStudent && (
               <NavLink href="/student/study-guide" icon={<FileTextIcon />} label="Study Guide" bold={false} onNavigate={onNavigate} />
             )}
+            {/* The playbooks are Boards' study guide and sit behind the same paid line the
+                rest of its prep tools do, so the link carries the badge Boards does. */}
+            {isStudent && (
+              <NavLink
+                href="/student/playbooks"
+                icon={<BandageIcon />}
+                label="Playbooks"
+                locked={!isVerifiedStudent}
+                lockLabel="STUDENT+"
+                bold={false}
+                onNavigate={onNavigate}
+              />
+            )}
             <NavLink href="/student/resources" icon={<ListIcon />} label="NPTE Resources" bold={false} onNavigate={onNavigate} />
           </>
         )}
@@ -386,44 +405,28 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
         />
         {proExpanded && (
           <>
-            {/* Dashboard/Force Lab/Limbic Agent used to be hidden entirely for a non-Pro
-                reader rather than shown-locked — now shown to everyone with the same
-                lock-pill treatment CE Tracker/HEP already had, so a signed-in reader sees
-                the full LimbicPRO toolbox and which pieces of it are still paywalled,
-                rather than some tools just silently not existing for them. */}
+            {/* Four rows, in the order you would reach for them. The first three are the
+                ones you can open without already knowing what you want — your caseload, the
+                index of everything, and the one you can just ask. Exercise Programs follows
+                because it is the one workspace with no other way in: Special Tests, Outcome
+                Measures and Force Lab all left this list, but the Dashboard already carries
+                them (Quick Tools for the first two, each patient's Force Lab card for the
+                third, scoped to that patient), while nothing in the app links to /hep except
+                the Toolbox and the /pro overview.
+
+                Everything not listed here lives on the Toolbox page, which describes each
+                tool instead of just naming it — see lib/clinician-toolbox.ts.
+
+                Dashboard and Limbic Agent are shown locked rather than hidden for a non-Pro
+                reader, the same treatment Exercise Programs already had, so a signed-in
+                reader sees what LimbicPRO contains and which pieces are paywalled rather
+                than some tools silently not existing for them. */}
             <NavLink href="/pro/dashboard" icon={<LayoutDashboardIcon />} label="Dashboard" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/force-lab" icon={<ZapIcon />} label="Force Lab" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            {isPro && clinicMembership?.isAdmin && (
-              <>
-                <NavLink href="/pro/dashboard?tab=team" icon={<UsersIcon />} label="Team Dashboard" bold={false} onNavigate={onNavigate} />
-                <NavLink href="/pro/clinic-report" icon={<FileTextIcon />} label="Clinic Report" bold={false} onNavigate={onNavigate} />
-              </>
-            )}
+            {/* ListIcon, not GridIcon: the Toolbox sits directly under the Dashboard now, and
+                LayoutDashboardIcon is itself a four-part grid — stacked, the two marks read as
+                the same icon. A list is also the honest description of what the page is. */}
+            <NavLink href="/pro/toolbox" icon={<ListIcon />} label="Toolbox" bold={false} onNavigate={onNavigate} />
             <NavLink href="/agent" icon={<NetworkIcon />} label="Limbic Agent" locked={!isPro} bold={false} onNavigate={onNavigate} />
-            {/* Outcome Measures/Screening & Decision Support/Special Tests are free to any
-                signed-in user now (see lib/session.ts hasClinicalReferenceAccess and each
-                page's own gate) — no longer wrapped in {(isPro || isStudent) && ...}, which
-                used to hide this whole block (CE Tracker/HEP included) from a plain
-                signed-in reader who was neither Pro nor a Limbic Student. */}
-            <NavLink href="/pro/calculators" icon={<ActivityIcon />} label="Outcome Measures" bold={false} onNavigate={onNavigate} />
-            {/* Decision Rules and Red Flag Screening used to be two separate sidebar rows/
-                routes — merged into one link since /pro/decision-rules itself already
-                hosts both as tabs (see components/pro/ScreeningDecisionTabs.tsx) and
-                /pro/red-flags is now just a redirect there. */}
-            <NavLink href="/pro/decision-rules" icon={<CheckCircleIcon />} label="Screening & Decision Support" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/special-tests" icon={<ListIcon />} label="Special Tests" bold={false} onNavigate={onNavigate} />
-            {/* Moved off the Health and Wellness hub's card grid — plain-language condition
-                explanations are reference reading, so they sit with the other reference
-                tools here. The /wellness/pathologies route itself is unchanged. */}
-            <NavLink href="/wellness/pathologies" icon={<BodyIcon />} label="Common Pathologies" bold={false} onNavigate={onNavigate} />
-            {/* Now a tab on Exercise Programs (see app/(app)/hep/page.tsx) rather than its
-                own page — this is a second entry into that page, same pattern as Team
-                Dashboard's /pro/dashboard?tab=team below. Kept as its own row, unlocked and
-                free to any signed-in user, since the Builder tab it sits next to still needs
-                a license and shows a lock pill (see Exercise Programs below) — a reader with
-                neither would otherwise have no unlocked way into this from the sidebar. */}
-            <NavLink href="/hep?tab=movement-lab" icon={<DumbbellIcon />} label="Movement Lab" bold={false} onNavigate={onNavigate} />
-            <NavLink href="/pro/ce-tracker" icon={<CalendarIcon />} label="CE Tracker" locked={!isPro} bold={false} onNavigate={onNavigate} />
             <NavLink href="/hep" icon={<BandageIcon />} label="Exercise Programs" locked={!isPro} bold={false} onNavigate={onNavigate} />
           </>
         )}
@@ -547,6 +550,7 @@ function NavContent({ profileName, specialtyLabel, practiceState, school, hasLic
           />
           {adminExpanded && (
             <>
+              <NavLink href="/admin/appraisals" icon={<FileTextIcon />} label="Appraisals" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/licenses" icon={<CheckCircleIcon />} label="License Queue" bold={false} onNavigate={onNavigate} />
               <NavLink href="/admin/copyright" icon={<ShieldIcon />} label="Copyright Notices" bold={false} onNavigate={onNavigate} />
@@ -695,7 +699,7 @@ export function AppShell({
       <nav className="app-sidebar" data-tour="sidebar">
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
           <LogoIcon size={22} />
-          <span style={{ fontFamily: "var(--font-heading)", fontSize: 19, color: "var(--color-text)" }}>
+          <span className="app-wordmark" style={{ fontSize: 19 }}>
             Limbic
           </span>
         </div>
@@ -714,7 +718,7 @@ export function AppShell({
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
             <LogoIcon size={19} />
-            <span style={{ fontFamily: "var(--font-heading)", fontSize: 17 }}>Limbic</span>
+            <span className="app-wordmark" style={{ fontSize: 17 }}>Limbic</span>
           </div>
           <span className="tag tag-neutral">{savedCount} saved</span>
         </div>
@@ -744,7 +748,7 @@ export function AppShell({
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <LogoIcon size={22} />
-                <span style={{ fontFamily: "var(--font-heading)", fontSize: 19, color: "var(--color-text)" }}>
+                <span className="app-wordmark" style={{ fontSize: 19 }}>
                   Limbic
                 </span>
               </div>

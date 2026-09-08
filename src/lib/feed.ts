@@ -1,5 +1,5 @@
 import type { Article, Specialty } from "@/lib/types";
-import { TYPE_META, SPECIALTY_META, formatDate } from "@/lib/meta";
+import { TYPE_META, SPECIALTY_META, formatDate, formatDateWithYear } from "@/lib/meta";
 import type { LlmInterestProfile } from "@/lib/llm-interest-profile";
 
 export interface DecoratedArticle extends Article {
@@ -7,6 +7,10 @@ export interface DecoratedArticle extends Article {
   typeTagClass: string;
   specialtyLabel: string;
   dateLabel: string;
+  /** The same date carrying its year, for the article detail page's byline. Kept alongside
+   *  dateLabel rather than replacing it because the two surfaces want different things —
+   *  see formatDateWithYear in lib/meta.ts. */
+  dateLabelWithYear: string;
   saved: boolean;
   /** True when published after the reader's previous home-feed visit. Always false
    *  outside the home feed (default param) — the badge only makes sense there. */
@@ -30,6 +34,7 @@ export function decorateArticle(
     typeTagClass: "tag " + tm.tag,
     specialtyLabel: SPECIALTY_META[a.specialty],
     dateLabel: formatDate(a.date),
+    dateLabelWithYear: formatDateWithYear(a.date),
     saved: savedIds.includes(a.id),
     isNew: sinceVisit != null && new Date(a.date).getTime() > sinceVisit.getTime(),
     isRead: readIds.includes(a.id),

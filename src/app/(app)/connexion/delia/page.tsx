@@ -54,7 +54,7 @@ export default async function ConnexionDeliaPage() {
           Delia Vicencio is a licensed physical therapist and Doctor of Physical Therapy with more than 30 years of
           experience working with older adults and medically complex patients in the home. She developed The
           Connexion Method, using the Adult Functional Independence Test as its functional assessment, to bring
-          standardized, evidence-based assessment to senior home safety and mobility optimization.
+          standardized assessment approach to senior home safety and mobility optimization.
         </p>
       </div>
 
@@ -73,25 +73,27 @@ export default async function ConnexionDeliaPage() {
 
       <div className="card elev-sm" style={{ marginBottom: 20 }}>
         <div className="card-title">Credentials and Experience</div>
-        {/* TODO: Delia to confirm full credential list */}
+        {/* These are professional credentials published about a real, named clinician, so
+            they state only what can be stood behind. The "Additional credentials — coming
+            soon" placeholder that used to close this list is gone: it implied further
+            qualifications without naming any, which is a claim about someone's professional
+            standing that nobody can check. Delia still needs to confirm the list as it
+            stands; add to it only from what she confirms. */}
         <ul className="connexion-credential-list">
           {CREDENTIALS.map((c) => (
             <li key={c} className="connexion-credential-item">
               {c}
             </li>
           ))}
-          <li className="connexion-credential-item">
-            Additional credentials
-            <span className="connexion-badge-soon">Coming soon</span>
-          </li>
         </ul>
       </div>
 
       <div className="connexion-mission-card" style={{ marginBottom: 20 }}>
         <div className="connexion-mission-kicker">Founder of The Connexion Method</div>
         <p className="connexion-mission-text" style={{ marginBottom: 14 }}>
-          The Connexion Method is a standardized, evidence-based system for senior home safety, mobility
-          optimization, and fall prevention, developed from 30 years of direct patient care.
+          The Connexion Method is a standardized system for senior home safety, mobility optimization, and fall
+          prevention, built on established fall-prevention practice and developed from 30 years of direct patient
+          care.
         </p>
         <Link href="/connexion" className="btn btn-primary">
           Learn About The Connexion Method

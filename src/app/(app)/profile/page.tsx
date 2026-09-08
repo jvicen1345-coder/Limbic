@@ -24,7 +24,7 @@ import { FoundingFunderBadgeCard } from "@/components/FoundingFunderBadgeCard";
 import { UserRoleSection } from "@/components/UserRoleSection";
 import { isUserRole, type UserRole } from "@/lib/user-role";
 import { ThemeSection } from "@/components/ThemeSection";
-import { ReplayTourButton } from "@/components/ReplayTourButton";
+import { TourMenu } from "@/components/TourMenu";
 import { ProgramTimelineSection } from "@/components/ProgramTimelineSection";
 import { dateToLocalIso } from "@/lib/limbic-calendar";
 import { getUserProgram } from "@/app/actions/dpt-programs";

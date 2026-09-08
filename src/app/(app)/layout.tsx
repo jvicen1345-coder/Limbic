@@ -9,6 +9,7 @@ import { OnboardingRoleModal } from "@/components/OnboardingRoleModal";
 import { zoneTwoOrder } from "@/lib/user-role";
 import { getClinicMembershipInfo } from "@/app/actions/clinic-pro";
 import { TimeZoneSync } from "@/components/TimeZoneSync";
+import { TourHost } from "@/components/TourHost";
 import { getTimeZone } from "@/lib/user-time-zone";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -60,6 +61,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       clinicMembership={clinicMembership}
     >
       <TimeZoneSync serverTimeZone={timeZone} />
+      {/* Mounted for the whole app rather than by Home, which is where it used to live: a
+          section tour walks between routes, so the player has to outlive any single page
+          (see components/TourHost.tsx). The welcome tour still starts itself only on Home
+          and only once — that gate is the prop, not the mount point. */}
+      <TourHost autoStartWelcome={!user.hasCompletedTour} />
       {children}
     </AppShell>
   );

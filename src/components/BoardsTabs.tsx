@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { DailySharpeningSession, type SavedSharpeningProgress } from "@/components/DailySharpeningSession";
@@ -10,6 +10,7 @@ import { EvidenceHierarchyPyramid } from "@/components/boards/EvidenceHierarchyP
 import { MissedQuestionsReview } from "@/components/boards/MissedQuestionsReview";
 import { NPTE_DOMAIN_WEIGHTS, domainSlug, type BoardQuestion, type BoardTerm, type NpteDomain } from "@/lib/board-content";
 import type { BoardsProgress } from "@/lib/boards-progress";
+import type { PlaybookSummary } from "@/lib/playbook-content";
 import type { DailyCase } from "@/lib/cases-static";
 
 /** The 5 scored systems, as the FSBPT content outline names them. `domain` ties each one
@@ -140,10 +141,11 @@ function streakMessageClass(days: number): string {
   return "boards-streak-message--success";
 }
 
-type BoardsTab = "sharpening" | "breakdown" | "research" | "resources";
+type BoardsTab = "sharpening" | "guide" | "breakdown" | "research" | "resources";
 
 const TABS: { id: BoardsTab; label: string }[] = [
   { id: "sharpening", label: "Daily Sharpening" },
+  { id: "guide", label: "Study Guide" },
   { id: "breakdown", label: "NPTE Breakdown" },
   { id: "research", label: "Research & Stats" },
   { id: "resources", label: "Resources" },
@@ -172,6 +174,7 @@ export function BoardsTabs({
   progress,
   examDays,
   hasExamDate,
+  playbooks,
   dailyGamesSection,
 }: {
   dateKey: string;
@@ -190,6 +193,10 @@ export function BoardsTabs({
   /** Days until this reader's NPTE, or null if they haven't set a date. */
   examDays: number | null;
   hasExamDate: boolean;
+  /** The study guide's own contents — see the Study Guide panel below. Summaries rather than
+   *  the playbooks themselves, so several thousand lines of content bank stay on the
+   *  server. */
+  playbooks: PlaybookSummary[];
   /** DailyGamesSection, already rendered by the server-component page above this one — a
    *  Client Component can't import and render a Server Component itself, so it arrives here
    *  as a plain ReactNode slot instead. Shown at the bottom of the Daily Sharpening panel
@@ -216,6 +223,16 @@ export function BoardsTabs({
     },
     [pathname, router, searchParams]
   );
+
+  /** The strip scrolls once five tabs no longer fit its measure (see .boards-tabs in
+   *  globals.css), so a deep link to a tab near the end would otherwise land on a page whose
+   *  own tab is off-screen to the right. Brings it into view without scrolling the page —
+   *  `block: "nearest"` is what keeps this from yanking the whole document down to the
+   *  tablist. */
+  useEffect(() => {
+    const index = TABS.findIndex((t) => t.id === activeTab);
+    tabRefs.current[index]?.scrollIntoView({ inline: "nearest", block: "nearest" });
+  }, [activeTab]);
 
   /** Roving-focus keyboard support, which the tablist role promises and this list didn't
    *  have: arrows move between tabs (wrapping), Home/End jump to the ends. Only the active
@@ -327,6 +344,52 @@ export function BoardsTabs({
 
           <h2 style={{ fontSize: 19, margin: "8px 0 0" }}>Daily Games</h2>
           {dailyGamesSection}
+        </div>
+      )}
+
+      {/* The study guide itself. Daily Sharpening is the habit and the breakdown is the map,
+          but this is the thing a reader is actually buying: whole regional examinations they
+          can work through, quiz themselves on, and annotate with what their own program
+          teaches. The playbooks live at /student/playbooks and are gated on the same paid
+          tier this page is, so linking straight out is a link into the same product, not
+          past its edge. */}
+      {activeTab === "guide" && (
+        <div {...panelProps("guide")}>
+          <div style={{ margin: "0 0 4px" }}>
+            <h2 style={{ fontSize: 19, margin: "0 0 4px" }}>Study Guide</h2>
+            <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 14px" }}>
+              Whole regional examinations in the order you&rsquo;d perform them — the sequence, the number each
+              finding is measured against, and where that number actually comes from. Blank any column to quiz
+              yourself, and keep a line of your own under any cell for what your program teaches.
+            </p>
+          </div>
+
+          <div className="boards-guide-grid">
+            {/* Served whole from content/playbooks rather than built from lib/playbooks, so
+                it leads to its own document rather than a playbook page. The document carries
+                its own link back into Limbic. */}
+            <Link className="boards-guide-card" href="/student/guides/shoulder-examination">
+              <span className="boards-guide-card-name">Shoulder Examination</span>
+              <span className="boards-guide-card-desc">
+                A full shoulder screen in the order you&rsquo;d perform it, with every value marked as measured,
+                convention or contested, and 82 sources linked.
+              </span>
+              <span className="boards-guide-card-meta">12 sections · 32 exam items · 82 references</span>
+            </Link>
+            {playbooks.map((playbook) => (
+              <Link className="boards-guide-card" key={playbook.slug} href={`/student/playbooks/${playbook.slug}`}>
+                <span className="boards-guide-card-name">{playbook.name}</span>
+                <span className="boards-guide-card-desc">{playbook.summary}</span>
+                <span className="boards-guide-card-meta">
+                  {playbook.sections} sections · {playbook.items} exam items
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          <p className="boards-research-guide-link">
+            Every playbook, with its checklist progress: <Link href="/student/playbooks">Open the library →</Link>
+          </p>
         </div>
       )}
 

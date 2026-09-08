@@ -46,7 +46,9 @@ export default async function ProCalculatorsPage() {
   return (
     <div className="screen-pad pro-calc-wide-page">
       <FreeToolBanner isPro={user.isPro} />
-      <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Outcome Measures</h1>
+      {/* Tour anchor (see lib/tours.ts) — the heading, because it always renders and is
+          exactly what the step is about. */}
+      <h1 data-tour="pro-calculators" style={{ fontSize: 24, margin: "0 0 4px" }}>Outcome Measures</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
         Validated outcome measures and functional assessments, scored and interpreted in real time.
       </p>

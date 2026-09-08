@@ -27,11 +27,21 @@
 /** Body region a clinician would filter by when they already know what they're treating.
  *  Finer-grained than the old library's single "Spine" bucket — it splits the spine into its
  *  three clinically distinct pieces (a cervical deep-neck-flexor hold and a lumbar dead bug
- *  have nothing to do with each other) and gives the upper limb its own region. */
+ *  have nothing to do with each other) and gives the upper limb its own region.
+ *
+ *  "Back" is the one region named for muscles rather than a body part, and the distinction is
+ *  deliberate: the three spine regions cover the *spine* — its range, its control, its
+ *  symptoms — while Back covers the pulling musculature trained as muscle, the lats, traps,
+ *  rhomboids and spinal extensors. A prone press-up is Lumbar & Core because it is about the
+ *  lumbar spine; a bent-over row is Back because it is about the lats. Because `region` holds
+ *  a single value, scapular exercises that shoulder rehabilitation is built on — the pull-apart,
+ *  the prone Y and T, the banded T — deliberately stay under Shoulder rather than moving here,
+ *  since a clinician filtering Shoulder for a subacromial problem must not lose them. */
 export const MOVEMENT_REGIONS = [
   "Cervical",
   "Thoracic & Rib",
   "Lumbar & Core",
+  "Back",
   "Shoulder",
   "Elbow, Wrist & Hand",
   "Hip & Pelvis",

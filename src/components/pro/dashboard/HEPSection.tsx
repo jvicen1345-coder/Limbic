@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { assignHEP, type AvailableHEP, type PatientDetail } from "@/app/actions/clinician-dashboard";
-import { PlusIcon } from "@/components/icons";
+import { ChevronRightIcon, PlusIcon } from "@/components/icons";
 import { ExerciseListEditor, ExerciseListDisplay } from "./HepExerciseList";
 import { parseHepExercises, type HepTemplateExercise } from "@/lib/hep-templates";
 
@@ -62,10 +63,24 @@ export function HEPSection({
         <div className="card-kicker" style={{ margin: 0 }}>
           Home Exercise Program
         </div>
-        <button type="button" className="btn btn-ghost" style={{ fontSize: 12 }} onClick={() => setFormOpen((v) => !v)}>
-          <PlusIcon size={13} />
-          Update HEP
-        </button>
+        <div className="clindash-hep-actions">
+          {/* The only route into the builder from inside a caseload. "Update HEP" assigns a
+              program that already exists — a saved template, or one typed by hand here — and
+              says nothing about where a saved template comes from. Building one is a real
+              piece of work on its own page, and until this link existed the only ways to
+              reach /hep were the Toolbox and the /pro overview, neither of which you are
+              looking at when you have decided this patient needs a program. A program built
+              there is saved as a template and shows up in the dropdown below on your way
+              back. */}
+          <Link href="/hep" className="clindash-hep-build">
+            Build a program
+            <ChevronRightIcon size={12} />
+          </Link>
+          <button type="button" className="btn btn-ghost" style={{ fontSize: 12 }} onClick={() => setFormOpen((v) => !v)}>
+            <PlusIcon size={13} />
+            Update HEP
+          </button>
+        </div>
       </div>
 
       {!current ? (

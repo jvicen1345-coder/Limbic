@@ -12,8 +12,8 @@ also the two most-churned files in the repo:
 
 | File | Size | Why it's dangerous |
 |---|---|---|
-| `src/app/globals.css` | ~10k lines, 124 media queries **interleaved** through the file | Every visual change lands here. Media queries are not grouped at the bottom — a mobile rule and a desktop rule can sit ten lines apart. |
-| `src/components/AppShell.tsx` | ~700 lines | The only nav/shell component. Desktop sidebar and mobile drawer share `NavContent`, so a "desktop-only" edit is rarely desktop-only. |
+| `src/app/globals.css` | ~13k lines, 171 media queries **interleaved** through the file | Every visual change lands here. Media queries are not grouped at the bottom — a mobile rule and a desktop rule can sit ten lines apart. |
+| `src/components/AppShell.tsx` | ~770 lines | The only nav/shell component. Desktop sidebar and mobile drawer share `NavContent`, so a "desktop-only" edit is rarely desktop-only. |
 
 ### Rules for `globals.css`
 
@@ -23,12 +23,61 @@ also the two most-churned files in the repo:
   end of the file. Do not modify or reorder existing rules to make room.
 - Never bulk-reformat or re-sort this file. A whitespace pass turns every other session's
   small diff into an unresolvable conflict.
+- **Close your braces, and check the file's depth before you push.** PR #384 appended a
+  `@media (max-width: 560px)` block and never closed it. It was the last block in the file
+  at the time, so nothing looked wrong — but every rule appended after it, by every session
+  that came later, was silently swallowed into that media query and only applied below
+  560px. It took PR #389 to find it, and the damage was invisible until someone tested a
+  desktop width. "Append at the end" is only safe if the end is at brace depth 0:
+
+  ```sh
+  # prints the file's closing brace depth; anything but 0 means a block is still open
+  awk '{d+=gsub(/{/,"{")-gsub(/}/,"}")} END{print d}' src/app/globals.css
+  ```
 
 ### Rules for `AppShell.tsx`
 
 Treat it as frozen whenever another session is active. If your task needs a change here,
 say so and get a decision first — do not edit it speculatively. Note that `NavContent` is
 shared between the desktop sidebar and the mobile drawer; verify both before pushing.
+
+## CI
+
+Every PR and every push to `main` runs `.github/workflows/ci.yml` (added in PR #387, after
+the last revision of this file): `npm run typecheck`, `npm run lint`, and the Playwright
+suite. Both jobs are blocking. Run them locally before pushing rather than using CI as the
+first check — a red PR is visible to everyone and costs a cycle.
+
+The e2e job builds the app and serves the build (PR #400). It used to run against
+`next dev`, which compiles routes on first request; with `fullyParallel` every worker hit
+those routes cold at once, and the suite spent four of ten `main` runs red on tests
+unrelated to whatever was being merged.
+
+That fixed the compile contention but not all of it, and the rest came back as the suite
+grew from 22 tests to 49. The second cause was the database, and it was invisible from the
+failure: `@libsql/client` forwards a `timeout` option to the native database as its busy
+timeout, and the default is **0** — a writer that finds the database locked failed
+immediately instead of waiting. SQLite serialises writers even in WAL mode, so two
+concurrent sign-ups were enough. It surfaced as a `DriverAdapterError` ("SocketTimeout")
+wrapped as Prisma `P1008`, thrown out of the sign-up Server Action, leaving the browser on
+the sign-up page — so every test died in the `completeFirstRun` helper waiting 25s for
+`/onboarding/name`, with nothing anywhere naming the database. `src/lib/db.ts` now sets it;
+running the suite at eight workers went from 5 failed with 15 adapter timeouts to 48 passed
+with none, and the run time halved.
+
+So: if you see an e2e failure that looks unrelated to your diff, both of those histories are
+why — and neither should be the explanation any more. **Read the failure before assuming
+it's noise, and check whether `main` is red on its own before assuming it isn't yours.** Both
+mistakes have been made here: a change that added two DB-writing tests really did break the
+suite by adding contention, and a later one really was innocent. They look identical from
+the outside; the two-minute check is `git log` on `main`'s CI runs.
+
+Locally `npm test` still runs against `next dev` and reuses a server already on `:3000`,
+so `npm run dev` in one terminal and `npm test` in another works. It needs a real `.env`
+(copy `.env.example`) and migrations applied (`node scripts/apply-migrations.mjs`) — the
+suite runs against the local SQLite `dev.db`, with no mocked backend. A missing `.env`
+surfaces as a Prisma `datasource.url` error from the migration step, and an unmigrated
+database as `no such table: main.User` from inside the tests.
 
 ## Branch discipline
 
@@ -50,6 +99,14 @@ it as unmerged when its content already landed. Confirm with:
 git log --oneline --all --grep="<subject>" -i     # look for a squash commit on main
 git log --oneline main -- <the files it touched>  # look for a later revert
 ```
+
+Also check whether `main` has since solved the same problem a **different** way. A branch
+can be perfectly good, conflict only trivially, and still be the wrong thing to merge. PR
+#336 moved the Boards tab bar above Daily Games so the tabs didn't sit under an unrelated
+section; while it waited, `boards-daily-games-in-sharpening-tab` landed and put Daily Games
+*inside* the Daily Sharpening tab instead, which solves the same complaint better. The two
+branches conflicted only in the comment explaining which approach won — merging #336 would
+have quietly reverted the better fix. It was closed rather than merged.
 
 **Known stale — do not merge:** `claude/redesign-sidebar-nav`. Its content shipped as
 PR #304 and was deliberately reverted by PR #307 ("changed too much of the platform's
@@ -84,7 +141,7 @@ git log --oneline origin/main --grep="<that subject>" -i
 
 **Why the obvious check does not work.** This repo squash-merges, so a landed branch's tip
 SHA is not an ancestor of `main` and `git diff main...branch` (three-dot, from the merge
-base) still reports the branch's full original diff. As of 2026-09-01 roughly 100 branches
+base) still reports the branch's full original diff. As of 2026-09-05 about 105 branches
 sit on origin and all but a couple have already shipped — every one of them looks unmerged
 to a three-dot diff. `fix-slide-breakdown-course-mixup` was the clearest example: it read as
 unmerged while *being* main's HEAD.
@@ -95,6 +152,22 @@ it landed and the branch is now stale, the opposite of unmerged work.
 
 If auto-delete-on-merge ever gets turned on in repo settings, most of this section stops
 being necessary: a branch still existing would mean something.
+
+### Recently landed (2026-09-02 – 09-05)
+
+- **CI** — PR #387 added it; PR #400 moved the e2e job onto a built app. See the CI section
+  above; this file predated both.
+- **Unclosed `@media` block in `globals.css`** — PR #389. The one to know about: see the
+  brace-depth rule under `globals.css` above.
+- **Article study breakdown** — PR #396 replaced the publisher's abstract on research
+  articles with a five-field summary, cached per article in `ArticleBreakdownCache`. PR
+  #399 followed with the date's year and the removal of the read-time from every `Article`
+  surface (it was the constant 2 for every abstract).
+- **Clinician Dashboard session logging** — PR #395 made logged sessions editable.
+- **Legal/compliance** — PRs #388, #390, #392, #394, #398.
+- **Movement Lab** — PR #391 added nine single-limb exercises and resolved every dangling
+  single-limb progression.
+- **Mini Crossword difficulty** — PR #393.
 
 ### Recently landed (2026-09-01)
 

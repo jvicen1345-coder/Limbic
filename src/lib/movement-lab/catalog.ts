@@ -21,6 +21,7 @@ import { MOVEMENT_REGIONS } from "@/lib/movement-lab/types";
 import { CERVICAL_EXERCISES } from "@/lib/movement-lab/exercises/cervical";
 import { THORACIC_EXERCISES } from "@/lib/movement-lab/exercises/thoracic";
 import { LUMBAR_CORE_EXERCISES } from "@/lib/movement-lab/exercises/lumbar-core";
+import { BACK_EXERCISES } from "@/lib/movement-lab/exercises/back";
 import { SHOULDER_EXERCISES } from "@/lib/movement-lab/exercises/shoulder";
 import { UPPER_LIMB_EXERCISES } from "@/lib/movement-lab/exercises/upper-limb";
 import { HIP_EXERCISES } from "@/lib/movement-lab/exercises/hip";
@@ -36,6 +37,7 @@ export const MOVEMENT_EXERCISES: MovementExercise[] = [
   ...CERVICAL_EXERCISES,
   ...THORACIC_EXERCISES,
   ...LUMBAR_CORE_EXERCISES,
+  ...BACK_EXERCISES,
   ...SHOULDER_EXERCISES,
   ...UPPER_LIMB_EXERCISES,
   ...HIP_EXERCISES,
@@ -123,22 +125,108 @@ function matchesWordPrefix(haystack: string, term: string): boolean {
   }
 }
 
+/**
+ * True when `term` appears in `haystack` as a complete word — stricter than
+ * matchesWordPrefix, which only requires the stored word to *start* with the term.
+ *
+ * Used exclusively for the de-pluralised forms below, and that restriction is the whole
+ * point. Stripping the "s" off a query shortens it, and a shortened term prefix-matches far
+ * too much: "lats" became "lat", which prefix-matches "lateral", so a search for the
+ * latissimus returned the Lateral Band Walk, Lateral Bound and Lateral Step-Down ahead of any
+ * back exercise. Requiring the stripped form to be a whole word keeps the plural fix working
+ * — "curls" still finds "Biceps Curl", "crunches" still finds "Mini crunch" — while refusing
+ * the accidental prefixes that the stripping itself created.
+ */
+function matchesWholeWord(haystack: string, word: string): boolean {
+  let from = 0;
+  for (;;) {
+    const at = haystack.indexOf(word, from);
+    if (at === -1) return false;
+    const before = at === 0 || !/[a-z0-9]/.test(haystack[at - 1]);
+    const afterIndex = at + word.length;
+    const after = afterIndex >= haystack.length || !/[a-z0-9]/.test(haystack[afterIndex]);
+    if (before && after) return true;
+    from = at + 1;
+  }
+}
+
+/**
+ * Everyday shorthand for the muscles, mapped to the clinical word the bank actually stores.
+ *
+ * `targets` is written in full ("Latissimus dorsi", "Gluteus maximus", "Quadriceps"), which is
+ * right for a clinical record and wrong for a search box: nobody types "latissimus". Stripping
+ * a plural does not bridge the gap either, and for the lats it actively misfires — "lats"
+ * shortens to "lat", which prefix-matches *lateral*, so the search returned the Lateral Band
+ * Walk and Lateral Step-Down instead of a single back exercise.
+ *
+ * Mapped rather than stemmed, because these are irregular by nature — no rule turns "pecs"
+ * into "pectoralis". Kept to the shorthand that is genuinely in daily use; a term that only
+ * appears in a textbook does not need an entry here.
+ */
+const MUSCLE_SYNONYMS: Readonly<Record<string, string>> = {
+  lats: "latissimus",
+  quad: "quadriceps",
+  quads: "quadriceps",
+  glute: "gluteus",
+  glutes: "gluteus",
+  ham: "hamstring",
+  hams: "hamstring",
+  pec: "pectoralis",
+  pecs: "pectoralis",
+  delt: "deltoid",
+  delts: "deltoid",
+  trap: "trapezius",
+  traps: "trapezius",
+  abs: "abdominis",
+  calves: "calf",
+  cuff: "rotator cuff",
+};
+
+/**
+ * The singular forms a term might be a plural of. The term itself is matched separately, by
+ * prefix; these are matched as whole words only (see matchesWholeWord).
+ *
+ * Word-prefix matching already handles a singular query against plural content — "kick"
+ * matches "Flutter Kicks", because the stored word merely has to *start* with the term. The
+ * reverse does not work, and the reverse is what clinicians actually type: real requests from
+ * the Movement Lab queue included "mini crunches", "banded lateral delt raises" and "straight
+ * bar bicep curls", none of which matched entries stored as crunch, raise and curl.
+ *
+ * Deliberately crude — strip a trailing plural ending rather than stem properly. A real
+ * stemmer would collapse distinct clinical words ("glide"/"gliding", "flexion"/"flexor") and
+ * the resulting false matches cost more here than the few plurals it would additionally catch.
+ */
+function termVariants(term: string): string[] {
+  if (term.length <= 3) return [];
+  if (term.endsWith("ies")) return [`${term.slice(0, -3)}y`];
+  if (term.endsWith("es")) return [term.slice(0, -2), term.slice(0, -1)];
+  if (term.endsWith("s")) return [term.slice(0, -1)];
+  return [];
+}
+
 /** Fields a free-text term is matched against, ordered by how strongly a hit in each one
  *  suggests the clinician found what they were after. `indications` is in here because
  *  searching by condition ("plantar", "ACL", "sciatica") is how a clinician actually looks
  *  for an exercise, and `aka` because they type the name they were taught rather than the
  *  one this bank happens to use. Every field below matches on a word prefix rather than a
- *  bare substring — see matchesWordPrefix for why. */
+ *  bare substring — see matchesWordPrefix for why — and against the term's singular forms
+ *  as well as the term itself, so a plural query finds singular content. */
 function searchScore(ex: MovementExercise, term: string): number {
+  const singulars = termVariants(term);
+  const synonym = MUSCLE_SYNONYMS[term];
+  const hit = (haystack: string) =>
+    matchesWordPrefix(haystack, term) ||
+    (synonym !== undefined && matchesWordPrefix(haystack, synonym)) ||
+    singulars.some((s) => matchesWholeWord(haystack, s));
   const name = ex.name.toLowerCase();
   if (name === term) return 100;
-  if (name.startsWith(term)) return 80;
-  if (matchesWordPrefix(name, term)) return 60;
-  if (ex.aka?.some((a) => matchesWordPrefix(a.toLowerCase(), term))) return 50;
-  if (ex.indications.some((i) => matchesWordPrefix(i.toLowerCase(), term))) return 40;
-  if (ex.targets.some((t) => matchesWordPrefix(t.toLowerCase(), term))) return 30;
-  if (matchesWordPrefix(ex.region.toLowerCase(), term) || matchesWordPrefix(ex.category.toLowerCase(), term)) return 20;
-  if (matchesWordPrefix(ex.cue.toLowerCase(), term) || matchesWordPrefix(ex.setup.toLowerCase(), term)) return 10;
+  if (name.startsWith(term) || singulars.some((s) => name === s)) return 80;
+  if (hit(name)) return 60;
+  if (ex.aka?.some((a) => hit(a.toLowerCase()))) return 50;
+  if (ex.indications.some((i) => hit(i.toLowerCase()))) return 40;
+  if (ex.targets.some((t) => hit(t.toLowerCase()))) return 30;
+  if (hit(ex.region.toLowerCase()) || hit(ex.category.toLowerCase())) return 20;
+  if (hit(ex.cue.toLowerCase()) || hit(ex.setup.toLowerCase())) return 10;
   return 0;
 }
 
@@ -148,28 +236,55 @@ function searchScore(ex: MovementExercise, term: string): number {
  * "shoulder band" narrows rather than widens. An OR-match would return every shoulder
  * exercise plus every band exercise, which at this bank's size is no better than no search.
  */
-export function searchExercises(query: string, filters: MovementFilters = {}): MovementExercise[] {
+/** A search hit with the strength of the match kept, rather than thrown away. */
+export interface ScoredMovementExercise {
+  exercise: MovementExercise;
+  /** Summed across the query's words, so it grows with the number of words matched. */
+  score: number;
+  /** How many words the query had, so `score / terms` compares across queries of any length. */
+  terms: number;
+}
+
+/**
+ * The ranked search, with each hit's score kept.
+ *
+ * Callers that just want the list should use `searchExercises`. This exists for the one
+ * caller that has to tell a real match from a loose one rather than simply showing the best
+ * few: the admin request queue asks "is this requested exercise now in the bank?", and the
+ * honest answer differs depending on whether the query matched an exercise's *name* or merely
+ * something it happens to treat. `score / terms` makes that judgement possible — the bands in
+ * `searchScore` mean an average at or above 50 was matched on name or alias, while lower
+ * averages matched only an indication, a target or a region.
+ */
+export function searchExercisesScored(
+  query: string,
+  filters: MovementFilters = {},
+): ScoredMovementExercise[] {
   const filtered = filterExercises(MOVEMENT_EXERCISES, filters);
   const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  if (terms.length === 0) return filtered;
+  if (terms.length === 0) return filtered.map((exercise) => ({ exercise, score: 0, terms: 0 }));
 
-  const scored: { ex: MovementExercise; score: number }[] = [];
-  for (const ex of filtered) {
+  const scored: ScoredMovementExercise[] = [];
+  for (const exercise of filtered) {
     let total = 0;
     let matchedAll = true;
     for (const term of terms) {
-      const score = searchScore(ex, term);
+      const score = searchScore(exercise, term);
       if (score === 0) {
         matchedAll = false;
         break;
       }
       total += score;
     }
-    if (matchedAll) scored.push({ ex, score: total });
+    if (matchedAll) scored.push({ exercise, score: total, terms: terms.length });
   }
 
   // Ties broken by name so the order is stable between renders rather than depending on the
   // sort implementation — a list that reshuffles as you type is hard to click.
-  scored.sort((a, b) => b.score - a.score || a.ex.name.localeCompare(b.ex.name));
-  return scored.map((s) => s.ex);
+  scored.sort((a, b) => b.score - a.score || a.exercise.name.localeCompare(b.exercise.name));
+  return scored;
+}
+
+export function searchExercises(query: string, filters: MovementFilters = {}): MovementExercise[] {
+  return searchExercisesScored(query, filters).map((s) => s.exercise);
 }

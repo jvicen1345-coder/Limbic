@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
     // body (see lib/media-upload.ts) — the default 1mb limit isn't enough for a few photos.
     serverActions: { bodySizeLimit: "10mb" },
   },
+  // The shoulder guide is a committed HTML file read at runtime by
+  // app/(app)/student/guides/shoulder-examination/route.ts. Nothing imports it, so the
+  // tracer cannot see it and would leave it out of the serverless bundle.
+  outputFileTracingIncludes: {
+    "/student/guides/shoulder-examination": ["content/playbooks/*.html"],
+  },
   images: {
     // Only YouTube's own thumbnail CDN — a single fixed, known hostname (see
     // lib/meta.ts youtubeThumbnailUrl), safe to optimize via next/image. Article/exercise

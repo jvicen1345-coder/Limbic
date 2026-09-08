@@ -130,10 +130,16 @@ export function CrosswordGame({
     [isBlack]
   );
 
-  const isClueSolved = useCallback(
-    (clue: CrosswordClue, dir: Direction) =>
-      cellsForClue(clue, dir).every(([r, c]) => cells[r][c].toUpperCase() === puzzle.grid[r][c]),
-    [cells, puzzle]
+  /** Whether every square of a clue has *a* letter in it — deliberately not whether those
+   *  letters are right. The clue list used to strike an entry through the moment it matched
+   *  the answer, which handed the solver a free correctness oracle: you could confirm any
+   *  guess without committing to it, and worse, pin down a single unknown square by cycling
+   *  A-Z and watching for the strike-through. Marking "filled" instead keeps the progress
+   *  signal (what's left to do) and takes away the answer key; the only correctness feedback
+   *  left is the whole-grid check on the last square, same as a real mini. */
+  const isClueFilled = useCallback(
+    (clue: CrosswordClue, dir: Direction) => cellsForClue(clue, dir).every(([r, c]) => cells[r][c] !== ""),
+    [cells]
   );
 
   const persist = useCallback(
@@ -429,7 +435,7 @@ export function CrosswordGame({
                   key={`a-${clue.number}`}
                   className={`crossword-clue-item${
                     activeClue?.number === clue.number && direction === "across" ? " crossword-clue-item-active" : ""
-                  }${isClueSolved(clue, "across") ? " crossword-clue-item-done" : ""}`}
+                  }${isClueFilled(clue, "across") ? " crossword-clue-item-filled" : ""}`}
                   onClick={() => {
                     inputRef.current?.focus();
                     setTouched(true);
@@ -449,7 +455,7 @@ export function CrosswordGame({
                   key={`d-${clue.number}`}
                   className={`crossword-clue-item${
                     activeClue?.number === clue.number && direction === "down" ? " crossword-clue-item-active" : ""
-                  }${isClueSolved(clue, "down") ? " crossword-clue-item-done" : ""}`}
+                  }${isClueFilled(clue, "down") ? " crossword-clue-item-filled" : ""}`}
                   onClick={() => {
                     inputRef.current?.focus();
                     setTouched(true);
