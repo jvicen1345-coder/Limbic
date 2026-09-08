@@ -51,9 +51,26 @@ first check — a red PR is visible to everyone and costs a cycle.
 The e2e job builds the app and serves the build (PR #400). It used to run against
 `next dev`, which compiles routes on first request; with `fullyParallel` every worker hit
 those routes cold at once, and the suite spent four of ten `main` runs red on tests
-unrelated to whatever was being merged. If you see an e2e failure that looks unrelated to
-your diff, that history is why — but it should no longer be the explanation, so read the
-failure before assuming it's noise.
+unrelated to whatever was being merged.
+
+That fixed the compile contention but not all of it, and the rest came back as the suite
+grew from 22 tests to 49. The second cause was the database, and it was invisible from the
+failure: `@libsql/client` forwards a `timeout` option to the native database as its busy
+timeout, and the default is **0** — a writer that finds the database locked failed
+immediately instead of waiting. SQLite serialises writers even in WAL mode, so two
+concurrent sign-ups were enough. It surfaced as a `DriverAdapterError` ("SocketTimeout")
+wrapped as Prisma `P1008`, thrown out of the sign-up Server Action, leaving the browser on
+the sign-up page — so every test died in the `completeFirstRun` helper waiting 25s for
+`/onboarding/name`, with nothing anywhere naming the database. `src/lib/db.ts` now sets it;
+running the suite at eight workers went from 5 failed with 15 adapter timeouts to 48 passed
+with none, and the run time halved.
+
+So: if you see an e2e failure that looks unrelated to your diff, both of those histories are
+why — and neither should be the explanation any more. **Read the failure before assuming
+it's noise, and check whether `main` is red on its own before assuming it isn't yours.** Both
+mistakes have been made here: a change that added two DB-writing tests really did break the
+suite by adding contention, and a later one really was innocent. They look identical from
+the outside; the two-minute check is `git log` on `main`'s CI runs.
 
 Locally `npm test` still runs against `next dev` and reuses a server already on `:3000`,
 so `npm run dev` in one terminal and `npm test` in another works. It needs a real `.env`
