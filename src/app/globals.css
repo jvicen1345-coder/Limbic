@@ -14685,3 +14685,135 @@ button.playbook-maskwrap:focus-visible {
   padding: 4px 2px;
 }
 .clindash-hep-build:hover { color: var(--color-accent); text-decoration: underline; }
+
+/* Clinical Toolbox filter row and card grid (see components/pro/ToolboxBrowser.tsx).
+
+   The grid is auto-fill rather than a fixed two columns. At two columns on a desktop the
+   cards ran ~540px wide holding one or two lines of text, and three of the five groups have
+   an odd number of tools, so each left a half-empty row hanging beside a single card — the
+   most visible flaw on the page. Letting the column count follow the available width packs a
+   three-tool group into one tidy row instead. Scoped to .toolbox-group so the /pro overview
+   hub's own grid, which holds six long-copy cards, is unaffected. */
+.toolbox-group .pro-tools-grid { grid-template-columns: repeat(auto-fill, minmax(272px, 1fr)); }
+
+.toolbox-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 14px 0 4px;
+}
+.toolbox-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 9px;
+  border: 1px solid var(--color-divider);
+  border-radius: 99px;
+  background: var(--color-card-surface);
+  color: var(--color-neutral-700);
+  flex: 0 0 auto;
+}
+.toolbox-search:focus-within { border-color: var(--color-accent); }
+.toolbox-search-input {
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 0;
+  width: 148px;
+}
+.toolbox-search-input::-webkit-search-cancel-button { display: none; }
+.toolbox-search-clear {
+  display: inline-flex;
+  border: 0;
+  background: none;
+  padding: 2px;
+  cursor: pointer;
+  color: var(--color-neutral-700);
+}
+.toolbox-search-clear:hover { color: var(--color-text); }
+
+.toolbox-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.toolbox-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 11px;
+  border: 1px solid var(--color-divider);
+  border-radius: 99px;
+  background: transparent;
+  color: var(--color-neutral-700);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.toolbox-chip:hover { border-color: var(--color-accent); color: var(--color-accent); }
+/* The :hover rule above is (0,2,0) and would otherwise outrank a plain .toolbox-chip--on,
+   painting the label accent-on-accent — an invisible chip for as long as the pointer stays
+   where it just clicked, which is exactly where it stays. The selected state is spelled out
+   for the hovered case too so it wins on order at equal specificity. */
+.toolbox-chip--on,
+.toolbox-chip--on:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+.toolbox-chip-n { font-size: var(--fs-10); opacity: 0.7; font-variant-numeric: tabular-nums; }
+.toolbox-chip--on .toolbox-chip-n { opacity: 0.85; }
+
+/* The icon is a visual anchor for scanning, not information on its own — the name beside it
+   carries the meaning, so it is hidden from assistive tech rather than given a label that
+   would be read out twice. */
+.toolbox-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--color-neutral-100);
+  color: var(--color-accent);
+}
+.pro-tool-card--locked .toolbox-card-icon { background: var(--color-neutral-100); color: var(--color-neutral-700); }
+.toolbox-card-head .pro-tool-card-title { flex: 1 1 auto; min-width: 0; }
+
+.toolbox-empty, .toolbox-result-note {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 18px 0 0;
+}
+.toolbox-empty { margin-top: 26px; }
+.toolbox-empty-reset {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+.toolbox-empty-reset:hover { text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .toolbox-bar { gap: 7px 8px; margin: 12px 0 2px; }
+  .toolbox-search { flex: 1 1 100%; }
+  .toolbox-search-input { width: auto; flex: 1 1 auto; }
+  .toolbox-card-icon { width: 22px; height: 22px; border-radius: 7px; }
+  /* One scrolling row rather than two wrapped ones. Six chips wrap to two rows on a phone
+     and push the first card most of a screen down, on a page whose point is that you can see
+     what is available. Its own scroll container, so the page body still never scrolls
+     sideways. */
+  .toolbox-chips {
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 1px;
+  }
+  .toolbox-chips::-webkit-scrollbar { display: none; }
+}

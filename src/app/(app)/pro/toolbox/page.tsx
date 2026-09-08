@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { getClinicMembershipInfo } from "@/app/actions/clinic-pro";
 import { toolboxFor } from "@/lib/clinician-toolbox";
-import { ChevronRightIcon, LockIcon } from "@/components/icons";
+import { ToolboxBrowser } from "@/components/pro/ToolboxBrowser";
 
 export const metadata: Metadata = {
   title: "Clinical Toolbox",
@@ -21,7 +20,12 @@ export const metadata: Metadata = {
  *  Grouped by when you'd reach for a tool rather than by what it costs. A locked card still
  *  shows what the tool does — a reader deciding whether LimbicPRO is worth it is exactly the
  *  reader who needs the description, and hiding it is how /pro/guidelines and
- *  /pro/documentation ended up unreachable in the first place. */
+ *  /pro/documentation ended up unreachable in the first place.
+ *
+ *  Deliberately still a server component. Access is decided here — toolboxFor drops what this
+ *  reader cannot reach at all, and isPro decides which cards show a lock — and only the
+ *  filtering is handed to the client (see components/pro/ToolboxBrowser.tsx), so no gate is
+ *  enforced in a place a reader could reach around. */
 export default async function ClinicianToolboxPage() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -37,52 +41,7 @@ export default async function ClinicianToolboxPage() {
         {!user.isPro && " Tools marked PRO need a subscription; the rest are yours already."}
       </p>
 
-      {/* Anchors for the LimbicPRO tour (see lib/tours.ts). Keyed off each group's own
-          title rather than its position, so reordering or adding a group cannot silently
-          point a tour step at the wrong one. */}
-      <div data-tour="toolbox-groups">
-      {groups.map((group) => (
-        <section
-          className="toolbox-group"
-          key={group.title}
-          data-tour={`toolbox-group-${group.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-        >
-          <div className="toolbox-group-head">
-            <h2 className="toolbox-group-title">{group.title}</h2>
-            <p className="toolbox-group-blurb">{group.blurb}</p>
-          </div>
-          <div className="pro-tools-grid">
-            {group.tools.map((tool) => {
-              const locked = Boolean(tool.pro) && !user.isPro;
-              return (
-                <Link
-                  key={tool.href}
-                  href={tool.href}
-                  className={`pro-tool-card${locked ? " pro-tool-card--locked" : ""}`}
-                >
-                  <div className="toolbox-card-head">
-                    <span className="pro-tool-card-title">{tool.name}</span>
-                    {locked && (
-                      <span className="toolbox-lock">
-                        <LockIcon size={11} />
-                        PRO
-                      </span>
-                    )}
-                  </div>
-                  <p className="pro-tool-card-desc">{tool.description}</p>
-                  <div className="pro-tool-card-footer">
-                    <span className="pro-tool-card-arrow">
-                      {locked ? "See what it does" : "Open"}
-                      <ChevronRightIcon size={12} />
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      ))}
-      </div>
+      <ToolboxBrowser groups={groups} isPro={user.isPro} />
     </div>
   );
 }
