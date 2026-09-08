@@ -577,7 +577,7 @@ export const JOINT_MOBILIZATION_PLAYBOOK: Playbook = {
       blocks: [
         {
           kind: "lede",
-          text: "Four joints, not one: glenohumeral, acromioclavicular, sternoclavicular, and the scapulothoracic articulation that is not a joint at all. Every row here also appears in the shoulder playbook, in the section where a reader working that region would meet it.",
+          text: "Four joints, not one: glenohumeral, acromioclavicular, sternoclavicular, and the scapulothoracic articulation that is not a joint at all. Every row here also appears in the Shoulder Examination Playbook, in the section where a reader working that region would meet it.",
         },
         {
           kind: "table",

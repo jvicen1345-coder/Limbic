@@ -37,6 +37,27 @@ export default async function PlaybooksHubPage() {
         <LimbicStudentGate toolName="Playbooks" />
       ) : (
         <div className="playbook-hub-grid">
+          {/* The shoulder guide is a fixed HTML asset served whole rather than a playbook
+              built from lib/playbooks — see the route handler for why. It opens in its own
+              tab because it is a complete document with its own navigation. */}
+          <div className="playbook-hub-card playbook-hub-card-guide">
+            <h2 className="playbook-hub-card-name">Shoulder Examination</h2>
+            <p className="playbook-hub-card-desc">
+              A full shoulder screen in the order you&rsquo;d perform it. Every value says where it came from — what the
+              literature measured, what is only convention, and what the studies still argue about — with 82 sources
+              linked, a taught lane for what your own program says, and a practice plan built from what you miss.
+            </p>
+            <span className="playbook-hub-card-meta">12 sections · 32 exam items · 82 references</span>
+            <a
+              href="/student/guides/shoulder-examination"
+              target="_blank"
+              rel="noopener"
+              className="specialty-explore-btn"
+            >
+              Open
+              <ChevronRightIcon size={14} />
+            </a>
+          </div>
           {PLAYBOOKS.map((playbook) => (
             <div className="playbook-hub-card" key={playbook.slug}>
               <h2 className="playbook-hub-card-name">{playbook.name}</h2>
