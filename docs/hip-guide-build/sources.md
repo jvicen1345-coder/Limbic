@@ -10,7 +10,8 @@ Access is recorded because the guide's rule is that an unmarked value is traced 
 reader can reach for free. Where only the abstract is free, only what the abstract carries may
 be quoted unmarked.
 
-Status: **in progress.** Nothing below has been drafted into content yet.
+Status: **in progress.** Thirteen papers read; four values formally recorded as untraceable.
+Nothing below has been drafted into content yet.
 
 ---
 
@@ -290,17 +291,59 @@ Scale, four-square step test, timed single-leg stance. Fall-risk management per 
 
 ---
 
+## What could not be traced, and what the guide will therefore say
+
+These are not gaps left for later. Each one was searched for and not found in anything a reader
+can reach for free, and that determination is itself content — the guide states it in place
+rather than quietly presenting a number as though it were sourced.
+
+### Per-motion normative hip ROM — **Convention**
+Searched Europe PMC for free normative goniometric hip ROM in a general adult population. What
+comes back is athlete cohorts (soccer, track and field) and post-surgical series, not norms. The
+classic sources — Boone & Azen, the AAOS and AMA tables, and Roach & Miles itself — are
+paywalled at the table.
+
+So every "normal hip flexion is 120°" figure in circulation is taught everywhere and traceable
+nowhere free. It goes in marked `Convention`, and Roach 1991 is cited beside it for the reason
+that matters: measured against a national probability sample, textbook values were off by **as
+much as 18°**. A student who has memorised one number should know it is a convention with a
+known error bar, not a measurement.
+
+The one hip ROM figure the guide can state unmarked is **hip IR less than 24°**, from the Koc
+2025 CPG — and only as a *diagnostic threshold in adults over 50*, never as a normal value.
+
+### The five variables of the Sutlive prediction rule — **untraceable**
+The +LR of 24.3 is in the free abstract; the identity of the five variables is not. The 2025 CPG
+does not mention Sutlive, the 2009 CPG's full text is not released for text mining, and no free
+validation study restating them was found. The guide will quote the rule's performance and say
+plainly that the variables themselves need the paywalled paper — rather than listing five
+plausible ones from memory, which is precisely how the shoulder draft acquired a fabricated
+citation.
+
+### Leg-length measurement reliability — **not found free**
+Searches return post-arthroplasty radiographic and spinopelvic work, not tape-measure reliability
+in a clinical setting. Until a free source turns up, leg-length measurement gets no reliability
+figure at all.
+
+### FABER diagnostic accuracy — **not found**
+Absent from the FAI clinical-test meta-analysis (Reiman 2015 does not mention it) and absent from
+the CPG, which recommends documenting FABER at Grade A without reporting how well it
+discriminates. The guide will present FABER as the CPG does — an **irritability** measure — and
+say that its diagnostic accuracy is not established, which is the more useful fact anyway.
+
+---
+
 ## Still to chase
 
-FABER individual accuracy (absent from both the FAI meta-analysis and the CPG — may not exist at
-usable quality) · hip abductor strength norms · leg-length measurement reliability · log roll ·
-scour · femoral version and Craig's test · squat and single-leg-stance norms · the five variables
-of the Sutlive rule (needs the full text) · per-motion hip AROM norms from a free source (Roach
-carries only the textbook comparison).
+Hip abductor strength norms · log roll · scour · femoral version and Craig's test · squat and
+single-leg-stance norms.
 
-**Done:** hip AROM norms (Roach 1991, comparison only) · hip OA prediction rule (Sutlive 2008,
-+LR only) · FAI clinical tests (Reiman 2015 meta-analysis) · FAI imaging (Reiman 2017) · FAIS
-examination validity (Owusu-Akyaw 2019) · Ober test (Willett 2016) · Thomas test reliability
-(González-de-la-Flor 2026) · capsular pattern (Bijl 1998) · Trendelenburg and GTPS (Bird 2001,
-Schmid 2026) · hip OA diagnosis, examination and the whole treatment section with grades
-(Koc 2025 CPG).
+Everything else is either recorded above or recorded as untraceable, which for the purposes of
+drafting is the same thing: a decision has been made about what the guide may say.
+
+**Done:** hip AROM norms (Roach 1991, comparison only — see Convention above) · hip OA
+prediction rule (Sutlive 2008, +LR only) · FAI clinical tests (Reiman 2015 meta-analysis) · FAI
+imaging (Reiman 2017) · FAIS examination validity (Owusu-Akyaw 2019) · Ober test (Willett 2016)
+· Thomas test reliability (González-de-la-Flor 2026) · capsular pattern (Bijl 1998) ·
+Trendelenburg and GTPS (Bird 2001, Schmid 2026) · hip OA diagnosis, examination and the whole
+treatment section with grades (Koc 2025 CPG).
