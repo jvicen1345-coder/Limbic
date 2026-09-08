@@ -22,9 +22,11 @@ Nothing below has been drafted into content yet.
 
 - **Supports** — NHANES I national probability sample; goniometric AROM from 1,892 subjects,
   analysis limited to 1,313 white and 370 black subjects. Normative values "differ from
-  estimates found in textbooks by as much as 18 degrees". Differences in mean AROM between
-  youngest (25–39) and oldest (60–74) groups are "generally small, ranging from 3 to 5
-  degrees". Only hip extension declines by more than 20% of its arc. Conclusion: to age 74,
+  estimates found in textbooks by as much as 18 degrees". Differences in mean AROM between the
+  youngest and oldest age groups are "generally small, ranging from 3 to 5 degrees", and with
+  one exception all motions were lower in the oldest group. **The abstract never states the age
+  brackets** — it says only "youngest"/"oldest" and "to age 74 years". An earlier version of
+  this entry gave them as 25-39 and 60-74; that precision was invented and is removed. Only hip extension declines by more than 20% of its arc. Conclusion: to age 74,
   substantial loss of mobility should be treated as abnormal rather than attributed to ageing.
 - **Does not support** — any specific per-motion normative figure. The tables are paywalled.
   Quoting "hip flexion 121°" from this paper would be a fabrication; the abstract carries the
@@ -180,7 +182,8 @@ first is quoting half a literature.
   tendinitis** (pure in 9, with tear in 6), **2 trochanteric bursal distension**, 1 AVN.
   Of three signs tested, **Trendelenburg's sign was the most accurate for predicting a tendon
   tear: sensitivity 72.7%, specificity 76.9%**, and the most reliable: **intraobserver kappa 0.676
-  (95% CI 0.270–1.08)**. Authors' conclusion: gluteus medius tendon pathology is what defines
+  (95% CI 0.270–1.08)** — measured in **12 of the 24 patients**, re-assessed at 2 months by the
+  same observer, not in the whole sample. Authors' conclusion: gluteus medius tendon pathology is what defines
   GTPS; bursal distension was uncommon and never occurred without gluteus medius pathology.
 - **Does not support** — GTPS as a bursitis; this paper is the evidence against that name.
   Nor does it support the accuracy figures generalising: n=24, all female, single radiologist,
