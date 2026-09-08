@@ -8,7 +8,9 @@ Written against `sources.md` and nothing else. Same four states as the hip and k
 
 **The ankle is the best-served joint in this series.** Two freely readable graded guidelines cover
 it — lateral ligament sprains with chronic instability, and midportion Achilles tendinopathy —
-between them carrying 34 current graded recommendations. Every recommendation below was taken from
+between them carrying 34 current graded recommendations. It is also the joint where the honest
+prognosis is worst: two in five care-seekers develop chronic instability after a first sprain, and
+the guideline says plainly that full recovery cannot be expected in everyone. Every recommendation below was taken from
 its guideline's **front-matter Summary of Recommendations**, which is the current set; the body
 reprints prior revisions and one of them reversed direction, so era was checked by position rather
 than assumed. See `sources.md`.
@@ -58,6 +60,12 @@ published accuracy. That contrast is the section.*
 | Laxity and function come apart | Over six weeks after a sprain, self-reported function improved significantly while **anterior drawer laxity did not change at all** (P > .05). A patient can feel much better with an unchanged drawer. `src: Martin 2021` |
 | An early MRI finding that predicts a slow course | A medial joint bone marrow contusion on tibia and/or talus within two weeks meant **25 versus 16 days** to normal walking (P = .0002) and **92 versus 56 days** to sport (P = .0001). `src: Martin 2021` |
 | What predicts chronic instability at 6 months | **Inability to complete jumping and landing tasks within 2 weeks** of injury, poorer dynamic postural control, and lower self-reported function. `src: Martin 2021` |
+| How often a first sprain becomes chronic instability | **40%.** In the only prospective study to date, the prevalence of chronic ankle instability was **40% in people who sought care for a first-time lateral ankle sprain**. `src: Martin 2021` |
+| And that is probably an underestimate elsewhere | The guideline attributes the much lower retrospective estimates to care-seeking behaviour, and says the true burden is **likely underrepresented** in retrospective designs. `src: Martin 2021` |
+| Return to participation | **1 day to a little more than 3 weeks**, depending on the demands of the activity or sport. `src: Martin 2021` |
+| Full recovery is a different question | **"Full recovery with no symptoms or limitations may take months or years to obtain, and cannot be expected in all patients."** The guideline's own words. Return to sport is not recovery. `src: Martin 2021` |
+| Does severity predict the course? | **The evidence conflicts.** The guideline states there is conflicting evidence for the role of injury severity in the clinical course after a sprain — so a mild sprain is not a promise. `src: Martin 2021` |
+| Recurrence rates | Nearly **12%** of reported sprains in collegiate athletes were recurrent; **14.2%** of professional football and basketball players report a history of recurrent sprain; **13.7%** of elite soccer players sustain a recurrent sprain. `src: Martin 2021` |
 | Modifiable risk for a repeat sprain | **Not using prophylactic bracing** and **not doing a balance-training programme** are both risk factors for a subsequent sprain. `src: Martin 2021` |
 
 ---
@@ -140,6 +148,8 @@ and honest position for a guideline to take, and this section says so rather tha
 |---|---|
 | Acute lateral ankle sprain | Classified by the seven clinical findings in §7 — Grade B. `src: Martin 2021` |
 | Chronic ankle instability | Identified by CAIT or IdFAI plus validated functional performance tests — Grade B. `src: Martin 2021` |
+| How common it is after a first sprain | **40%** of people who sought care for a first-time sprain, in the only prospective study. Not a rare complication — the modal bad outcome. `src: Martin 2021` |
+| Why that reframes the acute sprain | An acute lateral ankle sprain is usually treated as a self-limiting nuisance. If two in five care-seekers develop chronic instability, the prevention recommendations in §10 are the main event rather than an afterthought. `src: Martin 2021` |
 | Midportion Achilles tendinopathy | Managed by loading first; see §10. `src: Chimenti 2024` |
 | Movement diagnosis | Name the movement fault and its direction under load. `Convention` |
 | Relative stiffness | A stiff ankle borrows from the knee and the midfoot. `Convention` |
@@ -163,7 +173,9 @@ and honest position for a guideline to take, and this section says so rather tha
 ## 10 · Prevention, mobilisation, exercise and dose
 
 *Lede: the best-evidenced section in any of these four guides, and the only one containing Grade A
-**prevention**. Every letter below comes from a front-matter Summary of Recommendations, checked by
+**prevention** — which matters more than it sounds, because 40% of people who seek care for a
+first sprain go on to chronic instability, and full recovery "may take months or years to obtain,
+and cannot be expected in all patients". Every letter below comes from a front-matter Summary of Recommendations, checked by
 position, so it is the current revision rather than a superseded one.*
 
 | Prompt | Answer |
@@ -214,7 +226,10 @@ position, so it is the current revision rather than a superseded one.*
 14. What does the Achilles guideline say about orthoses?
 15. What predicts chronic instability at six months?
 16. What did an early medial bone marrow contusion mean for time to walking and to sport?
-17. Why is plantar heel pain absent from this guide?
+17. What proportion of people who seek care for a first ankle sprain develop chronic instability?
+18. Return to participation takes 1 to 3 weeks. How long does full recovery take?
+19. Does injury severity predict the clinical course?
+20. Why is plantar heel pain absent from this guide?
 
 ---
 
