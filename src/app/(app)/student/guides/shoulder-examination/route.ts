@@ -16,10 +16,16 @@ import { getCurrentUser, hasStudentAccess } from "@/lib/session";
  * value in it has been touched. Do not reformat, minify, or "tidy"
  * content/playbooks/shoulder-examination.html.
  *
- * It carries one deliberate change from the artifact it came from, made with the author's
- * say-so: the practice planner's click listener was moved to the capture phase, because the
- * mark-missed handler calls stopPropagation() and the planner therefore never saw the click
- * that should have rebuilt it. Anything else that diverges is a mistake.
+ * It carries two deliberate changes from the artifact it came from, both made with the
+ * author's say-so and neither touching a clinical value:
+ *
+ *   - the practice planner's click listener moved to the capture phase, because the
+ *     mark-missed handler calls stopPropagation() and the planner therefore never saw the
+ *     click that should have rebuilt it;
+ *   - a "← Limbic" link at the head of its sticky nav, since the page is reached by ordinary
+ *     navigation and otherwise offers no way back into the app.
+ *
+ * Anything else that diverges is a mistake.
  *
  * It is a complete HTML document with its own stylesheet, scripts and dark-mode palette,
  * which is why it is a route handler rather than a page — there is no Limbic shell to render
