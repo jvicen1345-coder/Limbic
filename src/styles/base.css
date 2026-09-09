@@ -221,7 +221,19 @@ html[data-theme="dark"] .card.card-hoverable:hover {
 .card-meta {
   display: flex; align-items: center; gap: 6px; font-size: var(--fs-11);
   color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  /* The journal name sharing this row can run very long ("Zhonghua lao dong wei sheng zhi
+     ye bing za zhi = Chinese journal of industrial hygiene and occupational diseases"), so
+     it needs somewhere to go other than out of the card. */
+  flex-wrap: wrap;
 }
+/* Pills in this row carry short fixed labels (the specialty, a 2-3 letter evidence
+   abbreviation) — they should never be what gives when the journal name beside them is
+   long. As ordinary flex items they shrank right along with it, and .tag's
+   `overflow-wrap: anywhere` (see below — it exists for the long tags on /pro/guidelines)
+   then let them collapse to a couple of characters per line: "Orthopedic" rendering as
+   "Orthop / edic", "RCT" as a vertical R / C / T. Pinning them to their content width
+   leaves the journal name as the only thing that wraps, which is what should happen. */
+.card-meta > .tag { flex: none; overflow-wrap: normal; }
 .elev-sm { box-shadow: var(--shadow-sm); }
 .elev-md { box-shadow: var(--shadow-md); }
 .elev-lg { box-shadow: var(--shadow-lg); }
