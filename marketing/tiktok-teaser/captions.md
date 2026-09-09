@@ -5,27 +5,79 @@ TikTok editor. It runs 54.8s and is structured as three tiers, so a sound with a
 build works better here than a single beat drop: the section cards land at 0:14
 (Limbic Student), 0:28.5 (LimbicPRO) and 0:39.8 (Health & Wellness).
 
-## Caption (primary)
+## Description (post-ready)
 
-> The profession, the research, and the public — finally in one place. Current research
-> tailored to you, the whole DPT journey, a clinical toolbox at the point of care, and
-> wellness tools for the people you treat. → limbic.center
+TikTok collapses everything after the first line behind "more", so the first line has to
+carry the hook on its own. This one is 60 characters and is the video's own opening card.
+
+> The profession, the research, and the public — in one place.
 >
-> #physicaltherapy #dptstudent #ptschool #npte #physicaltherapist
-
-## Caption (student-leaning)
-
-> Your semester, your boards prep, your playbooks, and the research behind all of it —
-> one app 🧠 limbic.center
+> Limbic is one platform for physical therapy:
 >
-> #dpt #dptstudent #ptschool #npte #futuredpt
+> 📚 Current research, live from PubMed and filtered to the topics you follow
+> 🔎 Search for research in plain English — Limbic writes the query and shows it to you
+> 🎓 Limbic Student — your semester, the shoulder playbook, daily NPTE reps
+> 🫀 Limbic Atlas — clinical anatomy, region by region
+> 🩺 LimbicPRO — calculators, decision rules, special tests, 224 exercises with dosage
+> 🧠 Limbic Agent — decision support grounded in evidence. Never a diagnosis.
+> 💙 Health & Wellness — tuned to your own numbers, private to you
+>
+> Free to start → limbic.center
+>
+> #physicaltherapy #dptstudent #physicaltherapist #ptschool #npte
 
-## Caption (clinician-leaning)
+## Description (student-first, shorter)
 
-> Calculators, decision rules, special tests, 224 exercises with dosage, and
-> evidence-grounded decision support at the point of care. Free to start. limbic.center
+> POV: your semester, your boards prep, your playbooks, and the research behind all of
+> it live in one app 🎓
+>
+> Class schedule and assignments, the shoulder screen in the order you'd perform it,
+> daily NPTE reps, and clinical anatomy you can actually click through.
+>
+> Free to start → limbic.center
+>
+> #dptstudent #dpt #ptschool #npte #futuredpt
+
+## Description (clinician-first)
+
+> Everything you reach for at the point of care, in one place.
+>
+> Calculators, decision rules and special tests — free for every PT. Plus 224 exercises
+> with setup, dosage and precautions you can send straight into a patient's program, and
+> decision support grounded in current evidence (never a diagnosis).
+>
+> limbic.center
 >
 > #physicaltherapist #ptclinic #evidencebasedpractice #rehab #physicaltherapy
+
+## Long-form description
+
+For YouTube Shorts and Instagram Reels, where the description has room to work, and for
+the landing page's own "See It In Action" slot.
+
+> Limbic is one platform for physical therapy — the profession, the research, and the
+> public.
+>
+> Your home feed pulls current studies live from PubMed and filters them to the topics
+> you follow. You can also search in plain English: describe what you're looking for,
+> and Limbic turns it into a real PubMed query — and shows you the query it wrote.
+>
+> **Limbic Student** covers the DPT journey. The Atrium holds your class schedule,
+> assignments and rotation countdown; playbooks walk a screen in the order you'd
+> actually perform it, with every value marked measured, convention or contested and 83
+> sources linked; and Boards gives you a term, a question and a case every day. **Limbic
+> Atlas** opens clinical anatomy region by region.
+>
+> **LimbicPRO** is the clinician's side. The Clinical Toolbox — calculators, decision
+> rules, special tests — is free for every PT. The Movement Lab carries 224 therapeutic
+> exercises and 19 phased protocols with setup, technique, dosage and precautions, ready
+> to send straight into a patient's program. And Limbic Agent offers decision support
+> grounded in current evidence: never a diagnosis, always a starting point.
+>
+> **Health & Wellness** gives the people you treat the same research their physical
+> therapist uses, tuned to their own numbers and private to them.
+>
+> Free to start at limbic.center
 
 ## Hashtag bank
 
