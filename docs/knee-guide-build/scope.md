@@ -67,9 +67,18 @@ length, MMT, special tests, syndromes, palpation, mobs & exercise, drill, refs.
 
 ## What this guide will not be able to do
 
-Recorded here so the draft does not quietly overreach. Unlike the hip, the knee has no reachable
-graded examination guideline; no free normative range of motion; no bedside diagnostic criteria
-set; no Q angle threshold or reliability; no accuracy for patellofemoral tests; and no reliability
-for the hand effusion tests. Items 5, 6, 15, 29 and parts of 9 will therefore be carried by
-`Convention` and `no traceable source` rather than by citations, and the guide will say so in
-place. Item 36 is the one section with graded evidence behind it.
+Recorded here so the draft does not quietly overreach. **Revised twice** — the two corrections in
+`sources.md` both narrowed this list, and the original version of this paragraph was wrong in the
+direction that flatters the author, by claiming an absence that made the guide's limits look
+principled rather than unsearched.
+
+What actually stands: no free normative range of motion; no bedside diagnostic criteria set for
+knee OA; no Q angle threshold or reliability; no accuracy for patellofemoral tests; no reliability
+for the hand effusion tests. Items 5, 15 and 29 and parts of 9 are carried by `Convention` and
+`no traceable source`, and the guide says so in place.
+
+What does **not** stand, and what the rebuild has to use: the knee has **three** reachable graded
+guidelines, not one. Meniscal and articular cartilage lesions (JOSPT 2018), non-arthroplasty
+osteoarthritis (AAOS OAK3, 2021) and anterior cruciate ligament injuries (AAOS, 2022) are all
+openly hosted and graded, alongside the arthroplasty guideline. Item 36 is no longer the only
+section with graded evidence behind it — items 2, 12, 23, 27, 28, 32 and 34 all have some now.

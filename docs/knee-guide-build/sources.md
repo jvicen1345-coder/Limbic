@@ -317,3 +317,99 @@ off by **as much as 18&deg;**.
 The knee guide will say the same, and the ankle build should expect the same result rather than
 spending the search again from scratch. If a free normative source for any of these ever turns
 up, it upgrades several rows across three guides at once.
+
+---
+
+## SECOND CORRECTION — two graded AAOS guidelines, found by the rule the first correction wrote down
+
+The first correction in this file ends with a rule: *when a source is hosted rather than indexed,
+absence from a search engine and absence from an index page are both weak evidence — check what
+the project already cites before concluding something is unreachable.*
+
+That rule was written and then not fully applied. One `grep` for `.pdf` across this repository
+returns **two openly hosted, graded AAOS knee guidelines** that this build never opened, both
+already cited by `src/components/pro/GuidelinesLibrary.tsx`:
+
+Between them they falsify the framing the knee guide was built on — that arthroplasty is the only
+place in the guide where an evidence grade can be attached to a recommendation.
+
+### American Academy of Orthopaedic Surgeons. Management of Osteoarthritis of the Knee (Non-Arthroplasty). 3rd ed.
+Adopted 31 August 2021 · 126 pp · <https://www.aaos.org/oak3cpg> · **free full PDF, openly hosted**
+
+- **Supports — graded non-surgical management of knee OA**, the exact hole the guide declares.
+  Verbatim, with the guideline's own strength ratings:
+  - **Strong** — "Supervised exercise, unsupervised exercise, and/or aquatic exercise are
+    recommended over no exercise to improve pain and function for treatment of knee
+    osteoarthritis."
+  - **Strong** — "Self-management programs are recommended to improve pain and function for
+    patients with knee osteoarthritis."
+  - **Strong** — "Patient education programs are recommended to improve pain in patients with knee
+    osteoarthritis."
+  - **Strong** — "Lateral wedge insoles are not recommended for patients with knee osteoarthritis."
+  - **Moderate (downgrade)** — "Neuromuscular training (i.e. balance, agility, coordination)
+    programs in combination with traditional exercise could be used to improve performance-based
+    function and walking speed for treatment of knee osteoarthritis."
+  - **Moderate (downgrade)** — "Sustained weight loss is recommended to improve pain and function
+    in overweight and obese patients with knee osteoarthritis."
+  - **Moderate** — "Canes could be used to improve pain and function in patients with knee
+    osteoarthritis."
+  - **Moderate (downgrade)** — "Brace treatment could be used to improve function, pain, and
+    quality of life in patients with knee osteoarthritis".
+  - **Limited (downgrade)** — "Manual therapy in addition to an exercise program may be used to
+    improve pain and function in patients with knee osteoarthritis."
+  - **Moderate** — "Arthroscopy with lavage and/or debridement in patients with a primary diagnosis
+    of knee osteoarthritis is not recommended."
+  - **Strong** — "Oral narcotics, including tramadol, result in a significant increase of adverse
+    events and are not effective at improving pain or function for treatment of osteoarthritis of
+    the knee."
+
+- **Does NOT support — bedside diagnostic criteria for knee OA.** Checked directly, because the
+  guide makes an absence claim there. The scope is treatment: "The purpose of this clinical
+  practice guideline is to evaluate the current best evidence associated with **treatment**." No
+  diagnostic criteria set, no physical-examination accuracy. The `no traceable source` flag on knee
+  OA bedside criteria **stands** — the knee still has no counterpart to the hip's Grade A criteria.
+
+### American Academy of Orthopaedic Surgeons. Management of Anterior Cruciate Ligament Injuries.
+Published 22 August 2022 · 76 pp · <https://www.aaos.org/aclcpg> · **free full PDF, openly hosted**
+
+Mostly surgical, so most of its 18 recommendations are out of scope. Four are not:
+
+- **Strong, Quality of Evidence: High** — "A relevant history should be obtained, and a focused
+  musculoskeletal exam of the lower extremities should be performed when assessing for an ACL
+  injury."
+- **Moderate, Quality of Evidence: High** — "Training programs designed to prevent injury can be
+  used to reduce the risk of primary ACL injuries in athletes participating in high-risk sports."
+- **Strength of Option: Limited, Quality of Evidence: Low** — "Functional evaluation, such as the
+  hop test, may be considered as one factor to determine return to sport after ACL reconstruction."
+- **Strength of Recommendation: Limited (downgraded), Quality of Evidence: High** — "Functional
+  knee braces are not recommended for routine use in patients who have received isolated primary
+  ACL reconstruction, as they confer no clinical benefit." Note the pairing: high-quality evidence,
+  downgraded strength. That gap is itself worth teaching.
+
+- **Upgrades the limb-symmetry / hop-testing entry from an absence to a sourced uncertainty.** This
+  file previously recorded the return-to-sport threshold as untraceable and the guide marked it
+  `Convention` + `no traceable source`. The guideline's own rationale is better than silence:
+  "There is little evidence regarding other criteria, including muscle function, timing of return
+  to play, kinesiophobia, and other rating scales. Specifically, the optimal timing of functional
+  testing and return to sport is unclear based on the literature." It names the spread — Nawasreh
+  2018 tested at 6 months, Toole 2017 at a mean of 8.1 months, Beischer 2020 found 9 months lowered
+  graft failure, Webster 2021 found no difference at 12 months. A guideline saying the threshold is
+  unsettled is a citation; "I could not find one" is not.
+
+### What this does to the guide
+
+| Claim in the built guide | Status |
+|---|---|
+| "The knee has no free graded guideline for examination or for non-surgical management" | **False.** OAK3 covers non-surgical OA management, graded. |
+| "It has one for arthroplasty, and that is the only place an evidence grade can be attached" | **False.** Three graded guidelines now: OAK3, ACL 2022, and the 2018 meniscal revision. |
+| "Ligament management has none" | **False.** True only of the JOSPT ligament revision, which is abstract-only. AAOS ACL 2022 is free and graded. |
+| Knee OA bedside criteria untraceable | **Stands.** OAK3 is treatment-scoped; checked. |
+| Limb symmetry index threshold untraceable | **Upgrade.** Now a graded statement plus a named acknowledgement that the criteria are unsettled. |
+| Patellofemoral test accuracy, Q angle, knee ROM norms untraceable | **Stand.** Neither guideline addresses them. |
+
+### The rule, restated because writing it down was not enough
+
+The first correction ended with the right lesson and this build still repeated the error, because a
+lesson recorded in prose is not a step in a process. So it becomes a step: **before writing any
+absence claim into a guide, `grep` the repository for a hosted PDF on that topic.** The absence
+claim is content — it gets the same verification as a number does.

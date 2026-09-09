@@ -6,11 +6,50 @@ text of a named paper carries that exact value.
 
 | Step | File | State |
 |---|---|---|
-| 1 · Scope | `scope.md` | done — 37 competencies in examination order |
-| 2 · Source bank | `sources.md` | in progress — 7 papers read, 5 usable; 5 values untraceable |
-| 3 · Draft | `draft.md` | done — 12 sections, 47 citations, 7 references |
+| 1 · Scope | `scope.md` | done — 37 competencies in examination order; limits paragraph revised twice |
+| 2 · Source bank | `sources.md` | done — 11 sources usable, incl. two AAOS guidelines found in the second correction |
+| 3 · Draft | `draft.md` | superseded by the built page |
 | 4 · Adversarial verification | `verification.md` | done — 4 defects in 48 claims, all fixed |
-| 5 · Build the page | `content/playbooks/knee-examination.html` | done — built with the McMurray figure; **served** at `/student/guides/knee-examination` |
+| 5 · Build the page | `content/playbooks/knee-examination.html` | built, **not served** — carries `comingSoon` in `src/lib/guides.ts` |
+| 6 · Rebuild to shoulder depth | in progress | see below |
+
+## Rebuild — why, and what is left
+
+The built page passes its own verification and is still the weakest of the served guides, for a
+reason that is structural rather than factual. Measured against the shoulder:
+
+| | knee | shoulder |
+|---|---|---|
+| Checklist items | 12 | 32 |
+| Tables | 10 | 28 |
+| **Distinct table column signatures** | **1** | **28** |
+| Figures | 1 | 8 |
+| References | 12 | 83 |
+
+The single number that explains the gap is the third one. Nine of the knee's ten tables are the
+same three columns — `Item | How it is performed | Finding / norm`. The shoulder builds a
+different table for each question it asks: `Muscle | Position & what you stabilize | Normal |
+Short means | What fakes a result`, `Test | What it compresses or contracts | Set-up | Positive |
+Does it change your mind?`, `Pain location | Candidate source | The test that addresses it | The
+finding that confirms it`. The brief asks for decision tables and for a "what fakes a result"
+column wherever something is commonly done wrong; the knee currently has neither. That, not the
+prose, is what makes it read thinner.
+
+**Done in this pass**
+- Second correction to the source bank: two graded AAOS guidelines found, both already cited
+  elsewhere in this repository (`sources.md`).
+- Five false claims removed from the page — the guide told students that graded evidence existed
+  for arthroplasty only, and that ligament management had none.
+- Section 10 gained the graded osteoarthritis and ACL sets, 9 rows under 2 group headings.
+- The limb-symmetry entry moved from `no traceable source` to a sourced, graded uncertainty.
+
+**Still to do**
+- Section 01: 12 rows, 8 of them section pointers rather than competencies, against 37 in
+  `scope.md`. This is the most visible gap and the next piece of work.
+- Purpose-built table columns per section, replacing the repeated generic three.
+- A "what fakes a result" column wherever a knee test is commonly done wrong.
+- Figures: 1 → 6-8.
+- The remaining `Convention` claims (44 of them) re-checked against the two new guidelines.
 
 ## CORRECTION: the knee guideline I said was unreachable
 
