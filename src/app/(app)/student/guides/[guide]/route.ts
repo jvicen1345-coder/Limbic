@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
-import { isGuideSlug } from "@/lib/guides";
+import { isServableGuide } from "@/lib/guides";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 
 /**
@@ -43,9 +43,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ gui
   const { guide: slug } = await params;
 
   const user = await getCurrentUser();
-  // An unknown slug and an unentitled reader both get the same 404: there is nothing here to
-  // upsell, the hub does that, and a 403 would confirm which guides exist.
-  if (!isGuideSlug(slug) || !user || !hasStudentAccess(user) || user.studentTier !== "limbicStudent") {
+  // An unknown slug, a slug still marked coming soon, and an unentitled reader all get the
+  // same 404: there is nothing here to upsell, the hub does that, and a 403 would confirm
+  // which guides exist and which are merely unfinished.
+  if (!isServableGuide(slug) || !user || !hasStudentAccess(user) || user.studentTier !== "limbicStudent") {
     return new NextResponse("Not found", { status: 404 });
   }
 

@@ -924,3 +924,18 @@ button.playbook-maskwrap:focus-visible {
   max-width: 72ch;
 }
 .playbook-hub-note b { color: var(--color-text); }
+
+/* A guide listed but not yet served (Guide.comingSoon in lib/guides.ts). The card keeps its
+   name, blurb and counts — all of which are true — and loses only the way in, so the row
+   still reads as part of the set rather than as a gap in it. */
+.playbook-hub-card--soon { opacity: 0.72; }
+.playbook-hub-soon {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 99px;
+  border: 1px dashed var(--color-divider);
+  background: transparent;
+  color: var(--color-neutral-700);
+  font-size: 12.5px;
+  font-weight: 600;
+}

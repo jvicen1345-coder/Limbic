@@ -419,7 +419,14 @@ test.describe("Served guides", () => {
     const traversal = await page.request.get("/student/guides/..%2F..%2Fpackage.json");
     expect(traversal.status(), "the slug reaches the filesystem").not.toBe(200);
 
-    for (const guide of GUIDES) {
+    // A guide still marked comingSoon is a known slug that must not be readable yet — the
+    // hub shows its card without a way in, and the route has to agree.
+    for (const guide of GUIDES.filter((g) => g.comingSoon)) {
+      const soon = await page.request.get(guideHref(guide));
+      expect(soon.status(), `${guide.slug} is marked coming soon but is readable`).toBe(404);
+    }
+
+    for (const guide of GUIDES.filter((g) => !g.comingSoon)) {
       const open = await page.request.get(guideHref(guide));
       expect(open.status(), `${guide.slug} does not open for a subscriber`).toBe(200);
       expect(open.headers()["content-type"]).toContain("text/html");
@@ -458,5 +465,12 @@ test.describe("Served guides", () => {
     for (const guide of GUIDES) {
       await expect(page.locator(".playbook-hub-card-name", { hasText: guide.name })).toBeVisible();
     }
+
+    // A guide that is not ready keeps its card and its counts, but offers no way in — the
+    // marker and the missing link have to move together, or the card is a dead end with no
+    // explanation, or a live link to a 404.
+    const soon = GUIDES.filter((g) => g.comingSoon);
+    await expect(page.locator(".playbook-hub-soon")).toHaveCount(soon.length);
+    await expect(page.getByRole("link", { name: "Open" })).toHaveCount(GUIDES.length - soon.length);
   });
 });
