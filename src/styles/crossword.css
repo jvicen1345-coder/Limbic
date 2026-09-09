@@ -1,0 +1,244 @@
+/* — Mini Crossword page (see components/CrosswordGame.tsx, app/(app)/crossword/page.tsx,
+   lib/crossword-puzzles.ts) — a full page (header + two-column grid/clue-list split) rather
+   than the compact single-column widget the rest of Limbic Games' mini-games use. */
+.crossword-page-pad { width: 100%; max-width: 1200px; margin: 0 auto; padding: 32px 24px 60px; box-sizing: border-box; }
+/* Shared by the Mini Crossword and Daily Term headers — same "back to the hub" affordance,
+   so the rule carries both names rather than Daily Term borrowing a crossword- class. */
+.crossword-back-link, .game-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-accent-700);
+  margin-bottom: 18px;
+}
+.crossword-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; margin: 0 0 4px; }
+.crossword-subtitle { font-size: 14px; color: var(--color-neutral-700); margin: 0; }
+.crossword-date { font-size: 13px; color: var(--color-neutral-600); margin-top: 4px; margin-bottom: 28px; }
+
+/* Both columns take an equal share of what's left *after* the gap — `flex: 0 0 50%` made
+   each one half the container and then added the 40px gap on top, so the pair measured
+   container + 40px and the clue column ran off the right edge of the window (the page's own
+   24px padding absorbed part of the overrun, leaving 16px past the viewport at 1440). */
+.crossword-layout { display: flex; gap: 40px; align-items: flex-start; }
+.crossword-left-col { flex: 1 1 0; min-width: 0; }
+.crossword-right-col { flex: 1 1 0; min-width: 0; }
+@media (max-width: 1023px) {
+  .crossword-layout { flex-direction: column; gap: 28px; }
+  .crossword-left-col, .crossword-right-col { flex: 1 1 auto; max-width: none; width: 100%; }
+}
+
+.crossword-left-header { display: flex; justify-content: flex-end; margin-bottom: 12px; min-height: 20px; }
+.crossword-timer {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  color: var(--color-neutral-600);
+  font-variant-numeric: tabular-nums;
+}
+
+.crossword-grid-center { display: flex; justify-content: center; }
+/* A soft "frame" (a step more muted than the cells themselves, so they read as sitting
+   forward on top of it) plus a two-layer elevation shadow — a tight contact shadow for
+   grounding and a wide soft one for lift — reads as a real, substantial object rather than
+   a flat table of borders. Individual cells are fully rounded now (see .crossword-cell)
+   and separated by the frame showing through a real gap, instead of the previous
+   hairline-per-edge (1px gap tinted with --color-divider) approach. */
+.crossword-grid-wrap {
+  display: inline-flex;
+  background: color-mix(in srgb, var(--color-card-surface) 55%, var(--color-bg) 45%);
+  padding: 10px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 20px 40px rgba(0, 0, 0, 0.16);
+}
+.crossword-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 52px);
+  grid-template-rows: repeat(5, 52px);
+  gap: 4px;
+}
+@media (max-width: 640px) {
+  .crossword-grid { grid-template-columns: repeat(5, 44px); grid-template-rows: repeat(5, 44px); }
+}
+.crossword-cell {
+  position: relative;
+  background: var(--color-card-surface);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 22px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--color-text);
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+@media (max-width: 640px) {
+  .crossword-cell { font-size: 18px; }
+}
+/* Non-touch only — a touchscreen has no hover state to preview, and this would otherwise
+   stick "on" after a tap until the next touch elsewhere. */
+@media (hover: hover) {
+  .crossword-cell:not(.crossword-cell-black):not(.crossword-cell-selected):hover {
+    background: color-mix(in srgb, var(--color-accent) 18%, var(--color-card-surface));
+  }
+}
+/* Blocked squares stay a fixed dark tone in both themes, same reasoning as the shadow
+   tokens and .app-mobile-drawer-backdrop's scrim above — a "blocked cell" is a structural
+   grid marking, not page content, so it doesn't flip with the palette the way a
+   foreground/background color would (unlike every other state below, which reads off a
+   real token and adapts per theme). A subtle diagonal gradient instead of a flat fill gives
+   it the same sense of depth every other cell state below has. */
+.crossword-cell-black { background: linear-gradient(145deg, #241c16, #100c09); cursor: default; }
+.crossword-cell-selected {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--color-accent) 80%, white), var(--color-accent));
+  color: #fff;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent) 45%, transparent), 0 3px 10px color-mix(in srgb, var(--color-accent) 40%, transparent);
+  transform: translateY(-1px);
+  z-index: 1;
+}
+.crossword-cell-selected .crossword-cell-number { color: rgba(255, 255, 255, 0.85); }
+.crossword-cell-active-word { background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card-surface)); }
+/* Applied once the whole puzzle is confirmed correct (status === "won") — see .tag-evidence
+   comment further up for the same reuse-over-invent reasoning: #4CAF7D is literally
+   --color-vitals-mobility already. */
+.crossword-cell-correct { background: color-mix(in srgb, var(--color-vitals-mobility) 15%, var(--color-card-surface)); }
+/* Fires once, when every cell is filled but the grid isn't fully correct yet — a brief
+   "something's off" cue on just the wrong cells, not a hint about which letter is right,
+   since it only ever triggers once nothing is left blank. */
+.crossword-cell-wrong-flash { animation: crossword-flash-fade 500ms ease forwards; }
+@keyframes crossword-flash-fade {
+  from { background-color: color-mix(in srgb, #e85a4a 20%, var(--color-card-surface)); }
+  to { background-color: var(--color-card-surface); }
+}
+.crossword-cell-number {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  font-size: var(--fs-10);
+  font-family: var(--font-body);
+  font-weight: 700;
+  color: var(--color-neutral-700);
+}
+
+.crossword-clue-banner {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-accent) 15%, var(--color-card-surface));
+  border-left: 3px solid var(--color-accent);
+  font-size: 15px;
+  color: var(--color-text);
+  transition: background-color 200ms ease;
+  min-height: 20px;
+  box-sizing: border-box;
+}
+.crossword-clue-banner-num { font-weight: 700; margin-right: 6px; }
+
+/* The actual focus target for every keystroke (see CrosswordGame.tsx's inputRef) — visually
+   invisible but a real, focusable, in-DOM <input>, which is what lets tapping a cell raise
+   the device's own keyboard on mobile instead of the old on-screen A-Z strip (removed) that
+   made a reader slide across a cramped alphabet row to find each letter. font-size: 16px
+   specifically avoids iOS Safari's automatic zoom-in on focusing a smaller input. */
+.crossword-hidden-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: none;
+  outline: none;
+  opacity: 0;
+  pointer-events: none;
+  font-size: 16px;
+}
+
+.crossword-clues-panel { display: flex; flex-direction: column; gap: 28px; }
+.crossword-clue-section-title {
+  font-size: var(--fs-11);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--color-divider);
+}
+.crossword-clue-item {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border-left: 2px solid transparent;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+}
+.crossword-clue-item:hover { background: var(--color-neutral-100); }
+.crossword-clue-item-active { background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card-surface)); border-left-color: var(--color-accent); }
+/* "Every square has a letter", not "this entry is correct" — see isClueFilled in
+   components/CrosswordGame.tsx for why the distinction matters. Dimmed so the eye skips to
+   unfinished clues, but no strike-through: a line through a wrong answer would read as the
+   confirmation this state deliberately withholds. */
+.crossword-clue-item-filled { opacity: 0.55; }
+.crossword-clue-num { font-weight: 700; min-width: 20px; flex-shrink: 0; text-align: right; color: var(--color-neutral-700); }
+
+/* — Mini Crossword completion overlay — a centered card over a dimmed backdrop, not a
+   full-screen takeover, so the finished grid stays visible (and dismissible back to) behind
+   it. --color-scrim is the same theme-invariant modal backdrop the Add Event modal and
+   Limbic Calendar's detail panel already use. */
+.crossword-complete-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--color-scrim);
+  animation: fade-in 300ms ease;
+}
+.crossword-complete-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-card-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 36px 32px;
+  text-align: center;
+  max-width: 360px;
+  width: 100%;
+}
+.crossword-complete-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--color-neutral-600);
+  cursor: pointer;
+}
+.crossword-complete-title { font-family: var(--font-heading); font-size: 24px; margin: 0 0 8px; }
+.crossword-complete-time { font-size: 14px; color: var(--color-neutral-700); margin-bottom: 22px; }
+.crossword-complete-actions { display: flex; flex-direction: column; gap: 10px; }
+/* Pure-CSS confetti — a fixed handful of colored pieces (see CONFETTI_PIECES in
+   CrosswordGame.tsx) rather than a physics simulation: each just falls straight down with a
+   full rotation and fades out, staggered by its own animation-delay, no library involved. */
+.crossword-confetti-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.crossword-confetti-piece {
+  position: absolute;
+  top: -14px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  animation: crossword-confetti-fall 1800ms ease-in forwards;
+}
+@keyframes crossword-confetti-fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+  100% { transform: translateY(260px) rotate(360deg); opacity: 0; }
+}
+

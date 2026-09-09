@@ -66,7 +66,7 @@ export const REASSESSMENT_INTERVAL_VISITS = 6;
 export const REASSESSMENT_STALE_DAYS = 14;
 
 /** Body-region pill accent — cycles through the app's existing tag-* palette (see
- *  .tag-accent/.tag-accent-2/.tag-neutral/.tag-outline in globals.css) rather than
+ *  .tag-accent/.tag-accent-2/.tag-neutral/.tag-outline in src/styles) rather than
  *  inventing a new color per region, so a patient's region pill always reads as "one of
  *  this app's existing categorical tags," not a new visual language. */
 const BODY_REGION_TAG_CLASSES = ["tag-accent", "tag-accent-2", "tag-neutral", "tag-outline"] as const;

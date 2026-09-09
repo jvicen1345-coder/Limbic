@@ -1,0 +1,165 @@
+/* — Nutrition page's Wellness+ paywall (see app/(app)/wellness/nutrition/page.tsx) — a
+   blurred preview with a centered upgrade card, faded into the surface color at the
+   bottom so the blur reads as "still there, just locked" rather than fully hidden. */
+.nutrition-paywall { position: relative; overflow: hidden; border-radius: var(--radius-lg); }
+.nutrition-paywall-content { filter: blur(5px); pointer-events: none; user-select: none; }
+.nutrition-paywall-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--color-surface) 55%, transparent) 0%, var(--color-surface) 85%);
+}
+.nutrition-paywall-card { text-align: center; max-width: 300px; }
+.nutrition-paywall-card p { font-size: 13px; color: var(--color-neutral-700); margin: 6px 0 14px; }
+
+/* — Nutrition page redesign (app/(app)/wellness/nutrition/page.tsx) — a "real product
+   feature" pass: a highlighted daily-tip card, a scannable quick-tips pill row, a two-
+   column card grid for the five topic sections, a premium goal card (or its blurred
+   paywalled preview), and a horizontal-scroll article row. Card left-border colors reuse
+   the exact literal hues Limbic Vitals and Limbic Games already established rather than
+   inventing new tokens: blue = --color-accent, orange = --color-vitals-strength,
+   green = --color-vitals-mobility, purple = --color-vitals-mindfulness, and teal (needed
+   only here, for the fifth "Recovery" card) = --color-accent-2, which is already a
+   cyan/teal hue in both themes. */
+.nutrition-header { margin-bottom: 18px; }
+.nutrition-title { font-size: 24px; margin: 0 0 4px; }
+.nutrition-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 12px; }
+
+.nutrition-section-label {
+  font-size: var(--fs-10);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin-bottom: 8px;
+}
+
+/* — Nutrition of the Day (now the top section of .nutrition-goal-card) — */
+.nutrition-tip-text { font-size: 17px; line-height: 1.55; margin: 0; }
+
+/* — Quick Tips pill row — */
+.nutrition-quicktips-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 22px;
+}
+.nutrition-quicktip-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  background: var(--color-neutral-100);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 12.5px;
+}
+.nutrition-quicktip-dot { width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; }
+.nutrition-quicktip-dot-hydration { background: var(--color-accent); }
+.nutrition-quicktip-dot-energy { background: var(--color-vitals-strength); }
+.nutrition-quicktip-dot-recovery { background: var(--color-vitals-mobility); }
+.nutrition-quicktip-dot-sleep { background: var(--color-vitals-mindfulness); }
+
+/* — Content card grid — */
+.nutrition-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+@media (max-width: 680px) {
+  .nutrition-cards-grid { grid-template-columns: 1fr; }
+}
+.nutrition-content-card {
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  box-shadow: var(--shadow-sm);
+  padding: 20px 22px;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+@media (hover: hover) {
+  .nutrition-content-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+}
+.nutrition-content-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; margin: 0 0 8px; }
+.nutrition-content-card-body { font-size: 13.5px; line-height: 1.6; color: var(--color-text); opacity: 0.85; margin: 0; }
+.nutrition-card-hydration { border-left-color: var(--color-accent); }
+.nutrition-card-macros { border-left-color: var(--color-vitals-strength); }
+.nutrition-card-workout { border-left-color: var(--color-vitals-mobility); }
+.nutrition-card-antiinflammatory { border-left-color: var(--color-vitals-mindfulness); }
+.nutrition-card-recovery { border-left-color: var(--color-accent-2); }
+
+/* — Today's Nutrition Tip + Personalized for Your Goal, combined into one card at the top
+   of the page (see app/(app)/wellness/nutrition/page.tsx) — the tip stays free/unblurred,
+   only the goal section below the divider is Wellness+-gated. */
+.nutrition-goal-card {
+  border-radius: var(--radius-lg);
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-card-surface);
+  box-shadow: var(--shadow-sm);
+  padding: 22px 24px;
+  margin-bottom: 22px;
+}
+.nutrition-goal-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 19px; margin: 2px 0 14px; }
+.nutrition-goal-divider { height: 1px; background: var(--color-divider); margin: 18px 0; }
+
+/* — Nutrition articles row — */
+.nutrition-articles-row { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 4px; }
+.nutrition-article-card { flex: 0 0 230px; }
+
+/* — Nutrition Sources (Step 9 of the Health & Wellness rebuild) — external link cards
+   pointing to free authoritative nutrition resources, same "point to the real source"
+   approach as the Student Atrium's FSBPT cards. */
+.wellness-sources-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 8px; }
+@media (max-width: 680px) { .wellness-sources-grid { grid-template-columns: 1fr; } }
+.wellness-source-card {
+  display: block;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.wellness-source-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.wellness-source-card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 14.5px;
+}
+.wellness-source-card-desc { font-size: 12.5px; color: var(--color-neutral-700); margin: 6px 0; line-height: 1.5; }
+.wellness-source-card-domain { font-size: var(--fs-11); color: var(--color-accent-700); font-weight: 600; }
+
+/* — Macro Calculator's macro-split bar — */
+.wellness-macro-split { margin-top: 8px; }
+.wellness-macro-bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--color-neutral-200); }
+.wellness-macro-bar-segment { height: 100%; }
+.wellness-macro-bar-segment--protein { background: var(--color-accent); }
+.wellness-macro-bar-segment--carb { background: var(--color-vitals-mobility); }
+.wellness-macro-bar-segment--fat { background: var(--color-migration-amber); }
+.wellness-macro-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; font-size: 12px; }
+.wellness-macro-legend-item { display: flex; align-items: center; gap: 6px; }
+.wellness-macro-legend-item::before { content: ""; width: 9px; height: 9px; border-radius: 999px; flex-shrink: 0; }
+.wellness-macro-legend-item--protein::before { background: var(--color-accent); }
+.wellness-macro-legend-item--carb::before { background: var(--color-vitals-mobility); }
+.wellness-macro-legend-item--fat::before { background: var(--color-migration-amber); }
+
+/* — Macro Calculator's Weight Management timeline fields + resulting pace note — */
+.wellness-macro-weightgoal {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  align-items: flex-end;
+}
+.wellness-macro-weightgoal-hint { flex-basis: 100%; font-size: var(--fs-11-5); color: var(--color-neutral-600); margin: 6px 0 0; }
+.wellness-macro-weightgoal-result { font-size: 12.5px; color: var(--color-neutral-700); margin: 8px 0 0; line-height: 1.5; }
+.wellness-macro-weightgoal-warning { color: var(--color-warn); }
+

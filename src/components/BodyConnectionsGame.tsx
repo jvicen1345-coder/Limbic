@@ -9,7 +9,7 @@ import { useIsMobile } from "@/lib/use-is-mobile";
 import type { BodyMatchPair } from "@/lib/body-connections-static";
 
 // Matches the CSS incorrect-flash animation's duration (see .body-region-flash /
-// .body-function-flash in globals.css) — the JS clears the flash state at the same moment
+// .body-function-flash in src/styles) — the JS clears the flash state at the same moment
 // the CSS animation finishes fading it out.
 const FLASH_MS = 600;
 

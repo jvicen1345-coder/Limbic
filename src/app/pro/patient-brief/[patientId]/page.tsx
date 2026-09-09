@@ -15,7 +15,7 @@ function isExerciseArray(value: unknown): value is HEPExercise[] {
 }
 
 /** The printable patient document — always light mode regardless of the clinician's own
- *  theme preference (see globals.css's .patient-brief-* rules, which use literal colors
+ *  theme preference (see src/styles's .patient-brief-* rules, which use literal colors
  *  rather than the app's --color-* custom properties for exactly this reason: a document
  *  meant to be printed or saved as a PDF should look the same on paper no matter what
  *  theme the clinician happens to be browsing in). Never renders a patient name — the

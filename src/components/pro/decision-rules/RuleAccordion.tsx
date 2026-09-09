@@ -1,7 +1,7 @@
 import { ChevronRightIcon } from "@/components/icons";
 
 /** Shared expand/collapse shell for every /pro/decision-rules card — native
- *  <details>/<summary> styled to match .card (see .pro-accordion-* in globals.css).
+ *  <details>/<summary> styled to match .card (see .pro-accordion-* in src/styles).
  *  Collapsed state shows just the one-line summary; expanded reveals the full scoring
  *  tool passed as children. `open` lets a caller start it expanded — the Clinical Reference
  *  search uses it to open a rule when a query narrows the list to a few (see

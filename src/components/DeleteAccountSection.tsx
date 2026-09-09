@@ -8,7 +8,7 @@ import { XIcon } from "@/components/icons";
 const CONFIRM_TEXT = "DELETE";
 
 /** The "danger zone" at the bottom of Profile — reuses the calendar's modal shell (see
- *  .cal-modal-* in globals.css) rather than inventing a new one. `hasFoundingSpot` only
+ *  .cal-modal-* in src/styles) rather than inventing a new one. `hasFoundingSpot` only
  *  changes the modal's copy (see app/actions/profile.ts deleteAccountAction for what
  *  actually survives) — the reader shouldn't have to already know that detail to
  *  understand what deleting their account does and doesn't erase. */

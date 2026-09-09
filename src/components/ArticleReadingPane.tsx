@@ -16,7 +16,7 @@ import type { DecoratedArticle } from "@/lib/feed";
 import type { EvidenceLevel } from "@/lib/types";
 
 /** Which of the Related grid's 6 left-border colors a card gets (see
- *  .article-related-border-* in globals.css) — keyed off the card's own evidence badge
+ *  .article-related-border-* in src/styles) — keyed off the card's own evidence badge
  *  rather than its specialty, so the border tells the reader something the badge doesn't
  *  already show right next to it. */
 function relatedBorderClass(level: EvidenceLevel | undefined): string {

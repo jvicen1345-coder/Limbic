@@ -18,10 +18,9 @@ content.
   [Turso](https://turso.tech) database in production — same schema, same queries, no
   branching — because a plain local SQLite file (what the app defaults to) doesn't
   survive on most serverless hosts, whose filesystems reset between requests.
-- Plain CSS (`src/app/globals.css`), not Tailwind — the design system's tokens and
-  component classes (`.card`, `.btn`, `.tag`, …) were ported directly from the exported
-  `styles.css` with the blue/white palette override baked into `:root`, to stay
-  pixel-faithful to the source design rather than re-deriving it in a utility framework.
+- Plain CSS in `src/styles/` (not Tailwind) — design-system tokens and shared primitives
+  (`.card`, `.btn`, `.tag`, …) load globally; feature sheets load from the route layouts
+  that need them. See [`docs/css.md`](docs/css.md).
 
 ## Getting started
 

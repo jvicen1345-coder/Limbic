@@ -64,7 +64,7 @@ function SaveToProfileFooter({ testKey, testName, result }: { testKey: string; t
 
 /** Shared modal shell for every /pro/calculators card's "Calculate" button — same
  *  .cal-modal-* visual language as the calendar's Add Event modal and AddLicenseModal
- *  (see .cal-modal-backdrop/.cal-modal in globals.css), widened via .pro-calc-modal for
+ *  (see .cal-modal-backdrop/.cal-modal in src/styles), widened via .pro-calc-modal for
  *  calculators with long item lists (Berg, LEFS). testKey/testName/result are optional so
  *  this stays usable for a future calculator that has no meaningful single result to save;
  *  every current one passes all three. */

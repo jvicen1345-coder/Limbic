@@ -71,7 +71,7 @@ const CATEGORIES: { name: string; goals: string[] }[] = [
 /** Not a copy template like the other six documentation cards, a searchable reference bank
  *  of pre-written goal examples organized by body region/function — six categories of five
  *  goals each is a lot of text, easily the tallest card on the page (see the .pro-grid-2
- *  row-stretch fix in globals.css this used to trigger). Collapsed by default via the same
+ *  row-stretch fix in src/styles this used to trigger). Collapsed by default via the same
  *  <details>/.pro-accordion-* shell every other reference-library entry in this app uses
  *  (TestCard in SpecialTestsLibrary.tsx, the decision-rule/red-flag cards) — closed, its
  *  height matches its row neighbors; a reader who wants it clicks to open, same as any other

@@ -176,7 +176,7 @@ export function ThreadsWeb({
       </div>
 
       {/* A normal block below the canvas, not an absolutely-positioned overlay on top of
-          it like Limbic Agent's own .agent-detail-card (see globals.css), Agent's chat is
+          it like Limbic Agent's own .agent-detail-card (see src/styles), Agent's chat is
           a fixed-height full-screen surface where a floating card never blocks anything
           meaningful, but Threads' canvas sits in a normal scrolling article page where a
           force-simulated node can end up anywhere, including right where a docked overlay

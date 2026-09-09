@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 /** Authenticated, clinic admin only — lives in the (app) route group for the AppShell
  *  sidebar. "Download Report" (see ClinicReportView) uses window.print() with
  *  .clindash-report-no-print hiding the form/history around it, plus the global
- *  @media print rule in globals.css that hides the sidebar/topbar chrome itself (see that
+ *  @media print rule in src/styles that hides the sidebar/topbar chrome itself (see that
  *  rule's own comment) — same print-styles goal as the patient brief print page
  *  (app/pro/patient-brief/[patientId]), which stays standalone since it's meant to be
  *  printed with zero app chrome at all, not just this report's own form/history hidden. */

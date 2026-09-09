@@ -86,7 +86,7 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
  *  HomeFeed.tsx's heroPool, filtered off withImage) — the plain-layout fallback below is
  *  defensive for any future/other caller, not something a reader can hit today. When
  *  there's an image, title/source/evidence/read-time/date all sit on the photo itself
- *  (above a bottom gradient — see .hero-card-* in globals.css) and the space below the
+ *  (above a bottom gradient — see .hero-card-* in src/styles) and the space below the
  *  photo is kept to just the summary, so the card reads as one clean photo-led moment
  *  rather than a second copy of the same meta row ArticleCard already shows in the grid. */
 export function HeroArticleCard({ article }: { article: DecoratedArticle }) {

@@ -16,7 +16,7 @@ type ProfessionalDateField =
   | "practiceStartDate";
 
 /** How long the "saved" checkmark stays mounted — matches the .profile-date-saved-check
- *  fade-in-out animation's duration (see globals.css) so it unmounts right as the fade
+ *  fade-in-out animation's duration (see src/styles) so it unmounts right as the fade
  *  finishes rather than vanishing mid-animation or lingering invisibly. */
 const SAVED_CHECK_MS = 1600;
 

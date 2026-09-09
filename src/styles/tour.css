@@ -1,0 +1,222 @@
+/* — perceived-performance: nav loading bar, skeletons, page-enter fade, tap feedback —
+   see components/TopLoadingBar.tsx, components/SkeletonCard.tsx, and each route's
+   loading.tsx under app/(app)/*. */
+.top-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--color-accent);
+  transition: width 300ms ease, opacity 200ms ease;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* .skeleton-card reuses .card's own background/radius/padding so the swap into real
+   content doesn't itself cause a jump — only the shimmering lines inside are placeholder.
+   The lines' gradient runs through --color-divider (always visibly a "bar") rather than
+   matching the card's own background at its low point, so nothing ever reads as blank. */
+.skeleton-card { gap: 10px; }
+.skeleton-line {
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--color-divider) 25%, var(--color-card-surface) 50%, var(--color-divider) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+/* prefers-reduced-motion: a shimmer is motion for motion's sake, unlike the page-enter
+   fade below (which reads as content simply appearing) — this is the one animation in this
+   block worth turning off outright rather than just shortening. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-line { animation: none; background-position: 0 0; }
+}
+
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-enter { animation: page-fade-in 0.2s ease forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .page-enter { animation: none; }
+}
+
+/* — Guided tour (see components/LimbicTour.tsx) — the overlay/ring's position is computed
+   per-render off the highlighted element's real DOMRect (top/left/width/height set inline,
+   since that genuinely changes every step); everything else — color, spacing, elevation —
+   comes from these classes so the tooltip looks like every other card in the app and picks
+   up dark mode for free. The tooltip reuses .card/.elev-lg for its box (same background/
+   radius/shadow as any other floating panel) rather than inventing new ones. */
+.tour-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-scrim);
+  z-index: 9998;
+  pointer-events: none;
+}
+.tour-highlight {
+  position: fixed;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 15%, transparent);
+  z-index: 9999;
+  pointer-events: none;
+  transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+.tour-tooltip {
+  position: fixed;
+  z-index: 10000;
+  width: 320px;
+  box-sizing: border-box;
+  padding: 20px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  box-shadow: var(--shadow-lg);
+  /* Matches .tour-highlight above, so the card and the ring it belongs to travel together
+     between steps instead of the ring gliding while the card teleports. Opacity covers the
+     first step, which fades in once measured rather than appearing centred and jumping. */
+  transition: top 0.3s ease, left 0.3s ease, opacity 0.2s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-tooltip, .tour-highlight { transition: opacity 0.2s ease; }
+}
+.tour-progress { display: flex; gap: 4px; margin-bottom: 12px; }
+.tour-progress-seg { height: 3px; flex: 1; border-radius: 2px; background: var(--color-neutral-200); transition: background 0.2s ease; }
+.tour-progress-seg--done { background: var(--color-accent); }
+.tour-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+.tour-desc { font-size: 14px; color: var(--color-neutral-700); line-height: 1.6; margin: 0 0 20px; }
+.tour-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tour-skip {
+  background: none;
+  border: none;
+  color: var(--color-neutral-700);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+}
+.tour-skip:hover { color: var(--color-text); }
+
+/* Mobile — recenter the tooltip regardless of the computed inline top/left (a highlight
+   ring pinned to a desktop-only sidebar item, hidden below the same breakpoint the sidebar
+   itself uses, wouldn't land anywhere sensible on a phone screen), and hide the ring since
+   it has nothing valid to point at once the tooltip's own position no longer follows it. */
+@media (max-width: 640px) {
+  .tour-tooltip {
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: calc(100vw - 48px);
+    max-width: 360px;
+  }
+  .tour-highlight { display: none; }
+}
+
+/* A reusable fixed-ratio placeholder for any image whose real dimensions aren't known
+   until it loads — most of this app's own images already avoid the problem with a fixed
+   pixel height (see .hero-card-media, ArticleImage.tsx, VideoThumbnail.tsx); this covers
+   the remaining case, user-uploaded Nexus post images, which have no such guarantee (see
+   components/NexusPostCard.tsx). */
+.hero-image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--color-neutral-200);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+.hero-image-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Tactile tap feedback for touch devices — desktop already gets this for real buttons via
+   .btn:active above; this extends the same idea to plain links and clickable cards, and
+   only at mobile widths, where a press-down cue matters most (no hover state to lean on). */
+@media (max-width: 768px) {
+  button:active:not(:disabled),
+  a:active,
+  .card.card-hoverable:active {
+    transform: scale(0.98);
+    transition: transform 100ms ease;
+  }
+}
+
+/* ============================================================================
+   Tour picker on Profile (see components/TourMenu.tsx) and the tour card's tour-name
+   kicker. The player's own .tour-overlay/.tour-highlight/.tour-tooltip rules are unchanged
+   and live earlier in this file. Appended at the end per COORDINATION.md.
+   ============================================================================ */
+.tour-kicker {
+  font-size: var(--fs-11);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-accent);
+  margin: 0 0 4px;
+}
+
+.tour-menu { display: flex; flex-direction: column; }
+.tour-menu-heading {
+  font-size: var(--fs-11);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  margin: 18px 0 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-neutral-300);
+}
+.tour-menu-intro {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  margin: 0 0 6px;
+  max-width: 60ch;
+}
+.tour-menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+}
+.tour-menu-row + .tour-menu-row { border-top: 1px solid var(--color-neutral-300); }
+.tour-menu-text { min-width: 0; }
+.tour-menu-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tour-menu-seen {
+  font-size: var(--fs-11);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  background: var(--color-surface-secondary);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.tour-menu-blurb {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  margin: 3px 0 0;
+  max-width: 56ch;
+}
+.tour-menu-start { flex-shrink: 0; }
+
+@media (max-width: 560px) {
+  .tour-menu-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .tour-menu-start { width: 100%; }
+}
+

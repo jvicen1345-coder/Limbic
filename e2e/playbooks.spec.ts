@@ -184,7 +184,7 @@ test.describe("Playbook page", () => {
       await expect(boxes.first()).toBeChecked();
       await expect(page.locator(".playbook-progress span").first()).toHaveText(`1 / ${items.length}`);
 
-      // The jump nav wraps above 900px (globals.css) precisely so a playbook with many
+      // The jump nav wraps above 900px (src/styles) precisely so a playbook with many
       // sections doesn't hide its last entries behind a sideways scroll — the failure the
       // hip playbook's 15 sections hit before that rule existed.
       const nav = await page.locator(".playbook-navrow").evaluate((el) => [el.scrollWidth, el.clientWidth]);

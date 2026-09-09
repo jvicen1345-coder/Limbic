@@ -22,7 +22,7 @@ function formatVariableStat(v: ArticleVariable): string {
 
 /** A pulsing placeholder shown in place of a tool's result area while its action is in
  *  flight — plain CSS animation (see .article-research-panel-loading-placeholder in
- *  globals.css), no library. */
+ *  src/styles), no library. */
 function LoadingPlaceholder() {
   return <div className="article-research-panel-loading-placeholder" aria-hidden="true" />;
 }

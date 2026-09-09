@@ -5,14 +5,14 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { TopLoadingBar } from "@/components/TopLoadingBar";
 import "./globals.css";
 
-// Self-hosted via next/font instead of the globals.css `@import` this replaced: that
+// Self-hosted via next/font instead of the src/styles `@import` this replaced: that
 // @import forced the browser through a 3-hop chain (page CSS -> fonts.googleapis.com CSS
 // -> the actual font files) before any text could paint, which is exactly the kind of
 // thing that shows up as a slow First/Largest Contentful Paint despite a fast
 // Time-to-First-Byte. next/font fetches the font files at build time and serves them from
 // the app's own origin, with the @font-face + preload wired up automatically.
 // No `weight` — Plus Jakarta Sans ships a variable font, so one file covers the whole
-// 200-800 range and every heading weight in globals.css resolves to a real master rather
+// 200-800 range and every heading weight in src/styles resolves to a real master rather
 // than the browser faking one. This replaced Caprasimo, a single-weight display face that
 // was carrying 143 heading rules: fine on a wordmark, but it was setting article titles and
 // nav labels too, where a poster face is simply harder to read.
@@ -25,7 +25,7 @@ const jakarta = Plus_Jakarta_Sans({
 // The base body font used to be self-hosted Figtree — now the same native system-UI stack
 // Facebook's web app renders with (no webfont download at all: San Francisco on macOS/iOS,
 // Segoe UI on Windows, Roboto on Android/Chrome OS), set directly on --font-body in
-// globals.css rather than loaded here.
+// src/styles rather than loaded here.
 
 export const metadata: Metadata = {
   // Resolves every relative URL in every page's metadata (openGraph.images, etc.) to an
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#092744",
-  // Without this, every env(safe-area-inset-*) in globals.css resolves to 0px — which quietly
+  // Without this, every env(safe-area-inset-*) in src/styles resolves to 0px — which quietly
   // disabled all four of them, including the bottom nav's home-indicator clearance and
   // .app-main's matching padding. It matters most in the installed-to-home-screen case:
   // appleWebApp.statusBarStyle above is "black-translucent", which draws page content under
