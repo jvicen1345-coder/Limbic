@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AgentGraph } from "@/components/AgentGraph";
+import { DeferredAgentGraph } from "@/components/DeferredAgentGraph";
 import { generateThreadsInsightAction } from "@/app/actions/threads";
 import { NetworkIcon, ChevronRightIcon, LockIcon } from "@/components/icons";
 import type { AgentNode, AgentLink } from "@/lib/agent-graph";
@@ -163,7 +163,7 @@ export function ThreadsWeb({
       </div>
       <p className="threads-caption">Explore connections from this article</p>
       <div className="agent-canvas-wrap threads-canvas-wrap" ref={containerRef}>
-        <AgentGraph
+        <DeferredAgentGraph
           nodes={nodes}
           links={links}
           selectedId={selectedId}

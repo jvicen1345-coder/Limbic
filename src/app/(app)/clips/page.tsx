@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClipsFeedLoader } from "@/components/ClipsFeedLoader";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getClips } from "@/lib/clips";
@@ -7,7 +8,6 @@ import { orderClipsForUser } from "@/lib/clip-rotation";
 export const metadata: Metadata = {
   title: "Clips",
 };
-import { ClipsFeed } from "@/components/ClipsFeed";
 
 export default async function ClipsPage() {
   const user = await getCurrentUser();
@@ -27,5 +27,5 @@ export default async function ClipsPage() {
   // prop update alone doesn't reset a client child's already-initialized local state.
   const feedKey = clips.map((c) => c.id).join(",");
 
-  return <ClipsFeed key={feedKey} clips={clips} savedClipIds={savedClipIds} />;
+  return <ClipsFeedLoader key={feedKey} clips={clips} savedClipIds={savedClipIds} />;
 }

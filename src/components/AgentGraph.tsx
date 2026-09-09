@@ -1,14 +1,25 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import * as d3 from "d3";
+import {
+  forceCollide,
+  forceLink,
+  forceManyBody,
+  forceSimulation,
+  forceX,
+  forceY,
+  type ForceLink,
+  type Simulation,
+  type SimulationNodeDatum,
+} from "d3-force";
+import { select, type Selection } from "d3-selection";
 import type { AgentNode, AgentLink } from "@/lib/agent-graph";
 
 // labelHalfWidth is filled in after each label's text is rendered (see the data-update
 // effect) by measuring its actual SVG bounding box — collision then reserves that much
 // horizontal room per node so two labels can never visually touch, regardless of how long
 // either string is.
-type SimNode = AgentNode & d3.SimulationNodeDatum & { labelHalfWidth?: number };
+type SimNode = AgentNode & SimulationNodeDatum & { labelHalfWidth?: number };
 type SimLink = { source: string | SimNode; target: string | SimNode; kind: "tree" | "cross" };
 
 // Minimum gap kept between the edges of two neighboring labels — wider than a node's own
@@ -83,7 +94,7 @@ let logoGradientCounter = 0;
  *  gets its own gradient id (a module-level counter, not React's
  *  useId, since this runs outside React) so multiple graphs mounted at once — Limbic
  *  Agent's own web and a Threads web, say — never collide on url(#id) resolution. */
-function appendLogoIcon(container: d3.Selection<SVGGElement, unknown, null, undefined>, size: number) {
+function appendLogoIcon(container: Selection<SVGGElement, unknown, null, undefined>, size: number) {
   const gradientId = `agent-graph-logo-gradient-${++logoGradientCounter}`;
   const icon = container
     .append("svg")
@@ -132,16 +143,7 @@ function appendLogoIcon(container: d3.Selection<SVGGElement, unknown, null, unde
   }
 }
 
-export function AgentGraph({
-  nodes,
-  links,
-  selectedId,
-  loadingId,
-  width,
-  height,
-  onNodeClick,
-  onBackgroundClick,
-}: {
+export interface AgentGraphProps {
   nodes: AgentNode[];
   links: AgentLink[];
   selectedId: string | null;
@@ -152,9 +154,20 @@ export function AgentGraph({
   height: number;
   onNodeClick: (node: AgentNode) => void;
   onBackgroundClick?: () => void;
-}) {
+}
+
+export function AgentGraph({
+  nodes,
+  links,
+  selectedId,
+  loadingId,
+  width,
+  height,
+  onNodeClick,
+  onBackgroundClick,
+}: AgentGraphProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const simRef = useRef<d3.Simulation<SimNode, SimLink> | null>(null);
+  const simRef = useRef<Simulation<SimNode, SimLink> | null>(null);
   const simNodesRef = useRef<SimNode[]>([]);
   const prevLabelsRef = useRef<Map<string, string>>(new Map());
   // Read inside the tick handler below (defined once, in the mount-only effect) rather
@@ -173,7 +186,7 @@ export function AgentGraph({
   // (keyed on nodes/links) feeds it new data, which is what makes the web grow outward
   // instead of re-arranging itself every time a node is added.
   useEffect(() => {
-    const svg = d3.select(svgRef.current);
+    const svg = select(svgRef.current);
     svg.selectAll("*").remove();
 
     svg.on("click", (event) => {
@@ -183,12 +196,10 @@ export function AgentGraph({
     svg.append("g").attr("class", "agent-links");
     svg.append("g").attr("class", "agent-nodes");
 
-    const simulation = d3
-      .forceSimulation<SimNode>([])
+    const simulation = forceSimulation<SimNode>([])
       .force(
         "link",
-        d3
-          .forceLink<SimNode, SimLink>([])
+        forceLink<SimNode, SimLink>([])
           .id((d) => d.id)
           .distance((d) => {
             const target = d.target as SimNode;
@@ -197,10 +208,10 @@ export function AgentGraph({
           })
           .strength((d) => (d.kind === "cross" ? 0.15 : 0.85))
       )
-      .force("charge", d3.forceManyBody().strength(() => (sizeRef.current.width < 460 ? CHARGE_STRENGTH_COMPACT : CHARGE_STRENGTH)))
+      .force("charge", forceManyBody().strength(() => (sizeRef.current.width < 460 ? CHARGE_STRENGTH_COMPACT : CHARGE_STRENGTH)))
       .force(
         "collide",
-        d3.forceCollide<SimNode>().radius((d) => {
+        forceCollide<SimNode>().radius((d) => {
           const r = d.variant === "action" ? ACTION_NODE_RADIUS : (RING_RADIUS[d.ring] ?? 14);
           return Math.max(r + 16, (d.labelHalfWidth ?? 0) + LABEL_COLLIDE_PADDING);
         })
@@ -251,8 +262,8 @@ export function AgentGraph({
     sizeRef.current = { width, height };
     const simulation = simRef.current;
     if (!simulation) return;
-    simulation.force("x", d3.forceX(width / 2).strength(0.03));
-    simulation.force("y", d3.forceY(height / 2).strength(0.03));
+    simulation.force("x", forceX(width / 2).strength(0.03));
+    simulation.force("y", forceY(height / 2).strength(0.03));
     const center = simNodesRef.current.find((n) => n.ring === 0);
     if (center) {
       center.fx = width / 2;
@@ -272,7 +283,7 @@ export function AgentGraph({
   // current position so they visibly grow outward from it rather than appearing at a
   // random spot on the canvas.
   useEffect(() => {
-    const svg = d3.select(svgRef.current);
+    const svg = select(svgRef.current);
     const simulation = simRef.current;
     if (!simulation) return;
 
@@ -352,7 +363,7 @@ export function AgentGraph({
       .append("g")
       .attr("class", "agent-node-pulse")
       .each(function (d) {
-        const g = d3.select(this);
+        const g = select(this);
         const r = nodeRadius(d, radii, compact);
         const isAction = d.variant === "action";
         g.append("circle")
@@ -401,7 +412,7 @@ export function AgentGraph({
     });
 
     simulation.nodes(nextSimNodes);
-    (simulation.force("link") as d3.ForceLink<SimNode, SimLink>).links(nextSimLinks);
+    (simulation.force("link") as ForceLink<SimNode, SimLink>).links(nextSimLinks);
     simulation.alpha(0.7).restart();
 
     // The center node's label changes once (idle "Limbic Agent" -> the question, then
@@ -410,7 +421,7 @@ export function AgentGraph({
     merged.each(function (d) {
       const prev = prevLabelsRef.current.get(d.id);
       if (prev !== undefined && prev !== d.label) {
-        const pulseNode = d3.select(this).select(".agent-node-pulse").node() as SVGGElement | null;
+        const pulseNode = select(this).select(".agent-node-pulse").node() as SVGGElement | null;
         if (pulseNode) {
           pulseNode.classList.remove("agent-node-pulse-replay");
           // Force a reflow so re-adding the class restarts the CSS animation.

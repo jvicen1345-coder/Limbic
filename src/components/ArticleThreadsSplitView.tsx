@@ -1,11 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { swapArticleAction } from "@/app/actions/article";
 import { ArticleReadingPane } from "@/components/ArticleReadingPane";
-import { ThreadsWeb } from "@/components/ThreadsWeb";
 import { ReadingProgressTracker } from "@/components/ReadingProgressTracker";
 import type { ArticleViewData } from "@/lib/article-view";
+
+const ThreadsWeb = dynamic(() => import("@/components/ThreadsWeb").then((module) => module.ThreadsWeb), {
+  loading: () => (
+    <div role="status" aria-label="Loading article connections" aria-busy="true" style={{ minHeight: 500 }} />
+  ),
+});
 
 /**
  * Owns the article reading pane + Limbic Threads panel as a persistent pair. Clicking a

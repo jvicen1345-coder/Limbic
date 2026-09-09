@@ -8,7 +8,7 @@ import { markClipSeenAction } from "@/app/actions/clips";
 import { VolumeIcon, VolumeMuteIcon, ExternalLinkIcon } from "@/components/icons";
 import { SPECIALTY_META, youtubeEmbedUrl, youtubeThumbnailUrl } from "@/lib/meta";
 import { shuffle } from "@/lib/shuffle";
-import { loadYouTubeIframeApi, type YouTubePlayer } from "@/lib/youtube-iframe-api";
+import type { YouTubePlayer } from "@/lib/youtube-iframe-api";
 import type { Clip } from "@/lib/types";
 
 // The curated clip list is small and finite, so a continuous ("for you"-style) feed loops
@@ -119,7 +119,11 @@ function ClipSlide({
     let cancelled = false;
     let player: YouTubePlayer | null = null;
 
-    loadYouTubeIframeApi()
+    // Keep both the loader module and YouTube's remote API off the initial /clips path.
+    // `mounted` cannot become true until IntersectionObserver confirms a slide is visible
+    // (see activeSlotId below), so background/prefetched routes never contact YouTube.
+    import("@/lib/youtube-iframe-api")
+      .then(({ loadYouTubeIframeApi }) => loadYouTubeIframeApi())
       .then((YT) => {
         if (cancelled || !iframeRef.current) return;
         player = new YT.Player(iframeRef.current, {
@@ -253,7 +257,10 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
   // meaning lazy-initializing state from it here is enough, with no separate reset needed
   // for a prop change that doesn't happen in practice.
   const [lapOrders, setLapOrders] = useState<Clip[][]>(() => (clips.length ? [clips] : []));
-  const [activeSlotId, setActiveSlotId] = useState<string | null>(clips[0] ? `${clips[0].id}__0` : null);
+  // Null until IntersectionObserver confirms an actual visible slide. Previously this was
+  // pre-seeded with the first clip, which mounted three YouTube players during hydration
+  // even when /clips had only been prefetched and was never viewed.
+  const [activeSlotId, setActiveSlotId] = useState<string | null>(null);
   const [muted, setMuted] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -363,7 +370,7 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
             clip={slot.clip}
             slotId={slot.slotId}
             active={slot.slotId === activeSlotId}
-            mounted={activeIndex === -1 || Math.abs(i - activeIndex) <= MOUNT_WINDOW}
+            mounted={activeIndex !== -1 && Math.abs(i - activeIndex) <= MOUNT_WINDOW}
             muted={muted}
             onToggleMute={() => setMuted((m) => !m)}
             onEnded={() => advanceToNext(slot.slotId)}
