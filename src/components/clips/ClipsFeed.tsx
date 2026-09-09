@@ -46,7 +46,10 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
   // meaning lazy-initializing state from it here is enough, with no separate reset needed
   // for a prop change that doesn't happen in practice.
   const [lapOrders, setLapOrders] = useState<Clip[][]>(() => (clips.length ? [clips] : []));
-  const [activeSlotId, setActiveSlotId] = useState<string | null>(clips[0] ? `${clips[0].id}__0` : null);
+  // Null until IntersectionObserver confirms an actual visible slide. Previously this was
+  // pre-seeded with the first clip, which mounted three YouTube players during hydration
+  // even when /clips had only been prefetched and was never viewed.
+  const [activeSlotId, setActiveSlotId] = useState<string | null>(null);
   const [muted, setMuted] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -156,7 +159,7 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
             clip={slot.clip}
             slotId={slot.slotId}
             active={slot.slotId === activeSlotId}
-            mounted={activeIndex === -1 || Math.abs(i - activeIndex) <= MOUNT_WINDOW}
+            mounted={activeIndex !== -1 && Math.abs(i - activeIndex) <= MOUNT_WINDOW}
             muted={muted}
             onToggleMute={() => setMuted((m) => !m)}
             onEnded={() => advanceToNext(slot.slotId)}

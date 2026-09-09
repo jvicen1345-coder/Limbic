@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ClipSaveButton } from "@/components/ClipSaveButton";
 import { VolumeIcon, VolumeMuteIcon, ExternalLinkIcon } from "@/components/icons";
 import { SPECIALTY_META, youtubeEmbedUrl, youtubeThumbnailUrl } from "@/lib/meta";
-import { loadYouTubeIframeApi, type YouTubePlayer } from "@/lib/youtube-iframe-api";
+import type { YouTubePlayer } from "@/lib/youtube-iframe-api";
 import type { Clip } from "@/lib/types";
 
 export function ClipSlide({
@@ -88,7 +88,11 @@ export function ClipSlide({
     let cancelled = false;
     let player: YouTubePlayer | null = null;
 
-    loadYouTubeIframeApi()
+    // Keep both the loader module and YouTube's remote API off the initial /clips path.
+    // `mounted` cannot become true until IntersectionObserver confirms a slide is visible
+    // (see activeSlotId below), so background/prefetched routes never contact YouTube.
+    import("@/lib/youtube-iframe-api")
+      .then(({ loadYouTubeIframeApi }) => loadYouTubeIframeApi())
       .then((YT) => {
         if (cancelled || !iframeRef.current) return;
         player = new YT.Player(iframeRef.current, {
