@@ -181,3 +181,72 @@
   font-family: inherit;
   cursor: pointer;
 }
+/* ---------- Home sidebar: daily insight (components/DailyInsightCard.tsx) ----------
+   One thing worth knowing today, picked from what the reader actually reads and pitched at
+   whether they are a clinician, a student, or reading as a member of the public. The source
+   link is the point of the card rather than a footnote, so it is given its own tappable
+   block at the foot rather than an inline anchor in the prose. */
+.daily-insight-topic {
+  font-family: var(--font-head, inherit);
+  font-size: 15px;
+  font-weight: 650;
+  margin-top: 8px;
+  line-height: 1.25;
+  color: var(--color-text);
+}
+.daily-insight-level {
+  font-size: var(--fs-11);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin-top: 2px;
+}
+.daily-insight-body {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--color-text);
+  margin: 6px 0 0;
+}
+.daily-insight-sowhat {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  margin: 8px 0 0;
+}
+.daily-insight-source {
+  display: block;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border);
+  text-decoration: none;
+  color: inherit;
+}
+.daily-insight-source:hover .daily-insight-source-title,
+.daily-insight-source:focus-visible .daily-insight-source-title {
+  text-decoration: underline;
+}
+.daily-insight-source-label {
+  display: block;
+  font-size: var(--fs-11);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+}
+.daily-insight-source-title {
+  display: block;
+  margin-top: 3px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--color-accent-700);
+}
+.daily-insight-source-publisher {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--fs-11);
+  color: var(--color-neutral-700);
+}
+/* Long titles in a narrow sidebar: break rather than push the card wider. */
+.daily-insight-source-title,
+.daily-insight-topic {
+  overflow-wrap: anywhere;
+}

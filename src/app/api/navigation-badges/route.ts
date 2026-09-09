@@ -1,6 +1,7 @@
 import { getAptaNewsArticles } from "@/lib/articles";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { nexusVisibleTo } from "@/lib/nexus-visibility";
 
 export const dynamic = "force-dynamic";
 
@@ -18,10 +19,16 @@ export async function GET() {
     return Response.json({ error: "Unauthorized" }, { status: 401, headers: PRIVATE_HEADERS });
   }
 
+  // A reader Nexus is hidden from has no Nexus nav to badge, and a non-zero count here
+  // would be a signal that the feature exists (see lib/nexus-visibility.ts). Don't count,
+  // and don't query.
+  const showNexus = nexusVisibleTo(user);
   const [aptaArticles, savedCount, nexusRequestCount] = await Promise.all([
     getAptaNewsArticles(),
     prisma.savedArticle.count({ where: { userId: user.id } }),
-    prisma.connection.count({ where: { recipientId: user.id, status: "pending" } }),
+    showNexus
+      ? prisma.connection.count({ where: { recipientId: user.id, status: "pending" } })
+      : Promise.resolve(0),
   ]);
 
   // Match Home's "new since your last visit" cutoff. On a Home hard load, recordHomeVisit

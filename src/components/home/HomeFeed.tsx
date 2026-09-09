@@ -21,10 +21,10 @@ import { PullToRefresh } from "@/components/PullToRefresh";
 import { refreshHomeFeedAction } from "@/app/actions/home";
 import { orderArticlesForGrid, titleFingerprint } from "@/lib/home-grid-rotation";
 import { type NexusSuggestion } from "@/components/NexusSuggestionsCard";
+import type { DailyInsight } from "@/lib/daily-insight";
 import { FoundingFunderBadge } from "@/components/FoundingFunderBadge";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { ArticleType } from "@/lib/types";
-import type { StockView } from "@/lib/stock";
 import type { LicenseView } from "@/lib/license";
 import type { LimbicAgentInsights } from "@/lib/limbic-agent-insights";
 
@@ -73,11 +73,12 @@ const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
 export function HomeFeed({
   articles,
   calendarWidget,
-  stocks,
   license,
   savedUnread,
   nexusSuggestions,
   nexusOnWaitlist,
+  showNexus,
+  dailyInsight,
   continueReading,
   homeQuestion,
   dashboard,
@@ -94,11 +95,12 @@ export function HomeFeed({
   articles: DecoratedArticle[];
   /** Server-rendered — see components/LimbicCalendarWidget.tsx, app/(app)/page.tsx. */
   calendarWidget: ReactNode;
-  stocks: StockView[];
   license: LicenseView | null;
   savedUnread: DecoratedArticle[];
   /** null when the viewer hasn't opted into Nexus yet — renders an invitation instead of
    *  a list of people they can't act on. */
+  showNexus: boolean;
+  dailyInsight: DailyInsight | null;
   nexusSuggestions: NexusSuggestion[] | null;
   /** True when the reader has opted into Nexus but nexusSuggestions is still null because
    *  Nexus itself is coming-soon for non-admins (see app/(app)/nexus/layout.tsx) — shows a
@@ -412,7 +414,8 @@ export function HomeFeed({
           calendarWidget={calendarWidget}
           nexusSuggestions={nexusSuggestions}
           nexusOnWaitlist={nexusOnWaitlist}
-          stocks={stocks}
+          showNexus={showNexus}
+          dailyInsight={dailyInsight}
         />
       </div>
     </div>

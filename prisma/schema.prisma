@@ -232,6 +232,14 @@ model User {
   // means "show everything", same as every existing account before this field existed.
   hiddenHomeWidgets Json @default("[]")
 
+  // Today's agent-written insight for the Home sidebar (see lib/daily-insight.ts), stored
+  // as the whole rendered card rather than regenerated per request — an LLM call never
+  // happens on a Home request, same rule as llmInterestProfile above. dailyInsightDate is
+  // the local YYYY-MM-DD the stored insight belongs to, which is both the rotation key and
+  // the cron's "who still needs one today" filter.
+  dailyInsight     Json?
+  dailyInsightDate String?
+
   // Gates the one-time "pick your interests" screen at app/onboarding (see
   // app/(app)/layout.tsx) for brand-new accounts. Defaults to true (not false) so this
   // field's own rollout doesn't retroactively send every existing account back through
