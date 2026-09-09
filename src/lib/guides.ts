@@ -29,6 +29,14 @@ export type Guide = {
   sections: number;
   items: number;
   references: number;
+  /** Listed on the hub and the Boards tab, but not yet served: the card shows a "Coming
+   *  soon" marker instead of a way in, and the route 404s the slug for everyone.
+   *
+   *  These three were built to the same skeleton as the hip and shoulder and are not yet at
+   *  the same standard — hip and shoulder are the two a reader should be spending time in.
+   *  They stay listed rather than hidden because the counts on their cards are real and the
+   *  work is real; what is not ready is the writing. Delete the flag to publish one. */
+  comingSoon?: true;
 };
 
 export const GUIDES: Guide[] = [
@@ -57,6 +65,7 @@ export const GUIDES: Guide[] = [
   {
     slug: "knee-examination",
     name: "Knee Examination",
+    comingSoon: true,
     description:
       "The knee screen, built on the openly published guideline rather than around it. Covers why a test’s headline accuracy depends on who performed it and on whom, and why the Ottawa knee rule’s “high diagnostic performance” sits beside an AUC of 0.54.",
     short:
@@ -68,6 +77,7 @@ export const GUIDES: Guide[] = [
   {
     slug: "ankle-examination",
     name: "Ankle Examination",
+    comingSoon: true,
     description:
       "The best-evidenced joint in the series — two graded guidelines carry 34 current recommendations between them — and the one with the worst honest prognosis: two in five people who seek care for a first sprain develop chronic instability. The special tests are recommended without any published accuracy, which the guide says rather than filling in.",
     short:
@@ -79,6 +89,7 @@ export const GUIDES: Guide[] = [
   {
     slug: "joint-mobilization",
     name: "Joint Mobilization",
+    comingSoon: true,
     description:
       "Not a region but a decision: whether to mobilise, where, how hard, and how you’d know it worked. Three of the conventions that decide how a mobilization is performed — the grading systems, packed positions, and the concave-convex rule — could not be traced to any reachable source. The one dose vocabulary that is defined has different outcomes at each level.",
     short:
@@ -93,6 +104,9 @@ export function guideHref(guide: Guide): string {
   return `/student/guides/${guide.slug}`;
 }
 
-export function isGuideSlug(slug: string): boolean {
-  return GUIDES.some((guide) => guide.slug === slug);
+/** Whether this slug may actually be served. A guide marked comingSoon is a known slug that
+ *  is deliberately not readable yet, so it fails this the same way an unknown one does — the
+ *  route gives both the same 404 rather than confirming which is which. */
+export function isServableGuide(slug: string): boolean {
+  return GUIDES.some((guide) => guide.slug === slug && !guide.comingSoon);
 }

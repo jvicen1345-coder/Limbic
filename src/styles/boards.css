@@ -569,3 +569,19 @@
   .boards-question-pad { max-width: 680px !important; }
   .npte-systems-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* The Study Guide tab's version of a guide that is listed but not yet served — see
+   .playbook-hub-card--soon in playbooks.css and Guide.comingSoon in lib/guides.ts. A div
+   rather than a Link, so it has no hover lift and nothing to click. */
+.boards-guide-card--soon { opacity: 0.72; cursor: default; }
+.boards-guide-card--soon:hover { transform: none; box-shadow: none; }
+.boards-guide-soon {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px dashed var(--color-divider);
+  color: var(--color-neutral-700);
+  font-size: var(--fs-10);
+  font-weight: 600;
+  white-space: nowrap;
+}

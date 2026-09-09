@@ -370,15 +370,30 @@ export function BoardsTabs({
                 each leads to its own document rather than a playbook page. Every document
                 carries its own link back into Limbic. Listed from lib/guides.ts so this and
                 the hub cannot drift apart. */}
-            {GUIDES.map((guide) => (
-              <Link className="boards-guide-card" key={guide.slug} href={guideHref(guide)}>
-                <span className="boards-guide-card-name">{guide.name}</span>
-                <span className="boards-guide-card-desc">{guide.short}</span>
-                <span className="boards-guide-card-meta">
-                  {guide.sections} sections · {guide.items} exam items · {guide.references} references
-                </span>
-              </Link>
-            ))}
+            {/* A guide still marked coming soon renders as a card rather than a link — same
+                information, nothing to click, and its route 404s regardless. */}
+            {GUIDES.map((guide) =>
+              guide.comingSoon ? (
+                <div className="boards-guide-card boards-guide-card--soon" key={guide.slug}>
+                  <span className="boards-guide-card-name">
+                    {guide.name}
+                    <span className="boards-guide-soon">Coming soon</span>
+                  </span>
+                  <span className="boards-guide-card-desc">{guide.short}</span>
+                  <span className="boards-guide-card-meta">
+                    {guide.sections} sections · {guide.items} exam items · {guide.references} references
+                  </span>
+                </div>
+              ) : (
+                <Link className="boards-guide-card" key={guide.slug} href={guideHref(guide)}>
+                  <span className="boards-guide-card-name">{guide.name}</span>
+                  <span className="boards-guide-card-desc">{guide.short}</span>
+                  <span className="boards-guide-card-meta">
+                    {guide.sections} sections · {guide.items} exam items · {guide.references} references
+                  </span>
+                </Link>
+              ),
+            )}
             {playbooks.map((playbook) => (
               <Link className="boards-guide-card" key={playbook.slug} href={`/student/playbooks/${playbook.slug}`}>
                 <span className="boards-guide-card-name">{playbook.name}</span>

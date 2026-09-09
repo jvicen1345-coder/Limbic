@@ -45,16 +45,26 @@ export default async function PlaybooksHubPage() {
             to this hub. */}
         <div className="playbook-hub-grid">
           {GUIDES.map((guide) => (
-            <div className="playbook-hub-card playbook-hub-card-guide" key={guide.slug}>
+            <div
+              className={`playbook-hub-card playbook-hub-card-guide${guide.comingSoon ? " playbook-hub-card--soon" : ""}`}
+              key={guide.slug}
+            >
               <h2 className="playbook-hub-card-name">{guide.name}</h2>
               <p className="playbook-hub-card-desc">{guide.description}</p>
               <span className="playbook-hub-card-meta">
                 {guide.sections} sections · {guide.items} exam items · {guide.references} references
               </span>
-              <Link href={guideHref(guide)} className="specialty-explore-btn">
-                Open
-                <ChevronRightIcon size={14} />
-              </Link>
+              {/* A guide that isn't ready keeps its card and its counts — those are real —
+                  and loses only the way in. The route 404s the slug too, so the card is the
+                  only thing standing between a reader and it, not the only thing. */}
+              {guide.comingSoon ? (
+                <span className="playbook-hub-soon">Coming soon</span>
+              ) : (
+                <Link href={guideHref(guide)} className="specialty-explore-btn">
+                  Open
+                  <ChevronRightIcon size={14} />
+                </Link>
+              )}
             </div>
           ))}
           {PLAYBOOKS.map((playbook) => (
