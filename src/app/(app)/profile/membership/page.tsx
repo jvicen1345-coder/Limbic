@@ -260,7 +260,7 @@ export default async function ProfileMembershipPage({
 
   const TIER_DEFS: TierConfig[] = [
     { key: "free", label: "Free", price: "$0", current: onFree, action: null },
-    { key: "wellness", label: "Limbic Wellness+", price: "$3/mo", current: onWellness, action: onWellness ? null : subscribeToWellnessPlusFromProfileAction, plan: "wellnessPlusMonthly" },
+    { key: "wellness", label: "Limbic Wellness+", price: "$2/mo", current: onWellness, action: onWellness ? null : subscribeToWellnessPlusFromProfileAction, plan: "wellnessPlusMonthly" },
     {
       key: "student",
       label: "Limbic Student",
