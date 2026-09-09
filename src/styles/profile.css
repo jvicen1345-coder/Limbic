@@ -1,0 +1,18 @@
+/* Profile — Program Timeline (components/ProgramTimelineSection.tsx). Rotation blocks
+   reuse .pro-accordion-summary/-content/-chevron from base.css, but get their own lighter
+   box (not .card) since they already sit nested inside the section's own .card. */
+
+.program-timeline-academic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 12px; }
+@media (max-width: 640px) {
+  .program-timeline-academic { grid-template-columns: minmax(0, 1fr); }
+}
+.program-timeline-rotation-list { display: flex; flex-direction: column; gap: 10px; }
+.program-timeline-rotation {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+.program-timeline-rotation .pro-accordion-content { grid-template-columns: repeat(2, minmax(0, 1fr)); display: grid; }
+@media (max-width: 640px) {
+  .program-timeline-rotation .pro-accordion-content { grid-template-columns: minmax(0, 1fr); }
+}
