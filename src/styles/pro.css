@@ -194,44 +194,8 @@
 .pro-slider { width: 100%; accent-color: var(--color-accent); cursor: pointer; }
 .pro-slider-scale { display: flex; justify-content: space-between; font-size: var(--fs-10-5); color: var(--color-neutral-700); }
 
-/* — Accordions — decision rules, red flags, medications, guidelines all use
-   native <details>/<summary>, styled to match .card. */
-.pro-accordion { display: flex; flex-direction: column; gap: 12px; }
-.pro-accordion-summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  cursor: pointer;
-  list-style: none;
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 15.5px;
-}
-.pro-accordion-summary::-webkit-details-marker { display: none; }
-.pro-accordion-summary-sub { font-size: 12.5px; color: var(--color-neutral-700); font-family: var(--font-body); font-weight: 400; margin-top: 3px; }
-.pro-accordion-chevron { flex-shrink: 0; transition: transform 150ms ease; color: var(--color-accent); }
-details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotate(90deg); }
-.pro-accordion-content { padding-top: 14px; margin-top: 14px; border-top: 1px solid var(--color-divider); display: flex; flex-direction: column; gap: 12px; }
-
-/* Profile's Program Timeline section (components/ProgramTimelineSection.tsx) — the three
-   rotation blocks reuse .pro-accordion-summary/-content/-chevron above for their expand
-   behavior, but get their own lighter box (not .card) since they already sit nested inside
-   the section's own .card — a second full card border per rotation would double up. */
-.program-timeline-academic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 12px; }
-@media (max-width: 640px) {
-  .program-timeline-academic { grid-template-columns: minmax(0, 1fr); }
-}
-.program-timeline-rotation-list { display: flex; flex-direction: column; gap: 10px; }
-.program-timeline-rotation {
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-md);
-  padding: 12px 14px;
-}
-.program-timeline-rotation .pro-accordion-content { grid-template-columns: repeat(2, minmax(0, 1fr)); display: grid; }
-@media (max-width: 640px) {
-  .program-timeline-rotation .pro-accordion-content { grid-template-columns: minmax(0, 1fr); }
-}
+/* Accordion + filter-chip primitives live in base.css — Profile, Student, Atlas,
+   Movement Lab, and HEP use them without loading this sheet. */
 
 /* Checkbox criterion row — Ottawa/Canadian C-Spine/NEXUS/red-flag checklists */
 .pro-check-row { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--color-text); padding: 6px 0; cursor: pointer; }
@@ -263,22 +227,6 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   font-size: 14px;
   margin-top: 4px;
 }
-
-/* — Filter bars — special tests / guidelines / lab values category tabs */
-.pro-filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; }
-.pro-filter-chip {
-  flex-shrink: 0;
-  border: 1px solid var(--color-divider);
-  background: var(--color-surface);
-  border-radius: 999px;
-  padding: 7px 15px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--color-text);
-  cursor: pointer;
-  white-space: nowrap;
-}
-.pro-filter-chip.active { background: var(--color-accent); color: var(--color-bg); border-color: var(--color-accent); }
 
 /* — Reference tables — lab values, mostly */
 .pro-table-wrap { overflow-x: auto; margin-bottom: 8px; }
