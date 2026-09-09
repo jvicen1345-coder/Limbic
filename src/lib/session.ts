@@ -165,8 +165,22 @@ export function isStudentEmail(email: string | null | undefined): boolean {
  *  above, just handled explicitly here since email-suffix identity isn't a field
  *  getCurrentUser() can quietly override without corrupting the account's real sign-in
  *  email. */
-export function hasStudentAccess(user: { email: string | null; licenseEmail: string | null; compedAccess: unknown }): boolean {
+export function hasStudentAccess(user: {
+  email: string | null;
+  licenseEmail: string | null;
+  compedAccess: unknown;
+  studentTier: string;
+}): boolean {
   return (
+    // A paid Limbic Student subscription counts on its own, without a .edu email still
+    // being the sign-in address. Graduation is the case this exists for: the app asks
+    // students to add a personal backup email, and makePrimaryEmail (see
+    // app/actions/account-migration.ts) then swaps that address into `email` and the .edu
+    // one out. Nothing about that swap touches studentTier — Stripe keeps billing the $5/mo
+    // — so without this clause a subscriber who followed the app's own graduation flow lost
+    // every surface gated here (the whole Student Atrium, Boards, the assignments API,
+    // Atlas via hasClinicalReferenceAccess below) while still paying for them.
+    user.studentTier === "limbicStudent" ||
     isStudentEmail(user.email) ||
     isAdminEmail(user.email) ||
     isAdminEmail(user.licenseEmail) ||
@@ -195,7 +209,13 @@ export function hasLicenseAccess(user: {
  *  content still worth opening up to a .edu Limbic Student account, not just a paying PRO
  *  clinician. Real LimbicPRO members are unaffected either way — this only widens who else
  *  gets through, never narrows the existing isPro check. */
-export function hasClinicalReferenceAccess(user: { isPro: boolean; email: string | null; licenseEmail: string | null; compedAccess: unknown }): boolean {
+export function hasClinicalReferenceAccess(user: {
+  isPro: boolean;
+  email: string | null;
+  licenseEmail: string | null;
+  compedAccess: unknown;
+  studentTier: string;
+}): boolean {
   return user.isPro || hasStudentAccess(user);
 }
 

@@ -51,6 +51,17 @@ export function priceIdForPlan(plan: BillablePlan): string | undefined {
   }
 }
 
+/** Whether `plan` can actually be checked out — i.e. someone filled in its Price id env var
+ *  above. startCheckout (app/actions/pro.ts) returns silently when priceIdForPlan comes back
+ *  undefined, so a Subscribe button offered for a plan without one is a dead click: the form
+ *  posts, nothing happens, and the reader is left on the same page with no explanation. Call
+ *  this before rendering a purchase button (see withPricingGuard in
+ *  app/(app)/profile/membership/page.tsx). Separate from stripeEnabled() above, which is
+ *  about billing being configured at all rather than about one plan. */
+export function planHasPrice(plan: BillablePlan): boolean {
+  return !!priceIdForPlan(plan);
+}
+
 /** The reverse lookup (webhook events carry a Price id, not a plan name) — see
  *  app/api/stripe/webhook/route.ts. Falls back to the event's own metadata.plan when set
  *  (see subscribeToProAction/subscribeToStudentTierAction/subscribeToWellnessPlus*Action,
