@@ -176,7 +176,7 @@ export function hasStudentAccess(user: {
     // being the sign-in address. Graduation is the case this exists for: the app asks
     // students to add a personal backup email, and makePrimaryEmail (see
     // app/actions/account-migration.ts) then swaps that address into `email` and the .edu
-    // one out. Nothing about that swap touches studentTier — Stripe keeps billing the $5/mo
+    // one out. Nothing about that swap touches studentTier — Stripe keeps billing the $3/mo
     // — so without this clause a subscriber who followed the app's own graduation flow lost
     // every surface gated here (the whole Student Atrium, Boards, the assignments API,
     // Atlas via hasClinicalReferenceAccess below) while still paying for them.

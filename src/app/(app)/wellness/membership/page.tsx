@@ -113,15 +113,15 @@ export default async function WellnessMembershipPage({
                 has to match the button it sits with. */}
             <div style={{ display: "flex", gap: 24, marginTop: 10, flexWrap: "wrap" }}>
               <form action={subscribeToWellnessPlusMonthlyAction}>
-                <AutoRenewalTerms price="$3" cadence="month" />
+                <AutoRenewalTerms price="$2" cadence="month" />
                 <button type="submit" className="btn btn-primary" disabled={!billingEnabled}>
-                  $3/month
+                  $2/month
                 </button>
               </form>
               <form action={subscribeToWellnessPlusYearlyAction}>
-                <AutoRenewalTerms price="$18" cadence="year" />
+                <AutoRenewalTerms price="$20" cadence="year" />
                 <button type="submit" className="btn btn-secondary" disabled={!billingEnabled}>
-                  $18/year
+                  $20/year
                 </button>
               </form>
             </div>

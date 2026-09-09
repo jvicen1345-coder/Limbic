@@ -260,17 +260,17 @@ export default async function ProfileMembershipPage({
 
   const TIER_DEFS: TierConfig[] = [
     { key: "free", label: "Free", price: "$0", current: onFree, action: null },
-    { key: "wellness", label: "Limbic Wellness+", price: "$3/mo", current: onWellness, action: onWellness ? null : subscribeToWellnessPlusFromProfileAction, plan: "wellnessPlusMonthly" },
+    { key: "wellness", label: "Limbic Wellness+", price: "$2/mo", current: onWellness, action: onWellness ? null : subscribeToWellnessPlusFromProfileAction, plan: "wellnessPlusMonthly" },
     {
       key: "student",
       label: "Limbic Student",
-      price: "$5/mo",
+      price: "$3/mo",
       current: onStudent,
       action: onStudent || !student ? null : subscribeToStudentTierAction,
       nonClickableReason: !onStudent && !student ? "Sign in with a .edu email to purchase Limbic Student" : undefined,
       plan: "limbicStudent",
     },
-    { key: "pro", label: "LimbicPRO", price: "$15/mo", current: onPro, action: onPro ? null : subscribeToProAction, plan: "pro" },
+    { key: "pro", label: "LimbicPRO", price: "$10/mo", current: onPro, action: onPro ? null : subscribeToProAction, plan: "pro" },
     { key: "clinic", label: "Clinic PRO", price: "$100/mo", current: onClinic, action: null, comingSoon: !onClinic },
   ];
   const TIERS = TIER_DEFS.map((tier) => withPricingGuard(tier, billingEnabled));
