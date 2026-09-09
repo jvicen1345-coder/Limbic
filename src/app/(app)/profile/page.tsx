@@ -9,6 +9,7 @@ import { TopicChip } from "@/components/TopicChip";
 import { TopicBrowser } from "@/components/TopicBrowser";
 import { ReadingStreakCard } from "@/components/ReadingStreakCard";
 import { GamesStreakCard } from "@/components/GamesStreakCard";
+import { WellnessStreakCard } from "@/components/wellness/WellnessStreakCard";
 import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import { HomeWidgetToggle } from "@/components/HomeWidgetToggle";
 import { DeleteAccountSection } from "@/components/DeleteAccountSection";
@@ -79,6 +80,7 @@ export default async function ProfilePage() {
       <div className="profile-header-grid">
         <ReadingStreakCard streakDays={user.streakDays} />
         <GamesStreakCard streakDays={user.gamesStreakDays} />
+        <WellnessStreakCard streakDays={user.wellnessStreakDays} />
       </div>
 
       {foundingFunderStatus.isFunder && (

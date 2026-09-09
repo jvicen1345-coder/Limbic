@@ -1151,3 +1151,39 @@ html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
 @media (min-width: 1024px) {
   .wellness-explore-grid { gap: 18px; }
 }
+
+/* — Hub header streak badge (see app/(app)/wellness/page.tsx, lib/wellness-activity.ts).
+   Compact and inline with the title rather than the full .streak-card block Profile
+   renders, so it costs no vertical space above the fold. Hidden entirely at zero: an
+   empty streak is not an achievement, and "0 days" reads as a scold on a page a reader
+   may be visiting for the first time. */
+.wellness-hub-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.wellness-hub-streak {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+  white-space: nowrap;
+}
+.wellness-hub-streak-value {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 18px;
+  line-height: 1;
+  color: var(--color-accent-700);
+}
+.wellness-hub-streak-unit { font-size: 12px; font-weight: 600; color: var(--color-accent-700); }
+@media (max-width: 560px) {
+  .wellness-hub-header-row { gap: 12px; }
+  .wellness-hub-streak { padding: 6px 11px; }
+  .wellness-hub-streak-value { font-size: 16px; }
+}

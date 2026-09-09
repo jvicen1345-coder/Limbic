@@ -322,6 +322,14 @@ model User {
   lastGamesActivityAt DateTime?
   gamesStreakDays     Int       @default(0)
 
+  // Health & Wellness streak — same nextStreak() logic and same "separate streak per
+  // feature" reasoning as the reading, Boards and Games streaks above, driven off
+  // WellnessActivity rows. Advanced once per day the first time the reader logs an
+  // activity, checks in their mood, or saves a metric that day (see
+  // lib/wellness-activity.ts), not once per log.
+  lastWellnessActivityAt DateTime?
+  wellnessStreakDays     Int       @default(0)
+
   // The Health & Wellness page's current per-user rotation state (see
   // lib/wellness-rotation.ts). wellnessArticleIds/wellnessVideoIds are JSON-encoded
   // string[] of the ids currently displayed; wellnessOpenedIds is a JSON-encoded string[]
@@ -457,6 +465,7 @@ model User {
   readArticles        ReadArticle[]
   boardActivity       BoardActivity[]
   gameActivity        GameActivity[]
+  wellnessActivity    WellnessActivity[]
   dailyCompletions    DailyCompletion[]
   calendarEvents      UserCalendarEvent[]
   vitalsProfile       VitalsProfile?
@@ -1037,6 +1046,25 @@ model BoardActivity {
 // BoardActivity drives the Boards one. Unique per (userId, dateKey) so finishing more than
 // one game the same day still only counts as one day of activity.
 model GameActivity {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dateKey   String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, dateKey])
+}
+
+// One row per day a user does something in Health & Wellness under their own steam —
+// logging an activity, a mood check-in, or saving a metric. Any one counts, and the
+// @@unique below is what makes the day idempotent, exactly like GameActivity above.
+//
+// Deliberately written only from the server actions a reader invokes, never from the
+// background syncs (lib/google-health-*.ts, lib/strava-sync.ts, lib/health-sync.ts) that
+// also write VitalsLog/MoodLog/MetricsLog rows. A streak is a record of showing up; a
+// wearable uploading overnight is not the reader showing up, and counting it would let a
+// streak run for weeks without them opening the app once.
+model WellnessActivity {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
