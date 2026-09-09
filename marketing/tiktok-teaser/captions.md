@@ -5,6 +5,26 @@ TikTok editor. It runs 54.8s and is structured as three tiers, so a sound with a
 build works better here than a single beat drop: the section cards land at 0:14
 (Limbic Student), 0:28.5 (LimbicPRO) and 0:39.8 (Health & Wellness).
 
+## Description (everyone — use this one for a general audience)
+
+The site's whole pitch is that it serves three audiences at once, so this version leads
+with that instead of picking one. One line per audience, then the research layer they
+share. First line is 41 characters, which fits above TikTok's "more" fold.
+
+> One app for everyone in physical therapy.
+>
+> Not just clinicians. Not just students. Anyone who wants the real research behind how
+> bodies move and heal.
+>
+> 🎓 In school — your semester, your playbooks, daily NPTE reps
+> 🩺 In the clinic — calculators, decision rules, special tests, 224 exercises with dosage
+> 💙 In your own body — wellness tools tuned to your numbers, built on the same evidence
+> 📚 For all three — current studies pulled live from PubMed, searchable in plain English
+>
+> Free to start → limbic.center
+>
+> #physicaltherapy #physicaltherapist #dptstudent #rehab #healthtok
+
 ## Description (post-ready)
 
 TikTok collapses everything after the first line behind "more", so the first line has to
