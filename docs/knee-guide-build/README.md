@@ -43,13 +43,26 @@ prose, is what makes it read thinner.
 - Section 10 gained the graded osteoarthritis and ACL sets, 9 rows under 2 group headings.
 - The limb-symmetry entry moved from `no traceable source` to a sourced, graded uncertainty.
 
+- Section 01 rebuilt: 12 pointer rows → 37 competencies under the ten questions `scope.md`
+  already uses, each with a finding rather than a description of the section.
+- Section 05 rebuilt into three purpose-built tables, including the brief's mandated
+  "What fakes a result" column — the first one anywhere in the knee, hip or ankle guides —
+  and a decision table keyed on end feel.
+
+Distinct table column signatures: **1 → 5**. Tables 10 → 12.
+
 **Still to do**
-- Section 01: 12 rows, 8 of them section pointers rather than competencies, against 37 in
-  `scope.md`. This is the most visible gap and the next piece of work.
-- Purpose-built table columns per section, replacing the repeated generic three.
-- A "what fakes a result" column wherever a knee test is commonly done wrong.
+- The same restructuring for sections 03, 04, 06, 08 and 09, which are still the generic
+  `Item | How it is performed | Finding / norm`.
 - Figures: 1 → 6-8.
-- The remaining `Convention` claims (44 of them) re-checked against the two new guidelines.
+- The remaining `Convention` claims re-checked against the two new guidelines.
+- A "what fakes a result" column in the special-tests and strength sections.
+
+**A gap this rebuild exposed.** A guide carrying `comingSoon` is skipped by the served-guides
+test, so its card counts — sections, items, references — are asserted by nothing. Both counts
+moved in this rebuild (items 12 → 37, references 10 → 12) and had to be verified by hand against
+the file. Either the counts should be derived from the document, or the test should check
+coming-soon guides against the file on disk rather than over HTTP.
 
 ## CORRECTION: the knee guideline I said was unreachable
 
