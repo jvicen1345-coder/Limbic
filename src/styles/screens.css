@@ -63,7 +63,7 @@
 }
 /* This used to cap .home-aside-scroll's height and give it its own overflow-y: auto
    scrollbar, on the theory that a tall column of widgets (streak, calendar, saved-unread,
-   Nexus, stock) would otherwise leave whatever fell past the viewport bottom unreachable
+   Nexus) would otherwise leave whatever fell past the viewport bottom unreachable
    under position: sticky. That premise was wrong — a sticky element is always reachable,
    it just stops being stuck and scrolls with the page once you pass its sticky range — and
    the nested scroll region it added caused a real, reproducible bug: any scroll-and-stitch

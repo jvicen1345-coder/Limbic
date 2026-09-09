@@ -7,12 +7,13 @@ import { prisma } from "@/lib/db";
 import { getArticles } from "@/lib/articles";
 import { decorateArticle, rankFeed, type DecoratedArticle } from "@/lib/feed";
 import { firstName as firstNameOf, timeOfDayGreeting, credentialFromName } from "@/lib/meta";
-import { getIndustryIndexView } from "@/lib/stock";
 import { prepareHomeImages, refreshHomeImageCache } from "@/lib/article-image-cache";
 import { buildLicenseView } from "@/lib/license";
 import { ensureNexusSeedData } from "@/lib/nexus-seed";
 import { getConnectionStates } from "@/lib/nexus";
+import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import { buildLimbicAgentInsights } from "@/lib/limbic-agent-insights";
+import { fallbackInsight, pickInsightArticle, readerLevelOf, storedInsightFor, type DailyInsight } from "@/lib/daily-insight";
 import { parseInterestProfile } from "@/lib/llm-interest-profile";
 import { todayLocalDateStr } from "@/lib/today";
 import { todayDateKey } from "@/lib/wordle-words";
@@ -46,7 +47,7 @@ export default async function HomePage() {
   const user = await getCurrentUser();
   if (!user) return null; // layout already redirects; guards TS narrowing below
 
-  const [articles, savedRows, readRows, industryIndex, previousVisit, lastReadArticle, backupSigninFlag, migrationBannerDismissed] =
+  const [articles, savedRows, readRows, previousVisit, lastReadArticle, backupSigninFlag, migrationBannerDismissed] =
     await Promise.all([
       getArticles(),
       prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true, createdAt: true } }),
@@ -60,7 +61,6 @@ export default async function HomePage() {
         // when this only fed buildLimbicAgentInsights' recency lookup.
         select: { articleId: true, updatedAt: true, scrollProgress: true },
       }),
-      getIndustryIndexView(),
       recordHomeVisit(user),
       prisma.readArticle.findFirst({
         where: { userId: user.id },
@@ -104,6 +104,27 @@ export default async function HomePage() {
   // lib/reading-calendar.ts, components/CalendarCard.tsx — none of them track a per-user
   // timezone either). The greeting is the one exception — see lib/timezone.ts for why.
   const todayStr = todayLocalDateStr(now);
+
+  // Today's insight for the sidebar. Read-only on this path: the agent-written version is
+  // produced by app/api/cron/refresh-daily-insights, never here, so Home never waits on a
+  // model. When there is no stored insight for today, fall back to a deterministic pick
+  // made the same personalized way — a real article, matched to this reader, carrying its
+  // own publisher link — so the card is always true and always sourced, and the cron only
+  // ever improves the writing. See lib/daily-insight.ts.
+  const dailyInsight: DailyInsight | null = (() => {
+    const stored = storedInsightFor(todayStr, user.dailyInsight, user.dailyInsightDate);
+    if (stored) return stored;
+    const article = pickInsightArticle(
+      articles,
+      new Set(readRows.map((r) => r.articleId)),
+      user.followedTopics as unknown as string[],
+      user.specialty,
+      user.id,
+      todayStr
+    );
+    if (!article) return null;
+    return fallbackInsight(article, readerLevelOf(user), todayStr);
+  })();
   const credential = credentialFromName(user.name);
   const greetingName = firstNameOf(user.name);
   const greeting = `${timeOfDayGreeting(await visitorHourOfDay())}, ${greetingName}${credential ? `, ${credential}` : ""}`;
@@ -255,11 +276,12 @@ export default async function HomePage() {
           isAdmin={isAdminUser}
         />
       }
-      stocks={industryIndex}
       license={license}
       savedUnread={savedUnread}
       nexusSuggestions={nexusSuggestions}
-      nexusOnWaitlist={!isAdminUser && user.nexusOptIn}
+      showNexus={nexusVisibleTo(user)}
+      dailyInsight={dailyInsight}
+      nexusOnWaitlist={false}
       continueReading={continueReading}
       homeQuestion={{
         dateKey: homeQuestionDateKey,

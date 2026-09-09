@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
 import { getCurrentUser, hasStudentAccess, hasLicenseAccess } from "@/lib/session";
@@ -136,7 +137,7 @@ export default async function BoardsHubPage() {
           question={question}
           initialSelectedIndex={questionCompletion?.selectedIndex ?? null}
           initialElapsedSeconds={questionCompletion?.elapsedSeconds ?? null}
-          nexusOptIn={user.nexusOptIn}
+          nexusOptIn={nexusVisibleTo(user) && user.nexusOptIn}
         />
       </BoardsFrame>
     );
@@ -224,7 +225,7 @@ export default async function BoardsHubPage() {
             alreadyComplete={saved.question != null && saved.term != null && saved.dayCase != null}
             saved={saved}
             targetSeconds={user.boardsSharpeningTargetSeconds ?? NPTE_THREE_QUESTION_BENCHMARK_SECONDS}
-            nexusOptIn={user.nexusOptIn}
+            nexusOptIn={nexusVisibleTo(user) && user.nexusOptIn}
             currentStreak={user.boardsStreakDays}
             longestStreak={longestStreak}
             weekDays={weekDays}

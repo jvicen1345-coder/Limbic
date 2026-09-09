@@ -11,7 +11,7 @@ export function FoundingFunderBadgeCard({ hidden, number }: { hidden: boolean; n
         <FoundingFunderBadgeToggle hidden={hidden} />
       </div>
       <p className="card-body" style={{ marginTop: 2 }}>
-        {`Your Founding Funder${number != null ? ` No. ${number}` : ""} badge appears here on your profile, next to your name in Nexus, and next to your name on Home. Turn it off if you’d rather keep it private.`}
+        {`Your Founding Funder${number != null ? ` No. ${number}` : ""} badge appears here on your profile and next to your name on Home. Turn it off if you’d rather keep it private.`}
       </p>
     </div>
   );

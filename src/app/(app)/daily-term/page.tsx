@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/lib/session";
+import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import { prisma } from "@/lib/db";
 import { todayDateKey } from "@/lib/wordle-words";
 import { WordleGame, type WordleInitialState } from "@/components/WordleGame";
@@ -16,5 +17,5 @@ export default async function WordlePage() {
     ? { guesses: (row.guesses as string[]) ?? [], status: (row.status as WordleInitialState["status"]) ?? "playing", elapsedSeconds: row.elapsedSeconds }
     : null;
 
-  return <WordleGame dateKey={dateKey} initial={initial} nexusOptIn={user.nexusOptIn} />;
+  return <WordleGame dateKey={dateKey} initial={initial} nexusOptIn={nexusVisibleTo(user) && user.nexusOptIn} />;
 }
