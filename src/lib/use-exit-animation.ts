@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 /** Keeps a conditionally-rendered element mounted for `exitMs` after `open` goes false, so
  *  it can play a CSS slide/fade-out before actually unmounting (see .cal-panel-closing/
- *  .cal-modal-closing in globals.css) — used by the calendar's detail panel and Add Event
+ *  .cal-modal-closing in src/styles) — used by the calendar's detail panel and Add Event
  *  modal, both of which need a real "closing" transition rather than an instant unmount.
  *
  *  `open` is compared against a tracked copy of itself and state is adjusted directly

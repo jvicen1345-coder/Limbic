@@ -1,0 +1,926 @@
+/* ============================================================================
+   Limbic Playbooks — app/(app)/student/playbooks, components/playbook/*
+   ----------------------------------------------------------------------------
+   A playbook is a long-form regional examination reference: a check-off sequence,
+   normative numbers, routing tables, diagrams and a drill. It reads as a document
+   rather than a dashboard, so it runs wider and denser than the rest of Limbic
+   Student and sets its own type scale — but every colour is a Limbic token, and
+   the surfaces come from the warm --atrium-* family the /student chrome already
+   uses (see .app-root--atrium above), so it sits inside the section rather than
+   beside it.
+
+   The --pb-* variables below are the only colours the SVG figures in
+   components/playbook/PlaybookFigures.tsx know about; the figures never name a
+   hex, so re-tinting a playbook is an edit here and nowhere else.
+   ============================================================================ */
+
+.playbook {
+  --pb-surface: var(--atrium-surface, var(--color-surface));
+  --pb-surface-2: var(--atrium-surface-2, var(--color-neutral-200));
+  --pb-line: var(--atrium-border, var(--color-divider));
+  --pb-line-soft: color-mix(in srgb, var(--pb-line) 55%, transparent);
+  --pb-ink-2: var(--color-neutral-700);
+
+  /* Diagram palette: three separable hues, plus the three irritability signals. */
+  --pb-accent: var(--atrium-blue, var(--color-accent));
+  --pb-accent-soft: color-mix(in srgb, var(--pb-accent) 12%, var(--pb-surface));
+  --pb-accent-ink: var(--color-accent-700);
+  --pb-d2: var(--color-accent-2);
+  --pb-d3: var(--atrium-purple, #9b7fd4);
+  --pb-hi: var(--color-danger);
+  --pb-mod: var(--atrium-tint, var(--color-warn));
+  --pb-low: var(--color-success);
+
+  --pb-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  color: var(--color-text);
+  padding-bottom: 72px;
+}
+
+.playbook-wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+
+/* ---------- masthead ---------- */
+.playbook-masthead {
+  border-bottom: 2px solid var(--color-text);
+  padding: 22px 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.playbook-eyebrow {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pb-accent);
+  margin: 0 0 10px;
+}
+.playbook-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.06;
+  margin: 0;
+  text-wrap: balance;
+}
+.playbook-summary { margin: 10px 0 0; max-width: 56ch; color: var(--pb-ink-2); font-size: 14.5px; line-height: 1.5; }
+.playbook-stamp {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11-5);
+  line-height: 1.7;
+  color: var(--pb-ink-2);
+  text-align: right;
+  white-space: nowrap;
+}
+.playbook-stamp b { color: var(--color-text); font-weight: 600; }
+
+/* ---------- sticky section rail ---------- */
+.playbook-nav {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--atrium-bg, var(--color-bg));
+  border-bottom: 1px solid var(--pb-line);
+  margin-bottom: 30px;
+}
+.playbook-navrow {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 9px 22px;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.playbook-navrow a {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 5px 9px;
+  border-radius: var(--radius-sm);
+}
+.playbook-navrow a:hover { color: var(--pb-accent); background: var(--pb-accent-soft); text-decoration: none; }
+
+/* ---------- sections ---------- */
+.playbook-section { margin: 0 0 48px; scroll-margin-top: 56px; }
+.playbook-sechead {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px solid var(--pb-line);
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+.playbook-secnum { font-family: var(--pb-mono); font-size: 12px; font-weight: 600; color: var(--pb-accent); letter-spacing: 0.05em; }
+.playbook-sechead h2 { font-size: 21px; font-weight: 600; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+.playbook-sechead-note { margin-left: auto; font-size: 12px; color: var(--pb-ink-2); font-family: var(--pb-mono); }
+.playbook-h3 { font-size: 15.5px; font-weight: 600; margin: 24px 0 10px; color: var(--color-text); }
+.playbook-lede { max-width: 68ch; color: var(--pb-ink-2); margin: 0 0 16px; font-size: 14px; line-height: 1.55; }
+.playbook-footnote { font-size: 12.5px; color: var(--pb-ink-2); margin: 12px 0 0; max-width: 72ch; line-height: 1.5; }
+
+/* ---------- tables ----------
+   The horizontal scroll lives on the wrapper, never on the page — several of these
+   tables are five columns of prose and will not fit a phone. */
+.playbook-tablewrap {
+  overflow-x: auto;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 14px;
+}
+.playbook-table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13.4px; }
+.playbook-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--pb-surface-2);
+  z-index: 1;
+  font-family: var(--pb-mono);
+  font-weight: 600;
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--pb-line);
+}
+.playbook-table tbody td { padding: 9px 12px; border-bottom: 1px solid var(--pb-line-soft); vertical-align: top; line-height: 1.5; }
+.playbook-table tbody tr:last-child td { border-bottom: none; }
+.playbook-table tbody tr:hover { background: var(--pb-accent-soft); }
+.playbook-cell-name { font-weight: 600; min-width: 150px; }
+.playbook-cell-num { font-family: var(--pb-mono); font-variant-numeric: tabular-nums; font-size: 12.6px; }
+.playbook-cell-tissue { color: var(--pb-ink-2); min-width: 210px; }
+.playbook-cell-tissue strong { color: var(--color-text); font-weight: 600; }
+.playbook-row-group td {
+  background: var(--pb-surface-2);
+  padding: 7px 12px;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pb-accent-ink);
+  border-bottom: 1px solid var(--pb-line);
+}
+.playbook-row-group:hover td { background: var(--pb-surface-2); }
+
+/* ---------- checklist ---------- */
+.playbook-check-table td:first-child { width: 34px; text-align: center; }
+.playbook-check-table td:nth-child(2) { width: 34px; }
+.playbook-check-table input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--pb-accent); cursor: pointer; margin-top: 2px; }
+.playbook-idx { font-family: var(--pb-mono); font-size: var(--fs-11-5); color: var(--pb-ink-2); font-variant-numeric: tabular-nums; }
+.playbook-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 0;
+  font-family: var(--pb-mono);
+  font-size: 12px;
+  color: var(--pb-ink-2);
+}
+.playbook-progress-track {
+  flex: 1;
+  height: 5px;
+  background: var(--pb-surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--pb-line-soft);
+}
+.playbook-progress-fill { display: block; height: 100%; background: var(--pb-accent); transition: width 0.25s ease; }
+.playbook-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- numbers grid ---------- */
+.playbook-numgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 1px;
+  background: var(--pb-line);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.playbook-numcell { background: var(--pb-surface); padding: 13px 14px; }
+.playbook-numcell-value {
+  font-family: var(--pb-mono);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--pb-accent);
+  font-variant-numeric: tabular-nums;
+}
+.playbook-numcell-label { font-size: 12.5px; color: var(--pb-ink-2); margin-top: 3px; line-height: 1.4; }
+
+/* ---------- stats key ----------
+   The glossary above the special-tests table: what Sn / Sp / +LR / -LR actually mean,
+   so the numbers in that table can be weighed rather than just read. */
+.playbook-statkey {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--pb-line);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin: 18px 0 14px;
+}
+.playbook-skcell { background: var(--pb-surface); padding: 11px 14px; display: flex; gap: 11px; align-items: baseline; }
+.playbook-skcell b {
+  font-family: var(--pb-mono);
+  font-size: 12.5px;
+  color: var(--pb-accent);
+  min-width: 38px;
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+}
+.playbook-skcell span { font-size: 12.8px; color: var(--pb-ink-2); line-height: 1.45; }
+.playbook-skcell em { color: var(--color-text); font-style: normal; font-weight: 600; }
+.playbook-statnote { font-size: 12.4px; color: var(--pb-ink-2); margin: 0 0 4px; max-width: 72ch; line-height: 1.5; }
+
+/* ---------- provenance ----------
+   Every clinical value in a playbook says what stands behind it: an unmarked value is
+   traced to a published source named beside it, and the two badges mark the ones that
+   aren't. Convention is taught everywhere and was never measured; Contested has been
+   measured and the studies disagree. Both are outlined rather than filled so they read as
+   an annotation on the value, not as another status pill. */
+.playbook-prov {
+  display: inline-block;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-9-5);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+  vertical-align: 1px;
+  border: 1px solid currentColor;
+  margin-right: 5px;
+}
+.playbook-prov-c { color: var(--pb-mod); }
+.playbook-prov-x { color: var(--pb-hi); }
+
+/* The citation itself — quiet, and allowed to break, since some run long. */
+.playbook-src {
+  font-family: var(--pb-mono);
+  font-size: 10.8px;
+  color: var(--pb-ink-2);
+  opacity: 0.9;
+  overflow-wrap: break-word;
+}
+
+.playbook-provkey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: baseline;
+  margin: 0 0 26px;
+  padding: 12px 16px;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  font-size: 12.4px;
+  line-height: 1.5;
+  color: var(--pb-ink-2);
+}
+.playbook-provkey strong { color: var(--color-text); }
+
+/* ---------- callouts ---------- */
+.playbook-callout {
+  border-left: 3px solid var(--pb-accent);
+  background: var(--pb-accent-soft);
+  padding: 12px 16px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 16px 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.playbook-callout-warn { border-left-color: var(--pb-mod); background: color-mix(in srgb, var(--pb-mod) 14%, var(--pb-surface)); }
+
+/* ---------- figures ---------- */
+.playbook-figure {
+  margin: 20px 0;
+  padding: 18px 18px 14px;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  box-shadow: var(--shadow-sm);
+}
+.playbook-figure svg {
+  display: block;
+  width: 100%;
+  max-width: 660px;
+  height: auto;
+  margin: 0 auto;
+  color: var(--pb-ink-2);
+  overflow: visible;
+}
+.playbook-figure text { font-family: var(--font-body); font-size: 12px; fill: currentColor; }
+.playbook-figure text.mono { font-family: var(--pb-mono); font-size: 10.5px; letter-spacing: 0.06em; }
+.playbook-figtitle {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pb-accent);
+  margin: 0 0 14px;
+}
+.playbook-figure figcaption { margin: 14px auto 0; font-size: 12.5px; line-height: 1.55; color: var(--pb-ink-2); max-width: 72ch; }
+.playbook-figure figcaption strong { color: var(--color-text); font-weight: 600; }
+
+/* ---------- irritability cards ---------- */
+.playbook-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+.playbook-card {
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  padding: 15px 16px;
+  border-top: 3px solid var(--pb-line);
+}
+.playbook-card-h { border-top-color: var(--pb-hi); }
+.playbook-card-m { border-top-color: var(--pb-mod); }
+.playbook-card-l { border-top-color: var(--pb-low); }
+.playbook-card h4 { margin: 0 0 3px; font-size: 14px; font-weight: 600; }
+.playbook-card-sub { font-family: var(--pb-mono); font-size: var(--fs-11-5); margin: 0 0 10px; color: var(--pb-ink-2); }
+.playbook-card ul { margin: 0; padding-left: 17px; font-size: 13px; color: var(--pb-ink-2); }
+.playbook-card li { margin-bottom: 4px; line-height: 1.45; }
+
+/* ---------- pills ---------- */
+.playbook-pill {
+  display: inline-block;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+.playbook-pill-h { background: color-mix(in srgb, var(--pb-hi) 16%, var(--pb-surface)); color: var(--pb-hi); }
+.playbook-pill-m { background: color-mix(in srgb, var(--pb-mod) 18%, var(--pb-surface)); color: var(--pb-mod); }
+.playbook-pill-l { background: color-mix(in srgb, var(--pb-low) 16%, var(--pb-surface)); color: var(--pb-low); }
+.playbook-pill-a { background: var(--pb-accent-soft); color: var(--pb-accent-ink); }
+
+/* ---------- drill ---------- */
+.playbook-drill {
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  background: var(--pb-surface);
+  margin-bottom: 7px;
+  overflow: hidden;
+}
+.playbook-drill summary {
+  cursor: pointer;
+  padding: 11px 14px;
+  font-weight: 500;
+  font-size: 14px;
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.45;
+}
+.playbook-drill summary::-webkit-details-marker { display: none; }
+.playbook-drill summary::before { content: "?"; font-family: var(--pb-mono); color: var(--pb-accent); font-weight: 600; font-size: 12px; margin-top: 2px; }
+.playbook-drill summary:hover { background: var(--pb-accent-soft); }
+.playbook-drill[open] summary { border-bottom: 1px solid var(--pb-line-soft); }
+.playbook-drill-answer { padding: 11px 14px 13px 36px; font-size: 13.5px; color: var(--pb-ink-2); line-height: 1.55; }
+
+.playbook-footer {
+  border-top: 1px solid var(--pb-line);
+  padding-top: 16px;
+  font-size: 12.4px;
+  color: var(--pb-ink-2);
+  max-width: 70ch;
+  line-height: 1.55;
+}
+.playbook-footer strong { color: var(--pb-ink-2); font-weight: 600; }
+
+/* ---------- index cards (student/playbooks) ---------- */
+.playbook-hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 20px; }
+.playbook-hub-card {
+  /* .specialty-explore-btn (above) tints itself from --specialty-accent and otherwise
+     falls back to the Atrium gold, which would leave a gold button inside a blue-edged
+     card — set the same accent the border uses so the two agree. */
+  --specialty-accent: var(--color-accent);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-left: 4px solid var(--color-accent);
+}
+.playbook-hub-card-name { font-size: 17px; font-weight: 600; margin: 0; }
+.playbook-hub-card-desc { font-size: 13px; color: var(--color-neutral-700); margin: 0; line-height: 1.5; }
+.playbook-hub-card-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-variant-numeric: tabular-nums; }
+
+@media (max-width: 700px) {
+  .playbook-statkey { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .playbook-wrap { padding: 0 14px; }
+  .playbook-navrow { padding: 9px 14px; }
+  .playbook-stamp { text-align: left; }
+  .playbook-masthead { padding-top: 14px; }
+  .playbook-drill-answer { padding-left: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .playbook-progress-fill { transition: none; }
+}
+
+/* A playbook with many sections overflows the jump nav: 15 entries don't fit one row at
+   any desktop width, and a sideways-scrolling nav hides the sections furthest from the
+   masthead — exactly the ones a reader can't reach by scrolling either. Above the phone
+   breakpoint the row wraps instead; below it, it stays a single swipeable strip, which is
+   the better shape on a narrow screen. Playbooks whose nav already fits are unaffected. */
+@media (min-width: 900px) {
+  .playbook-navrow { flex-wrap: wrap; }
+}
+
+/* ============================================================================
+   Playbook recall mode (components/playbook/PlaybookRecall.tsx)
+
+   A playbook is a reference until you can answer it without reading it, so every answer
+   on the page can be blanked and checked. Everything below is scoped to .playbook-* and
+   appended rather than woven into the block above it.
+   ============================================================================ */
+
+.playbook-recall-toggle {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  padding: 4px 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.playbook-recall-toggle:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+.playbook-recall-toggle[aria-pressed="true"] { background: var(--pb-accent); border-color: var(--pb-accent); color: var(--pb-surface); }
+
+.playbook-sec-recall {
+  margin-left: auto;
+  flex-shrink: 0;
+  align-self: center;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.playbook-sechead-note + .playbook-sec-recall { margin-left: 12px; }
+.playbook-sec-recall:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+.playbook-sec-recall[aria-pressed="true"] { background: var(--pb-accent); border-color: var(--pb-accent); color: var(--pb-surface); }
+
+.playbook-recallbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  margin: 16px 0 0;
+  padding: 9px 13px;
+  background: var(--pb-accent-soft);
+  border-radius: var(--radius-sm);
+  font-size: 12.6px;
+  line-height: 1.5;
+  color: var(--pb-ink-2);
+}
+.playbook-recallbar button {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-accent-ink);
+  background: transparent;
+  border: 1px solid var(--pb-accent);
+  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  cursor: pointer;
+}
+.playbook-recallbar button:hover { background: var(--pb-surface); }
+.playbook-recallbar button[disabled] { opacity: 0.45; cursor: default; }
+
+/* The chips are only worth the row's height once the group is switched on. */
+.playbook-colmask {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0 0 8px;
+}
+.playbook-colmask .playbook-cmlabel,
+.playbook-colmask .playbook-chip { display: none; }
+.playbook-colmask-open .playbook-cmlabel,
+.playbook-colmask-open .playbook-chip { display: inline-block; }
+.playbook-cmlabel {
+  font-family: var(--pb-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  margin-right: 3px;
+}
+.playbook-chip {
+  font-family: var(--pb-mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px dashed var(--pb-line);
+  border-radius: 999px;
+  padding: 3px 10px;
+  cursor: pointer;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.playbook-chip:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+.playbook-chip[aria-pressed="true"] {
+  background: var(--pb-accent);
+  border-color: var(--pb-accent);
+  border-style: solid;
+  color: var(--pb-surface);
+}
+.playbook-tbl-recall {
+  flex-shrink: 0;
+  font-family: var(--pb-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+.playbook-tbl-recall:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+.playbook-tbl-recall[aria-pressed="true"] { background: var(--pb-accent); border-color: var(--pb-accent); color: var(--pb-surface); }
+
+/* The blanked cells themselves. The wrapper is a button when it is hiding something, so it
+   is reachable by keyboard and announces itself; it is styled back down to look like the
+   text it replaces. */
+.playbook-maskwrap { display: block; }
+button.playbook-maskwrap {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.playbook-mask-on { border-radius: var(--radius-sm); }
+.playbook-mask-on .playbook-maskwrap { filter: blur(5.5px); user-select: none; transition: filter 0.16s ease; }
+.playbook-mask-on:hover { background: var(--pb-accent-soft); }
+/* A blur hides a paragraph but not "60°" — a short answer keeps its shape through it, so it
+   is blanked with a panel instead. */
+.playbook-mask-solid .playbook-maskwrap {
+  filter: none;
+  color: transparent;
+  background: var(--pb-surface-2);
+  box-shadow: inset 0 0 0 1px var(--pb-line-soft);
+  border-radius: var(--radius-sm);
+}
+.playbook-missbtn {
+  display: inline-block;
+  margin-top: 7px;
+  font-family: var(--pb-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px dashed var(--pb-line);
+  border-radius: 999px;
+  padding: 2px 9px;
+  cursor: pointer;
+}
+.playbook-missbtn:hover { color: var(--pb-hi); border-color: var(--pb-hi); }
+.playbook-missbtn-on { color: var(--pb-hi); border-color: var(--pb-hi); border-style: solid; }
+.playbook-missed { box-shadow: inset 3px 0 0 var(--pb-hi); }
+/* A ticked box and a missed answer are different states, so they get different marks. */
+.playbook-row-missed td:first-child { box-shadow: inset 3px 0 0 var(--pb-mod); }
+.playbook-flagcount { font-family: var(--pb-mono); font-size: var(--fs-11-5); color: var(--pb-hi); }
+
+/* A diagram with its labels blanked is a name-the-anatomy question; the caption gives the
+   answer away, so it goes with them. */
+.playbook-labels-hidden { cursor: pointer; }
+.playbook-labels-hidden svg text {
+  filter: blur(3.5px);
+  opacity: 0.6;
+  cursor: pointer;
+  transition: filter 0.16s ease, opacity 0.16s ease;
+}
+.playbook-labels-hidden svg text.playbook-label-shown { filter: none; opacity: 1; }
+.playbook-labels-hidden figcaption { filter: blur(5px); user-select: none; }
+
+
+/* A case answer is several labelled lines rather than one paragraph. */
+.playbook-case .playbook-drill-answer p { margin: 0 0 7px; }
+.playbook-case .playbook-drill-answer p:last-child { margin-bottom: 0; }
+.playbook-case .playbook-drill-answer b { color: var(--color-text); }
+
+/* ---------- focus ---------- */
+.playbook-navrow a:focus-visible,
+.playbook-recall-toggle:focus-visible,
+.playbook-sec-recall:focus-visible,
+.playbook-tbl-recall:focus-visible,
+.playbook-chip:focus-visible,
+.playbook-missbtn:focus-visible,
+.playbook-recallbar button:focus-visible,
+button.playbook-maskwrap:focus-visible {
+  outline: 2px solid var(--pb-accent);
+  outline-offset: 1px;
+  border-radius: var(--radius-sm);
+}
+.playbook-drill summary:focus-visible { outline: 2px solid var(--pb-accent); outline-offset: -2px; }
+
+/* A wide diagram squashed to phone width is unreadable; it scrolls in its own frame. */
+@media (max-width: 700px) {
+  .playbook-figure { overflow-x: auto; }
+  .playbook-figure svg { min-width: 540px; }
+}
+
+/* ---------- narrow screens: every table becomes a stack of cards ----------
+   A five-column table of prose cannot fit a phone, and a sideways-scrolling table hides
+   the last column — which in these tables is always the finding. Below this width each row
+   becomes a card with the column name printed above each value, so nothing is off-screen. */
+@media (max-width: 860px) {
+  .playbook-tablewrap { border: none; background: transparent; box-shadow: none; overflow-x: visible; }
+  .playbook-table { display: block; min-width: 0; }
+  .playbook-table thead { display: none; }
+  .playbook-table tbody { display: block; }
+  .playbook-table tbody tr {
+    display: block;
+    background: var(--pb-surface);
+    border: 1px solid var(--pb-line);
+    border-radius: var(--radius-sm);
+    padding: 11px 13px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  .playbook-table tbody tr:hover { background: var(--pb-surface); }
+  .playbook-table tbody tr.playbook-row-group {
+    background: var(--pb-surface-2);
+    padding: 7px 13px;
+    margin-bottom: 8px;
+    box-shadow: none;
+  }
+  .playbook-table tbody tr.playbook-row-group:hover { background: var(--pb-surface-2); }
+  .playbook-table tbody td { display: block; border: none; padding: 5px 0; }
+  .playbook-table tbody td:first-child { padding-top: 0; }
+  .playbook-table tbody td:last-child { padding-bottom: 0; }
+  .playbook-table tbody td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-family: var(--pb-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pb-ink-2);
+    margin-bottom: 3px;
+  }
+  .playbook-cell-name { font-size: 15px; min-width: 0; }
+  .playbook-cell-tissue { min-width: 0; }
+  .playbook-check-table .playbook-check-ck,
+  .playbook-check-table .playbook-idx {
+    display: inline-block;
+    width: auto;
+    text-align: left;
+    vertical-align: middle;
+    padding: 0;
+  }
+  .playbook-check-table .playbook-idx { margin-left: 9px; margin-right: 2px; }
+  .playbook-row-missed td:first-child { box-shadow: none; }
+  .playbook-row-missed { border-left: 3px solid var(--pb-mod); }
+}
+
+/* ---------- print ----------
+   A playbook is something people take into a lab, so it has to print: no controls, nothing
+   blanked, no sticky header floating over the page, and drill answers open. */
+@media print {
+  .playbook-nav,
+  .playbook-recallbar,
+  .playbook-colmask,
+  .playbook-recall-toggle,
+  .playbook-sec-recall,
+  .playbook-progress,
+  .playbook-missbtn {
+    display: none !important;
+  }
+  .playbook-mask-on .playbook-maskwrap,
+  .playbook-mask-solid .playbook-maskwrap {
+    filter: none !important;
+    color: inherit !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    user-select: auto !important;
+  }
+  .playbook-mask-on { background: transparent !important; }
+  .playbook-labels-hidden svg text { filter: none !important; opacity: 1 !important; }
+  .playbook-labels-hidden figcaption { filter: none !important; }
+  .playbook-wrap { max-width: none; padding: 0; }
+  .playbook-table thead th { position: static; }
+  .playbook-tablewrap { overflow: visible; box-shadow: none; }
+  .playbook-figure { box-shadow: none; }
+  .playbook-table tbody tr,
+  .playbook-figure,
+  .playbook-numcell,
+  .playbook-card,
+  .playbook-drill {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .playbook-section h2,
+  .playbook-h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .playbook-mask-on .playbook-maskwrap,
+  .playbook-labels-hidden svg text { transition: none; }
+}
+
+/* A table that declares column widths gets a fixed layout, so the widths are the widths;
+   without one the browser sizes columns from their content, which is right for most of
+   these tables and wrong where a short column would otherwise be squeezed to nothing. The
+   stacked-card layout below 860px replaces the table box entirely, so neither applies there. */
+.playbook-table-fixed { table-layout: fixed; }
+.playbook-check-table .playbook-check-ck { text-align: center; padding-left: 12px; padding-right: 2px; }
+.playbook-check-table .playbook-idx { text-align: right; padding-left: 2px; padding-right: 14px; white-space: nowrap; }
+
+/* The stacked-card layout replaces the table box, but a <col> width still reaches the cells
+   underneath it — a row that spans fewer columns than the colgroup declares ends up wearing
+   the first column's width, which on the checklist is 34px and renders a heading one letter
+   per line. Neutralise the columns and let each cell fill its card. */
+@media (max-width: 860px) {
+  .playbook-table col { width: auto; }
+  .playbook-table tbody td { width: auto; }
+  .playbook-check-table .playbook-check-ck,
+  .playbook-check-table .playbook-idx { width: auto; }
+}
+
+/* `.playbook-check-table td:first-child` above assumes the first cell of every row is the
+   tick box, which held until a checklist item could carry further rows under one box: those
+   rows start at the Item column, which then wears the tick box's 34px and centring and
+   renders a heading one letter per line. Match on what the cell is rather than where it sits. */
+.playbook-check-table td:first-child.playbook-cell-name { width: auto; text-align: left; }
+/* Same assumption, one column over: an `also` row's second cell is How it's performed, not
+   the row number, so it must not inherit the number column's width either. */
+.playbook-check-table td:nth-child(2):not(.playbook-idx) { width: auto; text-align: left; }
+/* ---------- playbook: the taught lane ----------
+   A reader's own line under a cell, in the atrium purple so it never reads as part of the
+   guide's own text. Empty lanes only exist while the lane is switched on; a filled one stays
+   on the page, and prints with it. */
+.playbook-taught-toggle {
+  flex-shrink: 0;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-ink-2);
+  background: transparent;
+  border: 1px solid var(--pb-line);
+  border-radius: var(--radius-sm);
+  padding: 4px 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.playbook-taught-toggle:hover { color: var(--pb-d3); border-color: var(--pb-d3); }
+.playbook-taught-toggle[aria-pressed="true"] { background: var(--pb-d3); border-color: var(--pb-d3); color: var(--pb-surface); }
+
+.playbook-taughtbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  margin: 12px 0 0;
+  padding: 9px 13px;
+  background: color-mix(in srgb, var(--pb-d3) 11%, var(--pb-surface));
+  border-radius: var(--radius-sm);
+  font-size: 12.6px;
+  line-height: 1.5;
+  color: var(--pb-ink-2);
+}
+.playbook-taughtbar span:first-child { flex: 1 1 30ch; }
+.playbook-taught-count { font-family: var(--pb-mono); font-size: var(--fs-10-5); color: var(--pb-d3); }
+.playbook-taughtbar button {
+  font-family: var(--pb-mono);
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-d3);
+  background: transparent;
+  border: 1px solid var(--pb-d3);
+  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  cursor: pointer;
+}
+.playbook-taughtbar button:hover { background: var(--pb-surface); }
+.playbook-taughtbar button[disabled] { opacity: 0.45; cursor: default; }
+
+/* Tag and line sit on one row: with every lane open at once, a stacked label would half
+   again the height of every table on the page. A lane with something in it earns the rule
+   above it; an empty one stays as quiet as an empty line can be. */
+.playbook-taught {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 6px 0 0;
+  color: var(--pb-d3);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.playbook-taught-set {
+  padding-top: 5px;
+  border-top: 1px dashed color-mix(in srgb, var(--pb-d3) 45%, transparent);
+}
+.playbook-taught-tag {
+  flex: 0 0 auto;
+  font-family: var(--pb-mono);
+  font-size: var(--fs-9-5);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--pb-d3);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+.playbook-taught-input {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 1.45em;
+  resize: none;
+  overflow: hidden;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1.5;
+}
+.playbook-taught-input::placeholder { color: var(--pb-d3); opacity: 0.5; }
+.playbook-taught-input:focus { outline: none; }
+.playbook-taught-input:focus-visible { outline: 2px solid var(--pb-d3); outline-offset: 3px; border-radius: 2px; }
+
+/* A reader's own lines are part of what they take into the lab, so they print — but only the
+   ones with something in them. An open lane is several hundred empty fields, and an empty
+   field on paper is just a rule under every cell. */
+@media print {
+  .playbook-taughtbar { display: none !important; }
+  .playbook-taught:not(.playbook-taught-set) { display: none !important; }
+  .playbook-taught-set { color: #543a86; break-inside: avoid; page-break-inside: avoid; }
+  .playbook-taught-set .playbook-taught-input { height: auto !important; }
+}
+
+/* The note on the Playbooks hub explaining a short list — see the withheld set in
+   lib/playbook-content.ts. */
+.playbook-hub-note {
+  margin: 18px 0 0;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-warn) 12%, var(--color-surface));
+  border-left: 3px solid var(--color-warn);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  max-width: 72ch;
+}
+.playbook-hub-note b { color: var(--color-text); }

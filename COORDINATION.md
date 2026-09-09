@@ -6,25 +6,35 @@ belongs to the session that created it; inspect the worktree before touching ove
 
 ## Shared chokepoints
 
-**There is no Tailwind in this project.** All styling is hand-written CSS. `src/app/globals.css`
-has interleaved media queries and is one of the most-churned files in the repository.
+**There is no Tailwind in this project.** All styling is hand-written CSS under
+`src/styles/`. Root layout loads only tokens, primitives, and shared desktop type
+(`.card` padding). Feature CSS is owned with its route layout — do not dump a heavy
+feature sheet into [`src/styles/index.css`](src/styles/index.css) or
+[`src/app/globals.css`](src/app/globals.css).
 
-For `globals.css`:
+For CSS:
 
-- Edit only the relevant base, mobile, or desktop sections for a targeted pass.
-- For a new feature, append scoped classes at the end; do not reorder or bulk-format existing
-  rules.
-- Close every block and check the final brace depth before pushing:
+- Append scoped classes to the matching feature file; do not reorder or bulk-format
+  existing rules.
+- Keep each feature's `@media` queries in that feature file.
+- Close every block and check brace depth before pushing:
 
   ```sh
-  awk '{d+=gsub(/{/,"{")-gsub(/}/,"}")} END{print d}' src/app/globals.css
+  python3 -c "from pathlib import Path
+  bad=[]
+  for p in Path('src/styles').glob('*.css'):
+    d=0
+    for line in p.read_text().splitlines():
+      d += line.count('{')-line.count('}')
+    if d: bad.append((p,d))
+  print(bad or 0)"
   ```
 
   The result must be `0`.
 
-`src/components/AppShell.tsx` is shared by the desktop sidebar and mobile drawer through
-`NavContent`. Treat it as frozen while another session is active. If a task requires it,
-coordinate ownership first and verify both navigation surfaces afterward.
+`src/components/shell/NavContent.tsx` is shared by the desktop sidebar and mobile drawer.
+Treat it as frozen while another session is active. If a task requires it, coordinate
+ownership first and verify both navigation surfaces afterward.
 
 ## CI and local verification
 

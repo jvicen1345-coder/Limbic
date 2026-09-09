@@ -1,0 +1,2850 @@
+/* ============================================================================
+   LimbicPRO Clinical Toolbox — shared across /pro/calculators, /pro/decision-
+   rules (now also its own Red Flag Screening tab, see ScreeningDecisionTabs.tsx),
+   /pro/special-tests, /pro/lab-values (now also its own Medications tab, see
+   ClinicalReferenceTabs.tsx), /pro/documentation, /pro/ce-tracker,
+   /pro/guidelines, and the /pro overview tools grid. One shared vocabulary
+   (.pro-*) so every tool page reads as one coherent product surface rather
+   than a pile of one-off layouts, following the same .card/.card-kicker/.tag/
+   --color-accent tokens the rest of the app uses.
+   ============================================================================ */
+
+/* — Overview hub tools grid — */
+.pro-tools-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin: 18px 0; }
+@media (min-width: 860px) {
+  .pro-tools-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.pro-tool-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border-left: 3px solid var(--color-accent);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.pro-tool-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); text-decoration: none; }
+.pro-tool-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15.5px; }
+.pro-tool-card-desc { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }
+.pro-tool-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.pro-tool-card-arrow { display: inline-flex; align-items: center; gap: 3px; color: var(--color-accent); font-weight: 600; }
+
+/* — PRO gate / locked state — shared by every /pro/* tool page (see
+   components/pro/ProGate.tsx). Same shell as .wellness-agent-paywall
+   (Limbic Agent's own paywall) so a locked clinical tool reads consistently
+   with every other paid-feature gate in the app rather than inventing a new
+   pattern. */
+.pro-locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  max-width: 480px;
+  margin: 24px auto 0;
+}
+.pro-locked-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  width: 100%;
+}
+.pro-locked-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text);
+}
+.pro-locked-list li svg { flex-shrink: 0; margin-top: 2px; color: var(--color-accent); }
+
+/* — Free clinical-reference banner — components/pro/FreeToolBanner.tsx, first element
+   inside every tool page's .screen-pad that dropped its LimbicPRO gate. An inset card
+   (rather than a full-bleed strip) so it sits naturally inside .screen-pad's own
+   max-width column instead of fighting that wrapper's padding at every breakpoint. */
+.free-tool-banner {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 10px 20px;
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 0 0 16px;
+}
+.free-tool-banner a { color: var(--color-accent); font-weight: 600; }
+
+/* — Disclaimer card — amber left border/tint, reused by both tabs of
+   /pro/decision-rules and both tabs of /pro/lab-values. Theme-adaptive amber
+   token (unlike the Connexion HIPAA disclaimer's fixed-dark-card literal
+   hex) since these PRO pages sit on the normal themed surface. */
+.pro-disclaimer {
+  border-left: 3px solid var(--color-migration-amber);
+  background: color-mix(in srgb, var(--color-migration-amber) 10%, var(--color-surface));
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-text);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  margin: 0 0 16px;
+}
+
+/* — Generic 2-column responsive card grid — calculators, decision rules,
+   special tests, medications, documentation, guidelines all reuse this same
+   grid shape, single column under 860px. */
+.pro-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-items: start; }
+@media (min-width: 860px) {
+  .pro-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* — Calculator Profiles workspace (/pro/calculators) — the calculator grid plus the
+   right-side save/retrieve panel (see CalculatorWorkspace.tsx). Panel stacks below the
+   grid on narrow screens, same breakpoint as .pro-grid-2 collapsing to one column. */
+.pro-calc-layout { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
+.pro-calc-main { flex: 1; min-width: 0; width: 100%; }
+@media (min-width: 1080px) {
+  .pro-calc-layout { flex-direction: row; }
+  .calc-profile-panel { width: 320px; flex-shrink: 0; position: sticky; top: 18px; max-height: calc(100vh - 36px); overflow-y: auto; }
+}
+
+.calc-profile-create { padding: 12px; border-radius: var(--radius-md); background: var(--color-neutral-100); margin-bottom: 14px; }
+.calc-profile-test-list { display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; padding-right: 4px; }
+.calc-profile-test-checkbox { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+.calc-profile-test-checkbox input { flex-shrink: 0; }
+
+.calc-profile-row {
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+  padding: 10px 12px; border-radius: var(--radius-md); border: 1px solid var(--color-divider);
+  background: var(--color-surface); cursor: pointer;
+}
+.calc-profile-row--active { border-color: var(--color-accent); background: var(--color-accent-100); }
+
+.calc-profile-detail { border-top: 1px solid var(--color-divider); padding-top: 14px; margin-top: 4px; }
+.calc-profile-checklist-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 4px 0; }
+.calc-profile-checklist-dot { width: 13px; height: 13px; border-radius: 999px; border: 1.5px solid var(--color-neutral-400); flex-shrink: 0; }
+.calc-profile-result-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 10px 12px; border-radius: var(--radius-md); background: var(--color-neutral-100);
+}
+
+/* — Calculator cards (/pro/calculators) — */
+.pro-calc-card { display: flex; flex-direction: column; gap: 2px; }
+.pro-calc-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; }
+.pro-calc-fullname { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 0 0 6px; }
+.pro-calc-desc { font-size: 13px; color: var(--color-text); margin: 0; line-height: 1.5; }
+.pro-calc-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 6px 0 10px; }
+.pro-calc-result {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+}
+.pro-calc-result-value { font-family: var(--font-heading); font-size: 22px; font-weight: var(--font-heading-weight); }
+.pro-calc-result-label { font-size: 12.5px; margin-top: 2px; }
+.pro-calc-toggle-btn {
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-accent);
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 10px;
+}
+.pro-calc-toggle-btn:hover { background: var(--color-accent-100); }
+.pro-calc-body { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-divider); }
+
+/* Scoring item row — Berg/LEFS/DASH/Oswestry/FGA item lists, one row per
+   scale item: description on the left, a 0-4/0-5/etc select on the right. */
+.pro-item-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-divider); }
+.pro-item-row:last-child { border-bottom: none; }
+.pro-item-row-label { font-size: 13px; color: var(--color-text); flex: 1; }
+.pro-item-row-select { flex-shrink: 0; width: auto; min-width: 128px; }
+
+/* CalcTimer — the stopwatch/countdown widget on TUG, TUG Cognitive, 6MWT, 30-Second Sit
+   to Stand, and mBESS (see components/pro/calculators/CalcTimer.tsx). */
+.calc-timer { padding: 12px 14px; border-radius: var(--radius-md); background: var(--color-neutral-100); border: 1px solid var(--color-neutral-200); margin-bottom: 12px; }
+.calc-timer-label { font-size: var(--fs-11); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); margin-bottom: 8px; }
+.calc-timer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.calc-timer-display { font-family: var(--font-heading); font-size: 26px; font-weight: var(--font-heading-weight); font-variant-numeric: tabular-nums; min-width: 72px; }
+.calc-timer-controls { display: flex; gap: 6px; flex-wrap: wrap; }
+.calc-timer-btn { font-size: 12px; padding: 5px 12px; }
+.calc-timer-complete { background: color-mix(in srgb, var(--color-danger) 12%, var(--color-neutral-100)); border-color: var(--color-danger); animation: calc-timer-pulse 1.1s ease-in-out 2; }
+.calc-timer-complete .calc-timer-display { color: var(--color-danger); }
+.calc-timer-complete-label { font-size: 12px; font-weight: 700; color: var(--color-danger); margin-top: 6px; }
+@keyframes calc-timer-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-danger) 35%, transparent); }
+  50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-danger) 0%, transparent); }
+}
+
+/* NPRS-style slider */
+.pro-slider-row { display: flex; flex-direction: column; gap: 8px; }
+.pro-slider { width: 100%; accent-color: var(--color-accent); cursor: pointer; }
+.pro-slider-scale { display: flex; justify-content: space-between; font-size: var(--fs-10-5); color: var(--color-neutral-700); }
+
+/* — Accordions — decision rules, red flags, medications, guidelines all use
+   native <details>/<summary>, styled to match .card. */
+.pro-accordion { display: flex; flex-direction: column; gap: 12px; }
+.pro-accordion-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15.5px;
+}
+.pro-accordion-summary::-webkit-details-marker { display: none; }
+.pro-accordion-summary-sub { font-size: 12.5px; color: var(--color-neutral-700); font-family: var(--font-body); font-weight: 400; margin-top: 3px; }
+.pro-accordion-chevron { flex-shrink: 0; transition: transform 150ms ease; color: var(--color-accent); }
+details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotate(90deg); }
+.pro-accordion-content { padding-top: 14px; margin-top: 14px; border-top: 1px solid var(--color-divider); display: flex; flex-direction: column; gap: 12px; }
+
+/* Profile's Program Timeline section (components/ProgramTimelineSection.tsx) — the three
+   rotation blocks reuse .pro-accordion-summary/-content/-chevron above for their expand
+   behavior, but get their own lighter box (not .card) since they already sit nested inside
+   the section's own .card — a second full card border per rotation would double up. */
+.program-timeline-academic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 12px; }
+@media (max-width: 640px) {
+  .program-timeline-academic { grid-template-columns: minmax(0, 1fr); }
+}
+.program-timeline-rotation-list { display: flex; flex-direction: column; gap: 10px; }
+.program-timeline-rotation {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+.program-timeline-rotation .pro-accordion-content { grid-template-columns: repeat(2, minmax(0, 1fr)); display: grid; }
+@media (max-width: 640px) {
+  .program-timeline-rotation .pro-accordion-content { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Checkbox criterion row — Ottawa/Canadian C-Spine/NEXUS/red-flag checklists */
+.pro-check-row { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--color-text); padding: 6px 0; cursor: pointer; }
+.pro-check-row input { margin-top: 2px; flex-shrink: 0; }
+.pro-check-row.pro-check-row--flagged { color: #dc2626; font-weight: 600; }
+
+.pro-result-banner {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.pro-result-banner--positive { background: color-mix(in srgb, #dc2626 14%, var(--color-surface)); color: #dc2626; }
+.pro-result-banner--negative { background: color-mix(in srgb, var(--color-success) 14%, var(--color-surface)); color: var(--color-success); }
+.pro-result-banner--neutral { background: var(--color-accent-100); color: var(--color-accent-800); }
+
+/* Large emergency-referral banner — Cauda Equina red flags */
+.pro-alert-critical {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #dc2626 16%, var(--color-surface));
+  border: 1px solid #dc2626;
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* — Filter bars — special tests / guidelines / lab values category tabs */
+.pro-filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; }
+.pro-filter-chip {
+  flex-shrink: 0;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  border-radius: 999px;
+  padding: 7px 15px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pro-filter-chip.active { background: var(--color-accent); color: var(--color-bg); border-color: var(--color-accent); }
+
+/* — Reference tables — lab values, mostly */
+.pro-table-wrap { overflow-x: auto; margin-bottom: 8px; }
+.pro-table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 640px; }
+.pro-table th { text-align: left; padding: 8px 10px; font-weight: 600; color: var(--color-neutral-700); border-bottom: 1px solid var(--color-divider); white-space: nowrap; }
+.pro-table td { padding: 10px; border-bottom: 1px solid var(--color-divider); vertical-align: top; }
+.pro-table tr:last-child td { border-bottom: none; }
+.pro-table td.pro-table-hold { color: #dc2626; font-weight: 600; }
+
+/* — Profile > Membership: subscription-tier comparison table — same overflow-x-scroll
+   shape as .pro-table above, plus a sticky first column (feature labels) so the row you're
+   reading stays visible while scrolling horizontally to a tier further right — see
+   app/(app)/profile/membership/page.tsx. */
+.plan-compare-wrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--color-divider); border-radius: var(--radius-lg); }
+.plan-compare-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+.plan-compare-table thead th {
+  background: var(--color-card-surface);
+  padding: 20px 14px;
+  border-bottom: 1px solid var(--color-divider);
+  vertical-align: top;
+}
+.plan-compare-table thead th:first-child { text-align: left; position: sticky; left: 0; z-index: 2; }
+.plan-compare-table thead th:not(:first-child) { text-align: center; border-left: 1px solid var(--color-divider); }
+.plan-compare-table tbody th {
+  text-align: left;
+  font-weight: 500;
+  padding: 10px 14px;
+  color: var(--color-text);
+  white-space: nowrap;
+  position: sticky;
+  left: 0;
+  background: inherit;
+}
+.plan-compare-table tbody td { text-align: center; padding: 10px 14px; border-left: 1px solid var(--color-divider); }
+.plan-compare-table tbody tr td, .plan-compare-table tbody tr th { border-bottom: 1px solid var(--color-divider); }
+.plan-compare-table tbody tr:last-child td, .plan-compare-table tbody tr:last-child th { border-bottom: none; }
+.plan-compare-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--color-card-surface) 45%, var(--color-surface)); }
+.plan-compare-table tbody tr:nth-child(odd) { background: var(--color-surface); }
+
+/* One purchase column's whole header stack — name, price, and its Subscribe button (or
+   Current Plan pill) — centered and evenly spaced, in both the desktop table's <th> and the
+   mobile per-tier card header (see .plan-compare-card-header below), so the two never need
+   separate markup. */
+.plan-compare-header { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.plan-compare-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; color: var(--color-text); }
+.plan-compare-price { font-size: 15px; font-weight: 600; color: var(--color-neutral-700); }
+.plan-compare-current-pill {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: var(--fs-11);
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-accent);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+/* A tier with no Stripe Price configured yet (see TierConfig.comingSoon) — deliberately
+   neutral/muted rather than accent-colored like .plan-compare-current-pill above, so it
+   doesn't read as "you have this" at a glance. */
+.plan-compare-coming-soon-pill {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: var(--fs-11);
+  font-weight: 700;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.plan-compare-cta-form { width: 100%; margin-top: 2px; }
+.plan-compare-cta { width: 100%; font-size: 12.5px; padding: 7px 10px; }
+
+.plan-compare-check { color: #16a34a; font-weight: 700; }
+.plan-compare-dash { color: var(--color-neutral-700); }
+.plan-compare-soon { color: var(--color-neutral-700); font-style: italic; font-size: 12px; }
+.plan-compare-divider-row td {
+  background: var(--color-card-surface);
+  color: var(--color-neutral-700);
+  font-size: var(--fs-11);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 14px;
+  border-left: none;
+}
+
+/* Mobile alternative to the table above — one full-width card per tier, each listing
+   every feature row top to bottom, so comparing tiers on a phone is a normal vertical
+   scroll rather than horizontally scrolling the table one column at a time. Hidden on
+   desktop/tablet; swaps with .plan-compare-wrap at the same breakpoint as the rest of the
+   app's mobile layout (see AppShell's >=1024px desktop-layout switch). */
+.plan-compare-cards { display: none; }
+@media (max-width: 799px) {
+  .plan-compare-wrap { display: none; }
+  .plan-compare-cards { display: flex; flex-direction: column; gap: 16px; margin: 16px 0; }
+}
+
+.plan-compare-card { border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface); }
+.plan-compare-card--current { border-color: var(--color-accent); border-width: 2px; }
+.plan-compare-card-header { background: var(--color-card-surface); padding: 16px; text-align: center; }
+.plan-compare-card-features { list-style: none; margin: 0; padding: 0 16px; }
+.plan-compare-card-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-divider);
+  font-size: 13px;
+  color: var(--color-text);
+}
+.plan-compare-card-features li:last-child { border-bottom: none; }
+.plan-compare-card-soon {
+  background: var(--color-card-surface);
+  color: var(--color-neutral-700);
+  font-size: var(--fs-11);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  padding: 8px 16px;
+}
+
+/* — Category count badge (red-flag positive counters) — */
+.pro-flag-count { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--color-neutral-700); }
+.pro-flag-count.pro-flag-count--active { color: #dc2626; }
+
+/* — Documentation template cards — */
+.pro-template-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.pro-template-body {
+  white-space: pre-wrap;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  line-height: 1.6;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-top: 10px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+/* — CE Tracker — */
+.pro-ce-progress-wrap { display: flex; flex-direction: column; gap: 8px; }
+.pro-ce-progress-bar { height: 12px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
+.pro-ce-progress-fill { height: 100%; border-radius: 999px; background: var(--color-accent); transition: width 300ms ease; }
+.pro-ce-stats-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 14px 0; }
+.pro-ce-stat { display: flex; flex-direction: column; gap: 2px; }
+.pro-ce-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; }
+.pro-ce-stat-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+@media (max-width: 560px) {
+  .pro-ce-stats-row { grid-template-columns: minmax(0, 1fr); }
+}
+.pro-ce-log-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 70px 110px 32px; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--color-divider); font-size: 12.5px; }
+.pro-ce-log-row:last-child { border-bottom: none; }
+@media (max-width: 700px) {
+  .pro-table-wrap .pro-ce-log-row { min-width: 620px; }
+}
+
+/* Copyright notice at the top of each score-entry calculator for a licensed published
+   instrument (see LicensedInstrumentNotice in components/pro/calculators/CalcModal.tsx).
+   Quiet but not hidden — a clinician needs to register that the form itself comes from
+   their own copy, not from here. Appended, scoped, overrides nothing. */
+.pro-calc-licence-notice {
+  font-size: var(--fs-11-5);
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100, #f2f4f5);
+  border-left: 2px solid var(--color-neutral-400);
+  border-radius: 3px;
+  padding: 8px 10px;
+  margin: 0 0 14px;
+}
+
+/* Tap-once score buttons on the outcome-measure calculators (see ItemScoreRow in
+   components/pro/calculators/CalcModal.tsx). Replaces a <select> per item: one tap instead
+   of two, the whole 0-5 range visible at once, and each value in a stable column position
+   so an examiner transcribing thirty items off a paper form can run straight down it.
+   Appended, scoped, overrides nothing. */
+.pro-score-row { display: flex; gap: 4px; flex-shrink: 0; }
+.pro-score-btn {
+  min-width: 34px;
+  padding: 6px 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-neutral-700);
+  background: var(--color-surface);
+  border: 1px solid var(--color-neutral-400);
+  border-radius: var(--radius-sm, 5px);
+  cursor: pointer;
+}
+.pro-score-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.pro-score-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+.pro-score-btn--on,
+.pro-score-btn--on:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+}
+@media (max-width: 560px) {
+  .pro-item-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .pro-score-btn { min-width: 40px; padding: 8px 0; }
+}
+/* ============================================================================
+   LimbicPRO Clinician Dashboard (/pro/dashboard) — see app/pro/dashboard/page.tsx
+   and components/pro/dashboard/*.tsx. Prefixed .clindash- throughout so nothing here
+   collides with the rest of the app's class names. Reuses the existing design
+   language (.card/.card-kicker/.field/.input/.btn/.tag) rather than inventing a
+   second one — new classes here are purely for this page's own layout shapes
+   (the 3-column grid, stat tiles, the outcome trend chart) that nothing else needs.
+   ============================================================================ */
+
+.clindash-page { max-width: 1400px; margin: 0 auto; }
+
+/* — Daily Brief bar — four stat tiles, full width above the three columns. Grid (not
+   the existing .dashboard-metrics-row flex row) specifically so the mobile breakpoint
+   below can go to a real 2x2 instead of a single stacked column. */
+.clindash-brief-row {
+  display: grid;
+  /* auto-fit (not a fixed repeat(4, ...)) so the Clinic PRO fifth tile ("Clinic Patients
+     Today" — see DailyBriefBar.tsx) fits alongside the original four without a separate
+     modifier class; at normal desktop widths four or five tiles both land one per row. */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.clindash-brief-tile { padding: 14px 16px; }
+.clindash-brief-tile-label {
+  font-size: var(--fs-11);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin-bottom: 6px;
+}
+.clindash-brief-tile-value { font-family: var(--font-heading); font-size: 24px; line-height: 1.1; }
+
+/* — Three-column layout — */
+.clindash-columns {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr) 280px;
+  gap: 20px;
+  align-items: start;
+}
+.clindash-col-patients,
+.clindash-col-research { min-width: 0; }
+.clindash-col-workspace { min-width: 0; }
+
+/* — Patient panel (left column) — */
+.clindash-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.clindash-panel-header .card-kicker { margin: 0; }
+.clindash-add-patient-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+}
+.clindash-add-patient-actions { display: flex; gap: 8px; }
+.clindash-hipaa-note {
+  font-size: var(--fs-11);
+  line-height: 1.4;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 12%, transparent);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+}
+.clindash-patient-list { display: flex; flex-direction: column; gap: 6px; }
+.clindash-patient-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  border-left: 3px solid transparent;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.clindash-patient-card:hover { background: var(--color-neutral-100); }
+.clindash-patient-card--selected { border-left-color: var(--color-accent); background: var(--color-accent-100); }
+.clindash-patient-card-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.clindash-patient-code { font-weight: 700; font-size: 13.5px; }
+.clindash-reassess-dot { width: 7px; height: 7px; border-radius: 999px; background: #c9853a; flex-shrink: 0; }
+.clindash-patient-condition {
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.clindash-patient-progress { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 3px; }
+.clindash-empty-state { font-size: 13px; color: var(--color-neutral-700); padding: 8px 2px; line-height: 1.5; }
+
+/* — Main workspace (center column) — */
+.clindash-workspace-greeting { font-size: 22px; margin: 0 0 4px; }
+.clindash-workspace-sub { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 18px; }
+.clindash-quick-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+.clindash-patient-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.clindash-patient-header-code { font-family: var(--font-heading); font-size: 24px; }
+.clindash-patient-header-condition { font-size: 13.5px; color: var(--color-neutral-700); margin-top: 2px; }
+.clindash-patient-header-pills { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+.clindash-status-pill { font-size: var(--fs-11); font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+.clindash-status-pill--active { background: color-mix(in srgb, var(--color-success) 18%, transparent); color: var(--color-success); }
+.clindash-status-pill--discharged { background: var(--color-neutral-200); color: var(--color-neutral-700); }
+.clindash-patient-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.clindash-discharge-btn { color: var(--color-danger); background: none; border: 1px solid var(--color-divider); }
+
+.clindash-section { margin-bottom: 22px; }
+.clindash-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.clindash-section-header .card-kicker { margin: 0; }
+
+.clindash-brief-box {
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-100);
+  border: 1px solid var(--color-accent-300);
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+.clindash-brief-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.clindash-brief-generated-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.clindash-disclaimer { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 8px; line-height: 1.5; }
+
+.clindash-visit-progress-label { font-family: var(--font-heading); font-size: 18px; margin-bottom: 8px; }
+.clindash-progress-bar { height: 8px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
+.clindash-progress-bar-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
+.clindash-visit-dates { display: flex; gap: 18px; margin-top: 8px; font-size: 12px; color: var(--color-neutral-700); }
+
+.clindash-outcome-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.clindash-outcome-table th {
+  text-align: left;
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  padding: 0 8px 6px 0;
+  font-weight: 600;
+}
+.clindash-outcome-row { cursor: pointer; }
+.clindash-outcome-row td { padding: 8px 8px 8px 0; border-top: 1px solid var(--color-divider); }
+.clindash-outcome-row:hover td { background: var(--color-neutral-100); }
+.clindash-trend-arrow { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 12px; }
+.clindash-trend-arrow--up { color: var(--color-success); }
+.clindash-trend-arrow--down { color: var(--color-danger); }
+.clindash-trend-arrow--flat { color: var(--color-neutral-600); }
+.clindash-outcome-history { padding: 4px 0 10px; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.clindash-outcome-history-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed var(--color-divider); }
+
+.clindash-trend-chart-wrap { margin-top: 6px; padding: 10px 4px 4px; }
+.clindash-trend-chart-name { font-size: var(--fs-11-5); font-weight: 600; margin-bottom: 6px; }
+.clindash-trend-chart { position: relative; height: 70px; overflow: hidden; }
+/* width/height 100% is required, not just inset:0 -- an absolutely positioned <svg> with no
+   explicit size is a *replaced element with an intrinsic aspect ratio* (from its viewBox),
+   so per the CSS sizing algorithm for absolutely positioned replaced elements it sizes
+   itself to preserve that 1:1 ratio instead of stretching to fill top/right/bottom/left:0
+   the way a non-replaced <div> would -- it rendered as a 582x582 square blowing out of this
+   70px-tall box until these were added. */
+.clindash-trend-chart-line { position: absolute; inset: 0; width: 100%; height: 100%; }
+.clindash-trend-point {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  transform: translate(-50%, 50%);
+}
+.clindash-trend-label { position: absolute; font-size: var(--fs-10); color: var(--color-neutral-700); white-space: nowrap; }
+.clindash-trend-need-more { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-style: italic; margin-top: 4px; }
+
+.clindash-inline-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+}
+.clindash-inline-form-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.clindash-inline-form-row > * { flex: 1; min-width: 110px; }
+.clindash-inline-form-actions { display: flex; gap: 8px; }
+
+/* Outcome Measures' "Pull from a saved test" quick-fill list (OutcomeMeasuresSection.tsx) —
+   the clinician's own past Calculators results (see /pro/calculators) matching the
+   currently-selected measure, one click away from filling in Score/Max Score below. */
+.clindash-outcome-pull { display: flex; flex-direction: column; gap: 4px; }
+.clindash-outcome-pull-label { font-size: var(--fs-10-5); text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); }
+.clindash-outcome-pull-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.clindash-outcome-pull-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-accent-300);
+  background: var(--color-accent-100);
+  color: var(--color-accent);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.clindash-outcome-pull-date { font-weight: 400; color: var(--color-neutral-700); }
+
+.clindash-hep-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--color-divider); font-size: 13px; }
+.clindash-hep-item:first-child { border-top: none; }
+.clindash-hep-item-name { font-weight: 600; }
+.clindash-hep-item-date { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+
+.clindash-note-item { padding: 10px 0; border-top: 1px solid var(--color-divider); cursor: pointer; }
+.clindash-note-item:first-child { border-top: none; }
+.clindash-note-item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.clindash-note-type-pill { font-size: var(--fs-10-5); font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--color-accent-100); color: var(--color-accent-700); }
+.clindash-note-preview { font-size: 12.5px; margin-top: 4px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.clindash-note-full { font-size: 12.5px; margin-top: 4px; line-height: 1.5; white-space: pre-wrap; }
+
+/* — Quick tools (right column) — */
+.clindash-quick-tools { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+
+/* — Zone 3: Practice Metrics — */
+.clindash-metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-top: 24px; }
+.clindash-metric-card-value { font-family: var(--font-heading); font-size: 26px; margin: 6px 0 2px; }
+.clindash-metric-card-sub { font-size: 12px; color: var(--color-neutral-700); }
+.clindash-region-bars { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.clindash-region-bar-row { display: flex; align-items: center; gap: 8px; font-size: var(--fs-11-5); }
+.clindash-region-bar-label { width: 92px; flex-shrink: 0; color: var(--color-neutral-700); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.clindash-region-bar-track { flex: 1; height: 10px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
+.clindash-region-bar-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
+.clindash-region-bar-count { width: 18px; flex-shrink: 0; text-align: right; color: var(--color-neutral-700); }
+.clindash-reassess-rate--ok { color: var(--color-success); }
+.clindash-reassess-rate--high { color: #c9853a; }
+
+/* — Zone 4: expansion placeholder — */
+.clindash-expansion-card {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--color-divider);
+  color: var(--color-neutral-700);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .clindash-brief-row { grid-template-columns: repeat(2, 1fr); }
+  .clindash-columns { grid-template-columns: 1fr; }
+  .clindash-metrics-row { grid-template-columns: 1fr; }
+}
+
+/* — Prepare for Patient modal (components/pro/dashboard/PreparePatientModal.tsx) — sits
+   in the same .cal-modal-backdrop overlay every other modal in this app uses, just with
+   its own larger card (spec calls for a full-screen review flow, not a small form) rather
+   than reusing .cal-modal's fixed 420px width. */
+.ppm-modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 720px;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+.ppm-steps { display: flex; gap: 8px; margin-bottom: 20px; }
+.ppm-step { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.ppm-step-bar { height: 4px; border-radius: 999px; background: var(--color-divider); }
+.ppm-step-bar--active,
+.ppm-step-bar--done { background: var(--color-accent); }
+.ppm-step-label { font-size: var(--fs-10-5); color: var(--color-neutral-700); }
+.ppm-step-label--active { color: var(--color-accent-700); font-weight: 600; }
+.ppm-step-heading { font-family: var(--font-heading); font-size: 19px; margin-bottom: 14px; }
+.ppm-textarea { width: 100%; min-height: 160px; font: inherit; font-size: 13.5px; line-height: 1.6; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--color-divider); background: var(--color-surface); color: var(--color-text); resize: vertical; }
+.ppm-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; gap: 10px; }
+.ppm-actions-right { display: flex; gap: 8px; }
+.ppm-hep-row { display: grid; grid-template-columns: 1.4fr 0.6fr 0.6fr 0.8fr 1fr; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--color-divider); }
+.ppm-hep-row:first-child { border-top: none; }
+.ppm-hep-row-name { font-size: 12.5px; font-weight: 600; }
+.ppm-details-grid { display: flex; flex-direction: column; gap: 12px; }
+.ppm-details-row { display: flex; flex-direction: column; gap: 4px; }
+.ppm-details-label { font-size: var(--fs-11); color: var(--color-neutral-700); }
+.ppm-details-static { font-size: 13.5px; padding: 8px 0; }
+.ppm-patient-name-line { font-size: 13.5px; color: var(--color-neutral-700); border-bottom: 1px solid var(--color-divider); padding-bottom: 10px; }
+.ppm-patient-name-note { font-size: var(--fs-11); color: var(--color-warn); margin-top: 4px; }
+.ppm-download-wrap { text-align: center; padding: 30px 10px; }
+.ppm-download-instruction { font-size: 12px; color: var(--color-neutral-700); margin-top: 12px; max-width: 380px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+
+@media (max-width: 700px) {
+  .ppm-hep-row { grid-template-columns: 1fr; gap: 4px; }
+  .ppm-steps { flex-wrap: wrap; }
+}
+
+/* ============================================================================
+   LimbicPRO Patient Document (/pro/patient-brief/[patientId]) — always renders in light
+   mode regardless of the viewer's theme preference (see that page's own comment on why),
+   so every rule below uses literal colors rather than the --color-* custom properties,
+   which would otherwise pick up html[data-theme="dark"]'s dark values. Self-contained by
+   design: nothing here reads from or feeds into the rest of the app's design system.
+   ============================================================================ */
+
+.patient-brief-page {
+  background: #eeede8;
+  min-height: 100vh;
+  color: #1a1a1a;
+}
+.patient-brief-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 20px;
+  background: #1a1a1a;
+  color: #fff;
+}
+.patient-brief-topbar a,
+.patient-brief-topbar button {
+  font: inherit;
+}
+.patient-brief-doc {
+  max-width: 750px;
+  margin: 28px auto 60px;
+  background: #ffffff;
+  color: #1a1a1a;
+  padding: 48px 56px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+}
+.patient-brief-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid #1a1a1a;
+  margin-bottom: 22px;
+}
+.patient-brief-clinic-name { font-size: 20px; font-weight: 700; }
+.patient-brief-clinic-tagline { font-size: var(--fs-11-5); color: #555; margin-top: 2px; }
+.patient-brief-doc-title { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #555; margin-bottom: 4px; }
+.patient-brief-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 24px;
+  font-size: 12.5px;
+  margin-bottom: 26px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #ddd;
+}
+.patient-brief-meta-label { color: #666; }
+.patient-brief-meta-value { font-weight: 600; }
+.patient-brief-section { margin-bottom: 24px; }
+.patient-brief-section-title { font-size: 13px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 10px; color: #1a1a1a; }
+.patient-brief-summary-text { font-size: 13.5px; line-height: 1.7; white-space: pre-wrap; }
+.patient-brief-hep-name { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.patient-brief-hep-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.patient-brief-hep-table th {
+  text-align: left;
+  font-size: var(--fs-10-5);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #666;
+  border-bottom: 1px solid #ccc;
+  padding: 6px 8px 6px 0;
+}
+.patient-brief-hep-row td { padding: 8px 8px 8px 0; border-bottom: 1px solid #eee; }
+.patient-brief-footer {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
+  font-size: var(--fs-10-5);
+  color: #777;
+  line-height: 1.6;
+}
+
+@media print {
+  .patient-brief-topbar { display: none !important; }
+  .patient-brief-page { background: #fff !important; min-height: 0; }
+  .patient-brief-doc {
+    box-shadow: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    max-width: none;
+  }
+  .patient-brief-hep-row,
+  .patient-brief-section { break-inside: avoid; page-break-inside: avoid; }
+  @page { margin: 0.75in; }
+}
+
+/* ============================================================================
+   Clinician Dashboard — Prompt 1 daily-habit features (Morning Rounds, visit logging,
+   outcome-milestone banners, End of Day summary). Extends the .clindash-* block above —
+   same naming convention, same reuse-existing-tokens approach.
+   ============================================================================ */
+
+.clindash-morning-title { font-size: 22px; margin: 0 0 2px; }
+.clindash-morning-date { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 18px; }
+
+.clindash-eod-card { padding: 20px; margin-bottom: 20px; }
+/* Label only — .card-kicker carries the type. It used to set its own 16px heading font,
+   which matched nothing else on the screen: too big and too plain to read as a card label
+   like "Today's Patients" beside it, and directly above the "Morning Rounds" h1, which it
+   competed with rather than deferring to. */
+.clindash-eod-header { margin-bottom: 12px; }
+.clindash-eod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.clindash-eod-stat-value { font-family: var(--font-heading); font-size: 22px; }
+.clindash-eod-stat-value--danger { color: var(--color-danger); }
+.clindash-eod-stat-label { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
+.clindash-eod-note { font-size: 12px; color: var(--color-neutral-700); margin-top: 12px; }
+.clindash-eod-actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+
+.clindash-today-list { display: flex; flex-direction: column; gap: 8px; }
+.clindash-today-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+}
+.clindash-today-row-main { min-width: 0; }
+.clindash-today-row-code { font-weight: 700; font-size: 13.5px; }
+.clindash-today-row-condition { font-size: 12px; color: var(--color-neutral-700); }
+.clindash-today-row-outcome { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
+
+.clindash-reminders-header { color: #c9853a; margin: 0 0 8px; }
+.clindash-reminder-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #c9853a 10%, transparent);
+  border: 1px solid color-mix(in srgb, #c9853a 30%, transparent);
+  margin-bottom: 8px;
+}
+.clindash-reminder-row-main { min-width: 0; }
+.clindash-reminder-row-code { font-weight: 700; font-size: 13px; }
+.clindash-reminder-row-condition { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+
+.clindash-quickstats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+.clindash-quickstat-tile { padding: 12px 14px; text-align: center; }
+.clindash-quickstat-value { font-family: var(--font-heading); font-size: 20px; }
+.clindash-quickstat-label { font-size: var(--fs-10-5); color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 3px; }
+
+.clindash-switch-view-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font: inherit;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  margin-top: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.clindash-patient-search-wrap { margin-top: 8px; }
+.clindash-patient-search-results { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.clindash-patient-search-result {
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.clindash-visit-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-100);
+  border: 1px solid var(--color-accent-300);
+  margin-bottom: 16px;
+}
+.clindash-visit-banner-actions { display: flex; align-items: center; gap: 8px; }
+.clindash-visit-banner-confirm { font-size: 13px; font-weight: 600; color: var(--color-success); }
+
+.clindash-milestone-banner {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #c9853a 10%, transparent);
+  border: 1px solid #c9853a;
+  margin-bottom: 16px;
+}
+.clindash-milestone-banner-text { font-size: 13.5px; color: var(--color-text); margin-bottom: 8px; }
+.clindash-milestone-banner-actions { display: flex; align-items: center; gap: 14px; }
+.clindash-milestone-banner-dismiss { font-size: 12px; color: var(--color-neutral-700); background: none; border: none; cursor: pointer; padding: 0; }
+
+.clindash-reassess-pill {
+  font-size: var(--fs-9-5);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #c9853a 18%, transparent);
+  color: #c9853a;
+}
+
+@media (max-width: 700px) {
+  .clindash-eod-grid { grid-template-columns: 1fr 1fr; }
+  .clindash-quickstats-row { grid-template-columns: 1fr; }
+  .clindash-today-row { flex-direction: column; align-items: flex-start; }
+  .clindash-reminder-row { flex-direction: column; align-items: flex-start; }
+}
+
+/* ============================================================================
+   Clinician Dashboard — Prompt 2 clinical-intelligence features (Condition Intelligence
+   card, outcome benchmarking, treatment idea generator, red flag monitor).
+   ============================================================================ */
+
+.clindash-ci-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px; }
+.clindash-ci-section-title { font-size: var(--fs-10-5); text-transform: uppercase; letter-spacing: 0.03em; color: var(--color-neutral-700); margin-bottom: 5px; }
+.clindash-ci-measures { display: flex; flex-wrap: wrap; gap: 6px; }
+.clindash-ci-measure-pill {
+  font-size: var(--fs-11);
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+  border: 1px solid var(--color-accent-300);
+  cursor: pointer;
+}
+.clindash-ci-text { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; }
+.clindash-ci-pearl { font-size: 12.5px; color: var(--color-neutral-700); font-style: italic; line-height: 1.5; }
+.clindash-ci-find-link { display: inline; font-size: var(--fs-11-5); margin-left: 6px; color: var(--color-accent); text-decoration: none; }
+.clindash-ci-find-link:hover { text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .clindash-ci-grid { grid-template-columns: 1fr; }
+}
+
+.clindash-benchmark-line { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
+.clindash-benchmark-pill { display: inline-block; font-size: var(--fs-10); font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-top: 4px; }
+.clindash-benchmark-pill--good { background: color-mix(in srgb, var(--color-success) 16%, transparent); color: var(--color-success); }
+.clindash-benchmark-pill--warn { background: color-mix(in srgb, #c9853a 16%, transparent); color: #c9853a; }
+.clindash-benchmark-pill--bad { background: color-mix(in srgb, var(--color-danger) 14%, transparent); color: var(--color-danger); }
+
+.clindash-alert-banner {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #c9853a 10%, transparent);
+  border: 1px solid #c9853a;
+  margin-bottom: 16px;
+}
+.clindash-alert-header { font-weight: 700; color: #c9853a; margin-bottom: 8px; }
+.clindash-alert-list { display: flex; flex-direction: column; gap: 8px; }
+.clindash-alert-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; font-size: 13px; }
+.clindash-alert-item-text { display: flex; gap: 6px; }
+.clindash-alert-item-text::before { content: "•"; flex-shrink: 0; }
+.clindash-alert-item-dismiss {
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+.clindash-alert-footer { margin-top: 10px; font-size: var(--fs-11-5); }
+
+/* ============================================================================
+   Clinician Dashboard — Prompt 3 practice-building features (Episode Length Tracker,
+   Discharge Summary Generator, Goal Bank Integration, Referral Tracker).
+   ============================================================================ */
+
+.clindash-goal-row { padding: 10px 0; border-top: 1px solid var(--color-divider); }
+.clindash-goal-row:first-child { border-top: none; }
+.clindash-goal-row--met { color: var(--color-neutral-700); }
+.clindash-goal-row--not-met .clindash-goal-text { text-decoration: line-through; color: var(--color-neutral-700); }
+.clindash-goal-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.clindash-goal-text { font-size: 13px; line-height: 1.5; flex: 1; min-width: 200px; }
+.clindash-goal-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.clindash-goal-timeframe { font-size: var(--fs-11); color: var(--color-neutral-700); }
+.clindash-goal-status-select { font-size: var(--fs-11-5); padding: 3px 6px; border-radius: var(--radius-md); border: 1px solid var(--color-divider); background: var(--color-surface); color: var(--color-text); }
+.clindash-goal-met-check { color: var(--color-success); }
+
+.clindash-suggested-goals { margin-top: 10px; padding: 10px; border-radius: var(--radius-md); background: var(--color-surface); border: 1px solid var(--color-divider); }
+.clindash-suggested-goals-title { font-size: var(--fs-10-5); text-transform: uppercase; letter-spacing: 0.03em; color: var(--color-neutral-700); margin-bottom: 6px; }
+.clindash-suggested-goal-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px dashed var(--color-divider); font-size: 12px; }
+.clindash-suggested-goal-row:first-child { border-top: none; }
+.clindash-suggested-goal-use { font-size: var(--fs-11); flex-shrink: 0; }
+
+.clindash-discharge-summary-box { padding: 14px 16px; border-radius: var(--radius-md); background: var(--color-neutral-100); font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
+.clindash-discharge-summary-date { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 8px; }
+
+.clindash-region-stat-table { width: 100%; font-size: var(--fs-11-5); margin-top: 8px; border-collapse: collapse; }
+.clindash-region-stat-table td { padding: 4px 0; border-top: 1px dashed var(--color-divider); }
+.clindash-region-stat-table tr:first-child td { border-top: none; }
+
+@media (max-width: 700px) {
+  .clindash-goal-top { flex-direction: column; align-items: flex-start; }
+}
+
+/* ============================================================================
+   Clinician Dashboard — Prompt 4 professional-connection features (Specialty Research
+   Digest, Clinical Question Log, Peer Comparison benchmarks). The CE Countdown card that
+   used to live here was removed from the dashboard; .clindash-ce-progress-bar/-fill below
+   are kept — TeamOverview.tsx's own seats-used bar still uses them. */
+
+.clindash-ce-progress-bar { height: 7px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; margin: 12px 0 6px; }
+.clindash-ce-progress-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
+
+.clindash-question-log { margin-top: 16px; }
+.clindash-question-card {
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  margin-bottom: 8px;
+}
+.clindash-question-text {
+  font-size: 12.5px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.clindash-question-date { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 3px; }
+.clindash-question-actions { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.clindash-question-ask { font-size: var(--fs-11-5); color: var(--color-accent); background: none; border: none; cursor: pointer; padding: 0; font-weight: 600; }
+.clindash-question-delete { font-size: var(--fs-11-5); color: var(--color-danger); background: none; border: none; cursor: pointer; padding: 0; }
+.clindash-question-answered-label { display: flex; align-items: center; gap: 5px; font-size: var(--fs-11-5); color: var(--color-success); cursor: pointer; }
+.clindash-question-see-all { display: block; text-align: center; font-size: var(--fs-11-5); margin-top: 4px; }
+
+.clindash-benchmarks-section { margin-top: 24px; }
+.clindash-benchmarks-header { font-family: var(--font-heading); font-size: 17px; }
+.clindash-benchmarks-subtitle { font-size: 12px; color: var(--color-neutral-700); margin: 2px 0 14px; }
+.clindash-benchmark-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.clindash-benchmark-card-measure { font-weight: 700; font-size: 13.5px; margin-bottom: 4px; }
+.clindash-benchmark-card-stat { font-size: 12px; color: var(--color-neutral-700); margin-bottom: 2px; }
+.clindash-benchmark-card-verdict { font-size: 12.5px; font-weight: 600; margin-top: 6px; }
+.clindash-benchmark-card-verdict--good { color: var(--color-success); }
+.clindash-benchmark-card-verdict--warn { color: #c9853a; }
+.clindash-benchmark-card-verdict--bad { color: var(--color-danger); }
+.clindash-benchmark-card-source { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 6px; }
+.clindash-benchmarks-disclaimer { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 12px; line-height: 1.5; }
+
+/* ============================================================================
+   Clinic PRO expansion — Team Overview tab (components/pro/dashboard/TeamOverview.tsx),
+   the Clinic Setup / Accept Invite / Clinic Report pages, and the sidebar's clinic-name
+   pill (see .nav-footer-clinic-pill above). Same .clindash- prefix convention as the rest
+   of this dashboard's CSS.
+   ============================================================================ */
+
+/* flex-wrap: wrap — added for Force Lab's 3rd tab (Paste Assessment): a `nowrap` flex row
+   whose items don't fit doesn't wrap to a new line, it overflows past the row's own bounds
+   into whatever sits next to it (here, the Strength Profile column) since CSS Grid columns
+   don't clip overflowing children by default. Only changes behavior once a row's tabs don't
+   fit at their natural width — a no-op for every other .clindash-tab-bar usage (e.g. Clinic
+   PRO Team Overview's 2 tabs), which already fit on one line. */
+.clindash-tab-bar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--color-divider); }
+.clindash-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 4px 10px;
+  margin-right: 20px;
+  font: 600 13.5px var(--font-body);
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.clindash-tab--active { color: var(--color-text); border-bottom-color: var(--color-accent); }
+
+.clindash-team-overview { margin-top: 4px; }
+.clindash-team-table-wrap { overflow-x: auto; }
+.clindash-team-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.clindash-team-table th {
+  text-align: left;
+  font-size: var(--fs-10-5);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-neutral-700);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-divider);
+  white-space: nowrap;
+}
+.clindash-team-table td { padding: 8px; border-bottom: 1px solid var(--color-divider); white-space: nowrap; }
+.clindash-team-row { cursor: pointer; }
+.clindash-team-row:hover { background: var(--color-accent-100); }
+.clindash-team-row-detail td { background: color-mix(in srgb, var(--color-surface-2) 60%, transparent); white-space: normal; }
+.clindash-team-patient-row {
+  display: flex;
+  gap: 14px;
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  padding: 3px 0;
+}
+.clindash-team-patient-row span:first-child { font-weight: 600; color: var(--color-text); min-width: 70px; }
+.clindash-team-you-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+
+.clindash-seats-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--color-divider); }
+.clindash-seats-label { font-size: 12.5px; font-weight: 600; margin-bottom: 6px; }
+.clindash-seats-price { font-size: var(--fs-11); color: var(--color-neutral-700); margin: 6px 0 0; }
+.clindash-seats-add-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.clindash-transfer-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--color-divider); }
+.clindash-transfer-recent { margin-top: 14px; }
+.clindash-transfer-recent-row {
+  display: flex;
+  gap: 14px;
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  padding: 5px 0;
+  border-top: 1px dashed var(--color-divider);
+}
+.clindash-transfer-recent-row span:first-child { font-weight: 600; color: var(--color-text); min-width: 70px; }
+
+@media (max-width: 700px) {
+  .clindash-team-patient-row,
+  .clindash-transfer-recent-row { flex-direction: column; gap: 2px; }
+}
+
+/* Clinic Setup / Clinic Report — a small centered-card shell within the AppShell layout
+   (Accept Invite stays genuinely standalone, since it must work for a signed-out visitor —
+   see app/clinic/accept-invite/page.tsx). */
+.clindash-standalone-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 48px 20px;
+}
+.clindash-standalone-page--wide { max-width: 900px; }
+.clindash-standalone-title { font-family: var(--font-heading); font-size: 22px; margin: 0 0 4px; }
+.clindash-standalone-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 20px; }
+
+.clindash-report-section { margin-top: 22px; }
+.clindash-report-section-title { font-family: var(--font-heading); font-size: 16px; margin: 0 0 10px; }
+.clindash-report-stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.clindash-report-stat-card { padding: 12px 14px; }
+.clindash-report-stat-value { font-family: var(--font-heading); font-size: 22px; }
+.clindash-report-stat-label { font-size: var(--fs-11); color: var(--color-neutral-700); }
+.clindash-report-history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  padding: 8px 0;
+  border-top: 1px dashed var(--color-divider);
+}
+
+@media print {
+  .clindash-report-no-print { display: none !important; }
+  /* Clinic Report's "Download Report" (window.print()) is the one print flow that lives
+     inside the AppShell layout — every other printable page (patient brief) is standalone
+     with no chrome to begin with. Hides the sidebar/topbar/bottomnav wrapper for any page
+     printed from inside (app), not just this one. */
+  .app-sidebar, .app-mobile-topbar, .app-bottomnav { display: none !important; }
+}
+
+/* Edit / Delete on one logged entry in the Session Exercises history
+   (SessionExerciseSection.tsx). Pushed to the right of the "Visit N · date" line the
+   entry already had, so correcting a past session doesn't cost the list a second row. */
+.clindash-session-exercise-actions { display: flex; gap: 10px; margin-left: auto; }
+.clindash-session-exercise-action {
+  font-size: var(--fs-11-5);
+  color: var(--color-accent-700);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.clindash-session-exercise-action:hover:not(:disabled) { text-decoration: underline; }
+.clindash-session-exercise-action:disabled { opacity: 0.5; cursor: default; }
+.clindash-session-exercise-action--danger { color: var(--color-danger); }
+
+/* — Dashboard side — */
+.intake-inbox { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.intake-empty { font-size: 12.5px; color: var(--color-neutral-700); margin: 0; line-height: 1.5; }
+.intake-fresh-link { background: var(--color-neutral-100); border-radius: var(--radius-md); padding: 10px 12px; }
+.intake-fresh-link-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin-bottom: 6px; }
+.intake-fresh-link-row { display: flex; gap: 8px; }
+.intake-fresh-link-row .input { font-size: 11.5px; }
+
+.intake-submission { border-top: 1px solid var(--color-divider); padding: 10px 0; }
+.intake-submission:first-of-type { border-top: none; }
+.intake-submission-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.intake-submission-name { font-weight: 600; font-size: 13px; }
+.intake-submission-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.intake-answers { display: flex; flex-direction: column; gap: 3px; margin-top: 7px; }
+.intake-answer-line { display: flex; gap: 8px; font-size: 12px; line-height: 1.45; }
+.intake-answer-label {
+  flex: 0 0 76px;
+  font-weight: 700;
+  font-size: var(--fs-10-5);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-accent-700);
+  padding-top: 1px;
+}
+.intake-answer-value { flex: 1; }
+.intake-attach-note { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 0; line-height: 1.45; }
+.intake-open-link { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 0; }
+.intake-open-link-label { font-size: 12.5px; font-weight: 600; }
+.intake-open-link-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.intake-open-link-actions { display: flex; gap: 10px; flex-shrink: 0; }
+
+/* Session date + patient delete — see SessionExerciseSection.tsx and PatientWorkspace.tsx. */
+.clindash-session-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* Delete is not Discharge. Discharge is the ordinary end of a course of treatment and gets
+   the muted outline above; this one destroys the record, so it reads as destructive from
+   across the header rather than only in its confirmation dialog. */
+.clindash-delete-patient-btn {
+  color: var(--color-danger);
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 45%, transparent);
+}
+.clindash-delete-patient-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+}
+.clindash-delete-patient-error { font-size: var(--fs-11-5); color: var(--color-danger); margin: 8px 0 0; }
+
+@media (max-width: 640px) {
+  .clindash-session-form-row { grid-template-columns: 1fr; }
+}
+/* ============================================================================
+   Clinical Reference (/pro/lab-values, components/pro/ClinicalReferenceTabs.tsx)
+   — the six-tab hub. All appended, .clinref- prefixed, nothing above rewritten.
+   ============================================================================ */
+
+/* Overrides .screen-pad's 900px cap — same reasoning/pattern as .atlas-page and
+   .forcelab-page. At 900px this page was a two-column card grid with a 320px profiles
+   panel beside it, which left ~270px-wide calculator cards and turned every tab into a
+   long scroll on a desktop viewport that had a few hundred px of bare gutter either side.
+   .screen-pad still supplies the padding; this only lifts the width. */
+.clinref-page { max-width: 1500px; }
+
+/* The extra width goes into more columns rather than wider cards, which is what actually
+   shortens these tabs. Scoped to .clinref-page so the standalone /pro/calculators,
+   /pro/special-tests, and /pro/decision-rules pages keep the 2-up/1-up shape .pro-grid-2
+   and .pro-accordion give them everywhere else.
+
+   Accordion cards (special tests, decision rules, red flags, medication classes) go 2-up
+   first: they have the full page width to themselves, so ~900px of content is already two
+   comfortable columns and it halves the scroll on the longest tabs. align-items: start so
+   an expanded <details> grows its own cell instead of stretching the card beside it. */
+@media (min-width: 1240px) {
+  .clinref-page .pro-accordion {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+/* The calculator grid shares its row with the 320px profiles panel, so it needs a good deal
+   more viewport before a third column is an improvement rather than three cramped ones —
+   below this it stays 2-up and simply gets wider cards than the old 900px cap allowed. */
+@media (min-width: 1560px) {
+  .clinref-page .pro-grid-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Same reasoning one step up: on an ultrawide, three columns become three wide stripes. */
+@media (min-width: 2000px) {
+  .clinref-page .pro-grid-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Tabs and the search box share one row on desktop; the tab strip keeps its own horizontal
+   scroll (six labels, one of them long) so it can never squeeze the search box out. */
+.clinref-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+.clinref-toolbar-tabs { min-width: 0; }
+@media (min-width: 900px) {
+  .clinref-toolbar { flex-direction: row; align-items: flex-end; gap: 16px; }
+  .clinref-toolbar-tabs { flex: 1; }
+  .clinref-search { width: 260px; flex-shrink: 0; margin-bottom: 6px; }
+}
+
+.clinref-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.clinref-search-icon {
+  position: absolute;
+  left: 11px;
+  color: var(--color-neutral-600);
+  pointer-events: none;
+}
+.clinref-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 32px 9px 34px;
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 13px;
+}
+.clinref-search-input::placeholder { color: var(--color-neutral-600); text-overflow: ellipsis; }
+.clinref-search-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+/* The type="search" native clear affordance is hidden in favour of the button below, which
+   matches the rest of the app's icon buttons and stays visible in both themes. */
+.clinref-search-input::-webkit-search-cancel-button { display: none; }
+.clinref-search-clear {
+  position: absolute;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.clinref-search-clear:hover { color: var(--color-text); }
+
+/* "Nothing here, but it's on those tabs" line — only shown when the active tab has no
+   matches and another tab does. */
+.clinref-elsewhere {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  margin: 14px 0 0;
+}
+.clinref-elsewhere-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+.clinref-elsewhere-link:hover { text-decoration: underline; }
+
+/* Per-tab empty state. Full-width inside the 2-up accordion grid above, so it reads as one
+   message rather than a half-width orphan card. */
+.clinref-empty {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 14px 0 0;
+}
+
+/* Outcome Measures body-region grouping (see app/(app)/pro/calculators/page.tsx) — each
+   .pro-calc-region is a section header + its own .pro-grid-2 of cards, so nothing about the
+   existing .pro-grid-2 / .pro-calc-card rules above needed to change. */
+.pro-calc-region { margin-bottom: 28px; }
+.pro-calc-region:last-child { margin-bottom: 0; }
+.pro-calc-region-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+/* Patient-reported (a PROM the patient fills out) vs clinician-administered (the PT times,
+   counts, or scores it) — the other, independent axis every card shows regardless of which
+   region section it's grouped under (see CalcCardShell in calculators/CalcModal.tsx). An
+   eyebrow pill above the title, not beside it — several of these titles are already long
+   ("Functional Gait Assessment", "30 Second Sit to Stand") and a fixed-width badge sharing
+   a flex row with the title squeezed it down to one word per line. */
+.pro-calc-admin-badge {
+  align-self: flex-start;
+  font-size: var(--fs-10);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  margin-bottom: 4px;
+}
+.pro-calc-admin-badge--patient {
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+.pro-calc-admin-badge--clinician {
+  color: #16a34a;
+  background: color-mix(in srgb, #16a34a 14%, transparent);
+}
+
+/* ————————————————————————————————————————————————————————————————
+   Limbic Boards — appended block (see COORDINATION.md: new scoped classes go at the end
+   of this file rather than beside related rules, so parallel sessions' diffs don't
+   collide). Covers the Boards page header, the shared board-question choice list, the
+   missed-question review, the per-system record on the NPTE Breakdown cards, and the
+   Resources tab's link lists.
+   ———————————————————————————————————————————————————————————————— */
+
+/* — page header: title on the left, streak badge and NPTE countdown on the right — */
+.boards-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.boards-page-title { display: flex; align-items: center; gap: 8px; }
+.boards-page-title h1 { font-size: 24px; margin: 0; }
+.boards-header-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.boards-header-countdown {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+  padding: 4px 12px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.boards-header-countdown strong {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  color: var(--color-accent-700);
+}
+
+/* — shared answer list for a board question (Daily Sharpening step 1 and the standalone
+     clinician Question of the Day card) — */
+.board-choice-list { display: flex; flex-direction: column; gap: 8px; }
+.board-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+}
+.board-choice--dimmed { opacity: 0.6; }
+.board-choice--wrong { border: 1.5px solid var(--color-accent-700); }
+.board-choice-mark { flex-shrink: 0; font-weight: 700; }
+
+/* — streak dots: a day still to come this week is not a day that was missed — */
+.boards-streak-day-dot--future { background: transparent; box-shadow: inset 0 0 0 1.5px var(--color-divider); }
+.boards-streak-day-label--future { opacity: 0.5; }
+/* Three stats now (current streak, longest streak, accuracy) rather than two. */
+.boards-streak-stats { grid-template-columns: repeat(3, 1fr); }
+
+/* — "where you're losing points" callout above the system grid — */
+.boards-weakest-card {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.boards-weakest-body { font-size: 13px; line-height: 1.6; color: var(--color-text); margin: 8px 0 12px; }
+.boards-weakest-link { display: inline-flex; text-decoration: none; }
+
+/* — NPTE Breakdown system cards, now links into that system's practice set — */
+.npte-system-card { text-decoration: none; color: inherit; transition: border-color 0.15s ease, transform 0.15s ease; }
+.npte-system-card:hover { border-color: var(--color-accent); transform: translateY(-1px); }
+.npte-system-record {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-divider);
+}
+.npte-system-record-value { font-family: var(--font-heading); font-weight: 700; font-size: 18px; color: var(--color-text); }
+.npte-system-record-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.npte-system-record-cta { width: 100%; text-align: right; font-size: var(--fs-11-5); font-weight: 600; color: var(--color-accent-700); }
+
+/* — missed-question review (Daily Sharpening tab) — */
+.boards-review-empty, .boards-review-intro {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  line-height: 1.6;
+  margin: 8px 0 0;
+}
+.boards-review-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.boards-review-item { border: 1px solid var(--color-divider); border-radius: 10px; overflow: hidden; }
+.boards-review-toggle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+.boards-review-toggle:hover { background: var(--color-neutral-100); }
+.boards-review-question { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; line-height: 1.5; }
+.boards-review-domain { flex-shrink: 0; font-size: var(--fs-10-5); color: var(--color-neutral-700); white-space: nowrap; padding-top: 2px; }
+.boards-review-body { padding: 0 12px 12px; border-top: 1px solid var(--color-divider); }
+.boards-review-answer { display: flex; gap: 8px; font-size: 12.5px; line-height: 1.5; margin: 10px 0 0; }
+.boards-review-answer-label {
+  flex-shrink: 0;
+  font-size: var(--fs-10);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-success);
+  padding-top: 2px;
+  width: 74px;
+}
+.boards-review-answer--yours .boards-review-answer-label { color: var(--color-danger); }
+.boards-review-explanation { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.6; margin: 10px 0 0; }
+.boards-review-practice-link { display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 600; }
+
+/* — Resources tab: practice-by-system rows and the official-source list — */
+.boards-domain-links, .boards-official-links { display: flex; flex-direction: column; gap: 2px; margin-top: 12px; }
+.boards-domain-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+.boards-domain-link:hover { background: var(--color-neutral-100); }
+.boards-domain-link-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.boards-domain-link-name { font-size: 13px; font-weight: 600; }
+.boards-domain-link-meta { margin-left: auto; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.boards-official-link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+.boards-official-link:hover { background: var(--color-neutral-100); }
+.boards-official-link-name { font-size: 13px; font-weight: 600; color: var(--color-accent-700); }
+.boards-official-link-desc { font-size: var(--fs-11-5); color: var(--color-neutral-700); line-height: 1.5; }
+
+@media (max-width: 480px) {
+  .boards-review-domain { display: none; }
+  .boards-domain-link-meta { font-size: var(--fs-10-5); }
+  .boards-streak-stat-value { font-size: 22px; }
+}
+
+/* Extends .clinref-page's wide-desktop treatment (see that class above) to the other
+   standalone .screen-pad pages that share its card-grid/accordion shapes — /pro/documentation,
+   /pro/special-tests, /pro/decision-rules, /pro/guidelines. .clinref-page's own comment
+   explicitly called these out as deliberately left at the narrower 900px/2-up shape when that
+   class shipped; this is that follow-up, not a change to .clinref-page itself. Same
+   .screen-pad-overriding-max-width pattern as .clinref-page/.atlas-page/.forcelab-page — the
+   padding still comes from .screen-pad, only the width changes. */
+.pro-wide-page { max-width: 1500px; }
+
+/* No side panel on any of these four pages, so the grid/accordion has the full page width to
+   itself — same 1240px threshold .clinref-page uses for its own accordion tabs, which are in
+   exactly that situation once the calculator tab's 320px profile panel is out of the picture. */
+@media (min-width: 1240px) {
+  .pro-wide-page .pro-accordion {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .pro-wide-page .pro-grid-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 2000px) {
+  .pro-wide-page .pro-grid-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* The standalone /pro/calculators page specifically — unlike the four pages above, its
+   CalculatorProfilesPanel shares the row with the card grid (see .pro-calc-layout in
+   CalculatorWorkspace.tsx), the same 320px panel .clinref-page's own calculator tab has, so
+   it needs the same wider viewport before extra columns help, not the 1240px threshold
+   above. */
+.pro-calc-wide-page { max-width: 1500px; }
+
+/* Each Outcome Measures region (see .pro-calc-region in that page) holds a different number
+   of cards — 1 (Spine), 2 (Lower Extremity), 5 (Balance/Gait/Neuro) — so a fixed 3-up track
+   count (what this used to be, matching the other .pro-calc-wide-page pages above) left the
+   1- and 2-card regions with one narrow card next to 1-2 empty tracks, visibly out of step
+   with the fully-populated rows elsewhere on the page. `grid-template-columns: repeat(auto-fit,
+   minmax(...))` was tried first, but it only collapses a track that is empty across the WHOLE
+   grid — the 5-card Balance/Gait/Neuro region still computes 3 columns (5 items fill more than
+   2), so its wrapped second row of 2 cards only occupies 2 of those 3 tracks and leaves the
+   same dead space on the right. Flexbox wrapping doesn't have that limitation: flex-grow
+   redistributes each row's leftover width across only the items actually on that row, so a
+   trailing partial row fills edge to edge same as a full one. Specific enough
+   (.pro-calc-wide-page .pro-calc-region .pro-grid-2, 3 classes) to beat the plain .pro-grid-2
+   base rule's `display: grid` without touching it, and needs no breakpoints of its own — it
+   adapts continuously as the page (and its 320px profile panel) resize. */
+.pro-calc-wide-page .pro-calc-region .pro-grid-2 {
+  display: flex;
+  flex-wrap: wrap;
+}
+.pro-calc-wide-page .pro-calc-region .pro-grid-2 > * {
+  flex: 1 1 280px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Touch-device corrections, kept together at the end of the file on purpose.
+
+   Every rule below exists to beat an earlier one by source order rather than by
+   inflating specificity. That ordering *is* the fix for the group of font-size
+   rules: the app already does the right thing near the top of this file with
+   `@media (max-width: 799px) { .input { font-size: 16px } }`, but a media query
+   contributes no specificity, so `.forcelab-filter-row .input { font-size: 12px }`
+   (0-2-0) beat it outright and `.forcelab-paste-textarea` beat it on order. Any
+   focusable field whose text computes under 16px makes iOS zoom the whole page in
+   on focus, which the reader then has to pinch back out of by hand.
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (pointer: coarse) {
+  /* Fields that opted out of .input entirely, so the 16px rule never reached them. */
+  .connexion-visit-input,
+  .ff-modal-input,
+  .ppm-textarea,
+  .clindash-goal-status-select,
+  .clinref-search-input,
+  /* …and fields that override .input later or more specifically. */
+  .forcelab-filter-row .input,
+  .forcelab-paste-textarea,
+  .syllabi-review-table .input {
+    font-size: 16px;
+  }
+  /* These two also shrank their own box below the 44px touch floor. */
+  .syllabi-review-table .input { min-height: 44px; }
+  .clindash-goal-status-select { min-height: 44px; }
+  .clinref-search-input { min-height: 44px; }
+
+  /* Rehab Sequence is the app's only drag-and-drop screen, and HTML5 drag events never
+     fire on a touchscreen — so on a phone these two arrows are not a fallback, they are
+     the only way to play. At 22×18px with a 2px gap they were unusable. */
+  .rehab-sequence-arrows { gap: 6px; }
+  .rehab-sequence-arrows button { width: 44px; height: 36px; font-size: 13px; }
+
+  /* The "clear topic filter" × on the Home feed — the smallest control in the app. */
+  .topic-filter-pill button { width: 28px; height: 28px; }
+}
+
+/* The theme preview is a 1000px mock-up shrunk with transform: scale() inside a fixed-height
+   frame. At the desktop 0.4 it renders 400px wide, which overflows the ~354px the frame gets
+   on a phone and clips the right-hand column off the thing being previewed. Scale to fit the
+   narrower frame instead, and bring the frame's height down by the same ratio so the crop
+   stays proportional. */
+@media (max-width: 420px) {
+  .theme-preview { transform: scale(0.33); }
+  .theme-preview-frame { height: 139px; }
+}
+
+/* Visible 0–4 risk legend on the Connexion safety assessment (see
+   components/connexion/SafetyAssessmentForm.tsx). The scale used to be documented only in
+   each score button's `title` attribute, which needs a hover a touchscreen can't perform. */
+.connexion-assess-legend {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.connexion-assess-legend li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--color-neutral-700);
+}
+.connexion-assess-legend-score {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-neutral-200);
+  background: var(--color-card-surface);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* The score buttons themselves sat at 26×26 with 4px gaps — five of them per row, on every
+   item of a full assessment. Give them a real finger target where the pointer is coarse. */
+@media (pointer: coarse) {
+  .connexion-assess-score-buttons { gap: 6px; }
+  .connexion-assess-score-btn { width: 44px; height: 44px; font-size: 14px; }
+}
+
+/* Pagination (components/Pagination.tsx) — used by Under Review, APTA News, Saved and Search.
+   Sizing lives here rather than inline so the touch bump below can apply; the component keeps
+   only the active/disabled colours inline. */
+.pagination-nav { display: flex; align-items: center; gap: 4px; margin-top: 22px; flex-wrap: wrap; }
+.pagination-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: var(--radius-md);
+  border: none;
+  font: inherit;
+  font-size: 13px;
+  text-decoration: none;
+}
+/* 32px targets 4px apart are the classic "meant to tap 3, got 4". */
+@media (pointer: coarse) {
+  .pagination-nav { gap: 6px; }
+  .pagination-link { min-width: 44px; height: 44px; font-size: 14px; }
+}
+
+/* Remaining sub-44px controls, same coarse-pointer gate as the block above. These are all
+   horizontal tab strips and inline text buttons that sat between 12px and 36px tall. */
+@media (pointer: coarse) {
+  /* The HEP exercise-library picker is a <select> styled as a button, so it never picked up
+     the .input font-size rule and still zoomed the page on focus. */
+  select.btn { font-size: 16px; }
+
+  .sliding-tab { padding-top: 13px; padding-bottom: 13px; }
+  .boards-tab { padding-top: 15px; padding-bottom: 15px; }
+  /* An 11.5px inline button that computed to ~12px tall — the "N threads" teaser on feed cards. */
+  .card-threads-teaser { padding: 8px 0; }
+}
+
+/* The generic control classes, brought up to the same 44px floor on touch. .btn covers most
+   of the app's buttons at once (Save, Edit, Replay Tour, …, all ~36px tall from their padding
+   alone); the rest are the horizontal tab and chip strips. min-height rather than height so a
+   control that is already taller — a wrapped two-line chip — keeps its size. */
+@media (pointer: coarse) {
+  .btn,
+  .sub-tab,
+  .sliding-tab,
+  .wellness-chip,
+  .card-threads-teaser {
+    min-height: 44px;
+  }
+}
+
+/* Ghost variant of the clip save button — see components/ClipSaveButton.tsx, which used to
+   carry these as inline styles that no media query could reach. */
+.clip-save-btn-ghost { width: 30px; height: 30px; }
+
+/* Final touch-target pass. These sit at the very end because each one has to beat an earlier
+   declaration of the same specificity: the checkbox/radio sizing above is undone by the base
+   `input[type="checkbox"] { width: 16px }` rule further down the file, and .clip-save-btn-ghost
+   is declared just above. */
+@media (pointer: coarse) {
+  input[type="checkbox"], input[type="radio"] { width: 22px; height: 22px; }
+  .clip-save-btn-ghost { width: 44px; height: 44px; }
+  .home-refresh-pill { min-height: 44px; }
+  .home-question-option { min-height: 44px; }
+}
+
+/* Icon buttons whose pixel size is set per-instance by the component (article/wellness save,
+   delete-exercise, HEP row controls). The size arrives as the --icon-btn-dim custom property
+   rather than an inline width/height, because an inline width wins against every stylesheet
+   rule — which is exactly what kept these below the touch-target floor on phones. */
+.icon-btn-sized { width: var(--icon-btn-dim); height: var(--icon-btn-dim); }
+@media (pointer: coarse) {
+  .icon-btn-sized {
+    width: max(44px, var(--icon-btn-dim));
+    height: max(44px, var(--icon-btn-dim));
+  }
+}
+
+/* Small-text floor on phones — see the --fs-* scale defined at the top of this file.
+   Nothing drops below 12px at this width; the tiers stay in order so labels still read as
+   secondary to the text around them. Uses the same 799px breakpoint as the rest of the app's
+   mobile layout (the sidebar/bottom-nav switch, the .input anti-zoom rule), rather than
+   pointer:coarse, because this is about how far the screen is from your eyes, not what you
+   are tapping with — a narrow desktop window benefits identically. */
+@media (max-width: 799px) {
+  :root {
+    --fs-8: 12px;
+    --fs-8-5: 12px;
+    --fs-9: 12px;
+    --fs-9-5: 12px;
+    --fs-10: 12px;
+    --fs-10-5: 12px;
+    --fs-11: 12.5px;
+    --fs-11-5: 13px;
+  }
+}
+
+/* Boards tab strip on narrow screens. The four labels ("Daily Sharpening", "NPTE Breakdown",
+   "Research & Stats", "Resources") are white-space: nowrap in flex: 1 columns, so on a phone
+   each one is cut off mid-word inside its own 89px tab — and .boards-tabs sets
+   overflow: hidden, so there is nothing to scroll to the rest of the label either.
+   Let the strip scroll instead and size each tab to its text, the same pattern .sub-tabs and
+   .sliding-tabs already use for exactly this. */
+@media (max-width: 799px) {
+  .boards-tabs { overflow-x: auto; overflow-y: hidden; }
+  .boards-tab { flex: 0 0 auto; padding-left: 14px; padding-right: 14px; }
+}
+
+/* The top keyboard row is ten keys at min-width 32px with 6px gaps — 374px of content in the
+   ~354px a phone gives it, so .wordle-keyboard clipped a few pixels off the outermost keys.
+   Predates the small-text scale (nothing in this chain is a font-size), but it is the same
+   kind of defect: shave the gap and the floor just enough for ten keys to fit. */
+@media (max-width: 420px) {
+  .wordle-keyboard-row { gap: 4px; }
+  .wordle-key { min-width: 30px; padding: 0 4px; }
+}
+
+/* Clinician's Tool Chest (see app/(app)/pro/toolbox/page.tsx) — the grouped view of what
+   LimbicPRO contains. Reuses .pro-tools-grid / .pro-tool-card from the overview hub; only
+   the grouping and the lock pill are new. */
+.toolbox-title { font-size: 26px; margin: 0 0 4px; }
+.toolbox-subtitle { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 6px; max-width: 62ch; line-height: 1.5; }
+.toolbox-group { margin-top: 22px; }
+.toolbox-group-head { border-bottom: 1px solid var(--color-divider); padding-bottom: 7px; }
+.toolbox-group-title { font-size: 16px; margin: 0; }
+.toolbox-group-blurb { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 2px 0 0; }
+.toolbox-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+/* A locked card is dimmer but still legible — its description is the reason to subscribe,
+   so greying it into unreadability would defeat the point of showing it at all. */
+.pro-tool-card--locked { border-left-color: var(--color-neutral-300); }
+.toolbox-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  font-size: var(--fs-10);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+}
+
+/* Clinical Toolbox on a phone (see app/(app)/pro/toolbox/page.tsx). The grid is already one
+   column below 860px, but at a full-size card the page runs about four screens of scrolling
+   on a 390px viewport — which works against a page whose whole job is to be scannable.
+   Measured at 2611px of scroll height before this block.
+
+   Tightened rather than gutted: the description is what tells a reader deciding on LimbicPRO
+   what a locked tool actually does, so it is clamped to two lines instead of hidden, and the
+   card keeps its "Open" affordance. Scoped to .toolbox-group so the /pro overview hub's own
+   cards, which are fewer and carry longer copy, are unaffected. */
+@media (max-width: 640px) {
+  .toolbox-group .pro-tools-grid { gap: 9px; margin: 14px 0; }
+  .toolbox-group { margin-top: 16px; }
+  .toolbox-group .pro-tool-card { padding: 11px 13px; gap: 2px; }
+  .toolbox-group .pro-tool-card-desc {
+    line-height: 1.45;
+    /* Two lines, then an ellipsis. -webkit-line-clamp is the only cross-browser way to do
+       this today; -webkit-box is what makes it apply, and is well supported everywhere. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .toolbox-group .pro-tool-card-footer { margin-top: 3px; }
+}
+
+/* The two actions on the Home Exercise Program section header (see
+   components/pro/dashboard/HEPSection.tsx). "Update HEP" assigns; the link beside it goes to
+   the builder, and is styled as a link rather than a second button so the assign action stays
+   the obvious one. */
+.clindash-hep-actions { display: flex; align-items: center; gap: 4px; }
+.clindash-hep-build {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  /* Neutral, not accent. Rendered in accent it matched "Update HEP" exactly and the two read
+     as a pair of equal choices, when assigning is the one you came here to do and building is
+     the detour. */
+  color: var(--color-neutral-700);
+  white-space: nowrap;
+  padding: 4px 2px;
+}
+.clindash-hep-build:hover { color: var(--color-accent); text-decoration: underline; }
+
+/* Clinical Toolbox filter row and card grid (see components/pro/ToolboxBrowser.tsx).
+
+   The grid is auto-fill rather than a fixed two columns. At two columns on a desktop the
+   cards ran ~540px wide holding one or two lines of text, and three of the five groups have
+   an odd number of tools, so each left a half-empty row hanging beside a single card — the
+   most visible flaw on the page. Letting the column count follow the available width packs a
+   three-tool group into one tidy row instead. Scoped to .toolbox-group so the /pro overview
+   hub's own grid, which holds six long-copy cards, is unaffected. */
+.toolbox-group .pro-tools-grid { grid-template-columns: repeat(auto-fill, minmax(272px, 1fr)); }
+
+.toolbox-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 14px 0 4px;
+}
+.toolbox-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 9px;
+  border: 1px solid var(--color-divider);
+  border-radius: 99px;
+  background: var(--color-card-surface);
+  color: var(--color-neutral-700);
+  flex: 0 0 auto;
+}
+.toolbox-search:focus-within { border-color: var(--color-accent); }
+.toolbox-search-input {
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 0;
+  width: 148px;
+}
+.toolbox-search-input::-webkit-search-cancel-button { display: none; }
+.toolbox-search-clear {
+  display: inline-flex;
+  border: 0;
+  background: none;
+  padding: 2px;
+  cursor: pointer;
+  color: var(--color-neutral-700);
+}
+.toolbox-search-clear:hover { color: var(--color-text); }
+
+.toolbox-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.toolbox-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 11px;
+  border: 1px solid var(--color-divider);
+  border-radius: 99px;
+  background: transparent;
+  color: var(--color-neutral-700);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.toolbox-chip:hover { border-color: var(--color-accent); color: var(--color-accent); }
+/* The :hover rule above is (0,2,0) and would otherwise outrank a plain .toolbox-chip--on,
+   painting the label accent-on-accent — an invisible chip for as long as the pointer stays
+   where it just clicked, which is exactly where it stays. The selected state is spelled out
+   for the hovered case too so it wins on order at equal specificity. */
+.toolbox-chip--on,
+.toolbox-chip--on:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+.toolbox-chip-n { font-size: var(--fs-10); opacity: 0.7; font-variant-numeric: tabular-nums; }
+.toolbox-chip--on .toolbox-chip-n { opacity: 0.85; }
+
+/* The icon is a visual anchor for scanning, not information on its own — the name beside it
+   carries the meaning, so it is hidden from assistive tech rather than given a label that
+   would be read out twice. */
+.toolbox-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--color-neutral-100);
+  color: var(--color-accent);
+}
+.pro-tool-card--locked .toolbox-card-icon { background: var(--color-neutral-100); color: var(--color-neutral-700); }
+.toolbox-card-head .pro-tool-card-title { flex: 1 1 auto; min-width: 0; }
+
+.toolbox-empty, .toolbox-result-note {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 18px 0 0;
+}
+.toolbox-empty { margin-top: 26px; }
+.toolbox-empty-reset {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+.toolbox-empty-reset:hover { text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .toolbox-bar { gap: 7px 8px; margin: 12px 0 2px; }
+  .toolbox-search { flex: 1 1 100%; }
+  .toolbox-search-input { width: auto; flex: 1 1 auto; }
+  .toolbox-card-icon { width: 22px; height: 22px; border-radius: 7px; }
+  /* One scrolling row rather than two wrapped ones. Six chips wrap to two rows on a phone
+     and push the first card most of a screen down, on a page whose point is that you can see
+     what is available. Its own scroll container, so the page body still never scrolls
+     sideways. */
+  .toolbox-chips {
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 1px;
+  }
+  .toolbox-chips::-webkit-scrollbar { display: none; }
+}
+
+/* ── Clinical Toolbox, second pass on the visuals (see components/pro/ToolboxBrowser.tsx) ──
+
+   The page was fifteen filled accent cards and nothing else: the loudest element on the
+   page, repeated until it stopped meaning anything, with no visual rest and the group
+   headings quieter than the content they label. So the emphasis is inverted here — the card
+   goes quiet and the icon carries the accent — which also fixes the icon tile, which was
+   within a few points of the card colour in both themes (#fcfdfe on #dbe7fb light,
+   #1a2136 on #1c2b4c dark) and read as a hole punched in the card rather than a badge.
+
+   Scoped to .toolbox-group throughout. The /pro overview hub uses the same .pro-tool-card
+   with six cards in open space, where a filled card is doing a different job. */
+.toolbox-group .pro-tool-card {
+  background: var(--color-neutral-100);
+  /* Replaces the 3px accent bar the shared card carries. On every one of fifteen cards that
+     bar signalled nothing; its only real job was to grey out for a locked card, a state most
+     readers never see. */
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+}
+.toolbox-group .pro-tool-card:hover { border-color: var(--color-accent-400); }
+.toolbox-group .toolbox-card-icon {
+  background: var(--color-accent-200);
+  color: var(--color-accent);
+}
+/* A locked card stays legible — its description is the reason to subscribe — but drops the
+   colour, so the eye sorts open from locked before it reads a word. */
+.toolbox-group .pro-tool-card--locked { border-color: var(--color-divider); }
+.toolbox-group .pro-tool-card--locked .toolbox-card-icon {
+  background: var(--color-neutral-200, var(--color-divider));
+  color: var(--color-neutral-700);
+}
+/* Cards in a row stretch to the tallest, but the footer sat wherever each description
+   happened to end, so "Open" stepped up and down across a row. */
+.toolbox-group .pro-tool-card-footer { margin-top: auto; }
+
+/* The heading has to read as a level above the grid under it, or the eye lands on the cards
+   and skips the structure the page is built on. */
+.toolbox-group-title { font-size: 17.5px; letter-spacing: -0.01em; }
+.toolbox-group-head { padding-bottom: 8px; }
+/* ============================================================================
+   Limbic Force Lab (/pro/force-lab) — see app/pro/force-lab/page.tsx and
+   components/pro/force-lab/*.tsx. Prefixed .forcelab- throughout, same isolation
+   convention as .clindash- for the Clinician Dashboard. Reuses several .clindash- classes
+   directly where the shapes are identical (.clindash-tab-bar/-tab for the Manual Entry /
+   Import Screenshot tabs, .clindash-inline-form* for small forms, .clindash-region-*-style
+   bars) rather than redeclaring the same rules under a second name.
+   ============================================================================ */
+
+/* Overrides .screen-pad's 900px cap — same reasoning/pattern as .clindash-page and
+   .atlas-page: a three-column layout (240px + flexible center + 260px, see
+   .forcelab-columns below) needs real room, and 900px squeezed the center column down to a
+   couple hundred px regardless of how wide the actual viewport was. .screen-pad still
+   supplies the padding; this only overrides max-width. */
+.forcelab-page { max-width: 1400px; margin: 0 auto; }
+
+.forcelab-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.forcelab-title { font-family: var(--font-heading); font-size: 26px; margin: 0; }
+.forcelab-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 2px 0 0; }
+/* Right side of the header — New Session (always visible, regardless of which tab/session
+   is showing below) plus the existing unit pill. */
+.forcelab-header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.forcelab-unit-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--color-accent-100);
+  color: var(--color-accent);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.forcelab-columns { display: grid; grid-template-columns: 240px minmax(0, 1fr) 260px; gap: 20px; align-items: start; }
+.forcelab-col-history, .forcelab-col-profile { min-width: 0; }
+.forcelab-col-center { min-width: 0; }
+
+@media (max-width: 1000px) {
+  .forcelab-columns { grid-template-columns: 1fr; }
+}
+
+/* — Session History (left column) — */
+.forcelab-filter-row { display: flex; gap: 8px; margin: 10px 0 12px; }
+.forcelab-filter-row .input { font-size: 12px; }
+.forcelab-history-empty { font-size: 12.5px; color: var(--color-neutral-700); }
+.forcelab-history-list { display: flex; flex-direction: column; gap: 8px; }
+.forcelab-history-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.forcelab-history-card:hover { border-color: var(--color-accent); }
+.forcelab-history-card--active { border-color: var(--color-accent); background: var(--color-accent-100); }
+.forcelab-history-card-muscle {
+  font-weight: 700;
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.forcelab-history-card-date { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin: 2px 0 6px; }
+.forcelab-history-card-peaks { display: flex; justify-content: space-between; font-size: var(--fs-11-5); margin-bottom: 6px; }
+.forcelab-history-card-tags { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.forcelab-lsi-pill {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  font-size: var(--fs-10-5);
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .forcelab-history-list { gap: 6px; }
+  .forcelab-history-card { padding: 8px 10px; }
+  .forcelab-history-card-muscle { font-size: 12px; }
+  .forcelab-history-card-date { font-size: var(--fs-10); margin: 1px 0 4px; }
+  .forcelab-history-card-peaks { font-size: var(--fs-11); margin-bottom: 4px; }
+  .forcelab-lsi-pill { padding: 0 6px; font-size: var(--fs-10); }
+}
+
+/* — Main Entry (center column) — */
+.forcelab-entry-layout { display: flex; gap: 18px; align-items: flex-start; }
+.forcelab-entry-fields { flex: 1; min-width: 0; }
+.forcelab-preview-col { flex-shrink: 0; width: 200px; }
+.forcelab-preview-image { width: 200px; border-radius: var(--radius-md); border: 1px solid var(--color-divider); display: block; }
+
+.forcelab-form-section { margin-top: 18px; }
+.forcelab-form-section:first-child { margin-top: 4px; }
+.forcelab-form-section-title { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-700); font-weight: 700; margin-bottom: 8px; }
+.forcelab-form-section-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.forcelab-form-section-title-row .forcelab-form-section-title { margin-bottom: 0; }
+
+.forcelab-unit-toggle { display: flex; border: 1px solid var(--color-divider); border-radius: 999px; overflow: hidden; }
+.forcelab-unit-btn { background: none; border: none; padding: 3px 12px; font-size: var(--fs-11-5); font-weight: 600; cursor: pointer; color: var(--color-neutral-700); }
+.forcelab-unit-btn--active { background: var(--color-accent); color: var(--color-bg); }
+
+.forcelab-measurement-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.forcelab-measurement-col-title { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+.forcelab-measurement-col-title--right { color: var(--color-accent); }
+.forcelab-measurement-col-title--left { color: #c9853a; }
+
+.forcelab-calculated-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  font-size: 12px;
+}
+
+.forcelab-norm-result { margin-top: 10px; font-size: 12px; }
+.forcelab-norm-result p { margin: 0 0 6px; color: var(--color-neutral-700); }
+.forcelab-norm-pill { font-size: 12px; font-weight: 700; }
+.forcelab-norm-none { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin-top: 8px; }
+
+.forcelab-confidence { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 14px 0 0; }
+.forcelab-confidence--low { color: #c9853a; font-weight: 600; }
+.forcelab-review-notice { font-size: var(--fs-11); color: var(--color-neutral-700); font-style: italic; margin: 4px 0 0; }
+
+/* — Import Screenshot tab — */
+.forcelab-import-instructions p { font-size: 13px; margin: 0 0 6px; }
+.forcelab-import-instructions p:last-child { margin-bottom: 0; color: var(--color-neutral-700); }
+.forcelab-upload-zone {
+  margin-top: 14px;
+  border: 2px dashed var(--color-divider);
+  border-radius: var(--radius-lg);
+  padding: 48px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.forcelab-upload-zone:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.forcelab-upload-zone--loading { cursor: default; color: var(--color-accent); }
+
+/* — Loaded session view — */
+.forcelab-session-view-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.forcelab-session-view-title { font-family: var(--font-heading); font-size: 20px; font-weight: 700; line-height: 1.3; margin: 0; }
+.forcelab-session-view-sub { font-size: 12.5px; color: var(--color-neutral-700); margin: 4px 0 0; display: flex; align-items: center; }
+.forcelab-session-view-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+
+.forcelab-force-display { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+.forcelab-force-display-col { padding: 14px; border-radius: var(--radius-md); background: var(--color-surface-2); }
+.forcelab-force-display-label { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+.forcelab-force-display-label--right { color: var(--color-accent); }
+.forcelab-force-display-label--left { color: #c9853a; }
+.forcelab-force-display-value { font-family: var(--font-heading); font-size: 28px; margin-top: 4px; }
+.forcelab-force-display-muted { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 4px; }
+
+.forcelab-session-notes { margin-top: 18px; }
+.forcelab-session-notes p { font-size: 13px; margin: 0; white-space: pre-wrap; }
+
+.forcelab-link-row { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--color-divider); }
+
+@media (max-width: 600px) {
+  .forcelab-force-display { grid-template-columns: 1fr; }
+  .forcelab-measurement-columns { grid-template-columns: 1fr; }
+  .forcelab-entry-layout { flex-direction: column; }
+  .forcelab-preview-col { width: 100%; }
+  .forcelab-preview-image { width: 100%; }
+}
+
+/* — Trend chart (SessionDetailView + the right column's Trends card) — same absolutely-
+   positioned-SVG sizing fix as .clindash-trend-chart-line (see that rule's own comment). */
+.forcelab-trend-wrap { margin-top: 6px; }
+/* display:flex centers a plain (non-absolutely-positioned) child like .forcelab-trend-need
+   -more below — the SVG line and point dots are all position:absolute, so they're unaffected
+   and keep rendering exactly as before when there IS enough data for a real chart. */
+.forcelab-trend-chart { position: relative; height: 90px; overflow: hidden; padding: 4px; display: flex; align-items: center; justify-content: center; }
+.forcelab-trend-line { position: absolute; inset: 0; width: 100%; height: 100%; }
+.forcelab-trend-point { position: absolute; width: 7px; height: 7px; border-radius: 999px; transform: translate(-50%, 50%); }
+.forcelab-trend-point--right { background: var(--color-accent); }
+.forcelab-trend-point--left { background: #c9853a; }
+.forcelab-trend-axis { display: flex; justify-content: space-between; font-size: var(--fs-10); color: var(--color-neutral-700); margin-top: 2px; }
+.forcelab-trend-legend { display: flex; gap: 14px; margin-top: 8px; }
+.forcelab-trend-legend-item { display: flex; align-items: center; gap: 5px; font-size: var(--fs-11); color: var(--color-neutral-700); }
+.forcelab-trend-swatch { width: 8px; height: 8px; border-radius: 999px; }
+.forcelab-trend-swatch--right { background: var(--color-accent); }
+.forcelab-trend-swatch--left { background: #c9853a; }
+.forcelab-trend-need-more { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-style: italic; text-align: center; margin: 0; padding: 0 8px; }
+
+/* — Strength Profile (right column, compact; full-width on the patient session page) — */
+.forcelab-profile-regions { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+.forcelab-profile-regions--full { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.forcelab-profile-region-title { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 8px; }
+.forcelab-profile-empty { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-style: italic; }
+.forcelab-profile-bar-row { margin-bottom: 8px; }
+.forcelab-profile-bar-label { display: flex; justify-content: space-between; font-size: var(--fs-11-5); margin-bottom: 3px; }
+.forcelab-profile-bar-label span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 8px; }
+.forcelab-profile-bar-label span:last-child { font-weight: 700; white-space: nowrap; }
+.forcelab-profile-bar-track { display: block; height: 8px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
+.forcelab-profile-bar-fill { display: block; height: 100%; border-radius: 999px; }
+/* Unilateral entries (one side only, so no LSI) skip the bar entirely — see
+   StrengthProfilePanel.tsx. font-weight set inline on the span itself since
+   .forcelab-profile-bar-label span:last-child above already forces bold. */
+.forcelab-profile-unilateral { color: var(--color-neutral-700); font-size: var(--fs-11); }
+.forcelab-profile-unilateral em { font-style: italic; margin-left: 4px; }
+
+/* — Patient session page (/pro/force-lab/patient/[patientCode]) — */
+.forcelab-patient-history-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 14px; }
+.forcelab-patient-history-table th {
+  text-align: left;
+  font-size: var(--fs-10-5);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-neutral-700);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-divider);
+  white-space: nowrap;
+}
+.forcelab-patient-history-table td { padding: 8px; border-bottom: 1px solid var(--color-divider); white-space: nowrap; }
+.forcelab-patient-history-table-wrap { overflow-x: auto; }
+
+/* — Dashboard integration (components/pro/dashboard/ForceLabSummary.tsx) — a compact
+   session-count-and-most-recent-reading card rather than a scrolling list of every session,
+   since this is one of several sections stacked in the active patient workspace and was
+   previously the tallest one on a caseload with any real Force Lab history. */
+.forcelab-card-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.forcelab-card-kicker { font-size: var(--fs-10); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700); }
+.forcelab-card-patient-code { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.forcelab-card-meta { font-size: 12px; color: var(--color-neutral-700); margin: 4px 0 0; }
+.forcelab-card-empty { font-size: 12.5px; color: var(--color-neutral-700); text-align: center; margin: 10px 0; }
+.forcelab-card-empty-btn { width: 100%; text-align: center; color: var(--color-accent); border-color: var(--color-accent); }
+
+.forcelab-card-divider { border-top: 1px solid var(--color-divider); margin: 10px 0; }
+.forcelab-card-section-label { font-size: var(--fs-10-5); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 6px; }
+.forcelab-card-muscle-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.forcelab-card-columns { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.forcelab-card-values { font-size: 13px; display: flex; flex-direction: column; gap: 2px; }
+.forcelab-card-values div:first-child { color: var(--color-accent); }
+.forcelab-card-values div:last-child { color: var(--color-neutral-700); }
+.forcelab-card-lsi-col { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.forcelab-card-trend { font-size: var(--fs-11); }
+.forcelab-card-trend--stable { color: var(--color-neutral-700); }
+
+.forcelab-card-attention-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 0; }
+.forcelab-card-attention-muscle { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.forcelab-card-attention-tags { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+
+.forcelab-card-actions { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.forcelab-card-action-outline {
+  flex: 1;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.forcelab-card-action-link { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; color: var(--color-accent); }
+
+@media (max-width: 600px) {
+  .forcelab-card-columns { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .forcelab-card-lsi-col { flex-direction: row; align-items: center; }
+  .forcelab-card-actions { flex-direction: column; align-items: stretch; }
+}
+
+/* — Paste Assessment tab (PasteAssessmentPanel.tsx) — */
+.forcelab-paste-textarea { width: 100%; min-height: 200px; margin-top: 12px; resize: vertical; font-family: var(--font-mono, monospace); font-size: 12px; }
+.forcelab-paste-confirmation { font-size: 12.5px; color: var(--color-success); font-weight: 600; margin: 8px 0 0; }
+.forcelab-paste-preview { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 20px; align-items: start; }
+.forcelab-paste-meta-panel { display: flex; flex-direction: column; gap: 0; }
+.forcelab-paste-meta-panel .field { margin-top: 10px; }
+.forcelab-paste-meta-panel .field:first-child { margin-top: 0; }
+.forcelab-paste-table-panel { min-width: 0; }
+.forcelab-inline-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.forcelab-automatch-note { font-size: var(--fs-11); color: var(--color-success); font-weight: 600; margin: 4px 0 0; }
+.forcelab-unrecognized-note { font-size: var(--fs-10-5); color: #c9853a; font-weight: 600; margin-top: 2px; }
+.forcelab-row-count { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 8px 0 0; }
+.forcelab-paste-disclaimer { font-size: var(--fs-10-5); color: var(--color-neutral-700); font-style: italic; margin: 10px 0 0; }
+
+@media (max-width: 900px) {
+  .forcelab-paste-preview { grid-template-columns: 1fr; }
+}
+
+/* — Past Results section (PastResultsSection.tsx / AssessmentExpandedView.tsx /
+   AssessmentComparisonView.tsx) — full-width, below the three-column workspace. Reuses
+   .forcelab-patient-history-table for every table in this group rather than a fourth
+   near-identical table style. */
+.forcelab-results-section { margin-top: 20px; }
+.forcelab-compare-hint { font-size: 12px; color: var(--color-accent); margin: 4px 0 10px; }
+.forcelab-results-row--selected { background: var(--color-accent-100); }
+.forcelab-results-actions { display: flex; gap: 6px; white-space: nowrap; }
+
+.forcelab-expanded-view { padding: 14px 4px; }
+.forcelab-expanded-meta-bar { display: flex; flex-wrap: wrap; gap: 8px; }
+.forcelab-meta-pill {
+  display: inline-block; padding: 3px 10px; border-radius: 999px; background: var(--color-surface-2);
+  font-size: var(--fs-11-5); color: var(--color-neutral-700);
+}
+.forcelab-expanded-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-divider); }
+.forcelab-patient-pill {
+  display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--color-accent-100);
+  color: var(--color-accent); font-size: 12px; font-weight: 700;
+}
+
+.forcelab-change--up { color: var(--color-success); font-weight: 700; }
+.forcelab-change--down { color: var(--color-danger); font-weight: 700; }
+.forcelab-change--muted { color: var(--color-neutral-700); }
+
+.forcelab-ai-card { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--color-divider); }
+.forcelab-ai-card-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+.forcelab-ai-generated-label { font-size: var(--fs-10-5); color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.03em; }
+.forcelab-ai-text { font-size: 13px; line-height: 1.6; background: var(--color-surface-2); border-radius: var(--radius-md); padding: 12px 14px; margin: 0; }
+.forcelab-ai-disclaimer { font-size: var(--fs-10-5); color: var(--color-neutral-700); font-style: italic; margin: 8px 0 0; }
+
+@media (max-width: 600px) {
+  .forcelab-expanded-meta-bar { flex-direction: column; align-items: flex-start; }
+}
+
+/* — Patient session page's Full Assessments cards (PatientAssessmentCard.tsx) and
+   cross-assessment trend charts (ForceLabAssessmentTrendChart.tsx) — */
+.forcelab-assessment-summary-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.forcelab-assessment-summary-card { padding: 12px 14px; border: 1px solid var(--color-divider); border-radius: var(--radius-md); }
+.forcelab-assessment-summary-top { display: flex; align-items: baseline; gap: 10px; }
+.forcelab-assessment-summary-date { font-weight: 700; font-size: 13.5px; }
+.forcelab-assessment-summary-count { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.forcelab-assessment-summary-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.forcelab-assessment-summary-more { font-size: var(--fs-10-5); color: var(--color-neutral-700); align-self: center; }
+.forcelab-assessment-summary-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+.forcelab-assessment-trends-section { margin-top: 20px; }
+.forcelab-assessment-trends-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.forcelab-assessment-trend-card { padding: 14px; }
+.forcelab-assessment-trend-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.forcelab-trend-swatch--lsi { border-radius: 2px; }
+
+@media (max-width: 800px) {
+  .forcelab-assessment-trends-grid { grid-template-columns: 1fr; }
+}
+
+/* — Patient brief print document's Strength Measurements section — */
+.pbrief-forcelab-title { font-size: 14px; font-weight: 700; color: #3b6fe0; margin-bottom: 8px; }
+.pbrief-forcelab-row { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; padding: 4px 0; border-bottom: 1px solid #eee; }
+.pbrief-forcelab-note { font-size: var(--fs-10-5); color: #666; margin-top: 6px; font-style: italic; }
+
+/* — Force Lab single-assessment print document's muscle-group table (see
+   app/pro/force-lab/assessment/[assessmentId]/print/page.tsx) — same literal-hex,
+   theme-independent approach as every other patient-brief/pbrief rule in this block, for
+   the same reason: this document must look identical no matter the clinician's own theme.
+   LSI color is applied inline per-cell (varies per row), not via a class. */
+.pbrief-assessment-table { width: 100%; border-collapse: collapse; font-size: var(--fs-11); }
+.pbrief-assessment-table th {
+  text-align: left; font-size: var(--fs-9-5); text-transform: uppercase; letter-spacing: 0.03em;
+  color: #666; padding: 5px 6px; border-bottom: 1px solid #ccc; white-space: nowrap;
+}
+.pbrief-assessment-table td { padding: 6px; border-bottom: 1px solid #eee; white-space: nowrap; }
+
+/* — Force Lab print page's Clinical/Patient report toggle (ForceLabAssessmentPrintTopbar.tsx)
+   — a plain segmented control living inside the existing dark .patient-brief-topbar, so it
+   uses the topbar's own white-on-dark palette rather than the app's --color-* tokens (same
+   reasoning as every other rule in this print-document block). */
+.pbrief-report-toggle { display: flex; gap: 2px; background: rgba(255, 255, 255, 0.12); border-radius: var(--radius-md); padding: 2px; }
+.pbrief-report-toggle-btn {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: calc(var(--radius-md) - 2px);
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+}
+.pbrief-report-toggle-btn--active { background: #fff; color: #1a1a1a; }
+.pbrief-topbar-actions { display: flex; align-items: center; gap: 10px; }
+.pbrief-patient-generate-error { background: #1a1a1a; color: #ff8a8a; font-size: 12px; text-align: center; margin: 0; padding: 6px 20px; }
+
+@media print {
+  .pbrief-report-toggle,
+  .pbrief-patient-generate-error { display: none !important; }
+}
+
+/* The topbar was built for two items (back link, print button); the report toggle and
+   Generate Summary button pushed it past what a phone-width row can hold without every
+   child squeezing down to a multi-line sliver — stack everything into its own full-width
+   row instead once it can't fit on one line. */
+@media (max-width: 700px) {
+  .patient-brief-topbar { flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px 14px; }
+  .patient-brief-topbar > a { order: 1; }
+  .pbrief-report-toggle { order: 3; width: 100%; justify-content: center; }
+  .pbrief-topbar-actions { order: 2; width: 100%; justify-content: center; flex-wrap: wrap; }
+}
+
+/* ============================================================================
+   Force Lab assessment print page's Patient Report tab (ForceLabPatientReportBody.tsx) —
+   plain-language sibling to the Clinical Report above, sharing its .patient-brief-doc/
+   .patient-brief-header/-clinic-name/-tagline shell and the same literal-hex,
+   theme-independent approach (this document must look identical regardless of the
+   clinician's own theme). Everything below is specific to this tab's own layout: the title
+   row, AI summary, per-muscle-group strength-bar cards, and focus-areas/meaning sections.
+   ============================================================================ */
+
+.pbrief-patient-title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 4px; }
+.pbrief-patient-title { font-size: 22px; margin: 0; }
+.pbrief-patient-title-date { font-size: 13px; color: #666; white-space: nowrap; }
+.pbrief-patient-prepared-by { font-size: 13px; color: #666; margin: 4px 0 0; }
+.pbrief-patient-name-line { font-size: 13px; margin: 12px 0 0; }
+.pbrief-patient-rule { border: none; border-top: 1px solid #ddd; margin: 12px 0; }
+
+.pbrief-patient-section { break-inside: avoid; page-break-inside: avoid; }
+.pbrief-patient-section-title { font-size: 15px; font-weight: 700; color: #3b6fe0; margin: 0 0 8px; }
+.pbrief-patient-subtitle { font-size: 12.5px; color: #666; line-height: 1.6; margin: 0 0 10px; }
+.pbrief-patient-summary-text { font-size: 13px; line-height: 1.7; margin: 0; white-space: pre-wrap; }
+.pbrief-patient-summary-placeholder {
+  font-size: 12.5px;
+  color: #888;
+  font-style: italic;
+  background: #f5f5f3;
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin: 0;
+}
+
+/* border-left-color is set inline per card (see ForceLabPatientReportBody.tsx) from the
+   same plainLSIColor the symmetry pill already uses, so the page reads by color before a
+   patient reads a single word of it — transparent for a unilateral card, which has no
+   symmetry score to color-code by. */
+.pbrief-muscle-card { break-inside: avoid; page-break-inside: avoid; padding: 8px 0 8px 14px; border-left: 4px solid transparent; }
+.pbrief-muscle-card-name { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.pbrief-muscle-card-rule { border: none; border-top: 1px solid rgba(221, 221, 221, 0.4); margin: 0; }
+
+.pbrief-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 12px; }
+.pbrief-bar-label { width: 40px; flex-shrink: 0; color: #666; }
+.pbrief-bar-track { flex: 1; background: #eee; border-radius: 5px; height: 10px; overflow: hidden; }
+.pbrief-bar-fill { display: block; height: 10px; border-radius: 5px; }
+.pbrief-bar-fill--left { background: #3b6fe0; }
+.pbrief-bar-fill--right { background: #c9853a; }
+.pbrief-bar-value { width: 48px; flex-shrink: 0; text-align: right; font-size: 12px; }
+
+.pbrief-symmetry-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.pbrief-symmetry-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; font-size: var(--fs-11-5); font-weight: 700; }
+.pbrief-patient-norm { font-size: var(--fs-11-5); color: #666; }
+
+/* — Overall Strength Summary card (between the header and Your Results at a Glance) — a
+   quick three-bucket roll-up, coarser than the per-muscle-group pill's five-tier scale
+   (see plainLSILabel): Excellent/Good both read green here, anything under the Areas to
+   Work On threshold reads red as "Needs attention", so the patient gets one glance at the
+   overall picture before the per-muscle-group detail below. */
+.pbrief-overview-card { background: #f5f5f3; border-radius: 8px; padding: 14px 18px; }
+.pbrief-overview-title { font-size: 13px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 8px; }
+.pbrief-overview-tested { font-size: 12.5px; color: #555; margin-bottom: 8px; }
+.pbrief-overview-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 2px 0; }
+.pbrief-overview-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.pbrief-overview-dot--green { background: #16a34a; }
+.pbrief-overview-dot--red { background: #dc2626; }
+.pbrief-overview-count { font-weight: 700; }
+
+.pbrief-focus-item { padding: 7px 0; border-bottom: 1px solid #eee; }
+.pbrief-focus-muscle { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+.pbrief-focus-sentence { font-size: 12.5px; color: #444; line-height: 1.55; margin: 0; }
+
+.pbrief-patient-bullets { font-size: 12.5px; line-height: 1.6; margin: 0 0 12px; padding-left: 20px; }
+.pbrief-next-steps-title { font-size: 13px; font-weight: 700; margin: 12px 0 6px; }
+.pbrief-patient-contact { font-size: 12.5px; margin: 0 0 2px; }
+.pbrief-patient-summary-recap { background: #f5f5f3; border-radius: 6px; padding: 12px 14px; margin-bottom: 4px; }
+
+.pbrief-patient-footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 20px; padding-top: 12px; border-top: 1px solid #ddd; font-size: var(--fs-10); color: #777; }
+
+/* — Screen-only "summary not generated" gate above the Patient Report (see
+   ForceLabAssessmentPrintView.tsx) — same amber as FORCE_LAB_AMBER used throughout this
+   report's bars/pills, literal hex like every other rule in this print-document family. */
+.pbrief-summary-warning {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 750px;
+  margin: 14px auto 0;
+  padding: 12px 16px;
+  background: #fdf1e0;
+  border: 1px solid #e8b567;
+  border-left: 4px solid #c9853a;
+  border-radius: 6px;
+  color: #7a4a1a;
+}
+.pbrief-summary-warning-icon { flex-shrink: 0; color: #c9853a; }
+.pbrief-summary-warning-text { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; line-height: 1.5; }
+.pbrief-summary-warning-title { font-weight: 700; font-size: 13px; }
+.pbrief-summary-warning button { flex-shrink: 0; }
+
+@media (max-width: 600px) {
+  .pbrief-patient-title-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .pbrief-bar-label { width: 36px; }
+  .pbrief-patient-footer { flex-direction: column; gap: 4px; }
+  .pbrief-summary-warning { flex-direction: column; align-items: flex-start; }
+}
+
+@media print {
+  .pbrief-summary-warning { display: none !important; }
+}
+
+@media print {
+  .pbrief-muscle-card { break-inside: avoid; page-break-inside: avoid; }
+}
+
+/* Non-affiliation note on the Force Lab import panels (see PasteAssessmentPanel.tsx).
+   Quieter than the surrounding instructions but not hidden — it exists to correct an
+   impression, so it has to be readable. Appended, scoped, overrides nothing. */
+.forcelab-import-affiliation {
+  font-size: var(--fs-11-5);
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  margin-top: 10px;
+}
+
+/* 3-Rep-Max card (ThreeRepMaxCard.tsx) — shares .forcelab-card-* shell/header/divider/
+   actions classes with ForceLabSummary.tsx (same card type, different data source), these
+   are the pieces unique to it: one row per lift, a colored strength-level pill, and the
+   "X lbs to next level" hint. */
+.trm-lift-list { display: flex; flex-direction: column; gap: 10px; }
+.trm-lift-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.trm-lift-row--empty { opacity: 0.6; }
+.trm-lift-name { font-size: 13px; font-weight: 700; }
+.trm-lift-value { font-size: 12.5px; color: var(--color-neutral-700); }
+.trm-lift-meta { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
+.trm-lift-standing { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.trm-level-badge {
+  font-size: var(--fs-11);
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+.trm-next-level { font-size: var(--fs-10-5); color: var(--color-neutral-700); white-space: nowrap; }
+
+/* Home Exercise Program's "current HEP" display (HEPSection.tsx) — the most recent
+   PatientHEPAssignment, shown with its exercise list, above the collapsed .clindash-hep-item
+   history list that already existed. */
+.clindash-hep-current {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+}
+.clindash-hep-current-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.clindash-hep-current-name { font-size: 14px; font-weight: 700; }
+.clindash-hep-history { margin-top: 10px; font-size: 12.5px; }
+.clindash-hep-history summary { cursor: pointer; color: var(--color-neutral-700); font-weight: 600; }
+.clindash-hep-history summary::marker { color: var(--color-neutral-700); }
+
+/* Session Exercises (SessionExerciseSection.tsx) — one entry per logged visit, same
+   border-top divider rhythm as .clindash-note-item. */
+.clindash-session-exercise-item { padding: 10px 0; border-top: 1px solid var(--color-divider); }
+.clindash-session-exercise-item:first-child { border-top: none; }
+
+/* Exercise list editor/display shared by HEPSection.tsx and SessionExerciseSection.tsx (see
+   components/pro/dashboard/HepExerciseList.tsx) — a compact sibling of HepBuilder's own
+   exercise rows (see components/HepBuilder.tsx), scoped to name/sets/reps/weight/notes.
+   Each row is two stacked lines (name+remove, then the dosage fields) rather than one wide
+   grid row, both so the name field has room for the autocomplete dropdown below it and so
+   the row doesn't get too cramped once weight joined sets/reps/notes. */
+.hep-exercise-editor { display: flex; flex-direction: column; gap: 10px; }
+.hep-exercise-editor-row { display: flex; flex-direction: column; gap: 6px; }
+.hep-exercise-editor-name-row { display: flex; align-items: flex-start; gap: 6px; }
+.hep-exercise-editor-name-row > .hep-exercise-name-field { flex: 1; }
+.hep-exercise-editor-dosage-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr 2fr;
+  gap: 6px;
+}
+.hep-exercise-editor-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-neutral-700);
+  display: flex;
+  padding: 8px 4px;
+  flex-shrink: 0;
+}
+.hep-exercise-editor-remove:hover { color: var(--color-danger); }
+.hep-exercise-display { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.hep-exercise-display li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; font-size: 12.5px; }
+.hep-exercise-display-name { font-weight: 600; }
+.hep-exercise-display-dosage { color: var(--color-accent); font-size: var(--fs-11-5); }
+.hep-exercise-display-notes { color: var(--color-neutral-700); font-size: var(--fs-11-5); }
+.hep-exercise-display-empty { font-size: 12px; color: var(--color-neutral-700); margin: 0; }
+@media (max-width: 700px) {
+  .hep-exercise-editor-dosage-row { grid-template-columns: 1fr 1fr; }
+}
+
+/* Exercise-name autocomplete + "request to add" (ExerciseNameField in HepExerciseList.tsx) —
+   a small absolutely-positioned dropdown under the name input, since the editor row it lives
+   in has no room to push content down without reflowing every other row in the list. */
+.hep-exercise-name-field { position: relative; }
+.hep-exercise-autocomplete {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  margin-top: 2px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.hep-exercise-autocomplete-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--color-divider);
+  cursor: pointer;
+  text-align: left;
+  font-size: 13.5px;
+  line-height: 1.3;
+}
+.hep-exercise-autocomplete-row:first-child { border-top: none; }
+/* Not just var(--color-neutral-100) — that's nearly indistinguishable from
+   var(--color-surface) in dark mode, so a hovered row looked identical to its neighbors. */
+.hep-exercise-autocomplete-row:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
+.hep-exercise-autocomplete-name { font-weight: 600; }
+.hep-exercise-autocomplete-region {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+.hep-exercise-autocomplete-request {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+.hep-exercise-autocomplete-request:hover { background: var(--color-neutral-100); }
+/* Shown instead of the request button above for a licensed-but-not-pro clinician (see
+   ExerciseNameField's isPro gate in HepBuilder.tsx) — requestMovementLabExercise itself is
+   isPro-gated, so a request button here would just fail silently for that account. */
+.hep-exercise-autocomplete-empty { padding: 8px 10px; margin: 0; font-size: 12px; font-style: italic; color: var(--color-neutral-700); }
+.hep-exercise-request-form {
+  margin-top: 6px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.hep-exercise-request-actions { display: flex; gap: 8px; }
+.hep-exercise-request-sent { font-size: 12px; color: var(--color-accent); margin: 6px 0 0; }
+
+/* Session Exercises' Progression disclosure (SessionExerciseSection.tsx) — per-exercise
+   trend built from the same logged sessions the history list above already shows, not a
+   separate fetch. */
+.clindash-progression-row { padding: 10px 0; border-top: 1px solid var(--color-divider); }
+.clindash-progression-row:first-child { border-top: none; }
+.clindash-progression-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.clindash-progression-name { font-size: 13px; font-weight: 700; }
+.clindash-progression-points { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.clindash-progression-point { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+
+/* "vs. ages 30–39" line on the 3-Rep-Max card (ThreeRepMaxCard.tsx) — sits between the
+   strength-level badge and the "X lbs to next level" hint, same muted small-text treatment
+   as .trm-next-level. */
+.trm-age-bracket { font-size: var(--fs-10-5); color: var(--color-neutral-700); white-space: nowrap; }
+

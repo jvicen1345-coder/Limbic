@@ -1,3 +1,9 @@
+import "@/styles/shell.css";
+import "@/styles/tour.css";
+import "@/styles/screens.css";
+import "@/styles/calendar.css";
+import "@/styles/streaks.css";
+import "@/styles/onboarding.css";
 import { redirect } from "next/navigation";
 import { getCurrentUser, hasStudentAccess, hasLicenseAccess, isAdminEmail } from "@/lib/session";
 import { SPECIALTY_META } from "@/lib/meta";

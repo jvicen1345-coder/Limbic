@@ -1,7 +1,15 @@
 import { test, expect } from "@playwright/test";
-import { PLAYBOOKS, playbookChecklist, playbookChecklistRows, type PlaybookBlock } from "@/lib/playbook-content";
-import { parsePlaybookInline } from "@/lib/playbook-inline";
 import { playbookTaughtCells } from "@/lib/playbook-taught";
+import {
+  ALL_PLAYBOOKS,
+  PLAYBOOKS,
+  UNVERIFIED_PLAYBOOKS,
+  playbookChecklist,
+  playbookChecklistRows,
+  type PlaybookBlock,
+} from "@/lib/playbook-content";
+import { parsePlaybookInline } from "@/lib/playbook-inline";
+import { GUIDES, guideHref } from "@/lib/guides";
 import { grantLimbicStudent, signUpAndEnterApp } from "./helpers";
 
 /**
@@ -16,7 +24,7 @@ import { grantLimbicStudent, signUpAndEnterApp } from "./helpers";
  */
 
 function everyBlock(): { playbook: string; section: string; block: PlaybookBlock }[] {
-  return PLAYBOOKS.flatMap((playbook) =>
+  return ALL_PLAYBOOKS.flatMap((playbook) =>
     playbook.sections.flatMap((section) =>
       section.blocks.map((block) => ({ playbook: playbook.slug, section: section.id, block })),
     ),
@@ -25,14 +33,14 @@ function everyBlock(): { playbook: string; section: string; block: PlaybookBlock
 
 test.describe("Playbook content", () => {
   test("checklist item ids are unique within a playbook", () => {
-    for (const playbook of PLAYBOOKS) {
+    for (const playbook of ALL_PLAYBOOKS) {
       const ids = playbookChecklist(playbook).map((item) => item.id);
       expect(new Set(ids).size, `duplicate checklist id in ${playbook.slug}`).toBe(ids.length);
     }
   });
 
   test("section ids are unique within a playbook", () => {
-    for (const playbook of PLAYBOOKS) {
+    for (const playbook of ALL_PLAYBOOKS) {
       const ids = playbook.sections.map((section) => section.id);
       expect(new Set(ids).size, `duplicate section id in ${playbook.slug}`).toBe(ids.length);
     }
@@ -65,7 +73,7 @@ test.describe("Playbook content", () => {
 
   test("inline markup leaves no unclosed delimiters", () => {
     const strings: string[] = [];
-    for (const playbook of PLAYBOOKS) {
+    for (const playbook of ALL_PLAYBOOKS) {
       strings.push(playbook.summary, playbook.footer);
       for (const { block } of everyBlock()) {
         if (block.kind === "lede" || block.kind === "footnote") strings.push(block.text);
@@ -176,7 +184,7 @@ test.describe("Playbook page", () => {
       await expect(boxes.first()).toBeChecked();
       await expect(page.locator(".playbook-progress span").first()).toHaveText(`1 / ${items.length}`);
 
-      // The jump nav wraps above 900px (globals.css) precisely so a playbook with many
+      // The jump nav wraps above 900px (src/styles) precisely so a playbook with many
       // sections doesn't hide its last entries behind a sideways scroll — the failure the
       // hip playbook's 15 sections hit before that rule existed.
       const nav = await page.locator(".playbook-navrow").evaluate((el) => [el.scrollWidth, el.clientWidth]);
@@ -263,13 +271,12 @@ test.describe("Playbook recall", () => {
   }
 });
 
-/** The taught lane (components/playbook/PlaybookTaught.tsx). Only the shoulder is exercised
- *  in the browser: the lane hangs off every maskable cell of every playbook by the same code
- *  path, so a second region would re-test the same thing at the cost of another sign-up. What
- *  is worth checking per playbook is the id map below, which is data. */
+/** The taught lane's cell inventory (lib/playbook-taught.ts). Data only — the browser half
+ *  needs a published playbook and there are none while every region is being verified — but
+ *  it runs over the withheld ones too, so their ids stay sound until they come back. */
 test.describe("Playbook taught lane", () => {
   test("every taught cell has a unique id and something to label it with", () => {
-    for (const playbook of PLAYBOOKS) {
+    for (const playbook of ALL_PLAYBOOKS) {
       const cells = playbookTaughtCells(playbook);
       expect(cells.length, `no taught cells in ${playbook.slug}`).toBeGreaterThan(0);
       const ids = cells.map((cell) => cell.id);
@@ -279,58 +286,6 @@ test.describe("Playbook taught lane", () => {
         expect(cell.id, `malformed taught cell id in ${playbook.slug}`).toMatch(/^[^|]+\|c\d+\|r\d+$/);
       }
     }
-  });
-
-  test("opens a line under every cell, keeps what is typed, and stays out of recall's way", async ({ page }) => {
-    const email = `pw-taught-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
-    await signUpAndEnterApp(page, email);
-    await grantLimbicStudent(email);
-    await page.goto("/student/playbooks/hip");
-    await expect(page.getByRole("heading", { name: "Hip Examination Playbook" })).toBeVisible();
-
-    // Nothing is open, nothing is filled, and the bar stays down until one or the other.
-    const toggle = page.locator(".playbook-taught-toggle");
-    await expect(toggle).toHaveText("Taught");
-    await expect(page.locator(".playbook-taught-input")).toHaveCount(0);
-    await expect(page.locator(".playbook-taughtbar")).toHaveCount(0);
-
-    // The switch opens a lane on every maskable cell at once — the same cells recall blanks.
-    await toggle.click();
-    await expect(page.locator(".playbook-taughtbar")).toBeVisible();
-    const taughtCells = playbookTaughtCells(PLAYBOOKS.find((p) => p.slug === "hip")!).length;
-    await expect(page.locator(".playbook-taught-input")).toHaveCount(taughtCells);
-
-    // A line commits when the reader moves on, and the guide's own text is untouched by it.
-    const checklist = page.locator("#checklist");
-    const firstRow = checklist.locator("tbody tr:not(.playbook-row-group)").first();
-    const finding = firstRow.locator("td").last();
-    const before = (await finding.locator(".playbook-maskwrap").innerText()).trim();
-    await finding.locator(".playbook-taught-input").fill("Our program marks the cervical screen as optional.");
-    await page.locator("h1").click();
-    await expect(toggle).toHaveText("Taught (1)");
-    expect((await finding.locator(".playbook-maskwrap").innerText()).trim()).toBe(before);
-
-    // Closed, the empty lanes go and the filled one stays — a note is part of the page.
-    await toggle.click();
-    await expect(page.locator(".playbook-taught-input")).toHaveCount(0);
-    await expect(page.locator(".playbook-taught-set")).toHaveCount(1);
-
-    // And it survives a reload, because that is the whole point of writing it down.
-    await page.reload();
-    await expect(page.locator(".playbook-taught-set")).toContainText("Our program marks the cervical screen as optional.");
-
-    // Blanked for recall, the reader's own line goes with the answer — it would give it away.
-    await page.locator(".playbook-recall-toggle").click();
-    await expect(finding).toHaveClass(/playbook-mask-on/);
-    await expect(page.locator(".playbook-taught-set")).toHaveCount(0);
-    await finding.locator("button.playbook-maskwrap").click();
-    await expect(page.locator(".playbook-taught-set")).toHaveCount(1);
-
-    // Clearing empties every lane at once, and the count goes with them.
-    await page.locator(".playbook-recall-toggle").click();
-    await page.locator(".playbook-taughtbar button", { hasText: "Clear my lines" }).click();
-    await expect(page.locator(".playbook-taught-set")).toHaveCount(0);
-    await expect(toggle).toHaveText("Taught");
   });
 });
 
@@ -347,16 +302,11 @@ test.describe("Playbook access", () => {
     await expect(page.getByText("LimbicStudent Required")).toBeVisible();
     await expect(page.locator(".playbook-hub-card")).toHaveCount(0);
 
-    // A direct link to one playbook upsells rather than dead-ends, and still renders none
-    // of the guide itself.
-    await page.goto("/student/playbooks/hip");
-    await expect(page.getByRole("link", { name: "Upgrade to LimbicStudent" })).toBeVisible();
-    await expect(page.locator(".playbook-check-table")).toHaveCount(0);
-
-    // And the moment they subscribe, both open.
+    // And the moment they subscribe, the hub opens.
     await grantLimbicStudent(email);
-    await page.goto("/student/playbooks/hip");
-    await expect(page.locator(".playbook-check-table")).toBeVisible();
+    await page.goto("/student/playbooks");
+    await expect(page.getByRole("heading", { name: "Playbooks" })).toBeVisible();
+    await expect(page.getByText("LimbicStudent Required")).toHaveCount(0);
   });
 });
 
@@ -433,4 +383,80 @@ test("the served guide links back into Limbic", async ({ page }) => {
   await page.getByRole("link", { name: /Limbic/ }).first().click();
   await page.waitForURL(/\/student\/playbooks$/);
   await expect(page.getByRole("heading", { name: "Playbooks" })).toBeVisible();
+});
+
+
+/** The four regions that were withheld for citing nothing are now served HTML guides built
+ *  from traced sources (lib/guides.ts). Three regressions are worth catching: the files
+ *  falling out of the serverless bundle, which would 500 in production and never locally;
+ *  the gate coming off, which would publish a paid asset; and a hub card claiming a count
+ *  the document does not have.
+ *
+ *  Parameterized over GUIDES, so a new guide is covered by being added to the registry. The
+ *  shoulder is in that registry too and is served by its own handler next door — a static
+ *  segment wins over the dynamic one — so this exercises both routes. */
+test.describe("Served guides", () => {
+  test("the unsourced originals are gone from the data", () => {
+    expect(UNVERIFIED_PLAYBOOKS, "withheld playbooks were deleted, not re-published").toEqual([]);
+    expect(PLAYBOOKS, "no data playbook is published; the guides are served from content/").toEqual([]);
+  });
+
+  test("every guide is gated, served whole, and matches the counts its card claims", async ({ page }) => {
+    const email = `pw-guides-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+    await signUpAndEnterApp(page, email);
+
+    // A .edu sign-in alone is not enough, and the miss is a 404 rather than a redirect —
+    // there is nothing here to upsell, the hub does that.
+    for (const guide of GUIDES) {
+      const locked = await page.request.get(guideHref(guide));
+      expect(locked.status(), `${guide.slug} is readable without a subscription`).toBe(404);
+    }
+
+    // An unknown slug stays a 404 even for a subscriber, so the allowlist cannot be walked.
+    await grantLimbicStudent(email);
+    const bogus = await page.request.get("/student/guides/elbow-examination");
+    expect(bogus.status()).toBe(404);
+    const traversal = await page.request.get("/student/guides/..%2F..%2Fpackage.json");
+    expect(traversal.status(), "the slug reaches the filesystem").not.toBe(200);
+
+    for (const guide of GUIDES) {
+      const open = await page.request.get(guideHref(guide));
+      expect(open.status(), `${guide.slug} does not open for a subscriber`).toBe(200);
+      expect(open.headers()["content-type"]).toContain("text/html");
+      // Entitlement is per-request, so no shared cache may hold a copy.
+      expect(open.headers()["cache-control"]).toContain("no-store");
+
+      await page.goto(guideHref(guide));
+      // The card's numbers are the document's numbers, or the card is lying.
+      await expect(page.locator("main section[id]"), `${guide.slug} sections`).toHaveCount(guide.sections);
+      await expect(page.locator("input[data-ck]"), `${guide.slug} exam items`).toHaveCount(guide.items);
+      await expect(page.locator("#refs li"), `${guide.slug} references`).toHaveCount(guide.references);
+
+      // Every citation resolves to a reference entry. This is the whole reason these four
+      // were withheld and rebuilt, so it is the one assertion that must not be softened.
+      const cites = await page.evaluate(
+        () => (window as unknown as { playbookCites?: { linked: number; unlinked: string[] } }).playbookCites,
+      );
+      expect(cites?.unlinked, `${guide.slug} has citations resolving to nothing`).toEqual([]);
+      expect(cites?.linked, `${guide.slug} linked citations`).toBeGreaterThan(100);
+
+      // The checklist ticks and the progress bar counts them — it reads "0 / 0" and sets a
+      // NaN width if the checkbox column is ever dropped from the markup again.
+      await page.locator("input[data-ck]").first().check();
+      await expect(page.locator("#ckcount")).toHaveText(`1 / ${guide.items}`);
+    }
+  });
+
+  test("the hub lists every guide, and no withdrawal note", async ({ page }) => {
+    const email = `pw-hub-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+    await signUpAndEnterApp(page, email);
+    await grantLimbicStudent(email);
+
+    await page.goto("/student/playbooks");
+    await expect(page.locator(".playbook-hub-card")).toHaveCount(GUIDES.length);
+    await expect(page.locator(".playbook-hub-note")).toHaveCount(0);
+    for (const guide of GUIDES) {
+      await expect(page.locator(".playbook-hub-card-name", { hasText: guide.name })).toBeVisible();
+    }
+  });
 });

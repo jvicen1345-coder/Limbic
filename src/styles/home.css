@@ -1,0 +1,259 @@
+/* — Home hero card's photo-led layout (see components/ArticleCard.tsx HeroArticleCard) —
+   evidence/read-time/date/save sit directly on the image; title/source sit in normal flow
+   right below it (not overlaid — see .hero-card-title below for why), then the summary. */
+.hero-card-media {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  height: 320px;
+  overflow: hidden;
+  background: var(--color-neutral-200);
+}
+.hero-card-topleft, .hero-card-topright {
+  position: absolute;
+  top: 14px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-card-topleft { left: 14px; }
+.hero-card-topright { right: 14px; }
+.hero-card-meta-pill {
+  font-size: var(--fs-11-5);
+  color: #fff;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+/* SaveButton's own hit target is already a circle (see .btn-icon) — this just gives it a
+   scrim to sit on so it stays legible over any photo, light or dark. */
+.hero-card-save-wrap {
+  display: flex;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.4);
+}
+.hero-card-save-wrap .btn-ghost { color: #fff; }
+.hero-card-save-wrap .btn-ghost:hover { background: rgba(255, 255, 255, 0.18); }
+.hero-card-title {
+  font-family: var(--font-heading);
+  /* var(--font-heading-weight), not a hardcoded 800 — see the h1-h6 rule near the top of
+     this file for why heading weight always goes through the token. */
+  font-weight: var(--font-heading-weight);
+  font-size: 22px;
+  line-height: 1.25;
+  color: var(--color-text);
+  /* Used to sit bottom-anchored on top of the fixed-height photo above, which meant a long
+     title just grew upward past the photo's top edge and got hard-clipped mid-letter by
+     its overflow: hidden — clamped to 3 lines with an ellipsis to avoid that. Now in normal
+     document flow below the photo instead, so it can wrap to however many lines it actually
+     needs — no more clamp, no more cut-off titles, at the cost of a slightly taller card for
+     a long one. */
+}
+.hero-card-source {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.hero-card-source-sep { opacity: 0.6; }
+@media (max-width: 799px) {
+  .hero-card-media { min-height: 240px; height: 240px; }
+  .hero-card-title { font-size: 19px; }
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-neutral-300);
+  overflow: hidden;
+}
+.progress-bar-fill { height: 100%; border-radius: 999px; background: var(--color-accent); }
+
+/* — Daily PT Dashboard (see components/DailyDashboard.tsx) — */
+.dashboard-metrics-row {
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+/* Deliberately NOT .card's saturated blue — this is utility chrome (today's numbers),
+   not a content card like the hero/article cards right below it. A quieter, bordered
+   neutral tile keeps the two visually distinct instead of blurring into one wall of blue. */
+.dashboard-metric-tile {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  /* ~20% over the old 12px/14px, same ratio as .card's own padding bump. */
+  padding: 15px 17px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-200);
+}
+.dashboard-metric-tile .card-kicker {
+  /* A step darker than the neutral-700 every other .card-kicker uses — small (9.5px) and
+     all-caps compounds low contrast into genuinely hard to read, more than the rest of
+     this app's kicker labels tend to be. */
+  color: var(--color-neutral-800);
+  font-size: var(--fs-9-5);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dashboard-metric-value {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 21px;
+  line-height: 1.15;
+  color: var(--color-text);
+}
+/* The zero-count state for Studies/Guidelines (see DailyDashboard.tsx's
+   upToDateWhenZero) — deliberately smaller and lighter than .dashboard-metric-tile's
+   own .card-kicker label above it, so it reads as a quiet aside rather than competing
+   with the label or the bold counts on neighboring tiles. */
+.dashboard-metric-uptodate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-neutral-500);
+}
+.dashboard-metric-uptodate span { color: #1f9d5e; }
+/* Day streak/Unfinished's own zero-state (see DailyDashboard.tsx's zeroMessage/zeroIcon) —
+   same quiet, muted treatment as .dashboard-metric-uptodate above, just without that one's
+   hardcoded green (a checkmark reading "up to date" earns green; "start your streak
+   today" isn't a status to celebrate the same way, just a nudge). */
+.dashboard-metric-zero {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-neutral-500);
+}
+@media (max-width: 799px) {
+  .dashboard-metrics-row { flex-direction: column; }
+  .dashboard-metric-tile { flex-direction: row; align-items: center; justify-content: space-between; }
+}
+
+/* Home's own "Question of the Day" aside card (see components/HomeQuestionCard.tsx) —
+   select-then-reveal flow with its own option states below. */
+.home-question-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.home-question-completed {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-11);
+  color: var(--color-neutral-600);
+}
+.home-question-text {
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0 0 12px;
+  color: var(--color-text);
+}
+.home-question-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.home-question-option {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font-size: 13.5px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.home-question-option:disabled { cursor: default; }
+.home-question-option-selected { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+.home-question-option-correct { background: var(--color-vitals-mobility); border-color: var(--color-vitals-mobility); color: #fff; }
+.home-question-option-incorrect {
+  background: color-mix(in srgb, #e85a4a 18%, var(--color-surface));
+  border-color: color-mix(in srgb, #e85a4a 45%, transparent);
+  color: var(--color-text);
+}
+.home-question-explanation {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  line-height: 1.5;
+  margin: 4px 0 0;
+}
+
+/* Profile "Professional Dates" date fields (see components/ProfessionalDatesForm.tsx) — a
+   real <input type="date"> sits invisibly on top (native picker + keyboard/a11y behavior
+   stays intact, including the OS's own date-clearing UI where it has one), while a normal
+   styled div underneath renders the value. Mobile browsers apply their own oversized,
+   inconsistently-styled chrome to a *visible* native date input (large centered text, extra
+   built-in height that ignores our .input sizing) — routing the real control through an
+   invisible overlay instead of relying on that rendering sidesteps it, so the field looks
+   the same compact pill on every platform. The explicit clear button exists because several
+   mobile browsers give a visible native date input a clear ("x") affordance that isn't
+   reachable/usable once it's the invisible overlay (and some never expose one at all on
+   touch), so without this there'd be no way to empty the field again on mobile. */
+.date-field-wrap { position: relative; }
+.date-field-native {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  margin: 0; padding: 0; border: 0; background: transparent;
+  opacity: 0; cursor: pointer; z-index: 1;
+}
+.date-field-display {
+  display: flex; align-items: center; min-height: 36px;
+  padding-inline: 14px; border-radius: 999px;
+  font-size: 14px; color: var(--color-text);
+  background: var(--color-surface); border: 1px solid var(--color-divider);
+  pointer-events: none;
+}
+.date-field-display[data-empty="true"] { color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.date-field-wrap:hover .date-field-display { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.date-field-clear {
+  position: absolute; top: 50%; right: 6px; transform: translateY(-50%);
+  z-index: 2; width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  font-size: 16px; line-height: 1; color: var(--color-neutral-700);
+}
+.date-field-clear:hover { background: color-mix(in srgb, var(--color-text) 10%, transparent); color: var(--color-text); }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+/* Profile "Professional Dates" save confirmation (see components/ProfessionalDatesForm.tsx)
+   — plays once per save rather than looping, unlike the other keyframe animations in this
+   file (spin, the agent-node pulses): mounted on save, unmounted via a matching-length
+   setTimeout once it's finished rather than left sitting at opacity 0 in the DOM. */
+@keyframes fade-in-out {
+  0% { opacity: 0; transform: scale(0.8); }
+  20% { opacity: 1; transform: scale(1); }
+  75% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.8); }
+}
+.profile-date-saved-check {
+  animation: fade-in-out 1.6s ease;
+  color: var(--color-accent-2-700);
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+/* Continue Reading's progress bar (see components/ContinueReadingCard.tsx). */
+.progress-bar-fade-in { animation: fade-in 0.5s ease; }
+
+
+@media (min-width: 1024px) {
+  .cards-grid.home-cards-grid { gap: 24px; }
+}

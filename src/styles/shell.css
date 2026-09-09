@@ -1,0 +1,237 @@
+/* — app shell layout — */
+.app-root {
+  display: flex;
+  /* dvh, not vh — see .app-main's own comment below for why plain vh leaves the fixed
+     bottom nav pinned against a taller baseline than what's actually visible on mobile
+     Safari. Kept as a fallback for browsers that don't support dvh yet. */
+  height: 100vh;
+  height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+/* The shell itself never scrolls — .app-sidebar and .app-main each own their own
+   scrollbar, so scrolling the nav (to reach "Sign out" below a long link list, say)
+   never moves the page content, and vice versa. */
+.app-sidebar {
+  width: 252px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 24px 16px;
+  /* --color-surface-secondary, not --color-surface (white, used by cards/inputs) — the
+     sidebar is structural chrome that should sit a step darker than the page background,
+     not level with cards. In dark mode this token mirrors --color-surface exactly, so this
+     is unchanged there. */
+  background: var(--color-surface-secondary);
+  border-right: 1px solid var(--color-neutral-200);
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+
+.nav-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-neutral-200);
+}
+
+/* The Founding Funders sidebar link (see AppShell.tsx FoundingFundersNavLink) — a fixed
+   gold, not var(--color-accent), so it stands out from every other (blue) nav item. No
+   vertical margin on the separator itself — .app-sidebar's own `gap` between flex children
+   already gives it the same spacing as any other two adjacent nav items; a margin here on
+   top of that gap was what opened up an oversized gap before Admin's last item and Founding
+   Funders. */
+.nav-founding-separator {
+  border: none;
+  border-top: 1px solid var(--color-neutral-200);
+  margin: 0 12px;
+}
+.nav-founding-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  border-left: 3px solid transparent;
+  background: none;
+  cursor: pointer;
+  font: 600 14px var(--font-body);
+  padding: 13px 12px;
+  border-radius: var(--radius-lg);
+  width: 100%;
+  color: #c9933a;
+  text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+.nav-founding-link:hover { background: color-mix(in srgb, #c9933a 12%, transparent); }
+.nav-founding-link-active {
+  border-left-color: #c9933a;
+  background: color-mix(in srgb, #c9933a 12%, transparent);
+}
+html[data-theme="dark"] .nav-founding-link { color: #d9a94d; }
+html[data-theme="dark"] .nav-founding-link:hover { background: color-mix(in srgb, #d9a94d 14%, transparent); }
+html[data-theme="dark"] .nav-founding-link-active {
+  border-left-color: #d9a94d;
+  background: color-mix(in srgb, #d9a94d 14%, transparent);
+}
+
+/* Takes the reader to /profile — the old dedicated "Profile" nav link was retired in favor
+   of this, so the nameplate itself needs to read as clickable rather than static text. */
+.nav-footer-nameplate {
+  display: block;
+  margin: -6px -8px 4px;
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+.nav-footer-nameplate:hover {
+  background: var(--color-accent-100);
+}
+
+/* Clinic PRO team membership pill (see AppShell.tsx's nav-footer-clinic-pill) — sits below
+   the specialty/state line inside the same clickable nameplate, muted so it reads as
+   metadata rather than another nav action. */
+.nav-footer-clinic-pill {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+  font-size: var(--fs-11);
+  font-weight: 600;
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  /* dvh (dynamic viewport height), not vh — .app-main is the app's own scroll container
+     (see the overflow-y below), so the actual document/body never scrolls, which means
+     mobile Safari never sees the scroll signal it uses to auto-collapse its own address
+     bar/toolbar. That toolbar then stays permanently expanded, but plain vh is computed
+     against the *toolbar-collapsed* viewport height regardless — taller than what's really
+     visible — so .app-bottomnav's fixed bottom:0 (anchored to that too-tall baseline) ends
+     up squeezed right against, sometimes partly under, Safari's own bar. dvh continuously
+     tracks the real visible height instead, keeping the bottom nav properly in view. Same
+     fix .clips-feed already uses below. Kept the vh line above as a fallback for browsers
+     without dvh support — dvh simply overrides it in the cascade where supported. */
+  height: 100dvh;
+  overflow-y: auto;
+  /* Explicit, not left to default "visible": per the CSS Overflow spec, a "visible"
+     overflow-x paired with a scrolling overflow-y (above) computes to "auto" instead —
+     turning this into a horizontally-scrollable container that stretches to fit its
+     widest descendant (e.g. a chip row meant to scroll internally) rather than clamping
+     to the viewport, which dragged every page wider than the screen on mobile. */
+  overflow-x: hidden;
+  /* Keeps the browser's own overscroll bounce (mobile Safari/Chrome both apply this to any
+     scrollable element, not just the document) from fighting Home's custom pull-to-refresh
+     indicator (see components/PullToRefresh.tsx) — "contain" rather than "none" so it still
+     stops scroll chaining to whatever's behind it, just without also rubber-banding on top
+     of the custom drag effect. Harmless on every other page — none of them implement a pull
+     gesture, so this only ever prevents a bounce nothing else here relies on. */
+  overscroll-behavior-y: contain;
+  /* A flex column (not just a plain block) so a full-height page (see .agent-page) can
+     use flex:1 to fill exactly what's left after .app-mobile-topbar, instead of guessing
+     that height with a CSS percentage that has no way to know the topbar is there. Every
+     other page here is an ordinary flex:0 auto child, which behaves identically to plain
+     block stacking — this changes nothing for them. */
+  display: flex;
+  flex-direction: column;
+}
+
+.app-mobile-topbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  /* The top/side insets matter once the app is installed to the home screen: appleWebApp's
+     "black-translucent" status bar draws page content under the clock and notch, so without
+     these the hamburger and wordmark sit underneath it. They resolve to 0 in ordinary Safari,
+     leaving the original 14px/18px untouched. */
+  padding: calc(14px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right))
+           14px calc(18px + env(safe-area-inset-left));
+  background: var(--color-surface-secondary);
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.app-bottomnav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-neutral-200);
+  padding: 8px 4px;
+  /* iPhone home-indicator clearance — without this the bar sits under the gesture
+     indicator instead of above it. Note the `8px +`: this longhand overrides the shorthand's
+     bottom value, so writing the bare env() here dropped the intended 8px to 0 on every phone
+     (env() resolves to 0px without viewport-fit: cover, which is set in app/layout.tsx). */
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  z-index: 20;
+}
+
+/* The bottom nav only fits Home/Search/Profile — everything else (Saved, APTA News,
+   Under Review, HEP, sign out) lives in this slide-out drawer, opened from the mobile
+   top bar's menu button. Only ever mounted while open, so no display:none default needed. */
+.app-mobile-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, #14213d 45%, transparent);
+  z-index: 30;
+}
+.app-mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  max-width: 84vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 16px;
+  background: var(--color-surface-secondary);
+  box-shadow: var(--shadow-lg);
+  z-index: 31;
+  overflow-y: auto;
+}
+
+@media (max-width: 799px) {
+  .app-sidebar { display: none; }
+  .app-mobile-topbar { display: flex; }
+  .app-bottomnav { display: flex; }
+  /* 76px clears .app-bottomnav's own flow height; the safe-area term additionally clears
+     the iPhone home-indicator space .app-bottomnav now reserves for itself (see its own
+     padding-bottom above) — without it the bar grows taller on notched devices and the
+     last bit of scrollable content ends up hidden behind that extra height. */
+  .app-main { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+}
+
+/* The drawer is a mobile-only affordance — its trigger button lives in
+   .app-mobile-topbar, which is itself hidden above the breakpoint, but this guards
+   against it staying mounted through a resize (e.g. rotating a tablet) while open. */
+@media (min-width: 800px) {
+  .app-mobile-drawer, .app-mobile-drawer-backdrop { display: none; }
+}
+
+/* The "Limbic" logotype in the app shell — desktop sidebar, mobile top bar, and mobile
+   drawer (see AppShell.tsx, which sets only the size inline, since the three differ). One
+   class rather than three inline styles: the weight is the whole point of this rule, and an
+   inline style carrying a family but no weight is exactly how the wordmark ended up
+   rendering at body weight in the first place. */
+.app-wordmark {
+  font-family: var(--font-heading);
+  font-weight: var(--font-wordmark-weight);
+  color: var(--color-text);
+}
+

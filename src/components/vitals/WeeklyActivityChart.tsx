@@ -8,7 +8,7 @@ function dayTotal(day: Record<VitalsCategory, number>): number {
 }
 
 /** No client state at all — the hover tooltip is pure CSS (see .vitals-chart-segment in
- *  globals.css), so this can render inside the client Vitals page without needing its own
+ *  src/styles), so this can render inside the client Vitals page without needing its own
  *  "use client" directive. */
 export function WeeklyActivityChart({ thisWeek, lastWeek, weekStartIso }: { thisWeek: WeekSummary; lastWeek: WeekSummary; weekStartIso: string }) {
   if (thisWeek.totalMinutes === 0 && lastWeek.totalMinutes === 0) {

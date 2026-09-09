@@ -569,7 +569,7 @@ export function AppleIcon(props: IconProps) {
 }
 
 /** Limbic Games hub — Daily Term's card icon: four letter tiles spelling "WORD", echoing
- *  the tile look of the actual game (see .wordle-tile-* in globals.css). Custom 64x64
+ *  the tile look of the actual game (see .wordle-tile-* in src/styles). Custom 64x64
  *  markup rather than the generic outline Svg wrapper, since this needs filled colored
  *  tiles + letters, not a single-stroke glyph. */
 export function DailyTermIcon({ size = 56, className, style }: IconProps) {

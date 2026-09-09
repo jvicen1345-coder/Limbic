@@ -9,7 +9,7 @@ const MIN_PROGRESS_DELTA = 0.02;
 /** Invisible — mounted on the article page (see app/(app)/article/[id]/page.tsx) purely to
  *  report how far the reader has scrolled, for the Home page "Continue Reading" card (see
  *  components/ContinueReadingCard.tsx). .app-main, not window, is this app's real scroll
- *  container (see globals.css) — everything here reads/listens on that element instead. */
+ *  container (see src/styles) — everything here reads/listens on that element instead. */
 export function ReadingProgressTracker({ articleId }: { articleId: string }) {
   const lastSentRef = useRef(0);
 

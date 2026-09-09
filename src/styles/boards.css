@@ -1,0 +1,571 @@
+/* — /boards/npte-breakdown — a static reference page, so it leans on the same shells the
+   rest of Boards already uses (.card.elev-sm, .card-kicker) rather than inventing a new
+   card language; only the pieces that page doesn't have a precedent for (the weighted
+   system grid, the amber caution card, the accordion deep-dives) get their own npte- rules
+   below. Section 3's stat row reuses .dashboard-metric-tile directly, and Section 2/7's
+   progress bars reuse .progress-bar (see the Daily PT Dashboard / generic progress-bar
+   rules above), same reasoning. */
+.npte-systems-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin-bottom: 14px; }
+.npte-system-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.npte-system-weight {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 26px;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.npte-system-desc { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; margin: 10px 0 0; }
+
+.npte-warning-card {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 12%, transparent);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.npte-warning-card-title { font-weight: 700; margin: 0 0 4px; color: var(--color-warn); }
+.npte-warning-card p { margin: 0; color: var(--color-text); }
+
+.npte-bullet-list { margin: 12px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.65; color: var(--color-text); }
+.npte-bullet-list li { margin-bottom: 4px; }
+
+.npte-accordion-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.npte-accordion {
+  background: var(--color-card-surface);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+}
+.npte-accordion summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 14px;
+}
+.npte-accordion summary::-webkit-details-marker { display: none; }
+.npte-accordion summary::after {
+  content: "+";
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--color-neutral-700);
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.npte-accordion[open] summary::after { content: "\2212"; }
+.npte-accordion p { margin: 12px 0 0; font-size: 13px; line-height: 1.6; color: var(--color-neutral-700); }
+
+.npte-stat-lines { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-divider); display: flex; flex-direction: column; gap: 6px; }
+.npte-stat-line { font-size: 13px; color: var(--color-neutral-700); }
+.npte-stat-line strong { color: var(--color-text); }
+
+/* — Limbic Boards tab bar (app/(app)/boards/page.tsx via components/BoardsTabs.tsx) — three
+   equal-width flat-underline tabs driven by React state, not routes (unlike the Link-based
+   .sub-tabs/.sub-tab pattern used for multi-page sections elsewhere), so the header/streak
+   badge above never remounts on switch. Background is --color-card-surface — the same tint
+   every .card already uses — so the bar reads as its own strip of chrome sitting on the
+   page rather than blending into it, without inventing a new surface color. */
+.boards-tabs {
+  display: flex;
+  width: 100%;
+  background: var(--color-card-surface);
+  border-radius: var(--radius-md);
+  border-bottom: 1px solid var(--color-divider);
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+.boards-tab {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  padding: 12px 10px;
+  font: 400 13.5px var(--font-body);
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.boards-tab:hover:not(.active) { color: var(--color-text); }
+.boards-tab.active { color: var(--color-accent); font-weight: 600; border-bottom-color: var(--color-accent); }
+/* Shrinks the label instead of letting 3 equal-width tabs force a scrollbar — every tab
+   stays visible and legible even at the narrowest supported phone width. */
+@media (max-width: 480px) {
+  .boards-tab { font-size: var(--fs-11-5); padding: 10px 4px; }
+}
+
+/* — Daily Sharpening tab's streak section (below the Daily Dose card, see
+   components/BoardsTabs.tsx) — a header row (label + personal best), a 7-day dot grid for
+   the current calendar week, two large stat tiles, and a motivational line that reacts to
+   the current streak length. */
+.boards-streak-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.boards-streak-best { font-size: 12px; color: var(--color-neutral-700); }
+
+.boards-streak-days { display: flex; justify-content: space-between; gap: 4px; margin: 4px 0 16px; }
+.boards-streak-day { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; min-width: 0; }
+.boards-streak-day-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-divider);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.boards-streak-day-dot--completed { background: #16a34a; }
+.boards-streak-day-dot--today {
+  background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  animation: boards-streak-pulse 1.8s ease-in-out infinite;
+}
+.boards-streak-day-check { font-size: var(--fs-8); color: #fff; }
+.boards-streak-day-label { font-size: var(--fs-10); color: var(--color-neutral-700); }
+
+@keyframes boards-streak-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 480px) {
+  .boards-streak-day-dot { width: 10px; height: 10px; }
+  .boards-streak-day-check { display: none; }
+}
+
+.boards-streak-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 0 0 12px; }
+.boards-streak-stat { text-align: center; padding: 14px 8px; }
+.boards-streak-stat-value { font-family: var(--font-heading); font-weight: 700; font-size: 28px; color: var(--color-text); }
+.boards-streak-stat-label { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
+
+.boards-streak-message { font-size: 13px; margin: 0; text-align: center; }
+.boards-streak-message--muted { color: var(--color-neutral-700); }
+.boards-streak-message--primary { color: var(--color-text); }
+.boards-streak-message--brand { color: var(--color-accent); }
+.boards-streak-message--success { color: #16a34a; }
+
+/* — Research & Stats tab (components/BoardsTabs.tsx "research" panel) — three new
+   components (components/boards/PaperAnatomyDiagram.tsx, StatisticsCardGrid.tsx,
+   EvidenceHierarchyPyramid.tsx) replacing what used to be a plain link-out card to
+   /pro/research-literacy. That guide page and its own accordion component
+   (ResearchLiteracyGuide.tsx) are untouched — these are new, Boards-only components. */
+.boards-research-section-title { font-size: 16px; font-weight: 700; margin: 0 0 12px; }
+.boards-research-guide-link { font-size: 12.5px; color: var(--color-neutral-700); margin: 28px 0 0; text-align: center; }
+.boards-research-guide-link a { color: var(--color-accent); font-weight: 600; }
+
+/* — Component 1: Paper Anatomy Diagram — */
+.paper-anatomy-reading-order { font-size: 12px; color: var(--color-neutral-700); margin: 0 0 12px; }
+
+.paper-anatomy-layout { display: grid; grid-template-columns: 45% 55%; gap: 24px; align-items: start; }
+@media (max-width: 860px) {
+  .paper-anatomy-layout { grid-template-columns: 1fr; }
+}
+
+.paper-anatomy-diagram { position: relative; display: flex; flex-direction: column; gap: 6px; padding-left: 12px; }
+.paper-anatomy-spine { position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: var(--color-divider); }
+
+.paper-anatomy-block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 64px;
+  width: 100%;
+  border-radius: 6px;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  border-left-width: 1px;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: var(--color-text);
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+.paper-anatomy-block:hover { border-color: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+.paper-anatomy-block--active {
+  border-left: 3px solid var(--color-accent);
+  background-color: color-mix(in srgb, var(--color-text) 4%, transparent);
+}
+.paper-anatomy-block-badge {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: var(--fs-10);
+  color: var(--color-neutral-700);
+  background: var(--color-card-surface);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.paper-anatomy-block-label { font-size: 14px; font-weight: 700; }
+.paper-anatomy-block-sublabel { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+.paper-anatomy-block-pill {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font-size: var(--fs-10);
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.paper-anatomy-block-pill--critical { background: rgba(220, 38, 38, 0.15); color: #dc2626; }
+.paper-anatomy-block-pill--skip { background: rgba(201, 133, 58, 0.18); color: #c9853a; }
+
+.paper-anatomy-detail { padding: 4px 0; }
+.paper-anatomy-detail-title { font-size: 18px; font-weight: 700; margin: 0 0 10px; }
+.paper-anatomy-detail-label { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-neutral-700); margin: 14px 0 4px; }
+.paper-anatomy-detail-label:first-of-type { margin-top: 0; }
+.paper-anatomy-detail-text { font-size: 14px; line-height: 1.7; color: var(--color-text); margin: 0; }
+.paper-anatomy-detail-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
+.paper-anatomy-detail-list li { font-size: 14px; line-height: 1.5; color: var(--color-text); }
+
+/* — Component 2: Statistics Card Grid — */
+.stats-card-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 4px; }
+@media (max-width: 720px) {
+  .stats-card-grid { grid-template-columns: 1fr; }
+}
+
+.stats-card {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 10px;
+  padding: 20px;
+  transition: border-color 150ms ease;
+}
+.stats-card:hover { border-color: color-mix(in srgb, var(--color-accent) 40%, transparent); }
+.stats-card--wide { margin-top: 16px; }
+
+.stats-card-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.stats-card-name { font-size: 16px; font-weight: 700; }
+.stats-formula-pill { font-size: 12px; border-radius: 4px; padding: 3px 9px; font-weight: 600; white-space: nowrap; }
+.stats-formula-pill--brand { background: color-mix(in srgb, var(--color-accent) 15%, transparent); color: var(--color-accent); }
+.stats-formula-pill--purple { background: rgba(124, 58, 237, 0.15); color: #7c3aed; }
+
+.stats-card-def { font-size: 13px; line-height: 1.6; color: var(--color-text); margin: 0 0 12px; }
+.stats-card-subhead { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-neutral-700); margin: 14px 0 6px; }
+
+.stats-callout { border-radius: 6px; padding: 10px 12px; margin-top: 10px; }
+.stats-callout-label { font-size: var(--fs-10); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 3px; }
+.stats-callout-text { font-size: 12px; line-height: 1.55; color: var(--color-neutral-700); margin: 0; }
+.stats-callout--amber { background: rgba(201, 133, 58, 0.08); border-left: 3px solid #c9853a; }
+.stats-callout-label--amber { color: #c9853a; }
+.stats-callout--green { background: rgba(22, 163, 74, 0.08); border-left: 3px solid #16a34a; }
+.stats-callout-label--green { color: #16a34a; }
+.stats-callout--brand { background: color-mix(in srgb, var(--color-accent) 8%, transparent); border-left: 3px solid var(--color-accent); }
+.stats-callout-label--brand { color: var(--color-accent); }
+.stats-callout--red { background: rgba(220, 38, 38, 0.08); border-left: 3px solid #dc2626; }
+.stats-callout-label--red { color: #dc2626; }
+
+.stats-compare { display: flex; gap: 16px; align-items: stretch; margin: 10px 0; }
+.stats-compare-col { flex: 1; min-width: 0; }
+.stats-compare-col-title { font-size: 12.5px; font-weight: 700; margin-bottom: 8px; }
+.stats-compare-list { margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 5px; }
+.stats-compare-list li { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.4; }
+.stats-compare-divider { width: 1px; background: var(--color-divider); flex-shrink: 0; }
+@media (max-width: 480px) {
+  .stats-compare { flex-direction: column; }
+  .stats-compare-divider { width: 100%; height: 1px; }
+}
+
+.stats-memory-boxes { display: flex; gap: 12px; margin-bottom: 12px; }
+@media (max-width: 480px) {
+  .stats-memory-boxes { flex-direction: column; }
+}
+.stats-memory-box { flex: 1; min-width: 0; background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: 8px; padding: 12px; }
+.stats-memory-box-title { font-size: 14px; margin-bottom: 4px; }
+.stats-memory-box-text { font-size: 12px; color: var(--color-text); margin: 0 0 6px; line-height: 1.4; }
+.stats-memory-box-example { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 0; line-height: 1.4; }
+
+.stats-lr-card { background: var(--color-neutral-100); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+.stats-lr-row { font-size: 12px; color: var(--color-neutral-700); }
+
+.stats-nnt-scale { display: flex; align-items: center; gap: 4px; margin: 10px 0 12px; flex-wrap: wrap; }
+.stats-nnt-segment { flex: 1; min-width: 72px; display: flex; flex-direction: column; align-items: center; text-align: center; border-radius: 6px; padding: 8px 4px; }
+.stats-nnt-segment--good { background: rgba(22, 163, 74, 0.15); }
+.stats-nnt-segment--mid { background: rgba(201, 133, 58, 0.15); }
+.stats-nnt-segment--poor { background: rgba(220, 38, 38, 0.15); }
+.stats-nnt-segment-value { font-size: var(--fs-11-5); font-weight: 700; }
+.stats-nnt-segment-label { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 2px; }
+.stats-nnt-arrow { font-size: 13px; color: var(--color-neutral-700); flex-shrink: 0; }
+
+.stats-causation-flow { display: flex; align-items: center; gap: 4px; margin: 10px 0 14px; }
+.stats-causation-step { flex: 1; min-width: 0; border-radius: 6px; padding: 10px 8px; text-align: center; border: 1px solid; }
+.stats-causation-step--brand { background: color-mix(in srgb, var(--color-accent) 8%, transparent); border-color: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+.stats-causation-step--amber { background: rgba(201, 133, 58, 0.08); border-color: rgba(201, 133, 58, 0.3); }
+.stats-causation-step--green { background: rgba(22, 163, 74, 0.08); border-color: rgba(22, 163, 74, 0.3); }
+.stats-causation-step-title { font-size: 12px; font-weight: 600; color: var(--color-text); }
+.stats-causation-step-sub { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
+
+.stats-causation-arrow { position: relative; width: 18px; height: 2px; flex-shrink: 0; background: var(--color-divider); }
+.stats-causation-arrow::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-style: solid;
+  border-width: 4px 0 4px 6px;
+  border-color: transparent transparent transparent var(--color-divider);
+}
+.stats-causation-arrow--brand { background: var(--color-accent); }
+.stats-causation-arrow--brand::after { border-left-color: var(--color-accent); }
+.stats-causation-arrow--amber { background: #c9853a; }
+.stats-causation-arrow--amber::after { border-left-color: #c9853a; }
+
+@media (max-width: 480px) {
+  .stats-causation-flow { flex-direction: column; align-items: stretch; }
+  .stats-causation-arrow { width: 2px; height: 18px; align-self: center; }
+  .stats-causation-arrow::after {
+    right: 50%;
+    top: auto;
+    bottom: -1px;
+    transform: translateX(50%);
+    border-width: 6px 4px 0 4px;
+    border-color: var(--color-divider) transparent transparent transparent;
+  }
+  .stats-causation-arrow--brand::after { border-top-color: var(--color-accent); border-left-color: transparent; }
+  .stats-causation-arrow--amber::after { border-top-color: #c9853a; border-left-color: transparent; }
+}
+
+.stats-confounder-list { margin: 0 0 4px; padding-left: 16px; display: flex; flex-direction: column; gap: 5px; }
+.stats-confounder-list li { font-size: 12px; color: var(--color-neutral-700); line-height: 1.5; }
+
+.stats-table-wrap { overflow-x: auto; margin-top: 8px; }
+.stats-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.stats-table th { text-align: left; background: color-mix(in srgb, var(--color-accent) 10%, transparent); color: var(--color-accent); font-weight: 700; padding: 10px 12px; white-space: nowrap; }
+.stats-table td { padding: 10px 12px; color: var(--color-text); }
+.stats-table tbody tr:nth-child(even) td { background: var(--color-card-surface); }
+
+/* — Component 3: Evidence Hierarchy Pyramid — */
+.evidence-pyramid-title { font-size: 18px; font-weight: 700; margin: 0 0 4px; }
+.evidence-pyramid-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 20px; }
+
+.evidence-pyramid-row { display: flex; justify-content: center; margin-bottom: 4px; }
+.evidence-pyramid { position: relative; width: 100%; max-width: 560px; display: flex; flex-direction: column; }
+
+.evidence-pyramid-level {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  padding: 4px 16px;
+  transition: filter 150ms ease;
+}
+/* Constrained per-level (see visibleWidthPercent in EvidenceHierarchyPyramid.tsx) to the
+   trapezoid's own narrower edge — clip-path only affects rendering, not layout, so without
+   this the text would wrap against the button's full unclipped width and overflow past
+   what's actually visible at the narrower levels. */
+.evidence-pyramid-level-inner { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.evidence-pyramid-level:hover { filter: brightness(1.06); }
+.evidence-pyramid-level--active { filter: brightness(1.12); }
+.evidence-pyramid-level--bordered { border-top: 1px solid var(--color-divider); border-bottom: 1px solid var(--color-divider); }
+.evidence-pyramid-badge {
+  font-size: var(--fs-9);
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  padding: 1px 8px;
+  letter-spacing: 0.04em;
+}
+
+/* The narrower top levels don't have much visible width once clipped — shrink the label
+   and give it more height to wrap into on small screens, rather than letting long labels
+   like "Systematic Reviews and Meta-Analyses" get cut off by the clip-path. */
+@media (max-width: 480px) {
+  .evidence-pyramid-level { font-size: var(--fs-9-5); line-height: 1.25; height: 68px; padding: 4px 8px; }
+  .evidence-pyramid-badge { font-size: var(--fs-8); padding: 1px 6px; }
+}
+
+.evidence-pyramid-side-label {
+  position: absolute;
+  right: -8px;
+  transform: translateX(100%);
+  font-size: var(--fs-11);
+  color: var(--color-neutral-700);
+  white-space: nowrap;
+  padding-left: 14px;
+}
+.evidence-pyramid-side-label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 12px;
+  border-top: 1px dashed var(--color-divider);
+}
+.evidence-pyramid-side-label--top { top: 20px; }
+.evidence-pyramid-side-label--bottom { bottom: 20px; }
+
+@media (max-width: 620px) {
+  .evidence-pyramid-side-label { display: none; }
+}
+
+.evidence-pyramid-detail { background: var(--color-card-surface); border: 1px solid var(--color-divider); border-radius: 10px; padding: 20px; margin-top: 24px; }
+.evidence-pyramid-detail-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+.evidence-pyramid-detail-label { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-neutral-700); margin: 12px 0 4px; }
+.evidence-pyramid-detail-label:first-of-type { margin-top: 0; }
+.evidence-pyramid-detail-text { font-size: 13.5px; line-height: 1.6; color: var(--color-text); margin: 0; }
+.evidence-pyramid-detail-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.evidence-pyramid-detail-list li { font-size: 13.5px; line-height: 1.5; color: var(--color-text); }
+
+.evidence-pyramid-note { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.6; margin: 16px 0 0; font-style: italic; }
+
+/* — FSBPT/NPTE resource links (app/(app)/student/resources/page.tsx) — kept the
+   "boards-"-prefixed class names even after these two cards moved out of Limbic Boards'
+   Resources tab (components/BoardsTabs.tsx) to their own free, no-subscription-required
+   page, since renaming a class is pure churn with no visible effect. .boards-resource-
+   disclaimer is still shared with Boards' own Research & Stats tab description, so it stays
+   put either way. The FSBPT link list's arrow is a literal unicode character via ::after,
+   same "no icon component" approach .article-related-arrow already uses elsewhere, not a
+   new icon. Boards' own Resources tab (Study Strategy/Coming Soon cards) has its own
+   classes below unrelated to this block — the Study Strategy numbered steps mirror
+   /connexion/protocol's .connexion-step-number treatment (a large, muted background
+   number) but in brand blue instead of Connexion's gold; the Coming Soon card's muted
+   background/border is set inline on the element itself (see LimbicAgentCard.tsx for the
+   same "override .card's background inline, not via a new class" convention) — only its
+   list/badge need dedicated classes here. */
+.boards-resource-link-list { display: flex; flex-direction: column; }
+.boards-resource-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-divider);
+  text-decoration: none;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+.boards-resource-link:last-child { border-bottom: none; }
+.boards-resource-link::after {
+  content: "↗";
+  font-size: 14px;
+  color: var(--color-accent);
+  flex-shrink: 0;
+  transition: transform 150ms ease;
+}
+.boards-resource-link:hover::after { transform: translate(2px, -2px); }
+.boards-resource-disclaimer { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 12px 0 0; }
+
+/* Official NPTE Resources card — lives on app/(app)/student/resources/page.tsx's own
+   960px-wide page (see .atrium-page), not squeezed into Boards' narrower 760px column
+   anymore, so this is back to 3 columns. Its own richer title+description treatment
+   (unlike the plain link list above) is worth the extra width, since these 4 already had
+   real descriptions worth keeping rather than flattening into .boards-resource-link. */
+.boards-npte-resource-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 8px 0 12px; }
+.boards-npte-resource-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-200);
+  text-decoration: none;
+  transition: border-color 150ms ease;
+}
+.boards-npte-resource-card:hover { border-color: var(--color-accent); }
+.boards-npte-resource-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.boards-npte-resource-title svg { color: var(--color-accent); flex-shrink: 0; }
+.boards-npte-resource-desc { font-size: 12px; color: var(--color-neutral-700); line-height: 1.45; margin: 0; }
+@media (max-width: 799px) {
+  .boards-npte-resource-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.boards-strategy-list { display: flex; flex-direction: column; gap: 14px; }
+.boards-strategy-item { display: flex; gap: 14px; align-items: flex-start; }
+.boards-strategy-number {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 28px;
+  line-height: 1;
+  color: color-mix(in srgb, var(--color-accent) 32%, transparent);
+  flex-shrink: 0;
+  min-width: 28px;
+}
+.boards-strategy-body { flex: 1; min-width: 0; font-size: 13.5px; line-height: 1.6; color: var(--color-text); margin: 0; }
+
+.boards-comingsoon-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.boards-comingsoon-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13.5px; color: var(--color-neutral-700); }
+/* Same amber as .npte-warning-card elsewhere on this page (--color-warn) rather than the
+   gold /connexion/founding-funders use for their own "coming soon" pill — Boards has
+   already established --color-warn as its own amber, so this stays consistent with that
+   instead of borrowing a different feature's brand color. */
+.boards-badge-soon {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--fs-9-5);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 16%, transparent);
+  border-radius: 999px;
+  padding: 3px 9px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ---------- Limbic Boards: the Study Guide tab ----------
+   One card per playbook. Shaped like .playbook-hub-card next door but whole-card clickable,
+   since here the card is the link rather than a card with a button in it. */
+.boards-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.boards-guide-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-left: 4px solid var(--color-accent);
+  text-decoration: none;
+  color: inherit;
+}
+.boards-guide-card:hover { background: var(--color-neutral-100); text-decoration: none; }
+.boards-guide-card-name { font-size: 16px; font-weight: 600; }
+.boards-guide-card-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; }
+/* Pushed to the foot of the card so the counts line up across a row whose summaries are
+   different lengths. */
+.boards-guide-card-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin-top: auto; padding-top: 6px; }
+
+/* Boards went from four tabs to five, and .boards-tab's flex:1 sized them to fit — which at
+   this page's measure ellipsed the labels down to "NPTE Breakd…". Let each keep the width of
+   its own label and scroll the strip when they don't all fit; a tab you nudge into view beats
+   a tab you can't read. They still grow to fill a wide strip. */
+.boards-tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.boards-tabs::-webkit-scrollbar { display: none; }
+.boards-tab { flex: 1 0 auto; }
+
+
+@media (min-width: 1024px) {
+  .boards-question-pad { max-width: 680px !important; }
+  .npte-systems-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

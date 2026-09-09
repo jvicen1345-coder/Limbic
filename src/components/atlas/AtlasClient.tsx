@@ -256,7 +256,7 @@ function ExploreFurtherSection({ zoneKey, zoneName, isPro, hasStudentOrPro }: { 
 }
 
 /** Replaces the old blur+overlay paywall with a plain, non-blurred upgrade card — see
- *  app/globals.css .atlas-gate-card. The Limbic Student button only submits for real when the
+ *  app/src/styles .atlas-gate-card. The Limbic Student button only submits for real when the
  *  visitor already qualifies for a .edu/comped Student identity (see
  *  hasStudentAccess/subscribeToStudentTierAction), same disabled-button-with-reason pattern
  *  as app/(app)/profile/membership/page.tsx's TierHeader — anyone actually seeing this gate

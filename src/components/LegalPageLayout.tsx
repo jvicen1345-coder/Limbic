@@ -1,3 +1,4 @@
+import "@/styles/legal-admin.css";
 import { LogoIcon } from "@/components/icons";
 import { LegalBackButton } from "@/components/LegalBackButton";
 

@@ -29,7 +29,7 @@ export interface EvidenceLevelMeta {
    *  API call, no generation — same "never fabricate, always real" spirit as this app's
    *  other evidence-adjacent content. */
   description: string;
-  /** CSS class for the pill's color — see the .tag-evidence-* rules in globals.css. */
+  /** CSS class for the pill's color — see the .tag-evidence-* rules in src/styles. */
   className: string;
 }
 

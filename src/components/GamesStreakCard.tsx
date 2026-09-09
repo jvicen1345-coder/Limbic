@@ -5,7 +5,7 @@ import { ZapIcon } from "@/components/icons";
  *  concepts that just happen to share a rendering pattern (see lib/game-activity.ts). The
  *  Boards streak is a third, separate concept again, but renders inline in its own compact
  *  header badge on /boards rather than this full-card treatment — see .boards-header-streak
- *  in globals.css. */
+ *  in src/styles. */
 export function GamesStreakCard({ streakDays }: { streakDays: number }) {
   return (
     <div className="card elev-sm streak-card" style={{ marginBottom: 18 }}>

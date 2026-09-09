@@ -1,0 +1,95 @@
+/* — screen padding shells — */
+.screen-pad {
+  width: 100%;
+  padding: 36px 44px 60px;
+  /* Widened from 720px — any page that doesn't set its own wider inline max-width was
+     sitting in a narrow centered column with a few hundred px of bare gutter on either
+     side on a normal desktop viewport; every such page picks up the extra room for free. */
+  max-width: 900px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.home-pad {
+  width: 100%;
+  padding: 36px 44px 60px;
+  /* Widened from 1020px — home-main-col is flex:1 and home-aside-col is a fixed 200px, so
+     the extra room goes entirely to the main feed column (see the "Desktop Space" ask). */
+  max-width: 1400px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Pull-to-refresh (see components/PullToRefresh.tsx) — .pull-refresh-root is the direct
+   child that component mounts into .app-main, wrapping .home-pad rather than being it, so
+   the indicators can sit visually above/below the feed content without being part of
+   .home-pad's own max-width/padding box. position: relative anchors the two absolutely
+   positioned indicators (see .pull-refresh-indicator below) to this box specifically,
+   not some further-out ancestor. clip hides whatever part of each indicator's fixed
+   MAX_PULL height is still translated outside .pull-refresh-root's own bounds at rest. */
+.pull-refresh-root { position: relative; overflow: clip; }
+/* Absolutely positioned (not left in normal document flow before/after the content div) so
+   an indicator's own presence never pushes the content div's layout position — content
+   moves purely via its own translateY (see PullToRefresh.tsx), and each indicator reveals
+   itself by sliding into view via its own translateY on the exact same distance scale.
+   Position (top vs bottom) and the translateY itself are set inline per indicator — this
+   shared rule only carries what's identical between the two. */
+.pull-refresh-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--color-accent);
+}
+@media (max-width: 799px) {
+  .screen-pad, .home-pad { padding: 18px 18px 40px; }
+}
+
+.home-row {
+  display: flex;
+  flex-direction: row;
+  gap: 48px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.home-main-col { flex: 1; min-width: 0; }
+.home-aside-col {
+  width: 200px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 20px;
+}
+/* This used to cap .home-aside-scroll's height and give it its own overflow-y: auto
+   scrollbar, on the theory that a tall column of widgets (streak, calendar, saved-unread,
+   Nexus, stock) would otherwise leave whatever fell past the viewport bottom unreachable
+   under position: sticky. That premise was wrong — a sticky element is always reachable,
+   it just stops being stuck and scrolls with the page once you pass its sticky range — and
+   the nested scroll region it added caused a real, reproducible bug: any scroll-and-stitch
+   capture (a phone's own "scrolling screenshot" feature, automated screenshot tools) got
+   confused about which of the two nested scrollers to scroll, stitching together frames
+   from different scroll positions of .home-aside-scroll and rendering cards as if their
+   content had escaped past their own rounded edges into the next card, even though the
+   live DOM layout (verified directly, not by screenshot) was always correct. Letting this
+   column scroll as plain part of the page's own flow removes the second scroller and the
+   bug with it. */
+.home-aside-scroll {
+  display: flex;
+  flex-direction: column;
+  /* Was 14px — too tight between the Calendar card's own "View full calendar" footer
+     link and the Nexus card right below it, the two read as crowded together rather than
+     as two distinct cards. */
+  gap: 22px;
+}
+/* A conservative floor under each widget so the aside column's overall height doesn't
+   depend entirely on which widgets happen to have content this render (see HomeFeed.tsx's
+   showWidget calls) — well under any real widget's actual height, so this never visibly
+   changes one, just guards the transition from home/loading.tsx's skeleton. */
+.home-aside-scroll > * { min-height: 60px; }
+@media (max-width: 799px) {
+  .home-row { flex-direction: column; gap: 24px; }
+  .home-main-col { width: 100%; }
+  .home-aside-col { width: 100%; position: static; }
+}
+

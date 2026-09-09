@@ -1,0 +1,9 @@
+/* Desktop typography and shared .card padding (>= 1024px).
+   Feature-specific desktop overrides live in each feature sheet. */
+
+@media (min-width: 1024px) {
+  h1 { font-size: 44px; }
+  h2 { font-size: 34px; }
+  h3 { font-size: 26px; }
+  .card { padding: 20px; }
+}

@@ -50,7 +50,7 @@ export const HEP_TEMPLATE_KIND_LABELS: Record<HepTemplateKind, string> = {
 };
 
 // Shorter form for the template library panel's kind tabs (HepTemplateLibrary.tsx) — that
-// panel is a fixed 280px column (see .hep-template-panel in globals.css), too narrow for
+// panel is a fixed 280px column (see .hep-template-panel in src/styles), too narrow for
 // both full HEP_TEMPLATE_KIND_LABELS side by side without clipping.
 export const HEP_TEMPLATE_KIND_SHORT_LABELS: Record<HepTemplateKind, string> = {
   home: "Home",

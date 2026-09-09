@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
-import { PLAYBOOKS, getPlaybook } from "@/lib/playbook-content";
+import { getPlaybook } from "@/lib/playbook-content";
 import { PlaybookPage } from "@/components/playbook/PlaybookPage";
 import { LimbicStudentGate } from "@/components/student/LimbicStudentGate";
 
@@ -9,9 +9,11 @@ import { LimbicStudentGate } from "@/components/student/LimbicStudentGate";
  *  playbook that carried this slug was built from an older draft that was not. */
 const RETIRED_SHOULDER_SLUG = "shoulder";
 
-export function generateStaticParams() {
-  return PLAYBOOKS.map((playbook) => ({ slug: playbook.slug }));
-}
+/* No generateStaticParams. This page reads the session cookie to gate on the paid tier, so it
+   can never be prerendered — and once PLAYBOOKS was emptied for verification it returned an
+   empty list, at which point Next treated the whole route as static and every slug answered
+   500 DYNAMIC_SERVER_USAGE instead of 404. There is nothing here worth prerendering even when
+   the playbooks come back, because the answer differs per reader. */
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;

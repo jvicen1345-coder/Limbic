@@ -58,7 +58,7 @@ function BoardsFrame({
               the Daily Games row is a card grid, not prose. Left to inherit that measure it sat
               in a third of the page with the rest empty, and the cards were narrow enough to
               break their own names across two lines ("Anatomy / Connect"). See
-              .boards-daily-games in globals.css, which widens it back out symmetrically. */}
+              .boards-daily-games in src/styles, which widens it back out symmetrically. */}
           <div className="boards-daily-games">
             <DailyGamesSection />
           </div>

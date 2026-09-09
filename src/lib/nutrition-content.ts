@@ -84,7 +84,7 @@ export function nutritionTipForDate(dateKey: string): string {
 
 /** /wellness/nutrition's "Quick Tips" pill row — short, scannable, one per general
  *  category. `kind` drives the pill's left dot color (see .nutrition-quicktip-dot-* in
- *  globals.css), reusing the same literal hues Limbic Vitals already assigns to
+ *  src/styles), reusing the same literal hues Limbic Vitals already assigns to
  *  strength/mobility/mindfulness rather than inventing new ones. */
 export type QuickTipKind = "hydration" | "energy" | "recovery" | "sleep";
 

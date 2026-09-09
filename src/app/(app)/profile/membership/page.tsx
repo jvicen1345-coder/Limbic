@@ -99,7 +99,7 @@ const PLAN_DISPLAY_NAME: Record<string, string> = {
 };
 
 /** A muted, uppercase, full-width section label row — same shell as the existing
- *  "Coming Soon" divider row (see .plan-compare-divider-row in globals.css), reused here to
+ *  "Coming Soon" divider row (see .plan-compare-divider-row in src/styles), reused here to
  *  split the desktop table into "Free Clinical Reference" and "LimbicPRO — Clinical Tools"
  *  sections instead of one continuous list. */
 function FeatureDividerRow({ label }: { label: string }) {
@@ -193,7 +193,7 @@ function TierHeader({
  *  Redesigned as a full comparison across all five tiers (Free, Limbic Wellness+, Limbic
  *  Student, LimbicPro, Clinic Pro) rather than one card per purchasable tier — see
  *  FEATURES/COMING_SOON above for the row data, shared by both layouts below. Desktop keeps
- *  a single scannable table (.plan-compare-table); below 799px (see globals.css) it swaps
+ *  a single scannable table (.plan-compare-table); below 799px (see src/styles) it swaps
  *  for one full-width card per tier, each listing every feature row top to bottom, so
  *  comparing tiers on a phone is a normal vertical scroll rather than horizontal scrolling
  *  one column at a time. Each purchasable tier gets a real "Subscribe" button (a Server
@@ -314,7 +314,7 @@ export default async function ProfileMembershipPage({
       )}
 
       {/* Desktop/tablet: one scannable table. Hidden below 799px in favor of the per-tier
-          card stack below (see .plan-compare-wrap in globals.css). */}
+          card stack below (see .plan-compare-wrap in src/styles). */}
       <div className="plan-compare-wrap">
         <table className="plan-compare-table">
           <thead>
@@ -398,7 +398,7 @@ export default async function ProfileMembershipPage({
           includes (plus its own upcoming items), not every row with a dash for what it
           lacks. Much shorter to scroll through than the full parity grid, and comparing
           tiers is a normal vertical scroll rather than horizontally scrolling the table one
-          column at a time. Only shown below 799px (see .plan-compare-cards in globals.css). */}
+          column at a time. Only shown below 799px (see .plan-compare-cards in src/styles). */}
       <div className="plan-compare-cards">
         {TIERS.map((tier) => {
           const included = FEATURES.filter((row) => cellFor(row, tier.key) === true);

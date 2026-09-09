@@ -2,7 +2,7 @@
  *  components rather than data because a drawing is markup, not a record — the content
  *  files stay serializable and reference these by id.
  *
- *  Every colour here is a --pb-* variable defined in globals.css, mapped onto Limbic's own
+ *  Every colour here is a --pb-* variable defined in src/styles, mapped onto Limbic's own
  *  palette tokens, so the figures follow the reader's light/dark theme instead of carrying
  *  their own. Uncoloured strokes use currentColor, which the .playbook-figure svg rule
  *  sets — don't hard-code a hex in here. Marker ids are prefixed `pbm-` since SVG ids are

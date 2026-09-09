@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AgentGraph } from "@/components/AgentGraph";
+import { DeferredAgentGraph } from "@/components/DeferredAgentGraph";
 import { generateThreadsInsightAction } from "@/app/actions/threads";
 import { NetworkIcon, ChevronRightIcon, LockIcon } from "@/components/icons";
 import type { AgentNode, AgentLink } from "@/lib/agent-graph";
@@ -163,7 +163,7 @@ export function ThreadsWeb({
       </div>
       <p className="threads-caption">Explore connections from this article</p>
       <div className="agent-canvas-wrap threads-canvas-wrap" ref={containerRef}>
-        <AgentGraph
+        <DeferredAgentGraph
           nodes={nodes}
           links={links}
           selectedId={selectedId}
@@ -176,7 +176,7 @@ export function ThreadsWeb({
       </div>
 
       {/* A normal block below the canvas, not an absolutely-positioned overlay on top of
-          it like Limbic Agent's own .agent-detail-card (see globals.css), Agent's chat is
+          it like Limbic Agent's own .agent-detail-card (see src/styles), Agent's chat is
           a fixed-height full-screen surface where a floating card never blocks anything
           meaningful, but Threads' canvas sits in a normal scrolling article page where a
           force-simulated node can end up anywhere, including right where a docked overlay

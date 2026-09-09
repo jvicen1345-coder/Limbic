@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/styles/landing.css";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { LandingPage } from "@/components/LandingPage";

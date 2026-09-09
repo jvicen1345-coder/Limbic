@@ -18,7 +18,7 @@ const BASE_TABS: { id: TabId; label: string }[] = [
 ];
 
 export interface SpecialtyPageTemplateProps {
-  /** Drives the --specialty-accent-{slug} CSS modifier class, see globals.css. */
+  /** Drives the --specialty-accent-{slug} CSS modifier class, see src/styles. */
   slug: string;
   name: string;
   description: string;

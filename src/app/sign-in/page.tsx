@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/styles/onboarding.css";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { googleSignInEnabled } from "@/lib/google-oauth";

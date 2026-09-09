@@ -58,7 +58,7 @@ export function SaveButton({
       aria-label={optimisticSaved ? "Remove from saved" : "Save"}
       // Size passed as a custom property rather than a literal width/height: an inline
       // width beats any stylesheet rule, which left this button stuck below the touch
-      // target floor on phones. See .icon-btn-sized in globals.css.
+      // target floor on phones. See .icon-btn-sized in src/styles.
       style={{ "--icon-btn-dim": `${dim}px`, flexShrink: 0 } as React.CSSProperties}
       onClick={onClick}
     >

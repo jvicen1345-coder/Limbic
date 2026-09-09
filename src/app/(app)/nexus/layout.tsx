@@ -1,3 +1,4 @@
+import "@/styles/nexus.css";
 import { getCurrentUser, isAdminEmail } from "@/lib/session";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
 import { BellIcon, CheckCircleIcon } from "@/components/icons";
