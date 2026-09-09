@@ -62,7 +62,7 @@ export function ExerciseLibraryTabs({ goal }: { goal: WellnessGoal | null }) {
                 </div>
 
                 <p className="wellness-calc-desc">{ex.benefits}</p>
-                <CollapsibleCard title="Expand">
+                <CollapsibleCard title="Exercise details" className="wellness-exercise-collapse">
                 <div className="wellness-assess-steps-label">How to perform</div>
                 <ol className="wellness-assess-steps">
                   {ex.steps.map((step, si) => (
