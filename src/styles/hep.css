@@ -89,3 +89,95 @@
   .hep-template-panel:not([open]) .hep-template-panel-body { display: flex !important; }
 }
 
+/* Moved from pro.css — HEP exercise picker + free-tool banner — /hep and LimbicPRO both use these */
+/* — Free clinical-reference banner — components/pro/FreeToolBanner.tsx, first element
+   inside every tool page's .screen-pad that dropped its LimbicPRO gate. An inset card
+   (rather than a full-bleed strip) so it sits naturally inside .screen-pad's own
+   max-width column instead of fighting that wrapper's padding at every breakpoint. */
+.free-tool-banner {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 10px 20px;
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 0 0 16px;
+}
+.free-tool-banner a { color: var(--color-accent); font-weight: 600; }
+.hep-exercise-editor-name-row > .hep-exercise-name-field { flex: 1; }
+/* Exercise-name autocomplete + "request to add" (ExerciseNameField in HepExerciseList.tsx) —
+   a small absolutely-positioned dropdown under the name input, since the editor row it lives
+   in has no room to push content down without reflowing every other row in the list. */
+.hep-exercise-name-field { position: relative; }
+.hep-exercise-autocomplete {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  margin-top: 2px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.hep-exercise-autocomplete-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--color-divider);
+  cursor: pointer;
+  text-align: left;
+  font-size: 13.5px;
+  line-height: 1.3;
+}
+.hep-exercise-autocomplete-row:first-child { border-top: none; }
+/* Not just var(--color-neutral-100) — that's nearly indistinguishable from
+   var(--color-surface) in dark mode, so a hovered row looked identical to its neighbors. */
+.hep-exercise-autocomplete-row:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
+.hep-exercise-autocomplete-name { font-weight: 600; }
+.hep-exercise-autocomplete-region {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+.hep-exercise-autocomplete-request {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+.hep-exercise-autocomplete-request:hover { background: var(--color-neutral-100); }
+/* Shown instead of the request button above for a licensed-but-not-pro clinician (see
+   ExerciseNameField's isPro gate in HepBuilder.tsx) — requestMovementLabExercise itself is
+   isPro-gated, so a request button here would just fail silently for that account. */
+.hep-exercise-autocomplete-empty { padding: 8px 10px; margin: 0; font-size: 12px; font-style: italic; color: var(--color-neutral-700); }
+.hep-exercise-request-form {
+  margin-top: 6px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.hep-exercise-request-actions { display: flex; gap: 8px; }
+.hep-exercise-request-sent { font-size: 12px; color: var(--color-accent); margin: 6px 0 0; }

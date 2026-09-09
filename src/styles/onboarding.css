@@ -213,3 +213,46 @@
   .professional-dates-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px; }
   .license-verification-card { max-width: 560px; }
 }
+
+/* Moved from pro.css — standalone clinic screens — clinic invite accept and LimbicPRO clinic pages */
+/* Clinic Setup / Clinic Report — a small centered-card shell within the AppShell layout
+   (Accept Invite stays genuinely standalone, since it must work for a signed-out visitor —
+   see app/clinic/accept-invite/page.tsx). */
+.clindash-standalone-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 48px 20px;
+}
+.clindash-standalone-title { font-family: var(--font-heading); font-size: 22px; margin: 0 0 4px; }
+.clindash-standalone-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 20px; }
+
+/* Moved from legal-admin.css — terms checkbox — sign-in */
+/* Clickwrap assent row on the sign-up and guest forms (components/SignInForm.tsx
+   AcceptTermsField). Sized to sit quietly above the submit button without reading as
+   fine print — the whole point is that it's noticed and ticked deliberately. Appended,
+   scoped, overrides nothing. */
+.accept-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+.accept-terms-box {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+.accept-terms-label {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.accept-terms-label a {
+  color: var(--color-neutral-700);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.accept-terms-label a:hover { color: var(--color-accent); }

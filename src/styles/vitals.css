@@ -1,16 +1,4 @@
-/* — Limbic Vitals (see app/(app)/wellness/metrics/*, components/vitals/*) — general
-   wellness tracking, not medical advice. Reuses .card/.field/.input/.btn for the two form
-   cards; everything below is specific to the disclaimer banner and the pure-CSS weekly bar
-   chart (no charting library — spec requirement). */
-.vitals-disclaimer {
-  font-size: var(--fs-11-5);
-  line-height: 1.5;
-  color: var(--color-neutral-700);
-  background: var(--color-neutral-100);
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-  margin-bottom: 18px;
-}
+
 
 .vitals-chart-wrap { overflow-x: auto; }
 .vitals-chart-days { display: flex; gap: 10px; align-items: flex-end; min-width: 320px; padding-top: 8px; }
@@ -136,4 +124,3 @@
 @media (max-width: 480px) {
   .vitals-chart-track { max-width: 26px; }
 }
-

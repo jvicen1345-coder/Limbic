@@ -1,3 +1,4 @@
+import "@/styles/legal-admin.css";
 import type { Metadata } from "next";
 import { LegalPageLayout } from "@/components/LegalPageLayout";
 

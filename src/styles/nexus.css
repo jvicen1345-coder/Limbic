@@ -28,31 +28,6 @@
   background: #000;
 }
 
-.filter-row {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-.filter-chip {
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
-}
-/* Chip.tsx's inactive state combines .tag-outline (border + colored text, no background)
-   with .filter-chip above — since .filter-chip's `border: none` comes later in the
-   cascade at equal specificity, it was silently canceling .tag-outline's border, and with
-   no background of its own either, the element fell through to the browser's default
-   <button> chrome: a light grey/white pill that read fine-ish in light mode but was hard
-   to read against dark mode's navy background (see the specialty filters on the Nexus
-   Directory page). This restores the intended outline look at higher specificity, with an
-   explicit transparent background so no default button styling can show through in either
-   theme. */
-.tag-outline.filter-chip {
-  border: 1px solid var(--color-accent);
-  background: none;
-}
-
 /* — Nexus — */
 .avatar {
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
@@ -96,7 +71,6 @@
 .message-bubble { max-width: 78%; padding: 8px 13px; border-radius: 16px; font-size: 13.5px; line-height: 1.4; }
 .message-bubble-mine { background: var(--color-accent); color: var(--color-bg); align-self: flex-end; border-bottom-right-radius: 4px; }
 .message-bubble-theirs { background: var(--color-surface); align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: var(--shadow-sm); }
-
 
 @media (min-width: 1024px) {
   .nexus-feed-pad { max-width: 680px; }

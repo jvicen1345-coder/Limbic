@@ -1,0 +1,14 @@
+/* Agent paywall notice. Shared by Wellness agent and Connexion. */
+
+/* Moved from wellness.css — agent paywall — Wellness agent and Connexion */
+/* — Limbic Agent Wellness — */
+.wellness-agent-paywall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+}

@@ -16,3 +16,188 @@
 @media (max-width: 640px) {
   .program-timeline-rotation .pro-accordion-content { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Moved from pro.css — plan comparison table — only /profile/membership uses these */
+/* — Profile > Membership: subscription-tier comparison table — same overflow-x-scroll
+   shape as .pro-table above, plus a sticky first column (feature labels) so the row you're
+   reading stays visible while scrolling horizontally to a tier further right — see
+   app/(app)/profile/membership/page.tsx. */
+.plan-compare-wrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--color-divider); border-radius: var(--radius-lg); }
+.plan-compare-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+.plan-compare-table thead th {
+  background: var(--color-card-surface);
+  padding: 20px 14px;
+  border-bottom: 1px solid var(--color-divider);
+  vertical-align: top;
+}
+.plan-compare-table thead th:first-child { text-align: left; position: sticky; left: 0; z-index: 2; }
+.plan-compare-table thead th:not(:first-child) { text-align: center; border-left: 1px solid var(--color-divider); }
+.plan-compare-table tbody th {
+  text-align: left;
+  font-weight: 500;
+  padding: 10px 14px;
+  color: var(--color-text);
+  white-space: nowrap;
+  position: sticky;
+  left: 0;
+  background: inherit;
+}
+.plan-compare-table tbody td { text-align: center; padding: 10px 14px; border-left: 1px solid var(--color-divider); }
+.plan-compare-table tbody tr td, .plan-compare-table tbody tr th { border-bottom: 1px solid var(--color-divider); }
+.plan-compare-table tbody tr:last-child td, .plan-compare-table tbody tr:last-child th { border-bottom: none; }
+.plan-compare-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--color-card-surface) 45%, var(--color-surface)); }
+.plan-compare-table tbody tr:nth-child(odd) { background: var(--color-surface); }
+/* One purchase column's whole header stack — name, price, and its Subscribe button (or
+   Current Plan pill) — centered and evenly spaced, in both the desktop table's <th> and the
+   mobile per-tier card header (see .plan-compare-card-header below), so the two never need
+   separate markup. */
+.plan-compare-header { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.plan-compare-name { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; color: var(--color-text); }
+.plan-compare-price { font-size: 15px; font-weight: 600; color: var(--color-neutral-700); }
+.plan-compare-current-pill {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: var(--fs-11);
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-accent);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+/* A tier with no Stripe Price configured yet (see TierConfig.comingSoon) — deliberately
+   neutral/muted rather than accent-colored like .plan-compare-current-pill above, so it
+   doesn't read as "you have this" at a glance. */
+.plan-compare-coming-soon-pill {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: var(--fs-11);
+  font-weight: 700;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.plan-compare-cta-form { width: 100%; margin-top: 2px; }
+.plan-compare-cta { width: 100%; font-size: 12.5px; padding: 7px 10px; }
+.plan-compare-check { color: #16a34a; font-weight: 700; }
+.plan-compare-dash { color: var(--color-neutral-700); }
+.plan-compare-soon { color: var(--color-neutral-700); font-style: italic; font-size: 12px; }
+.plan-compare-divider-row td {
+  background: var(--color-card-surface);
+  color: var(--color-neutral-700);
+  font-size: var(--fs-11);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 14px;
+  border-left: none;
+}
+/* Mobile alternative to the table above — one full-width card per tier, each listing
+   every feature row top to bottom, so comparing tiers on a phone is a normal vertical
+   scroll rather than horizontally scrolling the table one column at a time. Hidden on
+   desktop/tablet; swaps with .plan-compare-wrap at the same breakpoint as the rest of the
+   app's mobile layout (see AppShell's >=1024px desktop-layout switch). */
+.plan-compare-cards { display: none; }
+@media (max-width: 799px) {
+.plan-compare-wrap { display: none; }
+.plan-compare-cards { display: flex; flex-direction: column; gap: 16px; margin: 16px 0; }
+}
+.plan-compare-card { border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface); }
+.plan-compare-card--current { border-color: var(--color-accent); border-width: 2px; }
+.plan-compare-card-header { background: var(--color-card-surface); padding: 16px; text-align: center; }
+.plan-compare-card-features { list-style: none; margin: 0; padding: 0 16px; }
+.plan-compare-card-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-divider);
+  font-size: 13px;
+  color: var(--color-text);
+}
+.plan-compare-card-features li:last-child { border-bottom: none; }
+.plan-compare-card-soon {
+  background: var(--color-card-surface);
+  color: var(--color-neutral-700);
+  font-size: var(--fs-11);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  padding: 8px 16px;
+}
+
+/* Moved from home.css — credential date fields — only /profile/credentials uses these */
+/* Profile "Professional Dates" date fields (see components/ProfessionalDatesForm.tsx) — a
+   real <input type="date"> sits invisibly on top (native picker + keyboard/a11y behavior
+   stays intact, including the OS's own date-clearing UI where it has one), while a normal
+   styled div underneath renders the value. Mobile browsers apply their own oversized,
+   inconsistently-styled chrome to a *visible* native date input (large centered text, extra
+   built-in height that ignores our .input sizing) — routing the real control through an
+   invisible overlay instead of relying on that rendering sidesteps it, so the field looks
+   the same compact pill on every platform. The explicit clear button exists because several
+   mobile browsers give a visible native date input a clear ("x") affordance that isn't
+   reachable/usable once it's the invisible overlay (and some never expose one at all on
+   touch), so without this there'd be no way to empty the field again on mobile. */
+.date-field-wrap { position: relative; }
+.date-field-native {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  margin: 0; padding: 0; border: 0; background: transparent;
+  opacity: 0; cursor: pointer; z-index: 1;
+}
+.date-field-display {
+  display: flex; align-items: center; min-height: 36px;
+  padding-inline: 14px; border-radius: 999px;
+  font-size: 14px; color: var(--color-text);
+  background: var(--color-surface); border: 1px solid var(--color-divider);
+  pointer-events: none;
+}
+.date-field-display[data-empty="true"] { color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.date-field-wrap:hover .date-field-display { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.date-field-clear {
+  position: absolute; top: 50%; right: 6px; transform: translateY(-50%);
+  z-index: 2; width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  font-size: 16px; line-height: 1; color: var(--color-neutral-700);
+}
+.date-field-clear:hover { background: color-mix(in srgb, var(--color-text) 10%, transparent); color: var(--color-text); }
+
+/* Moved from wellness.css — Get-the-app how-to + toggle — only /profile uses these */
+/* — Assess Yourself — */
+/* Get the App card (Profile > About you — see components/GetTheAppCard.tsx) — one block
+   per platform, each its own small numbered how-to (order genuinely matters here, unlike
+   most lists in this app, so a real <ol> rather than bullets). Sized to match
+   .wellness-assess-steps' existing "small numbered instructions" treatment below rather
+   than inventing a second one. */
+.howto-platform-label { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--color-text); }
+.howto-steps { margin: 6px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.65; color: var(--color-text); }
+.howto-steps li + li { margin-top: 2px; }
+/* Generic on/off pill switch (see components/Switch.tsx) — a real <button role="switch">,
+   not a styled checkbox. */
+.switch {
+  position: relative;
+  width: 36px;
+  height: 21px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 999px;
+  padding: 0;
+  cursor: pointer;
+  background: var(--color-neutral-300);
+  transition: background 150ms ease;
+}
+.switch[aria-checked="true"] { background: var(--color-accent); }
+.switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 150ms ease;
+}
+.switch[aria-checked="true"] .switch-thumb { transform: translateX(15px); }

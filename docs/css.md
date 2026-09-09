@@ -16,6 +16,15 @@ re-exports the root barrel.
 | `shell.css`, `tour.css`, `screens.css`, `calendar.css`, `streaks.css`, `onboarding.css`, `programs.css` | `src/app/(app)/layout.tsx` | Authenticated chrome, widgets, and program search (onboarding modal + Profile) |
 | `profile.css` | `(app)/profile/layout.tsx` | Program Timeline rotations |
 | `<feature>.css` | That feature's `layout.tsx` (or page) | Page-private rules |
+| `metrics.css` | `(app)/wellness/layout.tsx`, `(app)/pro/layout.tsx` | Calculator readouts, rating badges |
+| `research-tools.css` | `(app)/article/layout.tsx`, `(app)/pro/layout.tsx` | Histogram explorer, research-literacy guide |
+| `patient-brief.css` | `pro/patient-brief`, `pro/force-lab`, `admin/connexion-safety-score` layouts | Printable patient brief |
+| `paywall.css` | `(app)/wellness/layout.tsx`, `(app)/connexion/layout.tsx` | Agent paywall notice |
+
+A rule shared by two features belongs in a sheet **both** routes load — either `base.css`
+when it is a true primitive, or a small sheet imported from each route's layout (the four
+above). Do not leave it in one feature's sheet and hope; `src/styles/route-css-reachability.test.ts`
+fails the build when a route can render a class none of its sheets define.
 
 Accordion (`.pro-accordion-*`) and filter chips (`.pro-filter-*`) are shared across Profile,
 Student, Atlas, Movement Lab, HEP, and LimbicPRO, so they live in `base.css`. Tab rails
@@ -32,6 +41,9 @@ authenticated shell because the role onboarding modal uses it.
    `layout.tsx`. Do **not** `@import` it from `src/styles/index.css`.
 4. Landing and sign-in must not download crossword, wellness, or connexion CSS.
    `src/styles/global-css-scope.test.ts` guards the root sheets.
+5. Run `npm run test:unit` before pushing. `route-css-reachability.test.ts` walks every
+   route's layout chain and component graph and fails if a class it can render is styled
+   only in a sheet that route never loads.
 
 ## Fallback before the split
 

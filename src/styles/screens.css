@@ -93,3 +93,204 @@
   .home-aside-col { width: 100%; position: static; }
 }
 
+/* Moved from base.css — authenticated-only shared widgets — kept off the landing/sign-in payload */
+.boards-tabs { overscroll-behavior-x: contain; }
+/* Moved from home.css — shared metric tiles and progress bars — Home, Boards, Student Atrium */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-neutral-300);
+  overflow: hidden;
+}
+.progress-bar-fill { height: 100%; border-radius: 999px; background: var(--color-accent); }
+/* — Daily PT Dashboard (see components/DailyDashboard.tsx) — */
+.dashboard-metrics-row {
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+/* Deliberately NOT .card's saturated blue — this is utility chrome (today's numbers),
+   not a content card like the hero/article cards right below it. A quieter, bordered
+   neutral tile keeps the two visually distinct instead of blurring into one wall of blue. */
+.dashboard-metric-tile {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  /* ~20% over the old 12px/14px, same ratio as .card's own padding bump. */
+  padding: 15px 17px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-200);
+}
+.dashboard-metric-tile .card-kicker {
+  /* A step darker than the neutral-700 every other .card-kicker uses — small (9.5px) and
+     all-caps compounds low contrast into genuinely hard to read, more than the rest of
+     this app's kicker labels tend to be. */
+  color: var(--color-neutral-800);
+  font-size: var(--fs-9-5);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dashboard-metric-value {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 21px;
+  line-height: 1.15;
+  color: var(--color-text);
+}
+@media (max-width: 799px) {
+.dashboard-metrics-row { flex-direction: column; }
+.dashboard-metric-tile { flex-direction: row; align-items: center; justify-content: space-between; }
+}
+/* Moved from article.css — shared video grid — saved clips, saved wellness, wellness articles */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 0;
+}
+.video-grid > * { min-width: 0; }
+@media (max-width: 799px) {
+.video-grid { grid-template-columns: minmax(0, 1fr); }
+}
+/* Moved from vitals.css — shared vitals disclaimer — Wellness, Connexion, HEP templates */
+/* — Limbic Vitals (see app/(app)/wellness/metrics/*, components/vitals/*) — general
+   wellness tracking, not medical advice. Reuses .card/.field/.input/.btn for the two form
+   cards; everything below is specific to the disclaimer banner and the pure-CSS weekly bar
+   chart (no charting library — spec requirement). */
+.vitals-disclaimer {
+  font-size: var(--fs-11-5);
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-bottom: 18px;
+}
+/* Moved from pro.css — shared gate screens (ProGate, LicenseGate, StudentGate, LimbicStudentGate) */
+/* — PRO gate / locked state — shared by every /pro/* tool page (see
+   components/pro/ProGate.tsx). Same shell as the agent paywall in paywall.css
+   (Limbic Agent's own paywall) so a locked clinical tool reads consistently
+   with every other paid-feature gate in the app rather than inventing a new
+   pattern. */
+.pro-locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  max-width: 480px;
+  margin: 24px auto 0;
+}
+.pro-locked-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  width: 100%;
+}
+.pro-locked-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text);
+}
+.pro-locked-list li svg { flex-shrink: 0; margin-top: 2px; color: var(--color-accent); }
+/* Moved from pro.css — shared icon-button sizing (SaveButton, HepBuilder, DeleteHepButton, WellnessSaveButton) */
+/* Icon buttons whose pixel size is set per-instance by the component (article/wellness save,
+   delete-exercise, HEP row controls). The size arrives as the --icon-btn-dim custom property
+   rather than an inline width/height, because an inline width wins against every stylesheet
+   rule — which is exactly what kept these below the touch-target floor on phones. */
+.icon-btn-sized { width: var(--icon-btn-dim); height: var(--icon-btn-dim); }
+@media (pointer: coarse) {
+.icon-btn-sized {
+    width: max(44px, var(--icon-btn-dim));
+    height: max(44px, var(--icon-btn-dim));
+  }
+}
+/* Moved from pro.css — shared Pagination component */
+/* Pagination (components/Pagination.tsx) — used by Under Review, APTA News, Saved and Search.
+   Sizing lives here rather than inline so the touch bump below can apply; the component keeps
+   only the active/disabled colours inline. */
+.pagination-nav { display: flex; align-items: center; gap: 4px; margin-top: 22px; flex-wrap: wrap; }
+.pagination-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: var(--radius-md);
+  border: none;
+  font: inherit;
+  font-size: 13px;
+  text-decoration: none;
+}
+/* 32px targets 4px apart are the classic "meant to tap 3, got 4". */
+@media (pointer: coarse) {
+.pagination-nav { gap: 6px; }
+.pagination-link { min-width: 44px; height: 44px; font-size: 14px; }
+}
+/* Moved from home.css — shared save-confirmation check (profile dates, vitals, metrics, CE tracker) */
+.profile-date-saved-check {
+  animation: fade-in-out 1.6s ease;
+  color: var(--color-accent-2-700);
+}
+/* Moved from boards.css — shared specialty page tab rail (SpecialtyPageTemplate) */
+/* — Limbic Boards tab bar (app/(app)/boards/page.tsx via components/BoardsTabs.tsx) — three
+   equal-width flat-underline tabs driven by React state, not routes (unlike the Link-based
+   .sub-tabs/.sub-tab pattern used for multi-page sections elsewhere), so the header/streak
+   badge above never remounts on switch. Background is --color-card-surface — the same tint
+   every .card already uses — so the bar reads as its own strip of chrome sitting on the
+   page rather than blending into it, without inventing a new surface color. */
+.boards-tabs {
+  display: flex;
+  width: 100%;
+  background: var(--color-card-surface);
+  border-radius: var(--radius-md);
+  border-bottom: 1px solid var(--color-divider);
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+.boards-tab {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  padding: 12px 10px;
+  font: 400 13.5px var(--font-body);
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.boards-tab:hover:not(.active) { color: var(--color-text); }
+.boards-tab.active { color: var(--color-accent); font-weight: 600; border-bottom-color: var(--color-accent); }
+/* Shrinks the label instead of letting 3 equal-width tabs force a scrollbar — every tab
+   stays visible and legible even at the narrowest supported phone width. */
+@media (max-width: 480px) {
+.boards-tab { font-size: var(--fs-11-5); padding: 10px 4px; }
+}
+/* Boards went from four tabs to five, and .boards-tab's flex:1 sized them to fit — which at
+   this page's measure ellipsed the labels down to "NPTE Breakd…". Let each keep the width of
+   its own label and scroll the strip when they don't all fit; a tab you nudge into view beats
+   a tab you can't read. They still grow to fill a wide strip. */
+.boards-tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.boards-tabs::-webkit-scrollbar { display: none; }
+.boards-tab { flex: 1 0 auto; }
