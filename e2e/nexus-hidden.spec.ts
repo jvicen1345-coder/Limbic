@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { test, expect } from "@playwright/test";
 import { freshEmail, signUpAndEnterApp } from "./helpers";
 
@@ -41,6 +43,17 @@ test.describe("Nexus is hidden from non-admins", () => {
     }
   });
 
+  test("the signed-out landing page does not advertise it", async ({ page }) => {
+    // The marketing page is the one surface a reader meets *before* any of the gates above
+    // can apply to them, and it used to carry a "Limbic Nexus — the professional network
+    // built for physical therapy" card in FEATURES. That is the worst version of the thing
+    // this file exists to prevent: it pitches the feature to someone who then signs up and
+    // finds no trace of it, which is the promise-and-withdraw that lib/nexus-visibility.ts
+    // says the 404 is there to avoid.
+    await page.goto("/");
+    await expect(page.getByText(/nexus/i)).toHaveCount(0);
+  });
+
   test("the nav badge endpoint reports no Nexus requests", async ({ page }) => {
     const email = freshEmail("nexus-badge");
     await signUpAndEnterApp(page, email);
@@ -62,4 +75,36 @@ test("the removed stock widget leaves no Profile toggle behind", async ({ page }
 
   await page.goto("/profile");
   await expect(page.getByText(/PT Industry Index/i)).toHaveCount(0);
+});
+
+/**
+ * The gates above all hide *screens*. A Server Action is an endpoint, so hiding the button
+ * that calls it proves nothing: the action ids ship in the client bundle wherever a
+ * component importing them is bundled, and an account that opted into Nexus before it went
+ * admin-only would still satisfy a bare `nexusOptIn` check. Every write in
+ * app/actions/nexus.ts therefore resolves its caller through `nexusMember()`, which folds in
+ * nexusVisibleTo.
+ *
+ * That invariant cannot be reached through the UI — there is no button left to press — so
+ * it is asserted against the source instead, the same way src/styles/global-css-scope.test.ts
+ * guards a rule no rendered page can show. A new action added later with a hand-written
+ * `getCurrentUser()` check is exactly the regression this catches.
+ */
+test("every Nexus write action resolves its caller through the visibility gate", () => {
+  const source = readFileSync(join(process.cwd(), "src/app/actions/nexus.ts"), "utf8");
+  const actions = [...source.matchAll(/export async function (\w+)\(([\s\S]*?)\n}/g)];
+  expect(actions.length, "no exported actions found — did the file move?").toBeGreaterThan(0);
+
+  for (const [, name, body] of actions) {
+    // leaveNexusAction is the documented exception: it only ever deletes the caller's own
+    // rows, so it stays reachable for someone Nexus is hidden from. optInToNexusAction
+    // cannot use nexusMember() either — it creates the membership nexusMember() requires —
+    // so it calls nexusVisibleTo directly.
+    if (name === "leaveNexusAction") continue;
+    const gated = name === "optInToNexusAction" ? /nexusVisibleTo\(user\)/ : /await nexusMember\(\)/;
+    expect(body, `${name} does not gate on Nexus visibility`).toMatch(gated);
+    if (name !== "optInToNexusAction") {
+      expect(body, `${name} still calls getCurrentUser() directly`).not.toMatch(/getCurrentUser\(\)/);
+    }
+  }
 });
