@@ -56,7 +56,7 @@ export function RpeScaleCard() {
           your effort matches your goal for that day.
         </p>
       </details>
-      <div className="wellness-calc-source">Source: Borg, 1982, Journal of Physical Education</div>
+      <div className="wellness-calc-source">Source: Borg GA. Psychophysical bases of perceived exertion. Med Sci Sports Exerc, 1982;14(5):377-381</div>
     </div>
   );
 }
