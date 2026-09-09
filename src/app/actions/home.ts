@@ -1,21 +1,18 @@
 "use server";
 
 import { revalidatePath, updateTag } from "next/cache";
-import { invalidateLiveArticlesCache } from "@/lib/news-live";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { withSeenId } from "@/lib/seen-tracking";
 import { MAX_HOME_GRID_SEEN_HISTORY } from "@/lib/home-grid-rotation";
 
 /** Forces the Home main feed's next render to pull genuinely fresh live articles instead
- *  of whatever's sitting in cache (see lib/news-live.ts's in-memory cache, plus the
- *  fetch()-level revalidate windows in lib/news-live.ts and lib/pubmed.ts) — both layers
- *  need invalidating, since the in-memory one sits in front of the tagged fetches and
- *  would otherwise keep serving its own snapshot even after the tags are updated.
- *  updateTag (not revalidateTag) because this is a read-your-own-click action — the
- *  reader who clicked Refresh should see new articles on this very next request, not get
- *  stale-while-revalidate semantics where the fresh pull only lands for someone else's
- *  later visit.
+ *  of whatever's sitting in cache (the tagged aggregations in lib/news-live.ts,
+ *  lib/apta-news.ts, and lib/pubmed.ts, plus those modules' fetch()-level revalidate
+ *  windows). updateTag (not revalidateTag) because this is a read-your-own-click
+ *  action — the reader who clicked Refresh should see new articles on this very next
+ *  request, not get stale-while-revalidate semantics where the fresh pull only lands for
+ *  someone else's later visit.
  *
  *  `currentGridFingerprints` are title fingerprints (see lib/home-grid-rotation.ts
  *  titleFingerprint) of whatever the grid was showing right before this click — recorded
@@ -35,8 +32,8 @@ export async function refreshHomeFeedAction(currentGridFingerprints: string[]) {
     }
   }
 
-  invalidateLiveArticlesCache();
   updateTag("live-news");
   updateTag("live-research");
+  updateTag("apta-news");
   revalidatePath("/home");
 }

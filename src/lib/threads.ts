@@ -277,7 +277,7 @@ function nexusHref(article: Article): string {
  *  generates its answer on click, PRO-gated, currently showing "Coming Soon" for everyone
  *  since generation is unfunded (see components/ThreadsWeb.tsx). Nothing here fabricates
  *  clinical content ahead of time either way. `articlePool` is the caller's already-fetched
- *  getArticles() result, passed in rather than fetched again here. `isAdmin` gates the
+ *  article-context pool, passed in rather than fetched again here. `isAdmin` gates the
  *  Nexus Discussion node's real post preview — Nexus itself is coming-soon for everyone
  *  else (see app/(app)/nexus/layout.tsx), so a non-admin must never see a real author name
  *  or post snippet here, only the generic "be the first to start one" fallback. */

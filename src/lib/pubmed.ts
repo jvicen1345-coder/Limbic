@@ -1,5 +1,6 @@
 import "server-only";
 import { XMLParser } from "fast-xml-parser";
+import { unstable_cache } from "next/cache";
 import type { Article, EvidenceLevel } from "@/lib/types";
 import { classify } from "@/lib/news-live";
 import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
@@ -287,8 +288,14 @@ export async function searchPubmed(query: string, limit = 12): Promise<Article[]
 }
 
 export async function fetchPubmedResearch(limit = DEFAULT_LIMIT): Promise<Article[]> {
-  return searchPubmed(DEFAULT_QUERY, limit);
+  return getCachedPubmedResearch(limit);
 }
+
+const getCachedPubmedResearch = unstable_cache(
+  async (limit: number): Promise<Article[]> => searchPubmed(DEFAULT_QUERY, limit),
+  ["pubmed-research-aggregation"],
+  { revalidate: 3600, tags: ["live-research"] }
+);
 
 /** Looks up a single PMID directly — used by getArticleById so an article surfaced by
  *  any search (the default research feed, or a one-off AI-generated query that isn't
