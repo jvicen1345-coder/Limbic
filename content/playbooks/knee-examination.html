@@ -282,7 +282,11 @@ figure svg{display:block; width:100%; max-width:660px; height:auto; margin:0 aut
   figure{overflow-x:hidden}
   figure svg{min-width:0}
 }
-figure text{font-family:var(--font-body); font-size:12px; fill:currentColor}
+/* :not([fill]) matters: a presentation attribute loses to a CSS rule, so a plain
+   `figure text{fill:currentColor}` silently overrode every fill= on every label and
+   painted the whole legend one colour. */
+figure text:not([fill]){font-family:var(--font-body); font-size:12px; fill:currentColor}
+figure text[fill]{font-family:var(--font-body); font-size:12px}
 figure text.mono{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em}
 figure text.big{font-family:var(--font-mono); font-size:13px; font-weight:600}
 @media (max-width:700px){
@@ -1788,14 +1792,14 @@ a{color:var(--accent)}
         <line x1="470" y1="46" x2="470" y2="248" stroke="currentColor" stroke-width="1" opacity=".3"></line>
 
         <path d="M130,72 L470,116" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"></path>
-        <path d="M130,216 L470,120" fill="none" stroke="var(--d2)" stroke-width="2.4" stroke-linecap="round"></path>
+        <path d="M130,216 L470,120" fill="none" stroke="var(--mod)" stroke-width="2.4" stroke-linecap="round"></path>
         <circle cx="130" cy="72" r="4" fill="var(--accent)"></circle>
         <circle cx="470" cy="116" r="4" fill="var(--accent)"></circle>
-        <circle cx="130" cy="216" r="4" fill="var(--d2)"></circle>
-        <circle cx="470" cy="120" r="4" fill="var(--d2)"></circle>
+        <circle cx="130" cy="216" r="4" fill="var(--mod)"></circle>
+        <circle cx="470" cy="120" r="4" fill="var(--mod)"></circle>
 
         <text class="mono" x="120" y="76" text-anchor="end" fill="var(--accent)">sensitivity</text>
-        <text class="mono" x="120" y="206" text-anchor="end" fill="var(--d2)">specificity</text>
+        <text class="mono" x="120" y="206" text-anchor="end" fill="var(--mod)">specificity</text>
 
         <text class="mono" x="130" y="56" text-anchor="middle">91%</text>
         <text class="mono" x="130" y="238" text-anchor="middle">55%</text>
@@ -1805,7 +1809,7 @@ a{color:var(--accent)}
         <text class="mono" x="130" y="272" text-anchor="middle" opacity=".75">5-7 days</text>
         <text class="mono" x="470" y="272" text-anchor="middle" opacity=".75">4-5 weeks</text>
 
-        <text class="mono" x="300" y="176" text-anchor="middle" fill="var(--hi)">36 points apart, then 1</text>
+        <text class="mono" x="300" y="252" text-anchor="middle" fill="currentColor" opacity=".8">36 points apart, then 1</text>
       </svg>
       <div class="figgrid c3">
         <div><b>Early</b> &mdash; sensitive and non-specific. A negative is informative; a positive is weak.</div>
@@ -1813,6 +1817,50 @@ a{color:var(--accent)}
         <div><b>Nothing about the knee changed.</b> Only the time since injury did, and with it what the same finding is worth.</div>
       </div>
       <figcaption><b>McMurray's sensitivity falls from 91% to 80% while its specificity rises from 55% to 79% between the first week and the second month after injury.</b> Two blinded surgeons examined 255 patients aged 20 to 45 at both timepoints, against MRI and arthroscopy, with 188 tears confirmed. This is why re-examining a knee at four weeks is a diagnostic act rather than a delay - and why a positive McMurray in the first week should not be treated as the same finding as a positive one a month later <span class="src">Rinonapoli 2025</span>.</figcaption>
+    </figure>
+
+    <figure>
+      <p class="figtitle">Four meniscal tests, and the line none of them clears by much</p>
+      <svg viewBox="0 0 620 290" role="img" aria-label="Forest plot of odds ratios for four meniscal tests against MRI in primary care. McMurray 1.79 with a confidence interval from 1.04 to 3.09, the only interval that excludes 1. Thessaly 1.24 from 0.71 to 2.18, Apley 1.24 from 0.73 to 2.12, and joint line tenderness 1.16 from 0.63 to 2.13 all cross 1, meaning a positive result from them changes nothing.">
+        <line x1="190.0" y1="242" x2="560.0" y2="242" stroke="currentColor" stroke-width="1" opacity=".28"></line>
+        <line x1="190.0" y1="242" x2="190.0" y2="247" stroke="currentColor" stroke-width="1" opacity=".28"></line>
+        <text class="mono" x="190.0" y="262" text-anchor="middle" fill="currentColor" opacity=".75">0.5</text>
+        <line x1="321.8" y1="242" x2="321.8" y2="247" stroke="currentColor" stroke-width="1" opacity=".28"></line>
+        <text class="mono" x="321.8" y="262" text-anchor="middle" fill="currentColor" opacity=".75">1</text>
+        <line x1="453.6" y1="242" x2="453.6" y2="247" stroke="currentColor" stroke-width="1" opacity=".28"></line>
+        <text class="mono" x="453.6" y="262" text-anchor="middle" fill="currentColor" opacity=".75">2</text>
+        <line x1="530.7" y1="242" x2="530.7" y2="247" stroke="currentColor" stroke-width="1" opacity=".28"></line>
+        <text class="mono" x="530.7" y="262" text-anchor="middle" fill="currentColor" opacity=".75">3</text>
+        <line x1="321.8" y1="62" x2="321.8" y2="242" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 3" opacity=".85"></line>
+        <text class="mono big" x="321.8" y="52" text-anchor="middle" fill="var(--accent)">OR 1 &#183; no information</text>
+        <text x="176.0" y="96" text-anchor="end" fill="currentColor">McMurray</text>
+        <line x1="329.3" y1="92" x2="536.3" y2="92" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity="1"></line>
+        <line x1="329.3" y1="87" x2="329.3" y2="97" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity="1"></line>
+        <line x1="536.3" y1="87" x2="536.3" y2="97" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity="1"></line>
+        <circle cx="432.5" cy="92" r="5.5" fill="var(--accent)"></circle>
+        <text x="176.0" y="136" text-anchor="end" fill="currentColor">Thessaly</text>
+        <line x1="256.7" y1="132" x2="470.0" y2="132" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity=".55"></line>
+        <line x1="256.7" y1="127" x2="256.7" y2="137" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity=".55"></line>
+        <line x1="470.0" y1="127" x2="470.0" y2="137" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity=".55"></line>
+        <circle cx="362.7" cy="132" r="5.5" fill="var(--surface)" stroke="var(--accent)" stroke-width="2" opacity=".8"></circle>
+        <text x="176.0" y="176" text-anchor="end" fill="currentColor">Apley</text>
+        <line x1="262.0" y1="172" x2="464.7" y2="172" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity=".55"></line>
+        <line x1="262.0" y1="167" x2="262.0" y2="177" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity=".55"></line>
+        <line x1="464.7" y1="167" x2="464.7" y2="177" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity=".55"></line>
+        <circle cx="362.7" cy="172" r="5.5" fill="var(--surface)" stroke="var(--accent)" stroke-width="2" opacity=".8"></circle>
+        <text x="176.0" y="216" text-anchor="end" fill="currentColor">Joint line tenderness</text>
+        <line x1="233.9" y1="212" x2="465.6" y2="212" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity=".55"></line>
+        <line x1="233.9" y1="207" x2="233.9" y2="217" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity=".55"></line>
+        <line x1="465.6" y1="207" x2="465.6" y2="217" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity=".55"></line>
+        <circle cx="350.0" cy="212" r="5.5" fill="var(--surface)" stroke="var(--accent)" stroke-width="2" opacity=".8"></circle>
+      </svg>
+      <div class="figgrid" style="grid-template-columns:repeat(2,1fr)">
+        <div><span class="lbl">McMurray</span><span class="t1">OR 1.79 (1.04-3.09)</span><br><span class="t2 em">The only interval that clears 1 - and its lower bound is 1.04.</span></div>
+        <div><span class="lbl">Thessaly</span><span class="t1">OR 1.24 (0.71-2.18)</span><br><span class="t2">Crosses 1. Best reliability of the four, &kappa; 0.54 - repeatable and uninformative.</span></div>
+        <div><span class="lbl">Apley</span><span class="t1">OR 1.24 (0.73-2.12)</span><br><span class="t2">Crosses 1 alone. Paired with McMurray it becomes the best combination of the six.</span></div>
+        <div><span class="lbl">Joint line tenderness</span><span class="t1">OR 1.16 (0.63-2.13)</span><br><span class="t2">Crosses 1, and the widest miss. Sn 0.77 with Sp 0.26.</span></div>
+      </div>
+      <figcaption><b>A filled dot is an interval that excludes 1; a hollow one crosses it.</b> Three of these four tests cannot move your probability of a meniscal tear in either direction, and the fourth clears the line by 0.04. The scale is logarithmic, which is how odds ratios are symmetric about 1 - a ratio of 2 and a ratio of 0.5 are the same distance from no information. All four come from primary care clinicians examining 292 patients and 75 healthy controls against MRI <span class="src">Logerstedt 2018</span>; the orthopaedic figures elsewhere in this section are higher, and that gap is the point of the table above.</figcaption>
     </figure>
   </section>
 

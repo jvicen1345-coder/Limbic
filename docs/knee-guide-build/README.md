@@ -51,12 +51,35 @@ prose, is what makes it read thinner.
 
 Distinct table column signatures: **1 → 5**. Tables 10 → 12.
 
+- Sections 03, 04, 06, 07, 08 and 09 restructured. Column signatures **1 → 15** across 16
+  tables. Only sections 02 and 10 still carry the generic three.
+- A second figure: a forest plot of the four meniscal odds ratios against the null at 1.
+
+### The figure-label bug, which is not only the knee's
+
+`figure text{fill:currentColor}` is a CSS rule, and a presentation attribute loses to a CSS
+rule. Every `fill="var(--accent)"` on every figure label in every guide was therefore ignored
+and painted one colour. Measured: **45 labels across four guides, all 45 ignored** — knee 4,
+hip 1, ankle 2, **shoulder 38**. In the knee's McMurray figure that meant "sensitivity" and
+"specificity" rendered identically, so the colour legend did not work at all.
+
+Fixed here by splitting the rule on `:not([fill])` / `[fill]`. **The same one-line fix is
+still owed to the hip, ankle and shoulder guides** — the shoulder is served to users now, and
+its eight figures are the ones most affected.
+
+Fixing it made three colours visible for the first time, so they got validated for the first
+time: `--accent` against `--d2` is ΔE 11.7 in light, below the 15 floor — two blues a reader
+cannot reliably separate. The specificity line moved to `--mod`, which passes at ΔE 30.1 light
+and 27.7 dark. `--mod` and `--low` appear only in CSS in this guide, so neither carries status
+meaning here.
+
 **Still to do**
-- The same restructuring for sections 03, 04, 06, 08 and 09, which are still the generic
-  `Item | How it is performed | Finding / norm`.
-- Figures: 1 → 6-8.
+- Section 02 as a `.numgrid` rather than a 25-row table. The CSS and the recall, filter and
+  taught-lane scripts all already support `.numcell`; the knee simply never used it, which is
+  why the brief's "key numbers grid" is missing.
+- Section 10 still generic.
+- Figures: 2 → 6-8.
 - The remaining `Convention` claims re-checked against the two new guidelines.
-- A "what fakes a result" column in the special-tests and strength sections.
 
 **A gap this rebuild exposed.** A guide carrying `comingSoon` is skipped by the served-guides
 test, so its card counts — sections, items, references — are asserted by nothing. Both counts
