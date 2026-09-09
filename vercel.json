@@ -19,6 +19,10 @@
     {
       "path": "/api/cron/refresh-live-feeds",
       "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron/refresh-daily-insights",
+      "schedule": "0 11 * * *"
     }
   ]
 }

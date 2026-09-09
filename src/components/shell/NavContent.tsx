@@ -294,11 +294,9 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
         )}
       </>
     ) : (
-      // Nexus isn't launched for non-admins yet — every /nexus/* route redirects them to the
-      // same "coming soon" waitlist screen regardless of which sub-page they land on (see
-      // app/(app)/nexus/layout.tsx), so a 4-link expandable section here would just be four
-      // paths to one identical screen. One plain link in, straight to the waitlist.
-      <NavLink href="/nexus" icon={<UsersIcon />} label="Nexus" exact={false} onNavigate={onNavigate} />
+      // Nexus does not exist for a non-admin (see lib/nexus-visibility.ts) — no entry, not
+      // even a link to a waitlist, since every /nexus/* route 404s for them anyway.
+      null
     ),
     saved: (
       <>
