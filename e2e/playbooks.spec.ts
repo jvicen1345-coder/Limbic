@@ -342,11 +342,54 @@ test.describe("Shoulder guide asset", () => {
     // And it runs: the scripts that build recall, the citation links and the taught lanes
     // all key off markup in that file, so if it were altered these counts move.
     await page.goto(URL);
-    await expect(page.locator("#refs li")).toHaveCount(82);
+    await expect(page.locator("#refs li")).toHaveCount(83);
     await expect(page.locator("input[data-ck]")).toHaveCount(32);
     const cites = await page.evaluate(() => (window as unknown as { playbookCites?: { linked: number; unlinked: string[] } }).playbookCites);
     expect(cites?.unlinked, "every citation resolves to a reference").toEqual([]);
     expect(cites?.linked).toBeGreaterThan(150);
+  });
+
+  /** Recall mode has to hide the answer wherever the answer is written, and a figure writes
+   *  it twice: once as labels inside the drawing, once as the legend beside it. Blurring only
+   *  the drawing left the legend sitting underneath in plain text, and the figure whose SVG
+   *  carries fewer than three labels was skipped by the recall wiring altogether — its legend
+   *  held the whole answer and was never hidden at all. Neither is visible in a screenshot of
+   *  the unblurred page, and neither moves a count, so it is asserted on the computed style. */
+  test("recall hides a figure's legend, not just the labels inside it", async ({ page }) => {
+    const email = `pw-recall-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+    await signUpAndEnterApp(page, email);
+    await grantLimbicStudent(email);
+    await page.goto(URL);
+
+    const legends = page.locator("figure:has(.figgrid > div)");
+    const count = await legends.count();
+    expect(count, "the guide still has figures carrying a legend").toBeGreaterThan(0);
+
+    await page.getByRole("button", { name: "Recall all" }).click();
+
+    for (let i = 0; i < count; i++) {
+      const fig = legends.nth(i);
+      const title = (await fig.locator(".figtitle").textContent())?.trim() ?? `figure ${i}`;
+      // Every figure with a legend takes part, whatever its label count.
+      await expect(fig, `${title} was skipped by recall`).toHaveClass(/labels-hidden/);
+      // The answer is hidden, and the label naming the question is not — the same split the
+      // tables use, where the first column stays readable.
+      const answer = fig.locator(".figgrid .t1, .figgrid .t2").first();
+      await expect(answer, `${title} leaks its answer`).toHaveCSS("filter", "blur(5px)");
+      await expect(fig.locator(".figgrid .lbl").first(), `${title} hides its own prompt`).toHaveCSS(
+        "filter",
+        "none",
+      );
+    }
+
+    // One entry lifts on click without giving away the ones beside it.
+    const grid = legends.last().locator(".figgrid > div");
+    await grid.first().click();
+    await expect(grid.first().locator(".t1")).toHaveCSS("filter", "none");
+    await expect(grid.nth(1).locator(".t1"), "lifting one entry revealed its neighbour").toHaveCSS(
+      "filter",
+      "blur(5px)",
+    );
   });
 });
 
@@ -365,7 +408,7 @@ test.describe("Retired shoulder playbook", () => {
 
     await page.goto("/student/playbooks/shoulder");
     await page.waitForURL(/\/student\/guides\/shoulder-examination$/);
-    await expect(page.locator("#refs li")).toHaveCount(82);
+    await expect(page.locator("#refs li")).toHaveCount(83);
   });
 });
 

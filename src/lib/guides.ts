@@ -44,12 +44,12 @@ export const GUIDES: Guide[] = [
     slug: "shoulder-examination",
     name: "Shoulder Examination",
     description:
-      "A full shoulder screen in the order you’d perform it. Every value says where it came from — what the literature measured, what is only convention, and what the studies still argue about — with 82 sources linked, a taught lane for what your own program says, and a practice plan built from what you miss.",
+      "A full shoulder screen in the order you’d perform it. Every value says where it came from — what the literature measured, what is only convention, and what the studies still argue about — with 83 sources linked, a taught lane for what your own program says, and a practice plan built from what you miss.",
     short:
-      "A full shoulder screen in the order you’d perform it, with every value marked as measured, convention or contested, and 82 sources linked.",
+      "A full shoulder screen in the order you’d perform it, with every value marked as measured, convention or contested, and 83 sources linked.",
     sections: 13,
     items: 32,
-    references: 82,
+    references: 83,
   },
   {
     slug: "hip-examination",
