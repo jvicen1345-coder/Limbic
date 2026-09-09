@@ -1,5 +1,5 @@
 import { getCurrentUser, hasStudentAccess, hasFreeAccess } from "@/lib/session";
-import { stripeEnabled } from "@/lib/stripe";
+import { stripeEnabled, planHasPrice, type BillablePlan } from "@/lib/stripe";
 import {
   subscribeToProAction,
   cancelProAction,
@@ -138,6 +138,23 @@ interface TierConfig {
    *  instead of a dead button. Remove once the tier's env var (e.g. STRIPE_PRICE_CLINIC) is
    *  actually set. */
   comingSoon?: boolean;
+  /** Which Stripe plan this tier's `action` buys, when it buys one — read by
+   *  withPricingGuard below to check that plan actually has a Price id configured. */
+  plan?: BillablePlan;
+}
+
+/** A tier whose Stripe Price id was never filled in can't start a checkout: startCheckout
+ *  (app/actions/pro.ts) returns silently on a missing price, so the Subscribe button posts
+ *  the form and nothing at all happens — no redirect, no error, no explanation. That's the
+ *  shape a half-finished Stripe setup takes in production (STRIPE_SECRET_KEY set, one of the
+ *  STRIPE_PRICE_* vars still empty), and it reads to the reader as a broken site rather than
+ *  as a tier that isn't on sale. Swap the dead button for a disabled one that says so.
+ *  Only meaningful once billing is configured at all — with STRIPE_SECRET_KEY unset every
+ *  button on this page is already disabled behind the "Payments aren't set up yet" banner,
+ *  and re-labelling them all here would just bury that clearer message. */
+function withPricingGuard(tier: TierConfig, billingEnabled: boolean): TierConfig {
+  if (!tier.action || !tier.plan || !billingEnabled || planHasPrice(tier.plan)) return tier;
+  return { ...tier, action: null, nonClickableReason: `${tier.label} isn't available for purchase yet` };
 }
 
 /** Renders one tier's name/price/subscribe-button-or-current-pill — shared between the
@@ -241,9 +258,9 @@ export default async function ProfileMembershipPage({
   const onClinic = user.isClinicPro;
   const onFree = !onWellness && !onStudent && !onPro && !onClinic;
 
-  const TIERS: TierConfig[] = [
+  const TIER_DEFS: TierConfig[] = [
     { key: "free", label: "Free", price: "$0", current: onFree, action: null },
-    { key: "wellness", label: "Limbic Wellness+", price: "$3/mo", current: onWellness, action: onWellness ? null : subscribeToWellnessPlusFromProfileAction },
+    { key: "wellness", label: "Limbic Wellness+", price: "$3/mo", current: onWellness, action: onWellness ? null : subscribeToWellnessPlusFromProfileAction, plan: "wellnessPlusMonthly" },
     {
       key: "student",
       label: "Limbic Student",
@@ -251,10 +268,12 @@ export default async function ProfileMembershipPage({
       current: onStudent,
       action: onStudent || !student ? null : subscribeToStudentTierAction,
       nonClickableReason: !onStudent && !student ? "Sign in with a .edu email to purchase Limbic Student" : undefined,
+      plan: "limbicStudent",
     },
-    { key: "pro", label: "LimbicPRO", price: "$15/mo", current: onPro, action: onPro ? null : subscribeToProAction },
+    { key: "pro", label: "LimbicPRO", price: "$15/mo", current: onPro, action: onPro ? null : subscribeToProAction, plan: "pro" },
     { key: "clinic", label: "Clinic PRO", price: "$100/mo", current: onClinic, action: null, comingSoon: !onClinic },
   ];
+  const TIERS = TIER_DEFS.map((tier) => withPricingGuard(tier, billingEnabled));
 
   // Whether any tier can actually be bought right now — a reader who is already on the top
   // tier, or who sees "Coming Soon" everywhere, has no consent to disclose anything about.
