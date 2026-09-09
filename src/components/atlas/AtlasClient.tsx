@@ -255,6 +255,14 @@ function ExploreFurtherSection({ zoneKey, zoneName, isPro, hasStudentOrPro }: { 
   );
 }
 
+/** Whether each plan on the gate card below can be bought right now, and what to say when
+ *  it can't — computed on the server (see app/(app)/atlas/page.tsx, which is where the
+ *  Price ids are readable) and passed down, since this is a client component. Replaces the
+ *  single `billingEnabled` flag these buttons used to share: "Stripe isn't configured" and
+ *  "this one plan has no Price id" are different failures, and only the second used to go
+ *  unreported — leaving an enabled button whose click did nothing at all. */
+type GatePurchaseStates = { student: { disabled: boolean; title?: string }; pro: { disabled: boolean; title?: string } };
+
 /** Replaces the old blur+overlay paywall with a plain, non-blurred upgrade card — see
  *  app/src/styles .atlas-gate-card. The Limbic Student button only submits for real when the
  *  visitor already qualifies for a .edu/comped Student identity (see
@@ -262,7 +270,7 @@ function ExploreFurtherSection({ zoneKey, zoneName, isPro, hasStudentOrPro }: { 
  *  as app/(app)/profile/membership/page.tsx's TierHeader — anyone actually seeing this gate
  *  card doesn't yet have that identity (hasFullAccess is false), so in practice this button
  *  reads as informational; LimbicPRO's button is always real when billing is configured. */
-function AtlasGateCard({ zoneName, canBuyStudent, billingEnabled }: { zoneName: string; canBuyStudent: boolean; billingEnabled: boolean }) {
+function AtlasGateCard({ zoneName, canBuyStudent, purchase }: { zoneName: string; canBuyStudent: boolean; purchase: GatePurchaseStates }) {
   return (
     <div className="atlas-gate-card">
       <h3 className="atlas-gate-card-title">Unlock the full {zoneName} profile</h3>
@@ -274,7 +282,7 @@ function AtlasGateCard({ zoneName, canBuyStudent, billingEnabled }: { zoneName: 
       </ul>
       {canBuyStudent ? (
         <form action={subscribeToStudentTierAction}>
-          <button type="submit" className="btn btn-primary atlas-gate-card-btn" disabled={!billingEnabled}>
+          <button type="submit" className="btn btn-primary atlas-gate-card-btn" disabled={purchase.student.disabled} title={purchase.student.title}>
             Unlock with Limbic Student — $3/mo
           </button>
         </form>
@@ -289,7 +297,7 @@ function AtlasGateCard({ zoneName, canBuyStudent, billingEnabled }: { zoneName: 
         </button>
       )}
       <form action={subscribeToProAction}>
-        <button type="submit" className="btn btn-secondary atlas-gate-card-btn" disabled={!billingEnabled}>
+        <button type="submit" className="btn btn-secondary atlas-gate-card-btn" disabled={purchase.pro.disabled} title={purchase.pro.title}>
           Unlock with LimbicPRO — $10/mo
         </button>
       </form>
@@ -311,13 +319,13 @@ function AtlasContentPanel({
   hasFullAccess,
   isPro,
   canBuyStudent,
-  billingEnabled,
+  purchase,
 }: {
   zoneKey: string | null;
   hasFullAccess: boolean;
   isPro: boolean;
   canBuyStudent: boolean;
-  billingEnabled: boolean;
+  purchase: GatePurchaseStates;
 }) {
   // Keyed by zoneKey rather than reset-then-refetch, so a stale zone's questions never
   // flash while the new zone's fetch is in flight — the derived `boardQuestions` below just
@@ -476,7 +484,7 @@ function AtlasContentPanel({
         </section>
       )}
 
-      {hasFullAccess ? rest : <AtlasGateCard zoneName={zone.name} canBuyStudent={canBuyStudent} billingEnabled={billingEnabled} />}
+      {hasFullAccess ? rest : <AtlasGateCard zoneName={zone.name} canBuyStudent={canBuyStudent} purchase={purchase} />}
 
       <ExploreFurtherSection zoneKey={zoneKey} zoneName={zone.name} isPro={isPro} hasStudentOrPro={hasFullAccess} />
     </div>
@@ -487,12 +495,12 @@ export function AtlasClient({
   hasFullAccess,
   isPro,
   canBuyStudent,
-  billingEnabled,
+  purchase,
 }: {
   hasFullAccess: boolean;
   isPro: boolean;
   canBuyStudent: boolean;
-  billingEnabled: boolean;
+  purchase: GatePurchaseStates;
 }) {
   const [view, setView] = useState<View>("anterior");
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
@@ -628,7 +636,7 @@ export function AtlasClient({
           hasFullAccess={hasFullAccess}
           isPro={isPro}
           canBuyStudent={canBuyStudent}
-          billingEnabled={billingEnabled}
+          purchase={purchase}
         />
       </aside>
     </div>
