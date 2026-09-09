@@ -5,7 +5,7 @@ TikTok editor. It runs 54.8s and is structured as three tiers, so a sound with a
 build works better here than a single beat drop: the section cards land at 0:14
 (Limbic Student), 0:28.5 (LimbicPRO) and 0:39.8 (Health & Wellness).
 
-## Description (everyone — use this one for a general audience)
+## Description (everyone, use this one for a general audience)
 
 The site's whole pitch is that it serves three audiences at once, so this version leads
 with that instead of picking one. One line per audience, then the research layer they
@@ -16,45 +16,44 @@ share. First line is 41 characters, which fits above TikTok's "more" fold.
 > Not just clinicians. Not just students. Anyone who wants the real research behind how
 > bodies move and heal.
 >
-> 🎓 In school — your semester, your playbooks, daily NPTE reps
-> 🩺 In the clinic — calculators, decision rules, special tests, 224 exercises with dosage
-> 💙 In your own body — wellness tools tuned to your numbers, built on the same evidence
-> 📚 For all three — current studies pulled live from PubMed, searchable in plain English
+> In school: your semester, your playbooks, daily NPTE reps.
+> In the clinic: calculators, decision rules, special tests, 224 exercises with dosage.
+> In your own body: wellness tools tuned to your numbers, built on the same evidence.
+> For all three: current studies pulled live from PubMed, searchable in plain English.
 >
-> Free to start → limbic.center
+> Free to start at limbic.center
 >
 > #physicaltherapy #physicaltherapist #dptstudent #rehab #healthtok
 
-## Description (post-ready)
+## Description (feature-by-feature)
 
-TikTok collapses everything after the first line behind "more", so the first line has to
-carry the hook on its own. This one is 60 characters and is the video's own opening card.
+Tracks the video beat for beat. Opens on the video's own first card.
 
-> The profession, the research, and the public — in one place.
+> The profession, the research, and the public, in one place.
 >
 > Limbic is one platform for physical therapy:
 >
-> 📚 Current research, live from PubMed and filtered to the topics you follow
-> 🔎 Search for research in plain English — Limbic writes the query and shows it to you
-> 🎓 Limbic Student — your semester, the shoulder playbook, daily NPTE reps
-> 🫀 Limbic Atlas — clinical anatomy, region by region
-> 🩺 LimbicPRO — calculators, decision rules, special tests, 224 exercises with dosage
-> 🧠 Limbic Agent — decision support grounded in evidence. Never a diagnosis.
-> 💙 Health & Wellness — tuned to your own numbers, private to you
+> Current research, live from PubMed and filtered to the topics you follow.
+> Search for research in plain English. Limbic writes the query and shows it to you.
+> Limbic Student: your semester, the shoulder playbook, daily NPTE reps.
+> Limbic Atlas: clinical anatomy, region by region.
+> LimbicPRO: calculators, decision rules, special tests, 224 exercises with dosage.
+> Limbic Agent: decision support grounded in evidence. Never a diagnosis.
+> Health and Wellness: tuned to your own numbers, private to you.
 >
-> Free to start → limbic.center
+> Free to start at limbic.center
 >
 > #physicaltherapy #dptstudent #physicaltherapist #ptschool #npte
 
 ## Description (student-first, shorter)
 
 > POV: your semester, your boards prep, your playbooks, and the research behind all of
-> it live in one app 🎓
+> it live in one app.
 >
 > Class schedule and assignments, the shoulder screen in the order you'd perform it,
 > daily NPTE reps, and clinical anatomy you can actually click through.
 >
-> Free to start → limbic.center
+> Free to start at limbic.center
 >
 > #dptstudent #dpt #ptschool #npte #futuredpt
 
@@ -62,7 +61,7 @@ carry the hook on its own. This one is 60 characters and is the video's own open
 
 > Everything you reach for at the point of care, in one place.
 >
-> Calculators, decision rules and special tests — free for every PT. Plus 224 exercises
+> Calculators, decision rules and special tests, free for every PT. Plus 224 exercises
 > with setup, dosage and precautions you can send straight into a patient's program, and
 > decision support grounded in current evidence (never a diagnosis).
 >
@@ -75,29 +74,36 @@ carry the hook on its own. This one is 60 characters and is the video's own open
 For YouTube Shorts and Instagram Reels, where the description has room to work, and for
 the landing page's own "See It In Action" slot.
 
-> Limbic is one platform for physical therapy — the profession, the research, and the
+> Limbic is one platform for physical therapy: the profession, the research, and the
 > public.
 >
 > Your home feed pulls current studies live from PubMed and filters them to the topics
-> you follow. You can also search in plain English: describe what you're looking for,
-> and Limbic turns it into a real PubMed query — and shows you the query it wrote.
+> you follow. You can also search in plain English. Describe what you're looking for,
+> and Limbic turns it into a real PubMed query, then shows you the query it wrote.
 >
 > **Limbic Student** covers the DPT journey. The Atrium holds your class schedule,
-> assignments and rotation countdown; playbooks walk a screen in the order you'd
+> assignments and rotation countdown. Playbooks walk a screen in the order you'd
 > actually perform it, with every value marked measured, convention or contested and 83
-> sources linked; and Boards gives you a term, a question and a case every day. **Limbic
+> sources linked. Boards gives you a term, a question and a case every day. **Limbic
 > Atlas** opens clinical anatomy region by region.
 >
-> **LimbicPRO** is the clinician's side. The Clinical Toolbox — calculators, decision
-> rules, special tests — is free for every PT. The Movement Lab carries 224 therapeutic
-> exercises and 19 phased protocols with setup, technique, dosage and precautions, ready
-> to send straight into a patient's program. And Limbic Agent offers decision support
-> grounded in current evidence: never a diagnosis, always a starting point.
+> **LimbicPRO** is the clinician's side. The Clinical Toolbox, with its calculators,
+> decision rules and special tests, is free for every PT. The Movement Lab carries 224
+> therapeutic exercises and 19 phased protocols with setup, technique, dosage and
+> precautions, ready to send straight into a patient's program. And Limbic Agent offers
+> decision support grounded in current evidence: never a diagnosis, always a starting
+> point.
 >
-> **Health & Wellness** gives the people you treat the same research their physical
+> **Health and Wellness** gives the people you treat the same research their physical
 > therapist uses, tuned to their own numbers and private to them.
 >
 > Free to start at limbic.center
+
+### House style for this copy
+
+No emoji and no em dashes anywhere in the posted text. Where a dash was doing work,
+use a colon, a comma, or a full stop instead. Same goes for the arrow that used to
+sit in front of the URL.
 
 ## Hashtag bank
 
