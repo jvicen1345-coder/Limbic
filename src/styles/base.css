@@ -314,6 +314,10 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 }
 
 .collapsible-card-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   cursor: pointer;
   list-style: none;
   padding: 18px;
@@ -327,15 +331,14 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
   display: none;
 }
 
-.collapsible-card-summary::after {
-  content: "+";
-  float: right;
-  font-size: 20px;
+.collapsible-card-chevron {
+  flex-shrink: 0;
+  color: var(--color-neutral-700);
   transition: transform 180ms ease;
 }
 
-.collapsible-card[open] .collapsible-card-summary::after {
-  content: "−";
+/* Closed: points down (where the card will expand). Open: points up (where it will shrink). */
+.collapsible-card[open] .collapsible-card-chevron {
   transform: rotate(180deg);
 }
 
@@ -361,7 +364,7 @@ html[data-theme="dark"] .tag-evidence-ce { background: color-mix(in srgb, #e0741
 
 @media (prefers-reduced-motion: reduce) {
   .collapsible-card-content,
-  .collapsible-card-summary::after {
+  .collapsible-card-chevron {
     transition: none;
   }
 }
