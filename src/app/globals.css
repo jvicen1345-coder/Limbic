@@ -14922,3 +14922,18 @@ button.playbook-maskwrap:focus-visible {
    and skips the structure the page is built on. */
 .toolbox-group-title { font-size: 17.5px; letter-spacing: -0.01em; }
 .toolbox-group-head { padding-bottom: 8px; }
+
+/* The note on the Playbooks hub explaining a short list — see the withheld set in
+   lib/playbook-content.ts. */
+.playbook-hub-note {
+  margin: 18px 0 0;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-warn) 12%, var(--color-surface));
+  border-left: 3px solid var(--color-warn);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  max-width: 72ch;
+}
+.playbook-hub-note b { color: var(--color-text); }

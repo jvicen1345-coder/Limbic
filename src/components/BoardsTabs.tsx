@@ -11,6 +11,7 @@ import { MissedQuestionsReview } from "@/components/boards/MissedQuestionsReview
 import { NPTE_DOMAIN_WEIGHTS, domainSlug, type BoardQuestion, type BoardTerm, type NpteDomain } from "@/lib/board-content";
 import type { BoardsProgress } from "@/lib/boards-progress";
 import type { PlaybookSummary } from "@/lib/playbook-content";
+import { GUIDES, guideHref } from "@/lib/guides";
 import type { DailyCase } from "@/lib/cases-static";
 
 /** The 5 scored systems, as the FSBPT content outline names them. `domain` ties each one
@@ -366,16 +367,18 @@ export function BoardsTabs({
 
           <div className="boards-guide-grid">
             {/* Served whole from content/playbooks rather than built from lib/playbooks, so
-                it leads to its own document rather than a playbook page. The document carries
-                its own link back into Limbic. */}
-            <Link className="boards-guide-card" href="/student/guides/shoulder-examination">
-              <span className="boards-guide-card-name">Shoulder Examination</span>
-              <span className="boards-guide-card-desc">
-                A full shoulder screen in the order you&rsquo;d perform it, with every value marked as measured,
-                convention or contested, and 82 sources linked.
-              </span>
-              <span className="boards-guide-card-meta">12 sections · 32 exam items · 82 references</span>
-            </Link>
+                each leads to its own document rather than a playbook page. Every document
+                carries its own link back into Limbic. Listed from lib/guides.ts so this and
+                the hub cannot drift apart. */}
+            {GUIDES.map((guide) => (
+              <Link className="boards-guide-card" key={guide.slug} href={guideHref(guide)}>
+                <span className="boards-guide-card-name">{guide.name}</span>
+                <span className="boards-guide-card-desc">{guide.short}</span>
+                <span className="boards-guide-card-meta">
+                  {guide.sections} sections · {guide.items} exam items · {guide.references} references
+                </span>
+              </Link>
+            ))}
             {playbooks.map((playbook) => (
               <Link className="boards-guide-card" key={playbook.slug} href={`/student/playbooks/${playbook.slug}`}>
                 <span className="boards-guide-card-name">{playbook.name}</span>

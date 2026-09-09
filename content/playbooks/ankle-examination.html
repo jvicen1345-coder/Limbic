@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="light dark">
-<title>JOINT Examination Playbook</title>
+<title>Ankle Examination Playbook</title>
 <style>
   html{color-scheme:light dark}
   body{margin:0; font:14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif}
@@ -784,11 +784,13 @@ a{color:var(--accent)}
 <a class="skip" href="#main">Skip to the guide</a>
 <nav>
   <div class="navrow">
+    <a href="/student/playbooks" title="Back to Limbic Playbooks">&larr; Limbic</a>
+    <span class="navdiv" aria-hidden="true"></span>
     <button class="recall-toggle" id="recallBtn" aria-pressed="false" title="Blur every blurrable area on the page - press again to clear it">Recall all</button>
     <span class="navdiv" aria-hidden="true"></span>
     <select id="navpick" aria-label="Jump to a section"></select>
     <div class="navlinks">
-    <a href="#checklist">32 Items</a>
+    <a href="#checklist">13 Items</a>
     <a href="#numbers">Numbers</a>
     <a href="#posture">Posture</a>
     <a href="#arom">AROM</a>
@@ -813,9 +815,16 @@ a{color:var(--accent)}
 <div class="wrap">
   <header class="masthead">
     <div>
-      <p class="eyebrow">Discipline &middot; scope of the guide <span class="ver">Version 1.0 &middot; MONTH YEAR</span></p>
-      <h1>JOINT Examination Playbook</h1>
-      <p>One paragraph on what this guide is. Keep the last sentence:
+      <p class="eyebrow">Physical therapy &middot; the lateral ankle screen, in order <span class="ver">Version 1.0 &middot; September 2026</span></p>
+      <h1>Ankle Examination Playbook</h1>
+      <p>A full lateral ankle screen in the order you would perform it, with every value marked for what
+      it is worth. This is the best-evidenced joint in the series - two freely readable graded
+      guidelines carry 34 current recommendations between them - and it is also the one where the
+      honest prognosis is worst: <b>40% of people who seek care for a first sprain develop chronic
+      instability</b>, and full recovery "may take months or years to obtain, and cannot be expected
+      in all patients". The best evidence here is for <b>prevention</b>, which is why prevention is
+      the argument rather than an afterthought. And the special tests are recommended without any
+      published accuracy at all, which the guide says plainly rather than filling in.
       <b>This is a study aid for examination preparation, not a clinical reference</b> - check any
       value against current literature before it weights a decision about a patient.</p>
     </div>
@@ -860,31 +869,115 @@ a{color:var(--accent)}
 
   <section id="checklist">
     <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2><span class="note">check-off saves in this browser</span></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">One decision comes before everything else - whether this ankle needs a radiograph. Get it early, and apply the rule entire.</p>
     
     <div class="tablewrap">
       <table class="check-table">
         <colgroup><col style="width:4%"><col style="width:5%"><col style="width:17%"><col style="width:37%"><col style="width:37%"></colgroup>
         <thead><tr><th scope="col"></th><th scope="col">#</th><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Example item"></td><td class="idx">1</td>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Apply the Ottawa Ankle Rules first"></td><td class="idx">1</td>
+        <td class="name">Apply the Ottawa Ankle Rules first</td>
+        <td>Malleolar zones, navicular, base of the fifth metatarsal, and ability to bear weight for four steps.</td>
+        <td data-imp="Ottawa|malleolar|navicular|entirety">
+          <b>And apply them in their entirety.</b> Omitting malleolar tenderness and relying on weight bearing alone dropped sensitivity to <b>88%</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="2" aria-label="Mark done: What the rules are for"></td><td class="idx">2</td>
+        <td class="name">What the rules are for</td>
+        <td>Deciding about imaging, not finding fractures.</td>
+        <td data-imp="ruling out|pooled|post-test|imaging">
+          <b>Ruling out.</b> Pooled sensitivity <b>0.92</b>, specificity <b>0.35</b>, &minus;LR <b>0.13</b>; a negative leaves roughly a <b>1%</b> post-test probability of fracture. <span class="src">Sharifi Razavi 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="3" aria-label="Mark done: Red flags"></td><td class="idx">3</td>
+        <td class="name">Red flags</td>
+        <td>History and inspection.</td>
+        <td data-imp="syndesmotic|Achilles rupture|neurovascular|infection">
+          Fracture, syndesmotic injury, Achilles rupture, infection, neurovascular compromise. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="4" aria-label="Mark done: Screen above"></td><td class="idx">4</td>
+        <td class="name">Screen above</td>
+        <td>Palpate the fibula along its whole length and check the knee.</td>
+        <td data-imp="fibula|Maisonneuve|proximal|knee">
+          <b>A Maisonneuve fracture is missed by looking only where it hurts.</b> <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="5" aria-label="Mark done: Classify from the history"></td><td class="idx">5</td>
+        <td class="name">Classify from the history</td>
+        <td>Mechanism, time since injury, and first sprain or recurrence.</td>
+        <td data-imp="mechanism|recurrence|prevention|first">
+          <b>First or repeat changes the plan</b>, because the prevention evidence differs for each. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="6" aria-label="Mark done: Resting state"></td><td class="idx">6</td>
+        <td class="name">Resting state</td>
+        <td>Swelling and where it sits, ecchymosis, point tenderness, standing posture.</td>
+        <td data-imp="swelling|ecchymosis|point tenderness|baseline">
+          Swelling is a <b>Grade A</b> documented measure, at baseline and two or more times. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="7" aria-label="Mark done: What they can do alone"></td><td class="idx">7</td>
+        <td class="name">What they can do alone</td>
+        <td>Gait and weight bearing, active range, lunge, balance, hopping.</td>
+        <td data-imp="lunge|eyes-closed|Star Excursion|hopping">
+          The guideline names the instruments: <b>weight-bearing lunge, eyes-closed single-limb balance, Star Excursion Balance Test, timed single-limb hopping</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="8" aria-label="Mark done: What you do to them"></td><td class="idx">8</td>
+        <td class="name">What you do to them</td>
+        <td>Passive range, talar translation, talar inversion, accessory glide.</td>
+        <td data-imp="talar translation|talar inversion|accessory|passive">
+          <b>Talar translation and talar inversion are Grade A</b> documented measures, not optional extras. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="9" aria-label="Mark done: What is short"></td><td class="idx">9</td>
+        <td class="name">What is short</td>
+        <td>Gastrocnemius against soleus; plantar fascia and the windlass.</td>
+        <td data-imp="gastrocnemius|soleus|windlass|crosses">
+          Knee straight then bent - the difference is the gastrocnemius, because it crosses the knee. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="10" aria-label="Mark done: What is weak"></td><td class="idx">10</td>
+        <td class="name">What is weak</td>
+        <td>The four directions, fibularis specifically, and the hip.</td>
+        <td data-imp="fibularis|abduction|external rotation|directions">
+          In chronic instability, <b>hip abduction, extension and external rotation</b> are documented measures at <b>Grade C</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="11" aria-label="Mark done: Where is it"></td><td class="idx">11</td>
+        <td class="name">Where is it</td>
+        <td>Lateral ligaments, deltoid, syndesmosis, fibula, fifth metatarsal base, Achilles.</td>
+        <td data-imp="deltoid|syndesmosis|metatarsal|tenderness">
+          Point tenderness is one of the seven findings used to classify severity. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="12" aria-label="Mark done: What is it"></td><td class="idx">12</td>
+        <td class="name">What is it</td>
+        <td>Anterior drawer, plus reverse anterolateral drawer and anterolateral talar palpation.</td>
+        <td data-imp="anterior drawer|anterolateral|palpation|alone">
+          <b>Grade B</b> - and note the drawer is explicitly <b>not enough on its own</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="13" aria-label="Mark done: What you do about it"></td><td class="idx">13</td>
+        <td class="name">What you do about it</td>
+        <td>Prevent, then treat by phase.</td>
+        <td data-imp="prevent|phase|graded|guidelines">
+          <b>Two graded guidelines apply here</b>, the most evidence any section in these four guides rests on. <span class="src">Martin 2021</span> <span class="src">Chimenti 2024</span>
         </td>
       </tr>
         </tbody>
@@ -895,108 +988,221 @@ a{color:var(--accent)}
 
   <section id="numbers">
     <div class="sechead"><span class="secnum">02</span><h2>Numbers worth knowing cold</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">The ankle has the strongest evidence in this series and still no published accuracy for its special tests. That contrast is the section - and so is the prognosis, which is worse than most people assume.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Ottawa Ankle Rules, pooled</td>
+        <td>Meta-analysis across studies.</td>
+        <td data-imp="pooled|likelihood|diagnostic odds|meta-analysis">
+          <b>Sn 0.92 (95% CI 0.91-0.93)</b>, <b>Sp 0.35 (0.34-0.36)</b>, <b>+LR 1.76 (1.46-2.13)</b>, <b>&minus;LR 0.13 (0.09-0.19)</b>, <b>DOR 16.21 (10.15-25.89)</b>. <span class="src">Sharifi Razavi 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What that buys you</td>
+        <td>Read the two directions separately.</td>
+        <td data-imp="negative|radiography|probability|direction">
+          A negative drops fracture probability to about <b>1%</b>, which is why it safely reduces radiography. A positive barely moves it. <b>Rule-out, not rule-in.</b> <span class="src">Sharifi Razavi 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The specificity is not one number</td>
+        <td>Ask across how many studies.</td>
+        <td data-imp="spread|varies|setting|studies">
+          Reported across studies as <b>7.8% to 68%</b> against a sensitivity of <b>92%-100%</b> - a fourteen-fold spread. A single pooled specificity hides how much it varies by setting. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Apply them entire</td>
+        <td>Do not shortcut to the weight-bearing question.</td>
+        <td data-imp="shortcut|malleolar|bear weight|whole">
+          Dropping malleolar tenderness and using only inability to bear weight and take four steps gave sensitivity <b>88%</b> - worse than the whole rule. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">In children</td>
+        <td>Compare the two rules.</td>
+        <td data-imp="low-risk|children|inferior|population">
+          The low-risk ankle rules' sensitivity of <b>85.7%</b> is <b>inferior</b> to the Ottawa rules' <b>100%</b> in that population. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What implementing them achieves</td>
+        <td>Beyond the diagnosis.</td>
+        <td data-imp="cost|wait time|length of stay|outcomes">
+          Reduced cost, wait time, length of stay (median <b>20 minutes</b>) and imaging, <b>without sacrificing outcomes</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">How often a first sprain becomes chronic instability</td>
+        <td>Ask the prognosis question out loud.</td>
+        <td data-imp="chronic instability|prospective|first-time|sought care">
+          <b>40%.</b> In the only prospective study to date, chronic ankle instability was present in <b>40% of people who sought care for a first-time lateral ankle sprain</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">And that is probably an underestimate elsewhere</td>
+        <td>Compare study designs.</td>
+        <td data-imp="retrospective|underrepresented|care-seeking|burden">
+          The guideline attributes much lower retrospective estimates to care-seeking behaviour, and says the true burden is <b>likely underrepresented</b> in retrospective designs. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Return to participation</td>
+        <td>Set the expectation early.</td>
+        <td data-imp="return|participation|demands|weeks">
+          <b>1 day to a little more than 3 weeks</b>, depending on the demands of the activity or sport. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Full recovery is a different question</td>
+        <td>Do not let the first number stand for the second.</td>
+        <td data-imp="full recovery|months or years|expected|symptoms">
+          The guideline's own words: <b>full recovery with no symptoms or limitations may take months or years to obtain, and cannot be expected in all patients</b>. Return to sport is not recovery. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Does severity predict the course?</td>
+        <td>Resist the grading instinct.</td>
+        <td data-imp="severity|conflicting|clinical course|mild">
+          <b>The evidence conflicts.</b> The guideline states there is conflicting evidence for the role of injury severity in the clinical course - a mild sprain is not a promise. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Recurrence rates</td>
+        <td>Ask about previous sprains every time.</td>
+        <td data-imp="recurrent|collegiate|professional|soccer">
+          Nearly <b>12%</b> of reported sprains in collegiate athletes were recurrent; <b>14.2%</b> of professional football and basketball players report a history of recurrence; <b>13.7%</b> of elite soccer players sustain one. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Modifiable risk for a repeat sprain</td>
+        <td>Two things you can change.</td>
+        <td data-imp="prophylactic|balance training|risk factor|subsequent">
+          <b>Not using prophylactic bracing</b> and <b>not doing a balance-training programme</b> are both risk factors for a subsequent sprain. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What predicts chronic instability at 6 months</td>
+        <td>Test it at two weeks.</td>
+        <td data-imp="jumping|landing|postural control|predicts">
+          <b>Inability to complete jumping and landing tasks within 2 weeks</b> of injury, poorer dynamic postural control, and lower self-reported function. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">An early MRI finding that predicts a slow course</td>
+        <td>If imaging was done, read it for prognosis.</td>
+        <td data-imp="bone marrow|contusion|walking|sport">
+          A medial joint bone marrow contusion on tibia and/or talus within two weeks meant <b>25 versus 16 days</b> to normal walking (P = .0002) and <b>92 versus 56 days</b> to sport (P = .0001). <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Laxity and function come apart</td>
+        <td>Do not read one from the other.</td>
+        <td data-imp="laxity|improved|drawer|significantly">
+          Over six weeks, self-reported function improved significantly while <b>anterior drawer laxity did not change at all</b> (P > .05). <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Anterior drawer accuracy</td>
+        <td>Ask for the figure before you rely on one.</td>
+        <td data-imp="accuracy|published|recommends|figure">
+          <b>There is none published here.</b> <span class="src">no traceable source</span> The guideline recommends the test at Grade B and does not report its accuracy.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Talar tilt accuracy</td>
+        <td>Same question.</td>
+        <td data-imp="talar tilt|appendix|query|finding">
+          <b>None.</b> <span class="src">no traceable source</span> Its only appearance in the guideline is inside the <b>literature search-strategy appendix</b> - a list of query terms, not a finding.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Normal ankle ROM</td>
+        <td>Goniometry against the other side.</td>
+        <td data-imp="goniometr|normative|other side|convention">
+          <span class="prov c">Convention</span> No free normative source, as at the hip and knee. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What is traceable about that</td>
+        <td>Compare textbook to measured.</td>
+        <td data-imp="textbook|probability sample|argument|degrees">
+          Against a national probability sample, textbook values for hip and knee were off by <b>as much as 18&deg;</b>. That paper does not cover the ankle, so it supports the argument here and is <b>not</b> an ankle figure. <span class="src">Roach 1991</span>
         </td>
       </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- WORKED FIGURE. Three panels comparing a normal state against two faults - the
-         "draw the difference" pattern. Conventions, all of which the machinery relies on:
-         · currentColor for structure, so it themes in light and dark automatically
-         · var(--accent) for the thing being measured, var(--hi) for the fault
-         · role="img" + aria-label carrying the same claim the picture makes
-         · <text> labels are hidden by Recall; click one to lift it. Keep them short -
-           whole sentences belong in the figcaption, not the drawing
-         · .figgrid below the svg holds the legend as reflowing HTML, so it stacks on a
-           phone instead of overlapping the drawing
-         · if the drawing has dead space beside it at desktop width, swap the viewBox at
-           narrow widths with a small matchMedia script rather than letting it shrink -->
     <figure>
-      <p class="figtitle">What the figure claims, in one line</p>
-      <svg viewBox="0 0 620 210" role="img" aria-label="Say here, in a sentence, exactly what a reader who cannot see the drawing would need to know.">
-        <defs>
-          <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"></path>
-          </marker>
-        </defs>
+      <p class="figtitle">One number is settled; the other is not</p>
+      <svg viewBox="0 0 620 300" role="img" aria-label="Ottawa Ankle Rules accuracy across studies. Sensitivity sits in a narrow band from 92 to 100 percent. Specificity ranges hugely, from 7.8 to 68 percent. The rule is consistently good at ruling fracture out and inconsistently poor at ruling it in.">
+        <line x1="110" y1="76" x2="110" y2="236" stroke="currentColor" stroke-width="1" opacity=".35"></line>
+        <line x1="340" y1="76" x2="340" y2="236" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".25"></line>
+        <line x1="570" y1="76" x2="570" y2="236" stroke="currentColor" stroke-width="1" opacity=".35"></line>
 
-        <!-- panel 1 - the normal state -->
-        <line x1="70" y1="40" x2="70" y2="185" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".55"></line>
-        <circle cx="95" cy="110" r="32" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
-        <path d="M 70 82 A 32 32 0 0 0 70 138 Z" fill="var(--accent)" fill-opacity=".2"></path>
-        <text class="mono" x="95" y="176" text-anchor="middle">NORMAL</text>
+        <rect x="533" y="98" width="37" height="26" rx="3" fill="var(--accent)" fill-opacity=".25" stroke="var(--accent)" stroke-width="1.8"></rect>
+        <rect x="146" y="178" width="277" height="26" rx="3" fill="var(--hi)" fill-opacity=".18" stroke="var(--hi)" stroke-width="1.8"></rect>
 
-        <!-- panel 2 - the fault, drawn as the same picture with one thing changed -->
-        <line x1="290" y1="40" x2="290" y2="185" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".55"></line>
-        <circle cx="272" cy="110" r="32" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
-        <path d="M 290 82 A 32 32 0 1 0 290 138 Z" fill="var(--hi)" fill-opacity=".2"></path>
-        <line x1="330" y1="110" x2="380" y2="110" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arw)"></line>
-        <text class="mono" x="272" y="176" text-anchor="middle" fill="var(--hi)">FAULT</text>
+        <text class="mono" x="112" y="92" text-anchor="start" fill="var(--accent)">sensitivity</text>
+        <text class="mono" x="112" y="172" text-anchor="start" fill="var(--hi)">specificity</text>
 
-        <!-- panel 3 - the measurement that separates them -->
-        <line x1="470" y1="70" x2="470" y2="150" stroke="var(--accent)" stroke-width="1.5"></line>
-        <line x1="464" y1="70" x2="476" y2="70" stroke="var(--accent)" stroke-width="1.5"></line>
-        <line x1="464" y1="150" x2="476" y2="150" stroke="var(--accent)" stroke-width="1.5"></line>
-        <text class="mono" x="484" y="114" fill="var(--accent)">the value</text>
+        <text class="mono" x="551" y="88" text-anchor="middle">92&ndash;100%</text>
+        <text class="mono" x="284" y="196" text-anchor="middle">7.8&ndash;68%</text>
+
+        <text class="mono" x="110" y="256" text-anchor="middle" opacity=".7">0%</text>
+        <text class="mono" x="340" y="256" text-anchor="middle" opacity=".7">50%</text>
+        <text class="mono" x="570" y="256" text-anchor="middle" opacity=".7">100%</text>
+
+        <text class="mono" x="284" y="284" text-anchor="middle" opacity=".8">a fourteen-fold spread</text>
       </svg>
       <div class="figgrid c3">
-        <div><span class="lbl">Normal</span><span class="t2">What you should see, and against what reference.</span></div>
-        <div><span class="lbl">Fault</span><span class="t2">The one thing that changed, named the way a student will be asked for it.</span></div>
-        <div><span class="lbl">The value</span><span class="t2">The threshold, with its provenance - most of these are convention.</span></div>
+        <div><b>Sensitivity</b> &mdash; narrow and high across every study. This is why a negative rule is trustworthy.</div>
+        <div><b>Specificity</b> &mdash; anywhere from 7.8% to 68% depending on the setting. This is why a positive rule means little.</div>
+        <div><b>The asymmetry is the point.</b> A pooled specificity of 0.35 is a real number that hides how much it moves.</div>
       </div>
-      <figcaption><b>Lead the caption with what the picture shows.</b> Then the sentence a reader needs that the drawing cannot carry - where the number comes from, or why the taught version differs from the measured one.</figcaption>
+      <figcaption><b>Across studies the Ottawa Ankle Rules' sensitivity stays between 92% and 100%, while their specificity ranges from 7.8% to 68%.</b> A rule that is consistently good in one direction and wildly inconsistent in the other is a screening tool, and the meta-analytic figures agree: pooled &minus;LR 0.13 takes a negative result to roughly a 1% post-test probability of fracture, while pooled +LR 1.76 barely moves a positive one <span class="src">Martin 2021</span> <span class="src">Sharifi Razavi 2026</span>.</figcaption>
     </figure>
   </section>
 
   <section id="posture">
-    <div class="sechead"><span class="secnum">03</span><h2>Posture and what it obligates</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">03</span><h2>Posture and resting alignment</h2></div>
+    <p class="lede">Short, because little here is measured - but two of its items are Grade A documented measures rather than impressions.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Swelling</td>
+        <td>Figure-of-eight or circumference, same landmarks each time.</td>
+        <td data-imp="figure-of-eight|circumference|document|episode">
+          <b>Grade A</b>: assess and document, at baseline and <b>two or more times</b> over an episode of care. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Where the swelling sits</td>
+        <td>Lateral, medial or diffuse; whether it tracks distally.</td>
+        <td data-imp="lateral|diffuse|tracks|inversion">
+          Diffuse or medial swelling after an inversion injury should raise the question of a deltoid or syndesmotic injury. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Ecchymosis and point tenderness</td>
+        <td>Inspect and palpate.</td>
+        <td data-imp="ecchymosis|palpate|classification|decision">
+          Both feed the Ottawa decision and the <b>Grade B</b> severity classification. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Standing foot posture</td>
+        <td>Weight-bearing alignment and hindfoot position.</td>
+        <td data-imp="hindfoot|weight-bearing|threshold|posture">
+          <span class="prov c">Convention</span> No threshold making a posture abnormal is traceable here. <span class="src">no traceable source</span>
         </td>
       </tr>
         </tbody>
@@ -1005,30 +1211,60 @@ a{color:var(--accent)}
   </section>
 
   <section id="arom">
-    <div class="sechead"><span class="secnum">04</span><h2>Active range of motion</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">04</span><h2>Active range and what they can do alone</h2></div>
+    <p class="lede">The guideline names the specific instruments rather than the domains, which is unusual and useful: use the ones it names and your measurements compare to something.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Active range, four directions</td>
+        <td>Dorsiflexion, plantarflexion, inversion, eversion.</td>
+        <td data-imp="dorsiflexion|plantarflexion|inversion|eversion">
+          Compare sides; the norms are convention <span class="prov c">Convention</span> and the other ankle is the better reference.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Dorsiflexion, specifically</td>
+        <td>Weight-bearing lunge: knee to wall, heel down, measure the distance.</td>
+        <td data-imp="lunge|knee to wall|heel|distance">
+          <b>The weight-bearing lunge test is the instrument the guideline names</b> for dorsiflexion. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Single-limb balance</td>
+        <td>Static, firm surface, <b>eyes closed</b>. Time it.</td>
+        <td data-imp="static|firm surface|eyes closed|time">
+          Named specifically - eyes closed on a firm surface, not simply "balance". <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Dynamic balance</td>
+        <td>Star Excursion Balance Test.</td>
+        <td data-imp="Star Excursion|anteromedial|posterolateral|reach">
+          In the <b>anterior, anteromedial, posteromedial and posterolateral</b> reach directions. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hopping</td>
+        <td>Single-limb hopping under timed conditions.</td>
+        <td data-imp="single-limb|timed|hopping|appropriate">
+          <b>Grade B</b>, where appropriate. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why hopping matters beyond function</td>
+        <td>Use it as a prognostic test at two weeks.</td>
+        <td data-imp="prognostic|two weeks|discharge|predicted">
+          <b>Inability to complete jumping and landing tasks within two weeks predicted chronic instability at six months.</b> It is prognostic, not only a discharge criterion. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Gait and weight bearing</td>
+        <td>Can they bear weight and take four steps?</td>
+        <td data-imp="four steps|bear weight|part|rule">
+          That question is <b>part of the Ottawa rule</b>, not separate from it. <span class="src">Sharifi Razavi 2026</span>
         </td>
       </tr>
         </tbody>
@@ -1037,30 +1273,53 @@ a{color:var(--accent)}
   </section>
 
   <section id="prom">
-    <div class="sechead"><span class="secnum">05</span><h2>PROM, end feel and muscle length</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">05</span><h2>Passive range, end feel and length</h2></div>
+    <p class="lede">Two of the passive measures here are Grade A documented findings. The rest is convention, and the section says which is which.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Passive against active</td>
+        <td>Compare each direction.</td>
+        <td data-imp="passive|guarding|inhibition|exceeding">
+          Passive exceeding active points to weakness, guarding or pain inhibition. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Talar translation</td>
+        <td>Anterior glide of the talus on the tibia.</td>
+        <td data-imp="translation|anterior glide|talus|document">
+          <b>Grade A</b>: assess and document at baseline and two or more times. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Talar inversion</td>
+        <td>Inversion stress at the talocrural joint.</td>
+        <td data-imp="inversion stress|talocrural|document|baseline">
+          <b>Grade A</b>: assess and document at baseline and two or more times. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Accessory glide</td>
+        <td>Talocrural anterior-posterior, subtalar, distal tibiofibular.</td>
+        <td data-imp="talocrural|subtalar|tibiofibular|comparison">
+          <span class="prov c">Convention</span> Graded by comparison with the other side rather than by a cited figure.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Gastrocnemius against soleus</td>
+        <td>Dorsiflexion with the knee straight, then bent.</td>
+        <td data-imp="knee straight|bent|contribution|crosses">
+          <b>The difference between the two is the gastrocnemius contribution</b>, because it crosses the knee. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Plantar fascia</td>
+        <td>Windlass mechanism on great toe extension.</td>
+        <td data-imp="windlass|great toe|extension|fascia">
+          <span class="prov c">Convention</span> Note this guide does not cover plantar heel pain - see section 08 for why.
         </td>
       </tr>
         </tbody>
@@ -1069,30 +1328,39 @@ a{color:var(--accent)}
   </section>
 
   <section id="mmt">
-    <div class="sechead"><span class="secnum">06</span><h2>Manual muscle testing</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">06</span><h2>Strength</h2></div>
+    <p class="lede">The interesting recommendation in this section is not about the ankle at all.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">The four directions</td>
+        <td>Against resistance, compared side to side.</td>
+        <td data-imp="resistance|side to side|norms|directions">
+          <span class="prov c">Convention</span> No reachable strength norms. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Fibularis specifically</td>
+        <td>Resisted eversion in slight plantarflexion.</td>
+        <td data-imp="evertors|dry needling|proprioceptive|eversion">
+          The evertors are the lateral ligament's active partner. The guideline supports <b>dry needling of the fibularis group</b> with proprioceptive training in chronic instability, at <b>Grade C</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hip strength</td>
+        <td>Abduction, extension and external rotation.</td>
+        <td data-imp="abduction|extension|external rotation|episode">
+          <b>Grade C</b> in chronic ankle instability: assess and document, two or more times over an episode of care. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why the hip is in an ankle guide</td>
+        <td>Because the guideline puts it there.</td>
+        <td data-imp="distal|proximal|graded|theory">
+          A distal problem with a proximal contribution is <b>not a theory here - it is a graded recommendation</b>. <span class="src">Martin 2021</span>
         </td>
       </tr>
         </tbody>
@@ -1102,29 +1370,73 @@ a{color:var(--accent)}
 
   <section id="special">
     <div class="sechead"><span class="secnum">07</span><h2>Special tests</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">The best-evidenced joint in this series recommends its special tests without publishing their accuracy. That is an unusual and honest position for a guideline to take, and this section says so rather than filling the gap.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">The recommended set - Grade B</td>
+        <td>Anterior drawer, plus reverse anterolateral drawer and anterolateral talar palpation.</td>
+        <td data-imp="reverse anterolateral|palpation|addition|diagnosis">
+          Use them <b>in addition to</b> a thorough history and physical examination to aid diagnosis of a lateral ankle sprain. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Note what that recommendation does</td>
+        <td>Read the phrase "in addition to".</td>
+        <td data-imp="traditional|enough|added|instead">
+          <b>The traditional drawer is not enough on its own.</b> The other two are added to it, not offered instead of it. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Accuracy of any of the three</td>
+        <td>Ask for a figure.</td>
+        <td data-imp="accuracy|published|quantified|figure">
+          <b>None published.</b> <span class="src">no traceable source</span> Recommended, not quantified.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Talar tilt</td>
+        <td>Ask the same question.</td>
+        <td data-imp="talar tilt|appendix|search strategy|appearance">
+          <b>None</b>, and its only appearance in the guideline is in a <b>search-strategy appendix</b>. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What the drawer does not tell you</td>
+        <td>Do not read stability from laxity.</td>
+        <td data-imp="independently|stable|lax|six weeks">
+          Laxity and function move independently - function improved significantly over six weeks while drawer laxity did not change. <b>A stable-feeling ankle can have a lax drawer, and the reverse.</b> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Classifying an acute sprain - Grade B</td>
+        <td>Seven clinical findings, together.</td>
+        <td data-imp="haemorrhaging|ligamentous|total ankle motion|classify">
+          <b>Level of function, ligamentous laxity, haemorrhaging, point tenderness, total ankle motion, swelling and pain.</b> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Identifying chronic instability - Grade B</td>
+        <td>A questionnaire and a test battery.</td>
+        <td data-imp="Cumberland|Identification|performance tests|controls">
+          Use the <b>Cumberland Ankle Instability Tool</b> or the <b>Identification of Functional Ankle Instability</b>, plus functional performance tests with established validity to separate people with instability from healthy controls. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The point of that row</td>
+        <td>Notice what is absent from it.</td>
+        <td data-imp="questionnaire|absent|laxity test|students">
+          <b>Chronic ankle instability is identified by a questionnaire and performance tests, not by a laxity test.</b> That surprises most students.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Interpreting a likelihood ratio</td>
+        <td>Convert to a probability shift.</td>
+        <td data-imp="likelihood|bands|sourced|rule-out">
+          <span class="prov c">Convention</span> for the familiar bands. What is sourced: a rule with &minus;LR 0.13 and +LR 1.76 is a rule-out. <span class="src">Sharifi Razavi 2026</span>
         </td>
       </tr>
         </tbody>
@@ -1133,30 +1445,67 @@ a{color:var(--accent)}
   </section>
 
   <section id="syndromes">
-    <div class="sechead"><span class="secnum">08</span><h2>Movement system diagnoses</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">08</span><h2>Syndromes and what you call it</h2></div>
+    <p class="lede">The naming problem at the ankle is not a misnamed test - it is that an acute sprain is treated as a self-limiting nuisance when two in five care-seekers do not fully recover.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Acute lateral ankle sprain</td>
+        <td>Classify with the seven findings from section 07.</td>
+        <td data-imp="acute|lateral|classify|findings">
+          <b>Grade B.</b> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Chronic ankle instability</td>
+        <td>Identified by CAIT or IdFAI plus functional performance tests.</td>
+        <td data-imp="CAIT|IdFAI|performance|questionnaire">
+          <b>Grade B</b> - a questionnaire-and-performance diagnosis rather than a laxity one. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">How common it is after a first sprain</td>
+        <td>Ask the prognosis question.</td>
+        <td data-imp="40|prospective|complication|modal">
+          <b>40%</b> of people who sought care for a first-time sprain, in the only prospective study. <b>Not a rare complication - the modal bad outcome.</b> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why that reframes the acute sprain</td>
+        <td>Decide what the acute visit is for.</td>
+        <td data-imp="reframes|prevention|main event|afterthought">
+          If two in five care-seekers develop chronic instability, <b>the prevention recommendations in section 10 are the main event rather than an afterthought</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Midportion Achilles tendinopathy</td>
+        <td>Load-related midportion pain and stiffness.</td>
+        <td data-imp="midportion|tendinopathy|loading|rest">
+          Managed by <b>loading first</b>, and explicitly <b>not</b> by rest - see section 10. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Plantar heel pain</td>
+        <td>Deliberately not covered.</td>
+        <td data-imp="plantar heel|draft|confidential|omitting">
+          <b>The only reachable guideline for it is a confidential stakeholder-review draft</b>, watermarked on every page as not for reproduction or circulation. This guide does not quote drafts, and says so rather than quietly omitting the region.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Movement diagnosis</td>
+        <td>Name the fault and its direction under load.</td>
+        <td data-imp="movement fault|direction|under load|name">
+          <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Relative stiffness</td>
+        <td>Look at the knee and the midfoot.</td>
+        <td data-imp="stiff|midfoot|borrows|knee">
+          A stiff ankle borrows from both. <span class="prov c">Convention</span>
         </td>
       </tr>
         </tbody>
@@ -1166,29 +1515,59 @@ a{color:var(--accent)}
 
   <section id="palpation">
     <div class="sechead"><span class="secnum">09</span><h2>Palpation</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">Palpation at the ankle is unusually consequential, because part of it is a Grade A imaging decision rather than a soft finding.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">The malleoli</td>
+        <td>Posterior edge and tip of each, 6cm proximally.</td>
+        <td data-imp="malleoli|posterior edge|Ottawa zone|proximally">
+          <b>This is an Ottawa zone.</b> Dropping malleolar tenderness from the rule cost 12 points of sensitivity. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The fibula along its length</td>
+        <td>And the base of the fifth metatarsal, and the navicular.</td>
+        <td data-imp="fibula|fifth metatarsal|navicular|points">
+          Ottawa zones, and none of them is where the patient points. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Lateral ligaments</td>
+        <td>ATFL, then CFL, then PTFL.</td>
+        <td data-imp="ATFL|CFL|PTFL|localise">
+          <span class="prov c">Convention</span> Tenderness localises; it does not grade. 
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Deltoid ligament</td>
+        <td>Medial, below and anterior to the medial malleolus.</td>
+        <td data-imp="deltoid|medial malleolus|inversion|syndesmotic">
+          Medial tenderness after an inversion injury raises the question of a deltoid or syndesmotic injury. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Point tenderness</td>
+        <td>Record it.</td>
+        <td data-imp="record|seven|severity|classifying">
+          One of the seven findings the guideline names for classifying severity - <b>Grade B</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles</td>
+        <td>Midportion against insertion.</td>
+        <td data-imp="midportion|insertion|scope|tendinopathy">
+          The guideline covers <b>midportion only</b>; insertional tendinopathy is outside its scope and outside this guide's. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What palpation cannot do</td>
+        <td>Know its ceiling.</td>
+        <td data-imp="grade|confirm|instability|ceiling">
+          It cannot grade a ligament or confirm instability. <b>Chronic instability is a questionnaire-and-performance diagnosis.</b> <span class="src">Martin 2021</span>
         </td>
       </tr>
         </tbody>
@@ -1197,30 +1576,179 @@ a{color:var(--accent)}
   </section>
 
   <section id="treatment">
-    <div class="sechead"><span class="secnum">10</span><h2>Mobilizations and exercise</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">10</span><h2>Prevention, mobilisation, exercise and dose</h2></div>
+    <p class="lede">The best-evidenced section in any of these four guides, and the only one containing Grade A prevention - which matters more than it sounds, because 40% of people who seek care for a first sprain go on to chronic instability. Every letter below comes from a front-matter Summary of Recommendations, checked by position, so it is the current revision rather than a superseded one.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Prevention, first sprain - A</td>
+        <td>Before anything has happened.</td>
+        <td data-imp="prophylactic bracing|first-time|risk factors|prevention">
+          <b>Prophylactic bracing</b> to reduce the risk of a first-time sprain, particularly in those with risk factors. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Prevention, never-injured - C</td>
+        <td>Balance training as primary prevention.</td>
+        <td data-imp="balance training|never|weaker|primary">
+          May be recommended to people who have <b>not</b> yet sprained. Note the weaker grade than bracing. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Prevention, after a first sprain - A</td>
+        <td>The combination, not either alone.</td>
+        <td data-imp="combination|proprioceptive|impairments|subsequent">
+          <b>Prophylactic bracing and proprioceptive, balance-focused exercise</b>, targeted at the impairments found on examination, to reduce subsequent injury. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Acute - A</td>
+        <td>External support and weight bearing.</td>
+        <td data-imp="braces|taping|progressive|affected">
+          Advise <b>braces or taping</b> and <b>progressive weight bearing</b> on the affected limb. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Acute - A</td>
+        <td>A structured exercise programme.</td>
+        <td data-imp="protected|postural re-education|social barriers|structured">
+          Protected active ROM, stretching, neuromuscular training, postural re-education and balance training, <b>in clinic and at home</b>, matched to severity, impairments, preferences, learning needs and social barriers. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Acute manual therapy - A</td>
+        <td>Within pain-free movement.</td>
+        <td data-imp="lymphatic|soft tissue|anterior-to-posterior|gait">
+          <b>Lymphatic drainage, active and passive soft tissue and joint mobilisation, and anterior-to-posterior talar mobilisation</b>, alongside exercise, to reduce swelling, improve pain-free mobility and normalise gait. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Return to work - B</td>
+        <td>Plan it rather than wait for it.</td>
+        <td data-imp="return-to-work|work-hardening|occupational|schedule">
+          A return-to-work schedule, a brace early in rehabilitation, occupational or sport-related training, and/or a work-hardening programme. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Acute - A, against</td>
+        <td>One thing to stop doing.</td>
+        <td data-imp="ultrasound|stop|against|acute">
+          <b>Do not use ultrasound</b> for the management of acute ankle sprains. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Acute - C</td>
+        <td>The weaker acute options.</td>
+        <td data-imp="ice|diathermy|laser|NSAID">
+          Ice with a therapeutic exercise programme; pulsed shortwave diathermy for oedema and gait deviation; low-level laser for early pain; NSAIDs where practice acts allow. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Chronic instability - A</td>
+        <td>The core intervention.</td>
+        <td data-imp="neuromuscular|dynamic postural|perceived|function">
+          <b>Proprioceptive and neuromuscular exercise</b>, to improve dynamic postural stability and patient-perceived stability during function. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Chronic instability - A</td>
+        <td>Manual therapy, with a stated target.</td>
+        <td data-imp="mobilisation with movement|manipulation|short term|dorsiflexion">
+          <b>Graded joint mobilisations, manipulations, and weight-bearing and non-weight-bearing mobilisation with movement</b>, to improve weight-bearing dorsiflexion and dynamic balance <b>in the short term</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Chronic instability - B, against</td>
+        <td>The brace is an adjunct, never the plan.</td>
+        <td data-imp="stand-alone|adjunct|contrast|postural">
+          <b>Do not use bracing or taping as a stand-alone intervention</b> to improve balance and postural stability. Grade A <i>with</i> exercise, Grade B <i>against</i> alone - the contrast is the teaching point. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Chronic instability - B and C</td>
+        <td>Supplementing balance training.</td>
+        <td data-imp="supplement|values|judgement|needling">
+          Multiple interventions may supplement balance training, guided by the patient's values and goals and the clinician's judgement (<b>B</b>); dry needling of the fibularis group with proprioceptive training (<b>C</b>). <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Psychological - E</td>
+        <td>Address the beliefs as well as the joint.</td>
+        <td data-imp="motivational interviewing|self-efficacy|correlates|beliefs">
+          <b>Psychologically informed techniques such as motivational interviewing</b>, to maximise self-efficacy and address psychological correlates of injury adjustment and recovery. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Outcome measures - A</td>
+        <td>Validated, and named.</td>
+        <td data-imp="PROMIS|Foot and Ankle Ability|Lower Extremity|validated">
+          <b>PROMIS</b> physical function and pain interference scales, the <b>Foot and Ankle Ability Measure</b>, and the <b>Lower Extremity Functional Scale</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Coping and fear - C</td>
+        <td>When recovery stalls, measure why.</td>
+        <td data-imp="Self-Efficacy|Kinesiophobia|fear-avoidance|stalls">
+          <b>Pain Self-Efficacy Questionnaire</b> acutely and post-acutely; <b>TSK-11</b> and <b>FABQ</b> for fear of movement, reinjury and fear-avoidance in chronic instability. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - A</td>
+        <td>Load it.</td>
+        <td data-imp="tendon loading|as high as tolerated|first-line|decrease pain">
+          <b>Tendon loading exercise, with loads as high as tolerated, as first-line treatment</b>, to improve function and decrease pain in midportion Achilles tendinopathy. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - B</td>
+        <td>What not to advise.</td>
+        <td data-imp="complete rest|not indicated|pain tolerance|continue">
+          <b>Complete rest is not indicated.</b> Patients should continue their activities <b>within their pain tolerance</b>. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - B</td>
+        <td>Education alongside the loading.</td>
+        <td data-imp="pain science|pathoanatomic|education|combined">
+          With either a <b>pain-science or a pathoanatomic focus</b>, combined with tendon-loading exercise. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - C</td>
+        <td>The adjuncts.</td>
+        <td data-imp="heel lifts|temporarily|multimodal|adjunct">
+          Heel lifts to temporarily reduce dorsiflexion during activity; multimodal treatment to enhance the benefits of exercise. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - C, against</td>
+        <td>Two to avoid.</td>
+        <td data-imp="low-level laser|ultrasound alone|avoid|against">
+          Do <b>not</b> use low-level laser therapy; do <b>not</b> use therapeutic ultrasound alone. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - the recommendation that reversed</td>
+        <td>Check which revision you were taught.</td>
+        <td data-imp="elastic tape|reversed|revision|current">
+          The <b>2018</b> guideline said <i>should not</i> use therapeutic elastic tape (F); the <b>2024</b> revision says <i>may</i> (E). <b>The current position is may.</b> Quoting the older one would contradict the guideline while citing it. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Achilles - D</td>
+        <td>A guideline declining to recommend.</td>
+        <td data-imp="orthoses|contradictory|declining|information">
+          <b>No recommendation is possible on orthoses</b>, because the evidence is contradictory. That is information, not a gap. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The reassessment marker</td>
+        <td>Name it before you treat.</td>
+        <td data-imp="reassessment|marker|Grade|baseline">
+          <b>Swelling, ROM, talar translation, talar inversion and single-leg balance</b> are the Grade A set, at baseline and <b>two or more times</b>. <span class="src">Martin 2021</span>
         </td>
       </tr>
         </tbody>
@@ -1230,7 +1758,7 @@ a{color:var(--accent)}
 
   <section id="drill">
     <div class="sechead"><span class="secnum">11</span><h2>Rapid drill</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">Two ways to rehearse. The cases work the whole chain from presentation to reassessment marker; the single facts test one value at a time, and most test whether you know what a value is worth as well as what it is.</p>
     <h3>What to practice</h3>
     <p class="lede">Built from the cells you marked missed while running recall. Nothing here is pre-filled - if this is empty, go and quiz yourself first. The practice method is chosen by <em>what the item is</em>, not by what kind of learner you are: a number, a pair of hands and a decision are three different jobs and they need three different kinds of rehearsal.</p>
     <div id="planner" class="planner"></div>
@@ -1238,55 +1766,112 @@ a{color:var(--accent)}
       <b>Why this is not a learning-styles quiz.</b> Sorting students into visual, auditory or kinesthetic learners and matching teaching to the label is one of the most durable ideas in education that the evidence does not support - the studies that test it properly find no benefit from the match <span class="src">Pashler 2008</span>. What does hold up is the method fitting the material: retrieving a fact from memory beats re-reading it, and spacing the attempts beats massing them <span class="src">Dunlosky 2013</span>. So the plan below sorts your misses by the kind of thing they are.
     </div>
 
-    
-    <div class="tablewrap">
-      <table>
-        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
-        <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
-      <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
-        </td>
-      </tr>
-        </tbody>
-      </table>
+    <h3>Cases - work the whole chain</h3>
+    <p class="lede">Open a case, then work down the prompts - answer each out loud and click to check. Answers are hidden every time a case opens, so nothing is spoiled by looking.</p>
+
+    <div class="cases">
+      <details class="case">
+        <summary class="stem"><b>Netball player, 19.</b> Inverted her ankle two days ago landing from a jump. Swollen laterally, bruising tracking into the foot. She can weight bear but limps. Tender over the ATFL. She wants to know when she can play.</summary>
+        <dl class="caseans">
+          <div><dt>Ottawa first</dt><dd>Palpate the posterior edge and tip of both malleoli, the navicular and the base of the fifth metatarsal, and ask whether she could bear weight for four steps. Apply it entire - dropping malleolar tenderness costs 12 points of sensitivity <span class="src">Martin 2021</span>. A negative rule leaves about a 1% probability of fracture <span class="src">Sharifi Razavi 2026</span>.</dd></div>
+          <div><dt>Classify it</dt><dd>Level of function, ligamentous laxity, haemorrhaging, point tenderness, total ankle motion, swelling and pain - the seven findings, Grade B <span class="src">Martin 2021</span>.</dd></div>
+          <div><dt>The answer to her question</dt><dd>Return to participation runs <b>1 day to a little more than 3 weeks</b> depending on the demands of the sport. But full recovery with no symptoms "may take months or years to obtain, and cannot be expected in all patients" <span class="src">Martin 2021</span>. Do not let the first number stand for the second.</dd></div>
+          <div><dt>The number she should hear</dt><dd><b>40%</b> of people who seek care for a first sprain develop chronic ankle instability <span class="src">Martin 2021</span>. That is what makes the next row the important one.</dd></div>
+          <div><dt>First three</dt><dd>External support and progressive weight bearing (A); a structured exercise programme with protected ROM, neuromuscular training and balance work, in clinic and at home (A); manual therapy within pain-free range including anterior-to-posterior talar mobilisation and lymphatic drainage (A) <span class="src">Martin 2021</span>. No ultrasound (A, against).</dd></div>
+          <div><dt>Reassess</dt><dd>Swelling, ROM, talar translation, talar inversion and single-leg balance - the Grade A set, at baseline and at least twice more. And test jumping and landing at two weeks, because failing it predicts instability at six months <span class="src">Martin 2021</span>.</dd></div>
+        </dl>
+      </details>
+
+      <details class="case">
+        <summary class="stem"><b>Recreational footballer, 27.</b> Fourth sprain of the same ankle in three years. "It just gives way." Anterior drawer feels lax but so does the other side. He has a brace he wears for matches and does no other rehabilitation.</summary>
+        <dl class="caseans">
+          <div><dt>Is the drawer the diagnosis?</dt><dd>No. Chronic ankle instability is identified with a discriminative instrument - the <b>Cumberland Ankle Instability Tool</b> or the <b>Identification of Functional Ankle Instability</b> - plus functional performance tests with established validity, Grade B <span class="src">Martin 2021</span>. It is a questionnaire-and-performance diagnosis, not a laxity one.</dd></div>
+          <div><dt>Why the lax drawer does not settle it</dt><dd>Laxity and function move independently: over six weeks function improved significantly while drawer laxity did not change at all <span class="src">Martin 2021</span>. And no accuracy figure for the drawer is published anyway <span class="src">no traceable source</span>.</dd></div>
+          <div><dt>The brace</dt><dd>Here is the contrast worth learning. Bracing is <b>Grade A</b> as prophylaxis <i>combined with</i> proprioceptive and balance exercise - and <b>Grade B against</b> as a <i>stand-alone</i> intervention for balance and postural stability <span class="src">Martin 2021</span>. He is doing the half that does not work alone.</dd></div>
+          <div><dt>What to add</dt><dd>Proprioceptive and neuromuscular exercise for dynamic postural stability (A); manual therapy including weight-bearing mobilisation with movement to improve dorsiflexion and balance in the short term (A) <span class="src">Martin 2021</span>.</dd></div>
+          <div><dt>Look proximally</dt><dd>Assess and document hip abduction, extension and external rotation strength, Grade C in chronic instability <span class="src">Martin 2021</span>. Also consider fear of reinjury with the TSK-11 or FABQ (C).</dd></div>
+        </dl>
+      </details>
+
+      <details class="case">
+        <summary class="stem"><b>Runner, 44.</b> Six months of midportion Achilles pain, worst starting a run and easing as he warms up. He has stopped running entirely for eight weeks on advice and is no better. He asks about orthotics and a night splint.</summary>
+        <dl class="caseans">
+          <div><dt>The advice he was given</dt><dd>Wrong, and the guideline says so directly: <b>complete rest is not indicated</b>, and patients should continue activities within their pain tolerance, Grade B <span class="src">Chimenti 2024</span>.</dd></div>
+          <div><dt>First-line treatment</dt><dd><b>Tendon loading exercise with loads as high as tolerated</b>, Grade A, to improve function and decrease pain - either eccentric or heavy-load slow-speed work <span class="src">Chimenti 2024</span>.</dd></div>
+          <div><dt>Orthotics</dt><dd>The guideline makes <b>no recommendation</b>, Grade D, because the evidence is contradictory <span class="src">Chimenti 2024</span>. A guideline declining to recommend is information, not a gap.</dd></div>
+          <div><dt>The night splint</dt><dd>Recommended against in the body of the guideline for midportion tendinopathy <span class="src">Chimenti 2024</span>.</dd></div>
+          <div><dt>What else is worth adding</dt><dd>Education with a pain-science or pathoanatomic focus, combined with the loading, Grade B <span class="src">Chimenti 2024</span>. Heel lifts may temporarily reduce dorsiflexion during activity (C). Not low-level laser, not ultrasound alone (C, against).</dd></div>
+        </dl>
+      </details>
     </div>
+
+    <h3>Single facts</h3>
+
+    <details><summary>Give the Ottawa Ankle Rules' pooled sensitivity and specificity. What is a negative worth?</summary><div class="ans">Pooled <b>Sn 0.92 (0.91-0.93)</b>, <b>Sp 0.35 (0.34-0.36)</b>, &minus;LR <b>0.13</b>. A negative leaves roughly a <b>1%</b> post-test probability of fracture, which is why the rules safely reduce radiography. A positive barely moves it - +LR 1.76 <span class="src">Sharifi Razavi 2026</span>.</div></details>
+
+    <details><summary>Why must the rules be applied in their entirety?</summary><div class="ans">Because a partial application is measurably worse. Omitting malleolar tenderness and relying on inability to bear weight and take four steps gave sensitivity <b>88%</b>, against 92%-100% for the whole rule <span class="src">Martin 2021</span>.</div></details>
+
+    <details><summary>In children, which performs better - the low-risk ankle rules or the Ottawa rules?</summary><div class="ans">The Ottawa rules. The low-risk ankle rules' sensitivity of <b>85.7%</b> is inferior to the Ottawa rules' <b>100%</b> in that population <span class="src">Martin 2021</span>.</div></details>
+
+    <details><summary>What is the anterior drawer test's sensitivity?</summary><div class="ans">Not published here. <span class="src">no traceable source</span> The guideline recommends it at Grade B - alongside the reverse anterolateral drawer test and anterolateral talar palpation - and reports no accuracy for any of the three <span class="src">Martin 2021</span>. The same goes for talar tilt, whose only appearance in the guideline is inside a literature search-strategy appendix.</div></details>
+
+    <details><summary>Function improved over six weeks. What happened to drawer laxity?</summary><div class="ans"><b>Nothing.</b> Ankle laxity did not change significantly on the anterior drawer test (P &gt; .05) despite significant improvement in self-reported function <span class="src">Martin 2021</span>. A stable-feeling ankle can have a lax drawer, and the reverse.</div></details>
+
+    <details><summary>How is chronic ankle instability actually identified?</summary><div class="ans">With a discriminative <b>questionnaire</b> - the Cumberland Ankle Instability Tool or the Identification of Functional Ankle Instability - <b>plus functional performance tests</b> with established validity to separate people with instability from healthy controls. Grade B <span class="src">Martin 2021</span>. Not with a laxity test.</div></details>
+
+    <details><summary>What proportion of people who seek care for a first ankle sprain develop chronic instability?</summary><div class="ans"><b>40%</b>, in the only prospective study performed to date. The guideline adds that retrospective designs likely <b>underrepresent</b> the true burden, because of care-seeking behaviour <span class="src">Martin 2021</span>.</div></details>
+
+    <details><summary>Return to participation takes 1 to 3 weeks. How long does full recovery take?</summary><div class="ans">Possibly far longer, and possibly never: "full recovery with no symptoms or limitations may take <b>months or years</b> to obtain, and <b>cannot be expected in all patients</b>" <span class="src">Martin 2021</span>. Return to sport is not recovery.</div></details>
+
+    <details><summary>Does injury severity predict the clinical course?</summary><div class="ans"><b>The evidence conflicts</b>, by the guideline's own statement <span class="src">Martin 2021</span>. A mild sprain is not a promise of a quick course.</div></details>
+
+    <details><summary>Bracing for chronic ankle instability - Grade A or Grade B against? Explain both.</summary><div class="ans">Both, and the contrast is the point. <b>Grade A</b> as prophylaxis <i>combined with</i> proprioceptive and balance-focused exercise. <b>Grade B against</b> as a <i>stand-alone</i> intervention to improve balance and postural stability <span class="src">Martin 2021</span>. The brace is an adjunct, never the plan.</div></details>
+
+    <details><summary>Name the four Star Excursion Balance Test reach directions the guideline specifies.</summary><div class="ans"><b>Anterior, anteromedial, posteromedial and posterolateral</b> <span class="src">Martin 2021</span>. It also names the weight-bearing lunge test for dorsiflexion and static single-limb balance on a firm surface with eyes closed.</div></details>
+
+    <details><summary>Which hip movements should be tested in chronic ankle instability, and at what grade?</summary><div class="ans"><b>Abduction, extension and external rotation</b>, assessed and documented two or more times over an episode of care - <b>Grade C</b> <span class="src">Martin 2021</span>. The proximal contribution to a distal problem is a graded recommendation here, not a theory.</div></details>
+
+    <details><summary>What is first-line treatment for midportion Achilles tendinopathy, and at what load?</summary><div class="ans"><b>Tendon loading exercise, with loads as high as tolerated</b>, Grade A - either eccentric or heavy-load slow-speed <span class="src">Chimenti 2024</span>.</div></details>
+
+    <details><summary>Is rest indicated for Achilles tendinopathy?</summary><div class="ans"><b>No.</b> "Complete rest is not indicated", and patients should continue their activities within their pain tolerance - Grade B <span class="src">Chimenti 2024</span>.</div></details>
+
+    <details><summary>Elastic tape for Achilles tendinopathy - should not, or may? Which revision said which?</summary><div class="ans">The <b>2018</b> guideline said <i>should not</i> (F). The <b>2024</b> revision says <i>may</i> (E). <b>The current position is may</b> <span class="src">Chimenti 2024</span>. Quoting the older one would contradict the guideline while citing it.</div></details>
+
+    <details><summary>What does the Achilles guideline say about orthoses?</summary><div class="ans">That <b>no recommendation can be made</b>, Grade D, because the evidence is contradictory <span class="src">Chimenti 2024</span>. A guideline declining to recommend is itself information.</div></details>
+
+    <details><summary>What predicts chronic ankle instability at six months?</summary><div class="ans"><b>Inability to complete jumping and landing tasks within 2 weeks</b> of the injury, poorer dynamic postural control, and lower self-reported function <span class="src">Martin 2021</span>. Which makes a two-week hop test a prognostic act, not a discharge one.</div></details>
+
+    <details><summary>What is the normal ankle range of motion?</summary><div class="ans">No figure here is defensible. <span class="prov c">Convention</span> <span class="src">no traceable source</span> - the same result as at the hip and knee. What is traceable is that textbook hip and knee values were off by as much as 18&deg; against a measured population sample <span class="src">Roach 1991</span>, and that paper does not cover the ankle.</div></details>
+
+    <details><summary>Why is plantar heel pain absent from this guide?</summary><div class="ans">Because the only reachable guideline for it is a <b>confidential stakeholder-review draft</b>, watermarked on all 49 pages as not for reproduction or circulation. A draft's values may differ from what was finally published, and quoting it here would be exactly the circulation it asks against.</div></details>
+
   </section>
 
 
   <section id="refs">
     <h2>References</h2>
-    <p class="lede">Every source named in this guide, with a link. All of them are free to read or
-    have a freely readable abstract carrying the values quoted here. Where a value is marked as
-    convention it appears in no list below, because nothing supports it.</p>
+    <p class="lede">Four sources, each cited at least once above, <b>all four free to read in full</b> -
+    the first time in this series that has been true. Two are graded clinical practice guidelines
+    openly hosted by the Academy of Orthopaedic Physical Therapy. Where a value is marked convention,
+    or flagged as having no traceable source, it appears in no entry below, because nothing supports
+    it. Each note records what the paper cannot support as well as what it can.</p>
 
-    <!-- GROUPS. Keep these headings or replace them; the citation linker does not care.
-         Each entry MUST carry .au (authors) and .jo (journal + year) - those two fields are
-         what the linker parses to match an inline "Author 2019" citation to this entry.
-         The .nt note is where you record what the paper actually shows, including its
-         population and any limit on what it can support. -->
-    <h3>Range of motion and kinematics</h3>
+        <h3>Guidelines</h3>
     <ol>
-      <li><span class="au">Author A, Author B, Author C, et al.</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/00000000/" target="_blank" rel="noopener">Title of the paper exactly as published</a></span>. <span class="jo">Journal Abbrev 2019;12(3):345-356</span><span class="nt">What it actually found, in whom, and what it cannot support.</span></li>
+      <li><span class="au">Martin RL, Davenport TE, Fraser JJ, Sawdon-Bea J, Carcia CR, Carroll LA, Kivlan BR, Carreira D</span> <span class="ti"><a href="https://www.orthopt.org/uploads/content_files/files/jospt.2021.0302.pdf" target="_blank" rel="noopener">Ankle Stability and Movement Coordination Impairments: Lateral Ankle Ligament Sprains Revision 2021</a></span>. <span class="jo">J Orthop Sports Phys Ther 2021;51(4):CPG1-CPG80</span><span class="nt">Openly hosted by the Academy of Orthopaedic Physical Therapy, all 80 pages free and graded. The spine of this guide: 23 current recommendations taken from its front-matter Summary of Recommendations, plus the Ottawa figures, the named measurement instruments, the classification and instability criteria, and the prognosis. Its body reprints 2013 recommendations beside the 2021 ones, so every letter quoted here was confirmed by position to come from the current set. It <b>recommends</b> the anterior drawer test at Grade B without publishing accuracy for it, which is why no sensitivity appears beside it in this guide.</span></li>
+      <li><span class="au">Chimenti RL, Neville C, Houck J, Cuddeford T, Carreira D, Martin RL</span> <span class="ti"><a href="https://www.orthopt.org/uploads/content_files/files/chimenti_et_al_2024_achilles_pain_stiffness_and_muscle_power_deficits_midportion_achilles_tendinopathy_revision_2024.pdf" target="_blank" rel="noopener">Achilles Pain, Stiffness, and Muscle Power Deficits: Midportion Achilles Tendinopathy Revision 2024</a></span>. <span class="jo">J Orthop Sports Phys Ther 2024</span><span class="nt">Openly hosted, free, 32 pages. Eleven current recommendations from its front-matter summary. Source for tendon loading at loads as high as tolerated as first-line treatment, and for the statement that complete rest is not indicated. Note its therapeutic elastic tape recommendation <b>reversed direction</b> between revisions - 2018 said should not, 2024 says may - so the era header matters. Scope is <b>midportion</b> tendinopathy only; insertional tendinopathy is outside it.</span></li>
     </ol>
-    <h3>Diagnostic accuracy</h3>
+
+    <h3>Fracture screening</h3>
     <ol>
-      <li><span class="au">Author D, Author E</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC0000000/" target="_blank" rel="noopener">Title</a></span>. <span class="jo">Journal 2021;5(1):1-10</span><span class="nt">Note the target condition - accuracy figures are only meaningful against the condition they were measured for.</span></li>
+      <li><span class="au">Sharifi Razavi D, Seiri M, Farrokhi M</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13412104/" target="_blank" rel="noopener">Revisiting the diagnostic accuracy of Ottawa Ankle Rules for ankle fractures: a systematic review and meta-analysis</a></span>. <span class="jo">Arch Acad Emerg Med 2026;14(1):e24</span><span class="nt">Free full text. Pooled sensitivity 0.92 and specificity 0.35, +LR 1.76, &minus;LR 0.13, DOR 16.21. Unlike the equivalent knee meta-analysis, this paper reads its own numbers correctly - it frames the rules as a screening tool for ruling out fracture rather than claiming high diagnostic performance in both directions.</span></li>
     </ol>
+
+    <h3>Range of motion</h3>
+    <ol>
+      <li><span class="au">Roach KE, Miles TP</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/1881956/" target="_blank" rel="noopener">Normal hip and knee active range of motion: the relationship to age</a></span>. <span class="jo">Phys Ther 1991;71(9):656-665</span><span class="nt">Cited once, for the size of the gap between textbook and measured values - as much as 18&deg; against a national probability sample. <b>It covers the hip and knee only</b>, so it supports the argument that normative tables are unreliable and is explicitly <b>not</b> an ankle figure.</span></li>
+    </ol>
+
 
     <!-- These two are cited by the practice planner text above and apply to any joint.
          Keep them. -->
@@ -1299,10 +1884,23 @@ a{color:var(--accent)}
 
   </main>
   <footer>
-    <b>About this guide.</b> <span class="ver" style="margin:0 8px 0 0; padding:0; border:0">Version 1.0 &middot; MONTH YEAR.</span>
-    State plainly what is original and what is drawn from published sources, and name the
-    principal sources by author and year. Values marked as convention are named as such because
-    no research stands behind them; where no source could be traced at all, say so.
+    <b>About this guide.</b> <span class="ver" style="margin:0 8px 0 0; padding:0; border:0">Version 1.0 &middot; September 2026.</span>
+    The examination sequence, the section order and the wording are original. Every clinical value
+    is drawn from the four published sources listed above and attributed where it appears -
+    principally Martin and colleagues 2021 for the lateral ankle sprain and chronic instability
+    content and the whole of section 10, Chimenti and colleagues 2024 for midportion Achilles
+    tendinopathy, and Sharifi Razavi and colleagues 2026 for the Ottawa Ankle Rules.
+    Every graded recommendation quoted here was taken from its guideline's front-matter Summary of
+    Recommendations and confirmed by position to be the <b>current</b> revision. Both guidelines
+    reprint superseded recommendations in their bodies, and in one case the direction reversed
+    between revisions, so this was checked rather than assumed.
+    Values marked <b>Convention</b> are named as such because no research stands behind them, and
+    three are flagged as having <b>no traceable source</b>: normative ankle range of motion, and the
+    diagnostic accuracy of the anterior drawer and talar tilt tests - the latter two because the
+    guideline recommends the tests without publishing figures for them.
+    <b>Plantar heel pain is deliberately absent.</b> The only reachable guideline for it is a
+    confidential stakeholder-review draft, watermarked on every page as not for reproduction or
+    circulation, and this guide does not quote drafts.
     Verify against current literature before letting any of it weight a clinical decision.
   </footer>
 </div>
@@ -1348,7 +1946,7 @@ a{color:var(--accent)}
   var boxes = document.querySelectorAll('input[data-ck]');
   var countEl = document.getElementById('ckcount');
   var fillEl = document.getElementById('ckfill');
-  var KEY = 'JOINT-comp-v1';
+  var KEY = 'ankle-comp-v1';
   var state = {};
   try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { state = {}; }
 
@@ -1372,7 +1970,7 @@ a{color:var(--accent)}
 (function(){
   var body = document.body;
   var globalBtn = document.getElementById('recallBtn');
-  var KEY = 'JOINT-recall-v3';
+  var KEY = 'ankle-recall-v3';
   var groups = [];   // one per table or grid: {sec, cols:[{id, chip, cells}]}
 
   function wrap(el){
@@ -1505,7 +2103,7 @@ a{color:var(--accent)}
   });
 
   // ---- what you got wrong ----
-  var MKEY = 'JOINT-missed-v1';
+  var MKEY = 'ankle-missed-v1';
   var missed = {};
   try {
     (JSON.parse(localStorage.getItem(MKEY) || '[]') || []).forEach(function(id){ missed[id] = 1; });
@@ -1818,7 +2416,7 @@ a{color:var(--accent)}
   try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e) {}
   if(!saved){
     var legacy = null;
-    try { legacy = localStorage.getItem('JOINT-recall-v2') || localStorage.getItem('JOINT-recall-v1'); } catch(e) {}
+    try { legacy = localStorage.getItem('ankle-recall-v2') || localStorage.getItem('ankle-recall-v1'); } catch(e) {}
     if(legacy === '1') saved = { secs: sections.map(function(s){ return s.id; }), cols: [] };
     else if(legacy){ try { saved = { secs: JSON.parse(legacy) || [], cols: [] }; } catch(e) {} }
   }
@@ -1865,7 +2463,7 @@ a{color:var(--accent)}
 
 
 (function(){
-  var KEY = 'JOINT-add-v1';
+  var KEY = 'ankle-add-v1';
   var store = {};
   try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { store = {}; }
   function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} render(); }
@@ -2511,7 +3109,7 @@ a{color:var(--accent)}
 (function(){
   var host = document.getElementById('planner');
   if(!host) return;
-  var MKEY = 'JOINT-missed-v1';
+  var MKEY = 'ankle-missed-v1';
 
   var METHOD = {
     number: {

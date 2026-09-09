@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="light dark">
-<title>JOINT Examination Playbook</title>
+<title>Knee Examination Playbook</title>
 <style>
   html{color-scheme:light dark}
   body{margin:0; font:14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif}
@@ -784,11 +784,13 @@ a{color:var(--accent)}
 <a class="skip" href="#main">Skip to the guide</a>
 <nav>
   <div class="navrow">
+    <a href="/student/playbooks" title="Back to Limbic Playbooks">&larr; Limbic</a>
+    <span class="navdiv" aria-hidden="true"></span>
     <button class="recall-toggle" id="recallBtn" aria-pressed="false" title="Blur every blurrable area on the page - press again to clear it">Recall all</button>
     <span class="navdiv" aria-hidden="true"></span>
     <select id="navpick" aria-label="Jump to a section"></select>
     <div class="navlinks">
-    <a href="#checklist">32 Items</a>
+    <a href="#checklist">12 Items</a>
     <a href="#numbers">Numbers</a>
     <a href="#posture">Posture</a>
     <a href="#arom">AROM</a>
@@ -813,9 +815,15 @@ a{color:var(--accent)}
 <div class="wrap">
   <header class="masthead">
     <div>
-      <p class="eyebrow">Discipline &middot; scope of the guide <span class="ver">Version 1.0 &middot; MONTH YEAR</span></p>
-      <h1>JOINT Examination Playbook</h1>
-      <p>One paragraph on what this guide is. Keep the last sentence:
+      <p class="eyebrow">Physical therapy &middot; the whole knee screen, in order <span class="ver">Version 1.0 &middot; September 2026</span></p>
+      <h1>Knee Examination Playbook</h1>
+      <p>A full knee screen in the order you would perform it, with every value marked for what it is
+      worth. The knee's recurring lesson is that a test's accuracy depends on more than the test:
+      the ligament figures come from patients pre-selected for surgery, McMurray's accuracy moves
+      with time since injury <i>and</i> differs sharply between orthopaedic and primary care hands,
+      and the lever sign's result shifts with the surface the leg rests on. Two graded guidelines
+      cover meniscal and cartilage lesions and arthroplasty; ligament management has none, and
+      section 10 says so rather than borrowing confidence it does not have.
       <b>This is a study aid for examination preparation, not a clinical reference</b> - check any
       value against current literature before it weights a decision about a patient.</p>
     </div>
@@ -860,31 +868,107 @@ a{color:var(--accent)}
 
   <section id="checklist">
     <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2><span class="note">check-off saves in this browser</span></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">Two questions come before any special test: is this a knee problem at all, and does it need a radiograph before it needs a hand on it.</p>
     
     <div class="tablewrap">
       <table class="check-table">
         <colgroup><col style="width:4%"><col style="width:5%"><col style="width:17%"><col style="width:37%"><col style="width:37%"></colgroup>
         <thead><tr><th scope="col"></th><th scope="col">#</th><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Example item"></td><td class="idx">1</td>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Screen above and below"></td><td class="idx">1</td>
+        <td class="name">Screen above and below</td>
+        <td>Clear the hip and lumbar spine before examining the knee.</td>
+        <td data-imp="lumbar|referred|screen|hip">
+          <b>Do this first.</b> Knee pain refers from both, and a knee examined for referred pain reads normal and reassuring. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="2" aria-label="Mark done: Decide about imaging early"></td><td class="idx">2</td>
+        <td class="name">Decide about imaging early</td>
+        <td>Apply the Ottawa Knee Rule before any special test.</td>
+        <td data-imp="Ottawa|radiograph|rule-out|pooled">
+          <b>It is a rule-out.</b> Pooled sensitivity <b>0.98</b> and &minus;LR <b>0.12</b> across 18 studies and 6,702 patients. <span class="src">Kazemi 2023</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="3" aria-label="Mark done: Red flags"></td><td class="idx">3</td>
+        <td class="name">Red flags</td>
+        <td>History and observation for septic arthritis, fracture, extensor mechanism rupture, DVT, malignancy.</td>
+        <td data-imp="septic|extensor mechanism|malignancy|fracture">
+          <b>An acutely hot, exquisitely painful knee with fever is not an examination problem.</b> <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="4" aria-label="Mark done: Classify from the history"></td><td class="idx">4</td>
+        <td class="name">Classify from the history</td>
+        <td>Traumatic or atraumatic, mechanical or inflammatory - and how long ago.</td>
+        <td data-imp="traumatic|inflammatory|time since|classify">
+          <b>Time since injury changes what the tests are worth.</b> See section 07; this is not a formality at the knee. <span class="src">Rinonapoli 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="5" aria-label="Mark done: Resting state"></td><td class="idx">5</td>
+        <td class="name">Resting state</td>
+        <td>Standing alignment, effusion, quadriceps bulk.</td>
+        <td data-imp="alignment|effusion|quadriceps bulk|resting">
+          The shortest section in the guide, because almost nothing here has been measured in a way a reader can check. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="6" aria-label="Mark done: What they can do alone"></td><td class="idx">6</td>
+        <td class="name">What they can do alone</td>
+        <td>Gait, active range, extension lag versus fixed flexion, squat, step-down, hop if appropriate.</td>
+        <td data-imp="extension lag|step-down|contracture|gait">
+          <b>The lag-versus-contracture distinction is the most useful thing in that list.</b> <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="7" aria-label="Mark done: What you do to them"></td><td class="idx">7</td>
+        <td class="name">What you do to them</td>
+        <td>Passive against active, end feel, patellar mobility, accessory glide.</td>
+        <td data-imp="springy block|end feel|patellar|accessory">
+          A <b>springy block</b> to extension is the classic displaced-meniscus end feel. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="8" aria-label="Mark done: What is short"></td><td class="idx">8</td>
+        <td class="name">What is short</td>
+        <td>Quadriceps by Ely or prone knee bend, hamstrings, gastrocnemius.</td>
+        <td data-imp="prone knee bend|gastrocnemius|hamstring|Ely">
+          Gastrocnemius crosses the knee, so it belongs in a knee examination rather than only an ankle one. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="9" aria-label="Mark done: What is weak"></td><td class="idx">9</td>
+        <td class="name">What is weak</td>
+        <td>Quadriceps first, then hamstrings, then hip abductors.</td>
+        <td data-imp="inhibition|abductor|retest|quadriceps">
+          <b>Expect inhibition rather than weakness</b> at the knee, and retest after reducing pain and effusion before you believe a grade. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="10" aria-label="Mark done: Where is it"></td><td class="idx">10</td>
+        <td class="name">Where is it</td>
+        <td>Joint line, patellar borders and tendon, tibial tubercle, collateral origins.</td>
+        <td data-imp="joint line|tibial tubercle|collateral|palpat">
+          Palpate after the movement examination, not before - it tells you whether the tenderness explains anything. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="11" aria-label="Mark done: What is it"></td><td class="idx">11</td>
+        <td class="name">What is it</td>
+        <td>Ligament tests, meniscal tests, patellofemoral tests, clustered from the hypothesis.</td>
+        <td data-imp="ligament|meniscal|cluster|hypothesis">
+          <b>No single knee test is reliable enough to diagnose alone.</b> <span class="src">Rinonapoli 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="12" aria-label="Mark done: What you do about it"></td><td class="idx">12</td>
+        <td class="name">What you do about it</td>
+        <td>Dose from irritability, match intervention to impairment, name the reassessment marker before treating.</td>
+        <td data-imp="irritability|reassessment|arthroplasty|impairment">
+          <b>Graded evidence exists for arthroplasty only.</b> Section 10 says so rather than borrowing confidence from it. <span class="src">Bove 2026</span>
         </td>
       </tr>
         </tbody>
@@ -895,108 +979,261 @@ a{color:var(--accent)}
 
   <section id="numbers">
     <div class="sechead"><span class="secnum">02</span><h2>Numbers worth knowing cold</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">The knee has fewer trustworthy numbers than the shoulder and fewer reachable ones than the hip. What it does have is one excellent screening rule, decent ligament figures from an inflated population, and a meniscal finding almost nobody is taught.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Ottawa Knee Rule</td>
+        <td>Five criteria; any one positive means image.</td>
+        <td data-imp="Ottawa|pooled|likelihood|studies">
+          Pooled <b>sensitivity 0.98 (95% CI 0.96-0.99)</b>, <b>specificity 0.43 (0.42-0.45)</b>, <b>+LR 1.56 (1.39-1.75)</b>, <b>&minus;LR 0.12 (0.05-0.26)</b>, from <b>18 studies and 6,702 patients</b>. <span class="src">Kazemi 2023</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What that actually means</td>
+        <td>Read the ratios, not the summary sentence.</td>
+        <td data-imp="AUC|chance|over-read|summary">
+          <b>A rule-out and nothing else.</b> A +LR of 1.56 barely moves probability and the HSROC <b>AUC is 0.54</b>, close to chance. The authors' own summary calls it "high diagnostic performance" - take that at face value and you will over-read a positive rule. <span class="src">Kazemi 2023</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Lachman</td>
+        <td>Knee at 20-30&deg;, stabilise femur, translate tibia forward. Grade endpoint and excursion.</td>
+        <td data-imp="Lachman|endpoint|excursion|translate">
+          <b>Sn 87.6% &middot; Sp 88.9%</b> - the balanced ligament test. <span class="src">Nguyen 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Anterior drawer</td>
+        <td>Knee at 90&deg;, foot stabilised, draw the tibia forward.</td>
+        <td data-imp="anterior drawer|stabilised|sensitive|tibia">
+          <b>Sn 77.5% &middot; Sp 86.1%</b> - less sensitive than Lachman for the same structure. <span class="src">Nguyen 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Pivot shift</td>
+        <td>Valgus and internal rotation from extension into flexion; feel for the reduction clunk.</td>
+        <td data-imp="pivot shift|valgus|reduction|clunk">
+          <b>Sn 65.9% &middot; Sp 94.4%</b> - the specific one and the least sensitive. A positive is meaningful; a negative is not. <span class="src">Nguyen 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The caveat on all three</td>
+        <td>Ask who was in the study.</td>
+        <td data-imp="arthroscopy|pretest|spectrum|inflate">
+          Those figures come from <b>165 patients already indicated for arthroscopy</b>. High pretest probability and a narrow spectrum inflate accuracy; expect worse in a clinic. <span class="src">Nguyen 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Lever sign</td>
+        <td>Fist under the proximal calf, press the distal thigh, watch the heel lift.</td>
+        <td data-imp="lever sign|interrater|agreement|utility">
+          <span class="prov x">Contested</span> One study reports <b>Sn 93.8% &middot; Sp 94.4%</b> and calls it useful <span class="src">Nguyen 2025</span>; another, in a general traumatic-knee population against MRI, found only <b>moderate interrater agreement (&kappa; 0.529, 0.368-0.691)</b> and at best <b>+LR 3.02, &minus;LR 0.45</b> - "limited clinical utility". <span class="src">Norris 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why they disagree</td>
+        <td>Compare the two populations.</td>
+        <td data-imp="overestimating|pre-selected|bias|cohort">
+          Norris says it outright: reviews naming the lever sign the best ACL rule-out rest on studies whose limitations "could bias the test outcome, potentially overestimating its clinical utility". One cohort was pre-selected for surgery; the other was not. <span class="src">Norris 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The lever sign's stranger finding</td>
+        <td>Standardise your setup before you trust the result.</td>
+        <td data-imp="surface|fist position|associated|effusion grade">
+          Its outcome depends on <b>the surface the leg rests on and where the examiner puts their fist</b> - both significantly associated with the result. Effusion grade, force applied and pain reported were <b>not</b>. <span class="src">Norris 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">McMurray in the first week</td>
+        <td>Flexion with rotation, extend while palpating the joint line. Tested at 5-7 days.</td>
+        <td data-imp="McMurray|rotation|joint line|days">
+          <b>Sn 91% &middot; Sp 55%</b>. Sensitive and non-specific. <span class="src">Rinonapoli 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">McMurray at a month</td>
+        <td>The same test, repeated at 4-5 weeks.</td>
+        <td data-imp="predictive value|weeks|specific|repeated">
+          <b>Sn 80% &middot; Sp 79%</b>, with a <b>positive predictive value of 92%</b>. Specific and less sensitive. <span class="src">Rinonapoli 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The point of those two rows</td>
+        <td>Ask when the injury happened before you weight the test.</td>
+        <td data-imp="operating characteristics|time since|week|weight">
+          <b>A test's operating characteristics move with time since injury.</b> A positive McMurray in week one means much less than the same positive a month later, and almost nobody is taught this. <span class="src">Rinonapoli 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">But McMurray is also contested</td>
+        <td>Ask who performed the test.</td>
+        <td data-imp="primary care|healthy controls|orthopaedic|below">
+          <span class="prov x">Contested</span> In <b>primary care hands</b> against MRI, in 292 patients plus 75 healthy controls, McMurray was <b>Sn 0.58 (0.49-0.67) &middot; Sp 0.56 (0.45-0.66)</b> - far below the orthopaedic figures above. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Which is right?</td>
+        <td>Both, for their own setting.</td>
+        <td data-imp="surgeons|prevalence|mixed population|manoeuvre">
+          Rinonapoli used <b>orthopaedic surgeons</b> in a trauma cohort with roughly 74% prevalence; Blyth used <b>primary care clinicians</b> in a mixed population including healthy controls. Same manoeuvre, different examiners, different people - and <b>the gap between them is wider than the gap between any two tests</b>. <span class="src">Rinonapoli 2025</span> <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What to take from that</td>
+        <td>Weight the examiner and the population, not only the test.</td>
+        <td data-imp="examiner|population|moves|chose">
+          <b>Who performs a test, and on whom, moves its accuracy more than which test you chose.</b> That is the single most useful thing in this guide.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Best meniscal combination</td>
+        <td>Run McMurray and Apley together.</td>
+        <td data-imp="Apley|combination|false positive|confirmed">
+          <b>McMurray with Apley</b> gave the best accuracy and minimised false positives, in 255 patients with 188 arthroscopically confirmed tears. <span class="src">Rinonapoli 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Thessaly</td>
+        <td>Weight-bearing rotation at 20&deg; of flexion.</td>
+        <td data-imp="Thessaly|weight-bearing|reliability|rotation">
+          <b>Sn 0.66 (0.57-0.74) &middot; Sp 0.39 (0.29-0.50)</b>, OR 1.24 (0.71-2.18) against MRI in primary care hands. Reliability is <b>fair, &kappa; 0.54</b>, from one moderate-quality study. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Apley</td>
+        <td>Prone, knee at 90&deg;, compression with rotation.</td>
+        <td data-imp="Apley|compression|prone|direction">
+          <b>Sn 0.53 (0.44-0.62) &middot; Sp 0.53 (0.42-0.63)</b>, OR 1.24 (0.73-2.12). Barely better than a coin in either direction. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Joint line tenderness</td>
+        <td>Palpate the tibiofemoral line with the knee flexed.</td>
+        <td data-imp="joint line|tibiofemoral|sensitive|palpate">
+          <b>Sn 0.77 (0.68-0.84) &middot; Sp 0.26 (0.18-0.36)</b>, OR 1.16 (0.63-2.13) - sensitive, almost non-specific. Reliability <b>poor, &kappa; &le; 0.38</b>. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Joint line tenderness differs by sex</td>
+        <td>Read the figure for the patient in front of you.</td>
+        <td data-imp="men|women|accuracy|differs">
+          In <b>men</b> Sn 0.50-0.58, Sp 0.74-1.00, accuracy 0.63-0.86. In <b>women</b> Sn 0.40-0.49, Sp 0.71-0.98. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The odds ratios are the tell</td>
+        <td>Check whether the interval includes 1.</td>
+        <td data-imp="odds ratio|interval|excludes|includes">
+          <b>Three of those four include 1</b> - Thessaly, Apley and joint line tenderness. Only McMurray's excludes it, and only just, at 1.04 to 3.09. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Ege and hyper-flexion</td>
+        <td>Named but not quantified.</td>
+        <td data-imp="Ege|hyper-flexion|anterior knee|quantified">
+          <b>No individual figures.</b> <span class="src">no traceable source</span> Noted only as more influenced by anterior knee pain. <span class="src">Rinonapoli 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The honest frame for the section</td>
+        <td>Say it to the patient too.</td>
+        <td data-imp="sufficiently reliable|independent|imaging|conclusion">
+          The authors' conclusion: <b>no single clinical test was sufficiently reliable for independent diagnosis</b>, reinforcing the need for imaging confirmation. <span class="src">Rinonapoli 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Normal knee ROM</td>
+        <td>Goniometry, compared to the other knee.</td>
+        <td data-imp="goniometr|normative|paywalled|convention">
+          <b>Convention.</b> <span class="prov c">Convention</span> No free normative source. <span class="src">no traceable source</span> The tables everyone quotes are paywalled at the table.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What is traceable about that</td>
+        <td>Compare a textbook figure to a measured population.</td>
+        <td data-imp="probability sample|textbook|estimates|differed">
+          Measured against a national probability sample, normative hip <b>and knee</b> values differed from textbook estimates <b>by as much as 18&deg;</b>, and differences between the youngest and oldest age groups were only 3 to 5&deg;. <span class="src">Roach 1991</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Q angle</td>
+        <td>ASIS to patellar centre to tibial tubercle.</td>
+        <td data-imp="patellar centre|population-specific|sedentary|universal">
+          <span class="prov c">Convention</span> Published values are population-specific - separate figures for different national cohorts, for sedentary adults versus athletes - with <b>no universal norm and no reliability study</b> reachable. <span class="src">no traceable source</span> The familiar 15&deg; is not quoted here.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Knee OA bedside criteria</td>
+        <td>Ask whether a criteria set exists.</td>
+        <td data-imp="criteria set|equivalent|bedside|reachable">
+          <b>It does not, reachably.</b> <span class="src">no traceable source</span> The knee has no equivalent to the hip's Grade A criteria set.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Patellofemoral test accuracy</td>
+        <td>Ask before you rely on one.</td>
+        <td data-imp="patellofemoral|established|bedside|accuracy">
+          <b>Not established.</b> <span class="src">no traceable source</span> Searched twice; nothing gives diagnostic accuracy for a bedside patellofemoral test.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Effusion test reliability</td>
+        <td>Sweep and ballottement.</td>
+        <td data-imp="sweep|ballottement|volumetry|examined">
+          <b>Not established.</b> <span class="src">no traceable source</span> The reachable literature is MRI volumetry, not the hand tests students are examined on.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Quadriceps limb symmetry index</td>
+        <td>Used as a return-to-sport gate.</td>
+        <td data-imp="symmetry|return-to-sport|cutoff|threshold">
+          <span class="prov c">Convention</span> Cohorts apply a symmetry cutoff; none reachable here establishes one. <span class="src">no traceable source</span> A threshold whose origin you cannot reach is a convention, not a measurement.
         </td>
       </tr>
         </tbody>
       </table>
     </div>
-
-    <!-- WORKED FIGURE. Three panels comparing a normal state against two faults - the
-         "draw the difference" pattern. Conventions, all of which the machinery relies on:
-         · currentColor for structure, so it themes in light and dark automatically
-         · var(--accent) for the thing being measured, var(--hi) for the fault
-         · role="img" + aria-label carrying the same claim the picture makes
-         · <text> labels are hidden by Recall; click one to lift it. Keep them short -
-           whole sentences belong in the figcaption, not the drawing
-         · .figgrid below the svg holds the legend as reflowing HTML, so it stacks on a
-           phone instead of overlapping the drawing
-         · if the drawing has dead space beside it at desktop width, swap the viewBox at
-           narrow widths with a small matchMedia script rather than letting it shrink -->
-    <figure>
-      <p class="figtitle">What the figure claims, in one line</p>
-      <svg viewBox="0 0 620 210" role="img" aria-label="Say here, in a sentence, exactly what a reader who cannot see the drawing would need to know.">
-        <defs>
-          <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"></path>
-          </marker>
-        </defs>
-
-        <!-- panel 1 - the normal state -->
-        <line x1="70" y1="40" x2="70" y2="185" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".55"></line>
-        <circle cx="95" cy="110" r="32" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
-        <path d="M 70 82 A 32 32 0 0 0 70 138 Z" fill="var(--accent)" fill-opacity=".2"></path>
-        <text class="mono" x="95" y="176" text-anchor="middle">NORMAL</text>
-
-        <!-- panel 2 - the fault, drawn as the same picture with one thing changed -->
-        <line x1="290" y1="40" x2="290" y2="185" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".55"></line>
-        <circle cx="272" cy="110" r="32" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
-        <path d="M 290 82 A 32 32 0 1 0 290 138 Z" fill="var(--hi)" fill-opacity=".2"></path>
-        <line x1="330" y1="110" x2="380" y2="110" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arw)"></line>
-        <text class="mono" x="272" y="176" text-anchor="middle" fill="var(--hi)">FAULT</text>
-
-        <!-- panel 3 - the measurement that separates them -->
-        <line x1="470" y1="70" x2="470" y2="150" stroke="var(--accent)" stroke-width="1.5"></line>
-        <line x1="464" y1="70" x2="476" y2="70" stroke="var(--accent)" stroke-width="1.5"></line>
-        <line x1="464" y1="150" x2="476" y2="150" stroke="var(--accent)" stroke-width="1.5"></line>
-        <text class="mono" x="484" y="114" fill="var(--accent)">the value</text>
-      </svg>
-      <div class="figgrid c3">
-        <div><span class="lbl">Normal</span><span class="t2">What you should see, and against what reference.</span></div>
-        <div><span class="lbl">Fault</span><span class="t2">The one thing that changed, named the way a student will be asked for it.</span></div>
-        <div><span class="lbl">The value</span><span class="t2">The threshold, with its provenance - most of these are convention.</span></div>
-      </div>
-      <figcaption><b>Lead the caption with what the picture shows.</b> Then the sentence a reader needs that the drawing cannot carry - where the number comes from, or why the taught version differs from the measured one.</figcaption>
-    </figure>
   </section>
 
   <section id="posture">
-    <div class="sechead"><span class="secnum">03</span><h2>Posture and what it obligates</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">03</span><h2>Posture and resting alignment</h2></div>
+    <p class="lede">The shortest section in the guide, because almost nothing here has been measured in a way a reader can check. Saying that is more useful than filling it with thresholds nobody established.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Standing alignment</td>
+        <td>Observe varus, valgus and recurvatum, weight-bearing, from front and side.</td>
+        <td data-imp="varus|recurvatum|weight-bearing|threshold">
+          <span class="prov c">Convention</span> No threshold that makes an alignment abnormal is traceable here. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Effusion - how to test</td>
+        <td>Sweep or stroke test for small effusions; ballottement for large ones. Grade and compare sides.</td>
+        <td data-imp="stroke test|ballottement|grade|compare">
+          Technique is uncontroversial. The grading is yours to repeat rather than to cite. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Effusion - how much to trust it</td>
+        <td>Ask what the reliability is.</td>
+        <td data-imp="modified stroke|essential|baseline|record">
+          <b>No reliability figure</b> <span class="src">no traceable source</span> - searched twice. But the <b>modified stroke test</b> is named as an essential physical impairment measure to document at baseline and follow-up, so use that one and record it. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Quadriceps bulk</td>
+        <td>Compare girth and vastus medialis definition side to side.</td>
+        <td data-imp="girth|vastus medialis|atrophy|chronicity">
+          Atrophy is a <b>chronicity marker</b>, not a diagnosis. <span class="prov c">Convention</span>
         </td>
       </tr>
         </tbody>
@@ -1005,30 +1242,46 @@ a{color:var(--accent)}
   </section>
 
   <section id="arom">
-    <div class="sechead"><span class="secnum">04</span><h2>Active range of motion</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">04</span><h2>Active range and what they can do alone</h2></div>
+    <p class="lede">One distinction in this section does more work than the rest of it combined: whether a knee that will not straighten is a quadriceps problem or a joint problem.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Active flexion and extension</td>
+        <td>Compare sides before comparing to a book.</td>
+        <td data-imp="flexion|reference|compare|norms">
+          The norms are convention <span class="prov c">Convention</span> and the other knee is the better reference.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Extension lag versus fixed flexion</td>
+        <td>Take it passively, then actively, and compare.</td>
+        <td data-imp="extension lag|contracture|passive|actively">
+          <b>Passive exceeds active</b> = an extension <b>lag</b>, a quadriceps problem. <b>Both equally limited</b> = a <b>contracture</b>, a joint problem. <span class="prov c">Convention</span> Two different treatments follow.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Gait</td>
+        <td>Observe stance-phase control, quadriceps avoidance and thrust.</td>
+        <td data-imp="stance-phase|avoidance|thrust|observ">
+          <span class="prov c">Convention</span> No free accuracy figures for gait observation at the knee. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Squat and step-down</td>
+        <td>Depth, symmetry, frontal-plane control, and whether the symptom reproduces.</td>
+        <td data-imp="depth|frontal-plane|reproduc|symmetry">
+          <span class="prov c">Convention</span> Useful as a reassessment marker because it repeats within a session.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hop testing and limb symmetry</td>
+        <td>Used as a return-to-sport gate.</td>
+        <td data-imp="hop|limb symmetry|cutoff|gate">
+          The threshold is <span class="prov c">Convention</span> - cohorts apply a limb symmetry cutoff, none reachable here establishes one. <span class="src">no traceable source</span>
         </td>
       </tr>
         </tbody>
@@ -1037,30 +1290,60 @@ a{color:var(--accent)}
   </section>
 
   <section id="prom">
-    <div class="sechead"><span class="secnum">05</span><h2>PROM, end feel and muscle length</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">05</span><h2>Passive range, end feel and length</h2></div>
+    <p class="lede">Passive testing at the knee is mostly about separating the joint from the muscle. The end feels carry the information, and none of them have reachable reliability figures.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Passive against active</td>
+        <td>Take each direction passively and compare with the active range.</td>
+        <td data-imp="passive|inhibition|equally limited|joint">
+          Passive exceeding active points to <b>inhibition or weakness</b>; both equally limited points to the <b>joint</b>. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">End feel</td>
+        <td>Note what stops the movement: capsular, bony, springy, empty, guarding.</td>
+        <td data-imp="springy block|capsular|guarding|displaced">
+          A <b>springy block</b> to extension is the classic displaced-meniscus finding. <span class="prov c">Convention</span> Taught universally; no reachable reliability at the knee. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Patellar mobility and tilt</td>
+        <td>Glide medially and laterally in slight flexion; assess tilt.</td>
+        <td data-imp="glide|tilt|hypomobile|slight flexion">
+          <span class="prov c">Convention</span> No traceable threshold for what counts as hyper- or hypomobile. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Accessory motion</td>
+        <td>Tibiofemoral anterior and posterior glide, patellofemoral glide. Grade resistance, compare sides.</td>
+        <td data-imp="tibiofemoral|posterior glide|resistance|accessory">
+          <span class="prov c">Convention</span> Graded resistance is universally taught; no reachable reliability figure at the knee.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Quadriceps length</td>
+        <td>Prone knee bend, or Ely's test. Watch for a compensatory pelvic rise.</td>
+        <td data-imp="prone knee bend|pelvic rise|compensatory|Ely">
+          The pelvic rise is the finding students miss; it means you have run out of quadriceps. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hamstring length</td>
+        <td>Passive straight-leg raise, or 90/90 knee extension.</td>
+        <td data-imp="straight-leg|90/90|threshold|passive">
+          <span class="prov c">Convention</span> No threshold or reliability figure reachable at the knee. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Gastrocnemius</td>
+        <td>Ankle dorsiflexion with the knee straight, then with it bent.</td>
+        <td data-imp="dorsiflexion|knee straight|contribution|crosses">
+          <b>The difference between the two is the gastrocnemius contribution</b>, because it crosses the knee. <span class="prov c">Convention</span>
         </td>
       </tr>
         </tbody>
@@ -1069,30 +1352,53 @@ a{color:var(--accent)}
   </section>
 
   <section id="mmt">
-    <div class="sechead"><span class="secnum">06</span><h2>Manual muscle testing</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">06</span><h2>Strength</h2></div>
+    <p class="lede">At the knee the important question is usually not how weak the quadriceps is, but whether it is weak at all as opposed to inhibited.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Quadriceps</td>
+        <td>Test through range and against resistance; prefer a dynamometer so the number repeats.</td>
+        <td data-imp="dynamometer|resistance|repeats|record">
+          Record a number you can compare next visit rather than a grade you cannot. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Weakness or inhibition?</td>
+        <td>Retest after reducing pain and effusion.</td>
+        <td data-imp="inhibition|effusion|improves|retest">
+          <b>A grade that improves at once was inhibition.</b> <span class="prov c">Convention</span> The rest of the knee plan depends on which one it is.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why it matters here specifically</td>
+        <td>Look at what the guideline recommends for it.</td>
+        <td data-imp="NMES|tolerable intensity|arthroplasty|moderate">
+          The one graded guideline available recommends <b>daily NMES to the quadriceps at the highest tolerable intensity</b> after arthroplasty, at moderate evidence quality - an intervention aimed squarely at inhibition rather than at load. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hamstrings</td>
+        <td>Prone knee flexion against resistance.</td>
+        <td data-imp="prone|hamstring-to-quadriceps|resistance|relationship">
+          Note the hamstring-to-quadriceps relationship rather than either in isolation. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hip abductors</td>
+        <td>Test them, every time.</td>
+        <td data-imp="abductor|frontal plane|valgus collapse|step-down">
+          <b>The knee follows the hip in the frontal plane</b>, and a valgus collapse on step-down is often a hip finding. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Strength norms</td>
+        <td>Ask what you are comparing against.</td>
+        <td data-imp="norms|side-to-side|serial|comparing">
+          <b>None reachable.</b> <span class="src">no traceable source</span> Use side-to-side difference and serial change.
         </td>
       </tr>
         </tbody>
@@ -1102,61 +1408,197 @@ a{color:var(--accent)}
 
   <section id="special">
     <div class="sechead"><span class="secnum">07</span><h2>Special tests</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">Two things make this section different from the shoulder's. The ligament figures come from a population pre-selected for surgery, and the meniscal figures move depending on when you examine. Both change how the numbers should be used, not merely how confidently.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Run tests from a hypothesis</td>
+        <td>Classify first: traumatic or atraumatic, and how long ago.</td>
+        <td data-imp="hypothesis|atraumatic|prevalence|battery">
+          A battery run on everyone produces false positives at the rate prevalence dictates. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Lachman</td>
+        <td>Knee 20-30&deg;, femur stabilised, anterior translation of the tibia.</td>
+        <td data-imp="Lachman|femur|anterior translation|workhorse">
+          <b>Sn 87.6% &middot; Sp 88.9%</b> - the workhorse. <span class="src">Nguyen 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Anterior drawer</td>
+        <td>Knee at 90&deg;, foot fixed.</td>
+        <td data-imp="drawer|foot fixed|less sensitive|structure">
+          <b>Sn 77.5% &middot; Sp 86.1%</b>; less sensitive than Lachman for the same structure. <span class="src">Nguyen 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Pivot shift</td>
+        <td>Valgus with internal rotation, extension into flexion.</td>
+        <td data-imp="pivot|internal rotation|guarding|rule-in">
+          <b>Sn 65.9% &middot; Sp 94.4%</b> - rule-in. Hard to perform on a guarding patient, which is part of why the sensitivity is low. <span class="src">Nguyen 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Lever sign</td>
+        <td>Fist under the calf, downward pressure on the thigh.</td>
+        <td data-imp="lever|standardise|prompt|position">
+          <span class="prov x">Contested</span> See section 02. Treat a positive as a prompt rather than a diagnosis, and standardise your surface and fist position before comparing results. <span class="src">Nguyen 2025</span> <span class="src">Norris 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The population caveat</td>
+        <td>Ask who the figures came from.</td>
+        <td data-imp="scheduled|arthroscopy|figures|population">
+          The ligament figures above come from patients <b>already scheduled for arthroscopy</b>. <span class="src">Nguyen 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">McMurray</td>
+        <td>Flexion with rotation, then extension, palpating the joint line.</td>
+        <td data-imp="McMurray|time-dependent|palpating|extension">
+          Time-dependent: <b>Sn 91% / Sp 55%</b> at 5-7 days, <b>Sn 80% / Sp 79%</b> with PPV <b>92%</b> at 4-5 weeks. <span class="src">Rinonapoli 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Meniscal clustering</td>
+        <td>Combine McMurray with Apley.</td>
+        <td data-imp="Apley|pairing|false positives|accuracy">
+          That pairing minimised false positives and gave the best accuracy of the six tests studied. <span class="src">Rinonapoli 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Thessaly</td>
+        <td>Weight-bearing rotation at 20&deg; of flexion.</td>
+        <td data-imp="Thessaly|discriminates|reliability|interval">
+          <b>Sn 0.66 &middot; Sp 0.39</b>, OR 1.24 with an interval including 1 - it discriminates poorly. Reliability fair at &kappa; 0.54, which is better than McMurray's or joint line tenderness's. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Patellofemoral tests</td>
+        <td>Use them to reproduce and localise the symptom.</td>
+        <td data-imp="reproduce|localise|confirm|diagnosis">
+          <b>Not to confirm a diagnosis.</b> <span class="src">no traceable source</span> No reachable accuracy for any of them.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Varus and valgus stress</td>
+        <td>At 0&deg; and 30&deg;, grading opening and end feel against the other side.</td>
+        <td data-imp="valgus stress|opening|comparison|graded">
+          <span class="prov c">Convention</span> <span class="src">no traceable source</span> for accuracy in this guide; graded by comparison rather than by a cited figure.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Interpreting a likelihood ratio</td>
+        <td>Convert the result into a probability shift.</td>
+        <td data-imp="likelihood|heuristic|decisive|reading">
+          <span class="prov c">Convention</span> The familiar bands - +LR over 10 decisive, 2-5 a small shift - are a teaching heuristic, not a value traced to any source here. The <b>numbers</b> are sourced; the word "rule-out" is the reading they force. <span class="src">Kazemi 2023</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The section's honest summary</td>
+        <td>Say it before you run the tests.</td>
+        <td data-imp="single|reliable|diagnose|alone">
+          <b>No single knee test is reliable enough to diagnose alone.</b> <span class="src">Rinonapoli 2025</span>
         </td>
       </tr>
         </tbody>
       </table>
     </div>
+
+    <figure>
+      <p class="figtitle">The same test, four weeks apart</p>
+      <svg viewBox="0 0 620 300" role="img" aria-label="McMurray test accuracy at two timepoints after knee injury. At five to seven days sensitivity is 91 percent and specificity 55 percent, a gap of 36 points. At four to five weeks sensitivity has fallen to 80 percent and specificity risen to 79 percent, a gap of one point. The test changes from sensitive and non-specific to balanced as time passes.">
+        <line x1="130" y1="46" x2="130" y2="248" stroke="currentColor" stroke-width="1" opacity=".3"></line>
+        <line x1="470" y1="46" x2="470" y2="248" stroke="currentColor" stroke-width="1" opacity=".3"></line>
+
+        <path d="M130,72 L470,116" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"></path>
+        <path d="M130,216 L470,120" fill="none" stroke="var(--d2)" stroke-width="2.4" stroke-linecap="round"></path>
+        <circle cx="130" cy="72" r="4" fill="var(--accent)"></circle>
+        <circle cx="470" cy="116" r="4" fill="var(--accent)"></circle>
+        <circle cx="130" cy="216" r="4" fill="var(--d2)"></circle>
+        <circle cx="470" cy="120" r="4" fill="var(--d2)"></circle>
+
+        <text class="mono" x="120" y="76" text-anchor="end" fill="var(--accent)">sensitivity</text>
+        <text class="mono" x="120" y="206" text-anchor="end" fill="var(--d2)">specificity</text>
+
+        <text class="mono" x="130" y="56" text-anchor="middle">91%</text>
+        <text class="mono" x="130" y="238" text-anchor="middle">55%</text>
+        <text class="mono" x="486" y="110" text-anchor="start">80%</text>
+        <text class="mono" x="486" y="140" text-anchor="start">79%</text>
+
+        <text class="mono" x="130" y="272" text-anchor="middle" opacity=".75">5-7 days</text>
+        <text class="mono" x="470" y="272" text-anchor="middle" opacity=".75">4-5 weeks</text>
+
+        <text class="mono" x="300" y="176" text-anchor="middle" fill="var(--hi)">36 points apart, then 1</text>
+      </svg>
+      <div class="figgrid c3">
+        <div><b>Early</b> &mdash; sensitive and non-specific. A negative is informative; a positive is weak.</div>
+        <div><b>Later</b> &mdash; balanced, with a positive predictive value of 92%. A positive now means something.</div>
+        <div><b>Nothing about the knee changed.</b> Only the time since injury did, and with it what the same finding is worth.</div>
+      </div>
+      <figcaption><b>McMurray's sensitivity falls from 91% to 80% while its specificity rises from 55% to 79% between the first week and the second month after injury.</b> Two blinded surgeons examined 255 patients aged 20 to 45 at both timepoints, against MRI and arthroscopy, with 188 tears confirmed. This is why re-examining a knee at four weeks is a diagnostic act rather than a delay - and why a positive McMurray in the first week should not be treated as the same finding as a positive one a month later <span class="src">Rinonapoli 2025</span>.</figcaption>
+    </figure>
   </section>
 
   <section id="syndromes">
-    <div class="sechead"><span class="secnum">08</span><h2>Movement system diagnoses</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">08</span><h2>Syndromes and what you call it</h2></div>
+    <p class="lede">The knee's syndromes are easier to name than to confirm. Two of the five below have no reachable bedside criteria at all, and saying that is more useful than a confident label.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">ACL rupture</td>
+        <td>Mechanism, immediate effusion, instability on the history.</td>
+        <td data-imp="rupture|instability|screened|confirmed">
+          Screened with Lachman, confirmed by neither the examination nor the lever sign alone. <span class="src">Nguyen 2025</span> <span class="src">Norris 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Meniscal tear</td>
+        <td>Mechanical symptoms, joint line pain, effusion.</td>
+        <td data-imp="mechanical|joint line|combination|injury">
+          <b>McMurray with Apley</b> is the best available combination, read against time since injury. <span class="src">Rinonapoli 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Patellofemoral pain</td>
+        <td>Anterior knee pain with loading, stairs, prolonged sitting.</td>
+        <td data-imp="anterior knee|stairs|prolonged sitting|exclusion">
+          <b>A diagnosis of pattern and exclusion here</b>, because no bedside test has reachable accuracy. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Knee osteoarthritis</td>
+        <td>Age, load-related pain, stiffness, crepitus.</td>
+        <td data-imp="osteoarthritis|crepitus|criteria|Grade">
+          <b>No reachable bedside criteria set.</b> <span class="src">no traceable source</span> Unlike the hip, there is no Grade A rule to apply.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">After arthroplasty</td>
+        <td>Post-surgical timeline and precautions.</td>
+        <td data-imp="arthroplasty|post-surgical|graded|management">
+          <b>The one syndrome here with graded evidence behind its management</b> - see section 10. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Movement diagnosis</td>
+        <td>Name the movement fault and its direction under load.</td>
+        <td data-imp="movement fault|under load|reproduces|direction">
+          State what the knee does under load that reproduces the symptom, not only the tissue you suspect. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Relative stiffness</td>
+        <td>Look above and below before treating the knee.</td>
+        <td data-imp="borrows|ankle|above and below|flex">
+          A knee that will not flex borrows from the hip and the ankle. <span class="prov c">Convention</span>
         </td>
       </tr>
         </tbody>
@@ -1166,29 +1608,38 @@ a{color:var(--accent)}
 
   <section id="palpation">
     <div class="sechead"><span class="secnum">09</span><h2>Palpation</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">Palpation comes late deliberately. Palpating first tells you where a patient is tender; palpating after the movement examination tells you whether that tenderness explains anything.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Joint line</td>
+        <td>Knee flexed, palpate the tibiofemoral line medially and laterally.</td>
+        <td data-imp="tibiofemoral|medially|suspicion|tenderness">
+          Tenderness raises meniscal suspicion, but its accuracy is not reported. <span class="src">no traceable source</span> <span class="src">Rinonapoli 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Patella</td>
+        <td>Borders, facets, tendon, tibial tubercle.</td>
+        <td data-imp="borders|facets|tibial tubercle|tendon">
+          <span class="prov c">Convention</span> Localises rather than grades.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Collaterals</td>
+        <td>Origins and insertions of the medial and lateral collateral ligaments.</td>
+        <td data-imp="collateral|origins|insertions|differential">
+          <span class="prov c">Convention</span> Tenderness here narrows the differential but confirms nothing on its own.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What palpation cannot do</td>
+        <td>Know its ceiling before relying on it.</td>
+        <td data-imp="distinguish|degeneration|confirm|localise">
+          It cannot distinguish a tear from degeneration, or confirm any of the syndromes in section 08. Use it to localise. <span class="prov c">Convention</span>
         </td>
       </tr>
         </tbody>
@@ -1197,30 +1648,200 @@ a{color:var(--accent)}
   </section>
 
   <section id="treatment">
-    <div class="sechead"><span class="secnum">10</span><h2>Mobilizations and exercise</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">10</span><h2>Mobilisation, exercise and dose</h2></div>
+    <p class="lede">This section is narrower than the hip's on purpose. The knee has no free graded guideline for examination or for non-surgical management. It has one for arthroplasty, and that is the only place in this guide where an evidence grade can be attached to a recommendation.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Where grades apply, and where they do not</td>
+        <td>Ask which guideline covers what you are treating.</td>
+        <td data-imp="graded|cartilage|ligament management|purpose statement">
+          <b>Two graded guidelines are reachable</b> - meniscal and articular cartilage lesions <span class="src">Logerstedt 2018</span> and total knee arthroplasty <span class="src">Bove 2026</span>. <b>Ligament management has none</b>: that guideline's free abstract is a purpose statement carrying no recommendation, grade, dose or threshold. <span class="src">Logerstedt 2017</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Meniscal and cartilage - B</td>
+        <td>Supervised and progressed, not handed over as a sheet.</td>
+        <td data-imp="neuromuscular training|hip muscles|progressive|supervised">
+          Progressive <b>range-of-motion exercise, strength training of the knee <i>and hip</i> muscles, and neuromuscular training</b>, for meniscus tears, cartilage lesions, and after surgery for either. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Meniscal - B</td>
+        <td>Electrical stimulation after meniscus procedures.</td>
+        <td data-imp="stimulation|re-education|functional performance|quadriceps">
+          <b>Neuromuscular stimulation and re-education</b> to increase quadriceps strength, functional performance and knee function. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">After meniscectomy - B</td>
+        <td>In-clinic plus home, both supervised.</td>
+        <td data-imp="meniscectomy|home programme|endurance|independent">
+          Supervised in-clinic exercise <b>and</b> a progressed home programme with education for independent performance (2018). The strength and functional exercise for quadriceps and hamstring strength and endurance is a <b>2010 recommendation retained</b> in 2018. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Motion after surgery - B</td>
+        <td>Early, progressive, both kinds.</td>
+        <td data-imp="early progressive|active and passive|surgery|motion">
+          Early progressive <b>active and passive</b> knee motion after meniscal or articular cartilage surgery. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Weight bearing - B</td>
+        <td>After cartilage implantation.</td>
+        <td data-imp="weight bearing|chondrocyte|stepwise|implantation">
+          Stepwise progression to full weight bearing <b>by 6 to 8 weeks</b> after matrix-supported autologous chondrocyte implantation. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Weight bearing after meniscal repair - C</td>
+        <td>Note the weaker grade.</td>
+        <td data-imp="meniscal repair|weaker|considered|confidence">
+          Early progressive weight bearing <i>may</i> be considered - a <b>C</b> against the <b>B</b> above, so the confidence is not the same. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Return to activity - C and E</td>
+        <td>Two different strengths of advice.</td>
+        <td data-imp="return to activity|delaying|expert opinion|cartilage">
+          Early progressive return <i>may</i> be used after meniscal repair (<b>C</b>); return <i>may need delaying</i> depending on the type of articular cartilage surgery (<b>E</b>, expert opinion). <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Risk factors - C</td>
+        <td>Ask about age and how long ago.</td>
+        <td data-imp="risk factor|age|predisposing|injury">
+          <b>Age and greater time from injury</b> are predisposing factors for meniscal injury. A <b>2010 recommendation retained</b> in the 2018 revision - still current guidance, but the evidence behind it is the older set. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Outcome measures - B</td>
+        <td>Pick from the named set.</td>
+        <td data-imp="IKDC|KOOS|questionnaire|activity scale">
+          A validated patient-reported outcome measure, a general health questionnaire and a validated activity scale. <b>IKDC 2000 and KOOS</b> are the named self-report measures. Also a <b>2010 recommendation retained</b> in 2018. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Essential physical measures</td>
+        <td>Document these at baseline and follow-up.</td>
+        <td data-imp="stroke test|isokinetic|baseline|document">
+          <b>Modified stroke test</b> for effusion, knee active ROM, maximum voluntary isometric or isokinetic quadriceps strength, and joint line tenderness. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Read the harms, not only the grades</td>
+        <td>Look up the harm statement beside each recommendation.</td>
+        <td data-imp="harms|costs|judgement|benefits">
+          The guideline states benefits, risks, harms and costs <b>for every recommendation</b>, and that is where the clinical judgement lives. <b>A grade tells you how much evidence exists; the harm statement tells you what it costs to be wrong.</b> <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Strength training - high</td>
+        <td>Progressive strength training and exercise, taught to the patient.</td>
+        <td data-imp="progressive|postacute|function|taught">
+          <b>Begin in the early postacute period</b>, to improve function, strength and ROM. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Cryotherapy and positioning - high</td>
+        <td>Prescribe cryotherapy and teach limb positioning.</td>
+        <td data-imp="cryotherapy|elevate|postoperative|positioning">
+          Elevate the surgical limb with <b>30 to 90&deg; of knee flexion</b> in the early postoperative period. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Digital health tools - high</td>
+        <td>Offer them alongside or instead of in-clinic care.</td>
+        <td data-imp="digital health|in-clinic|alternative|addition">
+          Recommended <b>either in addition to in-clinic care or as an alternative to it</b>. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Continuous passive motion - high, against</td>
+        <td>Do not use it after primary uncomplicated arthroplasty.</td>
+        <td data-imp="continuous passive|discomfort|quality of life|uncomplicated">
+          The reasoning is stated: <b>no consistent long-term improvement in function, ROM or quality of life</b>, and it <b>may increase patient discomfort</b>. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">NMES - moderate</td>
+        <td>Electrodes to quadriceps, from the early postoperative period.</td>
+        <td data-imp="electrical stimulation|daily|tolerable|gait">
+          Apply <b>at least daily</b>, <b>at the highest tolerable intensity</b>, for quadriceps strength, gait and performance outcomes. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Range of motion exercise - moderate</td>
+        <td>Passive, active-assistive and active.</td>
+        <td data-imp="active-assistive|optimise|recovery|affected">
+          Include all three to optimise recovery and functional outcomes of the affected knee. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Manual therapy - moderate</td>
+        <td>May augment active-assistive exercise for range, early.</td>
+        <td data-imp="augment|therapist skill|techniques|vary">
+          With the guideline's own caveat: <b>effectiveness may vary depending on therapist skill and the techniques used</b>. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Pain - moderate</td>
+        <td>Two separate recommendations.</td>
+        <td data-imp="TENS|Kinesio|psychologically informed|subacute">
+          <i>Should</i> teach and encourage <b>cryotherapy</b> for early postoperative pain. <i>May</i> use <b>TENS</b> (acute and subacute), <b>Kinesio taping</b> (acute), <b>manual therapy</b> and <b>psychologically informed techniques</b> - the last two with <b>no time frame specified</b>. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Activity - moderate</td>
+        <td>Encourage early activity and progress it.</td>
+        <td data-imp="collaborative|physiological|tolerance|progress">
+          Progress against <b>safety, functional tolerance, physiological response and collaborative goal setting</b>. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Delivery - moderate</td>
+        <td>Group or individual sessions.</td>
+        <td data-imp="group-based|individual|sessions|acceptable">
+          Both are acceptable after arthroplasty. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Bracing and splinting - moderate, against</td>
+        <td>Do not use routinely to gain early range.</td>
+        <td data-imp="bracing|bedrest|movement patterns|routine">
+          It <b>may prolong bedrest and limit natural movement patterns, restricting early mobility and gait training</b>. But the guideline also records that bracing into extension <b>may have short-term effects on pain and function</b> - so this is against <i>routine</i> use, not a prohibition. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Swelling - moderate, hedged</td>
+        <td>Kinesio taping may be considered.</td>
+        <td data-imp="swelling|mixed|benefit|considered">
+          To reduce swelling after uncomplicated arthroplasty - <b>"however, evidence is mixed regarding its benefit"</b>, the guideline's own words, and the reason this is a <i>may</i> rather than a <i>should</i>. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Swelling - low, against</td>
+        <td>Manual lymphatic drainage, compression dressings, CPM.</td>
+        <td data-imp="lymphatic drainage|compression|proven|postoperative">
+          Do <b>not</b> use these routinely to reduce postoperative swelling; they <b>have not been proven effective</b>. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What is striking about that list</td>
+        <td>Count the negative recommendations.</td>
+        <td data-imp="negative|strongest|stop doing|grades">
+          <b>The strongest evidence in it is negative.</b> The high-quality recommendation is what to stop doing, and the moderate and low grades add bracing, splinting, lymphatic drainage and compression to the same list. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The reassessment marker</td>
+        <td>Name it before you treat.</td>
+        <td data-imp="reassessment|marker|timed|impairment">
+          Extension lag, effusion grade, or a timed functional measure - whichever the impairment actually was. <span class="prov c">Convention</span>
         </td>
       </tr>
         </tbody>
@@ -1230,7 +1851,7 @@ a{color:var(--accent)}
 
   <section id="drill">
     <div class="sechead"><span class="secnum">11</span><h2>Rapid drill</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">Two ways to rehearse. The cases work the whole chain from presentation to reassessment marker; the single facts test one value at a time, and most of them test whether you know what a value is worth as well as what it is.</p>
     <h3>What to practice</h3>
     <p class="lede">Built from the cells you marked missed while running recall. Nothing here is pre-filled - if this is empty, go and quiz yourself first. The practice method is chosen by <em>what the item is</em>, not by what kind of learner you are: a number, a pair of hands and a decision are three different jobs and they need three different kinds of rehearsal.</p>
     <div id="planner" class="planner"></div>
@@ -1238,55 +1859,127 @@ a{color:var(--accent)}
       <b>Why this is not a learning-styles quiz.</b> Sorting students into visual, auditory or kinesthetic learners and matching teaching to the label is one of the most durable ideas in education that the evidence does not support - the studies that test it properly find no benefit from the match <span class="src">Pashler 2008</span>. What does hold up is the method fitting the material: retrieving a fact from memory beats re-reading it, and spacing the attempts beats massing them <span class="src">Dunlosky 2013</span>. So the plan below sorts your misses by the kind of thing they are.
     </div>
 
-    
-    <div class="tablewrap">
-      <table>
-        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
-        <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
-      <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
-        </td>
-      </tr>
-        </tbody>
-      </table>
+    <h3>Cases - work the whole chain</h3>
+    <p class="lede">Open a case, then work down the prompts - answer each out loud and click to check. Answers are hidden every time a case opens, so nothing is spoiled by looking.</p>
+
+    <div class="cases">
+      <details class="case">
+        <summary class="stem"><b>Footballer, 22.</b> Twisting injury four days ago, swelled within an hour, felt a pop. Lachman feels soft with a vague endpoint. McMurray reproduces medial joint line pain.</summary>
+        <dl class="caseans">
+          <div><dt>Ottawa first</dt><dd>Apply it before anything else. Sensitivity 0.98 with a &minus;LR of 0.12 means a negative rule genuinely lowers fracture probability; a positive one barely raises it, since +LR is 1.56 and the AUC is 0.54 <span class="src">Kazemi 2023</span>.</dd></div>
+          <div><dt>What Lachman buys you</dt><dd>Sn 87.6%, Sp 88.9% - the balanced ligament test <span class="src">Nguyen 2025</span>. Discount it slightly: those figures come from patients already indicated for arthroscopy.</dd></div>
+          <div><dt>The McMurray trap</dt><dd>At four days you are in the T1 window, where McMurray is <b>Sn 91% but Sp only 55%</b> <span class="src">Rinonapoli 2025</span>. A positive here is weak evidence. The same positive at four to five weeks, with specificity up to 79% and PPV 92%, would mean considerably more.</dd></div>
+          <div><dt>Would the lever sign settle it?</dt><dd>No. <span class="prov x">Contested</span> One study gives Sn 93.8%/Sp 94.4% <span class="src">Nguyen 2025</span>, another only moderate agreement and +LR 3.02 in a general population <span class="src">Norris 2025</span> - and its result shifts with the surface and your fist position.</dd></div>
+          <div><dt>What to do</dt><dd>Do not chase a diagnosis from tests this early. Settle irritability, protect, restore extension, and re-examine at three to four weeks when the meniscal tests are worth more.</dd></div>
+        </dl>
+      </details>
+
+      <details class="case">
+        <summary class="stem"><b>Teacher, 61.</b> Six weeks after an uncomplicated total knee replacement. Active extension lacks 12&deg;; passive extension is full. Quadriceps looks wasted. She has been given a brace to wear at night and a CPM machine to hire.</summary>
+        <dl class="caseans">
+          <div><dt>Lag or contracture?</dt><dd>Passive exceeds active, so this is an <b>extension lag</b> - a quadriceps problem, not a joint one. Stretching the joint will not fix it.</dd></div>
+          <div><dt>The CPM</dt><dd>Recommended <b>against</b>, at high evidence quality: no consistent long-term improvement in function, ROM or quality of life, and it may increase discomfort <span class="src">Bove 2026</span>.</dd></div>
+          <div><dt>The brace</dt><dd>Also against for routine early use, at moderate quality - it may prolong bedrest and restrict early mobility and gait training. But note the guideline records a possible short-term benefit of bracing into extension, so this is against routine use rather than a prohibition <span class="src">Bove 2026</span>.</dd></div>
+          <div><dt>What to add instead</dt><dd><b>NMES to quadriceps at least daily at the highest tolerable intensity</b>, and progressive strength training from the early postacute period, at high quality <span class="src">Bove 2026</span>. The lag is an inhibition problem and NMES targets exactly that.</dd></div>
+          <div><dt>The teaching point</dt><dd>The strongest evidence in this guideline is negative - the high-quality recommendation is what to stop doing.</dd></div>
+        </dl>
+      </details>
+
+      <details class="case">
+        <summary class="stem"><b>Runner, 29.</b> Anterior knee pain on stairs and after sitting. No trauma, no effusion, no giving way. She asks which test will confirm patellofemoral pain.</summary>
+        <dl class="caseans">
+          <div><dt>The honest answer</dt><dd>None of them. No bedside patellofemoral test has reachable diagnostic accuracy <span class="src">no traceable source</span>, searched twice. It is a diagnosis of pattern and exclusion.</dd></div>
+          <div><dt>So what are the tests for?</dt><dd>Reproducing and localising the symptom, and giving you something to re-measure - not confirming a label.</dd></div>
+          <div><dt>Where to look instead</dt><dd>Above and below. The knee follows the hip in the frontal plane, so test hip abductors and watch a step-down for valgus collapse.</dd></div>
+          <div><dt>Do not quote a Q angle</dt><dd><span class="prov c">Convention</span> Published values are population-specific, with no universal norm and no reliability study reachable <span class="src">no traceable source</span>. The familiar 15&deg; is not a measurement you can defend.</dd></div>
+          <div><dt>The marker</dt><dd>Pick one before treating - step-down repetitions to symptom, or stair descent - and re-measure it rather than re-asking about pain.</dd></div>
+        </dl>
+      </details>
     </div>
+
+    <h3>Single facts</h3>
+
+    <details><summary>The Ottawa Knee Rule has a sensitivity of 0.98. What is its specificity, and what does that make it good for?</summary><div class="ans">Specificity <b>0.43</b>. It is a <b>rule-out</b> and nothing else: +LR 1.56 barely moves probability, the HSROC AUC is 0.54, and the whole value sits in the &minus;LR of 0.12 <span class="src">Kazemi 2023</span>.</div></details>
+
+    <details><summary>That paper's conclusion calls it "high diagnostic performance". Is it?</summary><div class="ans">In one direction only. An AUC of 0.54 is close to chance discrimination. Take the phrase at face value and you will over-read a positive rule - read the ratios instead <span class="src">Kazemi 2023</span>.</div></details>
+
+    <details><summary>Give sensitivity and specificity for Lachman, anterior drawer and pivot shift. Which is the rule-in test?</summary><div class="ans">Lachman <b>87.6/88.9</b>, anterior drawer <b>77.5/86.1</b>, pivot shift <b>65.9/94.4</b> <span class="src">Nguyen 2025</span>. Pivot shift is the rule-in test - most specific, least sensitive.</div></details>
+
+    <details><summary>Why should you discount all three slightly?</summary><div class="ans">Because all 165 patients were <b>already indicated for arthroscopy</b>. High pretest probability and a narrow spectrum inflate accuracy; expect worse in clinic <span class="src">Nguyen 2025</span>.</div></details>
+
+    <details><summary>Two studies disagree about the lever sign. Give both results and the reason for the gap.</summary><div class="ans"><span class="prov x">Contested</span> Sn 93.8%/Sp 94.4%, "useful" <span class="src">Nguyen 2025</span>, against moderate interrater agreement (&kappa; 0.529) and at best +LR 3.02/&minus;LR 0.45, "limited clinical utility" <span class="src">Norris 2025</span>. The second says why: reviews favouring the test rest on studies whose limitations could overestimate its utility. One cohort was pre-selected for surgery, the other was not.</div></details>
+
+    <details><summary>Two things change the lever sign's result that have nothing to do with the knee. What are they?</summary><div class="ans"><b>The surface the leg rests on and where the examiner puts their fist</b> - both significantly associated with the outcome. Effusion grade, force applied and pain reported were not <span class="src">Norris 2025</span>.</div></details>
+
+    <details><summary>McMurray at one week versus one month - give both sensitivity and specificity.</summary><div class="ans"><b>5-7 days: Sn 91%, Sp 55%.</b> <b>4-5 weeks: Sn 80%, Sp 79%</b>, with PPV 92% <span class="src">Rinonapoli 2025</span>.</div></details>
+
+    <details><summary>Why does that matter for an acute knee?</summary><div class="ans">Because a test's operating characteristics <b>move with time since injury</b>. A positive McMurray in week one is weak evidence; the same positive a month later is much stronger. Re-examining later is a diagnostic act, not a delay <span class="src">Rinonapoli 2025</span>.</div></details>
+
+    <details><summary>Which two meniscal tests combine best, and what does the combination buy you?</summary><div class="ans"><b>McMurray with Apley</b> - best accuracy, minimising false positives, across 255 patients with 188 confirmed tears <span class="src">Rinonapoli 2025</span>.</div></details>
+
+    <details><summary>What is Thessaly's sensitivity?</summary><div class="ans">Unknown here. <span class="src">no traceable source</span> It was tested and compared but no accuracy figure appears in the free text; it was noted as more influenced by anterior knee pain <span class="src">Rinonapoli 2025</span>. Any Thessaly figure you have seen quoted did not come from this study.</div></details>
+
+    <details><summary>Extension lag or fixed flexion contracture - how do you tell, and what does each implicate?</summary><div class="ans">Compare passive with active. <b>Passive exceeds active = lag</b>, a quadriceps problem. <b>Both equally limited = contracture</b>, a joint problem. Two different treatments follow, and it is the most useful distinction in the active section.</div></details>
+
+    <details><summary>What is the normal knee range of motion?</summary><div class="ans">There is no figure here you can defend. <span class="prov c">Convention</span> <span class="src">no traceable source</span> What is traceable: measured against a national probability sample, normative hip and knee values differed from textbook estimates <b>by as much as 18&deg;</b> <span class="src">Roach 1991</span>. Compare to the other knee instead.</div></details>
+
+    <details><summary>What is a normal Q angle?</summary><div class="ans">Not a defensible number. <span class="prov c">Convention</span> Published values are population-specific, with no universal norm and no reliability study reachable <span class="src">no traceable source</span>.</div></details>
+
+    <details><summary>Which intervention after knee arthroplasty has high-quality evidence against it, and why?</summary><div class="ans"><b>Continuous passive motion.</b> No consistent long-term improvement in function, ROM or quality of life, and it may increase patient discomfort <span class="src">Bove 2026</span>.</div></details>
+
+    <details><summary>What is the NMES recommendation after arthroplasty, and at what intensity?</summary><div class="ans">Apply to the quadriceps <b>at least daily</b>, from the early postoperative period, <b>at the highest tolerable intensity</b>, for strength, gait and performance outcomes. Moderate evidence quality <span class="src">Bove 2026</span>.</div></details>
+
+    <details><summary>"Do not brace after knee replacement." Is that what the guideline says?</summary><div class="ans">Not quite. It advises against <b>routine</b> early bracing to gain ROM, because it may prolong bedrest and restrict early mobility and gait training - but it also records that bracing into extension <b>may have short-term effects on pain and function</b> <span class="src">Bove 2026</span>. Against routine use is not a prohibition.</div></details>
+
+    <details><summary>Where does the limb symmetry threshold come from?</summary><div class="ans">Nowhere reachable. <span class="prov c">Convention</span> <span class="src">no traceable source</span> Cohorts apply a cutoff; none found here establishes one. A threshold whose origin you cannot reach is a convention, not a measurement.</div></details>
+
+    <details><summary>McMurray is reported at Sn 91% in one study and Sn 0.58 in another. Which is right?</summary><div class="ans">Both, for their own setting. Rinonapoli used <b>orthopaedic surgeons</b> in a trauma cohort with roughly 74% prevalence <span class="src">Rinonapoli 2025</span>; Blyth used <b>primary care clinicians</b> in a mixed population including healthy controls <span class="src">Logerstedt 2018</span>. Same manoeuvre, different examiners, different people - and the gap between them is wider than the gap between any two tests.</div></details>
+
+    <details><summary>Give Thessaly's sensitivity and specificity, and say what its odds ratio tells you.</summary><div class="ans"><b>Sn 0.66, Sp 0.39</b>, OR 1.24 with a confidence interval of 0.71 to 2.18 - <b>it includes 1</b>, so the test barely discriminates. Its reliability is nonetheless the best of the three at &kappa; 0.54, against &kappa; &le; 0.38 for McMurray and joint line tenderness <span class="src">Logerstedt 2018</span>.</div></details>
+
+    <details><summary>Joint line tenderness has a sensitivity of 0.77. Why is that less useful than it sounds?</summary><div class="ans">Because its specificity is <b>0.26</b> and its odds ratio interval includes 1 <span class="src">Logerstedt 2018</span>. It is sensitive and almost non-specific: a negative is somewhat informative, a positive is close to noise. It also performs differently by sex - in men Sp 0.74 to 1.00, in women Sn only 0.40 to 0.49.</div></details>
+
+    <details><summary>Which knee problem has no graded guideline at all?</summary><div class="ans"><b>Ligament management.</b> Meniscal and cartilage lesions have one <span class="src">Logerstedt 2018</span> and arthroplasty has one <span class="src">Bove 2026</span>, but the knee ligament sprain guideline's free abstract is a purpose statement carrying no recommendation, grade, dose or threshold <span class="src">Logerstedt 2017</span>.</div></details>
+
   </section>
 
 
   <section id="refs">
     <h2>References</h2>
-    <p class="lede">Every source named in this guide, with a link. All of them are free to read or
-    have a freely readable abstract carrying the values quoted here. Where a value is marked as
-    convention it appears in no list below, because nothing supports it.</p>
+    <p class="lede">Eight sources, each cited at least once above, each read before it was quoted -
+    and seven of the eight are free full text. Where a value is marked convention, or flagged as
+    having no traceable source, it appears in no entry below, because nothing supports it. Each
+    note records what the paper cannot support as well as what it can, which for this guide is
+    where most of the work is: three of these papers are quoted mainly for their limits.</p>
 
-    <!-- GROUPS. Keep these headings or replace them; the citation linker does not care.
-         Each entry MUST carry .au (authors) and .jo (journal + year) - those two fields are
-         what the linker parses to match an inline "Author 2019" citation to this entry.
-         The .nt note is where you record what the paper actually shows, including its
-         population and any limit on what it can support. -->
-    <h3>Range of motion and kinematics</h3>
+        <h3>Fracture screening</h3>
     <ol>
-      <li><span class="au">Author A, Author B, Author C, et al.</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/00000000/" target="_blank" rel="noopener">Title of the paper exactly as published</a></span>. <span class="jo">Journal Abbrev 2019;12(3):345-356</span><span class="nt">What it actually found, in whom, and what it cannot support.</span></li>
+      <li><span class="au">Kazemi SM, Khorram R, Fayyazishishavan E, Amani-Beni R, Haririan Y, Hosseini Khameneh SM, et al</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10197917/" target="_blank" rel="noopener">Diagnostic accuracy of Ottawa Knee Rule for diagnosis of fracture in patients with knee trauma: a systematic review and meta-analysis</a></span>. <span class="jo">Arch Acad Emerg Med 2023;11(1):e30</span><span class="nt">18 studies, 6,702 patients, QUADAS-2 assessed. Pooled sensitivity 0.98 and specificity 0.43, +LR 1.56, &minus;LR 0.12, HSROC AUC 0.54. Note the gap between those numbers and the abstract's own summary phrase, "high diagnostic performance": the rule discriminates barely better than chance in the positive direction and earns its place purely as a rule-out.</span></li>
     </ol>
-    <h3>Diagnostic accuracy</h3>
+
+    <h3>Ligament tests</h3>
     <ol>
-      <li><span class="au">Author D, Author E</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC0000000/" target="_blank" rel="noopener">Title</a></span>. <span class="jo">Journal 2021;5(1):1-10</span><span class="nt">Note the target condition - accuracy figures are only meaningful against the condition they were measured for.</span></li>
+      <li><span class="au">Nguyen LT, Truong SV, Nguyen UTP</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12695428/" target="_blank" rel="noopener">Value of clinical tests in diagnosing anterior cruciate ligament tears: what is new?</a></span>. <span class="jo">Rev Bras Ortop 2025;60(5):s00451813005</span><span class="nt">165 knee-injury patients compared against arthroscopy. Source for anterior drawer, Lachman and pivot shift sensitivity and specificity. <b>Every patient was already indicated for arthroscopy</b>, so pretest probability is high and the spectrum narrow - expect lower accuracy in a general clinic. Its lever sign figures should not be quoted without Norris 2025 beside them.</span></li>
+      <li><span class="au">Norris R, Price A, Byrne J, Pulford S, van Melick N, Maddox TW, Boswell W, Kerin C, Oldershaw RA</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12078951/" target="_blank" rel="noopener">The lever sign test demonstrates limited clinical utility for diagnosing full-thickness anterior cruciate ligament tears after a traumatic knee injury</a></span>. <span class="jo">Orthop J Sports Med 2025;13(5):23259671251334775</span><span class="nt">101 patients after traumatic knee injury, MRI reference, tested beyond 3 weeks. Only moderate interrater agreement (&kappa; 0.529) and at best +LR 3.02 / &minus;LR 0.45. Names the reason earlier reviews overstate the test: their included studies could bias the outcome. Also the source for the finding that the result shifts with the surface used and the examiner's fist position, while effusion, force and pain do not affect it.</span></li>
     </ol>
+
+    <h3>Meniscal tests</h3>
+    <ol>
+      <li><span class="au">Rinonapoli G, Lucchetta L, Ancillai G, Manfreda F, Ceccarini P, Caraffa A</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/40557851/" target="_blank" rel="noopener">Clinical reliability of 6 meniscal tests: a diagnostic accuracy study of 255 patients</a></span>. <span class="jo">Acta Orthop 2025;96:452-458</span><span class="nt">255 patients aged 20-45, two blinded surgeons, tested at 5-7 days and again at 4-5 weeks, 188 arthroscopically confirmed tears. Source for McMurray's sensitivity falling from 91% to 80% while specificity rises from 55% to 79%, and for McMurray with Apley as the best combination. <b>Carries no individual figures</b> for Apley, Thessaly, Ege, joint line tenderness or hyper-flexion - those tests are compared but not quantified in the free text.</span></li>
+    </ol>
+
+    <h3>Range of motion</h3>
+    <ol>
+      <li><span class="au">Roach KE, Miles TP</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/1881956/" target="_blank" rel="noopener">Normal hip and knee active range of motion: the relationship to age</a></span>. <span class="jo">Phys Ther 1991;71(9):656-665</span><span class="nt">NHANES I national probability sample, 1,892 subjects. Covers hip <b>and knee</b>, so it is a knee source in its own right. Carries the finding that measured values differ from textbook estimates by as much as 18&deg; and that age-group differences are only 3 to 5&deg;. Does <b>not</b> carry per-motion normative figures; those tables are paywalled, which is why every ROM number here is marked convention.</span></li>
+    </ol>
+
+    <h3>Guidelines</h3>
+    <ol>
+      <li><span class="au">Bove AM, Carroll LA, Cone S, Dibblee P, Hensley CP, Lenington K, Manner PA, Scalzitti DA, Tompkins J, Bade MJ</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13403188/" target="_blank" rel="noopener">Clinical practice guideline for physical therapist management of total knee arthroplasty: revision 2026</a></span>. <span class="jo">Phys Ther 2026;106(7):pzag058</span><span class="nt">The only graded guideline this guide can reach, and only via its full text - the abstract is purely descriptive. Source for every grade and dose in section 10, and for the harms beside them. Covers <b>post-arthroplasty management only</b>; it says nothing about examining a knee and is not stretched to.</span></li>
+      <li><span class="au">Logerstedt DS, Scalzitti D, Risberg MA, Engebretsen L, Webster KE, Feller J, Snyder-Mackler L, Axe MJ, McDonough CM</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/29089004/" target="_blank" rel="noopener">Knee Stability and Movement Coordination Impairments: Knee Ligament Sprain Revision 2017</a></span>. <span class="jo">J Orthop Sports Phys Ther 2017;47(11):A1-A47</span><span class="nt">Cited once, in section 10, for the single fact it can support: that it exists. Its free abstract is a purpose statement containing no recommendation, no grade, no dose, no threshold and no accuracy figure. Quoting any clinical value from it would attach a real guideline to a number it does not contain.</span></li>
+      <li><span class="au">Logerstedt DS, Scalzitti DA, Bennell KL, Hinman RS, Silvers-Granelli H, Ebert J, Hambly K, Carey JL, Snyder-Mackler L, Axe MJ, McDonough CM</span> <span class="ti"><a href="https://www.orthopt.org/uploads/content_files/files/Knee%20pain%20and%20mobility%20impairments%202018.pdf" target="_blank" rel="noopener">Knee Pain and Mobility Impairments: Meniscal and Articular Cartilage Lesions, Revision 2018</a></span>. <span class="jo">J Orthop Sports Phys Ther 2018;48(2):A1-A50</span><span class="nt">Openly hosted by the Academy of Orthopaedic Physical Therapy, all 50 pages free and graded. Source for the meniscal test accuracy figures (from Blyth et al within it: 292 patients plus 75 healthy controls examined by <b>primary care clinicians</b> against MRI), for their reliability, for joint line tenderness by sex, and for the graded management of meniscal and cartilage lesions. Its McMurray figures are far lower than Rinonapoli's orthopaedic ones - the settings differ, and that contrast is the point rather than a contradiction. Scope is meniscal and articular cartilage lesions: it says nothing about ligaments, patellofemoral pain or osteoarthritis.</span></li>
+    </ol>
+
 
     <!-- These two are cited by the practice planner text above and apply to any joint.
          Keep them. -->
@@ -1299,10 +1992,21 @@ a{color:var(--accent)}
 
   </main>
   <footer>
-    <b>About this guide.</b> <span class="ver" style="margin:0 8px 0 0; padding:0; border:0">Version 1.0 &middot; MONTH YEAR.</span>
-    State plainly what is original and what is drawn from published sources, and name the
-    principal sources by author and year. Values marked as convention are named as such because
-    no research stands behind them; where no source could be traced at all, say so.
+    <b>About this guide.</b> <span class="ver" style="margin:0 8px 0 0; padding:0; border:0">Version 1.0 &middot; September 2026.</span>
+    The examination sequence, the section order and the wording are original. Every clinical
+    value is drawn from the eight published sources listed above and attributed where it appears -
+    principally Kazemi and colleagues 2023 for the Ottawa Knee Rule, Nguyen and colleagues 2025
+    with Norris and colleagues 2025 for the ligament tests, Rinonapoli and colleagues 2025 with
+    Logerstedt and colleagues 2018 for the meniscal tests, Roach and Miles 1991 for range of motion, and Bove and colleagues 2026 for the
+    whole of section 10.
+    Values marked <b>Convention</b> are named as such because no research stands behind them, and
+    five are flagged as having <b>no traceable source</b> at all: normative knee range, the Q
+    angle, the accuracy of any patellofemoral test, the reliability of the clinical effusion
+    tests, and the origin of the limb symmetry threshold. Two of those were searched twice before
+    being flagged. Saying so is deliberate.
+    Section 10 carries grades from two guidelines - meniscal and cartilage lesions, and
+    arthroplasty. Ligament management has no freely readable graded source, and the section says
+    so rather than implying otherwise.
     Verify against current literature before letting any of it weight a clinical decision.
   </footer>
 </div>
@@ -1348,7 +2052,7 @@ a{color:var(--accent)}
   var boxes = document.querySelectorAll('input[data-ck]');
   var countEl = document.getElementById('ckcount');
   var fillEl = document.getElementById('ckfill');
-  var KEY = 'JOINT-comp-v1';
+  var KEY = 'knee-comp-v1';
   var state = {};
   try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { state = {}; }
 
@@ -1372,7 +2076,7 @@ a{color:var(--accent)}
 (function(){
   var body = document.body;
   var globalBtn = document.getElementById('recallBtn');
-  var KEY = 'JOINT-recall-v3';
+  var KEY = 'knee-recall-v3';
   var groups = [];   // one per table or grid: {sec, cols:[{id, chip, cells}]}
 
   function wrap(el){
@@ -1505,7 +2209,7 @@ a{color:var(--accent)}
   });
 
   // ---- what you got wrong ----
-  var MKEY = 'JOINT-missed-v1';
+  var MKEY = 'knee-missed-v1';
   var missed = {};
   try {
     (JSON.parse(localStorage.getItem(MKEY) || '[]') || []).forEach(function(id){ missed[id] = 1; });
@@ -1818,7 +2522,7 @@ a{color:var(--accent)}
   try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e) {}
   if(!saved){
     var legacy = null;
-    try { legacy = localStorage.getItem('JOINT-recall-v2') || localStorage.getItem('JOINT-recall-v1'); } catch(e) {}
+    try { legacy = localStorage.getItem('knee-recall-v2') || localStorage.getItem('knee-recall-v1'); } catch(e) {}
     if(legacy === '1') saved = { secs: sections.map(function(s){ return s.id; }), cols: [] };
     else if(legacy){ try { saved = { secs: JSON.parse(legacy) || [], cols: [] }; } catch(e) {} }
   }
@@ -1865,7 +2569,7 @@ a{color:var(--accent)}
 
 
 (function(){
-  var KEY = 'JOINT-add-v1';
+  var KEY = 'knee-add-v1';
   var store = {};
   try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { store = {}; }
   function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} render(); }
@@ -2511,7 +3215,7 @@ a{color:var(--accent)}
 (function(){
   var host = document.getElementById('planner');
   if(!host) return;
-  var MKEY = 'JOINT-missed-v1';
+  var MKEY = 'knee-missed-v1';
 
   var METHOD = {
     number: {

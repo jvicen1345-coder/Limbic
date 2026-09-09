@@ -92,15 +92,17 @@ export const ORTHOPT_CPG_SEED: Article[] = [
     "AOPT's third guideline revision on midportion Achilles tendinopathy, covering diagnosis, risk factors, and physical therapist management.",
     ["Achilles tendinopathy"]
   ),
-  cpg(
-    "heel-pain-plantar-fasciitis-2023",
-    "Heel Pain–Plantar Fasciitis: Revision 2023",
-    "ortho",
-    "2023-12-01",
-    "https://www.orthopt.org/uploads/content_files/files/Heel_Pain_Plantar_Fasciitis_Revision_2023.pdf",
-    "AOPT's third revision of the heel pain / plantar fasciitis guideline, incorporating over 100 new studies into updated manual therapy, stretching, and orthotic recommendations.",
-    ["Plantar fasciitis", "Heel pain"]
-  ),
+  // Heel Pain-Plantar Fasciitis Revision 2023 is deliberately absent.
+  //
+  // The only copy reachable at the Academy's usual hosting path is a stakeholder-review
+  // draft, watermarked on all 49 pages: "This document is strictly confidential and solely
+  // for selective stakeholder review. This draft document may not be reproduced or
+  // circulated." Linking it from here sent readers to exactly the circulation it asks
+  // against, and described a draft as the published guideline — a draft's recommendations
+  // can differ from what is finally published, and at least one AOPT recommendation has
+  // reversed direction between revisions.
+  //
+  // Restore this entry when a published version is reachable, pointing at that.
   cpg(
     "rotator-cuff-tendinopathy-2025",
     "Rotator Cuff Tendinopathy Diagnosis, Nonsurgical Medical Care, and Rehabilitation",

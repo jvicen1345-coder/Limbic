@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="light dark">
-<title>JOINT Examination Playbook</title>
+<title>Joint Mobilization Playbook</title>
 <style>
   html{color-scheme:light dark}
   body{margin:0; font:14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif}
@@ -784,11 +784,13 @@ a{color:var(--accent)}
 <a class="skip" href="#main">Skip to the guide</a>
 <nav>
   <div class="navrow">
+    <a href="/student/playbooks" title="Back to Limbic Playbooks">&larr; Limbic</a>
+    <span class="navdiv" aria-hidden="true"></span>
     <button class="recall-toggle" id="recallBtn" aria-pressed="false" title="Blur every blurrable area on the page - press again to clear it">Recall all</button>
     <span class="navdiv" aria-hidden="true"></span>
     <select id="navpick" aria-label="Jump to a section"></select>
     <div class="navlinks">
-    <a href="#checklist">32 Items</a>
+    <a href="#checklist">10 Items</a>
     <a href="#numbers">Numbers</a>
     <a href="#posture">Posture</a>
     <a href="#arom">AROM</a>
@@ -813,9 +815,18 @@ a{color:var(--accent)}
 <div class="wrap">
   <header class="masthead">
     <div>
-      <p class="eyebrow">Discipline &middot; scope of the guide <span class="ver">Version 1.0 &middot; MONTH YEAR</span></p>
-      <h1>JOINT Examination Playbook</h1>
-      <p>One paragraph on what this guide is. Keep the last sentence:
+      <p class="eyebrow">Physical therapy &middot; the decision to mobilise, and the dose <span class="ver">Version 1.0 &middot; September 2026</span></p>
+      <h1>Joint Mobilization Playbook</h1>
+      <p>The other four guides in this series walk a body region. This one walks a <b>decision</b>:
+      whether to mobilise, where, how hard, and how you would know it worked. It is shaped by an
+      absence. <b>Three of the conventions that decide how a mobilization is performed could not be
+      traced to any reachable definition, derivation or reliability figure</b> - the Maitland and
+      Kaltenborn grading systems, open- and close-packed positions, and the concave-convex rule.
+      Meanwhile the things that <i>are</i> measured are modest and specific: two clinicians agree on
+      an accessory glide at <b>ICC 0.64</b>, the only poolable proprioception result is <b>null</b>,
+      and across 26 neuroimaging studies none linked the cortical change it found to the clinical
+      improvement it observed. What survives that filter is worth knowing cold - above all the one
+      dose vocabulary that <i>is</i> defined and has different outcomes attached to each level.
       <b>This is a study aid for examination preparation, not a clinical reference</b> - check any
       value against current literature before it weights a decision about a patient.</p>
     </div>
@@ -859,32 +870,92 @@ a{color:var(--accent)}
 <main id="main">
 
   <section id="checklist">
-    <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2><span class="note">check-off saves in this browser</span></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">01</span><h2>The reasoning sequence</h2><span class="note">check-off saves in this browser</span></div>
+    <p class="lede">Mobilization is a decision before it is a technique. The sequence below is the decision - and its first two steps disqualify most of the joints you were about to put your hands on.</p>
     
     <div class="tablewrap">
       <table class="check-table">
         <colgroup><col style="width:4%"><col style="width:5%"><col style="width:17%"><col style="width:37%"><col style="width:37%"></colgroup>
         <thead><tr><th scope="col"></th><th scope="col">#</th><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Example item"></td><td class="idx">1</td>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Screen before you touch"></td><td class="idx">1</td>
+        <td class="name">Screen before you touch</td>
+        <td>History, red flags, and the reason this joint is stiff.</td>
+        <td data-imp="screen|harms|rare|silent">
+          The reachable harms data is reassuring about <b>common</b> events and silent about <b>rare</b> ones. It cannot tell you screening is unnecessary. <span class="src">Daniels 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="2" aria-label="Mark done: Is the restriction articular?"></td><td class="idx">2</td>
+        <td class="name">Is the restriction articular?</td>
+        <td>Compare active with passive, and passive with accessory.</td>
+        <td data-imp="articular|guarding|wrong tissue|neural">
+          Mobilization treats a joint. If the limit is muscular, neural or pain-driven guarding, the technique is aimed at the wrong tissue. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="3" aria-label="Mark done: Does the evidence support it here?"></td><td class="idx">3</td>
+        <td class="name">Does the evidence support it <i>here</i>?</td>
+        <td>Look up the region before you commit.</td>
+        <td data-imp="regional|Grade A|absent|arthroplasty">
+          <b>This is regional, not general.</b> Grade A at the hip and ankle, expert opinion (F) for Achilles, <i>weak</i> recommendations after knee arthroplasty, and <b>absent entirely</b> from the knee meniscal and cartilage guideline. <span class="src">Koc 2025</span> <span class="src">Martin 2021</span> <span class="src">Chimenti 2024</span> <span class="src">Bove 2026</span> <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="4" aria-label="Mark done: What do you expect to change?"></td><td class="idx">4</td>
+        <td class="name">What do you expect to change?</td>
+        <td>Name it, and name the number you will re-measure.</td>
+        <td data-imp="range|pain|same dose|buying">
+          Range and pain <b>do not respond to the same dose</b>. High force moved range; low force moved pain pressure threshold. Decide which you are buying. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="5" aria-label="Mark done: Which glide, which direction?"></td><td class="idx">5</td>
+        <td class="name">Which glide, which direction?</td>
+        <td>Assess accessory motion joint by joint.</td>
+        <td data-imp="accessory|direction|before|restricted">
+          Name the restricted direction <b>before</b> choosing a technique, not after. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="6" aria-label="Mark done: How hard?"></td><td class="idx">6</td>
+        <td class="name">How hard?</td>
+        <td>Take up slack, then decide where to stop.</td>
+        <td data-imp="exceeding resistance|point of resistance|no resistance|defined">
+          Use the vocabulary that is actually defined: <b>stretching exceeding resistance</b>, <b>stopping at the point of resistance</b>, <b>no resistance</b>. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="7" aria-label="Mark done: How much?"></td><td class="idx">7</td>
+        <td class="name">How much?</td>
+        <td>Set sessions per week and a review date.</td>
+        <td data-imp="dosage|could not be made|risk of bias|6-12 weeks">
+          The hip guideline's own conclusion is that a specific dosage <b>&quot;could not be made&quot;</b> - five of ten studies were at high risk of bias. Its stated range is <b>1 to 3 times per week over 6-12 weeks</b>. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="8" aria-label="Mark done: Re-measure immediately"></td><td class="idx">8</td>
+        <td class="name">Re-measure immediately</td>
+        <td>Same marker, same session, same examiner.</td>
+        <td data-imp="immediate|short term|same session|re-test">
+          The measured effects are <b>immediate and short term</b>. If you do not re-test in the same session you have no evidence you did anything. <span class="src">Hadjisavvas 2026</span> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="9" aria-label="Mark done: Then load it"></td><td class="idx">9</td>
+        <td class="name">Then load it</td>
+        <td>Hand the patient the exercise before they leave.</td>
+        <td data-imp="alongside exercise|never instead|graded|load">
+          Mobilization appears in every graded recommendation <b>alongside exercise</b>, never instead of it. <span class="src">Koc 2025</span> <span class="src">Martin 2021</span> <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="10" aria-label="Mark done: What you may not claim"></td><td class="idx">10</td>
+        <td class="name">What you may not claim</td>
+        <td>Three things students are routinely taught to say.</td>
+        <td data-imp="grade number|pop|mechanism|traceable">
+          That a <b>grade number</b> describes your dose, that the <b>pop</b> means anything, or that a <b>central mechanism</b> explains the result. None of the three is traceable. <span class="src">Sillevis 2025</span> <span class="src">Jahromi 2026</span>
         </td>
       </tr>
         </tbody>
@@ -894,109 +965,248 @@ a{color:var(--accent)}
   </section>
 
   <section id="numbers">
-    <div class="sechead"><span class="secnum">02</span><h2>Numbers worth knowing cold</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">02</span><h2>Numbers worth knowing cold - and the ones that do not exist</h2></div>
+    <p class="lede">Half of this section is deliberately empty. The empty half is the finding: the vocabulary every student memorises cannot be traced to anything, while the things that are measured turn out modest and specific.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Maitland grades I-IV</td>
+        <td>The four-grade oscillation scale.</td>
+        <td data-imp="Maitland|undefined|derives|absent">
+          <b><span class="src">no traceable source</span></b> No reachable paper defines them, derives them, or reports whether two clinicians produce the same one. Also absent as a definition from all five guideline PDFs held.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Kaltenborn grades I-III</td>
+        <td>The three-grade translatoric scale.</td>
+        <td data-imp="Kaltenborn|translatoric|zero mentions|same result">
+          <b><span class="src">no traceable source</span></b> Same searches, same result. <b>Zero mentions</b> across all five guidelines.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Reproducibility of a nominated grade</td>
+        <td>Whether your grade III is my grade III.</td>
+        <td data-imp="reproducibility|force|amplitude|gap">
+          <b><span class="src">no traceable source</span></b> No force or amplitude reliability study was reachable. <b>This is the single most important gap in the guide.</b>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The one guideline mention</td>
+        <td>Read what it is doing.</td>
+        <td data-imp="label|summarising|never defines|ankle">
+          The ankle guideline refers to &quot;anterior-to-posterior <b>Maitland grade III</b> joint mobilizations&quot; while summarising someone else's trial. <b>It uses the grade as a label and never defines it.</b> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Open- and close-packed positions</td>
+        <td>The position you pre-position the joint in.</td>
+        <td data-imp="open packed|close packed|undefined|variants">
+          <b><span class="src">no traceable source</span></b> Four search-phrase variants returned nothing that defines, derives or tests them - and the hip guideline performs its distraction <b>&quot;in open packed position&quot;</b> without defining that either. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The concave-convex rule</td>
+        <td>The rule that tells you which way to glide.</td>
+        <td data-imp="concave-convex|36 mm|invite review|translation">
+          <span class="prov c">Convention</span> and now <span class="prov x">Contested</span>. The one clinical paper that engages it measured <b>36 (3) mm of posterior femoral translation</b> from 90&deg; to 150&deg; of knee flexion, and concluded the findings &quot;invite review of the concave-convex rule as it might apply to manual therapy of the knee&quot;. <span class="src">Scarvell 2019</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Inter-rater agreement, accessory glide</td>
+        <td>Two clinicians, one ankle.</td>
+        <td data-imp="ICC 0.64|inter-rater|SEM|poor to good">
+          <b>ICC 0.64</b> (SEM 2.8&deg;, MDC 4.7&deg;) for the posterior talar glide test between a novice and an experienced rater - described as poor to good. <span class="src">Nguyen 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Intra-rater agreement, same test</td>
+        <td>One clinician, twice.</td>
+        <td data-imp="ICC 0.97|intra-rater|consistent|themselves">
+          <b>ICC 0.97</b> (novice) and <b>0.94</b> (experienced). One clinician is highly consistent with themselves; two clinicians are not consistent with each other. <span class="src">Nguyen 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What fixed it</td>
+        <td>Add an external reference.</td>
+        <td data-imp="referential|horizontal plane|0.78|external">
+          A <b>referential horizontal plane</b> raised inter-rater agreement to <b>ICC 0.78</b>. Not skill, not a finer grading vocabulary - an external measurable datum. <span class="src">Nguyen 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The noise floor</td>
+        <td>Before you call a change real.</td>
+        <td data-imp="MDC|noise floor|four degrees|examiners">
+          <b>MDC 3.3&deg;-4.7&deg;.</b> A difference smaller than roughly four degrees between two examiners is not a finding. <span class="src">Nguyen 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">High-force long-axis distraction, hip</td>
+        <td>Three sessions, 1-week follow-up, 60 patients.</td>
+        <td data-imp="long-axis|high force|10.6|significant">
+          Flexion <b>10.6&deg;</b>, extension <b>8.0&deg;</b>, abduction <b>6.4&deg;</b>, adduction <b>3.3&deg;</b>, ER <b>5.6&deg;</b>, IR <b>7.6&deg;</b> - all significant (p &lt; .05) against the low-force group. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Low and medium force, same study</td>
+        <td>The comparison that makes the point.</td>
+        <td data-imp="no significant|low force|medium force|ROM">
+          <b>No significant change in hip ROM at all.</b> <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">But low force won on pain</td>
+        <td>The dose trade-off, measured.</td>
+        <td data-imp="pain pressure threshold|d = 2.0|physical function|trade-off">
+          Largest effect on <b>pain pressure threshold, d = 2.0</b>. High force had the largest effect on <b>physical function, d = 0.5-0.7</b>. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Single-session hip MWM</td>
+        <td>n = 40, mean age 78 &plusmn; 6.</td>
+        <td data-imp="single session|MWM|d = 3.0|immediate">
+          Immediate: pain <b>d = 1.9</b>, flexion ROM <b>d = 3.0</b>, IR ROM <b>d = 1.4</b>, TUG <b>d = 1.0</b>, 30-second chair stand <b>d = 1.7</b>, 40-m walk <b>d = 1.5</b>. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Mulligan MWM, rotator cuff disease</td>
+        <td>Four RCTs, 160 participants.</td>
+        <td data-imp="Mulligan|rotator cuff|no significant|quality of life">
+          Pain at rest MD <b>&minus;1.19</b> (I&sup2; = 0%), pain on activity MD <b>&minus;2.25</b>, function MD <b>&minus;14.71</b>, ROM MD <b>19.92</b>, joint position sense MD <b>&minus;3.31</b>. Quality of life: <b>no significant difference</b>. <span class="src">Alqallaf 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Mulligan SNAGs, chronic low back pain</td>
+        <td>Seventeen RCTs, 716 participants.</td>
+        <td data-imp="SNAG|SMD|extension|not significant">
+          Pain SMD <b>&minus;0.78</b>, disability SMD <b>&minus;0.60</b>, lumbar extension ROM SMD <b>0.75</b>; flexion ROM <b>not significant</b>. <span class="src">Shager 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Read that row with its heterogeneity</td>
+        <td>Always print the I&sup2; beside the SMD.</td>
+        <td data-imp="heterogeneity|92%|certainty|dispersion">
+          <b>I&sup2; = 92%, 83% and 93%.</b> The authors rate certainty <b>moderate for pain and low for disability and mobility</b>. A pooled estimate at that dispersion describes no single population. <span class="src">Shager 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Proprioception, the only poolable result</td>
+        <td>Knee JPSE at 60&deg;, two trials.</td>
+        <td data-imp="Hedges|not significant|poolable|JPSE">
+          <b>Hedges' g = &minus;0.21, 95% CI &minus;1.36 to 0.94, I&sup2; &asymp; 83% - not significant.</b> Every other outcome was too heterogeneous to pool. <span class="src">Hadjisavvas 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Adverse events, adults over 55</td>
+        <td>6 RCTs, 4 cohorts, 15 case series.</td>
+        <td data-imp="412|9 severe|none catastrophic|soreness">
+          <b>412</b> study-related events, <b>9 severe</b>, <b>none catastrophic</b> - mostly soreness, stiffness, numbness, weakness, fatigue, headache, dizziness. <span class="src">Daniels 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What that count is not</td>
+        <td>Read the denominator before the numerator.</td>
+        <td data-imp="not an incidence|denominator|excluded|rare">
+          <b>Not an incidence.</b> There is no denominator, several included studies lacked adverse-event definitions, and the review <b>excluded the database designs that detect rare events</b>. <span class="src">Daniels 2026</span>
         </td>
       </tr>
         </tbody>
       </table>
     </div>
-
-    <!-- WORKED FIGURE. Three panels comparing a normal state against two faults - the
-         "draw the difference" pattern. Conventions, all of which the machinery relies on:
-         · currentColor for structure, so it themes in light and dark automatically
-         · var(--accent) for the thing being measured, var(--hi) for the fault
-         · role="img" + aria-label carrying the same claim the picture makes
-         · <text> labels are hidden by Recall; click one to lift it. Keep them short -
-           whole sentences belong in the figcaption, not the drawing
-         · .figgrid below the svg holds the legend as reflowing HTML, so it stacks on a
-           phone instead of overlapping the drawing
-         · if the drawing has dead space beside it at desktop width, swap the viewBox at
-           narrow widths with a small matchMedia script rather than letting it shrink -->
-    <figure>
-      <p class="figtitle">What the figure claims, in one line</p>
-      <svg viewBox="0 0 620 210" role="img" aria-label="Say here, in a sentence, exactly what a reader who cannot see the drawing would need to know.">
-        <defs>
-          <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"></path>
-          </marker>
-        </defs>
-
-        <!-- panel 1 - the normal state -->
-        <line x1="70" y1="40" x2="70" y2="185" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".55"></line>
-        <circle cx="95" cy="110" r="32" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
-        <path d="M 70 82 A 32 32 0 0 0 70 138 Z" fill="var(--accent)" fill-opacity=".2"></path>
-        <text class="mono" x="95" y="176" text-anchor="middle">NORMAL</text>
-
-        <!-- panel 2 - the fault, drawn as the same picture with one thing changed -->
-        <line x1="290" y1="40" x2="290" y2="185" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".55"></line>
-        <circle cx="272" cy="110" r="32" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
-        <path d="M 290 82 A 32 32 0 1 0 290 138 Z" fill="var(--hi)" fill-opacity=".2"></path>
-        <line x1="330" y1="110" x2="380" y2="110" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arw)"></line>
-        <text class="mono" x="272" y="176" text-anchor="middle" fill="var(--hi)">FAULT</text>
-
-        <!-- panel 3 - the measurement that separates them -->
-        <line x1="470" y1="70" x2="470" y2="150" stroke="var(--accent)" stroke-width="1.5"></line>
-        <line x1="464" y1="70" x2="476" y2="70" stroke="var(--accent)" stroke-width="1.5"></line>
-        <line x1="464" y1="150" x2="476" y2="150" stroke="var(--accent)" stroke-width="1.5"></line>
-        <text class="mono" x="484" y="114" fill="var(--accent)">the value</text>
-      </svg>
-      <div class="figgrid c3">
-        <div><span class="lbl">Normal</span><span class="t2">What you should see, and against what reference.</span></div>
-        <div><span class="lbl">Fault</span><span class="t2">The one thing that changed, named the way a student will be asked for it.</span></div>
-        <div><span class="lbl">The value</span><span class="t2">The threshold, with its provenance - most of these are convention.</span></div>
-      </div>
-      <figcaption><b>Lead the caption with what the picture shows.</b> Then the sentence a reader needs that the drawing cannot carry - where the number comes from, or why the taught version differs from the measured one.</figcaption>
-    </figure>
   </section>
 
   <section id="posture">
-    <div class="sechead"><span class="secnum">03</span><h2>Posture and what it obligates</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">03</span><h2>Before you touch - screening and contraindications</h2></div>
+    <p class="lede">The honest position is that common harms are well described and mild, and the rare ones are undescribed rather than absent. Those are different statements, and the difference is the whole section.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">What happens, commonly</td>
+        <td>Warn the patient about this before, not after.</td>
+        <td data-imp="soreness|stiffness|dizziness|mild to moderate">
+          Changes in pain quality, muscle or joint soreness or stiffness, numbness, weakness, fatigue, headache, dizziness or lightheadedness. <b>Mild to moderate.</b> <span class="src">Daniels 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Severe events in trial and cohort data</td>
+        <td>Across 6 RCTs and 4 observational studies.</td>
+        <td data-imp="9 of 412|catastrophic|observational|over 55">
+          <b>9 of 412</b>, and <b>none catastrophic</b>, in adults over 55. <span class="src">Daniels 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Severe events in the case reports</td>
+        <td>A different literature, a different picture.</td>
+        <td data-imp="case reports|vascular|spinal manipulation|six">
+          <b>6 severe adverse events, four of them vascular.</b> Twenty of the case reports involved <b>spinal manipulation</b>. <span class="src">Daniels 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What generated no case reports</td>
+        <td>Worth knowing before you escalate a technique.</td>
+        <td data-imp="soft tissue|exercise|thrust|none">
+          <b>None</b> were reported following soft tissue techniques, exercise, or other modalities. Every case report involved a thrust, a modality, or repetitive shoulder abduction. <span class="src">Daniels 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why that is not reassurance</td>
+        <td>The limitation the authors state themselves.</td>
+        <td data-imp="excluded|database|could not have found|limitation">
+          The review <b>excluded administrative database studies</b> - and names that as a limitation precisely because those &quot;may detect rare AEs&quot;. <b>The design could not have found a catastrophic event.</b> <span class="src">Daniels 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">One more caveat on that source</td>
+        <td>Read the funding line.</td>
+        <td data-imp="funding|Clinical Compass|NCMIC|conflict">
+          It was <b>partially funded by Clinical Compass and the NCMIC Foundation</b>, both chiropractic organisations. A harms review funded by the profession under review is a conflict to weigh, not to ignore. <span class="src">Daniels 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">A validated screening test</td>
+        <td>Before cervical work especially.</td>
+        <td data-imp="screening|cervical|dissection|teaching">
+          <b><span class="src">no traceable source</span></b> Nothing reachable validates a screening procedure against the event it is meant to prevent. The nearest hit was a survey of what faculty <i>teach</i> about cervical artery dissection - a study of teaching, not of screening.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Harms in the hip guideline</td>
+        <td>Stated inside a Grade A recommendation.</td>
+        <td data-imp="no harms|Grade A|hip|reported">
+          <b>&quot;No harms of manual therapy were reported.&quot;</b> <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Modify for the person in front of you</td>
+        <td>Grade F, but a real instruction.</td>
+        <td data-imp="force amplitude|morphology|irritability|modify">
+          Clinicians <i>may</i> modify procedures and <b>force amplitude</b> according to <b>bony hip morphology</b> and <b>tissue tolerance/irritability</b>. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The ankle guideline's own limit</td>
+        <td>Written into the recommendation itself.</td>
+        <td data-imp="pain-free|boundary|acute|asking">
+          Acute-phase talar mobilization is specified <b>&quot;within pain-free movement&quot;</b>. That is a safety boundary you can only enforce by asking during. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Absolute contraindications</td>
+        <td>The list everyone teaches.</td>
+        <td data-imp="fracture|infection|malignancy|neurological">
+          Fracture, instability, infection, malignancy, and any undiagnosed progressive neurological deficit. <span class="prov c">Convention</span> - universally taught; no reachable source lists or tests them.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">When you are unsure</td>
+        <td>The failure mode to avoid.</td>
+        <td data-imp="unsure|examine further|gently|unscreened">
+          Treat &quot;I cannot rule this out&quot; as a reason to <b>examine further</b>, not as a reason to proceed gently. <b>Reducing force does not convert an unscreened joint into a screened one.</b> <span class="prov c">Convention</span>
         </td>
       </tr>
         </tbody>
@@ -1005,30 +1215,74 @@ a{color:var(--accent)}
   </section>
 
   <section id="arom">
-    <div class="sechead"><span class="secnum">04</span><h2>Active range of motion</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">04</span><h2>What the joint does on its own</h2></div>
+    <p class="lede">Active range is where you decide whether there is an articular problem to mobilise at all. Get this wrong and everything after it is a well-executed answer to the wrong question.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Why active comes first</td>
+        <td>Watch them move before you move them.</td>
+        <td data-imp="active first|willingness|pain arc|observation">
+          It is the patient's own report in movement - willingness, pain arc and available range in one observation. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What a full active range tells you</td>
+        <td>And what it saves you doing.</td>
+        <td data-imp="surfaces travel|full range|rarely|accessory">
+          That the joint surfaces travel. A joint with full active range rarely needs accessory mobilization <i>for range</i>. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What a limited active range does not tell you</td>
+        <td>The commonest reasoning error in this guide.</td>
+        <td data-imp="which tissue|inhibition|unwillingness|one of four">
+          <b>Which tissue limits it.</b> Active limitation is equally consistent with capsular restriction, muscular restriction, pain inhibition and unwillingness - and mobilization is indicated for one of those four. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Where in the range the problem sits</td>
+        <td>Note the arc, not just the endpoint.</td>
+        <td data-imp="arc|mid-range|end-range|catch">
+          A mid-range catch and an end-range block are different problems and take different techniques. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Weight-bearing or not</td>
+        <td>Position changes both technique and measurement.</td>
+        <td data-imp="weight-bearing|lunge|separately|measurement">
+          The ankle guideline names <b>weight-bearing and non-weight-bearing</b> mobilization with movement separately, and the <b>weight-bearing lunge</b> as the dorsiflexion measure. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Normative range values</td>
+        <td>Do not quote a textbook table.</td>
+        <td data-imp="normative|textbook|no source|independently">
+          <b><span class="src">no traceable source</span></b> for every joint in this series - as the hip, knee and ankle guides each found independently.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The measurement you can trust</td>
+        <td>And the one you cannot.</td>
+        <td data-imp="within-session|same person|0.94|0.64">
+          A within-session change on the same measure, taken by <b>the same person</b>. Intra-rater reliability is where the agreement lives: <b>ICC 0.94-0.97</b> against <b>0.64</b> between raters. <span class="src">Nguyen 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">So who re-measures?</td>
+        <td>This follows directly from the row above.</td>
+        <td data-imp="you do|immediately|colleague|discards">
+          <b>You do, and immediately.</b> Handing the re-test to a colleague discards most of the reliability the measurement had. <span class="src">Nguyen 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What to record</td>
+        <td>Three values, every time.</td>
+        <td data-imp="record|starting value|force level|anecdote">
+          The starting value, the technique and force level, and the value after. Without the first and third, the second is anecdote. <span class="prov c">Convention</span>
         </td>
       </tr>
         </tbody>
@@ -1037,30 +1291,88 @@ a{color:var(--accent)}
   </section>
 
   <section id="prom">
-    <div class="sechead"><span class="secnum">05</span><h2>PROM, end feel and muscle length</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">05</span><h2>Accessory motion and end feel</h2></div>
+    <p class="lede">This is the assessment the whole intervention is built on, and it is the one place in the guide where a real reliability figure exists. It is not flattering - and it points straight at the fix.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">What accessory motion is</td>
+        <td>Glide, spin and roll between surfaces.</td>
+        <td data-imp="glide|spin|roll|voluntarily">
+          Movement the patient cannot perform voluntarily, which is why you have to produce it to assess it. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why assess before treating</td>
+        <td>It sets the direction of the technique.</td>
+        <td data-imp="restricted|direction|aimed|assess">
+          The direction you find restricted is the direction the technique is aimed. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Can you reproduce your own finding?</td>
+        <td>Test, wait, re-test yourself.</td>
+        <td data-imp="reproduce|0.97|0.94|SEM">
+          <b>Yes, well.</b> Posterior talar glide test intra-rater <b>ICC 0.97</b> (novice) and <b>0.94</b> (experienced), SEM 2.2-2.4&deg;. <span class="src">Nguyen 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Can two clinicians reproduce each other's?</td>
+        <td>Ask a colleague to repeat it blind.</td>
+        <td data-imp="much less|0.64|experience|self-consistent">
+          <b>Much less.</b> Inter-rater <b>ICC 0.64</b>. And experience did not close the gap - the novice and the experienced rater were equally self-consistent. <span class="src">Nguyen 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What improved agreement</td>
+        <td>The finding worth generalising.</td>
+        <td data-imp="referential plane|0.78|2.3|agreement">
+          A <b>referential horizontal plane</b> raised inter-rater ICC to <b>0.78</b> and cut SEM to 2.3&deg;. <span class="src">Nguyen 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The lesson from that</td>
+        <td>Applies well beyond this one test.</td>
+        <td data-imp="outside the hands|skill|vocabulary|reproducibility">
+          Reproducibility came from <b>measuring against something outside the hands</b> - not from more skill, and not from a finer grading vocabulary. <span class="src">Nguyen 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The test's own standing</td>
+        <td>Quoted as the authors wrote it.</td>
+        <td data-imp="limited scientific support|recommended|standing|unnamed">
+          The posterior talar glide test is &quot;recommended for ankle sprain assessment, but it has <b>limited scientific support</b>&quot;. They do not name which guideline recommends it. <span class="src">Nguyen 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What counts as a real difference</td>
+        <td>Before you disagree with a colleague.</td>
+        <td data-imp="MDC|real difference|disagree|nothing">
+          <b>MDC 3.3&deg;-4.7&deg;.</b> Below that, two examiners disagreeing means nothing at all. <span class="src">Nguyen 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">End feel</td>
+        <td>Capsular, bony, springy, empty, muscular.</td>
+        <td data-imp="end feel|categories|agreement|convention">
+          <span class="prov c">Convention</span>. Universally taught, and no reachable source defines the categories or reports agreement between examiners on them. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Capsular pattern</td>
+        <td>Cyriax's proportional restriction.</td>
+        <td data-imp="capsular pattern|200 patients|not valid|Cyriax">
+          <b>It does not hold.</b> In 200 patients the pattern was &quot;not present as a distinct pattern&quot;, and it &quot;cannot be regarded as a valid test for the diagnosis of OA of the hip or knee&quot;. <span class="src">Bijl 1998</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Which glide direction to choose</td>
+        <td>Two ways to decide, and one is better.</td>
+        <td data-imp="concave-convex|contested|assessed|predicts">
+          The concave-convex rule is the conventional answer and it is <span class="prov x">Contested</span>. <b>The restricted direction you assessed is a better guide than the rule that predicts it.</b> <span class="src">Scarvell 2019</span>
         </td>
       </tr>
         </tbody>
@@ -1069,30 +1381,116 @@ a{color:var(--accent)}
   </section>
 
   <section id="mmt">
-    <div class="sechead"><span class="secnum">06</span><h2>Manual muscle testing</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">06</span><h2>Force, amplitude, and where you stop</h2></div>
+    <p class="lede">The section this guide is built around. The vocabulary students memorise cannot be traced; the vocabulary the guidelines use is defined, reproducible from its own description, and has a different measured outcome at each level.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">The grading systems</td>
+        <td>Maitland I-IV, Kaltenborn I-III.</td>
+        <td data-imp="grading systems|origin|reliability|gap">
+          <b><span class="src">no traceable source</span></b> for origin, definition, or reliability. Not a gap in this guide's searching - a gap in the literature.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Say that precisely</td>
+        <td>Do not overstate the absence either.</td>
+        <td data-imp="vocabulary|defines|summarising|universally">
+          They are taught universally and used as vocabulary - the ankle guideline names a &quot;Maitland grade III&quot; mobilization while summarising a trial. Nothing reachable <b>defines</b> them or shows two clinicians produce the same one. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What the guidelines use instead</td>
+        <td>Learn these three phrases verbatim.</td>
+        <td data-imp="tissue resistance|exceeding|stopping at|no resistance">
+          <b>Force relative to tissue resistance.</b> High = <b>stretching exceeding resistance</b>. Medium = <b>stopping at the point of resistance</b>. Low = <b>no resistance</b>. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why that vocabulary is better</td>
+        <td>The test any dose scale should pass.</td>
+        <td data-imp="defined|reproducible|description alone|outcome">
+          It is <b>defined by where the force stops relative to the tissue</b>, so it is reproducible from the description alone - and each level has a different measured outcome. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">High force buys range</td>
+        <td>Three sessions, 1-week follow-up, 60 patients.</td>
+        <td data-imp="high force|range|six directions|60 patients">
+          Significant ROM gains in <b>all six hip directions</b> against the low-force group. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Low force buys pain relief</td>
+        <td>And by a wider margin than you would guess.</td>
+        <td data-imp="low force|pain pressure|d = 2.0|largest">
+          Largest effect on pain pressure threshold, <b>d = 2.0</b> - larger than either heavier level achieved. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">So the dose is a choice</td>
+        <td>This is the practical takeaway of the guide.</td>
+        <td data-imp="choice|cannot maximise|pick|accordingly">
+          <b>You cannot maximise both.</b> Pick range or pain pressure threshold, and set the force accordingly. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Medium force</td>
+        <td>The level that lost twice.</td>
+        <td data-imp="medium force|neither|no change|largest">
+          Won neither outcome in that comparison - no significant ROM change, and not the largest pain effect. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Do not translate between scales</td>
+        <td>A tempting error.</td>
+        <td data-imp="translate|not equivalents|scales|error">
+          These three force levels <b>are not</b> Maitland or Kaltenborn grades and must never be presented as equivalents. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Name which scale a grade belongs to</td>
+        <td>The near-miss this build hit.</td>
+        <td data-imp="Kellgren-Lawrence|radiographic|grade III|scale">
+          &quot;Grade III&quot; in the hip literature is as likely to mean <b>Kellgren-Lawrence radiographic severity</b> as anything about mobilization. Those 60 patients had <b>Grade III hip OA</b> - a radiographic grade, not a treatment grade. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Dose, per the guideline that studied it</td>
+        <td>For mild-to-moderate hip OA.</td>
+        <td data-imp="1 to 3|6-12 weeks|dose|hip OA">
+          <b>1 to 3 times per week over 6-12 weeks.</b> <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The dose caveat, verbatim</td>
+        <td>Read this before quoting any dose.</td>
+        <td data-imp="768|high risk of bias|could not be made|caveat">
+          Across 10 studies and 768 participants the common dosages were 10-30 min per session, 2-3 times weekly for 2-6 weeks - but <b>five of the ten studies were at high risk of bias</b>, and &quot;recommending a specific manual therapy dosage for those with hip OA <b>could not be made</b>&quot;. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Amplitude and oscillation</td>
+        <td>How big, how fast.</td>
+        <td data-imp="amplitude|oscillation|rate|no source">
+          <b><span class="src">no traceable source</span></b> No reachable study specifies or compares oscillation rate or amplitude.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Where in range to work</td>
+        <td>The one defensible answer.</td>
+        <td data-imp="where in range|force scale|stop|instead">
+          The force scale above <i>is</i> a statement about where in range you stop. Use it instead of a grade number. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Position for the technique</td>
+        <td>Named by the guideline, defined by nobody.</td>
+        <td data-imp="open packed|long-axis|names|does not define">
+          The hip studies performed long-axis distraction <b>in open packed position</b> - a position the guideline names and does not define. <span class="src">Koc 2025</span>
         </td>
       </tr>
         </tbody>
@@ -1101,30 +1499,116 @@ a{color:var(--accent)}
   </section>
 
   <section id="special">
-    <div class="sechead"><span class="secnum">07</span><h2>Special tests</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">07</span><h2>The techniques, by category</h2></div>
+    <p class="lede">Five families. The honest ranking is not by sophistication - it is by how much of each one has actually been measured.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Long-axis distraction</td>
+        <td>Grip distal to the joint, pull along the shaft.</td>
+        <td data-imp="long-axis|dose-response|three levels|six directions">
+          The only technique here with a <b>dose-response study</b>: three defined force levels, six directions of measured ROM change, and separate pain and function effects. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Sustained glides</td>
+        <td>Hold at the barrier.</td>
+        <td data-imp="sustained|barrier|isolates|oscillatory">
+          Recommended within the guidelines' broader &quot;joint mobilization&quot; wording; <b>no reachable source isolates sustained from oscillatory glides</b> by outcome. <span class="src">Koc 2025</span> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Oscillatory mobilization</td>
+        <td>Rhythmic, repeated, at a chosen depth.</td>
+        <td data-imp="oscillatory|rhythmic|not separated|comparison">
+          Same position. Named in practice, not separated by evidence. <span class="src">no traceable source</span> for any comparison against sustained technique.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Mobilization with movement</td>
+        <td>Sustain the glide while they move actively.</td>
+        <td data-imp="MWM|Grade A|hip|chronic instability">
+          <b>Grade A</b> at the hip within the manual therapy recommendation, and <b>Grade A</b> at the ankle in chronic instability, weight-bearing and non-weight-bearing. <span class="src">Koc 2025</span> <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">MWM, single session at the hip</td>
+        <td>What one session did.</td>
+        <td data-imp="single session|d = 1.9|d = 3.0|immediate">
+          Immediate pain <b>d = 1.9</b>, flexion ROM <b>d = 3.0</b>, IR ROM <b>d = 1.4</b>, TUG <b>d = 1.0</b>, chair stand <b>d = 1.7</b>, 40-m walk <b>d = 1.5</b>. Large, and immediate. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">MWM at the shoulder</td>
+        <td>Four RCTs, 160 participants.</td>
+        <td data-imp="shoulder|160|improved|quality of life">
+          Pain, function, ROM and joint position sense all improved; <b>quality of life did not</b>. <span class="src">Alqallaf 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The design limit on that result</td>
+        <td>Read the comparator, not the conclusion.</td>
+        <td data-imp="add-on|no sham|contact time|comparator">
+          <b>Add-on, no sham.</b> Mulligan <i>plus</i> conventional therapy against conventional therapy <i>alone</i> cannot separate the technique from the extra contact time. <span class="src">Alqallaf 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Mulligan's proposed mechanism</td>
+        <td>Stated in the paper's own background.</td>
+        <td data-imp="positional fault|model's claim|measured|mechanism">
+          <b>&quot;Correcting positional faults&quot;</b> is the model's claim. <b>No included trial measured a positional fault.</b> <span class="src">Alqallaf 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">SNAGs at the lumbar spine</td>
+        <td>Seventeen RCTs, 716 participants.</td>
+        <td data-imp="SNAG|lumbar|83-93%|low certainty">
+          Significant pooled effects on pain, disability and extension range - with <b>I&sup2; of 83-93%</b> and certainty rated <b>low</b> for two of the three. <span class="src">Shager 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Manipulation</td>
+        <td>High-velocity, low-amplitude thrust.</td>
+        <td data-imp="manipulation|thrust|pool them|by outcome">
+          Distinct in execution, and <b><span class="src">no traceable source</span></b> separates it from mobilization <i>by outcome</i> - the reviews covering both <b>pool them together</b> as &quot;articular manual therapy&quot;. <span class="src">Hadjisavvas 2026</span> <span class="src">Jahromi 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Cavitation - what the pop is</td>
+        <td>The tribonucleation account.</td>
+        <td data-imp="cavitation|tribonucleation|inferred|joint space">
+          Consistent with tribonucleation, inferred from joint-space change rather than imaged directly. <span class="src">Sillevis 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Cavitation - what it is evidence of</td>
+        <td>The row to remember from this section.</td>
+        <td data-imp="regardless|joint space|separated|noise">
+          <b>Not of a successful technique.</b> &quot;All subjects <b>regardless of audible sound</b> increased in joint space&quot; after MCP and MTP manipulation. <b>The joint separated whether or not it made a noise.</b> <span class="src">Sillevis 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Is the pop simply being heard?</td>
+        <td>A neat control the study built in.</td>
+        <td data-imp="temporal lobes|auditory|T7|EEG">
+          No - after a T7 thrust the audible group showed significant EEG change in frontal, parietal and occipital lobes <b>but not the temporal lobes</b>, where the auditory centres are. <span class="src">Sillevis 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">How much weight those two carry</td>
+        <td>Check the author list before counting studies.</td>
+        <td data-imp="first author|one research line|replication|weight">
+          <b>They share a first author and method.</b> Treat them as one research line, not as independent replication. <span class="src">Sillevis 2024</span> <span class="src">Sillevis 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The authors' own verdict on the pop</td>
+        <td>Their sentence, not this guide's.</td>
+        <td data-imp="clinical usefulness|questionable|verdict|audible">
+          &quot;The clinical usefulness of audible sounds <b>remains questionable</b>.&quot; <span class="src">Sillevis 2025</span>
         </td>
       </tr>
         </tbody>
@@ -1133,30 +1617,88 @@ a{color:var(--accent)}
   </section>
 
   <section id="syndromes">
-    <div class="sechead"><span class="secnum">08</span><h2>Movement system diagnoses</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">08</span><h2>Matching technique to presentation</h2></div>
+    <p class="lede">The match is made on irritability and on what you are trying to change - not on the joint's name.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Highly irritable, pain-dominant</td>
+        <td>Low force - no resistance.</td>
+        <td data-imp="irritable|low force|not a compromise|d = 2.0">
+          And this is <b>not a compromise</b>: low force produced the <b>largest</b> pain pressure threshold effect, d = 2.0. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Stiff, low irritability, range-dominant</td>
+        <td>High force - stretching exceeding resistance.</td>
+        <td data-imp="stiff|high force|only level|range">
+          It is the <b>only</b> level that moved range. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Acute lateral ankle sprain</td>
+        <td>With therapeutic exercise, from the start.</td>
+        <td data-imp="acute sprain|lymphatic|pain-free|Grade A">
+          <b>Grade A</b>: lymphatic drainage, active and passive soft tissue and joint mobilization, and anterior-to-posterior talar mobilization <b>within pain-free movement</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Chronic ankle instability</td>
+        <td>Weight-bearing and non-weight-bearing.</td>
+        <td data-imp="chronic instability|weight-bearing|dorsiflexion|short term">
+          <b>Grade A</b>: graded joint mobilizations, manipulations and MWM, to improve <b>weight-bearing</b> ankle dorsiflexion and dynamic balance <b>in the short term</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Mild-to-moderate hip osteoarthritis</td>
+        <td>The strongest recommendation in the guide.</td>
+        <td data-imp="hip OA|Grade A|high and low force|distraction">
+          <b>Grade A</b>: soft tissue and/or joint mobilization including <b>high- and low-force long-axis hip distraction</b> and hip MWM, to increase ROM, decrease pain and improve function. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Early after total knee arthroplasty</td>
+        <td>Read both of its ratings.</td>
+        <td data-imp="arthroplasty|weak|downgraded|active-assistive">
+          Evidence quality <b>moderate</b>, but <b>recommendation strength <i>weak</i></b> - the guideline downgraded it &quot;due to limited evidence&quot;. Manual therapy <i>may</i> augment active-assistive exercise for ROM. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Midportion Achilles tendinopathy</td>
+        <td>And note the population.</td>
+        <td data-imp="Achilles|Grade F|expert opinion|mobility deficits">
+          <b>Grade F</b> - expert opinion. <i>May</i> manipulate or mobilise muscles, joints and connective tissues in those with midportion tendinopathy <b>and mobility deficits</b>. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Meniscal and articular cartilage lesions</td>
+        <td>The absence worth knowing.</td>
+        <td data-imp="meniscal|cartilage|absence|no recommendation">
+          <b>No manual therapy recommendation at all.</b> Not a negative recommendation - an absence. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Bony morphology that limits technique</td>
+        <td>Grade F, and practical.</td>
+        <td data-imp="morphology|force amplitude|tolerance|modify">
+          Modify procedures and <b>force amplitude</b> to the patient's bony hip morphology and tissue tolerance. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Suspected proprioceptive deficit</td>
+        <td>The claim to avoid making.</td>
+        <td data-imp="proprioception|null|not linked|promise">
+          Immediate joint position sense gains exist in individual trials, but the <b>only poolable result was null</b> and no trial linked the change to pain or function. <b>Do not promise this one.</b> <span class="src">Hadjisavvas 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What never changes with presentation</td>
+        <td>True in every graded recommendation here.</td>
+        <td data-imp="with exercise|never alone|every|graded">
+          Mobilization appears <b>with exercise</b>. Not one of these guidelines recommends it alone. <span class="src">Koc 2025</span> <span class="src">Martin 2021</span> <span class="src">Bove 2026</span>
         </td>
       </tr>
         </tbody>
@@ -1165,30 +1707,102 @@ a{color:var(--accent)}
   </section>
 
   <section id="palpation">
-    <div class="sechead"><span class="secnum">09</span><h2>Palpation</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">09</span><h2>Position, stabilisation and hand placement</h2></div>
+    <p class="lede">Almost everything in this section is convention. It is written down anyway, because a convention you can name is far safer than one you have mistaken for evidence.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Resting / open-packed position</td>
+        <td>Maximum capsular laxity, by definition.</td>
+        <td data-imp="open-packed|resting|textbook|untested">
+          <b><span class="src">no traceable source</span></b> Tabulated identically in every textbook; nothing reachable derives or tests the values.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Yet the guidelines use it</td>
+        <td>Which is exactly the problem.</td>
+        <td data-imp="guidelines use|named|used|undefined">
+          The hip distraction studies were performed <b>&quot;in open packed position&quot;</b> - named, used, undefined. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Close-packed position</td>
+        <td>Maximum congruence, ligaments taut.</td>
+        <td data-imp="close-packed|congruence|absence|variants">
+          <b><span class="src">no traceable source</span></b> Same four search-phrase variants, same absence.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why the convention still earns its place</td>
+        <td>Not every unsourced thing is useless.</td>
+        <td data-imp="shared position|worth having|unsourced|evidence-based">
+          It gives two clinicians a <b>shared starting position</b>. That is worth having even unsourced - provided nobody claims it is evidence-based. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Stabilise the proximal segment</td>
+        <td>Belt, table, or your other hand.</td>
+        <td data-imp="stabilise|proximal|dose delivered|shared">
+          Otherwise force is shared between the joint and everything proximal to it, and <b>the dose you intended is not the dose delivered</b>. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hand placement</td>
+        <td>As close to the joint line as the technique allows.</td>
+        <td data-imp="hand placement|joint line|lever|multiplies">
+          A longer lever multiplies force at the joint unpredictably. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Force direction</td>
+        <td>Along the assessed restricted glide.</td>
+        <td data-imp="force direction|assessed|not deduced|glide">
+          Assessed, not deduced. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The conventional direction rule</td>
+        <td>Convex on concave, concave on convex.</td>
+        <td data-imp="convex|concave|contested|rule">
+          Concave-convex, and it is <span class="prov x">Contested</span> - see the next two rows. <span class="src">Scarvell 2019</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What contests it</td>
+        <td>Fluoroscopy plus CT, six degrees of freedom.</td>
+        <td data-imp="fluoroscopy|36 mm|23 mm|r = 0.96">
+          In deep knee flexion the femur translated <b>posteriorly by 36 (3) mm</b> from 90&deg; to 150&deg;, finishing <b>23 (3) mm posterior</b> to the tibial centre, with external rotation from 8&deg; to 16&deg;. Flexion and translation were coupled at <b>r = 0.96</b>. <span class="src">Scarvell 2019</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">How far that finding goes</td>
+        <td>Do not overstate it - the authors did not.</td>
+        <td data-imp="does not refute|invite review|kneeling|healthy">
+          <b>It does not refute the rule.</b> The authors say the findings &quot;invite review&quot; of it, and they studied <b>kneeling in 25 healthy adults over 45</b> - no mobilization, and no patients. <span class="src">Scarvell 2019</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What to do with it</td>
+        <td>The practical resolution.</td>
+        <td data-imp="assess|deducing|geometry|measures">
+          <b>Assess the glide rather than deducing it from surface geometry.</b> The rule predicts; the assessment measures. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Communicating during the technique</td>
+        <td>Ask while you are doing it.</td>
+        <td data-imp="communicate|during|pain-free|enforce">
+          Ask about pain quality and location <b>during</b>, not only after - &quot;within pain-free movement&quot; is a limit you can only enforce by asking. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why the mechanism literature will not settle this</td>
+        <td>A commentary, and labelled as one.</td>
+        <td data-imp="commentary|unmeasured|mediators|not data">
+          Named authors argue that mechanisms of force-based manipulation interact with unmeasured variables and are &quot;influenced by time, clinician, environments and a litany of other mediators&quot;. <b>A commentary, not data.</b> <span class="src">Cook 2026</span>
         </td>
       </tr>
         </tbody>
@@ -1197,30 +1811,123 @@ a{color:var(--accent)}
   </section>
 
   <section id="treatment">
-    <div class="sechead"><span class="secnum">10</span><h2>Mobilizations and exercise</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">10</span><h2>What the evidence supports, by region</h2></div>
+    <p class="lede">One table, five guidelines, two grading scales. It is the most useful page in the guide and the least comfortable.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Hip osteoarthritis</td>
+        <td>The strongest of the five.</td>
+        <td data-imp="hip OA|Grade A|distraction|MWM">
+          <b>Grade A</b> - soft tissue and/or joint mobilization, including high- and low-force long-axis hip distraction and hip MWM, to increase ROM, decrease pain and improve function in mild-to-moderate hip OA. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hip osteoarthritis, second recommendation</td>
+        <td>The individualisation clause.</td>
+        <td data-imp="Grade F|modify|amplitude|irritability">
+          <b>Grade F</b> - <i>may</i> modify procedures and force amplitude to bony hip morphology and tissue tolerance/irritability. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Lateral ankle sprain, acute</td>
+        <td>Alongside therapeutic exercise.</td>
+        <td data-imp="acute|Grade A|lymphatic|talar">
+          <b>Grade A</b> - lymphatic drainage, active and passive soft tissue and joint mobilization, anterior-to-posterior talar mobilization within pain-free movement. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Lateral ankle sprain, chronic instability</td>
+        <td>Note both qualifiers.</td>
+        <td data-imp="chronic|weight-bearing|short term|balance">
+          <b>Grade A</b> - graded joint mobilizations, manipulations, weight-bearing and non-weight-bearing MWM, for <b>weight-bearing</b> ankle dorsiflexion and dynamic balance <b>in the short term</b>. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Lateral ankle sprain, adjunct</td>
+        <td>The softer one.</td>
+        <td data-imp="Grade B|supplement|balance training|judgement">
+          <b>Grade B</b> - multiple interventions <i>may</i> supplement balance training, guided by patient values and clinician judgement. <span class="src">Martin 2021</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Total knee arthroplasty, range</td>
+        <td>Two ratings, and the second is the honest one.</td>
+        <td data-imp="arthroplasty|weak|limited evidence|one study">
+          Evidence quality <b>moderate</b>, strength <b><i>weak</i></b>, &quot;downgraded due to limited evidence&quot; - <i>may</i> augment active-assistive exercise for ROM early postoperatively. Manual therapy itself rests on <b>one high-quality study</b>. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Total knee arthroplasty, pain</td>
+        <td>Same pattern again.</td>
+        <td data-imp="pain|weak|low certainty|time frame">
+          Evidence quality <b>moderate</b>, strength <b><i>weak</i></b>, &quot;downgraded due to low certainty of evidence&quot; - <i>may</i> use manual therapy among several options; <b>time frame not specified</b>. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Midportion Achilles tendinopathy</td>
+        <td>The weakest that still exists.</td>
+        <td data-imp="Achilles|Grade F|expert opinion|deficits">
+          <b>Grade F</b> - expert opinion; <i>may</i> use manual therapy where mobility deficits exist. <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Knee meniscal and cartilage lesions</td>
+        <td>The one that says nothing.</td>
+        <td data-imp="meniscal|none|no recommendation|silent">
+          <b>None.</b> No manual therapy recommendation appears in the guideline at all. <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The headline finding</td>
+        <td>Say this to a student before anything else.</td>
+        <td data-imp="regional|two of five|weak|absent">
+          <b>The evidence is regional, not general.</b> &quot;Manual therapy is evidence-based&quot; is true in two of these five documents, weak in two, and <b>absent from</b> the fifth - absent, not rejected. <span class="src">Koc 2025</span> <span class="src">Martin 2021</span> <span class="src">Chimenti 2024</span> <span class="src">Bove 2026</span> <span class="src">Logerstedt 2018</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Two scales, not one</td>
+        <td>And a trap inside the second.</td>
+        <td data-imp="two scales|separately|moderate is not B|weak">
+          Four guidelines grade A-F; the arthroplasty guideline reports <b>Evidence Quality and Recommendation Strength separately</b>. A <i>moderate</i> is not a <i>B</i> - and quoting its evidence quality alone hides that both its manual therapy recommendations are rated <b><i>weak</i></b>. <span class="src">Bove 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Where dose is specified</td>
+        <td>Look at the form the dose takes.</td>
+        <td data-imp="functionally|tolerance|not one|grade III">
+          Always <b>functionally</b> - force amplitude relative to tissue tolerance, within pain-free movement, in the short term, early postoperative, where mobility deficits exist. <b>Not one guideline says &quot;grade III&quot;.</b> <span class="src">Koc 2025</span> <span class="src">Martin 2021</span> <span class="src">Bove 2026</span> <span class="src">Chimenti 2024</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Duration of effect</td>
+        <td>The qualifier attached to almost everything here.</td>
+        <td data-imp="duration|short term|immediate|no follow-up">
+          The ankle guideline's own words are <b>&quot;in the short term&quot;</b>, and the proprioception evidence is entirely <b>immediate post-intervention</b> with no follow-up. <span class="src">Martin 2021</span> <span class="src">Hadjisavvas 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What happens centrally</td>
+        <td>Twenty-six neuroimaging studies.</td>
+        <td data-imp="neuroimaging|excitability|connectivity|integration">
+          Most found post-intervention change in <b>motor cortex excitability</b> (TMS), <b>functional connectivity</b> (fMRI) and <b>sensorimotor integration</b> (SEP). <span class="src">Jahromi 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The sentence to remember</td>
+        <td>The gap between mechanism and outcome.</td>
+        <td data-imp="none of them|linked|cortical|improvements">
+          &quot;Although many studies reported reductions in pain intensity, <b>none of them linked cortical changes directly to clinical improvements</b>.&quot; <span class="src">Jahromi 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Reassessment</td>
+        <td>Close the loop yourself.</td>
+        <td data-imp="reassess|same session|yourself|honestly">
+          Re-measure the marker you chose, <b>in the same session</b>, <b>yourself</b>. Immediate change is what the evidence describes - and it is all you can honestly claim. <span class="src">Nguyen 2026</span> <span class="src">Hadjisavvas 2026</span>
         </td>
       </tr>
         </tbody>
@@ -1230,7 +1937,7 @@ a{color:var(--accent)}
 
   <section id="drill">
     <div class="sechead"><span class="secnum">11</span><h2>Rapid drill</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">Two ways to rehearse. The cases work a whole decision from presentation to reassessment marker; the single facts test one value at a time, and several of them test whether you know that a value <i>does not exist</i>.</p>
     <h3>What to practice</h3>
     <p class="lede">Built from the cells you marked missed while running recall. Nothing here is pre-filled - if this is empty, go and quiz yourself first. The practice method is chosen by <em>what the item is</em>, not by what kind of learner you are: a number, a pair of hands and a decision are three different jobs and they need three different kinds of rehearsal.</p>
     <div id="planner" class="planner"></div>
@@ -1238,55 +1945,133 @@ a{color:var(--accent)}
       <b>Why this is not a learning-styles quiz.</b> Sorting students into visual, auditory or kinesthetic learners and matching teaching to the label is one of the most durable ideas in education that the evidence does not support - the studies that test it properly find no benefit from the match <span class="src">Pashler 2008</span>. What does hold up is the method fitting the material: retrieving a fact from memory beats re-reading it, and spacing the attempts beats massing them <span class="src">Dunlosky 2013</span>. So the plan below sorts your misses by the kind of thing they are.
     </div>
 
-    
-    <div class="tablewrap">
-      <table>
-        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
-        <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
-      <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
-        </td>
-      </tr>
-        </tbody>
-      </table>
+    <h3>Cases - work the whole decision</h3>
+    <p class="lede">Open a case, then work down the prompts - answer each out loud and click to check. Answers are hidden every time a case opens, so nothing is spoiled by looking.</p>
+
+    <div class="cases">
+      <details class="case">
+        <summary class="stem"><b>Retired teacher, 68.</b> Two years of right groin pain, radiographic hip osteoarthritis. Stiff into flexion and internal rotation, but not especially painful to move - she rates it 3/10 and wants to get back to walking her dog up a hill. Your student asks which Maitland grade to use.</summary>
+        <dl class="caseans">
+          <div><dt>Answer the student first</dt><dd>You cannot source one. The Maitland and Kaltenborn grading systems have <b>no reachable definition, origin or reliability figure</b> <span class="src">no traceable source</span>, and none of the five guidelines held here defines a grade. The ankle guideline mentions &quot;Maitland grade III&quot; once, as a label on someone else's trial <span class="src">Martin 2021</span>.</dd></div>
+          <div><dt>Use the vocabulary that is defined</dt><dd>Force relative to tissue resistance: <b>high</b> = stretching exceeding resistance, <b>medium</b> = stopping at the point of resistance, <b>low</b> = no resistance <span class="src">Koc 2025</span>.</dd></div>
+          <div><dt>Which level, for her?</dt><dd><b>High force.</b> She is stiffness-dominant and low-irritability, and high force is the only level that moved range - flexion 10.6&deg;, extension 8.0&deg;, abduction 6.4&deg;, adduction 3.3&deg;, ER 5.6&deg;, IR 7.6&deg;, significant against low force. Low and medium force produced <b>no significant ROM change at all</b> <span class="src">Koc 2025</span>.</dd></div>
+          <div><dt>What you are giving up</dt><dd>Pain relief. <b>Low</b> force had the largest effect on pain pressure threshold (d = 2.0) <span class="src">Koc 2025</span>. You cannot maximise both, so choose deliberately and tell her which you chose.</dd></div>
+          <div><dt>The recommendation this sits under</dt><dd><b>Grade A</b>: soft tissue and/or joint mobilization, including high- and low-force long-axis hip distraction and hip mobilization with movement, to increase ROM, decrease pain and improve function in mild-to-moderate hip OA <span class="src">Koc 2025</span>.</dd></div>
+          <div><dt>Dose</dt><dd><b>1 to 3 times per week over 6-12 weeks</b> - and say the caveat out loud: the guideline concluded that recommending a specific dosage &quot;could not be made&quot;, because five of ten studies were at high risk of bias <span class="src">Koc 2025</span>.</dd></div>
+          <div><dt>Before she leaves</dt><dd>Exercise. Mobilization appears <b>with exercise</b> in every graded recommendation in this guide, never instead of it <span class="src">Koc 2025</span>.</dd></div>
+        </dl>
+      </details>
+
+      <details class="case">
+        <summary class="stem"><b>Warehouse worker, 31.</b> Third sprain of the left ankle, now six months on. Stiff into dorsiflexion. A colleague assessed the posterior talar glide last week and recorded &quot;mildly restricted&quot;; you assess it today and think it is normal. He asks which of you is right.</summary>
+        <dl class="caseans">
+          <div><dt>The honest answer</dt><dd>Possibly neither, and the disagreement may be meaningless. Inter-rater reliability for that test is <b>ICC 0.64</b> - poor to good - with <b>MDC 4.7&deg;</b> <span class="src">Nguyen 2026</span>. A difference under about four degrees between two examiners is not a finding.</dd></div>
+          <div><dt>Why it is not a skill problem</dt><dd>Because <b>intra</b>-rater reliability is excellent for both a novice (ICC 0.97) and an experienced rater (ICC 0.94) <span class="src">Nguyen 2026</span>. Each of you is consistent with yourself. Experience did not close the gap between you.</dd></div>
+          <div><dt>What would close it</dt><dd>An external datum. Adding a <b>referential horizontal plane</b> raised inter-rater agreement to <b>ICC 0.78</b> <span class="src">Nguyen 2026</span>. Reproducibility came from measuring against something outside the hands - not from a finer grading vocabulary.</dd></div>
+          <div><dt>The practical rule</dt><dd><b>Re-measure your own marker, yourself, in the same session.</b> Handing the re-test to a colleague discards most of the reliability the measurement had <span class="src">Nguyen 2026</span>.</dd></div>
+          <div><dt>What the evidence supports here</dt><dd><b>Grade A</b>: graded joint mobilizations, manipulations, and weight-bearing and non-weight-bearing mobilization with movement, to improve <b>weight-bearing</b> ankle dorsiflexion and dynamic balance <b>in the short term</b> in chronic instability <span class="src">Martin 2021</span>. Both qualifiers matter.</dd></div>
+        </dl>
+      </details>
+
+      <details class="case">
+        <summary class="stem"><b>Office manager, 55.</b> Knee pain after a meniscal tear managed conservatively. She has read that manual therapy is evidence-based and asks you to mobilise the knee. Later in the session your thumb-and-thenar technique produces a loud pop and she is delighted - &quot;that's it, it's gone back in.&quot;</summary>
+        <dl class="caseans">
+          <div><dt>Her first question</dt><dd>The knee meniscal and articular cartilage guideline carries <b>no manual therapy recommendation at all</b> <span class="src">Logerstedt 2018</span>. That is an absence, not a rejection - but it is not the Grade A she has read about. The evidence is <b>regional, not general</b>: Grade A at hip and ankle, Grade F for Achilles, <i>weak</i> after knee arthroplasty, absent here.</dd></div>
+          <div><dt>What the pop tells you</dt><dd><b>Nothing about whether the technique worked.</b> In the study that measured it, <b>all</b> subjects increased in joint space after manipulation <b>regardless of whether an audible sound occurred</b> <span class="src">Sillevis 2025</span>. The joint gapped whether or not it made a noise.</dd></div>
+          <div><dt>Was she simply hearing it?</dt><dd>No - after a thoracic thrust, the audible group showed significant EEG change in frontal, parietal and occipital lobes <b>but not the temporal lobes</b>, where the auditory centres sit <span class="src">Sillevis 2024</span>. Note those two studies share a first author and method: <b>one research line, not two</b>.</dd></div>
+          <div><dt>Nothing &quot;went back in&quot;</dt><dd>Correct the model gently. The authors' own verdict is that &quot;the clinical usefulness of audible sounds remains questionable&quot; <span class="src">Sillevis 2025</span>.</dd></div>
+          <div><dt>What you can offer instead</dt><dd>Say what is true: the effects that are measured are on range, pain and immediate proprioception, they are <b>short term</b>, and they come alongside exercise. Then set a marker and re-measure it in this session <span class="src">Hadjisavvas 2026</span>.</dd></div>
+        </dl>
+      </details>
     </div>
+
+    <h3>Single facts</h3>
+
+    <details><summary>Name the three force levels the hip guideline defines, in terms of tissue resistance.</summary><div class="ans"><b>High</b> = stretching exceeding resistance. <b>Medium</b> = stopping at the point of resistance. <b>Low</b> = no resistance <span class="src">Koc 2025</span>. This is the one mobilization dose vocabulary in the guide that is defined, reproducible from its own description, and has outcomes attached.</div></details>
+
+    <details><summary>Which force level produced the largest effect on pain, and which on range?</summary><div class="ans"><b>Low</b> force on pain pressure threshold (d = 2.0); <b>high</b> force on range - and on physical function (d = 0.5-0.7). Medium force won neither <span class="src">Koc 2025</span>. You cannot maximise both, so the dose is a choice.</div></details>
+
+    <details><summary>What is the origin of the Maitland grading system, and what is its published inter-rater reliability?</summary><div class="ans">Neither is traceable to any reachable source <span class="src">no traceable source</span>. That is the answer, and it is the guide's central finding. Zero of the five guidelines held here define a grade; the only mention is the ankle guideline using &quot;Maitland grade III&quot; as a label while summarising someone else's trial <span class="src">Martin 2021</span>.</div></details>
+
+    <details><summary>What is the inter-rater ICC for the posterior talar glide test, and the smallest difference that means anything?</summary><div class="ans"><b>ICC 0.64</b>, poor to good, with <b>MDC 4.7&deg;</b> <span class="src">Nguyen 2026</span>. Intra-rater is excellent by contrast - 0.97 novice, 0.94 experienced. One clinician is consistent with themselves; two are not consistent with each other.</div></details>
+
+    <details><summary>What raised that inter-rater agreement, and to what?</summary><div class="ans">A <b>referential horizontal plane</b> - an external measurable datum - raised it to <b>ICC 0.78</b> <span class="src">Nguyen 2026</span>. Not more skill, and not a finer grading vocabulary.</div></details>
+
+    <details><summary>In how many of the five guidelines examined here does manual therapy reach Grade A? In how many does it appear at all?</summary><div class="ans"><b>Grade A in two</b> - hip osteoarthritis and lateral ankle sprain. It appears in <b>four of five</b>; the knee meniscal and articular cartilage guideline carries no manual therapy recommendation at all <span class="src">Koc 2025</span> <span class="src">Martin 2021</span> <span class="src">Chimenti 2024</span> <span class="src">Bove 2026</span> <span class="src">Logerstedt 2018</span>.</div></details>
+
+    <details><summary>The knee arthroplasty guideline rates manual therapy "moderate". Moderate what?</summary><div class="ans"><b>Evidence Quality.</b> Its <b>Recommendation Strength</b> for both manual therapy recommendations is <b><i>weak</i></b> - downgraded in the guideline's own words &quot;due to limited evidence&quot; (range) and &quot;due to low certainty of evidence&quot; (pain) <span class="src">Bove 2026</span>. Quoting the quality alone makes it look far stronger than its authors rate it.</div></details>
+
+    <details><summary>Your patient's joint popped loudly. What did that tell you about whether the joint gapped?</summary><div class="ans">Nothing. <b>All</b> subjects increased in joint space after manipulation <b>regardless of audible sound</b> <span class="src">Sillevis 2025</span>. And the pop is not simply being heard - the audible group showed EEG change everywhere except the <b>temporal</b> lobes <span class="src">Sillevis 2024</span>.</div></details>
+
+    <details><summary>A meta-analysis reports SMD &minus;0.78 for pain with I&sup2; = 92%. What does the I&sup2; change about how you read it?</summary><div class="ans">At that dispersion the pooled estimate <b>describes no single population</b>. The authors themselves rate certainty <b>moderate for pain and low for disability and mobility</b>, with I&sup2; of 92%, 83% and 93% across the three outcomes <span class="src">Shager 2026</span>. Always print the I&sup2; beside the SMD.</div></details>
+
+    <details><summary>Why is "no catastrophic adverse events were reported" not the same as "catastrophic adverse events are rare"?</summary><div class="ans">Because the review <b>excluded administrative database studies</b>, and its authors name that as a limitation precisely because those designs &quot;may detect rare AEs&quot; <span class="src">Daniels 2026</span>. The design could not have found one. Note also its funding: partially from Clinical Compass and the NCMIC Foundation, both chiropractic organisations.</div></details>
+
+    <details><summary>What are the common adverse events, and how many were severe?</summary><div class="ans"><b>412</b> study-related events in adults over 55, of which <b>9 severe</b> and <b>none catastrophic</b> - mostly changes in pain quality, soreness, stiffness, numbness, weakness, fatigue, headache and dizziness. In the case-report literature, 6 severe events, <b>four of them vascular</b> <span class="src">Daniels 2026</span>. It is a count, not an incidence: there is no denominator.</div></details>
+
+    <details><summary>In which position were the hip long-axis distraction studies performed, and what is the evidence base for that position?</summary><div class="ans"><b>Open packed position</b> - which the guideline names and does not define <span class="src">Koc 2025</span>, and which no reachable source derives or tests <span class="src">no traceable source</span>. It is the second load-bearing convention in this guide that could not be traced.</div></details>
+
+    <details><summary>What did Scarvell measure in deep knee flexion, and what did the authors conclude about the concave-convex rule - precisely?</summary><div class="ans"><b>36 (3) mm</b> of posterior femoral translation from 90&deg; to 150&deg; flexion, finishing <b>23 (3) mm posterior</b> to the tibial centre, with external rotation from 8&deg; to 16&deg; and flexion coupled to translation at r = 0.96. Their conclusion was that the findings <b>&quot;invite review&quot;</b> of the rule <span class="src">Scarvell 2019</span> - not that it is wrong. Twenty-five healthy adults over 45, kneeling; no mobilization and no patients.</div></details>
+
+    <details><summary>Across 26 neuroimaging studies of spinal manipulation and mobilization, what was never demonstrated?</summary><div class="ans">That the cortical changes were <b>linked to the clinical improvements</b>. Most studies found post-intervention change in motor cortex excitability, functional connectivity and sensorimotor integration, and many reported pain reduction - but &quot;none of them linked cortical changes directly to clinical improvements&quot; <span class="src">Jahromi 2026</span>.</div></details>
+
+    <details><summary>Mulligan MWM improved pain, function and ROM in rotator cuff disease. What design feature limits what you can conclude?</summary><div class="ans">It is an <b>add-on design with no sham</b>: Mulligan <i>plus</i> conventional therapy against conventional therapy <i>alone</i>, so the extra contact time and attention are uncontrolled <span class="src">Alqallaf 2025</span>. Note too that the paper's stated mechanism - &quot;correcting positional faults&quot; - was <b>never measured</b> in any included trial.</div></details>
+
+    <details><summary>What is the only proprioception result that could be pooled, and what did it show?</summary><div class="ans">Knee joint position sense error at 60&deg; in patellofemoral pain, two trials: <b>Hedges' g = &minus;0.21, 95% CI &minus;1.36 to 0.94, I&sup2; &asymp; 83% - not significant</b> <span class="src">Hadjisavvas 2026</span>. Every other outcome was too heterogeneous to pool, and all effects were immediate post-intervention with no follow-up.</div></details>
+
+    <details><summary>Name the two "grade III"s a hip paper might mean.</summary><div class="ans"><b>Kellgren-Lawrence radiographic severity</b> Grade III, and <b>Maitland mobilization</b> grade III. Entirely unrelated scales that share a word <span class="src">Koc 2025</span>. The 60 patients in the force-level study had Grade III <i>osteoarthritis</i>. Every grade in this guide names its scale for that reason.</div></details>
+
+    <details><summary>Is the capsular pattern a valid diagnostic?</summary><div class="ans"><b>No.</b> In 200 patients the pattern Cyriax describes was &quot;not present as a distinct pattern&quot;, and it &quot;cannot be regarded as a valid test for the diagnosis of OA of the hip or knee&quot; <span class="src">Bijl 1998</span>.</div></details>
+
+    <details><summary>Does the evidence distinguish manipulation from mobilization by outcome?</summary><div class="ans">No reachable source separates them <span class="src">no traceable source</span>. The reviews that cover both <b>pool them together</b> as &quot;articular manual therapy&quot; <span class="src">Hadjisavvas 2026</span> or report their responses jointly <span class="src">Jahromi 2026</span>. State that as the finding it is, rather than implying a difference the literature has not shown.</div></details>
+
+    <details><summary>Why does this guide cite a commentary, and what may it be cited for?</summary><div class="ans">For the position it takes and nothing else. Cook and colleagues argue that mechanisms of force-based manipulation interact with unmeasured variables and are &quot;influenced by time, clinician, environments and a litany of other mediators&quot; <span class="src">Cook 2026</span>. It contains <b>no data, no participants and no effect size</b>, and is labelled a commentary wherever it appears.</div></details>
+
   </section>
 
 
   <section id="refs">
     <h2>References</h2>
-    <p class="lede">Every source named in this guide, with a link. All of them are free to read or
-    have a freely readable abstract carrying the values quoted here. Where a value is marked as
-    convention it appears in no list below, because nothing supports it.</p>
+    <p class="lede">Sixteen sources, each cited at least once above. <b>Fifteen are free to read in
+    full</b>; the sixteenth (Scarvell) has a freely readable abstract, and only that abstract is
+    quoted. Five are graded clinical practice guidelines. Where a value is marked
+    <b>Convention</b>, or flagged as having <b>no traceable source</b>, it appears in no entry below,
+    because nothing supports it - and in this guide that applies to more of the vocabulary than in
+    any other guide in the series. Each note records what the paper <i>cannot</i> support as well as
+    what it can.</p>
 
-    <!-- GROUPS. Keep these headings or replace them; the citation linker does not care.
-         Each entry MUST carry .au (authors) and .jo (journal + year) - those two fields are
-         what the linker parses to match an inline "Author 2019" citation to this entry.
-         The .nt note is where you record what the paper actually shows, including its
-         population and any limit on what it can support. -->
-    <h3>Range of motion and kinematics</h3>
+        <h3>Clinical practice guidelines</h3>
     <ol>
-      <li><span class="au">Author A, Author B, Author C, et al.</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/00000000/" target="_blank" rel="noopener">Title of the paper exactly as published</a></span>. <span class="jo">Journal Abbrev 2019;12(3):345-356</span><span class="nt">What it actually found, in whom, and what it cannot support.</span></li>
+      <li><span class="au">Koc TA Jr, Cibulka M, Enseki KR, Gentile JT, MacDonald CW, Kollmorgen RC, Martin RL</span> <span class="ti"><a href="https://www.orthopt.org/uploads/content_files/files/hip_pain_and_mobility_deficits_hip_osteoarthritis_revision_2025.pdf" target="_blank" rel="noopener">Hip Pain and Mobility Deficits - Hip Osteoarthritis: Revision 2025</a></span>. <span class="jo">J Orthop Sports Phys Ther 2025;55(11):CPG1-CPG31</span><span class="nt">Openly hosted and free. <b>The most-cited source in this guide.</b> It carries the only defined mobilization dose vocabulary reachable anywhere - high force (stretching exceeding resistance), medium force (stopping at the point of resistance), low force (no resistance) - with different outcomes attached to each level. Two studies on the <b>same 60 subjects</b> (mean age 63 &plusmn; 9.7; 35 men, 25 women, Grade III hip OA) supply the ROM and pain figures quoted here; the distraction was performed <b>in open packed position</b>, which the guideline names and does not define. Also the source for the Grade A and Grade F manual therapy recommendations, the single-session mobilization-with-movement effect sizes, and the statement that <b>no harms of manual therapy were reported</b>. Read its dose caveat before quoting any dose: across 10 studies and 768 participants, five were at high risk of bias, and the guideline concluded that recommending a specific dosage &quot;could not be made&quot;.</span></li>
+      <li><span class="au">Martin RL, Davenport TE, Fraser JJ, Sawdon-Bea J, Carcia CR, Carroll LA, Kivlan BR, Carreira D</span> <span class="ti"><a href="https://www.orthopt.org/uploads/content_files/files/jospt.2021.0302.pdf" target="_blank" rel="noopener">Ankle Stability and Movement Coordination Impairments: Lateral Ankle Ligament Sprains Revision 2021</a></span>. <span class="jo">J Orthop Sports Phys Ther 2021;51(4):CPG1-CPG80</span><span class="nt">Openly hosted, free, graded. Source for both Grade A manual therapy recommendations - acute (within pain-free movement) and chronic instability (<b>weight-bearing</b> dorsiflexion and dynamic balance, <b>in the short term</b>) - and for the Grade B adjunct. It is also the <b>only</b> guideline of the five that mentions a Maitland grade at all, and it does so while summarising someone else's trial: it uses the grade as a label and never defines it. Its body reprints 2013 recommendations beside the 2021 ones, so every letter quoted here was confirmed by position to come from the current front-matter summary.</span></li>
+      <li><span class="au">Bove AM, et al.</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13403188/" target="_blank" rel="noopener">Clinical practice guideline for physical therapist management of total knee arthroplasty: revision 2026</a></span>. <span class="jo">Phys Ther 2026. doi:10.1093/ptj/pzag058</span><span class="nt">Free full text. <b>Read both of its ratings, not one.</b> This guideline reports Evidence Quality and Recommendation Strength separately, and both of its manual therapy recommendations are <i>moderate</i> quality but <b><i>weak</i> strength</b> - downgraded in its own words &quot;due to limited evidence&quot; (range of motion) and &quot;due to low certainty of evidence&quot; (pain). An earlier version of this guide quoted only the evidence quality, which made the recommendations look considerably stronger than their authors rate them. Manual therapy within the ROM recommendation rests on <b>one high-quality study</b>. Its scale is not interchangeable with the A-F letters used by the other four.</span></li>
+      <li><span class="au">Chimenti RL, Neville C, Houck J, Cuddeford T, Carreira D, Martin RL</span> <span class="ti"><a href="https://www.orthopt.org/uploads/content_files/files/chimenti_et_al_2024_achilles_pain_stiffness_and_muscle_power_deficits_midportion_achilles_tendinopathy_revision_2024.pdf" target="_blank" rel="noopener">Achilles Pain, Stiffness, and Muscle Power Deficits: Midportion Achilles Tendinopathy Revision 2024</a></span>. <span class="jo">J Orthop Sports Phys Ther 2024</span><span class="nt">Openly hosted, free. Cited for one recommendation only: <b>Grade F</b>, expert opinion - clinicians may use manual therapy directed at manipulating and/or mobilizing muscles, joints and connective tissues in those with midportion Achilles tendinopathy <b>and mobility deficits</b>. Both halves of that population matter. This is the weakest manual therapy recommendation in the guide that still exists.</span></li>
+      <li><span class="au">Logerstedt DS, Scalzitti DA, Bennell KL, Hinman RS, Silvers-Granelli H, Ebert J, Hambly K, Carey JL, Snyder-Mackler L, Axe MJ, McDonough CM</span> <span class="ti"><a href="https://www.orthopt.org/uploads/content_files/files/knee_pain_and_mobility_impairments_meniscal_and_articular_cartilage_lesions_revision_2018.pdf" target="_blank" rel="noopener">Knee Pain and Mobility Impairments: Meniscal and Articular Cartilage Lesions, Revision 2018</a></span>. <span class="jo">J Orthop Sports Phys Ther 2018;48(2):A1-A50</span><span class="nt">Openly hosted, free. Cited here for what it does <b>not</b> contain: <b>no manual therapy recommendation at all</b>. That is an absence, not a negative recommendation - the guideline did not consider and reject the intervention. It is the reason this guide says the evidence for manual therapy is regional rather than general.</span></li>
     </ol>
-    <h3>Diagnostic accuracy</h3>
+
+    <h3>Reliability and joint mechanics</h3>
     <ol>
-      <li><span class="au">Author D, Author E</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC0000000/" target="_blank" rel="noopener">Title</a></span>. <span class="jo">Journal 2021;5(1):1-10</span><span class="nt">Note the target condition - accuracy figures are only meaningful against the condition they were measured for.</span></li>
+      <li><span class="au">Nguyen AP, Bogaerts H, Galerne C, Fourchet F</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13251517/" target="_blank" rel="noopener">Reproducibility of a modified posterior talar glide test in ankle sprain conditions: a cross-sectional analysis on chronic ankle instability, copers, and healthy controls</a></span>. <span class="jo">J Man Manip Ther 2026;34(2):171-177</span><span class="nt">Free full text. The closest thing to a measured answer to this guide's central question. Twenty-eight participants, two raters (novice and experienced). <b>Intra</b>-rater reliability excellent - ICC 0.97 and 0.94 - while <b>inter</b>-rater was <b>0.64</b>, poor to good; adding a referential horizontal plane raised it to 0.78. MDC 3.3-4.7&deg;. <b>What it cannot support:</b> this is a glide <i>test</i> measured in degrees, not a graded mobilization treatment. No force was measured and no grading system was used, so it says nothing about whether two clinicians nominating &quot;grade III&quot; would apply the same force.</span></li>
+      <li><span class="au">Scarvell JM, Hribar N, Galvin CR, Pickering MR, Perriman DM, Lynch JT, Smith PN</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/30690574/" target="_blank" rel="noopener">Analysis of Kneeling by Medical Imaging Shows the Femur Moves Back to the Posterior Rim of the Tibial Plateau, Prompting Review of the Concave-Convex Rule</a></span>. <span class="jo">Phys Ther 2019;99(3):311-318</span><span class="nt">Abstract only, and only the abstract is quoted. Twenty-five healthy participants over 45, kneeling; fluoroscopy registered to CT, six degrees of freedom. From 90&deg; to 150&deg; flexion the femur translated posteriorly by 36 (3) mm, finishing 23 (3) mm posterior to the tibial centre, with external rotation from 8&deg; to 16&deg;; flexion and translation coupled at r = 0.96. <b>What it cannot support:</b> that the concave-convex rule is wrong. The authors' verb is that the findings <b>&quot;invite review&quot;</b> of it, and that is the strongest available. No mobilization was performed and no patient was studied.</span></li>
+      <li><span class="au">Bijl D, Dekker J, van Baar ME, Oostendorp RA, Lemmens AM, Bijlsma JW, Voorn TB</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/9808400/" target="_blank" rel="noopener">Validity of Cyriax's concept capsular pattern for the diagnosis of osteoarthritis of hip and/or knee</a></span>. <span class="jo">Scand J Rheumatol 1998;27(5):347-351</span><span class="nt">Cited once. In 200 patients the capsular pattern was &quot;not present as a distinct pattern&quot; and &quot;cannot be regarded as a valid test for the diagnosis of OA of the hip or knee&quot;. Carried across from the hip guide in this series rather than re-derived.</span></li>
     </ol>
+
+    <h3>Effects of mobilization and manipulation</h3>
+    <ol>
+      <li><span class="au">Alqallaf A, Alharran AM, Penchev P, Alkandari YY, Almulla B, Almulla A, Alshatti A, AlAyyaf AE, Alahmad A, Al-Naseem AO</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12692990/" target="_blank" rel="noopener">Mulligan Mobilization Combined with Conventional Therapy vs. Conventional Care Alone in Patients with Rotator Cuff Disease: A Systematic Review and Meta-Analysis of Randomized Controlled Trials</a></span>. <span class="jo">J Clin Med 2025;14(23):8352</span><span class="nt">Free full text. Four RCTs, 160 participants. Significant pooled improvements in pain at rest and on activity, function, range of motion and joint position sense; <b>no significant difference in quality of life</b>. <b>What it cannot support:</b> that the technique itself is responsible. This is an <b>add-on design with no sham</b> - Mulligan plus conventional therapy against conventional therapy alone - so the extra contact time is uncontrolled. Its background attributes the effect to &quot;correcting positional faults&quot;; that is the model's claim, and <b>no included trial measured a positional fault</b>. The abstract reports its ROM effect without naming a plane or unit, so no degree figure is quoted here.</span></li>
+      <li><span class="au">Shager K, Murugiah M, Sze Kei T, Ranganathan H, Ahmad MA</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13313661/" target="_blank" rel="noopener">Effects of Mulligan sustained natural apophyseal glide mobilizations on pain, mobility, and lumbar-related disability in chronic non-specific low back pain: A systematic review and meta-analysis</a></span>. <span class="jo">Medicine 2026;105(26):e49456</span><span class="nt">Free full text. Seventeen RCTs, 716 participants, PEDro 4-9. Pain SMD &minus;0.78, disability SMD &minus;0.60, lumbar extension SMD 0.75; flexion not significant. <b>Read the heterogeneity beside every one of those:</b> I&sup2; of 92%, 83% and 93%, with the authors rating certainty moderate for pain and <b>low</b> for disability and mobility. <b>What it cannot support:</b> anything about peripheral joints. This is the lumbar spine, and blinding was one of the two main bias domains, so the comparison is largely unblinded manual contact against less contact.</span></li>
+      <li><span class="au">Hadjisavvas S, Themistocleous IC, Efstathiou MA, Papamichael E, Michailidou C, Stefanakis M</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12921973/" target="_blank" rel="noopener">The Effect of Joint Mobilization and Manipulation on Proprioception: Systematic Review with Limited Meta-Analysis</a></span>. <span class="jo">J Funct Morphol Kinesiol 2026;11(1):59</span><span class="nt">Free full text. Seven RCTs, 350 participants; no eligible sham-controlled trial existed before 2018. Individual trials show immediate joint position sense gains, but <b>the only outcome that could be pooled came out null</b> - Hedges' g = &minus;0.21, 95% CI &minus;1.36 to 0.94, I&sup2; &asymp; 83%. <b>What it cannot support:</b> any distinction between mobilization and manipulation, which it pools as &quot;articular manual therapy&quot;; anything beyond the immediate post-intervention period, since there is no follow-up; or any link from joint position sense to pain or function, which no included trial made.</span></li>
+      <li><span class="au">Jahromi MM, Basset D, Borrell JA, Sharma NK</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13386196/" target="_blank" rel="noopener">Neurophysiological Response of Spinal Mobilization and Manipulation in Individuals With and Without Musculoskeletal Spine Disorders: A Scoping Review</a></span>. <span class="jo">Eur J Neurosci 2026;64(2):e70632</span><span class="nt">Free full text. Twenty-six studies - 8 TMS, 7 fMRI, 5 somatosensory evoked potential, 6 other. Most reported post-intervention change in motor cortex excitability, functional connectivity and sensorimotor integration. The sentence this guide quotes is the one that matters: &quot;Although many studies reported reductions in pain intensity, <b>none of them linked cortical changes directly to clinical improvements</b>.&quot; <b>What it cannot support:</b> any effect size - a scoping review neither appraises quality nor pools - and any causal claim that the cortical change produced the pain relief.</span></li>
+      <li><span class="au">Sillevis R, Selva-Sarzo F, Weiss V, Sanchez Romero EA</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11898839/" target="_blank" rel="noopener">Do Audible Sounds During a Metacarpophalangeal and Metatarsophalangeal Thrust Manipulation Have an Impact on Intra-Articular Joint Space and Brainwave Activity?</a></span>. <span class="jo">Healthcare (Basel) 2025;13(5):554</span><span class="nt">Free full text. Twenty-five healthy subjects, ultrasound for joint distance plus portable EEG. The finding that settles the clinical question: <b>all subjects, regardless of audible sound, increased in joint space</b> after manipulation. The authors' own verdict is that &quot;the clinical usefulness of audible sounds remains questionable&quot;. <b>What it cannot support:</b> anything about the joints this series otherwise covers - these are second MCP and MTP joints in healthy people, and no pain, function or symptom outcome was measured. The two joints produced opposite EEG results, unexplained.</span></li>
+      <li><span class="au">Sillevis R, Unum J, Weiss V, Shamus E, Selva-Sarzo F</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11216216/" target="_blank" rel="noopener">The effect of a spinal thrust manipulation's audible pop on brain wave activity: a quasi-experimental repeated measure design</a></span>. <span class="jo">PeerJ 2024;12:e17622</span><span class="nt">Free full text. Fifty-seven asymptomatic subjects, prone T7 thrust, 10 seconds of EEG. The audible group showed significant change in frontal, parietal and occipital lobes <b>but not the temporal lobes</b> - so the pop is not simply being heard. <b>Read this alongside the entry above, not as independent confirmation of it: the two share a first author and method, and are one research line.</b> <b>What it cannot support:</b> a causal claim about the sound, since group allocation was by whether a pop happened rather than by randomisation; or anything clinical, since no symptom outcome was recorded.</span></li>
+      <li><span class="au">Cook CE, Keter D, Napadow V, Barbe MF, Perle SM, Bent J, Learman K, Reed WR</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13425405/" target="_blank" rel="noopener">Manual therapy treatment mechanisms are complex: Challenges and a call to action</a></span>. <span class="jo">Complement Ther Med 2026;100:103393</span><span class="nt">Free full text, and <b>a commentary, not a study</b>. It is cited once, for the position its named authors take: that measuring the mechanisms of force-based manipulation is highly complex because those mechanisms interact with unmeasured variables, are influenced by time, clinician, environment &quot;and a litany of other mediators&quot;, and vary between people. <b>What it cannot support:</b> anything at all about whether mobilization works. It contains no participants, no data and no effect size.</span></li>
+    </ol>
+
+    <h3>Harms</h3>
+    <ol>
+      <li><span class="au">Daniels CJ, Farabaugh RJ, Salsbury SA, Anderson KR, Kleppe MJ, Whalen WM, Walters SA, Killinger LZ, Schielke AL</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13104207/" target="_blank" rel="noopener">Adverse events among older adults receiving chiropractic spinal manipulation and related treatments: an updated systematic review</a></span>. <span class="jo">Chiropr Man Therap 2026;34(1):15</span><span class="nt">Free full text. Adults over 55; 25 articles from 6 RCTs, 4 observational studies and 15 case reports. <b>412 study-related adverse events, 9 severe, none catastrophic</b>, mostly soreness, stiffness, numbness, weakness, fatigue, headache and dizziness; in the case reports, 6 severe events of which four were vascular, and none at all following soft tissue technique, exercise or other modalities. <b>What it cannot support - and this is the load-bearing limitation:</b> that catastrophic events are rare. The review <b>excluded administrative database studies</b>, and its authors name that as a limitation precisely because those designs &quot;may detect rare AEs&quot;. It also has no denominator, so 412 is a count and not an incidence, and several included studies lacked adverse-event definitions. <b>Funding:</b> partially funded by Clinical Compass and the NCMIC Foundation, both chiropractic organisations.</span></li>
+    </ol>
+
 
     <!-- These two are cited by the practice planner text above and apply to any joint.
          Keep them. -->
@@ -1299,10 +2084,28 @@ a{color:var(--accent)}
 
   </main>
   <footer>
-    <b>About this guide.</b> <span class="ver" style="margin:0 8px 0 0; padding:0; border:0">Version 1.0 &middot; MONTH YEAR.</span>
-    State plainly what is original and what is drawn from published sources, and name the
-    principal sources by author and year. Values marked as convention are named as such because
-    no research stands behind them; where no source could be traced at all, say so.
+    <b>About this guide.</b> <span class="ver" style="margin:0 8px 0 0; padding:0; border:0">Version 1.0 &middot; September 2026.</span>
+    The reasoning sequence, the section order and the wording are original. Every clinical value is
+    drawn from the sixteen published sources listed above and attributed where it appears -
+    principally Koc and colleagues 2025 for the force vocabulary, the hip recommendations and every
+    dose figure, Martin and colleagues 2021 for the ankle recommendations, and Nguyen and colleagues
+    2026 for the reliability of accessory glide assessment.
+    Every graded recommendation quoted here was taken from its guideline's front-matter Summary of
+    Recommendations and confirmed by position to be the <b>current</b> revision, because these
+    documents reprint superseded recommendations in their bodies.
+    <b>This guide flags more untraceable material than any other in the series, and does so
+    deliberately.</b> The Maitland and Kaltenborn grading systems, open- and close-packed positions,
+    the reproducibility of a nominated grade, amplitude and oscillation parameters, end-feel
+    categories, normative range values, a validated pre-treatment screening test, and any source
+    separating manipulation from mobilization by outcome are each marked
+    <b>no traceable source</b> - not because they were not searched for, but because the searches
+    returned nothing that defines, derives or tests them. The concave-convex rule is marked
+    <b>Contested</b> on the strength of a single paper whose authors ask only that it be reviewed.
+    Three constraints were carried deliberately into the writing: the two cavitation studies share a
+    first author and are presented as one research line rather than two findings; the Cook
+    commentary is cited only for the position it takes and never for an effect; and every &quot;grade&quot;
+    in this guide names the scale it belongs to, because Kellgren-Lawrence radiographic severity and
+    Maitland mobilization grades share a numeral and nothing else.
     Verify against current literature before letting any of it weight a clinical decision.
   </footer>
 </div>
@@ -1348,7 +2151,7 @@ a{color:var(--accent)}
   var boxes = document.querySelectorAll('input[data-ck]');
   var countEl = document.getElementById('ckcount');
   var fillEl = document.getElementById('ckfill');
-  var KEY = 'JOINT-comp-v1';
+  var KEY = 'mobilization-comp-v1';
   var state = {};
   try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { state = {}; }
 
@@ -1372,7 +2175,7 @@ a{color:var(--accent)}
 (function(){
   var body = document.body;
   var globalBtn = document.getElementById('recallBtn');
-  var KEY = 'JOINT-recall-v3';
+  var KEY = 'mobilization-recall-v3';
   var groups = [];   // one per table or grid: {sec, cols:[{id, chip, cells}]}
 
   function wrap(el){
@@ -1505,7 +2308,7 @@ a{color:var(--accent)}
   });
 
   // ---- what you got wrong ----
-  var MKEY = 'JOINT-missed-v1';
+  var MKEY = 'mobilization-missed-v1';
   var missed = {};
   try {
     (JSON.parse(localStorage.getItem(MKEY) || '[]') || []).forEach(function(id){ missed[id] = 1; });
@@ -1818,7 +2621,7 @@ a{color:var(--accent)}
   try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e) {}
   if(!saved){
     var legacy = null;
-    try { legacy = localStorage.getItem('JOINT-recall-v2') || localStorage.getItem('JOINT-recall-v1'); } catch(e) {}
+    try { legacy = localStorage.getItem('mobilization-recall-v2') || localStorage.getItem('mobilization-recall-v1'); } catch(e) {}
     if(legacy === '1') saved = { secs: sections.map(function(s){ return s.id; }), cols: [] };
     else if(legacy){ try { saved = { secs: JSON.parse(legacy) || [], cols: [] }; } catch(e) {} }
   }
@@ -1865,7 +2668,7 @@ a{color:var(--accent)}
 
 
 (function(){
-  var KEY = 'JOINT-add-v1';
+  var KEY = 'mobilization-add-v1';
   var store = {};
   try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { store = {}; }
   function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} render(); }
@@ -2511,7 +3314,7 @@ a{color:var(--accent)}
 (function(){
   var host = document.getElementById('planner');
   if(!host) return;
-  var MKEY = 'JOINT-missed-v1';
+  var MKEY = 'mobilization-missed-v1';
 
   var METHOD = {
     number: {

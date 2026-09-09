@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="light dark">
-<title>JOINT Examination Playbook</title>
+<title>Hip Examination Playbook</title>
 <style>
   html{color-scheme:light dark}
   body{margin:0; font:14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif}
@@ -784,11 +784,13 @@ a{color:var(--accent)}
 <a class="skip" href="#main">Skip to the guide</a>
 <nav>
   <div class="navrow">
+    <a href="/student/playbooks" title="Back to Limbic Playbooks">&larr; Limbic</a>
+    <span class="navdiv" aria-hidden="true"></span>
     <button class="recall-toggle" id="recallBtn" aria-pressed="false" title="Blur every blurrable area on the page - press again to clear it">Recall all</button>
     <span class="navdiv" aria-hidden="true"></span>
     <select id="navpick" aria-label="Jump to a section"></select>
     <div class="navlinks">
-    <a href="#checklist">32 Items</a>
+    <a href="#checklist">12 Items</a>
     <a href="#numbers">Numbers</a>
     <a href="#posture">Posture</a>
     <a href="#arom">AROM</a>
@@ -813,9 +815,15 @@ a{color:var(--accent)}
 <div class="wrap">
   <header class="masthead">
     <div>
-      <p class="eyebrow">Discipline &middot; scope of the guide <span class="ver">Version 1.0 &middot; MONTH YEAR</span></p>
-      <h1>JOINT Examination Playbook</h1>
-      <p>One paragraph on what this guide is. Keep the last sentence:
+      <p class="eyebrow">Physical therapy &middot; the whole hip screen, in order <span class="ver">Version 1.0 &middot; September 2026</span></p>
+      <h1>Hip Examination Playbook</h1>
+      <p>A full hip screen in the order you would perform it, with every value marked for what it is
+      worth. Most of what this guide has to say is that the hip examination is weaker than it is
+      taught to be - the Ober test does not test the iliotibial band, the capsular pattern is not a
+      pattern, and a standardised examination for impingement is right about half the time - and
+      each of those is quoted from a paper rather than asserted. Where nothing supports a taught
+      number, the guide says so in place instead of borrowing the confident voice of the values
+      that are sourced.
       <b>This is a study aid for examination preparation, not a clinical reference</b> - check any
       value against current literature before it weights a decision about a patient.</p>
     </div>
@@ -860,31 +868,107 @@ a{color:var(--accent)}
 
   <section id="checklist">
     <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2><span class="note">check-off saves in this browser</span></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">The order is the content. A hip screen that opens with special tests has already skipped the two questions that decide whether those tests mean anything.</p>
     
     <div class="tablewrap">
       <table class="check-table">
         <colgroup><col style="width:4%"><col style="width:5%"><col style="width:17%"><col style="width:37%"><col style="width:37%"></colgroup>
         <thead><tr><th scope="col"></th><th scope="col">#</th><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Example item"></td><td class="idx">1</td>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Lumbar and SI screen"></td><td class="idx">1</td>
+        <td class="name">Lumbar and SI screen</td>
+        <td>Clear the lumbar spine and sacroiliac joint before examining the hip: quadrant, segmental mobility, provocation cluster.</td>
+        <td data-imp="lumbar|sacroiliac|referred|screen">
+          <b>Do this first.</b> Hip and lumbar pain refer into each other's territory. A hip examination performed on referred pain will be normal, reassuring and wrong. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="2" aria-label="Mark done: Red flag screen"></td><td class="idx">2</td>
+        <td class="name">Red flag screen</td>
+        <td>History and observation for fracture, slipped capital femoral epiphysis, avascular necrosis, septic arthritis and malignancy.</td>
+        <td data-imp="slipped capital femoral|adolescent|avascular|malignancy">
+          <b>SCFE is the one that gets missed.</b> An adolescent with knee pain and a limp needs the hip examined. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="3" aria-label="Mark done: Classify from the history"></td><td class="idx">3</td>
+        <td class="name">Classify from the history</td>
+        <td>Decide, before you touch: intra-articular, extra-articular, or referred.</td>
+        <td data-imp="intra-articular|extra-articular|classify|history">
+          <b>This chooses your tests.</b> Running a battery on everyone produces false positives at whatever rate the prevalence dictates. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="4" aria-label="Mark done: Resting state"></td><td class="idx">4</td>
+        <td class="name">Resting state</td>
+        <td>Standing posture and pelvic alignment, leg length, muscle bulk.</td>
+        <td data-imp="pelvic alignment|resting|posture|bulk">
+          <b>The baseline every later finding is compared against.</b> Also the part with least measurement behind it. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="5" aria-label="Mark done: What they can do alone"></td><td class="idx">5</td>
+        <td class="name">What they can do alone</td>
+        <td>Gait, single-leg stance, squat, active range in all planes, then a functional composite.</td>
+        <td data-imp="chair stand|timed up-and-go|functional|walk">
+          <b>Prefer the measures the guideline names.</b> 6-minute walk, 30-second chair stand, timed up-and-go, timed stair performance, all Grade A. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="6" aria-label="Mark done: What you do to them"></td><td class="idx">6</td>
+        <td class="name">What you do to them</td>
+        <td>Passive range against active, end feel, capsular pattern, accessory motion.</td>
+        <td data-imp="passive range|end feel|accessory|active">
+          <b>Passive exceeding active</b> points to weakness or inhibition; passive matching a limited active points to joint or true shortening. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="7" aria-label="Mark done: What is short"></td><td class="idx">7</td>
+        <td class="name">What is short</td>
+        <td>Thomas, Ober, hamstring length, piriformis length.</td>
+        <td data-imp="Thomas|Ober|piriformis|hamstring">
+          <b>Two of these do not do what their names say.</b> See sections 05. <span class="src">Willett 2016</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="8" aria-label="Mark done: What is weak"></td><td class="idx">8</td>
+        <td class="name">What is weak</td>
+        <td>Abductors, extensors, flexors, adductors, graded 0-5 - and weakness separated from inhibition.</td>
+        <td data-imp="abductor|adduction|impairment|graded">
+          <b>Test all six directions.</b> IR, ER, flexion, extension, abduction, adduction is the Grade A impairment set. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="9" aria-label="Mark done: Where is it"></td><td class="idx">9</td>
+        <td class="name">Where is it</td>
+        <td>Bony then soft-tissue palpation: greater trochanter, adductor origin, ischial tuberosity.</td>
+        <td data-imp="greater trochanter|ischial|adductor origin|palpat">
+          <b>Palpate last, not first.</b> Palpating first tells you where a patient is tender; palpating after movement tells you whether that tenderness explains anything. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="10" aria-label="Mark done: What is it"></td><td class="idx">10</td>
+        <td class="name">What is it</td>
+        <td>Special tests by category, interpreted as likelihood ratios, clustered from your hypothesis.</td>
+        <td data-imp="likelihood ratio|impingement|cluster|accuracy">
+          <b>Expect them to screen, not confirm.</b> Mean diagnostic accuracy of a standardised hip examination for impingement was 45.5%. <span class="src">Owusu-Akyaw 2019</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="11" aria-label="Mark done: What you call it"></td><td class="idx">11</td>
+        <td class="name">What you call it</td>
+        <td>A movement diagnosis, the syndrome it matches, and where the relative stiffness sits.</td>
+        <td data-imp="movement diagnosis|syndrome|stiffness|direction">
+          <b>Name the movement fault and its direction</b>, not only the tissue. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="12" aria-label="Mark done: What you do"></td><td class="idx">12</td>
+        <td class="name">What you do</td>
+        <td>Dose from irritability, match intervention to impairment, mobilise with a stated rationale, name the reassessment marker before treating.</td>
+        <td data-imp="irritability|reassessment|FABER|marker">
+          <b>The guideline's irritability measure at the hip is the FABER test.</b> <span class="src">Koc 2025</span>
         </td>
       </tr>
         </tbody>
@@ -895,108 +979,198 @@ a{color:var(--accent)}
 
   <section id="numbers">
     <div class="sechead"><span class="secnum">02</span><h2>Numbers worth knowing cold</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">This is the section that separates a guide from a revision card. Most hip numbers a student memorises have no traceable primary source, and the two that do are diagnostic thresholds rather than norms. Both facts are more useful than the numbers.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Normal hip ROM by plane</td>
+        <td>Goniometry, each plane, compared to the unaffected side.</td>
+        <td data-imp="goniometr|normative|plane|convention">
+          <b>Every circulating figure is convention.</b> <span class="prov c">Convention</span> Flexion 120&deg;, abduction 45&deg;, IR 45&deg; - taught everywhere, traceable nowhere free. The classic tables are paywalled at the table. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why that matters more than the number</td>
+        <td>Compare any textbook figure against a population sample before trusting it.</td>
+        <td data-imp="probability sample|textbook|normative|differ">
+          Measured in a national probability sample (NHANES I; 1,892 subjects, analysis of 1,313 white and 370 black subjects), normative values <b>differ from textbook estimates by as much as 18&deg;</b>. <span class="src">Roach 1991</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Does hip range fall with age?</td>
+        <td>Compare age groups rather than assuming decline.</td>
+        <td data-imp="oldest|extension|ageing|decline">
+          <b>Barely.</b> Differences between youngest and oldest age groups are "generally small, ranging from 3 to 5 degrees". Only <b>hip extension</b> declines by more than 20% of its arc. To age 74, substantial loss is abnormal, not ageing. <span class="src">Roach 1991</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The one ROM figure you can state as sourced</td>
+        <td>Passive hip internal rotation, adults over 50.</td>
+        <td data-imp="internal rotation|diagnostic criteria|painless|threshold">
+          <b>Hip IR less than 24&deg;</b>, or IR and flexion 15&deg; less than the painless side, is part of the Grade A diagnostic criteria for hip OA. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The caveat that makes it usable</td>
+        <td>Read it as a criterion, not a norm.</td>
+        <td data-imp="criterion|threshold|normal value|over 50">
+          That is a <b>diagnostic threshold in adults over 50</b>, not a normal value. A 25-year-old with 20&deg; of IR has not met a criterion - they have a hip that needs explaining.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Full Grade A criteria for hip OA</td>
+        <td>History plus passive IR.</td>
+        <td data-imp="morning stiffness|weight-bearing|anterior|criteria">
+          Adults <b>over 50</b> with moderate anterior or lateral hip pain <b>on weight-bearing</b>; morning stiffness <b>under 1 hour</b>; <b>IR &lt; 24&deg;</b> or IR and flexion 15&deg; less than the painless side; and/or increased pain with <b>passive IR</b>. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">FADIR - how good is it?</td>
+        <td>Flexion, adduction, internal rotation.</td>
+        <td data-imp="pooled sensitivity|screening accuracy|adduction|odds ratio">
+          Pooled sensitivity <b>0.94 (95% CI 0.90-0.97) to 0.99 (0.98-1.00)</b>; DOR <b>5.71 (0.84-38.86) to 7.82 (1.06-57.84)</b>. The authors' verdict: it possesses <b>"only screening accuracy"</b>. <span class="src">Reiman 2015</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What that means at the bedside</td>
+        <td>Interpret direction, not presence.</td>
+        <td data-imp="negative|impingement|interval|settles">
+          A negative FADIR argues meaningfully <b>against</b> impingement. A positive one settles nothing - the DOR intervals include or nearly include 1. <span class="src">Reiman 2015</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">FADIR specificity</td>
+        <td>Not reported.</td>
+        <td data-imp="specificity|meta-analysis|reports|invented">
+          <b>There is none to quote.</b> <span class="src">no traceable source</span> The meta-analysis reports sensitivity and DOR only. Any specificity written beside those sensitivities has been invented. <span class="src">Reiman 2015</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Flexion-internal rotation test</td>
+        <td>Hip flexed, passive internal rotation.</td>
+        <td data-imp="flexion-internal|pooled|screening|rotation">
+          Pooled sensitivity <b>0.96 (95% CI 0.81-0.99)</b>; DOR <b>8.36 (0.41-171.3)</b>. Same conclusion: screening only. <span class="src">Reiman 2015</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">How much evidence is behind all that</td>
+        <td>Read the quality, not just the number.</td>
+        <td data-imp="high quality|candidate|substantial|decision-making">
+          21 candidate articles, <b>one of high quality</b>; nine entered the meta-analysis. Few hip tests "have been investigated in enough studies of substantial quality to direct clinical decision-making". <span class="src">Reiman 2015</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">FABER accuracy</td>
+        <td>Flexion, abduction, external rotation - Patrick's test.</td>
+        <td data-imp="Patrick|irritability|abduction|documenting">
+          <b>Not established.</b> <span class="src">no traceable source</span> Absent from the FAI meta-analysis and from the guideline's evidence - while the guideline still recommends documenting it at Grade A, filed under <b>joint irritability</b>, not diagnosis. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">How well does the hip exam perform overall?</td>
+        <td>Compare the whole examination against a reference diagnosis.</td>
+        <td data-imp="self-examination|standardised|clinician|accuracy">
+          In 75 patients examined for FAIS, mean diagnostic accuracy was <b>53.6%</b> for a patient self-examination and <b>45.5%</b> for a standardised clinician examination (p=0.02) - both called low by the authors. <span class="src">Owusu-Akyaw 2019</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hip OA clinical prediction rule</td>
+        <td>Five examination variables; count how many are present.</td>
+        <td data-imp="prediction rule|unilateral|radiographic|probability">
+          With at least 4 of 5 present, <b>+LR 24.3 (95% CI 4.4-142.1)</b>, raising probability to 91%. From 72 patients with unilateral hip pain, 21 (29%) with radiographic OA. Preliminary and unvalidated by the authors' own statement. <span class="src">Sutlive 2008</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The five variables themselves</td>
+        <td>Not obtainable.</td>
+        <td data-imp="variables|abstract|validation|restates">
+          <b>They are not in the free abstract.</b> <span class="src">no traceable source</span> The 2025 guideline does not cite this rule and no free validation restates them. Quote the rule's performance; do not list variables you cannot read.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Trendelenburg sign accuracy</td>
+        <td>Single-leg stance; watch the unsupported hemipelvis.</td>
+        <td data-imp="Trendelenburg|symptomatic|paralysis|specificity">
+          <span class="prov x">Contested</span> Against MRI in 24 symptomatic patients: sensitivity <b>72.7%</b>, specificity <b>76.9%</b>, best of three signs. <span class="src">Bird 2001</span> But under experimental paralysis of gluteus medius and minimus, <b>only 1 of 10</b> healthy adults produced the sign. <span class="src">Schmid 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Trendelenburg reliability</td>
+        <td>Same observer, repeated.</td>
+        <td data-imp="intraobserver|kappa|subset|retested">
+          Intraobserver kappa <b>0.676</b>, 95% CI <b>0.270-1.08</b> - an interval running from poor to uninformative. Measured in a <b>12-patient subset</b> of the 24, retested at 2 months. <span class="src">Bird 2001</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Thomas test reliability</td>
+        <td>Supine at the table edge, contralateral hip held to flatten the lumbar spine.</td>
+        <td data-imp="intrarater|interrater|hip-flexor|pooled">
+          Pooled across five hip-flexor tests: intrarater ICC <b>0.90 (0.85-0.95)</b>, interrater <b>0.80 (0.71-0.88)</b>. But the <b>classic Thomas test has the lowest interrater reliability of any of them: ICC 0.62 (0.46-0.78)</b>. <span class="src">González-de-la-Flor 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The trap in that number</td>
+        <td>Check what the pooled figure pooled.</td>
+        <td data-imp="headline|inverts|finding|pooled">
+          The headline 0.90 is across five different tests. Quoting it as "the Thomas test's reliability" inverts the paper's own finding about that test. <span class="src">González-de-la-Flor 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Imaging, if you are wondering</td>
+        <td>Referral decision, not a bedside test.</td>
+        <td data-imp="arthrography|labral|pretest|generalisability">
+          CT arthrography is most accurate for labral tear: SN <b>0.91</b>, SP <b>0.89</b>, +LR <b>6.28</b>, -LR <b>0.11</b>. But pretest probability was <b>81%</b> for labral tear and <b>74%</b> for FAI, which the authors say limits generalisability sharply. <span class="src">Reiman 2017</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Leg-length measurement reliability</td>
+        <td>ASIS to medial malleolus, both sides.</td>
+        <td data-imp="malleolus|tape|reliability|record">
+          <b>None available.</b> <span class="src">no traceable source</span> No free clinical tape-measure reliability study was found. Measure it, record it, and attach no confidence figure you cannot support.
         </td>
       </tr>
         </tbody>
       </table>
     </div>
-
-    <!-- WORKED FIGURE. Three panels comparing a normal state against two faults - the
-         "draw the difference" pattern. Conventions, all of which the machinery relies on:
-         · currentColor for structure, so it themes in light and dark automatically
-         · var(--accent) for the thing being measured, var(--hi) for the fault
-         · role="img" + aria-label carrying the same claim the picture makes
-         · <text> labels are hidden by Recall; click one to lift it. Keep them short -
-           whole sentences belong in the figcaption, not the drawing
-         · .figgrid below the svg holds the legend as reflowing HTML, so it stacks on a
-           phone instead of overlapping the drawing
-         · if the drawing has dead space beside it at desktop width, swap the viewBox at
-           narrow widths with a small matchMedia script rather than letting it shrink -->
-    <figure>
-      <p class="figtitle">What the figure claims, in one line</p>
-      <svg viewBox="0 0 620 210" role="img" aria-label="Say here, in a sentence, exactly what a reader who cannot see the drawing would need to know.">
-        <defs>
-          <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"></path>
-          </marker>
-        </defs>
-
-        <!-- panel 1 - the normal state -->
-        <line x1="70" y1="40" x2="70" y2="185" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".55"></line>
-        <circle cx="95" cy="110" r="32" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
-        <path d="M 70 82 A 32 32 0 0 0 70 138 Z" fill="var(--accent)" fill-opacity=".2"></path>
-        <text class="mono" x="95" y="176" text-anchor="middle">NORMAL</text>
-
-        <!-- panel 2 - the fault, drawn as the same picture with one thing changed -->
-        <line x1="290" y1="40" x2="290" y2="185" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".55"></line>
-        <circle cx="272" cy="110" r="32" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
-        <path d="M 290 82 A 32 32 0 1 0 290 138 Z" fill="var(--hi)" fill-opacity=".2"></path>
-        <line x1="330" y1="110" x2="380" y2="110" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arw)"></line>
-        <text class="mono" x="272" y="176" text-anchor="middle" fill="var(--hi)">FAULT</text>
-
-        <!-- panel 3 - the measurement that separates them -->
-        <line x1="470" y1="70" x2="470" y2="150" stroke="var(--accent)" stroke-width="1.5"></line>
-        <line x1="464" y1="70" x2="476" y2="70" stroke="var(--accent)" stroke-width="1.5"></line>
-        <line x1="464" y1="150" x2="476" y2="150" stroke="var(--accent)" stroke-width="1.5"></line>
-        <text class="mono" x="484" y="114" fill="var(--accent)">the value</text>
-      </svg>
-      <div class="figgrid c3">
-        <div><span class="lbl">Normal</span><span class="t2">What you should see, and against what reference.</span></div>
-        <div><span class="lbl">Fault</span><span class="t2">The one thing that changed, named the way a student will be asked for it.</span></div>
-        <div><span class="lbl">The value</span><span class="t2">The threshold, with its provenance - most of these are convention.</span></div>
-      </div>
-      <figcaption><b>Lead the caption with what the picture shows.</b> Then the sentence a reader needs that the drawing cannot carry - where the number comes from, or why the taught version differs from the measured one.</figcaption>
-    </figure>
   </section>
 
   <section id="posture">
-    <div class="sechead"><span class="secnum">03</span><h2>Posture and what it obligates</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">03</span><h2>Posture and resting alignment</h2></div>
+    <p class="lede">The resting state is the baseline every later finding is compared against. It is also where the least has been measured, and saying so is the point.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Standing pelvic alignment</td>
+        <td>Observe iliac crest heights, ASIS and PSIS levels, and frontal-plane pelvic tilt.</td>
+        <td data-imp="iliac crest|asymmetry|pelvic tilt|observe">
+          <span class="prov c">Convention</span> The thresholds that make an asymmetry significant are not established in any free source. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Leg length - how to measure</td>
+        <td>Supine, ASIS to medial malleolus, same landmarks both sides. Record the difference.</td>
+        <td data-imp="supine|landmark|discrepancy|corroborate">
+          Technique is uncontroversial; its reliability is unrecorded. <span class="src">no traceable source</span> Treat an apparent discrepancy as a finding to corroborate, not a diagnosis.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Muscle bulk</td>
+        <td>Compare gluteal and quadriceps bulk side to side.</td>
+        <td data-imp="gluteal|quadriceps|atrophy|chronicity">
+          Atrophy is a <b>chronicity marker</b>, not a diagnosis. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What the resting state is actually for</td>
+        <td>Collect the risk factors the history did not surface.</td>
+        <td data-imp="risk factor|osteophyte|developmental|socioeconomic">
+          Hip OA risk factors include <b>reduced hip ROM, especially IR</b>, plus age, previous hip injury, developmental hip disorders, osteophytes, higher BMI, higher bone mass and lower socioeconomic status. <span class="src">Koc 2025</span>
         </td>
       </tr>
         </tbody>
@@ -1005,30 +1179,74 @@ a{color:var(--accent)}
   </section>
 
   <section id="arom">
-    <div class="sechead"><span class="secnum">04</span><h2>Active range of motion</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">04</span><h2>Active range and what they can do alone</h2></div>
+    <p class="lede">Active movement is where you learn what the hip is willing to do, and single-leg stance is the most informative ten seconds of the examination - as long as you do not over-read the sign it produces.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Active range, all planes</td>
+        <td>Flexion, extension, abduction, adduction, IR, ER, standing or supine as tolerated.</td>
+        <td data-imp="unaffected|compare|planes|reference">
+          Compare sides before comparing to a book. The norms are convention <span class="prov c">Convention</span> and the unaffected side is the better reference.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Which motion to weight most</td>
+        <td>Passive and active internal rotation.</td>
+        <td data-imp="internal rotation|criteria|risk factor|weight">
+          <b>IR.</b> It is in the Grade A diagnostic criteria for hip OA and is a listed risk factor for developing it. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Single-leg stance - what to watch</td>
+        <td>Time a ten-second hold. Watch for pelvic drop on the unsupported side and trunk lean over the stance leg.</td>
+        <td data-imp="single-leg|pelvic drop|Duchenne|stance">
+          Ten seconds is the tested interval. Pelvic drop is the Trendelenburg sign; lateral trunk lean is the Duchenne sign. <span class="src">Schmid 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What a positive Trendelenburg tells you</td>
+        <td>Interpret it as a chain failure, not a muscle.</td>
+        <td data-imp="frontal-plane|localise|gluteus maximus|paralysis">
+          <b>That frontal-plane pelvic control has failed. It does not localise to gluteus medius.</b> Under paralysis of gluteus medius and minimus, 5 of 10 could not hold ten seconds but only 1 showed the sign; after gluteus maximus paralysis 5 of 10 also failed, 2 with a Duchenne sign. <span class="src">Schmid 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">So is the sign useful?</td>
+        <td>Use it as a screen, then look for why.</td>
+        <td data-imp="symptomatic|experimental|tear|screen">
+          <span class="prov x">Contested</span> In symptomatic patients it was the most accurate and reliable of three signs for a gluteus medius tear (Sn 72.7%, Sp 76.9%). <span class="src">Bird 2001</span> In an experimental model it barely responded to paralysis of the muscle it names. <span class="src">Schmid 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Gait</td>
+        <td>Observe for antalgia, trunk lean, pelvic drop and reduced stance time.</td>
+        <td data-imp="antalgia|trunk lean|stance time|observ">
+          <span class="prov c">Convention</span> No free source gives accuracy figures for gait observation at the hip. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Squat</td>
+        <td>Depth, symmetry, and whether pain reproduces.</td>
+        <td data-imp="depth|symmetry|reproduc|squat">
+          <span class="prov c">Convention</span> Useful as a reassessment marker precisely because it is reproducible within a session.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Functional composites</td>
+        <td>Step-down and sit-to-stand, then a timed measure.</td>
+        <td data-imp="chair stand|stair|timed up-and-go|composite">
+          Prefer the Grade A measures: <b>6-minute walk, 30-second chair stand, timed up-and-go, timed stair performance</b>. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Balance and falls</td>
+        <td>Screen anyone with reduced function or a fall history.</td>
+        <td data-imp="Berg Balance|four-square|fall|Geriatrics">
+          <b>Grade A.</b> Berg Balance Scale, four-square step test, timed single-leg stance. Fall-risk management per APTA Geriatrics is Grade F. <span class="src">Koc 2025</span>
         </td>
       </tr>
         </tbody>
@@ -1037,62 +1255,246 @@ a{color:var(--accent)}
   </section>
 
   <section id="prom">
-    <div class="sechead"><span class="secnum">05</span><h2>PROM, end feel and muscle length</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">05</span><h2>Passive range, end feel and length</h2></div>
+    <p class="lede">Two of the best-known tests in this section do not do what their names say. The Ober test does not test the iliotibial band, and the hip capsular pattern is not a pattern. Both are quotable findings, and both are usually taught the other way round.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Passive against active</td>
+        <td>Take each plane passively and compare to the active range.</td>
+        <td data-imp="passive|inhibition|shortening|exceed">
+          Passive exceeding active points to <b>weakness or inhibition</b>; passive matching a limited active points to the <b>joint or true shortening</b>. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">End feel</td>
+        <td>Note what stops the movement: capsular, bony, springy, empty, or guarding.</td>
+        <td data-imp="capsular|springy|guarding|taxonomy">
+          <span class="prov c">Convention</span> The taxonomy is Cyriax's and is taught universally; no free source establishes its reliability at the hip. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The capsular pattern of the hip</td>
+        <td>Compare limitation across medial rotation, flexion and abduction.</td>
+        <td data-imp="medial rotation|distinct pattern|Cyriax|valid">
+          <b>It does not hold.</b> In 200 patients the pattern Cyriax describes "was not present as a distinct pattern" in hip OA, and "cannot be regarded as a valid test for the diagnosis of OA of the hip or knee". <span class="src">Bijl 1998</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What that does and does not mean</td>
+        <td>Separate the diagnostic claim from the descriptive one.</td>
+        <td data-imp="diagnostic|non-arthritic|description|failed">
+          It was tested as a <b>diagnostic</b> for OA and failed as one. That is not evidence about non-arthritic stiffness, and it does not stop the pattern being a useful description of what you found.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Knee, for contrast</td>
+        <td>Note that the same study tested both joints.</td>
+        <td data-imp="subgroup|indication|specific|blanket">
+          The same study found an indication of a knee pattern (flexion and extension) in subgroups - so the finding is specific to the hip, not a blanket rejection. <span class="src">Bijl 1998</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Accessory motion</td>
+        <td>Long-axis distraction, lateral distraction, anterior and posterior glide. Grade resistance and compare sides.</td>
+        <td data-imp="distraction|glide|resistance|accessory">
+          <span class="prov c">Convention</span> Graded resistance is universally taught; no free reliability figure at the hip is recorded here. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Thomas test - what it is for</td>
+        <td>Supine at the table edge, contralateral hip held. Read thigh position for iliopsoas, knee angle for rectus femoris, abduction drift for TFL.</td>
+        <td data-imp="iliopsoas|rectus femoris|abduction drift|contralateral">
+          The technique is not the problem; the agreement is. <span class="prov c">Convention</span> for the interpretation thresholds.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Thomas test - how far to trust it</td>
+        <td>Use one version consistently.</td>
+        <td data-imp="interrater|heterogeneity|hip-flexor|lowest">
+          Pooled across five hip-flexor tests intrarater ICC is <b>0.90</b> and interrater <b>0.80</b>, but the <b>classic Thomas test's interrater ICC is 0.62 (0.46-0.78)</b>, the lowest of any test in the review. Overall heterogeneity was I&sup2; 99% intrarater and 98.3% interrater. <span class="src">González-de-la-Flor 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Which version to use</td>
+        <td>The modified Thomas test, and the same version every time.</td>
+        <td data-imp="modified|methodological|standardised|protocol">
+          The review's own conclusion is that the variability is <b>methodological</b> and calls for standardised protocols. <span class="src">González-de-la-Flor 2026</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Is any of it valid?</td>
+        <td>Ask what the test was validated against.</td>
+        <td data-imp="agreement|validated|flexor length|measures">
+          <b>Unknown.</b> <span class="src">no traceable source</span> The review measures agreement, not whether these tests measure hip flexor length at all.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Ober test - the received version</td>
+        <td>Side-lying, hip abducted and extended, knee flexed or straight, thigh lowered into adduction.</td>
+        <td data-imp="side-lying|iliotibial|adduction|tightness">
+          Taught as a test of <b>iliotibial band</b> tightness. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Ober test - what a cadaveric study found</td>
+        <td>Sequential transection: ITB, then gluteus medius and minimus, then hip capsule.</td>
+        <td data-imp="transection|cadaveric|significant|capsule">
+          <b>Transecting the ITB produced no significant change in hip adduction</b> in either version. Significant change came only from cutting gluteus medius/minimus and the hip capsule (both P &lt; .0001). <span class="src">Willett 2016</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The numbers</td>
+        <td>Inclinometer at the thigh, each condition.</td>
+        <td data-imp="inclinometer|intact|modified|adduction">
+          Modified Ober mean adduction: intact <b>4.28&deg;</b> &rarr; <b>5.00&deg;</b> after ITB transection &rarr; <b>11.20&deg;</b> after gluteus medius/minimus &rarr; <b>13.20&deg;</b> after capsule. Ober: intact <b>-2.90&deg;</b> &rarr; <b>-2.20&deg;</b> &rarr; <b>6.50&deg;</b> &rarr; <b>9.53&deg;</b>. <b>The ITB step is the one that does nothing.</b> <span class="src">Willett 2016</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The authors' conclusion</td>
+        <td>Read it verbatim before repeating the textbook.</td>
+        <td data-imp="refute|hypothesis|proximal|structures">
+          The findings "refute the hypothesis that the ITB plays a role in limiting hip adduction during either version of the Ober test" and the test "assesses tightness of structures proximal to the hip joint &hellip; rather than the ITB". <span class="src">Willett 2016</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What to say to a patient, then</td>
+        <td>Report the structure, not the band.</td>
+        <td data-imp="restriction|proximal|report|band">
+          That the test showed restriction <b>proximal to the hip</b> - gluteus medius and minimus, and capsule - not a tight ITB.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Limits of that evidence</td>
+        <td>Weigh the design before generalising.</td>
+        <td data-imp="cadaveric|limbs|symptomatic|conditions">
+          Cadaveric, sequential transection (Ober n=28, modified Ober n=34, 18 limbs through all conditions). It says nothing about living, symptomatic hips or about reliability. <span class="src">Willett 2016</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hamstring length</td>
+        <td>Passive straight-leg raise, or 90/90 knee extension.</td>
+        <td data-imp="straight-leg|knee extension|threshold|passive">
+          <span class="prov c">Convention</span> No free source gives a threshold or a reliability figure at the hip. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Piriformis length</td>
+        <td>Hip flexed, then adducted and internally rotated.</td>
+        <td data-imp="piriformis|internally rotated|impingement|position">
+          <span class="prov c">Convention</span> Note that this position <b>is also FADIR</b> - a positive may be impingement rather than muscle length.
         </td>
       </tr>
         </tbody>
       </table>
     </div>
+
+    <figure>
+      <p class="figtitle">Cutting the band is the step that changes nothing</p>
+      <svg viewBox="0 0 620 300" role="img" aria-label="Hip adduction measured through four sequential cadaveric conditions. From intact to iliotibial band transected, adduction changes by less than one degree in both versions of the Ober test. Cutting gluteus medius and minimus, and then the hip joint capsule, each move it by several degrees. The band is not what limits the test.">
+        <line x1="96" y1="56" x2="96" y2="236" stroke="currentColor" stroke-width="1" opacity=".45"></line>
+        <line x1="96" y1="196" x2="580" y2="196" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".4"></line>
+        <text class="mono" x="88" y="199" text-anchor="end" opacity=".65">0&deg;</text>
+
+        <path d="M140,153.2 L275,146" fill="none" stroke="var(--hi)" stroke-width="3.4" stroke-linecap="round"></path>
+        <path d="M275,146 L410,84 L545,64" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <circle cx="140" cy="153.2" r="3.6" fill="var(--accent)"></circle>
+        <circle cx="275" cy="146" r="3.6" fill="var(--accent)"></circle>
+        <circle cx="410" cy="84" r="3.6" fill="var(--accent)"></circle>
+        <circle cx="545" cy="64" r="3.6" fill="var(--accent)"></circle>
+
+        <path d="M140,225 L275,218" fill="none" stroke="var(--hi)" stroke-width="3.4" stroke-linecap="round"></path>
+        <path d="M275,218 L410,131 L545,100.7" fill="none" stroke="var(--d2)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <circle cx="140" cy="225" r="3.6" fill="var(--d2)"></circle>
+        <circle cx="275" cy="218" r="3.6" fill="var(--d2)"></circle>
+        <circle cx="410" cy="131" r="3.6" fill="var(--d2)"></circle>
+        <circle cx="545" cy="100.7" r="3.6" fill="var(--d2)"></circle>
+
+        <text class="mono" x="140" y="143.2" text-anchor="middle">4.28&deg;</text>
+        <text class="mono" x="275" y="136" text-anchor="middle">5.00&deg;</text>
+        <text class="mono" x="410" y="74" text-anchor="middle">11.20&deg;</text>
+        <text class="mono" x="545" y="54" text-anchor="middle">13.20&deg;</text>
+
+        <text class="mono" x="140" y="243" text-anchor="middle">&minus;2.90&deg;</text>
+        <text class="mono" x="275" y="236" text-anchor="middle">&minus;2.20&deg;</text>
+        <text class="mono" x="410" y="121" text-anchor="middle">6.50&deg;</text>
+        <text class="mono" x="545" y="90.7" text-anchor="middle">9.53&deg;</text>
+
+        <path d="M207,150 L207,172" stroke="var(--hi)" stroke-width="1" opacity=".55" fill="none"></path>
+        <text class="mono" x="207" y="185" text-anchor="middle" fill="var(--hi)">band cut: no change</text>
+
+        <text class="mono" x="140" y="278" text-anchor="middle" opacity=".75">intact</text>
+        <text class="mono" x="275" y="278" text-anchor="middle" opacity=".75">ITB cut</text>
+        <text class="mono" x="410" y="278" text-anchor="middle" opacity=".75">glut med/min</text>
+        <text class="mono" x="545" y="278" text-anchor="middle" opacity=".75">+ capsule</text>
+      </svg>
+      <div class="figgrid c3">
+        <div><b>Modified Ober</b> &mdash; the upper line, n=34.</div>
+        <div><b>Ober</b> &mdash; the lower line, n=28. Starts in relative abduction, so its early values are negative.</div>
+        <div><b>The red segment</b> is the iliotibial band being cut. It is the step the test is named for, and the only one that does not move the number.</div>
+      </div>
+      <figcaption><b>Transecting the iliotibial band moved hip adduction by less than a degree in both versions of the test; cutting gluteus medius and minimus, then the capsule, moved it several degrees each.</b> Both differences against intact were significant at P &lt; .0001, and the difference between the gluteal and capsular conditions was significant too. This is a cadaveric study of sequential transection, so it changes what a positive Ober <em>means</em> &mdash; restriction proximal to the hip rather than a tight band &mdash; and says nothing about living or symptomatic hips <span class="src">Willett 2016</span>.</figcaption>
+    </figure>
   </section>
 
   <section id="mmt">
-    <div class="sechead"><span class="secnum">06</span><h2>Manual muscle testing</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">06</span><h2>Strength</h2></div>
+    <p class="lede">The guideline tells you which strength to measure and at what grade of evidence. It does not give you norms, and no free source does either - so the comparison is the other side, and the change over time.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Which motions to test</td>
+        <td>All six, each side, same position each time.</td>
+        <td data-imp="impairment set|abduction|adduction|Grade">
+          <b>IR, ER, flexion, extension, abduction and adduction</b> - with passive ROM and the FABER test, this is the Grade A physical impairment set. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Abductors</td>
+        <td>Side-lying abduction against resistance with the pelvis stabilised, or hand-held dynamometry.</td>
+        <td data-imp="side-lying|dynamometry|stabilised|resistance">
+          Compare sides and record the value. <span class="prov c">Convention</span> for the manual grade; dynamometry gives you a number you can repeat.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Abductor strength norms</td>
+        <td>There is no table to check against.</td>
+        <td data-imp="normative|dataset|serial|difference">
+          <b>None available.</b> <span class="src">no traceable source</span> No free normative dataset was found. Use side-to-side difference and serial change.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Extensors</td>
+        <td>Prone hip extension with the knee flexed to bias gluteus maximus.</td>
+        <td data-imp="prone|gluteus maximus|hamstring|flexed">
+          <span class="prov c">Convention</span> Knee flexion reduces the hamstring contribution; the threshold at which that matters is not established.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Grading</td>
+        <td>0-5 manual muscle test.</td>
+        <td data-imp="manual muscle|grading|universal|reliability">
+          <span class="prov c">Convention</span> Universal, and no free reliability figure at the hip is recorded in this guide. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Weakness or inhibition?</td>
+        <td>Retest immediately after reducing pain.</td>
+        <td data-imp="inhibition|retest|improves|distinction">
+          A grade that improves at once was <b>inhibition</b>, not weakness. <span class="prov c">Convention</span> - a clinically important distinction the literature does not quantify.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why the distinction matters here</td>
+        <td>Connect it back to stance.</td>
+        <td data-imp="Trendelenburg|identical|separate|inhibition">
+          Because a Trendelenburg sign from pain inhibition and one from a gluteus medius tear look identical in stance, and the sign itself does not separate them. <span class="src">Schmid 2026</span>
         </td>
       </tr>
         </tbody>
@@ -1102,29 +1504,80 @@ a{color:var(--accent)}
 
   <section id="special">
     <div class="sechead"><span class="secnum">07</span><h2>Special tests</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">The honest summary is that the hip's special tests screen better than they confirm, and that one high-quality study underpins the whole literature. Interpreting them as likelihood ratios is not a nicety - it is the only way to use tests this weak without misleading yourself.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Run tests from a hypothesis</td>
+        <td>Classify from the history, then choose the category: impingement, labral, intra-articular, extra-articular.</td>
+        <td data-imp="hypothesis|labral|prevalence|category">
+          A battery run on everyone produces false positives at the rate the prevalence dictates. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">FADIR / anterior impingement</td>
+        <td>Hip flexed to 90&deg;, then adducted and internally rotated to symptom reproduction.</td>
+        <td data-imp="anterior impingement|pooled|screening|internally">
+          Pooled SN <b>0.94-0.99</b>; DOR <b>5.71-7.82</b>; <b>"only screening accuracy"</b>. <span class="src">Reiman 2015</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">How to use FADIR</td>
+        <td>Treat a negative as informative and a positive as a prompt.</td>
+        <td data-imp="rule-out|lowers|probability|interval">
+          As a <b>rule-out</b>. Negative meaningfully lowers the probability of impingement; positive does not raise it much, and the DOR intervals include or nearly include 1. <span class="src">Reiman 2015</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Flexion-internal rotation</td>
+        <td>Hip flexed, passive internal rotation to end range.</td>
+        <td data-imp="flexion-internal|end range|pooled|caveat">
+          Pooled SN <b>0.96 (0.81-0.99)</b>, DOR <b>8.36 (0.41-171.3)</b>. Same use, same caveat. <span class="src">Reiman 2015</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">FABER / Patrick's</td>
+        <td>Figure-four position; measure the distance from lateral knee to table, or note symptom reproduction.</td>
+        <td data-imp="figure-four|irritability|lateral knee|document">
+          <b>Document it - Grade A.</b> But the guideline lists it under <b>joint irritability</b>, not diagnosis, and no accuracy figure appears in either the guideline or the FAI meta-analysis. <span class="src">Koc 2025</span> <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The quality behind these numbers</td>
+        <td>Read the denominator of the evidence.</td>
+        <td data-imp="candidate|rated|pooled|quality">
+          21 candidate studies, <b>one</b> rated high quality; nine pooled. <span class="src">Reiman 2015</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What the whole examination is worth</td>
+        <td>Compare against a reference standard.</td>
+        <td data-imp="self-examination|standardised|mean|reference">
+          Mean diagnostic accuracy for FAIS: <b>53.6%</b> self-examination, <b>45.5%</b> standardised clinical examination. <span class="src">Owusu-Akyaw 2019</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hip OA - the strongest cluster</td>
+        <td>Count the variables present.</td>
+        <td data-imp="post-test|prevalence|preliminary|cluster">
+          &ge;4 of 5 variables: <b>+LR 24.3 (4.4-142.1)</b>, post-test probability 91%, in a sample with 29% prevalence. Preliminary and unvalidated by the authors. <span class="src">Sutlive 2008</span> The five variables are not obtainable free. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Interpreting a likelihood ratio</td>
+        <td>Convert the result into a probability shift.</td>
+        <td data-imp="likelihood|heuristic|decisive|crossing">
+          <span class="prov c">Convention</span> The familiar bands - +LR over 10 or -LR under 0.1 as decisive, 2-5 as a small shift - are a widely taught heuristic, not a value traced to any source here. What <b>is</b> sourced: a high sensitivity with a DOR interval crossing 1 is a screening test and nothing more. <span class="src">Reiman 2015</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Building a cluster</td>
+        <td>Combine tests that fail in different ways.</td>
+        <td data-imp="independent|mechanism|piriformis|combine">
+          Two tests sharing a mechanism give no independent information - FADIR and a piriformis length test share a position. <span class="prov c">Convention</span>
         </td>
       </tr>
         </tbody>
@@ -1133,30 +1586,81 @@ a{color:var(--accent)}
   </section>
 
   <section id="syndromes">
-    <div class="sechead"><span class="secnum">08</span><h2>Movement system diagnoses</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">08</span><h2>Syndromes and what you call it</h2></div>
+    <p class="lede">Naming matters here more than at most joints, because the most common name in this section is wrong. Trochanteric bursitis describes a bursa that is usually not the problem.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Greater trochanteric pain syndrome</td>
+        <td>Lateral hip pain, tender over the trochanter, worse in side-lying and on stairs.</td>
+        <td data-imp="trochanteric|bursal distension|tendinitis|tear">
+          In 24 patients with clinical GTPS: <b>11 (45.8%) had a gluteus medius tear</b>, <b>15 (62.5%) had tendinitis</b> (pure in 9, with tear in 6), and only <b>2 had bursal distension</b> - which never occurred without gluteus medius pathology. <span class="src">Bird 2001</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">So what is GTPS?</td>
+        <td>Name it for the tendon.</td>
+        <td data-imp="tendinopathy|bursitis|defines|pathology">
+          A <b>gluteal tendinopathy</b>, not a bursitis. The authors conclude gluteus medius tendon pathology is what defines the syndrome. <span class="src">Bird 2001</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">How to examine for it</td>
+        <td>Single-leg stance, resisted abduction, resisted internal rotation.</td>
+        <td data-imp="resisted abduction|accurate|localise|signs">
+          Trendelenburg was the most accurate of three signs for a tear (Sn 72.7%, Sp 76.9%). <span class="src">Bird 2001</span> Read that against section 04 - the sign does not localise.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Limits</td>
+        <td>Weigh the sample before quoting the figures.</td>
+        <td data-imp="radiologist|median|subset|settled">
+          n=24, all women, median age 58 (range 36-75), single radiologist - and the reliability kappa comes from a 12-patient subset. Do not present those figures as settled. <span class="src">Bird 2001</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Hip osteoarthritis</td>
+        <td>Apply the Grade A criteria.</td>
+        <td data-imp="osteoarthritis|criteria|adults|apply">
+          Adults over 50 meeting the criteria in section 02. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Radiographic grading</td>
+        <td>Kellgren-Lawrence, from the standing AP pelvis.</td>
+        <td data-imp="Kellgren|osteophyte|sclerosis|narrowing">
+          <b>0</b> none; <b>1</b> doubtful narrowing, possible osteophyte; <b>2</b> possible narrowing and osteophyte; <b>3</b> definite narrowing, moderate osteophyte, some sclerosis, possible bone-end deformity; <b>4</b> large osteophyte, severe narrowing, marked sclerosis, definite deformity. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Femoroacetabular impingement</td>
+        <td>Screened by FADIR and flexion-IR; confirmed by neither.</td>
+        <td data-imp="femoroacetabular|screened|confirmed|chance">
+          Expect the examination to perform at chance-adjacent levels. <span class="src">Owusu-Akyaw 2019</span> <span class="src">Reiman 2015</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Movement diagnosis</td>
+        <td>State the movement fault and its direction under load.</td>
+        <td data-imp="movement fault|under load|reproduces|direction">
+          Name what the hip does under load that reproduces the symptom, not only the tissue you suspect. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Relative stiffness</td>
+        <td>Find where the motion is coming from instead.</td>
+        <td data-imp="lumbar extension|instead|pelvis|rotate">
+          A hip that will not extend produces lumbar extension; a hip that will not rotate produces it at the pelvis or the knee. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">When to change your mind</td>
+        <td>Re-examine when the picture does not fit.</td>
+        <td data-imp="revise|refer|classification|improving">
+          <b>Grade F:</b> revise the diagnosis, change the plan, or refer when the history, activity limitations or impairments do not fit the classification, or when symptoms are not improving with treatment aimed at the impairments. <span class="src">Koc 2025</span>
         </td>
       </tr>
         </tbody>
@@ -1166,29 +1670,52 @@ a{color:var(--accent)}
 
   <section id="palpation">
     <div class="sechead"><span class="secnum">09</span><h2>Palpation</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">Palpation comes late deliberately. Palpating first tells you where a patient is tender; palpating after the movement examination tells you whether that tenderness explains anything.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">Bony landmarks</td>
+        <td>Iliac crest, ASIS, PSIS, greater trochanter, ischial tuberosity, pubic tubercle.</td>
+        <td data-imp="iliac crest|pubic tubercle|ischial|landmark">
+          Orientation before interpretation. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Greater trochanter</td>
+        <td>Side-lying, palpate the facets over the trochanter.</td>
+        <td data-imp="trochanter|tendinopathy|tenderness|facet">
+          Tenderness here is the entry point to GTPS - a <b>gluteal tendinopathy</b> far more often than a bursitis. <span class="src">Bird 2001</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Adductor origin</td>
+        <td>Palpate the pubic tubercle and the adductor tendons.</td>
+        <td data-imp="adductor|pubic|tendon|localise">
+          <span class="prov c">Convention</span> Tenderness localises but does not grade.
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Ischial tuberosity</td>
+        <td>Palpate the proximal hamstring origin; ask about sitting.</td>
+        <td data-imp="ischial|proximal hamstring|sitting|reproduc">
+          Tender in proximal hamstring tendinopathy, and reproduced by sitting. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">What palpation cannot do</td>
+        <td>Know its ceiling before you rely on it.</td>
+        <td data-imp="separate|tendinitis|coexisted|distinction">
+          It cannot separate a gluteus medius <b>tear</b> from <b>tendinitis</b> - MRI was needed for that distinction, and the two coexisted in 6 of 24. <span class="src">Bird 2001</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Accuracy of hip palpation</td>
+        <td>Ask what the figures are.</td>
+        <td data-imp="sensitivity|specificity|reports|figures">
+          <b>There are none here.</b> <span class="src">no traceable source</span> No free source in this guide reports sensitivity, specificity or reliability for palpation at the hip.
         </td>
       </tr>
         </tbody>
@@ -1197,30 +1724,165 @@ a{color:var(--accent)}
   </section>
 
   <section id="treatment">
-    <div class="sechead"><span class="secnum">10</span><h2>Mobilizations and exercise</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <div class="sechead"><span class="secnum">10</span><h2>Mobilisation, exercise and dose</h2></div>
+    <p class="lede">This is the best-evidenced section in the guide, because a 2025 clinical practice guideline carries graded recommendations with doses attached. Every letter below is defined - and a grade measures how much consistent evidence exists, not how large the effect is, how long it lasts, or how confident you should be in a dose.</p>
     
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
       <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
+        <td class="name">What the grades mean</td>
+        <td>Read the letter with its definition, not on its own.</td>
+        <td data-imp="preponderance|consensus|conflicting|grades">
+          <b>A</b> strong (preponderance of level I/II, including &ge;1 level I; "must or should"). <b>B</b> moderate (a single high-quality RCT or preponderance of level II; "should"). <b>C</b> weak (a single level II, or level III-IV including expert consensus; "may"). <b>D</b> conflicting. <b>E</b> theoretical. <b>F</b> expert opinion. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Set the dose from irritability</td>
+        <td>Use the guideline's own irritability measure.</td>
+        <td data-imp="irritability|essential data|FABER|elements">
+          The hip's irritability measure is the <b>FABER test</b>, listed among the essential data elements under joint irritability. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Manual therapy - the recommendation</td>
+        <td>Soft tissue and joint mobilisation, including long-axis distraction and mobilisation with movement.</td>
+        <td data-imp="long-axis|mobilisation with movement|mild-to-moderate|soft tissue">
+          <b>Grade A</b> to increase ROM, decrease pain and improve function in mild-to-moderate hip OA. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Manual therapy - the dose</td>
+        <td>1-3 times per week, 6-12 weeks.</td>
+        <td data-imp="stretching|strengthening|sustain|weeks">
+          As motion improves, add stretching and strengthening to sustain the gains. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The caveat the grade hides</td>
+        <td>Check what the dose rests on.</td>
+        <td data-imp="dosage review|risk of bias|participants|summarises">
+          The guideline's own dosage review (10 studies, 768 participants) concluded that <b>"recommending a specific manual therapy dosage for those with hip OA could not be made"</b> - five of the ten were at high risk of bias. The 1-3&times;/week figure summarises the range studies used, not a dose a trial established. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Force amplitude - which for what</td>
+        <td>Choose the force for the target, not by habit.</td>
+        <td data-imp="high-force|pain pressure|amplitude|distraction">
+          In 60 patients with Grade III hip OA, <b>high-force</b> long-axis distraction increased ROM (flexion 10.6&deg;, extension 8.0&deg;, abduction 6.4&deg;, adduction 3.3&deg;, ER 5.6&deg;, IR 7.6&deg;) where low and medium force did not - while the <b>low-force</b> group showed the largest effect on pain pressure threshold (d = 2.0). <b>Higher force for range, lower force for pain.</b> <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Mobilising with a stated rationale</td>
+        <td>Match technique and force to the individual hip.</td>
+        <td data-imp="morphology|tolerance|amplitude|rationale">
+          <b>Grade F:</b> modify procedure and force amplitude to the patient's <b>bony hip morphology and tissue tolerance/irritability</b>. The rationale is the morphology and the irritability, not the grade number. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Harms</td>
+        <td>Record what was reported.</td>
+        <td data-imp="harms|reported|reviewed|evidence">
+          <b>None reported</b> for manual therapy in the evidence reviewed. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">How long does it last?</td>
+        <td>Ask about durability, not just effect.</td>
+        <td data-imp="short-term|long-term|follow-up|enhances">
+          <b>Unknown.</b> The guideline names the benefits as "the recognized short-term benefits" and lists long-term follow-up as a gap, along with whether manual therapy enhances exercise. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Exercise - the recommendation</td>
+        <td>An individualised programme, potentially including aquatic therapy.</td>
+        <td data-imp="individualised|aquatic|programme|function">
+          <b>Grade A</b> for motion, strength, function and pain. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Exercise - the dose</td>
+        <td>1-5 times per week, 30-120 minutes, over 5-16 weeks.</td>
+        <td data-imp="titration|span|frequency|weeks">
+          That is the span of what studies used, <b>not a titration</b>. Which dose suits which patient - by K-L grade, land versus aquatic, frequency - is listed as a gap in knowledge. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Dry needling</td>
+        <td>Myofascial trigger points, iliopsoas, rectus femoris, TFL, gluteus medius and minimus.</td>
+        <td data-imp="myofascial|trigger point|extensibility|needling">
+          <b>Grade A</b> for <b>short-term (3-week)</b> gains in extensibility, pain, ROM, function and force production, in <b>K-L Grade II and III</b> hip OA. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Dry needling - what is not known</td>
+        <td>Do not read the ceiling as a course length.</td>
+        <td data-imp="ceiling|standalone|duration|alongside">
+          The three weeks is the ceiling of the evidence, not a treatment duration - long-term effects are an explicit gap. So is whether it adds anything <b>alongside exercise</b>; it has mostly been tested standalone. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Patient education</td>
+        <td>Activity modification, exercise, weight reduction, joint unloading, internet-based pain coping skills training.</td>
+        <td data-imp="coping skills|unloading|modification|education">
+          <b>Grade B</b>, combined with exercise and/or manual therapy. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Why education is only a B</td>
+        <td>Read the grade as a statement about the literature.</td>
+        <td data-imp="revision|limited|literature|intervention">
+          Not because it failed a trial - because "research on the use of patient education is limited since the 2017 revision". A B here reflects a thin literature, not a weak intervention. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Weight loss</td>
+        <td>Collaborate with physicians, nutritionists or dietitians alongside exercise.</td>
+        <td data-imp="nutritionist|dietitian|upgraded|collaborate">
+          <b>Grade B</b>, upgraded from Grade C in 2017. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Functional, gait and balance training</td>
+        <td>Impairment-based, including proper use of assistive devices.</td>
+        <td data-imp="assistive device|participation|documented|impairment-based">
+          <b>Grade C</b>, where limitations are observed and documented. Individualise to the patient's values and participation needs, also C. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Therapeutic ultrasound</td>
+        <td>Only under shared decision making.</td>
+        <td data-imp="ultrasound|shared decision|conflicts|cost">
+          <b>Grade D - conflicting.</b> The patient must be told the evidence conflicts, and about any cost. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Bracing</td>
+        <td>Not first line.</td>
+        <td data-imp="bracing|pivoting|bilateral|first line">
+          <b>Grade F.</b> May be used after exercise and manual therapy have failed, for turning and pivoting activities, in mild-to-moderate and especially bilateral hip OA. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">The reassessment marker</td>
+        <td>Name it before you treat.</td>
+        <td data-imp="self-report|baseline|follow-up|performance">
+          Use at least one self-report and one performance measure, plus the impairment set, at baseline and at least one follow-up. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Which measures</td>
+        <td>Pick from the guideline's essential data elements.</td>
+        <td data-imp="WOMAC|PROMIS|chair stand|NPRS">
+          Self-report: <b>WOMAC Physical Function, HOOS, PROMIS</b>. Performance: <b>6MWT, 30-second chair stand, TUG, timed stair performance</b>. Impairment: hip ROM and strength in all six directions, NPRS for pain, FABER for irritability. <span class="src">Koc 2025</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="name">Monitoring over time</td>
+        <td>Track the same things at each review.</td>
+        <td data-imp="joint space|outcome score|baseline|monitor">
+          ROM and strength, baseline pain, K-L grade, joint space width and outcome score. <span class="src">Koc 2025</span>
         </td>
       </tr>
         </tbody>
@@ -1230,7 +1892,7 @@ a{color:var(--accent)}
 
   <section id="drill">
     <div class="sechead"><span class="secnum">11</span><h2>Rapid drill</h2></div>
-    <p class="lede">One or two sentences on what this section is for and how to read it.</p>
+    <p class="lede">Two ways to rehearse. The cases work the whole chain from presentation to reassessment marker; the single facts test one value at a time, and most of them test whether you know what a value is worth as well as what it is.</p>
     <h3>What to practice</h3>
     <p class="lede">Built from the cells you marked missed while running recall. Nothing here is pre-filled - if this is empty, go and quiz yourself first. The practice method is chosen by <em>what the item is</em>, not by what kind of learner you are: a number, a pair of hands and a decision are three different jobs and they need three different kinds of rehearsal.</p>
     <div id="planner" class="planner"></div>
@@ -1238,55 +1900,131 @@ a{color:var(--accent)}
       <b>Why this is not a learning-styles quiz.</b> Sorting students into visual, auditory or kinesthetic learners and matching teaching to the label is one of the most durable ideas in education that the evidence does not support - the studies that test it properly find no benefit from the match <span class="src">Pashler 2008</span>. What does hold up is the method fitting the material: retrieving a fact from memory beats re-reading it, and spacing the attempts beats massing them <span class="src">Dunlosky 2013</span>. So the plan below sorts your misses by the kind of thing they are.
     </div>
 
-    
-    <div class="tablewrap">
-      <table>
-        <thead><tr><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
-        <tbody>
-      <!-- ONE WORKED ROW. Copy this shape; delete the comments.
-           · td.name  is the row label. Never put an answer here - it is the prompt.
-           · data-imp is what the PDF importer matches a student's handout against.
-             Give 3-5 terms. At least one must be 6+ characters. They must be able to
-             CO-OCCUR in one real sentence - a list of pure synonyms can never score 2.
-           · prov c   = convention: taught everywhere, tested by nobody.
-           · prov x   = contested: measured, and the studies disagree.
-           · span.src = the citation. It auto-links to the matching reference entry
-             by surname + year, so "Smith 2019" must match an entry authored Smith, 2019.
-           · unmarked = traced to a source a reader can reach for free. -->
-      <tr>
-        <td class="name">Example item</td>
-        <td>How it is performed. Keep this operational - what the hands do.</td>
-        <td data-imp="example|specific term|another term|test">
-          <b>Lead with the answer.</b> The taught value <span class="prov c">Convention</span>,
-          then what was actually measured <span class="src">Author 2019</span>, then the caveat
-          that decides how far to trust it.
-        </td>
-      </tr>
-        </tbody>
-      </table>
+    <h3>Cases - work the whole chain</h3>
+    <p class="lede">Open a case, then work down the prompts - answer each out loud and click to check. Answers are hidden every time a case opens, so nothing is spoiled by looking.</p>
+
+    <div class="cases">
+      <details class="case">
+        <summary class="stem"><b>Retired postal worker, 63.</b> Groin pain on walking, eighteen months, stiff for about forty minutes each morning. Passive hip IR measures 18&deg; on the painful side and 34&deg; on the other. Passive IR reproduces the groin pain.</summary>
+        <dl class="caseans">
+          <div><dt>Does she meet the criteria?</dt><dd>Yes, on every count. Over 50; weight-bearing pain; morning stiffness under an hour; IR under 24&deg; <em>and</em> 16&deg; less than the painless side; pain on passive IR. That is the Grade A diagnostic set for hip OA <span class="src">Koc 2025</span>.</dd></div>
+          <div><dt>What the 18&deg; is and is not</dt><dd>It is a diagnostic threshold met, not a distance from normal. There is no traceable free source for normal hip IR <span class="src">no traceable source</span>, so do not tell her she has lost 27&deg;.</dd></div>
+          <div><dt>Irritability</dt><dd>Use FABER - the guideline's irritability measure, listed under joint irritability rather than diagnosis <span class="src">Koc 2025</span>.</dd></div>
+          <div><dt>First three</dt><dd>Manual therapy including long-axis distraction, Grade A, 1-3 times per week over 6-12 weeks; an individualised exercise programme, Grade A, 1-5 times per week; education and weight support if relevant, Grade B <span class="src">Koc 2025</span>.</dd></div>
+          <div><dt>Which force, for what</dt><dd>Higher force if the goal is range, lower force if the goal is pain: high-force distraction moved ROM where low and medium force did not, while low force had the largest effect on pain pressure threshold <span class="src">Koc 2025</span>.</dd></div>
+          <div><dt>Reassess</dt><dd>Name the marker before treating. At least one self-report and one performance measure - IR range, a 30-second chair stand, and the NPRS <span class="src">Koc 2025</span>.</dd></div>
+        </dl>
+      </details>
+
+      <details class="case">
+        <summary class="stem"><b>Hockey player, 24.</b> Deep anterior hip pain on sitting and cutting. FADIR reproduces it sharply. He has read that this confirms impingement and wants a surgical opinion.</summary>
+        <dl class="caseans">
+          <div><dt>What a positive FADIR buys you</dt><dd>Very little on its own. Pooled sensitivity is 0.94-0.99, but the diagnostic odds ratios run 5.71 to 7.82 with intervals that include or nearly include 1, and the authors call it <b>screening accuracy only</b> <span class="src">Reiman 2015</span>.</dd></div>
+          <div><dt>So what would a negative have meant?</dt><dd>More. High sensitivity makes it a rule-out: a negative meaningfully lowers the probability. The positive is the weak direction, which is the opposite of how it is usually presented.</dd></div>
+          <div><dt>The specificity he will ask for</dt><dd>There is none to give. The meta-analysis reports sensitivity and DOR only <span class="src">no traceable source</span>. A specificity quoted beside those sensitivities has been invented.</dd></div>
+          <div><dt>The confounder in the position</dt><dd>FADIR is also the piriformis length position. A positive does not distinguish the two, and two tests sharing a mechanism give no independent information.</dd></div>
+          <div><dt>What to tell him</dt><dd>That the whole examination for this diagnosis has a mean accuracy around 45.5% in a standardised clinical exam <span class="src">Owusu-Akyaw 2019</span>, so the test has raised a question, not answered one.</dd></div>
+        </dl>
+      </details>
+
+      <details class="case">
+        <summary class="stem"><b>Teacher, 57.</b> Lateral hip pain, cannot lie on that side, worse on stairs. Tender over the greater trochanter. Trendelenburg positive on the painful side. A previous clinician called it trochanteric bursitis.</summary>
+        <dl class="caseans">
+          <div><dt>Is it a bursitis?</dt><dd>Almost certainly not. In 24 patients with clinical GTPS, 11 (45.8%) had a gluteus medius tear and 15 (62.5%) had tendinitis, while only 2 had bursal distension - which never occurred without gluteus medius pathology <span class="src">Bird 2001</span>. It is a gluteal tendinopathy.</dd></div>
+          <div><dt>What the positive Trendelenburg tells you</dt><dd>That frontal-plane pelvic control has failed. <b>It does not localise to gluteus medius.</b> Under experimental paralysis of gluteus medius and minimus only 1 of 10 adults showed the sign, and gluteus maximus paralysis produced similar failures <span class="src">Schmid 2026</span>.</dd></div>
+          <div><dt>How much is the sign worth here?</dt><dd><span class="prov x">Contested</span> Sn 72.7%, Sp 76.9% against MRI in this population <span class="src">Bird 2001</span>, from 24 women with a single radiologist, and a reliability kappa drawn from only 12 of them.</dd></div>
+          <div><dt>What palpation cannot settle</dt><dd>Tear versus tendinitis. MRI was needed for that, and the two coexisted in 6 of 24 <span class="src">Bird 2001</span>.</dd></div>
+          <div><dt>The trap</dt><dd>Treating the bursa. The name points at a structure that was uninvolved in 22 of 24 patients.</dd></div>
+        </dl>
+      </details>
+
+      <details class="case">
+        <summary class="stem"><b>Runner, 31.</b> Lateral thigh pain. Ober test positive. The referral asks for iliotibial band release work.</summary>
+        <dl class="caseans">
+          <div><dt>What did the test actually show?</dt><dd>Restriction proximal to the hip. Transecting the ITB produced <b>no significant change</b> in adduction in either version of the test; only cutting gluteus medius/minimus and the hip capsule did (both P &lt; .0001) <span class="src">Willett 2016</span>.</dd></div>
+          <div><dt>The numbers</dt><dd>Modified Ober: intact 4.28&deg;, after ITB transection 5.00&deg;, after gluteus medius/minimus 11.20&deg;, after capsule 13.20&deg;. The ITB step moves it by less than a degree <span class="src">Willett 2016</span>.</dd></div>
+          <div><dt>What the authors concluded</dt><dd>That the findings "refute the hypothesis that the ITB plays a role in limiting hip adduction during either version of the Ober test", and that the test assesses structures proximal to the hip joint rather than the ITB <span class="src">Willett 2016</span>.</dd></div>
+          <div><dt>The limit on all that</dt><dd>Cadaveric, sequential transection. It says nothing about living, symptomatic hips or about reliability - so it changes what the test <em>means</em>, not whether her thigh hurts.</dd></div>
+          <div><dt>What to write back</dt><dd>That the positive Ober points at gluteus medius, minimus and capsule, and that the plan targets those.</dd></div>
+        </dl>
+      </details>
     </div>
+
+    <h3>Single facts</h3>
+
+    <details><summary>Normal hip flexion is 120&deg;. Where does that number come from?</summary><div class="ans">Nowhere you can read for free. <span class="prov c">Convention</span> <span class="src">no traceable source</span> The classic tables are paywalled at the table. What is traceable is the size of the error: measured against a national probability sample, textbook values differed by <b>as much as 18&deg;</b> <span class="src">Roach 1991</span>.</div></details>
+
+    <details><summary>Hip IR less than 24&deg; - normal value or diagnostic threshold?</summary><div class="ans">Diagnostic threshold, and only in adults over 50, as part of the Grade A criteria for hip OA <span class="src">Koc 2025</span>. A 25-year-old with 20&deg; of IR has not met a criterion; they have a hip that needs explaining.</div></details>
+
+    <details><summary>FADIR has a pooled sensitivity up to 0.99. Why can you not use it to confirm impingement?</summary><div class="ans">Because sensitivity is the rule-out direction. The diagnostic odds ratios run 5.71-7.82 with intervals including or nearly including 1, and the authors describe the test as possessing <b>"only screening accuracy"</b> <span class="src">Reiman 2015</span>.</div></details>
+
+    <details><summary>What is FADIR's pooled specificity?</summary><div class="ans">There isn't one. <span class="src">no traceable source</span> The meta-analysis reports sensitivity and DOR only <span class="src">Reiman 2015</span>. If you have seen a specificity quoted next to those sensitivities, it was invented.</div></details>
+
+    <details><summary>What does the Ober test actually assess?</summary><div class="ans">Structures proximal to the hip joint - gluteus medius and minimus, and the hip capsule - <b>not</b> the iliotibial band. Transecting the ITB changed adduction by less than a degree; cutting the gluteals and capsule changed it significantly <span class="src">Willett 2016</span>.</div></details>
+
+    <details><summary>Is the hip capsular pattern a valid diagnostic for hip OA, and in how many patients was that tested?</summary><div class="ans">No, and 200. The pattern "was not present as a distinct pattern" in hip OA and "cannot be regarded as a valid test for the diagnosis of OA of the hip or knee" <span class="src">Bijl 1998</span>. The same study did find an indication of a knee pattern in subgroups, so this is specific to the hip.</div></details>
+
+    <details><summary>Give the Trendelenburg sign's sensitivity and specificity - then give the reason to distrust them.</summary><div class="ans"><span class="prov x">Contested</span> Sn 72.7%, Sp 76.9% against MRI <span class="src">Bird 2001</span> - from 24 women, single radiologist, with reliability drawn from a 12-patient subset. And under experimental paralysis of gluteus medius and minimus, only 1 of 10 adults produced the sign at all <span class="src">Schmid 2026</span>.</div></details>
+
+    <details><summary>What is GTPS, in one word that is not "bursitis"? What proportion had bursal distension?</summary><div class="ans">A tendinopathy. Only <b>2 of 24</b> had trochanteric bursal distension, and it never occurred without gluteus medius pathology, while 11 had a tear and 15 had tendinitis <span class="src">Bird 2001</span>.</div></details>
+
+    <details><summary>The pooled ICC for hip flexor length tests is 0.90. Why should you not quote that for the Thomas test?</summary><div class="ans">Because it pools five different tests, and the classic Thomas test has the <b>lowest interrater reliability of any of them, ICC 0.62 (0.46-0.78)</b>. Quoting the headline inverts the paper's own finding about that test <span class="src">González-de-la-Flor 2026</span>.</div></details>
+
+    <details><summary>State the manual therapy dose for hip OA, with its grade - then state the catch.</summary><div class="ans">Grade A, 1-3 times per week over 6-12 weeks <span class="src">Koc 2025</span>. The catch: the guideline's own dosage review (10 studies, 768 participants, five at high risk of bias) concluded that <b>a specific dosage could not be recommended</b>. The figure summarises the range studies used, not a dose a trial established.</div></details>
+
+    <details><summary>Higher or lower force for range? For pain?</summary><div class="ans">Higher force for range - high-force long-axis distraction increased ROM where low and medium force did not. Lower force for pain - the low-force group showed the largest effect on pain pressure threshold (d = 2.0) <span class="src">Koc 2025</span>.</div></details>
+
+    <details><summary>Which intervention is Grade D, and what must you tell the patient?</summary><div class="ans">Therapeutic ultrasound. It may be added under shared decision making, but the patient must be told the evidence conflicts and about any cost <span class="src">Koc 2025</span>.</div></details>
+
+    <details><summary>Which is Grade F and explicitly not first line?</summary><div class="ans">Bracing. It may be used after exercise and manual therapy have failed, for turning and pivoting activities, especially in bilateral hip OA <span class="src">Koc 2025</span>.</div></details>
+
+    <details><summary>Which test does the guideline use as its irritability measure?</summary><div class="ans">FABER - listed among the essential data elements under <b>joint irritability</b>, not under diagnosis. Its diagnostic accuracy is not established <span class="src">Koc 2025</span> <span class="src">no traceable source</span>.</div></details>
+
+    <details><summary>Patient education is Grade B. Does that mean it works less well than a Grade A?</summary><div class="ans">No. It means the literature is thinner - "research on the use of patient education is limited since the 2017 revision" <span class="src">Koc 2025</span>. A grade measures how much consistent evidence exists, not effect size, durability, or how confident you should be in a dose.</div></details>
+
   </section>
 
 
   <section id="refs">
     <h2>References</h2>
-    <p class="lede">Every source named in this guide, with a link. All of them are free to read or
-    have a freely readable abstract carrying the values quoted here. Where a value is marked as
-    convention it appears in no list below, because nothing supports it.</p>
+    <p class="lede">Eleven sources, each cited at least once above, each read before it was quoted.
+    Every one is free to read or has a freely readable abstract carrying the values used here.
+    Where a value is marked convention, or flagged as having no traceable source, it appears in no
+    entry below - because nothing supports it, and this guide would rather say so than borrow a
+    citation that does not carry the number. Each note records what the paper cannot support as
+    well as what it can.</p>
 
-    <!-- GROUPS. Keep these headings or replace them; the citation linker does not care.
-         Each entry MUST carry .au (authors) and .jo (journal + year) - those two fields are
-         what the linker parses to match an inline "Author 2019" citation to this entry.
-         The .nt note is where you record what the paper actually shows, including its
-         population and any limit on what it can support. -->
-    <h3>Range of motion and kinematics</h3>
+        <h3>Range of motion</h3>
     <ol>
-      <li><span class="au">Author A, Author B, Author C, et al.</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/00000000/" target="_blank" rel="noopener">Title of the paper exactly as published</a></span>. <span class="jo">Journal Abbrev 2019;12(3):345-356</span><span class="nt">What it actually found, in whom, and what it cannot support.</span></li>
+      <li><span class="au">Roach KE, Miles TP</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/1881956/" target="_blank" rel="noopener">Normal hip and knee active range of motion: the relationship to age</a></span>. <span class="jo">Phys Ther 1991;71(9):656-665</span><span class="nt">NHANES I national probability sample; goniometric AROM from 1,892 subjects, analysed in 1,313 white and 370 black subjects. Carries the finding that textbook values differ from measured norms by as much as 18&deg;, and that differences between the youngest and oldest age groups are 3 to 5&deg;. It does <b>not</b> carry per-motion normative figures - those tables are paywalled, which is why every ROM number in this guide is marked convention.</span></li>
     </ol>
+
+    <h3>Diagnosis and classification</h3>
+    <ol>
+      <li><span class="au">Koc TA, Cibulka M, Enseki KR, Gentile JT, MacDonald CW, Kollmorgen RC, Martin RL</span> <span class="ti"><a href="https://www.orthopt.org/uploads/content_files/files/koc_et_al_2025_hip_pain_and_mobility_deficits_hip_osteoarthritis_revision_2025%281%29.pdf" target="_blank" rel="noopener">Hip Pain and Mobility Deficits - Hip Osteoarthritis: Revision 2025</a></span>. <span class="jo">J Orthop Sports Phys Ther 2025;55(11):CPG1-CPG31</span><span class="nt">The clinical practice guideline, openly hosted by the Academy of Orthopaedic Physical Therapy, so all 31 pages are readable free. Source for the Grade A diagnostic criteria including hip IR under 24&deg;, the Grade A impairment set, the Kellgren-Lawrence descriptions, and every intervention grade and dose in section 10. Its ROM figures are diagnostic thresholds in adults over 50, <b>not</b> normative values, and it recommends documenting FABER without reporting how well FABER discriminates.</span></li>
+      <li><span class="au">Sutlive TG, Lopez HP, Schnitker DE, Yawn SE, Halle RJ, Mansfield LT, Boyles RE, Childs JD</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/18758047/" target="_blank" rel="noopener">Development of a clinical prediction rule for diagnosing hip osteoarthritis in individuals with unilateral hip pain</a></span>. <span class="jo">J Orthop Sports Phys Ther 2008;38(9):542-550</span><span class="nt">72 subjects, 21 (29%) with radiographic hip OA at Kellgren-Lawrence 2 or above. Carries the rule's performance - at least 4 of 5 variables gives +LR 24.3 (4.4-142.1), raising probability to 91%. It does <b>not</b> carry the identity of the five variables in its free abstract, which is why this guide quotes the performance and not the rule.</span></li>
+      <li><span class="au">Bijl D, Dekker J, van Baar ME, Oostendorp RA, Lemmens AM, Bijlsma JW, Voorn TB</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/9808397/" target="_blank" rel="noopener">Validity of Cyriax's concept capsular pattern for the diagnosis of osteoarthritis of hip and/or knee</a></span>. <span class="jo">Scand J Rheumatol 1998;27(5):347-351</span><span class="nt">200 patients. The hip capsular pattern was not present as a distinct pattern in hip OA. Tested as a <b>diagnostic</b> for OA and failed as one - it is not evidence about non-arthritic stiffness, and an indication of a knee pattern was found in subgroups.</span></li>
+    </ol>
+
     <h3>Diagnostic accuracy</h3>
     <ol>
-      <li><span class="au">Author D, Author E</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC0000000/" target="_blank" rel="noopener">Title</a></span>. <span class="jo">Journal 2021;5(1):1-10</span><span class="nt">Note the target condition - accuracy figures are only meaningful against the condition they were measured for.</span></li>
+      <li><span class="au">Reiman MP, Goode AP, Cook CE, H&ouml;lmich P, Thorborg K</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/25515771/" target="_blank" rel="noopener">Diagnostic accuracy of clinical tests for the diagnosis of hip femoroacetabular impingement/labral tear: a systematic review with meta-analysis</a></span>. <span class="jo">Br J Sports Med 2015;49(12):811</span><span class="nt">21 candidate articles, one of high quality, nine pooled. Source for FADIR's pooled sensitivity and diagnostic odds ratio, and for the authors' verdict that these tests possess &quot;only screening accuracy&quot;. Reports <b>no specificity</b> for any test, and does not mention FABER.</span></li>
+      <li><span class="au">Reiman MP, Thorborg K, Goode AP, Cook CE, Weir A, H&ouml;lmich P</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/28129509/" target="_blank" rel="noopener">Diagnostic accuracy of imaging modalities and injection techniques for the diagnosis of femoroacetabular impingement/labral tear</a></span>. <span class="jo">Am J Sports Med 2017;45(11):2665-2677</span><span class="nt">Imaging, not physical examination. CT arthrography was strongest overall. Pretest probability in the included studies was 81% for labral tear and 74% for FAI, which the authors say limits generalisability sharply.</span></li>
+      <li><span class="au">Owusu-Akyaw KA, Hutyra CA, Evanson RJ, Cook CE, Reiman M, Mather RC</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6797256/" target="_blank" rel="noopener">Concurrent validity of a patient self-administered examination and a clinical examination for femoroacetabular impingement syndrome</a></span>. <span class="jo">BMJ Open Sport Exerc Med 2019;5(1):e000574</span><span class="nt">75 patients. Mean diagnostic accuracy 53.6% for a self-administered examination against 45.5% for a standardised clinical examination. The authors call both low and consistent with the hip examination literature for this condition.</span></li>
     </ol>
+
+    <h3>Muscle length and reliability</h3>
+    <ol>
+      <li><span class="au">Willett GM, Keim SA, Shostrom VK, Lomneth CS</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/26755689/" target="_blank" rel="noopener">An anatomic investigation of the Ober test</a></span>. <span class="jo">Am J Sports Med 2016;44(3):696-701</span><span class="nt">Cadaveric, sequential transection; Ober n=28, modified Ober n=34, 18 limbs through all conditions. Transecting the iliotibial band produced no significant change in adduction; gluteus medius/minimus and the hip capsule did. Says nothing about living or symptomatic hips, or about reliability.</span></li>
+      <li><span class="au">Gonz&aacute;lez-de-la-Flor &Aacute;, Seijas-Otero D</span> <span class="ti"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13358456/" target="_blank" rel="noopener">Reliability of physical examination tests for assessing hip flexor flexibility: a systematic review and meta-analysis</a></span>. <span class="jo">PM&amp;R 2026;18(7):779-792</span><span class="nt">27 studies, 1,056 participants. Pooled intrarater ICC 0.90 and interrater 0.80 <b>across five different tests</b>, with overall heterogeneity of 99% and 98.3%; the classic Thomas test had the lowest interrater reliability of any of them at 0.62. Measures agreement only - not whether these tests measure hip flexor length.</span></li>
+    </ol>
+
+    <h3>Abductor function, Trendelenburg and GTPS</h3>
+    <ol>
+      <li><span class="au">Bird PA, Oakley SP, Shnier R, Kirkham BW</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/11592379/" target="_blank" rel="noopener">Prospective evaluation of magnetic resonance imaging and physical examination findings in patients with greater trochanteric pain syndrome</a></span>. <span class="jo">Arthritis Rheum 2001;44(9):2138-2145</span><span class="nt">24 patients, all women, median age 58, single radiologist. Establishes GTPS as a gluteal tendinopathy rather than a bursitis. The Trendelenburg accuracy figures come from this sample; the intraobserver kappa of 0.676 comes from a <b>12-patient subset</b> retested at two months, and its interval runs from 0.270 to above 1.</span></li>
+      <li><span class="au">Schmid M, Hoch A, Dimitriou D, Rosner J, Schubert M, Eichenberger U, Zingg PO</span> <span class="ti"><a href="https://pubmed.ncbi.nlm.nih.gov/42501605/" target="_blank" rel="noopener">Evaluation of Trendelenburg and Duchenne signs by experimentally induced gluteal muscle paralysis</a></span>. <span class="jo">Clin Biomech 2026;139:106931</span><span class="nt">Ten healthy adults, sequential nerve blocks, ten-second single-leg stance. After gluteus medius and minimus paralysis 5 of 10 could not hold the stance but only 1 showed a Trendelenburg sign. An experimental paralysis model, not a diagnostic accuracy study - which is why this guide marks the sign contested.</span></li>
+    </ol>
+
 
     <!-- These two are cited by the practice planner text above and apply to any joint.
          Keep them. -->
@@ -1299,10 +2037,21 @@ a{color:var(--accent)}
 
   </main>
   <footer>
-    <b>About this guide.</b> <span class="ver" style="margin:0 8px 0 0; padding:0; border:0">Version 1.0 &middot; MONTH YEAR.</span>
-    State plainly what is original and what is drawn from published sources, and name the
-    principal sources by author and year. Values marked as convention are named as such because
-    no research stands behind them; where no source could be traced at all, say so.
+    <b>About this guide.</b> <span class="ver" style="margin:0 8px 0 0; padding:0; border:0">Version 1.0 &middot; September 2026.</span>
+    The examination sequence, the section order and the wording are original. Every clinical
+    value is drawn from the eleven published sources listed above and attributed where it appears
+    - principally Koc and colleagues 2025 for diagnosis and the whole of section 10, Reiman and
+    colleagues 2015 for the impingement tests, Willett and colleagues 2016 for the Ober test,
+    Bird and colleagues 2001 for greater trochanteric pain syndrome, Schmid and colleagues 2026
+    for the Trendelenburg sign, Bijl and colleagues 1998 for the capsular pattern,
+    Gonz&aacute;lez-de-la-Flor and Seijas-Otero 2026 for hip flexor test reliability, Roach and
+    Miles 1991 for range of motion, Sutlive and colleagues 2008 for the prediction rule, and
+    Owusu-Akyaw and colleagues 2019 with Reiman and colleagues 2017 for how the examination and
+    imaging actually perform.
+    Values marked <b>Convention</b> are named as such because no research stands behind them, and
+    four are flagged as having <b>no traceable source</b> at all: per-motion normative hip range,
+    the five variables of the hip OA prediction rule, the reliability of clinical leg-length
+    measurement, and the diagnostic accuracy of FABER. Saying so is deliberate.
     Verify against current literature before letting any of it weight a clinical decision.
   </footer>
 </div>
@@ -1348,7 +2097,7 @@ a{color:var(--accent)}
   var boxes = document.querySelectorAll('input[data-ck]');
   var countEl = document.getElementById('ckcount');
   var fillEl = document.getElementById('ckfill');
-  var KEY = 'JOINT-comp-v1';
+  var KEY = 'hip-comp-v1';
   var state = {};
   try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { state = {}; }
 
@@ -1372,7 +2121,7 @@ a{color:var(--accent)}
 (function(){
   var body = document.body;
   var globalBtn = document.getElementById('recallBtn');
-  var KEY = 'JOINT-recall-v3';
+  var KEY = 'hip-recall-v3';
   var groups = [];   // one per table or grid: {sec, cols:[{id, chip, cells}]}
 
   function wrap(el){
@@ -1505,7 +2254,7 @@ a{color:var(--accent)}
   });
 
   // ---- what you got wrong ----
-  var MKEY = 'JOINT-missed-v1';
+  var MKEY = 'hip-missed-v1';
   var missed = {};
   try {
     (JSON.parse(localStorage.getItem(MKEY) || '[]') || []).forEach(function(id){ missed[id] = 1; });
@@ -1818,7 +2567,7 @@ a{color:var(--accent)}
   try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e) {}
   if(!saved){
     var legacy = null;
-    try { legacy = localStorage.getItem('JOINT-recall-v2') || localStorage.getItem('JOINT-recall-v1'); } catch(e) {}
+    try { legacy = localStorage.getItem('hip-recall-v2') || localStorage.getItem('hip-recall-v1'); } catch(e) {}
     if(legacy === '1') saved = { secs: sections.map(function(s){ return s.id; }), cols: [] };
     else if(legacy){ try { saved = { secs: JSON.parse(legacy) || [], cols: [] }; } catch(e) {} }
   }
@@ -1865,7 +2614,7 @@ a{color:var(--accent)}
 
 
 (function(){
-  var KEY = 'JOINT-add-v1';
+  var KEY = 'hip-add-v1';
   var store = {};
   try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { store = {}; }
   function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} render(); }
@@ -2511,7 +3260,7 @@ a{color:var(--accent)}
 (function(){
   var host = document.getElementById('planner');
   if(!host) return;
-  var MKEY = 'JOINT-missed-v1';
+  var MKEY = 'hip-missed-v1';
 
   var METHOD = {
     number: {

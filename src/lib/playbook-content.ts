@@ -30,10 +30,6 @@
  * saying what its numbers are sourced from and what a reader should verify.
  */
 
-import { ANKLE_PLAYBOOK } from "@/lib/playbooks/ankle";
-import { HIP_PLAYBOOK } from "@/lib/playbooks/hip";
-import { JOINT_MOBILIZATION_PLAYBOOK } from "@/lib/playbooks/joint-mobilization";
-import { KNEE_PLAYBOOK } from "@/lib/playbooks/knee";
 import type { PlaybookProvenance } from "@/lib/playbook-inline";
 
 /** A cell's presentation: `name` is the row's subject (bolded first column), `num` renders
@@ -164,13 +160,29 @@ export interface Playbook {
   footer: string;
 }
 
-export const PLAYBOOKS: Playbook[] = [
-  HIP_PLAYBOOK,
-  KNEE_PLAYBOOK,
-  ANKLE_PLAYBOOK,
-  JOINT_MOBILIZATION_PLAYBOOK,
-];
+/** Regions withheld pending verification. Empty: hip, knee, ankle and joint mobilization
+ *  were withheld here after an audit found they cited nothing, and they have since been
+ *  rebuilt from traced sources as served HTML guides (content/playbooks, listed in
+ *  lib/guides.ts). The unsourced originals were deleted rather than left in the tree, so
+ *  nothing can republish them by accident.
+ *
+ *  A future region written as a data playbook goes here until every value in it is traced,
+ *  then moves into PLAYBOOKS. */
+export const UNVERIFIED_PLAYBOOKS: Playbook[] = [];
 
+/** What the app renders and links to. Empty: every published region is now a served HTML
+ *  guide rather than a data playbook (see lib/guides.ts and the route handlers under
+ *  app/(app)/student/guides). The type and the renderer stay because they are the mechanism
+ *  for any future data-driven playbook, and because the retired shoulder slug still routes
+ *  through app/(app)/student/playbooks/[slug]. */
+export const PLAYBOOKS: Playbook[] = [];
+
+/** Every playbook the codebase holds, published or not. For checks that should hold whatever
+ *  a playbook's publication state is. */
+export const ALL_PLAYBOOKS: Playbook[] = [...PLAYBOOKS, ...UNVERIFIED_PLAYBOOKS];
+
+/** Published only — a withheld playbook's slug must not resolve, or the route would serve
+ *  what the hub declines to list. */
 export function getPlaybook(slug: string): Playbook | undefined {
   return PLAYBOOKS.find((playbook) => playbook.slug === slug);
 }
