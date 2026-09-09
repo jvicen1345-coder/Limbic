@@ -1,5 +1,5 @@
 import { getCurrentUser, hasStudentAccess, hasFreeAccess } from "@/lib/session";
-import { stripeEnabled, planHasPrice, type BillablePlan } from "@/lib/stripe";
+import { stripeEnabled, planHasPrice, unpricedPlanReason, type BillablePlan } from "@/lib/stripe";
 import {
   subscribeToProAction,
   cancelProAction,
@@ -154,7 +154,7 @@ interface TierConfig {
  *  and re-labelling them all here would just bury that clearer message. */
 function withPricingGuard(tier: TierConfig, billingEnabled: boolean): TierConfig {
   if (!tier.action || !tier.plan || !billingEnabled || planHasPrice(tier.plan)) return tier;
-  return { ...tier, action: null, nonClickableReason: `${tier.label} isn't available for purchase yet` };
+  return { ...tier, action: null, nonClickableReason: unpricedPlanReason(tier.label) };
 }
 
 /** Renders one tier's name/price/subscribe-button-or-current-pill — shared between the

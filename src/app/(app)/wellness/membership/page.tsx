@@ -1,5 +1,5 @@
 import { getCurrentUser, hasFreeAccess } from "@/lib/session";
-import { stripeEnabled } from "@/lib/stripe";
+import { stripeEnabled, purchaseButtonState } from "@/lib/stripe";
 import { subscribeToWellnessPlusMonthlyAction, subscribeToWellnessPlusYearlyAction, cancelWellnessPlusAction } from "@/app/actions/pro";
 import { WellnessIcon } from "@/components/icons";
 import { AutoRenewalTerms } from "@/components/AutoRenewalTerms";
@@ -13,6 +13,10 @@ export default async function WellnessMembershipPage({
   if (!user) return null;
 
   const billingEnabled = stripeEnabled();
+  // Each interval is its own Stripe Price, so they can be configured independently — the
+  // annual button stays dead on its own if only the monthly id was ever filled in.
+  const monthly = purchaseButtonState("wellnessPlusMonthly", "Limbic Wellness+ monthly", billingEnabled);
+  const yearly = purchaseButtonState("wellnessPlusYearly", "Limbic Wellness+ annual", billingEnabled);
   // Same reasoning as /pro/membership — a site admin's, or a comped account's,
   // isWellnessPlus reads true (see lib/session.ts getCurrentUser()) without a real
   // subscription behind it, so skip the dead "Manage membership" button and the (also fake,
@@ -114,13 +118,13 @@ export default async function WellnessMembershipPage({
             <div style={{ display: "flex", gap: 24, marginTop: 10, flexWrap: "wrap" }}>
               <form action={subscribeToWellnessPlusMonthlyAction}>
                 <AutoRenewalTerms price="$2" cadence="month" />
-                <button type="submit" className="btn btn-primary" disabled={!billingEnabled}>
+                <button type="submit" className="btn btn-primary" disabled={monthly.disabled} title={monthly.title}>
                   $2/month
                 </button>
               </form>
               <form action={subscribeToWellnessPlusYearlyAction}>
                 <AutoRenewalTerms price="$20" cadence="year" />
-                <button type="submit" className="btn btn-secondary" disabled={!billingEnabled}>
+                <button type="submit" className="btn btn-secondary" disabled={yearly.disabled} title={yearly.title}>
                   $20/year
                 </button>
               </form>
