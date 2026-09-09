@@ -73,11 +73,18 @@ cannot reliably separate. The specificity line moved to `--mod`, which passes at
 and 27.7 dark. `--mod` and `--low` appear only in CSS in this guide, so neither carries status
 meaning here.
 
+- Section 02 is now a `.numgrid` of **20 cells**, in the shoulder's format: one value per cell,
+  four columns, five full rows and no ragged last row. Four of the twenty record an absence,
+  which is how the shoulder handles its own conventions. The six argument rows were cut rather
+  than reformatted - the "Five questions" table added to section 07 in phase 4 had duplicated
+  them, which only became visible on re-reading the two sections side by side.
+
 **Still to do**
-- Section 02 as a `.numgrid` rather than a 25-row table. The CSS and the recall, filter and
-  taught-lane scripts all already support `.numcell`; the knee simply never used it, which is
-  why the brief's "key numbers grid" is missing.
-- Section 10 still generic.
+- Section 10, the last generic table - and its real defect is not the columns. Three
+  incommensurable grading scales share one column, distinguished only by a dash in the row
+  name: JOSPT letters (`- B`), TKA evidence quality (`- high`), and AAOS recommendation
+  strength (`- Strong`). "Moderate" appears in two of them meaning different things. The grade
+  needs its own column carrying its scale.
 - Figures: 2 → 6-8.
 - The remaining `Convention` claims re-checked against the two new guidelines.
 
