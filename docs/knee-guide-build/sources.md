@@ -413,3 +413,49 @@ The first correction ended with the right lesson and this build still repeated t
 lesson recorded in prose is not a step in a process. So it becomes a step: **before writing any
 absence claim into a guide, `grep` the repository for a hosted PDF on that topic.** The absence
 claim is content — it gets the same verification as a number does.
+
+---
+
+## THIRD CORRECTION — the Ottawa criteria, and what "numbers worth knowing cold" is for
+
+Two findings, from opening the meniscal CPG's own PDF rather than reasoning about it.
+
+**The Ottawa Knee Rule criteria are reachable.** This build recorded them as unavailable because
+Kazemi's meta-analysis reports the rule's accuracy without restating its content, and the guide
+was written to say so in place. But *Knee Pain and Mobility Impairments* (Logerstedt 2018) — a
+source already in this bank — quotes the rule in full:
+
+> "The Ottawa knee rule has a sensitivity of 0.99 and specificity of 0.49. A knee radiograph
+> series is required in patients with any of the following criteria: • Aged 55 years or older
+> • Isolated tenderness of patella (no bone tenderness of knee other than patella) • Tenderness
+> of head of the fibula • Inability to flex knee to 90° • Inability to bear weight both
+> immediately and in the emergency department for 4 steps regardless of limping"
+
+That is the same error the first two corrections in this file record: concluding a value is
+unreachable without checking the sources already collected. Not searching further afield — just
+reading what was already cited. The rule now stands as a step: **when a value is missing from
+the source you expected it in, grep the bank before writing an absence.**
+
+**Epidemiology, retrieved for the first time.** The section called "numbers worth knowing cold"
+had been filled with diagnostic accuracy, which is not what that heading means — those figures
+belong beside the tests they describe. The constants that do belong were sitting in the three
+guideline PDFs unread:
+
+- Knee OA: incidence **240 per 100,000 per year** in the US; worldwide prevalence of
+  radiographically confirmed symptomatic knee OA **3.8%**, over **10%** past ~60 <AAOS 2021>
+- ACL: **200,000** injuries per year in the US; mean age at reconstruction **29**, constant
+  1990-2006; reconstruction in patients over 40 up **>200%** <AAOS 2022>
+- ACL timing: risk of additional cartilage and meniscal injury "starts to increase within
+  **3 months**" — Strong, on high-quality evidence <AAOS 2022>
+- Meniscus: incidence **61 per 100,000**, prevalence **12-14%**, second most common knee injury;
+  a meniscal tear accompanies **22-86%** of ACL injuries; **850,000** meniscus surgeries a year
+  in the US, **10-20%** of all orthopaedic surgery; yearly procedures doubled from 8,750 to
+  17,368, the largest rise in patients over 55 <Logerstedt 2018>
+- Positions: Thessaly at **20°**; the Ottawa rule's **90°**; limb elevation at **30-90°** after
+  arthroplasty <Bove 2026>; full weight bearing by **6-8 weeks** after MACI <Logerstedt 2018>
+
+**What still has no number.** Roach 1991 remains abstract-only for the values themselves — it
+gives the *error* in textbook estimates (**18°**) and the *size* of age-related change
+(**3-5°**), which are worth knowing in their own right, but no normative knee ROM table. The Q
+angle, knee OA bedside criteria, patellofemoral test accuracy and effusion test reliability all
+stand as untraceable.
