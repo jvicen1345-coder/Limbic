@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { askAgentAction, expandAgentNodeAction } from "@/app/actions/agent";
-import { AgentGraph } from "@/components/AgentGraph";
+import { DeferredAgentGraph } from "@/components/DeferredAgentGraph";
 import { AGENT_DEMO_NODES, AGENT_DEMO_CROSS_LINKS } from "@/lib/agent-demo";
 import type { AgentNode, AgentLink, AgentRing } from "@/lib/agent-graph";
 
@@ -208,7 +208,7 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
       </div>
 
       <div className="agent-canvas-wrap" ref={containerRef}>
-        <AgentGraph
+        <DeferredAgentGraph
           nodes={nodes}
           links={links}
           selectedId={selectedId}
