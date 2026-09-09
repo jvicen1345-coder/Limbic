@@ -119,15 +119,37 @@ export function LandingPage() {
 
       <section className="landing-demo">
         <p className="landing-demo-eyebrow">See It In Action</p>
-        <h2 className="landing-section-heading">Watch a 4-minute walkthrough</h2>
+        <h2 className="landing-section-heading">Watch the 55-second tour</h2>
         <p className="landing-demo-body">
           See how Limbic works for students, clinicians, and the public — all in one platform.
         </p>
-        {/* Placeholder until the Loom demo is recorded — swap for the real embed iframe,
-            same wrapper div, once it exists. */}
-        <div className="landing-demo-video-placeholder">
-          <p>Video coming soon</p>
+        {/* The tour is vertical 9:16 (it doubles as the social cut — see
+            marketing/tiktok-teaser), so this is a phone-width frame rather than the 16:9 box
+            the old placeholder filled. Native controls and no autoplay keep this section a
+            Server Component with no client JS. preload="none", not "metadata": Chrome pulls
+            a small WebM in full on a metadata preload (measured: the whole 3.4MB on page
+            load), so this way the 29KB poster is all the page pays for until someone
+            actually presses play. The trade is that the controls read 0:00 until playback
+            starts, which is why the heading carries the runtime instead. */}
+        <div className="landing-demo-video">
+          {/* WebM first so Chrome, Firefox and Android take the VP9 file, which is a third
+              smaller than the H.264 one at the same visible quality; Safari and anything
+              without a VP9 decoder falls through to the MP4. */}
+          <video
+            className="landing-demo-video-player"
+            poster="/limbic-tour-poster.jpg"
+            controls
+            playsInline
+            preload="none"
+            aria-label="A 55-second tour of Limbic"
+          >
+            <source src="/limbic-tour.webm" type="video/webm" />
+            <source src="/limbic-tour.mp4" type="video/mp4" />
+          </video>
         </div>
+        <p className="landing-demo-note">
+          No sound needed. Everything is on screen.
+        </p>
       </section>
 
       <section className="landing-founding">

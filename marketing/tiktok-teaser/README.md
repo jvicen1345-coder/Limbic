@@ -12,6 +12,11 @@ Output: `limbic-teaser.mp4` — 1080x1920, 30 fps, H.264 High at crf 22 (~16MB),
 silent AAC track so a trending sound can be laid over it in the TikTok editor.
 Caption/hashtag copy and posting notes: [`captions.md`](captions.md).
 
+**The landing page serves this too.** `/` embeds a 720x1280 cut of the same master (see
+the `landing-demo` section of `src/components/LandingPage.tsx`), so after any re-render
+run [`derive-web-assets.sh`](derive-web-assets.sh) or the site keeps showing the old
+version while the social file moves on.
+
 ## Re-rendering it
 
 Needs a working local app (`.env` + `npx prisma migrate deploy`), `playwright-core`
@@ -24,6 +29,7 @@ node marketing/tiktok-teaser/capture.mjs           # signs in, screenshots each 
 node marketing/tiktok-teaser/capture-agent.mjs     # re-shoots /agent with a question typed
 node marketing/tiktok-teaser/capture-extra.mjs     # feed / playbook / movement lab / metrics
 node marketing/tiktok-teaser/render.mjs            # 1644 frames -> limbic-teaser.mp4
+./marketing/tiktok-teaser/derive-web-assets.sh    # -> the three files public/ serves
 ```
 
 `capture.mjs` signs in as `demo@limbic.center` (creating the account on first run) and
@@ -72,6 +78,11 @@ start times are accumulated, never hand-written, so nothing downstream needs adj
 | **LimbicPRO** card → Clinical Toolbox, Agent, Movement Lab | 1.9s + 3.2–3.4s each |
 | **Health & Wellness** card → Wellness+, Games, Clips | 1.9s + 2.8–3.2s each |
 | CTA — limbic.center · Free to start | 4.8s |
+
+The opening frame is deliberately not empty. The intro lines fade in, but the first one
+starts its fade *before* t=0 (the `+0.34` in `introScene`) so frame 0 already reads:
+TikTok takes the opening frame as the default cover, and the landing page shows it the
+moment playback starts.
 
 One constraint to respect when adding a beat: a 700px-wide phone screenshot is 1522px
 tall inside a 1400px window, so a beat's `pan` can only travel about 122px before it runs

@@ -105,6 +105,9 @@ No emoji and no em dashes anywhere in the posted text. Where a dash was doing wo
 use a colon, a comma, or a full stop instead. Same goes for the arrow that used to
 sit in front of the URL.
 
+This applies to the video's own on-screen copy as well, not just the captions, so
+`teaser.html`'s sublines follow it too. Changing one means a re-render.
+
 ## Hashtag bank
 
 Core: `#physicaltherapy` `#physicaltherapist` `#dpt` `#dptstudent` `#ptstudent`
@@ -149,7 +152,7 @@ research cards are live PubMed results, not seed content.
 | 0:25.6 | Limbic Atlas | `/atlas` | Anatomy by region; open to Student and PRO — the page's own gating note |
 | 0:28.5 | **LimbicPRO** | — | "For the clinician at the point of care" |
 | 0:30.4 | Clinical Toolbox | `/pro/toolbox` | "Free clinical reference for every PT" — the free tier per `LandingPage.tsx` |
-| 0:33.6 | Limbic Agent | `/agent` | "Never a diagnosis. Always a starting point." — the app's own disclaimer wording |
+| 0:33.6 | Limbic Agent | `/agent` | "Never a diagnosis, always a starting point." from the app's own disclaimer wording |
 | 0:36.8 | Movement Lab | `/hep?tab=movement-lab` | "224 therapeutic exercises and 19 phased protocols" — read off the page |
 | 0:39.8 | **Health & Wellness** | — | "For the people they serve" |
 | 0:41.7 | Limbic Wellness+ | `/wellness/metrics` | "Optional, all private to you" — the page's own wording |

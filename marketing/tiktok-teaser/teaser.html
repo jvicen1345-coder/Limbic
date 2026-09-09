@@ -101,7 +101,7 @@ function introScene(lines){
   const els=[...s.querySelectorAll('.introline')];
   return {el:s, update(lt){
     els.forEach((e,i)=>{
-      const q=eOut((lt-i*0.52)/0.72);
+      const q=eOut((lt+0.34-i*0.52)/0.72);
       e.style.top=(600+i*132)+'px';
       e.style.opacity=q.toFixed(3);
       e.style.transform='translateY('+lerp(54,0,q)+'px)';
@@ -205,11 +205,11 @@ const PLAN=[
 
   {d:3.4, s:()=>featureScene({img:'shots/feed.png', chip:'Your home feed',
     head:'Current research,<br>tailored to you.',
-    sub:'Live from PubMed and filtered to the topics you follow — studies, guidelines, industry and policy.',
+    sub:'Live from PubMed, filtered to the topics you follow: studies, guidelines, industry and policy.',
     pan:[-4,-118]},3.4)},
   {d:3.4, s:()=>featureScene({img:'shots/search.png', chip:'Search',
     head:'Look for research<br>in plain English.',
-    sub:'Describe what you need. Limbic turns it into a real PubMed query — and shows you the query it wrote.'},3.4)},
+    sub:'Describe what you need. Limbic turns it into a real PubMed query, then shows you the query it wrote.'},3.4)},
 
   {d:1.9, s:()=>sectionScene('Limbic Student','Built for the DPT journey')},
   {d:3.2, s:()=>featureScene({img:'shots/student.png', chip:'The Atrium',
@@ -217,14 +217,14 @@ const PLAN=[
     sub:'Class schedule, assignments, rotation countdown, and daily clinical sharpening.'},3.2)},
   {d:3.4, s:()=>featureScene({img:'shots/playbook.png', chip:'Playbooks',
     head:'The shoulder screen,<br>in the order<br>you’d perform it.',
-    sub:'Every value marked measured, convention, or contested — with 83 sources linked.',
+    sub:'Every value marked measured, convention, or contested, with 83 sources linked.',
     pan:[-2,-112]},3.4)},
   {d:3.1, s:()=>featureScene({img:'shots/boards.png', chip:'Boards',
     head:'Daily NPTE reps.',
     sub:'Term of the day. Board question. Case of the day.'},3.1)},
   {d:3.4, s:()=>featureScene({img:'shots/atlas.png', chip:'Limbic Atlas',
     head:'Clinical anatomy,<br>region by region.',
-    sub:'Muscles, conditions, special tests and board pearls — open to Student and PRO alike.'},3.4)},
+    sub:'Muscles, conditions, special tests and board pearls. Open to Student and PRO alike.'},3.4)},
 
   {d:1.9, s:()=>sectionScene('LimbicPRO','For the clinician at the point of care')},
   {d:3.2, s:()=>featureScene({img:'shots/pro.png', chip:'Clinical Toolbox',
@@ -232,11 +232,11 @@ const PLAN=[
     sub:'Free clinical reference for every PT, grouped by when you’d reach for it.'},3.2)},
   {d:3.2, s:()=>featureScene({img:'shots/agent.png', chip:'Limbic Agent',
     head:'Ask a clinical<br>question.',
-    sub:'Grounded in current evidence. Never a diagnosis — always a starting point.',
+    sub:'Grounded in current evidence. Never a diagnosis, always a starting point.',
     pan:[0,-120]},3.2)},
   {d:3.4, s:()=>featureScene({img:'shots/movementlab.png', chip:'Movement Lab',
     head:'224 exercises.<br>19 phased protocols.',
-    sub:'Setup, technique, dosage and precautions — sent straight into a patient’s program.',
+    sub:'Setup, technique, dosage and precautions, sent straight into a patient’s program.',
     pan:[-2,-114]},3.4)},
 
   {d:1.9, s:()=>sectionScene('Health &amp; Wellness','For the people they serve')},
