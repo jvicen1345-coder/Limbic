@@ -4,37 +4,42 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:1080px;height:1920px;overflow:hidden;background:#0d1220}
 #stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#0d1220;
-  font-family:'Jakarta',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#e7ecf7;-webkit-font-smoothing:antialiased}
-.glow{position:absolute;border-radius:50%;filter:blur(120px);will-change:transform,opacity}
-#g1{width:900px;height:900px;background:#6d9bf5;opacity:.20}
-#g2{width:760px;height:760px;background:#4dd1ee;opacity:.13}
-#grain{position:absolute;inset:0;opacity:.055;pointer-events:none;
+  font-family:'Jakarta',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#e7ecf7;
+  -webkit-font-smoothing:antialiased}
+/* Radial-gradient washes rather than filter:blur() circles — same look, but nothing has to
+   re-rasterize a 120px blur on every one of ~1600 frames. */
+.glow{position:absolute;width:1500px;height:1500px;pointer-events:none}
+#g1{background:radial-gradient(circle closest-side,rgba(109,155,245,.30),rgba(109,155,245,.12) 45%,transparent 72%)}
+#g2{background:radial-gradient(circle closest-side,rgba(77,209,238,.20),rgba(77,209,238,.07) 45%,transparent 72%)}
+#grain{position:absolute;inset:0;opacity:.05;pointer-events:none;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>")}
 #vig{position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(120% 80% at 50% 42%, rgba(13,18,32,0) 40%, rgba(6,9,17,.72) 100%)}
 #bar{position:absolute;top:0;left:0;height:7px;width:0;
   background:linear-gradient(90deg,#4dd1ee,#6d9bf5);z-index:60}
-.scene{position:absolute;inset:0;display:none}
+.scene{position:absolute;inset:0;display:none;will-change:opacity,transform}
 .scene.on{display:block}
 
-/* ---------- hook ---------- */
-#hook{padding:0 84px}
-.hookwrap{position:absolute;left:84px;top:470px;width:912px}
-.hookline{font-weight:800;font-size:118px;line-height:1.02;letter-spacing:-4px;
-  will-change:transform,opacity}
-.hookline i{font-style:normal;color:#6d9bf5}
-.hooktail{position:absolute;left:84px;top:1180px;width:912px;font-weight:700;font-size:60px;
-  line-height:1.12;letter-spacing:-1.6px;color:#9aa8c9}
+/* ---------- intro ---------- */
+.introline{position:absolute;left:84px;width:912px;font-weight:800;font-size:118px;
+  line-height:1.02;letter-spacing:-4.4px;will-change:transform,opacity}
 
 /* ---------- logo ---------- */
-.logocenter{position:absolute;left:0;right:0;top:640px;text-align:center}
-.mark{width:196px;height:196px;margin:0 auto;display:block;will-change:transform,opacity;
+.logocenter{position:absolute;left:0;right:0;top:600px;text-align:center}
+.mark{width:200px;height:200px;margin:0 auto;display:block;will-change:transform,opacity;
   filter:drop-shadow(0 30px 70px rgba(109,155,245,.5))}
-.word{margin-top:44px;font-weight:800;font-size:148px;letter-spacing:-6px;line-height:1}
-.tagline{margin-top:26px;font-weight:700;font-size:32px;letter-spacing:6px;
+.word{margin-top:46px;font-weight:800;font-size:150px;letter-spacing:-6px;line-height:1}
+.tagline{margin-top:28px;font-weight:700;font-size:32px;letter-spacing:6px;
   text-transform:uppercase;color:#6d9bf5}
-.tagsub{margin-top:52px;font-weight:600;font-size:50px;line-height:1.24;color:#9aa8c9;
-  padding:0 110px;letter-spacing:-1px}
+.tagsub{margin-top:58px;font-weight:600;font-size:50px;line-height:1.26;color:#9aa8c9;
+  padding:0 100px;letter-spacing:-1px}
+
+/* ---------- section card ---------- */
+.seccenter{position:absolute;left:0;right:0;top:760px;text-align:center}
+.secrule{width:132px;height:6px;margin:0 auto 46px;background:#4dd1ee;border-radius:3px;
+  transform-origin:50% 50%}
+.sectitle{font-weight:800;font-size:126px;letter-spacing:-5px;line-height:1}
+.seclabel{margin-top:34px;font-weight:600;font-size:44px;letter-spacing:-.8px;color:#9aa8c9}
 
 /* ---------- feature ---------- */
 .chip{position:absolute;left:84px;top:196px;display:flex;align-items:center;gap:18px;
@@ -43,34 +48,20 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#0d1220}
   box-shadow:0 0 26px 6px rgba(77,209,238,.6)}
 .fhead{position:absolute;left:84px;top:262px;width:920px;font-weight:800;font-size:92px;
   line-height:1.03;letter-spacing:-3.4px}
-.fsub{position:absolute;left:84px;width:880px;font-weight:600;font-size:40px;line-height:1.3;
+.fsub{position:absolute;left:84px;width:890px;font-weight:600;font-size:39px;line-height:1.32;
   letter-spacing:-.8px;color:#9aa8c9}
 .phone{position:absolute;left:190px;width:700px;height:1400px;border-radius:60px;
   border:11px solid #222b43;overflow:hidden;background:#0d1220;
   box-shadow:0 50px 120px rgba(0,0,0,.62), 0 0 0 2px rgba(231,236,247,.07) inset;
   will-change:transform,opacity}
-.phone img{position:absolute;left:0;top:0;width:100%;display:block}
+.phone img{position:absolute;left:0;top:0;width:100%;display:block;will-change:transform}
 .phone .gloss{position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(160deg,rgba(255,255,255,.13) 0%,rgba(255,255,255,0) 34%)}
 .phone .fade{position:absolute;left:0;right:0;bottom:0;height:150px;pointer-events:none;
   background:linear-gradient(180deg,rgba(13,18,32,0),rgba(13,18,32,.72))}
 
-/* ---------- flash 3-up ---------- */
-.fl3{position:absolute;top:600px;width:330px;height:760px;border-radius:42px;
-  border:8px solid #222b43;overflow:hidden;background:#0d1220;
-  box-shadow:0 34px 80px rgba(0,0,0,.6);will-change:transform,opacity}
-.fl3 img{position:absolute;left:0;top:0;width:100%}
-.fl3lab{position:absolute;top:1408px;width:330px;text-align:center;font-weight:700;
-  font-size:34px;letter-spacing:-.8px;color:#e7ecf7}
-
-/* ---------- audience ---------- */
-.aud{position:absolute;left:84px;width:912px;font-weight:800;font-size:112px;line-height:1;
-  letter-spacing:-4px;will-change:transform,opacity}
-.audfin{position:absolute;left:84px;top:1210px;width:912px;font-weight:800;font-size:126px;
-  line-height:1;letter-spacing:-5px;color:#6d9bf5}
-
 /* ---------- cta ---------- */
-.ctawrap{position:absolute;left:0;right:0;top:700px;text-align:center}
+.ctawrap{position:absolute;left:0;right:0;top:680px;text-align:center}
 .ctamark{width:168px;height:168px;margin:0 auto 46px;display:block;
   filter:drop-shadow(0 24px 56px rgba(109,155,245,.5))}
 .ctaurl{font-weight:800;font-size:118px;letter-spacing:-4px;line-height:1}
@@ -87,221 +78,217 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#0d1220}
   <div id="scenes"></div>
 </div>
 <script>
-const W=1080,H=1920,DUR=22.0;
+const W=1080,H=1920;
+/* Cross-dissolve length. Every scene's visible life is its own duration plus XF, so the
+   outgoing scene's fade-out runs exactly over the incoming scene's fade-in. */
+const XF=0.52;
 const cl=(x,a,b)=>Math.max(a,Math.min(b,x));
 const eOut=p=>1-Math.pow(1-cl(p,0,1),3);
 const eOut4=p=>1-Math.pow(1-cl(p,0,1),4);
-const eIO=p=>{p=cl(p,0,1);return p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2};
-const eBack=p=>{p=cl(p,0,1);const c=1.7;return 1+(c+1)*Math.pow(p-1,3)+c*Math.pow(p-1,2)};
+const eBack=p=>{p=cl(p,0,1);const c=1.6;return 1+(c+1)*Math.pow(p-1,3)+c*Math.pow(p-1,2)};
 const lerp=(a,b,p)=>a+(b-a)*cl(p,0,1);
-// window(t) helper: fade in over fi, hold, fade out over fo
-const winA=(lt,st,fi,dur,fo)=>{const x=lt-st;if(x<0)return 0;if(x<fi)return x/fi;
-  if(x<fi+dur)return 1;if(x<fi+dur+fo)return 1-(x-fi-dur)/fo;return 0};
 
 const MARK='../../public/logo-icon.png';
-const FEATURES=[
- {img:'shots/agent.png',  chip:'Limbic Agent', head:'Ask a clinical<br>question.',
-  sub:'Decision support grounded in current evidence.<br>Never a diagnosis. Always a starting point.', pan:[0,-122]},
- {img:'shots/search.png', chip:'AI PubMed Search', head:'Plain English in.<br>Real PubMed out.',
-  sub:'Describe what you need. It writes the query —<br>and shows it to you.'},
- {img:'shots/pro.png',    chip:'LimbicPRO', head:'Calculators.<br>Decision rules.<br>Special tests.',
-  sub:'Free clinical reference for every PT.'},
- {img:'shots/atlas.png',  chip:'Limbic Atlas', head:'Clinical anatomy,<br>region by region.',
-  sub:'Muscles, conditions, special tests, board pearls.'},
- {img:'shots/boards.png', chip:'Limbic Boards', head:'Daily NPTE reps.',
-  sub:'Term of the day. Board question. Case of the day.'},
- {img:'shots/nexus.png',  chip:'Limbic Nexus', head:'A network built<br>for PT.',
-  sub:'Not adapted from somewhere else.'},
-];
-const FLASH=[
- {img:'shots/games.png', lab:'Daily games'},
- {img:'shots/clips.png', lab:'PT clips'},
- {img:'shots/hep.png',   lab:'HEP builder'},
-];
+const DEF_PAN=[-4,-118];
 
 const root=document.getElementById('scenes');
-const mk=(html,id)=>{const d=document.createElement('div');d.className='scene';d.id=id;
-  d.innerHTML=html;root.appendChild(d);return d};
+const mk=(html)=>{const d=document.createElement('div');d.className='scene';d.innerHTML=html;
+  root.appendChild(d);return d};
 
-/* ===== scene 1: hook ===== */
-const HOOK=['PubMed.','APTA.','NPTE decks.','Clinic PDFs.'];
-const sHook=mk('<div class="hookwrap">'+HOOK.map((h,i)=>
-  '<div class="hookline" data-i="'+i+'">'+h+'</div>').join('')+
-  '</div><div class="hooktail">Every one of them<br>somewhere else.</div>','hook');
-const hookLines=[...sHook.querySelectorAll('.hookline')];
-const hookTail=sHook.querySelector('.hooktail');
+/* ============ scene builders ============ */
+function introScene(lines){
+  const s=mk(lines.map((l,i)=>'<div class="introline">'+l+'</div>').join(''));
+  const els=[...s.querySelectorAll('.introline')];
+  return {el:s, update(lt){
+    els.forEach((e,i)=>{
+      const q=eOut((lt-i*0.52)/0.72);
+      e.style.top=(600+i*132)+'px';
+      e.style.opacity=q.toFixed(3);
+      e.style.transform='translateY('+lerp(54,0,q)+'px)';
+      e.style.color=i===lines.length-1?'#6d9bf5':'#e7ecf7';
+    });
+  }};
+}
 
-/* ===== scene 2: logo ===== */
-const sLogo=mk('<div class="logocenter">'+
-  '<img class="mark" src="'+MARK+'">'+
-  '<div class="word">Limbic</div>'+
-  '<div class="tagline">The Physical Therapy Platform</div>'+
-  '<div class="tagsub">The research, the profession,<br>and the public. In one place.</div>'+
-  '</div>','logo');
-const lgMark=sLogo.querySelector('.mark'), lgWord=sLogo.querySelector('.word'),
-      lgTag=sLogo.querySelector('.tagline'), lgSub=sLogo.querySelector('.tagsub');
+function logoScene(){
+  const s=mk('<div class="logocenter">'+
+    '<img class="mark" src="'+MARK+'">'+
+    '<div class="word">Limbic</div>'+
+    '<div class="tagline">The Physical Therapy Platform</div>'+
+    '<div class="tagsub">One platform. Every PT professional.<br>Their entire career.</div></div>');
+  const m=s.querySelector('.mark'), w=s.querySelector('.word'),
+        g=s.querySelector('.tagline'), b=s.querySelector('.tagsub');
+  return {el:s, update(lt){
+    const a=eBack(lt/0.85), c=eOut((lt-0.30)/0.70),
+          d=eOut((lt-0.60)/0.70), e=eOut((lt-0.95)/0.75);
+    m.style.opacity=cl(a,0,1).toFixed(3);
+    m.style.transform='scale('+lerp(0.46,1,a)+') rotate('+lerp(-20,0,a)+'deg)';
+    w.style.opacity=c.toFixed(3);
+    w.style.transform='translateY('+lerp(42,0,c)+'px) scale('+lerp(0.95,1,c)+')';
+    g.style.opacity=d.toFixed(3);
+    g.style.letterSpacing=lerp(14,6,d)+'px';
+    b.style.opacity=e.toFixed(3);
+    b.style.transform='translateY('+lerp(34,0,e)+'px)';
+  }};
+}
 
-/* ===== scenes 3..8: features ===== */
-const featScenes=FEATURES.map((f,i)=>{
+function sectionScene(title,label){
+  const s=mk('<div class="seccenter"><div class="secrule"></div>'+
+    '<div class="sectitle">'+title+'</div><div class="seclabel">'+label+'</div></div>');
+  const r=s.querySelector('.secrule'), t=s.querySelector('.sectitle'), l=s.querySelector('.seclabel');
+  return {el:s, update(lt){
+    const a=eOut(lt/0.60), b=eOut((lt-0.14)/0.66), c=eOut((lt-0.38)/0.66);
+    r.style.opacity=a.toFixed(3);
+    r.style.transform='scaleX('+lerp(0.05,1,a)+')';
+    t.style.opacity=b.toFixed(3);
+    t.style.transform='translateY('+lerp(36,0,b)+'px)';
+    l.style.opacity=c.toFixed(3);
+    l.style.transform='translateY('+lerp(24,0,c)+'px)';
+  }};
+}
+
+function featureScene(f,dur){
   const s=mk('<div class="chip"><span class="dot"></span>'+f.chip+'</div>'+
     '<div class="fhead">'+f.head+'</div>'+
-    '<div class="fsub">'+f.sub+'</div>'+
-    '<div class="phone"><img src="'+f.img+'"><div class="gloss"></div><div class="fade"></div></div>',
-    'feat'+i);
-  return {s, chip:s.querySelector('.chip'), head:s.querySelector('.fhead'),
-          sub:s.querySelector('.fsub'), phone:s.querySelector('.phone'),
-          img:s.querySelector('.phone img')};
-});
+    (f.sub?'<div class="fsub">'+f.sub+'</div>':'')+
+    '<div class="phone"><img src="'+f.img+'"><div class="gloss"></div><div class="fade"></div></div>');
+  const chip=s.querySelector('.chip'), head=s.querySelector('.fhead'),
+        sub=s.querySelector('.fsub'), phone=s.querySelector('.phone'),
+        img=s.querySelector('.phone img');
+  const pan=f.pan||DEF_PAN;
+  return {el:s, update(lt){
+    const c=eOut(lt/0.50), h=eOut((lt-0.08)/0.62),
+          v=eOut((lt-0.26)/0.70), ph=eOut4(lt/1.00);
+    chip.style.opacity=c.toFixed(3);
+    chip.style.transform='translateX('+lerp(-38,0,c)+'px)';
+    head.style.opacity=h.toFixed(3);
+    head.style.transform='translateY('+lerp(44,0,h)+'px)';
+    let bottom=262+head.offsetHeight;
+    if(sub){
+      sub.style.top=(bottom+34)+'px';
+      sub.style.opacity=(v*0.98).toFixed(3);
+      sub.style.transform='translateY('+lerp(28,0,v)+'px)';
+      bottom=bottom+34+sub.offsetHeight;
+    }
+    phone.style.top=Math.max(600,bottom+58)+'px';
+    phone.style.opacity=ph.toFixed(3);
+    phone.style.transform='translateY('+lerp(170,0,ph)+'px) scale('+lerp(0.96,1,ph)+')';
+    img.style.transform='translateY('+lerp(pan[0],pan[1],lt/dur)+'px)';
+  }};
+}
 
-/* ===== scene 9: flash 3-up ===== */
-const sFlash=mk('<div class="chip"><span class="dot"></span>Also inside</div>'+
-  '<div class="fhead" style="top:262px">Habits, not homework.</div>'+
-  FLASH.map((f,i)=>'<div class="fl3" data-i="'+i+'"><img src="'+f.img+'"></div>'+
-    '<div class="fl3lab" data-i="'+i+'">'+f.lab+'</div>').join(''),'flash');
-const fl3=[...sFlash.querySelectorAll('.fl3')], fl3l=[...sFlash.querySelectorAll('.fl3lab')];
-const flHead=sFlash.querySelector('.fhead'), flChip=sFlash.querySelector('.chip');
+function ctaScene(){
+  const s=mk('<div class="ctawrap"><img class="ctamark" src="'+MARK+'">'+
+    '<div class="ctaurl">limbic.center</div>'+
+    '<div class="ctafree">Free to start</div>'+
+    '<div class="ctasub">Students · Clinicians · Patients</div></div>');
+  const m=s.querySelector('.ctamark'), u=s.querySelector('.ctaurl'),
+        f=s.querySelector('.ctafree'), b=s.querySelector('.ctasub');
+  return {el:s, update(lt){
+    const a=eBack(lt/0.80), c=eOut((lt-0.34)/0.68),
+          d=eBack((lt-0.70)/0.85), e=eOut((lt-1.05)/0.68);
+    m.style.opacity=cl(a,0,1).toFixed(3);
+    m.style.transform='scale('+lerp(0.54,1,a)+')';
+    u.style.opacity=c.toFixed(3);
+    u.style.transform='translateY('+lerp(38,0,c)+'px)';
+    f.style.opacity=cl(d,0,1).toFixed(3);
+    const pulse=lt>1.3?1+0.03*Math.sin((lt-1.3)*5.0):1;
+    f.style.transform='scale('+(lerp(0.82,1,d)*pulse)+')';
+    b.style.opacity=(e*0.95).toFixed(3);
+  }};
+}
 
-/* ===== scene 10: audience ===== */
-const AUD=['Students.','Clinicians.','Patients.'];
-const sAud=mk(AUD.map((a,i)=>'<div class="aud" data-i="'+i+'">'+a+'</div>').join('')+
-  '<div class="audfin">One platform.</div>','aud');
-const audEls=[...sAud.querySelectorAll('.aud')], audFin=sAud.querySelector('.audfin');
+/* ============ timeline ============ */
+const PLAN=[
+  {d:3.0, s:()=>introScene(['The profession,','the research,','and the public.'])},
+  {d:2.8, s:logoScene},
 
-/* ===== scene 11: cta ===== */
-const sCta=mk('<div class="ctawrap">'+
-  '<img class="ctamark" src="'+MARK+'">'+
-  '<div class="ctaurl">limbic.center</div>'+
-  '<div class="ctafree">Free to start</div>'+
-  '<div class="ctasub">Students · Clinicians · Patients</div>'+
-  '</div>','cta');
-const ctaMark=sCta.querySelector('.ctamark'), ctaUrl=sCta.querySelector('.ctaurl'),
-      ctaFree=sCta.querySelector('.ctafree'), ctaSub=sCta.querySelector('.ctasub');
+  {d:3.4, s:()=>featureScene({img:'shots/feed.png', chip:'Your home feed',
+    head:'Current research,<br>tailored to you.',
+    sub:'Live from PubMed and filtered to the topics you follow — studies, guidelines, industry and policy.',
+    pan:[-4,-118]},3.4)},
+  {d:3.4, s:()=>featureScene({img:'shots/search.png', chip:'Search',
+    head:'Look for research<br>in plain English.',
+    sub:'Describe what you need. Limbic turns it into a real PubMed query — and shows you the query it wrote.'},3.4)},
 
-/* ===== timeline ===== */
-const FT=1.7, F0=4.0;
-const T=[
-  {el:sHook, a:0.0,  b:2.4},
-  {el:sLogo, a:2.4,  b:4.0},
-  ...featScenes.map((f,i)=>({el:f.s, a:F0+i*FT, b:F0+(i+1)*FT, feat:i})),
-  {el:sFlash,a:F0+6*FT, b:F0+6*FT+1.7},
-  {el:sAud,  a:F0+6*FT+1.7, b:F0+6*FT+1.7+2.2},
-  {el:sCta,  a:F0+6*FT+1.7+2.2, b:DUR},
+  {d:1.9, s:()=>sectionScene('Limbic Student','Built for the DPT journey')},
+  {d:3.2, s:()=>featureScene({img:'shots/student.png', chip:'The Atrium',
+    head:'Your semester,<br>in one place.',
+    sub:'Class schedule, assignments, rotation countdown, and daily clinical sharpening.'},3.2)},
+  {d:3.4, s:()=>featureScene({img:'shots/playbook.png', chip:'Playbooks',
+    head:'The shoulder screen,<br>in the order<br>you’d perform it.',
+    sub:'Every value marked measured, convention, or contested — with 83 sources linked.',
+    pan:[-2,-112]},3.4)},
+  {d:3.1, s:()=>featureScene({img:'shots/boards.png', chip:'Boards',
+    head:'Daily NPTE reps.',
+    sub:'Term of the day. Board question. Case of the day.'},3.1)},
+  {d:3.4, s:()=>featureScene({img:'shots/atlas.png', chip:'Limbic Atlas',
+    head:'Clinical anatomy,<br>region by region.',
+    sub:'Muscles, conditions, special tests and board pearls — open to Student and PRO alike.'},3.4)},
+
+  {d:1.9, s:()=>sectionScene('LimbicPRO','For the clinician at the point of care')},
+  {d:3.2, s:()=>featureScene({img:'shots/pro.png', chip:'Clinical Toolbox',
+    head:'Calculators.<br>Decision rules.<br>Special tests.',
+    sub:'Free clinical reference for every PT, grouped by when you’d reach for it.'},3.2)},
+  {d:3.2, s:()=>featureScene({img:'shots/agent.png', chip:'Limbic Agent',
+    head:'Ask a clinical<br>question.',
+    sub:'Grounded in current evidence. Never a diagnosis — always a starting point.',
+    pan:[0,-120]},3.2)},
+  {d:3.4, s:()=>featureScene({img:'shots/movementlab.png', chip:'Movement Lab',
+    head:'224 exercises.<br>19 phased protocols.',
+    sub:'Setup, technique, dosage and precautions — sent straight into a patient’s program.',
+    pan:[-2,-114]},3.4)},
+
+  {d:1.9, s:()=>sectionScene('Health &amp; Wellness','For the people they serve')},
+  {d:3.2, s:()=>featureScene({img:'shots/wellness2.png', chip:'Limbic Wellness+',
+    head:'Tuned to your<br>own numbers.',
+    sub:'Optional, private, and built on the same research your physical therapist uses.'},3.2)},
+  {d:2.8, s:()=>featureScene({img:'shots/games.png', chip:'Limbic Games',
+    head:'A daily habit,<br>not homework.',
+    sub:'Daily Term. Mini Crossword.'},2.8)},
+  {d:2.8, s:()=>featureScene({img:'shots/clips.png', chip:'Limbic Clips',
+    head:'Real PT,<br>in short form.',
+    sub:'Curated and live-sourced rehab clips.'},2.8)},
+
+  {d:4.8, s:ctaScene},
 ];
+
+let acc=0;
+const T=PLAN.map(p=>{const seg={a:acc, d:p.d, ...p.s()}; acc+=p.d; return seg});
+const DUR=acc;                        // last scene has no successor to dissolve into
+T.forEach((seg,i)=>{seg.b=seg.a+seg.d+(i===T.length-1?0:XF)});
 
 const g1=document.getElementById('g1'), g2=document.getElementById('g2'),
       bar=document.getElementById('bar');
 
+/** Fade-in over XF, fade-out over the trailing XF — asymmetric easing (incoming a touch
+ *  quicker than outgoing) keeps the two overlapping scenes from reading as mud. */
+function alphaOf(seg,t){
+  const x=t-seg.a;
+  if(x<0||t>=seg.b) return 0;
+  const fin=seg.a===0?1:cl(x/(XF*0.82),0,1);
+  const fout=cl((seg.b-t)/XF,0,1);
+  return Math.min(fin,fout);
+}
+
 window.__render=function(t){
   t=cl(t,0,DUR-0.001);
   bar.style.width=(t/DUR*W)+'px';
-  // drifting glows
-  g1.style.transform='translate('+(-120+180*Math.sin(t*0.42))+'px,'+(240+300*Math.cos(t*0.31))+'px)';
-  g2.style.transform='translate('+(560+150*Math.cos(t*0.37+1.1))+'px,'+(1180+260*Math.sin(t*0.29+2.0))+'px)';
+  g1.style.transform='translate('+(-460+170*Math.sin(t*0.22))+'px,'+(-180+300*Math.cos(t*0.16))+'px)';
+  g2.style.transform='translate('+(150+150*Math.cos(t*0.19+1.1))+'px,'+(700+280*Math.sin(t*0.14+2.0))+'px)';
 
-  T.forEach(seg=>seg.el.classList.remove('on'));
-  const seg=T.find(s=>t>=s.a&&t<s.b)||T[T.length-1];
-  seg.el.classList.add('on');
-  const lt=t-seg.a, dur=seg.b-seg.a, p=lt/dur;
-
-  if(seg.el===sHook){
-    hookLines.forEach((el,i)=>{
-      const st=i*0.30;
-      const inp=eOut((lt-st)/0.34);
-      // collapse phase: dim + pull together at the end
-      const col=eIO((lt-1.62)/0.62);
-      const y=470+i*128;
-      const ty=lerp(0,-(i*128)*0.10,col) + lerp(60,0,inp);
-      const sc=lerp(0.94,1,inp)*lerp(1,0.94,col);
-      el.style.opacity=(inp*lerp(1,0.22,col)).toFixed(3);
-      el.style.transform='translateY('+ty+'px) scale('+sc+')';
-      el.style.color=i===3?'#6d9bf5':'#e7ecf7';
-      el.style.position='absolute';el.style.left='0';el.style.top=(i*128)+'px';
-      el.style.width='912px';
-    });
-    const tl=eOut((lt-1.72)/0.5);
-    hookTail.style.opacity=tl.toFixed(3);
-    hookTail.style.transform='translateY('+lerp(46,0,tl)+'px)';
-  }
-
-  if(seg.el===sLogo){
-    const m=eBack(lt/0.62), w=eOut((lt-0.20)/0.5),
-          g=eOut((lt-0.42)/0.5), s2=eOut((lt-0.66)/0.55);
-    lgMark.style.opacity=cl(m,0,1).toFixed(3);
-    lgMark.style.transform='scale('+lerp(0.42,1,m)+') rotate('+lerp(-22,0,m)+'deg)';
-    lgWord.style.opacity=w.toFixed(3);
-    lgWord.style.transform='translateY('+lerp(38,0,w)+'px) scale('+lerp(0.94,1,w)+')';
-    lgTag.style.opacity=g.toFixed(3);
-    lgTag.style.letterSpacing=lerp(13,6,g)+'px';
-    lgSub.style.opacity=s2.toFixed(3);
-    lgSub.style.transform='translateY('+lerp(30,0,s2)+'px)';
-  }
-
-  if(seg.feat!==undefined){
-    const f=featScenes[seg.feat];
-    const c=eOut(lt/0.30), h=eOut((lt-0.06)/0.40),
-          s2=eOut((lt-0.24)/0.44), ph=eOut4(lt/0.62);
-    const out=cl((lt-(dur-0.20))/0.20,0,1);   // quick exit
-    f.chip.style.opacity=(c*(1-out)).toFixed(3);
-    f.chip.style.transform='translateX('+lerp(-34,0,c)+'px)';
-    f.head.style.opacity=(h*(1-out)).toFixed(3);
-    f.head.style.transform='translateY('+lerp(40,0,h)+'px)';
-    // sub sits under the headline, measured
-    const hh=f.head.offsetHeight;
-    f.sub.style.top=(262+hh+34)+'px';
-    f.sub.style.opacity=(s2*0.98*(1-out)).toFixed(3);
-    f.sub.style.transform='translateY('+lerp(26,0,s2)+'px)';
-    const subBottom=262+hh+34+f.sub.offsetHeight;
-    const phTop=Math.max(600, subBottom+56);
-    f.phone.style.top=phTop+'px';
-    f.phone.style.opacity=(ph*(1-out*0.85)).toFixed(3);
-    f.phone.style.transform='translateY('+lerp(150,0,ph)+'px) scale('+lerp(0.965,1,ph)+')';
-    // slow internal scroll (ken burns)
-    const pan=FEATURES[seg.feat].pan||[-10,-190];
-    f.img.style.transform='translateY('+lerp(pan[0],pan[1],p)+'px)';
-  }
-
-  if(seg.el===sFlash){
-    const c=eOut(lt/0.28), h=eOut((lt-0.08)/0.4);
-    flChip.style.opacity=c.toFixed(3);
-    flHead.style.opacity=h.toFixed(3);
-    flHead.style.transform='translateY('+lerp(36,0,h)+'px)';
-    fl3.forEach((el,i)=>{
-      const q=eOut4((lt-0.18-i*0.13)/0.55);
-      el.style.left=(30+i*346)+'px';
-      el.style.opacity=q.toFixed(3);
-      el.style.transform='translateY('+lerp(130,0,q)+'px) scale('+lerp(0.9,1,q)+')';
-      el.querySelector('img').style.transform='translateY('+lerp(-6,-90,p)+'px)';
-      const l=fl3l[i];
-      l.style.left=(30+i*346)+'px';
-      l.style.opacity=eOut((lt-0.34-i*0.13)/0.5).toFixed(3);
-    });
-  }
-
-  if(seg.el===sAud){
-    audEls.forEach((el,i)=>{
-      const q=eOut((lt-i*0.26)/0.36);
-      el.style.top=(560+i*146)+'px';
-      el.style.opacity=q.toFixed(3);
-      el.style.transform='translateX('+lerp(-52,0,q)+'px)';
-    });
-    const fq=eBack((lt-1.05)/0.7);
-    audFin.style.opacity=cl(fq,0,1).toFixed(3);
-    audFin.style.transform='scale('+lerp(0.86,1,fq)+')';
-  }
-
-  if(seg.el===sCta){
-    const m=eBack(lt/0.62), u=eOut((lt-0.22)/0.5),
-          f2=eBack((lt-0.5)/0.65), s3=eOut((lt-0.78)/0.5);
-    ctaMark.style.opacity=cl(m,0,1).toFixed(3);
-    ctaMark.style.transform='scale('+lerp(0.5,1,m)+')';
-    ctaUrl.style.opacity=u.toFixed(3);
-    ctaUrl.style.transform='translateY('+lerp(34,0,u)+'px)';
-    ctaFree.style.opacity=cl(f2,0,1).toFixed(3);
-    // gentle pulse to draw the eye
-    const pulse=1+0.035*Math.sin((lt-0.5)*6.0);
-    ctaFree.style.transform='scale('+(lerp(0.8,1,f2)*(lt>0.9?pulse:1))+')';
-    ctaSub.style.opacity=(s3*0.95).toFixed(3);
-  }
+  T.forEach((seg,i)=>{
+    const a=alphaOf(seg,t);
+    if(a<=0){ seg.el.classList.remove('on'); return; }
+    seg.el.classList.add('on');
+    seg.el.style.opacity=a.toFixed(3);
+    seg.el.style.zIndex=String(10+i);
+    // outgoing drifts slightly forward, incoming settles back — a dissolve with depth
+    const x=t-seg.a, tail=cl((x-(seg.d))/XF,0,1);
+    const inn=cl(x/(XF*0.82),0,1);
+    seg.el.style.transform='scale('+(lerp(0.988,1,inn)*lerp(1,1.022,tail))+')';
+    seg.update(x);
+  });
 };
 window.__DUR=DUR;
 </script></body></html>

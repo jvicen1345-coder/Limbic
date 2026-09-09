@@ -1,11 +1,15 @@
 # TikTok teaser
 
-A 22-second, 1080×1920 teaser for limbic.center, rendered from real screenshots of this
+A 55-second, 1080×1920 teaser for limbic.center, rendered from real screenshots of this
 app — no mockups, no invented UI. Everything here is reproducible: the screens are
 captured from a local dev server, the motion is a deterministic HTML page, and the frames
 are piped straight into ffmpeg.
 
-Output: `limbic-teaser.mp4` (H.264 High, 30 fps, silent AAC track).
+It's structured as three tiers with a section card in front of each — Limbic Student,
+LimbicPRO, Health & Wellness — bracketed by a research opening and a CTA.
+
+Output: `limbic-teaser.mp4` — 1080x1920, 30 fps, H.264 High at crf 22 (~16MB), with a
+silent AAC track so a trending sound can be laid over it in the TikTok editor.
 Caption/hashtag copy and posting notes: [`captions.md`](captions.md).
 
 ## Re-rendering it
@@ -18,7 +22,8 @@ npm run dev                                        # in another shell, on :3000
 
 node marketing/tiktok-teaser/capture.mjs           # signs in, screenshots each route
 node marketing/tiktok-teaser/capture-agent.mjs     # re-shoots /agent with a question typed
-node marketing/tiktok-teaser/render.mjs            # 660 frames -> limbic-teaser.mp4
+node marketing/tiktok-teaser/capture-extra.mjs     # feed / playbook / movement lab / metrics
+node marketing/tiktok-teaser/render.mjs            # 1644 frames -> limbic-teaser.mp4
 ```
 
 `capture.mjs` signs in as `demo@limbic.center` (creating the account on first run) and
@@ -26,7 +31,13 @@ walks the role picker and welcome tour, so the screens come out clean. To get th
 paid-tier and student-gated screens to render fully, put that address in
 `FOUNDING_FUNDERS_ADMIN_EMAILS` in your `.env` before starting the dev server.
 
-Env knobs: `FFMPEG` (path to ffmpeg), `CHROME_PATH` (a specific Chromium),
+Some screens only look right at a particular scroll offset, and the scroller is
+`main.app-main`, not the window — `capture-extra.mjs` scrolls that element directly (or
+sends real wheel events) rather than calling `window.scrollTo`, which silently does
+nothing here.
+
+Env knobs: `FFMPEG` (path to ffmpeg), `CHROME_PATH` (a specific Chromium — needed
+whenever the installed browser revision doesn't match what `playwright-core` expects),
 `FPS` (default 30), `OUT` (output path), and `PREVIEW="3.2,7.5"` — render just those
 timestamps as PNGs instead of encoding, which is how you iterate on the design without
 waiting on a full render.
@@ -45,16 +56,27 @@ teaser tracks the app's real type, and no font binary lives in this repo. Colors
 dark-theme tokens from `src/styles/tokens.css` (`--color-bg`, `--color-accent`, …), so
 the teaser stays on-brand automatically if those change.
 
-Timeline, if you want to recut it (`FEATURES` and the `T` array in `teaser.html`):
+Scenes cross-dissolve rather than cut: `XF` (0.52s) is the dissolve length, and each
+scene's visible life is its own duration plus `XF`, so the outgoing scene's fade-out runs
+exactly over the incoming scene's fade-in. Outgoing scenes drift very slightly forward
+while incoming ones settle back, which keeps two overlapping full-frame scenes from
+reading as mud. To retime the whole thing, edit the `d:` values in the `PLAN` array —
+start times are accumulated, never hand-written, so nothing downstream needs adjusting.
 
-| Time | Beat |
+| Beat | Length |
 |---|---|
-| 0.0–2.4s | Hook — "PubMed. APTA. NPTE decks. Clinic PDFs." → "Every one of them somewhere else." |
-| 2.4–4.0s | Logo + "The research, the profession, and the public. In one place." |
-| 4.0–14.2s | Six product beats, 1.7s each: Agent, AI PubMed search, LimbicPRO, Atlas, Boards, Nexus |
-| 14.2–15.9s | Games / Clips / HEP builder, three-up |
-| 15.9–18.1s | "Students. Clinicians. Patients." → "One platform." |
-| 18.1–22.0s | limbic.center · Free to start |
+| Intro — "The profession, the research, and the public." | 3.0s |
+| Logo — "One platform. Every PT professional. Their entire career." | 2.8s |
+| Your home feed → Search | 3.4s each |
+| **Limbic Student** card → Atrium, Playbooks, Boards, Atlas | 1.9s + 3.1–3.4s each |
+| **LimbicPRO** card → Clinical Toolbox, Agent, Movement Lab | 1.9s + 3.2–3.4s each |
+| **Health & Wellness** card → Wellness+, Games, Clips | 1.9s + 2.8–3.2s each |
+| CTA — limbic.center · Free to start | 4.8s |
+
+One constraint to respect when adding a beat: a 700px-wide phone screenshot is 1522px
+tall inside a 1400px window, so a beat's `pan` can only travel about 122px before it runs
+off the bottom of the image. If you want a longer scroll than that, capture the screen at
+a different scroll offset instead of panning further.
 
 `shots/` (the captured screenshots) is gitignored — regenerate it with the capture
 scripts rather than committing it.

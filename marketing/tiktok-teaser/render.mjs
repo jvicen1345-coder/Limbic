@@ -28,6 +28,16 @@ const FPS = Number(process.env.FPS || 30);
 const OUT = process.env.OUT || path.join(SC, 'limbic-teaser.mp4');
 const FFMPEG = process.env.FFMPEG || 'ffmpeg';
 const PREVIEW = process.env.PREVIEW ? process.env.PREVIEW.split(',').map(Number) : null;
+/** Frames go through the pipe as JPEG, not PNG. Chromium's PNG encoder is the entire
+ *  bottleneck in this pipeline — measured on this page at 1080x1920, PNG costs ~780ms per
+ *  frame against ~110ms for JPEG q96, i.e. 21 minutes versus 3 for a full render. The
+ *  quality cost is nil in practice: H.264's 4:2:0 chroma subsampling at crf 19 discards
+ *  more than JPEG q96 does. Set FRAMES=png if you ever need a lossless intermediate. */
+const LOSSLESS = process.env.FRAMES === 'png';
+/** crf 22 rather than 19: this footage is mostly static UI under slow pans, TikTok
+ *  re-encodes everything on upload anyway, and 19 put a 55s cut at 25MB — most of which
+ *  would have been bitrate nobody ever sees. Override with CRF=19 for a master copy. */
+const CRF = process.env.CRF || '22';
 
 const browser = await chromium.launch({
   ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}),
@@ -58,10 +68,10 @@ if (PREVIEW) {
 const total = Math.round(DUR * FPS);
 const ff = spawn(FFMPEG, [
   '-y', '-hide_banner', '-loglevel', 'error',
-  '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'png', '-i', '-',
+  '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', LOSSLESS ? 'png' : 'mjpeg', '-i', '-',
   '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo',
   '-map', '0:v', '-map', '1:a', '-shortest',
-  '-c:v', 'libx264', '-preset', 'slow', '-crf', '19',
+  '-c:v', 'libx264', '-preset', 'slow', '-crf', CRF,
   '-pix_fmt', 'yuv420p', '-profile:v', 'high', '-level', '4.2',
   '-x264-params', 'keyint=60:min-keyint=30',
   '-c:a', 'aac', '-b:a', '96k',
@@ -74,7 +84,7 @@ const write = buf => new Promise(res => { if (ff.stdin.write(buf)) res(); else f
 for (let i = 0; i < total; i++) {
   const t = i / FPS;
   await page.evaluate(x => window.__render(x), t);
-  const buf = await page.screenshot({ type: 'png' });
+  const buf = await page.screenshot(LOSSLESS ? { type: 'png' } : { type: 'jpeg', quality: 96 });
   await write(buf);
   if (i % 60 === 0) console.log(`frame ${i}/${total} (${t.toFixed(1)}s)`);
 }
