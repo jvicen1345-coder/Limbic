@@ -1,0 +1,641 @@
+/* — article reading pane + persistent Limbic Threads panel (see
+   components/ArticleThreadsSplitView.tsx) — a full-width 60/40 split (article content /
+   Limbic Threads) rather than a capped-width centered pair: Threads is the dominant right
+   column feature here, not a secondary aside, so it earns real, proportioned width instead
+   of a narrow fixed sidebar. Stacks to one column below 1024px (tablet and mobile), same
+   sticky-aside mechanics as .home-row/.home-main-col/.home-aside-col above otherwise. */
+.article-split-pad {
+  width: 100%;
+  padding: 28px 32px 48px;
+  max-width: 1800px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.article-split {
+  display: flex;
+  flex-direction: row;
+  gap: 28px;
+  align-items: flex-start;
+}
+.article-split-reading { flex: 0 0 60%; max-width: 60%; min-width: 0; }
+.article-split-threads {
+  flex: 0 0 40%;
+  max-width: 40%;
+  min-width: 0;
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+@media (max-width: 1023px) {
+  .article-split-pad { padding: 24px 20px 40px; }
+  .article-split { flex-direction: column; gap: 28px; }
+  .article-split-reading, .article-split-threads {
+    flex: 1 1 auto; max-width: none; width: 100%; position: static; max-height: none; overflow-y: visible;
+  }
+}
+@media (max-width: 640px) {
+  .article-split-pad { padding: 18px 16px 40px; }
+}
+
+/* — article reading card (components/ArticleReadingPane.tsx) — the left column's own warm
+   card surface, same background every other card in the app uses, so a full-width redesign
+   still reads as part of the same product rather than a bare, unbounded page of text.
+   Fades in on load — the right column's Threads web gets its own organic build via the
+   staggered node reveal (see components/ThreadsWeb.tsx) instead of a fade. */
+.article-reading-card {
+  background: var(--color-card-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 24px 28px 32px;
+  animation: fade-in 0.5s ease;
+}
+@media (max-width: 640px) {
+  .article-reading-card { padding: 20px 16px 24px; }
+}
+
+/* — article header (components/ArticleReadingPane.tsx) — evidence badge first and most
+   prominent (a filled, solid-color pill instead of the feed card's tinted one — see
+   .tag-xl.tag-evidence-* further down), a one-line plain-language caption under it, then a
+   plain breadcrumb (not another pair of tag pills — the evidence badge already carries the
+   page's visual weight) before the title. */
+.article-evidence-caption {
+  margin: 6px 0 14px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--color-neutral-700);
+  max-width: 480px;
+}
+.article-breadcrumb {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--color-neutral-700);
+  margin-bottom: 8px;
+}
+.article-hero-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 26px;
+  line-height: 1.3;
+  margin: 0 0 12px;
+}
+@media (max-width: 640px) {
+  .article-hero-title { font-size: 21px; }
+}
+.article-hero-journal { font-size: 14px; font-weight: 700; color: var(--color-text); margin-bottom: 3px; }
+.article-hero-datemeta { font-size: 12.5px; color: var(--color-neutral-700); }
+.article-hero-divider { border: none; border-top: 1px solid var(--color-divider); margin: 18px 0; }
+
+/* — article body (components/ArticleReadingPane.tsx) — capped at a real editorial
+   line-length regardless of how wide the 60% column itself gets, so text never grows
+   uncomfortably long-lined on a big desktop; other left-column content (actions, topics,
+   Related) intentionally isn't capped here, since those are UI modules, not prose. */
+.article-prose { max-width: 680px; }
+.article-prose p { font-size: 15px; line-height: 1.7; color: var(--color-text); margin: 0 0 16px; }
+.article-prose p.article-lede { font-size: 16px; font-weight: 600; line-height: 1.6; }
+.article-continue-inline { color: var(--color-neutral-700); }
+.article-continue-inline a { color: var(--color-accent-700); font-weight: 600; }
+
+/* — article actions (components/ArticleReadingPane.tsx) — one prominent primary CTA out to
+   the source, full column width, with Save/Share as an even split row underneath. */
+.article-actions { margin-top: 8px; display: flex; flex-direction: column; gap: 10px; }
+.article-actions-primary { width: 100%; font-size: 14px; padding: 11px; }
+.article-actions-secondary { display: flex; gap: 10px; }
+.article-actions-secondary .btn { flex: 1; }
+
+/* — shared small-caps section label (components/ArticleReadingPane.tsx: Topics, Related —
+   and components/ThreadsWeb.tsx: Article Connections, so all three read as one family). */
+.article-section-label {
+  font-size: var(--fs-11);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin: 22px 0 10px;
+}
+.article-topics-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.article-topic-tag { cursor: pointer; transition: background 150ms ease, border-color 150ms ease; }
+.article-topic-tag:hover { background: var(--color-accent-100); border-color: var(--color-accent-600); }
+
+/* — Related articles grid (components/ArticleReadingPane.tsx) — a real card per article
+   (photo on top when one exists), 3-up on desktop, 2-up on tablet, 1-up on mobile. */
+.article-related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 1023px) {
+  .article-related-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .article-related-grid { grid-template-columns: 1fr; }
+}
+/* Own background (a step lighter/darker than the warm-tinted .article-reading-card these
+   sit inside — see --color-surface, the app's general "chrome" surface token, as opposed to
+   --color-card-surface's warm tint) plus a heavier shadow than the shared .card-hoverable
+   default, so these read as distinctly clickable rather than blending into their parent
+   card. .card.elev-sm.article-related-card / .card.elev-sm.card-hoverable...:hover below are
+   deliberately over-qualified (3-4 classes) so they beat both the plain .card.elev-sm rule
+   and its dark-mode override on specificity alone, in either theme, without needing our own
+   dark-mode-scoped copy. */
+.article-related-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: var(--color-surface);
+}
+.card.elev-sm.article-related-card {
+  box-shadow: 0 4px 16px rgba(20, 10, 0, 0.12);
+  transition: all 200ms ease;
+}
+.card.elev-sm.card-hoverable.article-related-card:hover {
+  box-shadow: 0 8px 24px rgba(20, 10, 0, 0.18);
+  transform: translateY(-3px);
+}
+.article-related-thumb {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  flex-shrink: 0;
+  background: var(--color-neutral-200);
+}
+.article-related-body { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px 16px; }
+.article-related-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.article-related-divider { border: none; border-top: 1px solid var(--color-divider); margin: 0; }
+.article-related-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15.5px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.article-related-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.article-related-date { font-size: var(--fs-11); color: var(--color-neutral-600); }
+/* A quiet "this is clickable" hint in the corner — muted, not a real button, so it doesn't
+   compete with the title/meta for attention; nudges right on hover as its only signal. */
+.article-related-arrow {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  color: var(--color-neutral-500);
+  font-size: 15px;
+  transition: transform 200ms ease;
+}
+.article-related-card:hover .article-related-arrow { transform: translateX(3px); }
+/* Left border keyed to the card's own evidence badge — RES/RCT/SR/MA/CPG each reuse an
+   existing token that already anchors that color elsewhere (RCT/MA/mindfulness's greens and
+   purples come from Limbic Vitals' category colors, SR from the accent-blue scale); CPG's
+   amber has no existing token close enough to reuse, so it's the one literal hex here.
+   Anything else (Review/Industry/CE/Product, or no evidence level at all) falls back to a
+   plain muted border rather than no border, so every card gets the same left-edge treatment. */
+.article-related-border-res { border-left: 3px solid var(--color-neutral-900); }
+.article-related-border-rct { border-left: 3px solid var(--color-vitals-mobility); }
+.article-related-border-sr { border-left: 3px solid var(--color-accent); }
+.article-related-border-ma { border-left: 3px solid var(--color-vitals-mindfulness); }
+.article-related-border-cpg { border-left: 3px solid #e8a93a; }
+.article-related-border-default { border-left: 3px solid var(--color-neutral-400); }
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 0;
+}
+.cards-grid > * { min-width: 0; }
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 0;
+}
+.video-grid > * { min-width: 0; }
+@media (max-width: 799px) {
+  .cards-grid { grid-template-columns: minmax(0, 1fr); }
+  .video-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* "Analyze This Study" panel on the article detail page (see
+   components/ArticleResearchPanel.tsx, components/ArticleReadingPane.tsx) — collapsed by
+   default, expands in place (no overlay). Full width at every breakpoint, so nothing extra
+   is needed for mobile beyond the 44px tap targets already on .article-research-panel-toggle
+   and .article-research-panel-submit. */
+.article-research-panel {
+  margin: 20px 0;
+}
+
+.article-research-panel-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.article-research-panel-toggle:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+.article-research-panel-toggle[aria-expanded="true"] {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.article-research-panel-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.article-research-panel-zap {
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.article-research-panel-chevron {
+  color: var(--color-neutral-700);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.article-research-panel-body {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 20px;
+}
+
+.article-research-panel-section { display: flex; flex-direction: column; }
+
+.article-research-panel-kicker {
+  font-size: var(--fs-11);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-neutral-700);
+  font-weight: 600;
+}
+
+.article-research-panel-desc {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 6px 0 0;
+}
+
+.article-research-panel-field {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.article-research-panel-field label {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+
+.article-research-panel-prefill-note {
+  font-size: var(--fs-11);
+  font-style: italic;
+  color: var(--color-neutral-700);
+  margin: 0;
+}
+
+.article-research-panel-field-error {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  margin: 10px 0 0;
+}
+
+.article-research-panel-error {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 12px 0 0;
+}
+
+.article-research-panel-submit {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 14px;
+}
+
+.article-research-panel-disclaimer {
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-600);
+  margin-top: 14px;
+}
+
+.article-research-panel-divider {
+  border: none;
+  border-top: 1px solid var(--color-divider);
+  margin: 16px 0;
+}
+
+@keyframes article-research-panel-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
+}
+.article-research-panel-loading-placeholder {
+  margin-top: 14px;
+  height: 60px;
+  border-radius: 8px;
+  background: var(--color-divider);
+  animation: article-research-panel-pulse 1.4s ease-in-out infinite;
+}
+
+/* ============================================================================
+   Automatic generalizability score — the article detail panel's first tool (see
+   components/ArticleResearchPanel.tsx, app/actions/research-literacy.ts). Appended,
+   .gen-score- prefixed; nothing above is rewritten. Replaces the patient-description form
+   that used to live in that panel, so no existing .article-research-panel-* rule changed —
+   the ones the removed form used (.article-research-panel-field etc.) are still in use by
+   the Article Histogram Explorer below it and by other panels.
+
+   Full width at every breakpoint like the rest of the panel, so it needs no mobile media
+   query of its own: the scale bar and the factor rows are flex/percentage-based, and the
+   one fixed-width element (the 60px mini bar) is inside a row that wraps its text below it.
+   ============================================================================ */
+
+.gen-score-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gen-score-cached-pill {
+  font-size: var(--fs-10);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-neutral-700);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+
+/* Loading — a shimmer bar standing in for the score that's being generated. */
+@keyframes gen-score-shimmer {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.4; }
+}
+.gen-score-loading {
+  margin-top: 14px;
+}
+.gen-score-shimmer-bar {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-divider);
+  animation: gen-score-shimmer 1.5s ease-in-out infinite;
+}
+.gen-score-loading-text {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--color-neutral-700);
+  margin: 8px 0 0;
+}
+
+.gen-score-error-wrap {
+  margin-top: 12px;
+}
+.gen-score-error {
+  font-size: 13px;
+  color: var(--color-danger);
+  margin: 0;
+}
+
+/* Shared link-styled button — "Try again" and "Show breakdown". */
+.gen-score-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.gen-score-link:hover {
+  color: var(--color-text);
+}
+.gen-score-breakdown-toggle {
+  align-self: flex-start;
+  margin-top: 14px;
+}
+
+.gen-score-result {
+  display: flex;
+  flex-direction: column;
+  margin-top: 14px;
+}
+
+.gen-score-headline {
+  text-align: center;
+}
+.gen-score-number {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.gen-score-label {
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* The 0-10 scale. The fill and the dot are positioned from the score, so both take their
+   width/left inline from the component; everything else lives here. */
+.gen-score-scale {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-divider);
+  margin-top: 14px;
+}
+.gen-score-scale-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+.gen-score-scale-dot {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--color-divider);
+  transform: translate(-50%, -50%);
+}
+.gen-score-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-10);
+  color: var(--color-neutral-700);
+  margin-top: 6px;
+}
+
+.gen-score-summary {
+  font-size: 13px;
+  line-height: 1.6;
+  font-style: italic;
+  color: var(--color-neutral-700);
+  margin: 12px 0 0;
+}
+
+.gen-score-factors {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-divider);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gen-score-factor-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gen-score-factor-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.gen-score-factor-bar {
+  width: 60px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-divider);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.gen-score-factor-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+}
+.gen-score-factor-value {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+
+/* One line by default so six factors stay scannable; the full sentence unfurls on hover
+   (and on keyboard focus of the row, so it isn't pointer-only). */
+.gen-score-factor-finding {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  margin: 4px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gen-score-factor:hover .gen-score-factor-finding,
+.gen-score-factor:focus-within .gen-score-factor-finding {
+  white-space: normal;
+  overflow: visible;
+}
+.gen-score-factor-impact {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--color-neutral-700);
+  margin: 2px 0 0;
+}
+
+.gen-score-limitations {
+  margin-top: 16px;
+}
+.gen-score-limitation-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.gen-score-limitation-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+.gen-score-limitation-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  flex-shrink: 0;
+}
+
+/* ============================================================================
+   Article study breakdown (components/ArticleBreakdown.tsx) — the five labelled
+   fields that stand in for the publisher's abstract as a research article's body
+   copy. Sits inside .article-prose, so the label/value rows deliberately reset the
+   prose paragraph spacing rather than inherit it.
+   ============================================================================ */
+.article-breakdown { display: flex; flex-direction: column; gap: 16px; }
+.article-breakdown-row { display: flex; flex-direction: column; gap: 4px; }
+.article-breakdown-label {
+  font-size: var(--fs-10-5);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-accent-700);
+}
+.article-breakdown-value { margin: 0; font-size: 15px; line-height: 1.6; }
+.article-breakdown-findings { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.article-breakdown-findings li { font-size: 15px; line-height: 1.6; }
+/* Set apart from the breakdown itself: this is provenance, not part of the study. */
+.article-breakdown-note {
+  margin: 4px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-divider);
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  font-style: italic;
+}
+.article-breakdown-failed { margin: 0; font-size: 15px; line-height: 1.6; color: var(--color-neutral-700); }
+
+/* First-reader-only state, while the one Anthropic call for this article is in flight —
+   every reader after that gets the cached breakdown server-rendered with no loading step. */
+.article-breakdown-loading { display: flex; flex-direction: column; gap: 12px; }
+.article-breakdown-loading-bar {
+  height: 46px;
+  border-radius: 8px;
+  background: var(--color-divider);
+  animation: article-breakdown-pulse 1.4s ease-in-out infinite;
+}
+.article-breakdown-loading-bar:nth-child(3) { width: 70%; }
+@keyframes article-breakdown-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .article-breakdown-loading-bar { animation: none; }
+}
+
+/* No screen-reader-only utility existed in this file before this; scoped to the breakdown
+   rather than introduced as a global one, so nothing else silently depends on it. */
+.article-breakdown-loading .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+

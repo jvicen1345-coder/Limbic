@@ -1,0 +1,1133 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   — Health & Wellness rebuild (app/(app)/wellness/*) — a personal health
+   education platform: a hub Overview, Metrics (calculators + tracking),
+   Assess Yourself, Top 10 Exercises, Rep Continuum, and Limbic Agent
+   Wellness. Reuses existing tokens throughout — --color-accent (blue),
+   --color-vitals-mobility (green), --color-migration-amber (amber),
+   --color-vitals-mindfulness (purple), --color-accent-2 (teal), and
+   --color-migration-gold (gold) — rather than inventing new literal colors,
+   so every card/badge/accent here already follows the light/dark toggle for
+   free, same reasoning as the Student Atrium's path-card accents.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* — Overview hub — */
+.wellness-hub-header { margin-bottom: 22px; }
+.wellness-hub-title { font-size: 26px; margin: 0 0 4px; }
+.wellness-hub-subtitle { font-size: 13.5px; color: var(--color-neutral-700); margin: 0; }
+
+.wellness-snapshot-card {
+  padding: 20px 22px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 18px;
+}
+.wellness-snapshot-kicker {
+  font-size: var(--fs-11);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin-bottom: 12px;
+}
+.wellness-snapshot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; }
+.wellness-snapshot-stat-label { font-size: var(--fs-11); color: var(--color-neutral-700); margin-bottom: 3px; }
+.wellness-snapshot-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; }
+.wellness-snapshot-stat-note { font-size: 12px; color: var(--color-accent-700); margin-top: 2px; }
+.wellness-snapshot-empty { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 10px; }
+.wellness-snapshot-link { font-size: 12.5px; color: var(--color-accent-700); font-weight: 600; text-decoration: none; display: inline-block; margin-top: 14px; }
+.wellness-snapshot-link:hover { text-decoration: underline; }
+
+.wellness-tip-of-day {
+  padding: 16px 20px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-migration-gold) 8%, var(--color-card-surface));
+  border-left: 4px solid var(--color-migration-gold);
+  margin-bottom: 26px;
+}
+.wellness-tip-of-day-text { font-size: 14.5px; line-height: 1.55; margin: 6px 0 0; }
+
+.wellness-section-label {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-600);
+  margin: 0 0 14px;
+}
+
+/* — Overview's Explore/Trends switcher (see components/WellnessOverviewTabs.tsx) — plain
+   underline tabs, not pills, so it reads as "two views of the same section" rather than
+   two separate navigation destinations. */
+.wellness-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--color-divider);
+  margin-bottom: 18px;
+}
+.wellness-tab {
+  font: inherit;
+  font-size: 12px;
+  /* Weight and color now carry the whole inactive/active distinction alongside the
+     underline — an inactive tab is plain secondary text with no border at all, so the one
+     underlined, brand-colored, semibold tab is unambiguously the current view. */
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0 2px 10px;
+  margin-right: 18px;
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+.wellness-tab:hover { color: var(--color-text); }
+.wellness-tab--active,
+.wellness-tab--active:hover { color: var(--color-accent); font-weight: 600; border-bottom-color: var(--color-accent); }
+.wellness-trends-panel { margin-bottom: 30px; }
+
+.wellness-explore-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 30px; }
+@media (max-width: 800px) { .wellness-explore-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .wellness-explore-grid { grid-template-columns: 1fr; } }
+.wellness-explore-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border-top: 3px solid var(--explore-accent, var(--color-accent));
+  border-left: 1px solid var(--color-divider);
+  border-right: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--color-divider);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.wellness-explore-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.wellness-explore-card--blue { --explore-accent: var(--color-accent); }
+.wellness-explore-card--green { --explore-accent: var(--color-vitals-mobility); }
+.wellness-explore-card--amber { --explore-accent: var(--color-migration-amber); }
+.wellness-explore-card--purple { --explore-accent: var(--color-vitals-mindfulness); }
+.wellness-explore-card--teal { --explore-accent: var(--color-accent-2); }
+.wellness-explore-card--gold { --explore-accent: var(--color-migration-gold); }
+.wellness-explore-card--orange { --explore-accent: var(--color-vitals-strength); }
+.wellness-explore-card--red { --explore-accent: var(--color-danger); }
+.wellness-explore-card--agent {
+  padding: 22px 20px;
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--color-migration-gold) 18%, transparent);
+}
+.wellness-explore-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: var(--fs-9-5);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-migration-gold);
+  background: color-mix(in srgb, var(--color-migration-gold) 16%, transparent);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+.wellness-explore-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--explore-accent, var(--color-accent)) 16%, transparent);
+  color: var(--explore-accent, var(--color-accent));
+  margin-bottom: 12px;
+}
+.wellness-explore-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15.5px; margin-bottom: 4px; display: block; }
+.wellness-explore-desc { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.45; display: block; padding-right: 20px; }
+.wellness-explore-arrow { position: absolute; bottom: 18px; right: 16px; color: var(--explore-accent, var(--color-accent)); }
+
+.wellness-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-accent-700);
+  text-decoration: none;
+}
+.wellness-back-link:hover { text-decoration: underline; }
+
+@media (max-width: 720px) {
+  .wellness-hub-title { font-size: 22px; }
+}
+
+/* — Shared calculator/card shell (Metrics calculators, Assess cards, Exercise cards,
+   Continuum zone cards, Nutrition's Macro Calculator) — one visual language across every
+   "education card" in this rebuild. */
+.wellness-calc-card,
+.wellness-assess-card {
+  padding: 20px 22px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  box-shadow: var(--shadow-sm);
+}
+.wellness-calc-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; margin-bottom: 6px; }
+.wellness-calc-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; margin: 0 0 14px; }
+.wellness-calc-inputs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.wellness-calc-result {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-divider);
+}
+.wellness-calc-result-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.wellness-calc-result-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; }
+.wellness-calc-result-unit { font-size: 12.5px; color: var(--color-neutral-700); }
+/* An always-visible caution — not tucked inside the collapsed "What does this mean?"
+   <details> below, since a limitation worth knowing shouldn't require an extra click to
+   see. */
+.wellness-calc-caution {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 12%, transparent);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  margin-top: 12px;
+}
+.wellness-calc-education {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--color-text);
+}
+.wellness-calc-education summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-accent-700);
+  font-size: 12.5px;
+}
+.wellness-calc-education p { margin: 10px 0 0; line-height: 1.6; color: var(--color-neutral-700); }
+
+/* ResearchLiteracyGuide's topic cards (see components/pro/ResearchLiteracyGuide.tsx) — a
+   <details>/<summary> card rather than the plain-text summary above, since each topic here
+   is its own standalone card in a list, not a single aside under one calculator. */
+.research-literacy-topic-summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  list-style: none;
+}
+.research-literacy-topic-summary::-webkit-details-marker { display: none; }
+.research-literacy-topic-summary::before {
+  content: "+";
+  display: inline-block;
+  width: 16px;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+.research-literacy-topic[open] .research-literacy-topic-summary::before { content: "–"; }
+.wellness-calc-source { font-size: var(--fs-11); color: var(--color-neutral-600); margin-top: 10px; }
+
+/* — Missing-profile notice — shown instead of a calculator's own input fields for anything
+   now sourced from the single profile on /wellness/activity (see BodyMetricsCard). */
+.wellness-calc-missing-profile {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 4px;
+}
+.wellness-calc-missing-profile a { color: var(--color-accent-700); font-weight: 600; }
+
+/* — Assess Yourself / Top 10 Exercises card grid — a CSS multi-column layout rather than a
+   row-synced grid, since these cards vary a lot in height (norms tables, checklists); this
+   lets shorter and taller cards flow independently instead of every row being as tall as
+   its tallest card, cutting deadspace on desktop while leaving mobile untouched (single
+   column, same as before). */
+.wellness-card-columns { column-count: 1; column-gap: 18px; }
+@media (min-width: 860px) {
+  .wellness-card-columns { column-count: 2; }
+}
+.wellness-card-columns > * { break-inside: avoid; margin-bottom: 18px; }
+
+/* — Metrics page's calculator grid — unlike .wellness-card-columns above, these four cards
+   (BMI/Max HR/HRV/VO2 Max) are similar enough in height that a real row-synced grid reads
+   as more deliberately "even" than letting them flow into masonry columns — a real grid
+   with align-items: stretch so paired cards in the same row match height exactly. */
+.metrics-calc-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: stretch; }
+@media (min-width: 860px) {
+  .metrics-calc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.metrics-calc-grid > .wellness-calc-card { display: flex; flex-direction: column; height: 100%; }
+/* Pins each card's result block to the bottom of its (now stretched) card, so all four
+   results line up on the same baseline instead of trailing at whatever height each card's
+   own description/input text happens to end. */
+.metrics-calc-grid .wellness-calc-result { margin-top: auto; }
+.metrics-calc-grid .wellness-calc-missing-profile { margin-top: auto; margin-bottom: 0; }
+
+/* — Status badges (BMI/HRV/VO2 Max/RPE categories) — */
+.wellness-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--fs-11-5);
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.wellness-badge-poor { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 15%, transparent); }
+.wellness-badge-fair { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
+.wellness-badge-good { color: var(--color-vitals-mobility); background: color-mix(in srgb, var(--color-vitals-mobility) 16%, transparent); }
+.wellness-badge-excellent { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 16%, transparent); }
+.wellness-badge-superior { color: var(--color-migration-gold); background: color-mix(in srgb, var(--color-migration-gold) 18%, transparent); }
+
+/* — Article Histogram Explorer (components/pro/ArticleHistogramExplorer.tsx) — variable
+   picker pills plus a simple single-series bar chart, same "plain div bars sized by
+   percentage height" approach as .vitals-chart- above, just one series instead of stacked
+   segments. */
+.histogram-var-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+.histogram-var-pill {
+  font: 600 12.5px var(--font-body);
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.histogram-var-pill-active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+}
+.histogram-wrap { overflow-x: auto; }
+.histogram-bars { display: flex; gap: 4px; align-items: flex-end; min-width: 320px; height: 120px; padding-top: 8px; }
+.histogram-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px; }
+.histogram-bar { width: 100%; min-height: 3px; border-radius: 3px 3px 0 0; background: var(--color-accent); }
+.histogram-bar-label { font-size: var(--fs-9-5); color: var(--color-neutral-700); white-space: nowrap; transform: rotate(-40deg); transform-origin: top right; margin-top: 4px; }
+.histogram-caption { font-size: var(--fs-11-5); color: var(--color-neutral-600); margin-top: 14px; font-style: italic; }
+
+/* — BMI spectrum bar — */
+.wellness-spectrum-bar {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  margin: 14px 0 6px;
+  background: linear-gradient(
+    to right,
+    var(--color-warn) 0%,
+    var(--color-vitals-mobility) 22%,
+    var(--color-vitals-mobility) 45%,
+    var(--color-warn) 62%,
+    var(--color-danger) 100%
+  );
+}
+.wellness-spectrum-marker {
+  position: absolute;
+  top: -3px;
+  width: 4px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--color-text);
+  transform: translateX(-50%);
+}
+.wellness-spectrum-labels { display: flex; justify-content: space-between; font-size: var(--fs-10-5); color: var(--color-neutral-600); }
+
+/* — Heart rate zones — */
+.wellness-hr-zones { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.wellness-hr-zone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--zone-color, var(--color-accent));
+  background: color-mix(in srgb, var(--zone-color, var(--color-accent)) 8%, transparent);
+  font-size: 12.5px;
+}
+.wellness-hr-zone--1 { --zone-color: var(--color-vitals-mobility); }
+.wellness-hr-zone--2 { --zone-color: var(--color-accent-2); }
+.wellness-hr-zone--3 { --zone-color: var(--color-accent); }
+.wellness-hr-zone--4 { --zone-color: var(--color-vitals-strength); }
+.wellness-hr-zone--5 { --zone-color: var(--color-danger); }
+.wellness-hr-zone-name { font-weight: 600; min-width: 100px; }
+.wellness-hr-zone-bpm { color: var(--color-text); font-weight: 600; min-width: 80px; }
+.wellness-hr-zone-purpose { color: var(--color-neutral-700); margin-left: auto; }
+
+/* — RPE scale — */
+.wellness-rpe-scale { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.wellness-rpe-point {
+  flex: 1 1 56px;
+  min-width: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+.wellness-rpe-point--selected { border-color: var(--color-text); }
+.wellness-rpe-point-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; }
+.wellness-rpe-point-label { font-size: var(--fs-8-5); text-align: center; line-height: 1.2; opacity: 0.95; }
+
+/* — Metrics Over Time trends dashboard — one shared line chart (BMI/HRV/VO2 Max as
+   differently colored lines on a shared time axis) plus a legend, instead of three
+   separate per-metric sparkline cards. */
+.wellness-trend-chart-card {
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  margin-bottom: 20px;
+}
+.wellness-tracking-label { font-size: var(--fs-11); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-700); }
+.wellness-tracking-empty { font-size: 12.5px; color: var(--color-neutral-600); font-style: italic; margin: 10px 0 0; }
+.wellness-tracking-trend { font-size: 13px; font-weight: 700; }
+.wellness-tracking-trend--up { color: var(--color-success); }
+.wellness-tracking-trend--down { color: var(--color-danger); }
+.wellness-tracking-trend--stable { color: var(--color-neutral-600); }
+
+.wellness-trend-legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--color-divider); }
+.wellness-trend-legend-item { display: flex; align-items: center; gap: 7px; font-size: 12.5px; }
+.wellness-trend-legend-item--empty { opacity: 0.7; }
+.wellness-trend-legend-dot { width: 9px; height: 9px; border-radius: 999px; flex-shrink: 0; }
+.wellness-trend-legend-label { font-weight: 600; }
+.wellness-trend-legend-value { color: var(--color-neutral-700); }
+
+.wellness-log-history {
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+}
+.wellness-log-history-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-divider);
+  font-size: 13px;
+}
+.wellness-log-history-row:last-of-type { border-bottom: none; }
+.wellness-log-history-date { color: var(--color-neutral-700); font-size: var(--fs-11-5); min-width: 50px; }
+.wellness-log-history-metric { flex: 1; font-weight: 600; }
+.wellness-log-history-value { color: var(--color-neutral-700); }
+
+/* — Assess Yourself — */
+/* Get the App card (Profile > About you — see components/GetTheAppCard.tsx) — one block
+   per platform, each its own small numbered how-to (order genuinely matters here, unlike
+   most lists in this app, so a real <ol> rather than bullets). Sized to match
+   .wellness-assess-steps' existing "small numbered instructions" treatment below rather
+   than inventing a second one. */
+.howto-platform-label { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--color-text); }
+.howto-steps { margin: 6px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.65; color: var(--color-text); }
+.howto-steps li + li { margin-top: 2px; }
+
+/* Generic on/off pill switch (see components/Switch.tsx) — a real <button role="switch">,
+   not a styled checkbox. */
+.switch {
+  position: relative;
+  width: 36px;
+  height: 21px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 999px;
+  padding: 0;
+  cursor: pointer;
+  background: var(--color-neutral-300);
+  transition: background 150ms ease;
+}
+.switch[aria-checked="true"] { background: var(--color-accent); }
+.switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 150ms ease;
+}
+.switch[aria-checked="true"] .switch-thumb { transform: translateX(15px); }
+
+.wellness-assess-steps-label { font-size: var(--fs-11); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-700); margin: 14px 0 6px; }
+.wellness-assess-steps { margin: 0 0 14px; padding-left: 20px; font-size: 13px; line-height: 1.65; color: var(--color-text); }
+.wellness-assess-steps--bullet { list-style-type: disc; }
+.wellness-assess-note { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.55; margin: 0 0 8px; }
+
+.wellness-table-wrap { overflow-x: auto; margin-bottom: 14px; }
+.wellness-table { border-collapse: collapse; width: 100%; font-size: 12.5px; min-width: 420px; }
+.wellness-table th,
+.wellness-table td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--color-divider); }
+.wellness-table th { color: var(--color-neutral-700); font-weight: 600; font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.04em; }
+.wellness-table-note { font-size: var(--fs-11); color: var(--color-neutral-600); margin: 6px 0 0; font-style: italic; }
+
+.wellness-assess-checklist { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+.wellness-assess-checklist-item { padding: 10px 14px; border-radius: var(--radius-md); background: var(--color-neutral-100); }
+.wellness-assess-checklist-item-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.wellness-assess-checklist-item-body { font-size: 12.5px; color: var(--color-neutral-700); margin: 0 0 4px; line-height: 1.5; }
+.wellness-assess-checklist-item-helps { font-size: 12.5px; color: var(--color-accent-700); margin: 0; line-height: 1.5; }
+
+/* A distinct "log your result" footer zone: border-top separates it from the card content
+   above, and the background is the card surface nudged a few percent toward --color-text —
+   a small, theme-safe shift (mixing toward text darkens on a light surface, lightens on a
+   dark one) rather than a hardcoded shade, so it stays "just a shade off" in both themes. */
+.wellness-assess-log {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding: 14px;
+  border-top: 1px solid var(--color-divider);
+  background: color-mix(in srgb, var(--color-card-surface) 94%, var(--color-text) 6%);
+  border-radius: var(--radius-md);
+}
+.wellness-assess-log-field { flex: 1 1 auto; min-width: 0; }
+.wellness-assess-log-field > label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-neutral-500);
+  margin-bottom: 6px;
+}
+.wellness-assess-log-field .input { padding: 8px 12px; }
+.wellness-assess-log-field .input::placeholder { color: var(--color-neutral-500); }
+.wellness-assess-log-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+@media (max-width: 799px) {
+  .wellness-assess-log { flex-direction: column; align-items: stretch; }
+  .wellness-assess-log-actions { width: 100%; }
+  .wellness-assess-log-actions .btn { flex: 1; }
+}
+
+/* — Assess Yourself: each test card is paired with its own video-reference card —
+   scoped to this page only; .wellness-assess-card and .wellness-card-columns are shared
+   with /wellness/exercises so they are left untouched and this page opts out of the
+   shared column-grid via .assess-page-layout instead. On mobile the two are simply
+   stacked in DOM order (test, its video, next test, its video, ...) so the reference stays
+   right next to its test. On desktop, .assess-page-layout becomes a 2-column grid with the
+   same interleaved DOM order — CSS grid auto-placement fills left-then-right per row, so
+   each video cell lands in the same row as its matching test card without any JS height
+   matching; align-items: start keeps the (usually much shorter) video cell pinned to the
+   top of that row instead of stretching. */
+.assess-page-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+@media (min-width: 1024px) {
+  .assess-page-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 13fr) minmax(0, 7fr);
+    gap: 24px;
+    align-items: start;
+    padding-top: 24px;
+  }
+  .assess-video-cell { position: relative; }
+  .assess-right-panel-heading {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+  }
+}
+.assess-test-card { border-left: 3px solid var(--color-accent); }
+
+.assess-video-cell { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.assess-right-panel-heading { font-size: var(--fs-11); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700); margin: 0 0 2px; }
+
+.assess-video-card {
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+}
+.assess-video-title { font-size: 12.5px; font-weight: 700; margin: 0 0 8px; }
+.assess-video-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
+  /* Theme-invariant literal color (like --color-scrim above) — the neutral ramp flips
+     direction between light/dark mode, which would turn a "dark gray" placeholder light. */
+  background: #2a3142;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.assess-video-thumb-icon { color: rgba(255, 255, 255, 0.85); }
+.assess-video-link { display: inline-block; font-size: var(--fs-11-5); color: var(--color-neutral-700); text-decoration: none; }
+.assess-video-link:hover { text-decoration: underline; }
+
+/* — Top 10 Exercises — */
+.wellness-exercise-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.wellness-exercise-number {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+  font-weight: 700;
+  font-size: 12.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.wellness-difficulty-badge { margin-left: auto; font-size: var(--fs-10-5); font-weight: 700; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.03em; }
+.wellness-difficulty-badge--medium { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
+.wellness-difficulty-badge--hard { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 16%, transparent); }
+.wellness-muscle-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.wellness-muscle-chip {
+  font-size: var(--fs-11);
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-vitals-mindfulness) 14%, transparent);
+  color: var(--color-vitals-mindfulness);
+}
+.wellness-video-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-accent-700);
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+.wellness-video-link:hover { text-decoration: underline; }
+.wellness-exercise-progressions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 14px 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+}
+@media (max-width: 480px) { .wellness-exercise-progressions { grid-template-columns: 1fr; } }
+.wellness-exercise-progression-label { font-size: var(--fs-10-5); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 3px; }
+.wellness-exercise-progression-text { font-size: 12.5px; margin: 0; line-height: 1.5; }
+
+/* — Rep Continuum — a two-column layout so "Which zone is right for me?" reads as a
+   sidebar alongside the zone list on desktop, rather than a card stranded at the bottom of
+   a long page; grid-template-areas puts the guide card first in source order (so it lands
+   on top on mobile) while `main guide` on desktop keeps it visually secondary to the right
+   of the primary zone content. */
+.wellness-continuum-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas: "guide" "main";
+  gap: 24px;
+}
+@media (min-width: 900px) {
+  .wellness-continuum-layout {
+    grid-template-columns: 1fr 300px;
+    grid-template-areas: "main guide";
+    align-items: start;
+  }
+}
+.wellness-continuum-main { grid-area: main; min-width: 0; }
+.wellness-continuum-sidebar { grid-area: guide; }
+@media (min-width: 900px) {
+  .wellness-continuum-sidebar { position: sticky; top: 20px; }
+}
+
+.wellness-continuum-bar-wrap {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  margin: 24px 0 8px;
+  background: linear-gradient(to right, var(--color-migration-gold), var(--color-vitals-strength), var(--color-accent), var(--color-vitals-mobility), var(--color-accent-2));
+}
+.wellness-continuum-marker { position: absolute; top: -3px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.wellness-continuum-marker-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--color-surface); border: 3px solid var(--color-text); }
+.wellness-continuum-marker-label { position: absolute; top: 26px; font-size: var(--fs-10-5); font-weight: 600; white-space: nowrap; }
+.wellness-continuum-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 10px 0 14px; }
+@media (max-width: 560px) { .wellness-continuum-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.wellness-continuum-stats > div { display: flex; flex-direction: column; gap: 2px; }
+.wellness-continuum-stat-label { font-size: var(--fs-10-5); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); }
+.wellness-continuum-stat-value { font-size: 13px; font-weight: 600; }
+.wellness-goal-guide {
+  padding: 20px 22px;
+  border-radius: var(--radius-lg);
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-card-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+/* — Limbic Agent Wellness — */
+.wellness-agent-paywall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+}
+.wellness-agent-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  padding: 18px;
+}
+.wellness-agent-personalize { display: flex; flex-direction: column; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--color-divider); }
+.wellness-agent-personalize-label { font-size: var(--fs-11); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px; }
+.wellness-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.wellness-chip {
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  font: inherit;
+}
+.wellness-chip--selected { background: var(--color-migration-gold); border-color: var(--color-migration-gold); color: #fff; font-weight: 600; }
+
+.wellness-agent-messages { display: flex; flex-direction: column; gap: 14px; min-height: 160px; max-height: 460px; overflow-y: auto; }
+.wellness-agent-empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 20px 10px; }
+.wellness-agent-empty p { font-size: 13px; color: var(--color-neutral-700); margin: 0; max-width: 360px; }
+.wellness-agent-prompts { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 460px; margin-top: 6px; }
+.wellness-agent-prompt {
+  text-align: left;
+  font-size: 12.5px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  font: inherit;
+}
+.wellness-agent-prompt:hover { border-color: var(--color-migration-gold); }
+
+.wellness-agent-msg { max-width: 80%; padding: 12px 16px; border-radius: var(--radius-lg); font-size: 13.5px; line-height: 1.55; }
+.wellness-agent-msg--user { align-self: flex-end; background: var(--color-accent); color: #fff; border-bottom-right-radius: 4px; }
+.wellness-agent-msg--agent { align-self: flex-start; background: var(--color-surface); border: 1px solid var(--color-divider); border-bottom-left-radius: 4px; }
+.wellness-agent-msg--pending { color: var(--color-neutral-600); font-style: italic; }
+.wellness-agent-msg-sources { font-size: var(--fs-10-5); color: var(--color-neutral-600); margin-top: 8px; }
+.wellness-agent-msg-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.wellness-agent-feedback-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--color-divider);
+  background: transparent;
+  color: var(--color-neutral-600);
+  cursor: pointer;
+}
+.wellness-agent-feedback-btn--active { color: var(--color-migration-gold); border-color: var(--color-migration-gold); }
+.wellness-agent-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-11);
+  font-weight: 600;
+  color: var(--color-accent-700);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+}
+.wellness-agent-save-btn:disabled { color: var(--color-neutral-600); cursor: default; }
+.wellness-agent-error { align-self: center; font-size: 12.5px; color: var(--color-danger); }
+
+.wellness-agent-input-row { display: flex; gap: 10px; }
+.wellness-agent-input-row .input { flex: 1; }
+.wellness-agent-new-convo {
+  align-self: center;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+@media (max-width: 620px) {
+  .wellness-agent-msg { max-width: 92%; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Health and Wellness hub — Quick Actions, Ask Limbic Agent banner, Today's
+   Tip, the two-row Explore grid, and the article preview
+   (see app/(app)/wellness/page.tsx). Appended as its own scoped block rather
+   than folded into the .wellness-* section further up, per COORDINATION.md.
+   The older .wellness-snapshot-* rules up there are still used by
+   app/(app)/wellness/loading.tsx's skeleton and by .wellness-snapshot-link,
+   which several wellness pages share, so none of them are removed here.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* — Quick Actions bar — replaces the Health Snapshot card. Three equal-width
+   buttons on desktop, stacked full-width on mobile. */
+.wellness-quick-actions { display: flex; gap: 12px; margin-bottom: 18px; }
+.wellness-quick-action {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-decoration: none;
+  text-align: center;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+.wellness-quick-action:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 7%, var(--color-card-surface));
+}
+/* Plain text glyphs (+ ↗), not icon components — one line of markup each and they inherit
+   the button's own font, so they stay aligned with the label at any text size. Both are
+   plain typographic characters that take the button's own color; the --brand modifier that
+   used to tint Ask Limbic Agent's bolt went with that button, and the bolt was never
+   actually tinted anyway — U+26A1 renders with emoji presentation, which ignores `color`. */
+.wellness-quick-action-glyph { font-size: 14px; line-height: 1; flex-shrink: 0; }
+@media (max-width: 640px) {
+  .wellness-quick-actions { flex-direction: column; }
+  .wellness-quick-action { width: 100%; }
+}
+
+/* — Ask Limbic Agent featured banner — promoted out of the Explore grid, so it reads as
+   the section's one headline offer rather than a seventh peer card. */
+.wellness-agent-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+  background: linear-gradient(
+    to right,
+    var(--color-card-surface),
+    color-mix(in srgb, var(--color-accent) 8%, var(--color-card-surface))
+  );
+}
+.wellness-agent-banner-main { min-width: 0; }
+.wellness-agent-banner-pill-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.wellness-agent-banner-pill {
+  font-size: var(--fs-10);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+.wellness-agent-banner-lock { color: var(--color-neutral-600); flex-shrink: 0; }
+.wellness-agent-banner-title { font-size: 18px; font-weight: 700; color: var(--color-text); margin-bottom: 4px; }
+.wellness-agent-banner-sub { font-size: 13px; line-height: 1.5; color: var(--color-neutral-700); margin: 0; }
+.wellness-agent-banner-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.wellness-agent-banner-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 8px;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 160ms ease;
+}
+.wellness-agent-banner-btn:hover { background: var(--color-accent-600); }
+.wellness-agent-banner-note { font-size: var(--fs-11); color: var(--color-neutral-700); text-align: right; }
+@media (max-width: 720px) {
+  .wellness-agent-banner { flex-direction: column; align-items: stretch; gap: 16px; }
+  .wellness-agent-banner-cta { align-items: flex-start; }
+  .wellness-agent-banner-note { text-align: left; }
+}
+
+/* — Today's Tip — the citation is split off the tip text server-side (see
+   lib/wellness-tips-static.ts splitWellnessTip) and rendered as a footnote below it, so
+   the tip itself reads as one sentence rather than trailing a journal name. */
+.wellness-tip-card {
+  padding: 16px 20px;
+  margin-bottom: 26px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-left: 3px solid var(--wellness-tip-green);
+  border-radius: 8px;
+  /* Brightened in dark mode below — #16a34a on the dark card surface sits under the
+     4.5:1 contrast floor the rest of this file's accent colors are held to. */
+  --wellness-tip-green: #16a34a;
+}
+html[data-theme="dark"] .wellness-tip-card { --wellness-tip-green: #4ade80; }
+.wellness-tip-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.wellness-tip-card-kicker {
+  font-size: var(--fs-11);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--wellness-tip-green);
+}
+.wellness-tip-card-date { font-size: var(--fs-11); color: var(--color-neutral-700); white-space: nowrap; }
+.wellness-tip-card-text { font-size: 14px; line-height: 1.7; color: var(--color-text); margin: 0; }
+.wellness-tip-card-source { font-size: var(--fs-11); font-style: italic; color: var(--color-neutral-700); margin: 8px 0 0; }
+
+/* — Explore grid, two rows — two large primary cards over four smaller ones. Which cards
+   land in which row is decided per-role server-side (lib/user-role.ts wellnessCardOrder);
+   these rules only describe the two sizes. */
+.wellness-explore-rows { display: flex; flex-direction: column; gap: 14px; margin-bottom: 30px; }
+/* Overrides the shared .wellness-explore-grid's 3-up template above — same class is reused
+   for the card styling, only the column count differs per row. */
+.wellness-explore-grid--primary { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 0; }
+.wellness-explore-grid--secondary { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 0; }
+/* Extra bottom padding on top of the spec'd 24px / 16px: .wellness-explore-arrow is
+   absolutely positioned at bottom 18px, so without a reserved band the preview line's
+   second row (e.g. "Last logged: Zone 2 run on Aug 31" wrapping in a narrow secondary
+   card) ran straight under the chevron. */
+.wellness-explore-card--primary { padding: 24px 24px 40px; min-height: 140px; }
+.wellness-explore-card--secondary { padding: 16px 20px 36px; min-height: 100px; }
+.wellness-explore-card--secondary .wellness-explore-icon { width: 34px; height: 34px; margin-bottom: 10px; }
+.wellness-explore-card--secondary .wellness-explore-title { font-size: 14.5px; }
+/* The whole card is one <a>, so the global `a:hover { color: …; text-decoration: underline }`
+   near the top of this file outranks .wellness-explore-card's own `text-decoration: none` /
+   `color: inherit` and underlined and recolored every line of copy on hover. Pinned back
+   here (0,2,0 beats that rule's 0,1,1) so hover stays the lift + shadow it was designed as. */
+.wellness-explore-card:hover { text-decoration: none; color: inherit; }
+
+/* The live "last logged" line under Metrics' and Activity Log's descriptions, at either
+   card size — see the CARD_PREVIEW note in app/(app)/wellness/page.tsx. */
+.wellness-explore-preview {
+  display: block;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  margin-top: 8px;
+  padding-right: 28px;
+}
+@media (max-width: 800px) {
+  .wellness-explore-grid--secondary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .wellness-explore-grid--primary,
+  .wellness-explore-grid--secondary { grid-template-columns: 1fr; }
+  .wellness-explore-card--primary { min-height: 0; padding: 20px 20px 36px; }
+  .wellness-explore-card--secondary { min-height: 0; }
+}
+
+/* — Latest Wellness Articles — first article featured, the other two as compact rows. */
+.wellness-article-featured {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 10px;
+  transition: border-color 160ms ease;
+}
+.wellness-article-featured:hover { border-color: color-mix(in srgb, var(--color-accent) 40%, transparent); }
+.wellness-article-featured-body { min-width: 0; padding-bottom: 6px; }
+.wellness-article-featured-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-text);
+  text-decoration: none;
+}
+.wellness-article-featured-title:hover { color: var(--color-accent); }
+.wellness-article-featured-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+.wellness-article-dot { width: 3px; height: 3px; border-radius: 999px; background: var(--color-neutral-700); flex-shrink: 0; }
+.wellness-article-read { display: inline-flex; align-items: center; gap: 3px; }
+.wellness-article-featured-arrow {
+  position: absolute;
+  right: 20px;
+  bottom: 14px;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--color-neutral-700);
+}
+.wellness-article-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+.wellness-article-row-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  color: var(--color-text);
+  text-decoration: none;
+}
+.wellness-article-row-title:hover { color: var(--color-accent); }
+.wellness-article-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  text-align: right;
+}
+@media (max-width: 560px) {
+  .wellness-article-featured { padding: 16px 18px; }
+  .wellness-article-featured-arrow { right: 16px; }
+  /* The one-line title plus a right-aligned source·date doesn't fit at phone width —
+     stack them rather than truncating the title down to a few characters. */
+  .wellness-article-row { flex-wrap: wrap; gap: 4px 10px; }
+  .wellness-article-row-title { flex-basis: 100%; white-space: normal; }
+  .wellness-article-row-meta { width: 100%; justify-content: space-between; text-align: left; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Health and Wellness — profile setup prompt and the Trends tab's Recovery
+   block (see app/(app)/wellness/page.tsx, components/wellness/RecoverySection.tsx).
+   Appended as its own scoped block, per COORDINATION.md.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* — Setup prompt — shown on the hub only while the profile can't drive the calculators.
+   Wraps the same BodyMetricsCard the Metrics page uses, so the fields are entered where
+   the reader already is rather than on a page they have to be sent to first. */
+.wellness-profile-setup {
+  padding: 18px 20px 4px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-card-surface));
+}
+.wellness-profile-setup-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.wellness-profile-setup-kicker {
+  font-size: var(--fs-11);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.wellness-profile-setup-copy {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  margin: 0 0 4px;
+}
+/* The wrapped card is already inside a bordered container — drop its own frame so the
+   prompt reads as one block rather than a card nested in a card. */
+.wellness-profile-setup .card {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+@media (max-width: 560px) {
+  .wellness-profile-setup { padding: 16px 16px 4px; }
+  .wellness-profile-setup-head { flex-direction: column; gap: 4px; }
+}
+
+/* — Recovery — sleep and mood on the Trends tab. */
+.wellness-recovery { margin-top: 22px; }
+.wellness-recovery-heading { margin-bottom: 10px; }
+.wellness-recovery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 720px) { .wellness-recovery-grid { grid-template-columns: 1fr; } }
+.wellness-recovery-card {
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+}
+.wellness-recovery-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.wellness-recovery-card-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+}
+.wellness-recovery-card-note { font-size: var(--fs-11); color: var(--color-neutral-700); white-space: nowrap; }
+/* Wraps rather than scrolls — sleep shows up to three stats and mood up to three, and at
+   narrow widths a second row reads better than a cramped single one. */
+.wellness-recovery-stats { display: flex; flex-wrap: wrap; gap: 18px 26px; }
+.wellness-recovery-stat { min-width: 0; }
+.wellness-recovery-stat-value {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 22px;
+  line-height: 1.15;
+}
+.wellness-recovery-stat-label { font-size: 12px; color: var(--color-neutral-700); margin-top: 3px; }
+.wellness-recovery-caption {
+  font-size: var(--fs-11);
+  font-style: italic;
+  color: var(--color-neutral-700);
+  line-height: 1.5;
+  margin: 12px 0 0;
+}
+
+
+@media (min-width: 1024px) {
+  .wellness-explore-grid { gap: 18px; }
+}

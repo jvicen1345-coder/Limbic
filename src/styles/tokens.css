@@ -1,0 +1,271 @@
+/* Design system tokens + component classes, ported from the Claude Design export
+   (project/_ds/organic-.../styles.css) with the blue/white palette override that was
+   dialed in during design iteration (project/PT News.dc.html's <style> block) baked
+   directly into :root instead of layered on top. Structure and component classes are
+   otherwise unchanged, so anything styled with .card/.btn/.tag/etc. keeps its exact
+   shape and behavior. The heading face (Plus Jakarta Sans) is loaded via next/font in
+   app/layout.tsx (--font-jakarta), not a CSS @import — see the comment there for why.
+   Light is still the default palette below; dark mode is a second token block further
+   down, gated on `html[data-theme="dark"]` (see components/ThemeToggle.tsx and the inline
+   script in app/layout.tsx that sets the attribute before first paint). Because every
+   component here is built on these tokens rather than literal colors, that block is
+   almost the entire feature — component rules never need their own dark variant. The two
+   deliberate exceptions are .agent-page/.threads-* (already their own fixed dark palette
+   in both themes — see the comment further down) and the four hardcoded evidence-badge
+   hues (RCT/MA/CPG/CE) that don't route through a token, each given one small dark
+   override right after its light rule below. */
+
+:root {
+  /* A warm off-white rather than pure white, with card surfaces a step brighter than the
+     page itself (see --color-surface below) — the page/card contrast now comes from that
+     tonal step plus --shadow-* (also warmed, further down) instead of a blue tint.
+     --color-accent/--color-accent-2 are deliberately untouched here: blue stays reserved
+     for interactive elements (buttons, active states, links) exactly as before, just no
+     longer doubling as the page's general surface color. Shifted a further step warmer/
+     darker (was #f8f7f5) so --color-surface's plain white actually reads as a distinct
+     layer above the page instead of nearly matching it — see --color-divider below for the
+     border half of that same "cards must be clearly separated" fix. Dark mode's own
+     --color-bg (further down) is untouched. */
+  --color-bg: #f4f4f0;
+  --color-surface: #ffffff;
+  /* Cards' own background — a pastel blue rather than plain white, bringing back the color
+     the very first design pass had (--color-surface itself used to be this exact pastel
+     blue, #dbe7fb, before a later warmth pass flattened it to white for every surface —
+     inputs, the sidebar, message bubbles, etc.). Aliased to --color-accent-200 (defined
+     below) rather than a literal duplicate, and scoped to its own token instead of
+     reverting --color-surface, so only actual card-shaped content (.card, plus a few
+     custom "-card" classes that don't share that base class) picks up the tint — chrome
+     like inputs and the sidebar stays neutral. */
+  --color-card-surface: var(--color-accent-200);
+  /* One step darker than --color-bg — the sidebar, mobile top bar, and mobile drawer read
+     as their own secondary layer instead of just matching the page (or, before this pass,
+     actually being *lighter* than the page via --color-surface, backwards from what a
+     "structured, layered" editorial UI wants). Dark mode mirrors dark's own --color-surface
+     value here (unchanged from before this pass) rather than getting its own darker step,
+     since dark mode wasn't part of this fix. */
+  --color-surface-secondary: #ebe9e2;
+  --color-text: #1a1a1a;
+  --color-accent: #3b6fe0;
+  --color-accent-2: #1fa8d1;
+  /* Muted, not alarm-red — for Sign out and other clearly-destructive-but-not-scary
+     actions (see .nav-footer's Sign out button). */
+  --color-danger: #b0413e;
+  /* A step lighter/softer than --color-danger — for Daily Term's absent-letter tiles (see
+     .wordle-tile-absent below), where the full alarm-red reads too harsh for a plain "not
+     in the word" indicator sitting next to the blue/teal correct/present tiles. Same value
+     in both themes (see dark override below) since it's a solid tile fill behind white
+     text, not text sitting on the page background, so it doesn't need a dark-mode brighten
+     the way --color-accent/-accent-2 do. */
+  --color-danger-soft: #c96e69;
+  /* A literal warm gray rather than the previous navy-tinted color-mix — visibly more
+     present now that --color-bg/--color-surface sit closer together in lightness (see
+     both above), so every card/input/tile that borders on var(--color-divider) actually
+     lifts off the page instead of blending into it. Dark mode's own --color-divider
+     (further down) is untouched. */
+  --color-divider: #e2e0d8;
+
+  /* Two semantic hues the design system doesn't otherwise name — reusing the exact same
+     literal values already established elsewhere for the same meaning (CE evidence badge/
+     personal-deadline orange, RCT evidence badge green — see .tag-evidence-ce/-rct below)
+     rather than inventing new ones. Named as real tokens (like --color-danger above) so
+     the Limbic Calendar (sidebar widget and full /calendar page) never references a
+     literal hex directly — only var(--color-warn)/var(--color-success) — and both
+     automatically follow the dark-mode override further down. */
+  --color-warn: #e0741f;
+  --color-success: #1f9d5e;
+  /* A theme-invariant dimming scrim for the calendar detail panel's mobile backdrop and
+     the Add Event modal — same literal-black-tint approach .app-mobile-drawer-backdrop
+     already uses (a scrim dims whatever's behind it equally in either theme, unlike
+     foreground/surface colors, which is why this is the one place a flat black works
+     without a dark-mode override, same reasoning behind the --shadow-* tokens below). */
+  --color-scrim: color-mix(in srgb, #000 45%, transparent);
+
+  /* Limbic Vitals' three non-Cardio activity-category colors (Cardio itself just reuses
+     --color-accent above) — named tokens for the same reason --color-warn/--color-success
+     are, so components/vitals/* only ever reads var(--color-vitals-*), never a literal
+     hex, and gets the dark-mode brightening below for free. */
+  --color-vitals-strength: #e8834a;
+  --color-vitals-mobility: #4caf7d;
+  --color-vitals-mindfulness: #9b7fd4;
+
+  /* Account migration surfaces (Profile's Account Security section, Home's
+     migration-reminder banner and graduation-transition card — see
+     components/AccountSecuritySection.tsx, HomeFeed.tsx) — same named-token pattern as
+     --color-warn/--color-success above, not a literal hex in the components themselves.
+     --color-migration-gold's dark value reuses the exact brightened gold .ff-page (Founding
+     Funders) already uses for the same warm-celebratory meaning in dark mode. */
+  --color-migration-amber: #e8a93a;
+  --color-migration-gold: #c9933a;
+
+  /* One step darker than --color-bg — the "secondary background" for chrome that should
+     sit visually behind the page content rather than level with cards (sidebar, mobile
+     topbar, mobile drawer). Deliberately its own token rather than reusing --color-surface
+     (white, used by cards/inputs/etc.) or --color-bg itself. */
+  --color-surface-secondary: #ebe9e2;
+
+  --color-neutral-100: #fcfdfe;
+  --color-neutral-200: #f2f5fa;
+  --color-neutral-300: #d3deec;
+  --color-neutral-400: #b0c0da;
+  --color-neutral-500: #8ba0c2;
+  --color-neutral-600: #66799e;
+  /* Warm gray, not the cool navy-tinted #4a5a78 this used to be — this token is the
+     app-wide muted/secondary text color, so shifting it warm keeps it in step with the
+     warm off-white page/card system above instead of reading as a mismatched cool gray. */
+  --color-neutral-700: #6b6860;
+  --color-neutral-800: #33405c;
+  --color-neutral-900: #1f2940;
+
+  --color-accent-100: #f6f9fe;
+  --color-accent-200: #dbe7fb;
+  --color-accent-300: #b8d0f7;
+  --color-accent-400: #8bb0f0;
+  --color-accent-500: #3b6fe0;
+  --color-accent-600: #2c5ac2;
+  --color-accent-700: #1f4494;
+  --color-accent-800: #17346f;
+  --color-accent-900: #0f2350;
+
+  --color-accent-2-100: #e6f7fc;
+  --color-accent-2-200: #c7edf7;
+  --color-accent-2-300: #97ddf0;
+  --color-accent-2-400: #5cc7e6;
+  --color-accent-2-500: #1fa8d1;
+  --color-accent-2-600: #1786a8;
+  --color-accent-2-700: #106485;
+  --color-accent-2-800: #0b4760;
+  --color-accent-2-900: #072e3f;
+
+  /* Plus Jakarta Sans, a humanist sans in the same family as the system stack --font-body
+     resolves to, rather than a display face pulling against it. It replaced Caprasimo,
+     which read as a poster font in the 143 places this token is used — including article
+     titles and nav labels, where it cost real legibility. */
+  --font-heading: var(--font-jakarta), system-ui, sans-serif;
+  --font-heading-weight: 700;
+  /* The "Limbic" logotype, heavier than an ordinary heading. It needs its own token because
+     the wordmark appears in five places that had drifted to three different weights — and
+     the three in AppShell.tsx had none at all, inheriting body 400. That went unnoticed
+     while the heading face was Caprasimo, which ships only weight 400 and is heavy by
+     design; the moment a normal-weight family replaced it, the logotype quietly became
+     light text. */
+  --font-wordmark-weight: 800;
+  /* Same native system-UI font stack Facebook's web app renders body text with — no
+     webfont download, just each OS's own UI font (San Francisco on macOS/iOS, Segoe UI on
+     Windows, Roboto on Android/Chrome OS, sans-serif as the final fallback). Replaces the
+     self-hosted Figtree google font this pointed to before. */
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* — small-text scale —
+     Every font-size below 12px in this file (and the handful set inline in components) goes
+     through one of these instead of a literal, so the small end of the type scale can be
+     lifted on small screens in one place. Desktop values are exactly what they were.
+
+     They needed lifting: an audit at iPhone width found sub-12px text on 106 of 110 routes —
+     11px tags on 103 of them, 10px card kickers on 27, and a handful at 9.5px. The comment on
+     .dashboard-metric-tile .card-kicker below already conceded the problem ("small (9.5px) and
+     all-caps compounds low contrast into genuinely hard to read") and only adjusted the colour.
+     The mobile block further down floors these at 12px while keeping their relative order, so
+     the hierarchy survives at a readable size rather than being flattened. */
+  --fs-8: 8px;
+  --fs-8-5: 8.5px;
+  --fs-9: 9px;
+  --fs-9-5: 9.5px;
+  --fs-10: 10px;
+  --fs-10-5: 10.5px;
+  --fs-11: 11px;
+  --fs-11-5: 11.5px;
+
+  --space-1: 4.4px;
+  --space-2: 8.8px;
+  --space-3: 13.2px;
+  --space-4: 17.6px;
+  --space-6: 26.4px;
+  --space-8: 35.2px;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+
+  /* Warm brown-black tint (was navy #1f2940) so elevation reads as a soft, warm shadow
+     rather than a cool grey one — same 3-tier scale, same overall softness as before. */
+  --shadow-sm: 0 2px 8px color-mix(in srgb, #2b2015 8%, transparent);
+  --shadow-md: 0 4px 16px color-mix(in srgb, #2b2015 10%, transparent);
+  --shadow-lg: 0 16px 40px color-mix(in srgb, #2b2015 14%, transparent);
+}
+
+/* Same token set, dark values — same hue families as the light palette above (navy/blue
+   for neutral, the accent blue, the accent-2 cyan) with each 100..900 ramp's lightness
+   direction flipped, since every ramp is used both as "light tint background, dark tint
+   text" in the light theme (e.g. .tag-accent: 100 background, 800 text) and needs the
+   opposite pairing to keep working once the app's own background is dark — swap only
+   which end is dark and the exact same component rules read correctly in both themes. The
+   accent hues are also brightened a step (not just inverted) since a saturated blue that
+   passes contrast on white needs to be lighter to still pass on navy. */
+html[data-theme="dark"] {
+  --color-bg: #0d1220;
+  --color-surface: #1a2338;
+  /* Same --color-accent-200 alias as light mode, so cards stay a clean blue rather than
+     drifting toward purple, just a step more saturated than plain --color-surface so they
+     still read as distinctly tinted against the navy page background. */
+  --color-card-surface: var(--color-accent-200);
+  --color-text: #e7ecf7;
+  --color-accent: #6d9bf5;
+  --color-accent-2: #4dd1ee;
+  --color-danger: #e08883;
+  /* Same literal as light mode's --color-danger-soft (see :root above) — kept identical
+     rather than brightened for dark, since dark's own --color-danger is already too pale
+     to hold contrast against the tile's white text once softened further. */
+  --color-danger-soft: #c96e69;
+  --color-divider: color-mix(in srgb, #e7ecf7 14%, transparent);
+  --color-warn: #f7ab6c;
+  --color-success: #7fe8b2;
+  --color-vitals-strength: #f0a578;
+  --color-vitals-mobility: #7dd8a8;
+  --color-vitals-mindfulness: #c0acea;
+  --color-migration-amber: #f3c169;
+  --color-migration-gold: #d9a94d;
+
+  /* Mirrors dark's existing --color-surface exactly (not a new dark value) — the light-mode
+     side of this token exists to darken sidebar/topbar/drawer chrome a step below the page
+     background; dark mode's chrome was already --color-surface before this token existed,
+     so this keeps dark mode's rendered output unchanged. */
+  --color-surface-secondary: var(--color-surface);
+
+  --color-neutral-100: #1a2136;
+  --color-neutral-200: #212a44;
+  --color-neutral-300: #2c3752;
+  --color-neutral-400: #3c4968;
+  --color-neutral-500: #59678c;
+  --color-neutral-600: #7686ac;
+  --color-neutral-700: #9aa8c9;
+  --color-neutral-800: #c4cde4;
+  --color-neutral-900: #eef1fa;
+
+  --color-accent-100: #16223c;
+  --color-accent-200: #1c2b4c;
+  --color-accent-300: #23375f;
+  --color-accent-400: #2e4677;
+  --color-accent-500: #6d9bf5;
+  --color-accent-600: #8fb2f8;
+  --color-accent-700: #b0c8fa;
+  --color-accent-800: #cfdcfc;
+  --color-accent-900: #e9f0fe;
+
+  --color-accent-2-100: #0f2a33;
+  --color-accent-2-200: #123640;
+  --color-accent-2-300: #17434f;
+  --color-accent-2-400: #1c5666;
+  --color-accent-2-500: #4dd1ee;
+  --color-accent-2-600: #77ddf1;
+  --color-accent-2-700: #9fe6f5;
+  --color-accent-2-800: #c6f0f9;
+  --color-accent-2-900: #e6faff;
+
+  /* Black-based rather than the light theme's navy-based shadow tint, and a bit more
+     opaque at each step — elevation on a dark surface reads through contrast against an
+     even darker shadow, not through the light theme's "darker than white" trick. */
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #000 45%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #000 50%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #000 55%, transparent);
+}
+

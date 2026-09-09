@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import "@/styles/founding-funders.css";
+import "@/styles/onboarding.css";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { isSiteAdmin } from "@/lib/admin";

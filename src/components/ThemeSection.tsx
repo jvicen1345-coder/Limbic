@@ -10,7 +10,7 @@ const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: "system", label: "System" },
 ];
 
-/** A static mockup — plain HTML/CSS, not a live iframe (see .theme-preview* in globals.css)
+/** A static mockup — plain HTML/CSS, not a live iframe (see .theme-preview* in src/styles)
  *  — scaled down into a clipped frame so it reads as a thumbnail of Home's actual layout:
  *  a sidebar strip, a couple of article-card placeholders, a right panel strip. Wrapped in
  *  .theme-preview--light/--dark, which redeclare the handful of --color-* tokens this

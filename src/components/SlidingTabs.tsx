@@ -28,7 +28,7 @@ export function SlidingTabs<T extends string>({
   }, [active, tabs]);
 
   /** Whether the strip is actually wider than its box, published to CSS as
-   *  `data-scrollable` (see .sliding-tabs[data-scrollable="true"] in globals.css).
+   *  `data-scrollable` (see .sliding-tabs[data-scrollable="true"] in src/styles).
    *
    *  It gates `touch-action: pan-x`, which is what stops a sideways swipe across the tabs
    *  from dragging the page up and down with it — and which has a real cost, because it

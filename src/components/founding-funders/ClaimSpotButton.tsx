@@ -10,7 +10,7 @@ import { XIcon } from "@/components/icons";
  *  Step 1 collects a display name/credential; step 2 shows the $40 summary and starts a real
  *  Stripe Checkout Session (createFoundingFunderCheckout), redirecting the browser there on
  *  success. Modal shell is its own .ff-modal-* CSS (not the app's shared .cal-modal-* — see
- *  the .ff-page comment in globals.css) so it stays on this page's --ff-* dark palette
+ *  the .ff-page comment in src/styles) so it stays on this page's --ff-* dark palette
  *  regardless of the site's actual light/dark toggle. */
 export function ClaimSpotButton() {
   const [open, setOpen] = useState(false);

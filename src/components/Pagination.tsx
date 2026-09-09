@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 /* Only the state-dependent half stays inline. Size, spacing and shape moved to
-   `.pagination-link` in globals.css so the touch-target rules there can reach them — as inline
+   `.pagination-link` in src/styles so the touch-target rules there can reach them — as inline
    styles they were stuck at 32×32 with a 4px gap on every device, which is a lot of
    mis-taps for a control whose whole job is picking one number out of a row of them. */
 const linkStyle = (active: boolean, disabled: boolean): React.CSSProperties => ({

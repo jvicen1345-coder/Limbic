@@ -1,0 +1,4 @@
+/* Global styles only. Feature sheets are imported from route layouts — see docs/css.md. */
+@import "./tokens.css";
+@import "./base.css";
+@import "./responsive-lg.css";

@@ -1,0 +1,409 @@
+/* — /terms, /privacy (components/LegalPageLayout.tsx) — plain --color-* tokens, unlike
+   .ff-page above, since these are meant to read as a normal part of the app, not a
+   different visual language. — */
+.legal-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+.legal-back-link {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 150ms ease;
+}
+.legal-back-link:hover { transform: translateX(-2px); }
+
+.legal-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 84px 24px 64px;
+}
+.legal-header { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+.legal-header-name { font-family: var(--font-heading); font-weight: var(--font-wordmark-weight); font-size: 18px; }
+
+.legal-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; margin: 0 0 6px; }
+.legal-updated { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 36px; }
+
+.legal-section-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 19px;
+  margin: 32px 0 10px;
+}
+.legal-section-title:first-of-type { margin-top: 0; }
+.legal-body { font-size: 16px; line-height: 1.7; margin: 0 0 8px; }
+.legal-list { font-size: 16px; line-height: 1.7; margin: 0 0 8px; padding-left: 22px; }
+.legal-list li { margin-bottom: 8px; }
+.legal-list li:last-child { margin-bottom: 0; }
+
+@media (max-width: 599px) {
+  .legal-container { padding: 72px 18px 48px; }
+  .legal-title { font-size: 24px; }
+}
+
+/* — Admin Suggestions list (app/(app)/admin/suggestions/page.tsx) — a simple row-per-
+   suggestion list, same shape as .vitals-log-row. */
+.suggestion-admin-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--color-divider);
+}
+.suggestion-admin-row:last-child { border-bottom: none; }
+.suggestion-admin-date { font-size: var(--fs-11); color: var(--color-neutral-600); margin-bottom: 3px; }
+.suggestion-admin-body { font-size: 13.5px; line-height: 1.55; margin: 0; white-space: pre-wrap; }
+
+/* ============================================================================
+   Appraisal workbench — /admin/appraisals (see components/admin/AppraisalWorkbench.tsx,
+   lib/appraisal.ts). Admin-only surface, so it is deliberately plain: a dense entry form
+   whose job is to be quick to fill in from a paper open beside it, not to look like the
+   reader-facing feed. Appended at the end of the file per COORDINATION.md.
+   ============================================================================ */
+.appraisal-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.appraisal-btn {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 14px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.appraisal-btn:hover:not(:disabled) { border-color: var(--color-accent); }
+.appraisal-btn:disabled { opacity: 0.5; cursor: default; }
+.appraisal-btn-primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+.appraisal-btn-danger { color: var(--color-danger, #9E2B25); }
+
+.appraisal-status-pill {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--color-surface-secondary);
+  color: var(--color-neutral-700);
+}
+.appraisal-status-pill[data-status="published"] {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.appraisal-empty {
+  font-size: 13.5px;
+  color: var(--color-neutral-700);
+  max-width: 60ch;
+  line-height: 1.6;
+}
+
+.appraisal-list { list-style: none; margin: 0; padding: 0; }
+.appraisal-list-row { border-top: 1px solid var(--color-neutral-300); }
+.appraisal-list-open {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 14px 2px;
+  cursor: pointer;
+}
+.appraisal-list-open:hover { background: var(--color-neutral-200); }
+.appraisal-list-title { display: block; font-size: 15px; font-weight: 600; color: var(--color-text); }
+.appraisal-list-meta { display: block; font-size: 12px; color: var(--color-neutral-700); margin-top: 3px; }
+.appraisal-list-flag {
+  display: block;
+  font-size: 12px;
+  color: var(--color-danger, #9E2B25);
+  margin-top: 5px;
+  line-height: 1.45;
+}
+
+.appraisal-preamble {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-neutral-700);
+  max-width: 66ch;
+  margin: 0 0 22px;
+}
+
+.appraisal-section {
+  border-top: 1px solid var(--color-neutral-300);
+  padding-top: 18px;
+  margin-top: 22px;
+}
+.appraisal-section-title { font-size: 15px; margin: 0 0 6px; }
+.appraisal-section-note {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--color-neutral-700);
+  max-width: 64ch;
+  margin: 0 0 14px;
+}
+
+.appraisal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+.appraisal-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.appraisal-field-wide { grid-column: 1 / -1; }
+.appraisal-field-label { font-size: 12px; font-weight: 600; color: var(--color-text); }
+.appraisal-field-hint { font-size: 11.5px; color: var(--color-neutral-700); line-height: 1.45; }
+.appraisal-field input,
+.appraisal-field select {
+  font: inherit;
+  font-size: 13.5px;
+  padding: 7px 9px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  width: 100%;
+  min-width: 0;
+}
+.appraisal-field input:focus-visible,
+.appraisal-field select:focus-visible,
+.appraisal-notes:focus-visible,
+.appraisal-para:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+
+.appraisal-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text);
+  grid-column: 1 / -1;
+}
+.appraisal-check input { width: 16px; height: 16px; }
+
+.appraisal-checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.appraisal-check-row { display: grid; grid-template-columns: 92px 1fr; gap: 12px; align-items: baseline; }
+.appraisal-check-verdict {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.appraisal-check-body { font-size: 13px; line-height: 1.55; color: var(--color-text); }
+
+.appraisal-notes,
+.appraisal-para {
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1.6;
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  resize: vertical;
+}
+.appraisal-para { margin-top: 10px; }
+
+.appraisal-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.appraisal-actions-note { font-size: 12px; color: var(--color-neutral-700); }
+.appraisal-actions-final {
+  border-top: 1px solid var(--color-neutral-300);
+  padding-top: 16px;
+  margin-top: 24px;
+}
+
+.appraisal-blockers {
+  margin: 22px 0 0;
+  padding: 12px 14px 12px 30px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-secondary);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--color-neutral-700);
+}
+
+.appraisal-message { font-size: 13px; margin: 14px 0 0; }
+.appraisal-message[data-kind="error"] { color: var(--color-danger, #9E2B25); }
+.appraisal-message[data-kind="ok"] { color: var(--color-success, #24614F); }
+
+@media (max-width: 640px) {
+  .appraisal-grid { grid-template-columns: minmax(0, 1fr); }
+  .appraisal-check-row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+
+/* ============================================================================
+   Appraisal citation lookup and outcome-measure picker — the two entry shortcuts on
+   /admin/appraisals (see components/admin/AppraisalWorkbench.tsx). Appended at the end of
+   the file per COORDINATION.md.
+   ============================================================================ */
+.appraisal-lookup {
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-secondary);
+}
+.appraisal-lookup-row { display: flex; gap: 8px; align-items: stretch; }
+.appraisal-lookup-row input {
+  font: inherit;
+  font-size: 13.5px;
+  padding: 7px 9px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  flex: 1;
+  min-width: 0;
+}
+.appraisal-lookup-row input:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+.appraisal-lookup-row .appraisal-btn { flex-shrink: 0; }
+
+.appraisal-lookup-result {
+  margin-top: 12px;
+  padding: 11px 12px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+.appraisal-lookup-title { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.4; color: var(--color-text); }
+.appraisal-lookup-meta { font-size: 12.5px; color: var(--color-neutral-700); margin: 5px 0 0; line-height: 1.45; }
+
+.appraisal-measure { margin-bottom: 14px; }
+.appraisal-measure-summary {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  margin: 8px 0 0;
+  padding-left: 10px;
+  border-left: 2px solid var(--color-neutral-300);
+  max-width: 64ch;
+}
+/* A measure with no agreed MCID is the case worth noticing while entering numbers — the
+   magnitude check will come back "not entered" rather than passing or failing. */
+.appraisal-measure-summary[data-no-mcid="true"] {
+  border-left-color: var(--color-warn, #8A6D1F);
+  color: var(--color-text);
+}
+
+/* ============================================================================
+   Read-only PubMed abstract pane on /admin/appraisals (see AbstractPane in
+   components/admin/AppraisalWorkbench.tsx). Styled as reference material rather than as
+   content: a muted panel with its own label and footnote, deliberately not looking like the
+   fields around it, because everything else on that page is something the appraiser typed
+   and this is the one thing that isn't. Appended at the end of the file per COORDINATION.md.
+   ============================================================================ */
+.appraisal-abstract { margin-bottom: 16px; }
+.appraisal-abstract-empty {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  margin: 0 0 14px;
+  max-width: 64ch;
+  line-height: 1.55;
+}
+.appraisal-abstract-pane {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px dashed var(--color-neutral-400);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-secondary);
+}
+.appraisal-abstract-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  margin: 0 0 8px;
+}
+.appraisal-abstract-text {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--color-text);
+  margin: 0;
+  max-width: 72ch;
+  /* Long abstracts scroll inside the pane rather than pushing the number fields — the
+     whole point is having both on screen at once. */
+  max-height: 320px;
+  overflow-y: auto;
+}
+.appraisal-abstract-foot {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  margin: 10px 0 0;
+  padding-top: 9px;
+  border-top: 1px solid var(--color-neutral-300);
+  max-width: 68ch;
+}
+/* Clinical-notes form: the "Note" label sits opposite a link out to the full documentation
+   templates (see ClinicalNotesSection.tsx). */
+.clindash-note-label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.clindash-note-templates-link { font-size: var(--fs-11-5); color: var(--color-accent); text-decoration: none; }
+.clindash-note-templates-link:hover { text-decoration: underline; }
+
+/* Inline links inside legal prose (/terms, /privacy, /dmca). The global `a` rule only
+   underlines on hover, which is fine for nav and cards but too quiet inside a wall of
+   body copy where a cross-reference to another policy has to be obviously clickable —
+   Terms §8 pointing at the DMCA policy is the case this exists for. Appended, scoped to
+   .legal-body/.legal-list, and overrides nothing. */
+.legal-body a,
+.legal-list a {
+  color: var(--color-accent-700);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.legal-body a:hover,
+.legal-list a:hover { color: var(--color-accent); }
+
+/* Clickwrap assent row on the sign-up and guest forms (components/SignInForm.tsx
+   AcceptTermsField). Sized to sit quietly above the submit button without reading as
+   fine print — the whole point is that it's noticed and ticked deliberately. Appended,
+   scoped, overrides nothing. */
+.accept-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+.accept-terms-box {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+.accept-terms-label {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.accept-terms-label a {
+  color: var(--color-neutral-700);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.accept-terms-label a:hover { color: var(--color-accent); }
+

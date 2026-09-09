@@ -1,0 +1,1119 @@
+/* — Limbic Games hub (app/(app)/games/page.tsx) — the "game lobby" redesign: header with
+   streak, a responsive 3/2/1-column card grid, and a bottom stats section. The completed
+   state's green is the exact literal Limbic Vitals already uses for "Mobility"
+   (#4caf7d light / #7dd8a8 dark) — aliased here rather than duplicated so both features
+   stay in sync if that hue ever changes. */
+:root { --color-games-completed: var(--color-vitals-mobility); }
+
+.games-header { text-align: center; margin-bottom: 24px; }
+.games-header-date { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 6px; }
+.games-header-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 30px; margin: 0 0 8px; }
+.games-header-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 14%, var(--color-surface));
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+.games-header-tagline { font-size: 13px; color: var(--color-neutral-700); margin: 4px 0 0; }
+
+/* auto-fit rather than a hard `repeat(3, 1fr)`: the /games hub has room for three across
+   and still gets three, but the same component also renders inside Boards' 680px reading
+   column, where three fixed columns left each card ~186px wide and broke the names across
+   two lines ("Anatomy / Connect"). Below the 210px floor the grid now drops to two columns
+   instead of crushing the cards. */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+@media (max-width: 720px) {
+  .games-grid { grid-template-columns: 1fr; }
+}
+
+/* Boards' page column is deliberately narrow for reading the Question of the Day, but the
+   Daily Games row is a card grid, not prose — it has no reason to inherit that measure and
+   sit in a third of the page with the rest empty. Widening symmetrically out of the reading
+   column keeps it centered on the same axis as everything above it.
+
+   The pull is computed rather than fixed so it can never widen past the room that actually
+   exists: 940px is the sidebar plus .boards-question-pad's 680px max-width (with a few px
+   of slack), so (100vw - 940px) / 2 is the gutter beside that column, floored at 0 for the
+   widths where the column is narrower than its max and there is no gutter at all. The +44px
+   is the column's own padding, which this block can always reclaim, and the 150px ceiling
+   stops it widening further once the window is roomy. A fixed -150px instead overflowed the
+   content area by ~20px around 1100px wide, where that much gutter doesn't exist yet. */
+.boards-daily-games { margin-inline: 0; }
+@media (min-width: 800px) {
+  .boards-daily-games {
+    margin-inline: calc(-1 * min(150px, max(0px, (100vw - 940px) / 2) + 44px));
+  }
+}
+
+.game-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  padding: 22px 20px;
+  border-radius: calc(var(--radius-lg) * 1.15);
+  background: linear-gradient(165deg, var(--color-accent-100), var(--color-card-surface) 55%);
+  border: 1px solid var(--color-divider);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: transform 200ms ease, box-shadow 200ms ease, opacity 200ms ease;
+}
+.game-card-fresh:hover, .game-card-progress:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.game-card-completed { background: color-mix(in srgb, var(--color-games-completed) 8%, var(--color-surface)); opacity: 0.88; }
+
+/* Each remaining game gets its own light hearted tint (same design language as the
+   Student Atrium path cards' --path-accent) instead of every card sharing one identical
+   blue gradient — still entirely from the existing palette, just one accent per game
+   rather than the same one everywhere. */
+.game-card-kind-wordle { --game-accent: var(--color-accent); }
+.game-card-kind-crossword { --game-accent: var(--color-accent-2); }
+.game-card-kind-healthTrivia { --game-accent: var(--color-vitals-mindfulness); }
+.game-card-fresh.game-card-kind-wordle,
+.game-card-fresh.game-card-kind-crossword,
+.game-card-fresh.game-card-kind-healthTrivia,
+.game-card-progress.game-card-kind-wordle,
+.game-card-progress.game-card-kind-crossword,
+.game-card-progress.game-card-kind-healthTrivia {
+  background: linear-gradient(165deg, color-mix(in srgb, var(--game-accent) 16%, var(--color-accent-100)), var(--color-card-surface) 55%);
+  border-top: 3px solid var(--game-accent);
+}
+
+.game-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--game-accent, var(--color-accent)) 16%, transparent);
+}
+/* No font-family override — inherits the ambient body font (var(--font-body)) instead of
+   the display heading font, which rendered too heavy for a card title at this size. */
+.game-card-title { font-weight: var(--font-heading-weight); font-size: 19px; margin: 0 0 6px; }
+.game-card-desc { font-size: 13px; color: var(--color-neutral-700); line-height: 1.45; margin: 0 0 14px; flex: 1; }
+
+.game-card-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 12px; color: var(--color-neutral-700); }
+.game-card-dots { display: inline-flex; gap: 3px; align-items: center; }
+.game-card-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--color-neutral-300); }
+.game-card-dot-filled { background: var(--game-accent, var(--color-accent)); }
+
+.game-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 0;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 600;
+  border: none;
+}
+.game-card-fresh .game-card-btn, .game-card-progress .game-card-btn {
+  background: var(--game-accent, var(--color-accent));
+  color: #fff;
+}
+.game-card-completed .game-card-btn {
+  background: color-mix(in srgb, var(--color-games-completed) 20%, var(--color-surface));
+  color: var(--color-games-completed);
+}
+.game-card-check-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: var(--color-games-completed);
+  background: var(--color-surface);
+  border-radius: 999px;
+  display: flex;
+  padding: 2px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Newer daily games (Differential, Anatomy Connect, Rehab Sequence — each its own
+   dedicated Prisma model rather than a DailyCompletion `kind`, see their schema.prisma
+   models) get a plain card here rather than one driven by the GAMES/GameKind array above
+   — no per-kind completion-state wiring, just title/description/badge/link, same content
+   contract as the streak-tracked cards without any of their state machinery. */
+.game-card-standalone:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.game-card-standalone .game-card-btn { background: var(--color-accent); color: #fff; }
+.game-card-daily-badge {
+  align-self: flex-start;
+  font-size: var(--fs-10-5);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  padding: 3px 9px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+
+.game-card-progress-dot {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  animation: games-pulse 1.6s ease-in-out infinite;
+}
+@keyframes games-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent); }
+  50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-accent) 0%, transparent); }
+}
+
+/* — Daily Games context bar (components/DailyGamesSection.tsx) — plain text strip above
+   the three standalone game cards on /boards, no card shell of its own. */
+.daily-games-context-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.daily-games-context-date { font-size: 13px; color: var(--color-neutral-700); }
+.daily-games-context-status { font-size: 13px; }
+.daily-games-context-status--complete { color: #16a34a; }
+.daily-games-context-status--partial { color: #c9853a; }
+.daily-games-context-status--none { color: var(--color-neutral-700); }
+
+/* — Daily Games three-state card treatment — scoped to .game-card-standalone (rather than
+   the bare .game-card-completed/.game-card-fresh/.game-card-progress classes above) so the
+   /games hub's own Wordle/Crossword/Trivia cards, which share those same base classes,
+   keep their existing tokenized (--color-games-completed) styling untouched. Only
+   not-started and completed are implemented — these three games have no in-progress
+   signal in the data (see DailyGamesSection.tsx's own comment), so there's nothing to
+   detect an "in progress" state from. */
+.game-card-standalone.game-card-not-started {
+  background: var(--color-card-surface);
+}
+.game-card-standalone.game-card-completed {
+  background: color-mix(in srgb, var(--color-card-surface) 60%, transparent);
+  border-color: color-mix(in srgb, var(--color-divider) 40%, transparent);
+  opacity: 1;
+}
+.game-card-standalone.game-card-completed .game-card-title { color: var(--color-neutral-700); }
+.game-card-standalone.game-card-completed .game-card-desc.game-card-desc--clamp {
+  color: var(--color-neutral-700);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+.game-card-standalone.game-card-completed .game-card-daily-badge {
+  background: color-mix(in srgb, var(--color-neutral-700) 20%, transparent);
+  color: var(--color-neutral-700);
+}
+.game-card-standalone-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #16a34a;
+}
+
+/* — Your Stats section — */
+.games-stats-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; margin: 0 0 12px; }
+.games-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+@media (max-width: 620px) {
+  .games-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.games-stat-tile { text-align: center; padding: 14px 8px; }
+.games-stat-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; }
+.games-stat-label { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
+
+.games-week-bar { display: flex; align-items: center; gap: 6px; }
+.games-week-dot { width: 22px; height: 22px; border-radius: 999px; background: var(--color-neutral-200); flex-shrink: 0; }
+.games-week-dot-active { background: var(--color-games-completed); }
+.games-week-label { font-size: 12.5px; color: var(--color-neutral-700); margin-left: 6px; }
+
+/* — Case of the Day (components/DailySharpeningSession.tsx) — */
+.case-section { margin-bottom: 12px; }
+.case-section-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; margin-bottom: 8px; }
+.case-bullet-list { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.6; color: var(--color-text); }
+.case-bullet-list li { margin-bottom: 2px; }
+
+.case-option-list { display: flex; flex-direction: column; gap: 8px; }
+.case-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  text-align: left;
+  padding: 11px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font-size: 13.5px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.case-option:hover:not(:disabled) { border-color: var(--color-accent); }
+.case-option:disabled { cursor: default; }
+.case-option-selected { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+.case-option-correct {
+  border-color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 12%, var(--color-surface));
+  color: var(--color-success);
+  font-weight: 600;
+}
+.case-option-wrong {
+  border-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
+  opacity: 0.75;
+}
+
+.case-reveal { margin-top: 4px; }
+.case-reveal-explanation { font-size: 13.5px; line-height: 1.6; color: var(--color-text); margin: 0 0 14px; }
+
+/* — Daily Sharpening timed session (components/DailySharpeningSession.tsx) — the unified
+   flow that replaced Board Question/Term/Case of the Day opening as three independent
+   cards on /boards. Reuses .case-* rules above plus .btn/.card-kicker/.dashboard-metric-*
+   throughout for each step's own content so this only adds the pieces those don't already
+   cover: the idle teaser cards, the pre-session stat row's container, the timer/progress
+   chrome, the per-question result banner, and the summary screen. */
+/* Idle state — one consolidated "Daily Dose" entry point (replaces three separate
+   per-activity teaser cards) covering all 3 steps at once. */
+.sharpen-dose-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border: none;
+  font: inherit;
+  color: inherit;
+}
+.sharpen-dose-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; margin: 6px 0 10px; }
+.sharpen-dose-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.sharpen-dose-meta span {
+  font-size: var(--fs-11-5);
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+/* Today's Challenge card — replaces the old plain "Beat your time: X" line, only shown
+   once a personal target exists (see DailySharpeningSession.tsx's hasPersonalBest). Sits
+   between the pill row and the "Tap to begin" hint, so there's no divider needed between
+   them any more — the card itself is the visual break. */
+.sharpen-challenge-card {
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+.sharpen-challenge-label { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-700); margin-bottom: 2px; }
+.sharpen-challenge-value { font-size: 15px; font-weight: 700; color: var(--color-text); }
+.sharpen-intro-card-hint { font-size: 12.5px; color: var(--color-accent-700); font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+
+.sharpen-done-card { text-align: center; padding: 28px 20px; }
+.sharpen-done-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; margin: 0 0 6px; }
+.sharpen-done-body { font-size: 13px; color: var(--color-neutral-700); margin: 0; }
+
+.sharpen-preview-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 20px; margin: 0 0 4px; }
+.sharpen-preview-subtitle { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 16px; }
+.sharpen-preview-desc { font-size: 13px; line-height: 1.6; color: var(--color-neutral-700); margin: 16px 0 20px; }
+.sharpen-begin-btn { width: 100%; font-size: 15px; padding: 13px; }
+.sharpen-preview-footnote { font-size: 12px; color: var(--color-neutral-600); text-align: center; margin: 10px 0 0; }
+
+.sharpen-active-header { margin-bottom: 14px; }
+.sharpen-timer {
+  font-family: "SF Mono", "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  margin-bottom: 10px;
+  transition: color 200ms ease;
+}
+.sharpen-timer--over { color: var(--color-danger); }
+.sharpen-timer-over-label { font-size: var(--fs-11-5); font-weight: 600; color: var(--color-danger); text-align: center; margin: -6px 0 10px; }
+.sharpen-progress-row { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.sharpen-progress-label { font-size: var(--fs-11-5); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-700); }
+.sharpen-progress-dots { display: flex; gap: 8px; }
+.sharpen-progress-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--color-neutral-300); }
+.sharpen-progress-dot--done { background: var(--color-success); }
+.sharpen-progress-dot--current { background: var(--color-accent); }
+
+.sharpen-result-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  margin: 14px 0 8px;
+}
+.sharpen-result-banner--correct { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 12%, transparent); }
+.sharpen-result-banner--incorrect { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 10%, transparent); }
+.sharpen-result-explanation { font-size: 13px; line-height: 1.6; color: var(--color-neutral-700); margin: 0 0 16px; }
+
+.sharpen-summary-time { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; text-align: center; margin: 0 0 4px; }
+.sharpen-summary-score { font-size: 14px; text-align: center; color: var(--color-neutral-700); margin: 0 0 14px; }
+.sharpen-summary-context {
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin: 0 0 16px;
+  text-align: center;
+}
+.sharpen-summary-target {
+  font-size: 12.5px;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 12%, transparent);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin: 0 0 16px;
+  text-align: center;
+}
+.sharpen-summary-target--beat { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 12%, transparent); }
+.sharpen-perfect-badge {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-warn) 40%, transparent);
+  border-radius: 999px;
+  padding: 5px 14px;
+}
+.sharpen-breakdown-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.sharpen-breakdown-item { padding: 12px 14px; border-radius: var(--radius-md); background: var(--color-neutral-100); }
+.sharpen-breakdown-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sharpen-breakdown-title { font-size: 13.5px; font-weight: 600; }
+.sharpen-breakdown-status { font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.sharpen-breakdown-status--correct { color: var(--color-success); }
+.sharpen-breakdown-status--incorrect { color: var(--color-danger); }
+.sharpen-breakdown-answer { font-size: 12.5px; color: var(--color-neutral-700); margin: 6px 0 0; }
+.sharpen-summary-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+/* — Health Trivia (app/(app)/games/trivia/page.tsx, components/HealthTriviaGame.tsx) — */
+.trivia-page { max-width: 480px; margin: 0 auto; }
+
+.trivia-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  margin-bottom: 8px;
+}
+.trivia-progress-bar { display: flex; gap: 6px; }
+.trivia-progress-dot { width: 22px; height: 5px; border-radius: 999px; background: var(--color-neutral-200); }
+.trivia-progress-dot-active { background: var(--color-accent); }
+
+.trivia-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  margin: 8px auto 18px;
+  animation: trivia-icon-pulse 700ms ease-out;
+}
+@keyframes trivia-icon-pulse {
+  0% { transform: scale(0.8); opacity: 0; }
+  65% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.trivia-question-text { font-size: 18px; font-weight: 700; line-height: 1.4; text-align: center; margin: 0 0 20px; color: var(--color-text); }
+
+.trivia-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.trivia-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font-size: 14.5px;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.trivia-option:hover:not(:disabled) { border-color: var(--color-accent); }
+.trivia-option:disabled { cursor: default; }
+.trivia-option-selected { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+.trivia-option-correct { background: var(--color-vitals-mobility); border-color: var(--color-vitals-mobility); color: #fff; }
+.trivia-option-incorrect {
+  background: color-mix(in srgb, var(--color-danger) 16%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.trivia-explanation { font-size: 13.5px; line-height: 1.6; color: var(--color-neutral-700); margin: 0 0 16px; }
+
+.trivia-results { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.trivia-results-score {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 32px;
+  margin: 6px 0 20px;
+}
+.trivia-results-review { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
+.trivia-review-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: var(--radius-md); background: var(--color-surface); border: 1px solid var(--color-divider); }
+.trivia-review-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 999px; margin-top: 1px; }
+.trivia-review-icon-correct { background: color-mix(in srgb, var(--color-vitals-mobility) 20%, transparent); color: var(--color-vitals-mobility); }
+.trivia-review-icon-incorrect { background: color-mix(in srgb, var(--color-danger) 16%, transparent); color: var(--color-danger); }
+.trivia-review-question { font-size: 13px; font-weight: 600; margin: 0 0 3px; }
+.trivia-review-answer { font-size: 12.5px; color: var(--color-neutral-700); margin: 0; }
+.trivia-results-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+
+@media (max-width: 620px) {
+  .trivia-option { min-height: 52px; }
+}
+
+/* Differential's only category not already covered by the six specialty-accent-* classes
+   above (see the Limbic Student Specialty Tracks comment) — same var, same pattern, just
+   a seventh slug for the general-wellness cases in lib/differential-cases.ts. */
+.specialty-accent-wellness { --specialty-accent: var(--color-vitals-mindfulness); }
+
+/* — Differential (app/games/differential/page.tsx, components/DifferentialGame.tsx) — */
+.differential-page { max-width: 480px; margin: 0 auto; }
+.differential-header { text-align: center; margin-bottom: 18px; }
+.differential-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; margin: 0 0 4px; }
+.differential-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 0; }
+
+.differential-category-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--specialty-accent, var(--color-accent)) 14%, transparent);
+  color: var(--specialty-accent, var(--color-accent));
+  margin-bottom: 16px;
+}
+
+.differential-clue-card {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  padding: 32px 22px;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.differential-clue-text { font-size: 17px; line-height: 1.5; margin: 0; }
+.differential-clue-counter { text-align: center; font-size: 12.5px; color: var(--color-neutral-700); margin-bottom: 14px; }
+
+.differential-guess-row { display: flex; gap: 8px; margin-top: 16px; }
+.differential-guess-row .input { flex: 1; }
+.differential-feedback { font-size: 12.5px; color: var(--color-danger); margin: 8px 0 0; text-align: center; }
+.differential-difficulty-label { font-size: 12px; color: var(--color-neutral-700); margin: 18px 0 2px; text-align: center; }
+.differential-score-hint { font-size: 12px; color: var(--color-neutral-700); margin: 0 0 20px; text-align: center; }
+
+.differential-result-card {
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.differential-result-card--correct { background: color-mix(in srgb, var(--color-vitals-mobility) 14%, transparent); border: 1px solid color-mix(in srgb, var(--color-vitals-mobility) 30%, transparent); }
+.differential-result-card--incorrect { background: color-mix(in srgb, var(--color-danger) 12%, transparent); border: 1px solid color-mix(in srgb, var(--color-danger) 28%, transparent); }
+.differential-result-title { font-size: 18px; font-weight: 700; margin: 0 0 6px; }
+.differential-result-sub { font-size: 13.5px; color: var(--color-neutral-700); margin: 0; }
+
+.differential-clue-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.differential-clue-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 10px 12px;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+}
+.differential-clue-list-num {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent);
+  font-size: var(--fs-11);
+  font-weight: 700;
+}
+
+.differential-stats-card { margin-top: 20px; }
+.differential-back-link { text-align: center; margin-top: 14px; font-size: 13px; }
+.differential-back-link a { color: var(--color-accent); text-decoration: none; }
+.differential-back-link a:hover { text-decoration: underline; }
+
+/* — Anatomy Connect (app/games/anatomy-connect/page.tsx, components/AnatomyConnectGame.tsx)
+   — four accent colors for the four muscle-to-nerve/action/region rows, reused for both the
+   desktop columns and the mobile flow so a given row reads the same color either way.
+   Blue / purple / amber / green: four hues that stay distinguishable side by side, each a
+   named token rather than a literal hex so both themes track the palette (see the
+   --color-warn/--color-success comment near the top of this file for why nothing here
+   hard-codes a color). */
+.ac-color-0 { --ac-row-color: var(--color-accent); }
+.ac-color-1 { --ac-row-color: var(--color-vitals-mindfulness); }
+.ac-color-2 { --ac-row-color: var(--color-warn); }
+.ac-color-3 { --ac-row-color: var(--color-vitals-mobility); }
+
+.anatomy-connect-page { max-width: 960px; margin: 0 auto; }
+.anatomy-connect-puzzle-title { font-size: 14px; font-weight: 600; color: var(--color-accent); margin: 8px 0 0; }
+.anatomy-connect-timer { text-align: center; font-size: 12.5px; color: var(--color-neutral-700); margin-bottom: 16px; }
+
+.anatomy-connect-columns { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+.anatomy-connect-column { display: flex; flex-direction: column; gap: 8px; }
+.anatomy-connect-column-heading { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); text-align: center; margin-bottom: 2px; }
+
+.anatomy-connect-card {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-card-surface);
+  color: var(--color-text);
+  font-size: 12.5px;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.anatomy-connect-card:hover:not(:disabled) { border-color: color-mix(in srgb, var(--color-accent) 40%, transparent); }
+/* Graded cards stay at full strength once the board goes read-only — dimming a disabled
+   card would wash out the correct/incorrect colors that are the whole point of that state. */
+.anatomy-connect-card:disabled { cursor: default; }
+.anatomy-connect-card-active {
+  position: relative;
+  border-color: var(--color-accent);
+  border-width: 2px;
+  background: color-mix(in srgb, var(--color-accent) 20%, var(--color-card-surface));
+  color: var(--color-accent);
+  font-weight: 600;
+}
+.anatomy-connect-card[class*="ac-color-"] { border-width: 2px; border-color: var(--ac-row-color); background: color-mix(in srgb, var(--ac-row-color) 15%, var(--color-card-surface)); }
+.anatomy-connect-card-correct { border-color: var(--color-success) !important; background: color-mix(in srgb, var(--color-success) 8%, var(--color-card-surface)) !important; }
+.anatomy-connect-card-incorrect { border-color: var(--color-danger) !important; background: color-mix(in srgb, var(--color-danger) 8%, var(--color-card-surface)) !important; }
+.anatomy-connect-card-hinted { border-color: color-mix(in srgb, var(--color-success) 55%, transparent) !important; }
+
+.anatomy-connect-card-wrap { display: flex; flex-direction: column; gap: 3px; }
+.anatomy-connect-correct-note { font-size: var(--fs-10-5); color: color-mix(in srgb, var(--color-success) 80%, var(--color-neutral-700)); padding-left: 2px; }
+
+/* The active muscle's pulsing marker — plain CSS keyframes, no library. */
+@keyframes ac-active-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1); }
+}
+.anatomy-connect-active-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  animation: ac-active-pulse 1.2s ease-in-out infinite;
+}
+.anatomy-connect-hint-tag { display: block; font-size: var(--fs-10); margin-top: 3px; color: color-mix(in srgb, var(--color-success) 80%, var(--color-neutral-700)); }
+
+.anatomy-connect-instruction { text-align: center; font-size: 13px; font-style: italic; color: var(--color-neutral-700); margin: 0 0 14px; }
+
+.ac-timer-flash { margin-left: 8px; font-weight: 700; color: var(--color-warn); animation: ac-active-pulse 1s ease-out; }
+
+.anatomy-connect-hint-btn {
+  flex: 1;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid var(--color-divider);
+  color: var(--color-neutral-700);
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 150ms ease;
+}
+.anatomy-connect-hint-btn:hover:not(:disabled) { border-color: var(--color-warn); }
+.anatomy-connect-hint-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* Mobile flow is hidden on desktop and vice versa — the two are separate rendering paths
+   that share only the timer and hint budget, so exactly one is ever visible. */
+.anatomy-connect-mobile { display: none; }
+
+.anatomy-connect-actions { display: flex; gap: 10px; margin-bottom: 10px; }
+.anatomy-connect-actions .btn-secondary { flex: 1; }
+.anatomy-connect-actions .btn-primary { flex: 2; }
+.anatomy-connect-attempts-note { text-align: center; font-size: 12.5px; color: var(--color-neutral-700); margin: 0 0 20px; }
+
+.anatomy-connect-result-card {
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 16px;
+  background: color-mix(in srgb, var(--color-vitals-mobility) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-vitals-mobility) 30%, transparent);
+}
+
+/* Three-column board on the five puzzles whose rows all share one region — the Region
+   column is dropped rather than shown as four identical, unmissable cards. */
+.anatomy-connect-columns-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* Part 6 — "Your Stats" inherits the body face here instead of the heading face
+   .games-stats-title sets globally. Scoped to this game rather than fixing the shared rule,
+   which also titles the games index, Differential and Rehab Sequence. Family only: size and
+   weight still come from .games-stats-title. */
+.anatomy-connect-page .games-stats-title,
+.ac-how-to-play .games-stats-title { font-family: inherit; }
+
+.ac-stats-empty { text-align: center; font-size: 14px; color: var(--color-neutral-700); margin: 6px 0 4px; }
+
+.ac-how-to-play {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+.ac-how-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ac-how-steps li { display: flex; align-items: baseline; gap: 8px; font-size: 13.5px; color: var(--color-text); }
+.ac-how-step-num { font-weight: 700; font-size: 14px; color: var(--color-accent); flex-shrink: 0; }
+.ac-how-tips-label { margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--color-neutral-700); }
+.ac-how-tips { margin: 6px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.ac-how-tips li { font-size: 13px; font-style: italic; color: var(--color-neutral-700); }
+
+@media (max-width: 767px) {
+  .anatomy-connect-desktop { display: none; }
+  .anatomy-connect-mobile { display: block; margin-bottom: 20px; }
+
+  .ac-progress-track { height: 4px; border-radius: 2px; background: var(--color-divider); overflow: hidden; margin-bottom: 16px; }
+  .ac-progress-fill { height: 100%; background: var(--color-accent); border-radius: 2px; transition: width 250ms ease; }
+
+  .ac-muscle-header {
+    background: var(--color-card-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .ac-muscle-header-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .ac-muscle-progress { font-size: 13px; color: var(--color-neutral-700); }
+  .ac-region-pill {
+    font-size: var(--fs-11);
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-accent) 14%, var(--color-card-surface));
+    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    color: var(--color-accent-700);
+  }
+  .ac-muscle-name { font-size: 22px; font-weight: 700; text-align: center; margin-top: 8px; color: var(--color-text); }
+
+  .ac-question-card { display: flex; flex-direction: column; gap: 8px; }
+  .ac-question-label { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; color: var(--color-neutral-700); }
+
+  .ac-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-divider);
+    background: var(--color-card-surface);
+    color: var(--color-text);
+    font-size: 13.5px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 150ms ease, background 150ms ease;
+  }
+  .ac-option:disabled { cursor: default; }
+  .ac-option-correct { border: 2px solid var(--color-success); background: color-mix(in srgb, var(--color-success) 8%, var(--color-card-surface)); }
+  .ac-option-incorrect { border: 2px solid var(--color-danger); background: color-mix(in srgb, var(--color-danger) 8%, var(--color-card-surface)); }
+  .ac-option-reveal { border: 2px solid var(--color-success); }
+  .ac-option-hinted { border: 2px solid color-mix(in srgb, var(--color-success) 55%, transparent); }
+  .ac-option-mark { font-weight: 700; flex-shrink: 0; }
+  .ac-option-correct .ac-option-mark { color: var(--color-success); }
+  .ac-option-incorrect .ac-option-mark { color: var(--color-danger); }
+  .ac-option-reveal-label { font-size: var(--fs-10); color: var(--color-neutral-700); flex-shrink: 0; }
+
+  .ac-next-btn, .ac-hint-mobile { margin-top: 8px; }
+  .ac-hint-mobile { width: 100%; }
+
+  .ac-muscle-result {
+    background: var(--color-card-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: center;
+  }
+  .ac-muscle-result-name { font-size: 16px; font-weight: 700; color: var(--color-text); }
+  .ac-muscle-result-score { font-size: 15px; font-weight: 700; margin: 6px 0 16px; }
+  .ac-score-all { color: var(--color-success); }
+  .ac-score-some { color: var(--color-warn); }
+  .ac-score-none { color: var(--color-danger); }
+}
+
+/* — Rehab Sequence (app/games/rehab-sequence/page.tsx, components/RehabSequenceGame.tsx) — */
+.rehab-sequence-page { max-width: 640px; margin: 0 auto; }
+
+.rehab-case-card {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+.rehab-case-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.rehab-case-title { font-size: 16px; font-weight: 700; line-height: 1.35; }
+.rehab-case-pills { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+.rehab-case-pills .differential-category-pill { margin-bottom: 0; }
+.rehab-case-context { font-size: 13px; line-height: 1.55; color: var(--color-neutral-700); margin: 0; }
+
+.rehab-difficulty-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: var(--fs-10-5);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.rehab-difficulty-pill--beginner { color: var(--color-vitals-mobility); background: color-mix(in srgb, var(--color-vitals-mobility) 16%, transparent); }
+.rehab-difficulty-pill--intermediate { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
+.rehab-difficulty-pill--advanced { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 16%, transparent); }
+
+.rehab-sequence-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.rehab-sequence-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-card-surface);
+  cursor: grab;
+}
+.rehab-sequence-card-correct { border-color: var(--color-vitals-mobility); background: color-mix(in srgb, var(--color-vitals-mobility) 12%, var(--color-card-surface)); }
+.rehab-sequence-card-incorrect { border-color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 10%, var(--color-card-surface)); }
+.rehab-sequence-num {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent);
+  font-size: var(--fs-11-5);
+  font-weight: 700;
+}
+.rehab-sequence-text { flex: 1; font-size: 13px; line-height: 1.4; }
+.rehab-sequence-arrows { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+.rehab-sequence-arrows button {
+  border: none;
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+  width: 22px;
+  height: 18px;
+  font-size: var(--fs-9);
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 1;
+}
+.rehab-sequence-arrows button:disabled { opacity: 0.35; cursor: default; }
+.rehab-sequence-arrows button:hover:not(:disabled) { background: var(--color-neutral-300); }
+
+.rehab-sequence-review { margin: 20px 0 16px; }
+.rehab-sequence-review-heading { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+.rehab-sequence-review-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.rehab-sequence-review-step { font-size: 13px; font-weight: 600; margin: 0 0 2px; }
+.rehab-sequence-review-rationale { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }
+
+/* — Body Connections (app/(app)/games/body/page.tsx, components/BodyConnectionsGame.tsx,
+   components/BodySilhouette.tsx) — */
+.body-page { max-width: 900px; margin: 0 auto; }
+.body-header { text-align: center; margin-bottom: 22px; }
+.body-title { font-size: 24px; margin: 4px 0 6px; }
+.body-progress { font-size: 13px; font-weight: 600; color: var(--color-neutral-700); margin: 0 0 8px; }
+.body-progress-bar {
+  width: 100%;
+  max-width: 320px;
+  height: 6px;
+  margin: 0 auto 12px;
+  border-radius: 999px;
+  background: var(--color-neutral-200);
+  overflow: hidden;
+}
+.body-progress-bar-fill {
+  height: 100%;
+  background: var(--color-vitals-mobility);
+  border-radius: 999px;
+  transition: width 400ms ease;
+}
+.body-instruction { font-size: 13px; color: var(--color-neutral-700); margin: 0; }
+
+.body-desktop-layout { display: flex; gap: 28px; align-items: stretch; }
+.body-silhouette-col { flex: 0 0 45%; min-width: 0; }
+.body-functions-col { flex: 0 0 55%; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+@media (max-width: 767px) {
+  .body-desktop-layout { flex-direction: column; }
+  .body-silhouette-col, .body-functions-col { flex: 1 1 auto; width: 100%; }
+}
+
+/* A deliberately dark "stage" for the silhouette, distinct from the rest of the page in
+   either theme — never a literal color, so it still automatically tracks light/dark instead
+   of ever inverting to a light card when the site itself is already in dark mode. Light
+   theme mixes --color-bg toward --color-accent-900 (a rich navy in light theme) rather than
+   toward black, since --color-bg there is a warm near-white that flattens to plain grey when
+   darkened with black alone; dark theme's --color-bg is already a dark navy, so mixing
+   toward black there just deepens it further on the same hue. */
+.body-silhouette-card {
+  position: relative;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  border-radius: calc(var(--radius-lg) * 1.15);
+  background: color-mix(in srgb, var(--color-bg) 18%, var(--color-accent-900));
+  box-sizing: border-box;
+}
+html[data-theme="dark"] .body-silhouette-card {
+  background: color-mix(in srgb, var(--color-bg) 55%, black);
+}
+.body-silhouette { width: 100%; max-width: 300px; height: auto; display: block; margin: 0 auto; }
+
+.body-region-decorative {
+  fill: color-mix(in srgb, var(--color-neutral-400) 22%, transparent);
+  stroke: color-mix(in srgb, var(--color-neutral-400) 60%, transparent);
+  stroke-width: 1.2;
+}
+
+.body-region-part {
+  fill: color-mix(in srgb, var(--color-neutral-400) 30%, transparent);
+  stroke: var(--color-neutral-400);
+  stroke-width: 1.5;
+  cursor: pointer;
+  transition: fill 150ms ease, stroke 150ms ease, filter 150ms ease;
+}
+.body-region-part:hover { fill: color-mix(in srgb, var(--color-accent) 40%, transparent); stroke: var(--color-accent); }
+.body-region-inactive {
+  fill: color-mix(in srgb, var(--color-neutral-400) 14%, transparent);
+  stroke: color-mix(in srgb, var(--color-neutral-400) 35%, transparent);
+  cursor: default;
+  pointer-events: none;
+}
+.body-region-selected {
+  fill: color-mix(in srgb, var(--color-accent) 70%, transparent);
+  stroke: var(--color-accent);
+  filter: drop-shadow(0 0 7px var(--color-accent));
+}
+.body-region-matched { fill: color-mix(in srgb, var(--color-vitals-mobility) 60%, transparent); stroke: var(--color-vitals-mobility); pointer-events: none; }
+.body-region-flash { animation: body-region-flash-fade 600ms ease; }
+.body-region-pulsing { animation: body-region-pulse 1.4s ease-in-out infinite; }
+@keyframes body-region-flash-fade {
+  0% { fill: color-mix(in srgb, #e85a4a 40%, transparent); stroke: #e85a4a; }
+  100% { fill: color-mix(in srgb, var(--color-neutral-400) 30%, transparent); stroke: var(--color-neutral-400); }
+}
+@keyframes body-region-pulse {
+  0%, 100% { fill: color-mix(in srgb, var(--color-accent) 55%, transparent); }
+  50% { fill: color-mix(in srgb, var(--color-accent) 20%, transparent); }
+}
+
+.body-region-label {
+  fill: color-mix(in srgb, #fff 88%, transparent);
+  font-size: var(--fs-11);
+  font-weight: 600;
+  text-anchor: middle;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.body-region-group:hover .body-region-label { opacity: 1; }
+/* Where there's no hover, revealing a region's name on hover means never revealing it: the
+   click handler sits on the <path>, so the label could only ever appear after you'd already
+   selected the region. Show them all instead — you can read what you're about to tap. */
+@media (hover: none) {
+  .body-region-label { opacity: 1; }
+}
+
+.body-selected-tooltip {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 85%, black);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  animation: body-tooltip-fade-in 200ms ease;
+}
+@keyframes body-tooltip-fade-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.body-function-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-surface);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.body-function-card:hover:not(:disabled) { background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface)); }
+.body-function-card:disabled { cursor: default; }
+.body-function-letter {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  color: var(--color-accent);
+  font-size: var(--fs-11);
+  font-weight: 700;
+}
+.body-function-text-wrap { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.body-function-text { font-size: 13.5px; color: var(--color-text); line-height: 1.4; }
+.body-function-matched-label { font-size: var(--fs-11-5); font-weight: 600; color: var(--color-vitals-mobility); }
+
+.body-function-selected { background: var(--color-accent); border-left-color: var(--color-accent-800); }
+.body-function-selected .body-function-text { color: #fff; }
+.body-function-selected .body-function-letter { background: color-mix(in srgb, #fff 25%, transparent); color: #fff; }
+
+.body-function-matched {
+  border-left-color: var(--color-vitals-mobility);
+  background: color-mix(in srgb, var(--color-vitals-mobility) 12%, var(--color-surface));
+  opacity: 0.85;
+}
+.body-function-matched .body-function-letter { background: color-mix(in srgb, var(--color-vitals-mobility) 20%, transparent); color: var(--color-vitals-mobility); }
+
+.body-function-flash {
+  border-left-color: #e85a4a;
+  background: color-mix(in srgb, #e85a4a 14%, var(--color-surface));
+  animation: body-card-shake 400ms ease;
+}
+@keyframes body-card-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.body-mobile-layout { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; }
+.body-mobile-prompt { font-size: 16px; font-weight: 700; text-align: center; margin: 0; }
+.body-mobile-options { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.body-mobile-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-surface);
+  font-size: 14.5px;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+.body-mobile-option:hover:not(:disabled) { background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface)); }
+.body-mobile-option-wrong {
+  border-left-color: #e85a4a;
+  background: color-mix(in srgb, #e85a4a 14%, var(--color-surface));
+  animation: body-card-shake 400ms ease;
+}
+
+.body-complete-scrim {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 20px;
+}
+.body-complete-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 32px;
+  border-radius: calc(var(--radius-lg) * 1.15);
+  background: var(--color-card-surface);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: body-complete-fade-in 320ms ease;
+}
+@keyframes body-complete-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.body-complete-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 26px; margin: 4px 0 2px; }
+.body-results-score { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 32px; margin: 2px 0 20px; color: var(--color-vitals-mobility); }
+.body-results-review { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
+.body-review-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: var(--radius-md); background: var(--color-surface); border: 1px solid var(--color-divider); }
+.body-review-part { font-size: 13px; font-weight: 600; }
+.body-review-function { font-size: 12.5px; color: var(--color-neutral-700); margin-top: 2px; }
+.body-results-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+
+
+@media (min-width: 1024px) {
+  .games-grid { gap: 20px; }
+}

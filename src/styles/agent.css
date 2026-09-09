@@ -1,0 +1,328 @@
+/* — Limbic Agent: full-screen dark canvas + spiderweb (components/AgentClient.tsx,
+   components/AgentGraph.tsx). A deliberately separate visual language from the rest of
+   the (light-themed) app — this page owns its own colors rather than reusing --color-*. */
+.agent-page {
+  /* Fills exactly what's left of .app-main after .app-mobile-topbar (mobile only) —
+     see the .app-main comment above for why this is flex:1 and not a height percentage. */
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(ellipse at 50% 30%, #10182c 0%, #070a14 65%, #05070d 100%);
+  color: #dbe4f5;
+}
+.agent-topbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 14px 20px;
+  font-size: var(--fs-11-5);
+  color: #7c8db5;
+  line-height: 1.5;
+}
+.agent-topbar strong { color: #a9bbe0; font-weight: 600; }
+.agent-demo-badge {
+  flex-shrink: 0;
+  background: rgba(255, 176, 66, 0.14);
+  border: 1px solid rgba(255, 176, 66, 0.4);
+  color: #ffb042;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: var(--fs-10);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  margin-top: 1px;
+}
+
+.agent-canvas-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.agent-input-bar {
+  flex-shrink: 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+  max-width: 620px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.agent-input-bar input {
+  flex: 1;
+  min-width: 0;
+  background: rgba(20, 28, 48, 0.8);
+  border: 1px solid rgba(140, 170, 255, 0.25);
+  color: #e8ecf7;
+  font-size: 14px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  outline: none;
+}
+.agent-input-bar input::placeholder { color: #5c6a8f; }
+.agent-input-bar input:focus { border-color: rgba(140, 170, 255, 0.6); }
+@media (max-width: 799px) {
+  /* Same iOS-Safari-auto-zoom-on-focus fix as .input's own mobile override above — this
+     input doesn't use the .input class (the whole Agent page owns its own dark styling
+     instead), so it needs the same 16px-on-mobile treatment applied separately here. */
+  .agent-input-bar input { font-size: 16px; }
+}
+.agent-input-bar button {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #5b8def, #3b6fe0);
+  color: #fff;
+  border: none;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 14px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.agent-input-bar button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.agent-error {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: #ffb4b4;
+  background: rgba(60, 20, 20, 0.55);
+  border: 1px solid rgba(255, 140, 140, 0.3);
+  padding: 6px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.agent-detail-card {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  width: min(420px, calc(100% - 32px));
+  background: rgba(15, 21, 38, 0.92);
+  border: 1px solid rgba(140, 170, 255, 0.25);
+  border-radius: 16px;
+  padding: 14px 16px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+.agent-detail-kicker {
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6ea8ff;
+}
+.agent-detail-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+  color: #f1f4fc;
+  margin: 4px 0 6px;
+}
+.agent-detail-body { font-size: 12.5px; color: #a9b6d6; line-height: 1.5; margin: 0; }
+.agent-detail-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #7c8db5;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+}
+.agent-detail-close:hover { color: #dbe4f5; }
+.agent-detail-hint { font-size: var(--fs-11); color: #6ea8ff; font-style: italic; margin: 8px 0 0; }
+
+/* Nodes/links */
+.agent-link { stroke-width: 1.4; }
+.agent-link-tree { stroke: rgba(140, 170, 255, 0.28); }
+.agent-link-cross { stroke: rgba(66, 214, 200, 0.35); stroke-dasharray: 3 4; stroke-width: 1.1; }
+/* The line running to Limbic Threads' "Prompt Agent" node (see AgentNode.variant) —
+   same tree line style as .agent-link-tree, just amber to match that one node's warm
+   glow instead of the usual blue. */
+.agent-link-action { stroke: rgba(216, 156, 65, 0.4); }
+
+/* Grows a newly-added line out from its source rather than snapping in at full length —
+   see components/AgentGraph.tsx, which sets pathLength="100" and stroke-dasharray: 100
+   on every new line specifically so this animates consistently regardless of the line's
+   actual on-screen length (which keeps changing as the force simulation settles). Only
+   applied on creation (the "enter" selection), never replayed on an existing line. */
+@keyframes agent-link-draw-in {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+.agent-link-draw-in {
+  animation: agent-link-draw-in 1.3s ease-out forwards;
+}
+
+@keyframes agent-node-pulse-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.agent-node-pulse {
+  transform-origin: center;
+  animation: agent-node-pulse-in 0.8s ease-out;
+}
+.agent-node-pulse-replay { animation: agent-node-pulse-in 0.8s ease-out; }
+
+.agent-node-circle { transition: filter 0.25s ease, opacity 0.25s ease; }
+.agent-node-circle { filter: drop-shadow(0 0 5px currentColor); }
+.agent-node:hover .agent-node-circle,
+.agent-node-selected .agent-node-circle {
+  filter: drop-shadow(0 0 12px currentColor);
+}
+.agent-node-label {
+  font-family: var(--font-body);
+  fill: #a9b6d6;
+  pointer-events: none;
+}
+
+@keyframes agent-node-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
+@keyframes agent-node-breathe-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px currentColor); }
+  50% { filter: drop-shadow(0 0 20px currentColor); }
+}
+.agent-node-breathing .agent-node-pulse {
+  animation: agent-node-breathe 3.4s ease-in-out infinite;
+}
+.agent-node-breathing .agent-node-circle {
+  animation: agent-node-breathe-glow 3.4s ease-in-out infinite;
+}
+
+@keyframes agent-node-loading-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+.agent-node-loading .agent-node-circle {
+  animation: agent-node-loading-pulse 0.9s ease-in-out infinite;
+}
+
+/* Limbic Threads' "Prompt Agent" node (see AgentNode.variant, components/AgentGraph.tsx)
+   — a slower, subtler pulse than .agent-node-breathing's (5s vs. 3.4s, a gentler scale),
+   reading as a calm, warm invitation rather than something actively "thinking." */
+@keyframes agent-node-action-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+@keyframes agent-node-action-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px currentColor); }
+  50% { filter: drop-shadow(0 0 18px currentColor); }
+}
+.agent-node-action .agent-node-pulse {
+  animation: agent-node-action-pulse 5s ease-in-out infinite;
+}
+.agent-node-action .agent-node-circle {
+  animation: agent-node-action-glow 5s ease-in-out infinite;
+}
+
+@media (max-width: 640px) {
+  .agent-topbar { padding: 10px 14px; font-size: var(--fs-10-5); }
+  .agent-input-bar { padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* — Limbic Threads (see components/ThreadsWeb.tsx) — reuses the .agent-node/.agent-link
+   rules and the .agent-detail-kicker/-title/-body/-hint/-close typography above verbatim.
+   Its own detail panel is NOT .agent-detail-card's floating overlay though — Agent's own
+   card can afford to float over its fixed-height chat canvas, but Threads' canvas sits in
+   a normal scrolling page where a force-simulated node can end up anywhere, including
+   right where a docked overlay would sit, silently blocking clicks on whatever's under it. */
+/* box-shadow added so the panel sits at the same visual weight as the rest of the app's
+   card system (--shadow-md) instead of reading as a flat bordered rectangle next to it. */
+.threads-wrap {
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.threads-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 14px;
+  color: #dbe4f5;
+  background: #0b1122;
+}
+/* A one-line explainer under the header so the panel reads as an explained feature rather
+   than an unlabeled dark box before a reader has clicked anything in it. */
+.threads-caption {
+  padding: 0 16px 14px;
+  margin-top: -2px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #9fb0d0;
+  background: #0b1122;
+}
+/* Minimum 500px — Threads is the dominant right-column feature on the article detail page
+   now, not a secondary panel, so its canvas gets real, unconditional room regardless of
+   viewport (no shorter mobile override the way .article-hero-media used to have). */
+.threads-canvas-wrap {
+  min-height: 500px;
+  height: 500px;
+  background: radial-gradient(ellipse at 50% 30%, #10182c 0%, #070a14 65%, #05070d 100%);
+}
+.threads-detail-panel {
+  position: relative;
+  background: #0d1428;
+  border-top: 1px solid rgba(140, 170, 255, 0.15);
+  padding: 16px;
+}
+.threads-detail-cta { margin-top: 10px; font-size: 12.5px; }
+/* .btn-secondary's default color/border (see the "buttons" rules above) are tuned for a
+   light background — var(--color-text) on this panel's dark navy background was
+   effectively navy-on-navy, nearly invisible. .btn-primary is unaffected (solid accent
+   fill + white text already reads fine on dark). */
+.threads-detail-panel .btn-secondary {
+  color: #dbe4f5;
+  border-color: rgba(140, 170, 255, 0.35);
+}
+.threads-detail-panel .btn-secondary:hover {
+  background: rgba(140, 170, 255, 0.14);
+}
+/* Same color language as .agent-demo-badge above ("Demo" on /agent's topbar) — both mark
+   "not fully live yet," so they should read as the same signal wherever they show up. */
+.threads-coming-soon-badge {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 8px;
+  background: rgba(255, 176, 66, 0.14);
+  border: 1px solid rgba(255, 176, 66, 0.4);
+  color: #ffb042;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: var(--fs-9-5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+/* — Feed-card Threads teaser (see components/ArticleCard.tsx) — a direct, always-visible
+   link into the article's real Threads web, not a hover-revealed preview. */
+.card-threads-teaser {
+  margin-top: 4px;
+  font-size: var(--fs-11-5);
+  color: var(--color-accent-700);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+

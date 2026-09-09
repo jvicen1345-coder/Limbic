@@ -16,15 +16,18 @@ API routes unless the existing architecture clearly requires one. Persistence us
 with SQLite/libSQL, so schema changes require an appropriate Prisma migration and must work
 with both local SQLite and hosted Turso databases.
 
-There is no Tailwind. Styling is hand-written in `src/app/globals.css`; utility prefixes such
-as `sm:`, `md:`, and `lg:` do nothing. That file has interleaved media queries and is a shared
-chokepoint. For a new feature, append narrowly scoped classes at the end rather than
-reordering or bulk-formatting existing rules. Keep mobile and desktop edits in the appropriate
-media-query/base sections, close every block, and verify the final brace depth is zero.
+There is no Tailwind. Styling is hand-written CSS under [`src/styles/`](src/styles/),
+imported by route: tokens/base/desktop type live on the root layout; AppShell chrome on
+`(app)/layout.tsx`; feature sheets on that feature's `layout.tsx`. Utility prefixes such
+as `sm:`, `md:`, and `lg:` do nothing. Append new rules to the matching feature file (or
+add a sheet and import it from the route layout). Do not put crossword, wellness, games,
+or connexion CSS on the root import. Keep media queries with their feature rules, close
+every block, and verify brace depth is zero across `src/styles/*.css`. See
+[`docs/css.md`](docs/css.md).
 
-`src/components/AppShell.tsx` is another shared chokepoint: its navigation content is used by
-both the desktop sidebar and mobile drawer. Treat it as owned/shared work, and verify both
-surfaces after any change.
+`src/components/shell/` (`AppShell` + `NavContent`) is another shared chokepoint: its
+navigation content is used by both the desktop sidebar and mobile drawer. Treat it as
+owned/shared work, and verify both surfaces after any change.
 
 ## Agent workflows
 

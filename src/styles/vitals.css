@@ -1,0 +1,139 @@
+/* — Limbic Vitals (see app/(app)/wellness/metrics/*, components/vitals/*) — general
+   wellness tracking, not medical advice. Reuses .card/.field/.input/.btn for the two form
+   cards; everything below is specific to the disclaimer banner and the pure-CSS weekly bar
+   chart (no charting library — spec requirement). */
+.vitals-disclaimer {
+  font-size: var(--fs-11-5);
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-bottom: 18px;
+}
+
+.vitals-chart-wrap { overflow-x: auto; }
+.vitals-chart-days { display: flex; gap: 10px; align-items: flex-end; min-width: 320px; padding-top: 8px; }
+.vitals-chart-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.vitals-chart-track {
+  position: relative;
+  width: 100%;
+  max-width: 34px;
+  height: 140px;
+}
+/* Last week's bar sits behind this week's at low opacity, for at-a-glance comparison —
+   absolutely positioned in the same track rather than a second row, so the two visually
+   overlap the way the spec's "ghost bars behind current week" describes. */
+.vitals-chart-ghost {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  opacity: 0.2;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.vitals-chart-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 1;
+}
+.vitals-chart-segment { width: 100%; min-height: 2px; }
+/* A pure-CSS hover tooltip (no JS) — the segment is the positioning context, the tooltip
+   is a hidden absolutely-positioned label that only becomes visible on :hover/:focus. */
+.vitals-chart-segment { position: relative; cursor: pointer; }
+.vitals-chart-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: var(--fs-10-5);
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+  z-index: 2;
+}
+/* :focus (not just :focus-visible) so a tap reveals the value too — the segments are now
+   focusable (see components/vitals/WeeklyActivityChart.tsx), and on a touchscreen a tap
+   focuses without necessarily qualifying for :focus-visible. */
+.vitals-chart-segment:hover .vitals-chart-tooltip,
+.vitals-chart-segment:focus .vitals-chart-tooltip,
+.vitals-chart-segment:focus-visible .vitals-chart-tooltip { opacity: 1; }
+.vitals-chart-daylabel { font-size: var(--fs-10-5); color: var(--color-neutral-700); font-weight: 600; }
+.vitals-chart-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--color-divider); }
+.vitals-chart-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.vitals-chart-legend-dot { width: 9px; height: 9px; border-radius: 999px; flex-shrink: 0; }
+.vitals-chart-legend-total { color: var(--color-neutral-700); }
+.vitals-chart-empty { text-align: center; padding: 30px 10px; color: var(--color-neutral-700); font-size: 13px; }
+
+.vitals-color-cardio { background: var(--color-accent); }
+.vitals-color-strength { background: var(--color-vitals-strength); }
+.vitals-color-mobility { background: var(--color-vitals-mobility); }
+.vitals-color-mindfulness { background: var(--color-vitals-mindfulness); }
+
+.vitals-log-list { display: flex; flex-direction: column; gap: 2px; margin-top: 14px; }
+.vitals-log-row { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid var(--color-divider); font-size: 13px; }
+.vitals-log-row:last-child { border-bottom: none; }
+.vitals-log-date { color: var(--color-neutral-700); font-size: var(--fs-11-5); min-width: 46px; }
+.vitals-log-activity { flex: 1; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.vitals-log-minutes { color: var(--color-neutral-700); font-size: 12px; }
+.vitals-log-synced-badge {
+  font-size: var(--fs-10);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+
+.vitals-insight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+.vitals-insight-item:last-child { border-bottom: none; }
+.vitals-insight-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--color-accent); margin-top: 6px; flex-shrink: 0; }
+
+/* MoodPickerCard's 5-point same-day check-in (see components/vitals/MoodPickerCard.tsx) —
+   a plain round emoji button, filled/ringed when it's today's picked value. */
+.mood-picker-option {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-card-surface);
+  font-size: 19px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.mood-picker-option:hover:not(:disabled) { border-color: var(--color-accent); }
+.mood-picker-option[data-selected="true"] { border-color: var(--color-accent); border-width: 2px; background: color-mix(in srgb, var(--color-accent) 12%, var(--color-card-surface)); }
+.mood-picker-option:disabled { opacity: 0.6; cursor: default; }
+
+@media (max-width: 480px) {
+  .vitals-chart-track { max-width: 26px; }
+}
+

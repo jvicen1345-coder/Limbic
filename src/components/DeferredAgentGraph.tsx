@@ -1,9 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { AgentGraphProps } from "@/components/AgentGraph";
+import type { AgentGraphProps } from "@/components/agent/AgentGraph";
 
-const AgentGraph = dynamic(() => import("@/components/AgentGraph").then((module) => module.AgentGraph), {
+const AgentGraph = dynamic(() => import("@/components/agent/AgentGraph").then((module) => module.AgentGraph), {
   loading: () => (
     <div
       role="status"

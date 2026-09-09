@@ -16,7 +16,7 @@ import type {
 import { CheckIcon, PencilIcon, TrashIcon, XIcon } from "@/components/icons";
 
 /** Slides in from the right (up from the bottom on mobile — see the max-width:640px
- *  override on .cal-panel in globals.css). `date`/`events` are the *last* selected date's
+ *  override on .cal-panel in src/styles). `date`/`events` are the *last* selected date's
  *  data even after `open` goes false — see CalendarPageClient's lastSelectedDate tracking
  *  — so the slide-out animation has real content to show while it plays instead of going
  *  blank the instant a reader closes it. */

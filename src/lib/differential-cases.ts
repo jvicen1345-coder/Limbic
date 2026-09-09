@@ -3,7 +3,7 @@ import { todayKeyInZone } from "@/lib/day";
  * Differential's static case bank (see app/games/differential/page.tsx,
  * app/actions/differential.ts) — one clinical vignette per case, revealed as 5
  * progressively more specific clues. Category/difficulty drive the page's colored pill
- * (see .specialty-accent-* in globals.css) and stats breakdowns.
+ * (see .specialty-accent-* in src/styles) and stats breakdowns.
  */
 
 export type DifferentialCategory =

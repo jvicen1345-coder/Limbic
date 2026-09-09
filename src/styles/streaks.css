@@ -1,0 +1,95 @@
+/* — reading streak calendar (GitHub-contributions-style, 365 rolling days) — still used by
+   ReadingCalendar (/home); ReadingStreakCard/GamesStreakCard moved to the plain numeric
+   .streak-card treatment below, and the Boards streak is a compact header badge instead
+   (.boards-header-streak, /boards). — */
+.reading-calendar { display: flex; gap: 3px; width: max-content; }
+.reading-calendar-week { display: flex; flex-direction: column; gap: 3px; }
+.reading-calendar-day {
+  width: 9px; height: 9px; border-radius: 2px;
+  background: var(--color-neutral-200);
+}
+.reading-calendar-day-read { background: var(--color-accent); }
+.reading-calendar-day-today { box-shadow: 0 0 0 1px var(--color-accent-700); }
+
+/* — streak-card: current-streak-only summary (Reading/Limbic Games activity on Profile) — */
+.streak-card-row { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+.streak-card-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+  flex-shrink: 0;
+}
+.streak-card-value {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--color-text);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.streak-card-value--zero { font-size: 15px; font-weight: 600; }
+.streak-card-unit {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-neutral-700);
+}
+.streak-card-caption { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin-top: 3px; }
+
+/* — Boards header streak: a compact pill in the /boards page header, replacing the old
+   full-width BoardsStreakCard below the Daily Dose card (see boards/page.tsx). Same accent
+   coloring as .streak-card-badge above, just condensed into one inline row. */
+.boards-header-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-accent-700);
+  background: var(--color-accent-100);
+  padding: 5px 12px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+/* Never show an unpaired trailing card in the 2-column desktop grid — assumes more
+   content exists on another page, which is true for every paginated .cards-grid (Search,
+   Saved, etc.) but not Home's (see .home-cards-grid override right below): Home never
+   paginates, so an odd count there (e.g. only 1-5 real, distinct-image articles found —
+   see page.tsx's resolveHomeImages) is the whole story, not a dangling leftover to hide. */
+@media (min-width: 800px) {
+  .cards-grid > *:last-child:nth-child(odd) { display: none; }
+  .cards-grid.home-cards-grid > *:last-child:nth-child(odd) { display: block; }
+}
+
+/* A second, low-key entry point into the exact same refresh RefreshHomeFeedButton (top of
+   the page) and pull-to-refresh already do — for a reader who's scrolled all the way
+   through the grid and wants another batch without scrolling back up. Small and quiet on
+   purpose, not another prominent button competing with the one at the top. */
+.home-refresh-pill-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.home-refresh-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-card-surface);
+  color: var(--color-neutral-700);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.home-refresh-pill:hover { background: var(--color-neutral-100); }
+.home-refresh-pill:disabled { cursor: default; opacity: 0.7; }
+

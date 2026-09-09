@@ -57,7 +57,7 @@ const FOOTER_LINKS = [
 /** The public marketing page at "/" — see app/page.tsx, which only renders this for a
  *  signed-out visitor. Deliberately outside the (app) route group: no AppShell, no
  *  sidebar, no session-dependent data, every color routes through the same tokens the
- *  rest of the app already uses (see globals.css's "Landing page" section) so this reads
+ *  rest of the app already uses (see src/styles's "Landing page" section) so this reads
  *  as the front door of the same product instead of a bolted-on template. */
 export function LandingPage() {
   return (

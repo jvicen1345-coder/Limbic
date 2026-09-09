@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeftIcon, DownloadIcon } from "@/components/icons";
 
 /** Screen-only chrome for /pro/patient-brief/[patientId] — hidden entirely under
- *  @media print (see .patient-brief-topbar in globals.css), so it never shows up in the
+ *  @media print (see .patient-brief-topbar in src/styles), so it never shows up in the
  *  printed or saved-as-PDF document itself. */
 export function PatientBriefTopbar() {
   return (
