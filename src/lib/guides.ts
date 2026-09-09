@@ -71,7 +71,7 @@ export const GUIDES: Guide[] = [
     short:
       "The knee screen built on the openly published guideline — including why a test’s headline accuracy depends on who performed it and on whom.",
     sections: 12,
-    items: 12,
+    items: 37,
     references: 12,
   },
   {

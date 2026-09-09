@@ -790,7 +790,7 @@ a{color:var(--accent)}
     <span class="navdiv" aria-hidden="true"></span>
     <select id="navpick" aria-label="Jump to a section"></select>
     <div class="navlinks">
-    <a href="#checklist">12 Items</a>
+    <a href="#checklist">37 Items</a>
     <a href="#numbers">Numbers</a>
     <a href="#posture">Posture</a>
     <a href="#arom">AROM</a>
@@ -868,110 +868,320 @@ a{color:var(--accent)}
 
   <section id="checklist">
     <div class="sechead"><span class="secnum">01</span><h2>The competency checklist</h2><span class="note">check-off saves in this browser</span></div>
-    <p class="lede">Two questions come before any special test: is this a knee problem at all, and does it need a radiograph before it needs a hand on it.</p>
+    <p class="lede">Thirty-seven capabilities, grouped by the question each phase of the examination answers. Two of them come before any special test: is this a knee problem at all, and does it need a radiograph before it needs a hand on it. Every item is written as something you can perform rather than something you can name, and the last column is the finding - the number or observation that turns the manoeuvre into information, with what it is worth beside it.</p>
     
     <div class="tablewrap">
       <table class="check-table">
         <colgroup><col style="width:4%"><col style="width:5%"><col style="width:17%"><col style="width:37%"><col style="width:37%"></colgroup>
         <thead><tr><th scope="col"></th><th scope="col">#</th><th scope="col">Item</th><th scope="col">How it is performed</th><th scope="col">Finding / norm</th></tr></thead>
         <tbody>
+      <tr class="group"><td colspan="5">Should I be examining this knee at all?</td></tr>
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Screen above and below"></td><td class="idx">1</td>
-        <td class="name">Screen above and below</td>
-        <td>Clear the hip and lumbar spine before examining the knee.</td>
-        <td data-imp="lumbar|referred|screen|hip">
-          <b>Do this first.</b> Knee pain refers from both, and a knee examined for referred pain reads normal and reassuring. <span class="prov c">Convention</span>
+        <td class="ck"><input type="checkbox" data-ck="1" aria-label="Mark done: Screen the hip and lumbar spine"></td><td class="idx">1</td>
+        <td class="name">Screen the hip and lumbar spine</td>
+        <td>Lumbar quadrant and segmental mobility, then hip flexion-adduction-internal rotation and passive hip IR. Ask whether the knee symptom changes.</td>
+        <td data-imp="lumbar|hip|referred|screen">
+          <b>Do this first.</b> Knee pain refers from both, and a knee examined for referred pain reads normal and reassuring. <span class="prov c">Convention</span> The whole-limb version does carry a grade: "a focused musculoskeletal exam of the <em>lower extremities</em> should be performed when assessing for an ACL injury" - Strong, on high-quality evidence <span class="src">AAOS 2022</span>.
         </td>
       </tr>
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="2" aria-label="Mark done: Decide about imaging early"></td><td class="idx">2</td>
-        <td class="name">Decide about imaging early</td>
-        <td>Apply the Ottawa Knee Rule before any special test.</td>
-        <td data-imp="Ottawa|radiograph|rule-out|pooled">
-          <b>It is a rule-out.</b> Pooled sensitivity <b>0.98</b> and &minus;LR <b>0.12</b> across 18 studies and 6,702 patients. <span class="src">Kazemi 2023</span>
+        <td class="ck"><input type="checkbox" data-ck="2" aria-label="Mark done: Apply the Ottawa Knee Rule"></td><td class="idx">2</td>
+        <td class="name">Apply the Ottawa Knee Rule</td>
+        <td>Five criteria; any one positive sends the knee for a radiograph before it gets a special test.</td>
+        <td data-imp="ottawa|radiograph|fracture|imaging">
+          A rule-out, and only that. Pooled Sn <b>0.98</b> (0.96-0.99), &minus;LR <b>0.12</b> (0.05-0.26) across 18 studies and 6,702 patients <span class="src">Kazemi 2023</span>. The five criteria are not reproduced on this page: the meta-analysis these figures come from reports the rule's accuracy without restating its content, so take the criteria from the rule itself rather than from here.
         </td>
       </tr>
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="3" aria-label="Mark done: Red flags"></td><td class="idx">3</td>
-        <td class="name">Red flags</td>
-        <td>History and observation for septic arthritis, fracture, extensor mechanism rupture, DVT, malignancy.</td>
-        <td data-imp="septic|extensor mechanism|malignancy|fracture">
-          <b>An acutely hot, exquisitely painful knee with fever is not an examination problem.</b> <span class="prov c">Convention</span>
+        <td class="ck"><input type="checkbox" data-ck="3" aria-label="Mark done: Red flag screen"></td><td class="idx">3</td>
+        <td class="name">Red flag screen</td>
+        <td>Fever, night pain, calf swelling, prior cancer, and whether they can actively extend the knee against gravity.</td>
+        <td data-imp="red flag|septic|fracture|extensor|dvt">
+          An acutely hot, exquisitely painful knee with fever is not an examination problem. A patient who cannot actively extend the knee against gravity but can be moved there passively has an extensor mechanism to exclude before anything else is worth doing. <span class="prov c">Convention</span>
         </td>
       </tr>
       <tr>
         <td class="ck"><input type="checkbox" data-ck="4" aria-label="Mark done: Classify from the history"></td><td class="idx">4</td>
         <td class="name">Classify from the history</td>
         <td>Traumatic or atraumatic, mechanical or inflammatory - and how long ago.</td>
-        <td data-imp="traumatic|inflammatory|time since|classify">
-          <b>Time since injury changes what the tests are worth.</b> See section 07; this is not a formality at the knee. <span class="src">Rinonapoli 2025</span>
+        <td data-imp="history|classify|traumatic|time since">
+          The last of those is not a formality at the knee. McMurray moves from Sn 91 / Sp 55 at 5-7 days to Sn 80 / Sp 79 with a PPV of 92% at 4-5 weeks <span class="src">Rinonapoli 2025</span>. Time since injury changes what a test is worth, not merely how confident you feel.
+        </td>
+      </tr>
+      <tr class="group"><td colspan="5">What is the resting state?</td></tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="5" aria-label="Mark done: Standing alignment"></td><td class="idx">5</td>
+        <td class="name">Standing alignment</td>
+        <td>Weight-bearing, from front and side: varus, valgus, recurvatum. Compare limbs.</td>
+        <td data-imp="alignment|varus|valgus|recurvatum">
+          <span class="prov c">Convention</span> No threshold that makes an alignment abnormal is traceable here. <span class="src">no traceable source</span> Record it as a description you can repeat, not as a diagnosis you have made.
         </td>
       </tr>
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="5" aria-label="Mark done: Resting state"></td><td class="idx">5</td>
-        <td class="name">Resting state</td>
-        <td>Standing alignment, effusion, quadriceps bulk.</td>
-        <td data-imp="alignment|effusion|quadriceps bulk|resting">
-          The shortest section in the guide, because almost nothing here has been measured in a way a reader can check. <span class="prov c">Convention</span>
+        <td class="ck"><input type="checkbox" data-ck="6" aria-label="Mark done: Effusion, graded"></td><td class="idx">6</td>
+        <td class="name">Effusion, graded</td>
+        <td>Modified stroke test for small effusions, ballottement for large. Grade it and compare sides.</td>
+        <td data-imp="effusion|stroke test|ballottement|swelling">
+          Use the modified stroke test specifically: it is named as an essential physical impairment measure to document at baseline <em>and</em> at follow-up <span class="src">Logerstedt 2018</span>. Its reliability is not reported anywhere reachable - searched twice. <span class="src">no traceable source</span>
         </td>
       </tr>
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="6" aria-label="Mark done: What they can do alone"></td><td class="idx">6</td>
-        <td class="name">What they can do alone</td>
-        <td>Gait, active range, extension lag versus fixed flexion, squat, step-down, hop if appropriate.</td>
-        <td data-imp="extension lag|step-down|contracture|gait">
-          <b>The lag-versus-contracture distinction is the most useful thing in that list.</b> <span class="prov c">Convention</span>
+        <td class="ck"><input type="checkbox" data-ck="7" aria-label="Mark done: Quadriceps bulk and vastus medialis"></td><td class="idx">7</td>
+        <td class="name">Quadriceps bulk and vastus medialis</td>
+        <td>Girth at a fixed distance above the patella, and VMO definition, both sides.</td>
+        <td data-imp="quadriceps|bulk|atrophy|vastus medialis">
+          Atrophy is a chronicity marker, not a diagnosis. <span class="prov c">Convention</span> The measure that counts is strength, not appearance - maximum voluntary isometric or isokinetic quadriceps testing is the essential one <span class="src">Logerstedt 2018</span>.
+        </td>
+      </tr>
+      <tr class="group"><td colspan="5">What can they do on their own?</td></tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="8" aria-label="Mark done: Gait, including stance-phase control"></td><td class="idx">8</td>
+        <td class="name">Gait, including stance-phase control</td>
+        <td>From the front and the side: quadriceps avoidance, varus thrust, and whether the knee reaches extension at heel strike.</td>
+        <td data-imp="gait|stance|thrust|quadriceps avoidance">
+          <span class="prov c">Convention</span> No free accuracy figures for gait observation at the knee. <span class="src">no traceable source</span> Use it to generate the hypothesis you then test, never to confirm one.
         </td>
       </tr>
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="7" aria-label="Mark done: What you do to them"></td><td class="idx">7</td>
-        <td class="name">What you do to them</td>
-        <td>Passive against active, end feel, patellar mobility, accessory glide.</td>
-        <td data-imp="springy block|end feel|patellar|accessory">
-          A <b>springy block</b> to extension is the classic displaced-meniscus end feel. <span class="prov c">Convention</span>
+        <td class="ck"><input type="checkbox" data-ck="9" aria-label="Mark done: Active flexion and extension"></td><td class="idx">9</td>
+        <td class="name">Active flexion and extension</td>
+        <td>Goniometry, both knees, same landmarks, recorded as numbers.</td>
+        <td data-imp="active range|rom|goniometer|flexion">
+          Knee active ROM is an essential measure to document <span class="src">Logerstedt 2018</span>. Its <em>norms</em> are not: measured against a national probability sample, normative hip and knee values differed from textbook estimates by as much as <b>18&deg;</b>, while the gap between the youngest and oldest age groups was only 3 to 5&deg; <span class="src">Roach 1991</span>. The other knee beats any table.
         </td>
       </tr>
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="8" aria-label="Mark done: What is short"></td><td class="idx">8</td>
-        <td class="name">What is short</td>
-        <td>Quadriceps by Ely or prone knee bend, hamstrings, gastrocnemius.</td>
-        <td data-imp="prone knee bend|gastrocnemius|hamstring|Ely">
-          Gastrocnemius crosses the knee, so it belongs in a knee examination rather than only an ankle one. <span class="prov c">Convention</span>
+        <td class="ck"><input type="checkbox" data-ck="10" aria-label="Mark done: Extension lag versus fixed flexion contracture"></td><td class="idx">10</td>
+        <td class="name">Extension lag versus fixed flexion contracture</td>
+        <td>Take extension passively, then ask for it actively, and compare the two.</td>
+        <td data-imp="extension lag|contracture|passive|active">
+          Passive exceeding active is an <b>extension lag</b> - a quadriceps problem. Both equally limited is a <b>contracture</b> - a joint problem. <span class="prov c">Convention</span> Two different treatments follow, which is why this one distinction does more work than the rest of the section combined.
         </td>
       </tr>
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="9" aria-label="Mark done: What is weak"></td><td class="idx">9</td>
-        <td class="name">What is weak</td>
-        <td>Quadriceps first, then hamstrings, then hip abductors.</td>
-        <td data-imp="inhibition|abductor|retest|quadriceps">
-          <b>Expect inhibition rather than weakness</b> at the knee, and retest after reducing pain and effusion before you believe a grade. <span class="prov c">Convention</span>
+        <td class="ck"><input type="checkbox" data-ck="11" aria-label="Mark done: Squat and step-down"></td><td class="idx">11</td>
+        <td class="name">Squat and step-down</td>
+        <td>Depth, symmetry, frontal-plane control at the knee, and whether the symptom reproduces.</td>
+        <td data-imp="squat|step-down|valgus|frontal plane">
+          Its value is that it repeats within a session, which makes it a reassessment marker rather than a diagnosis. <span class="prov c">Convention</span> Watch the hip while you watch the knee - a valgus collapse on step-down is often a hip finding wearing a knee's clothes.
         </td>
       </tr>
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="10" aria-label="Mark done: Where is it"></td><td class="idx">10</td>
-        <td class="name">Where is it</td>
-        <td>Joint line, patellar borders and tendon, tibial tubercle, collateral origins.</td>
-        <td data-imp="joint line|tibial tubercle|collateral|palpat">
-          Palpate after the movement examination, not before - it tells you whether the tenderness explains anything. <span class="prov c">Convention</span>
+        <td class="ck"><input type="checkbox" data-ck="12" aria-label="Mark done: Functional composites and hop testing"></td><td class="idx">12</td>
+        <td class="name">Functional composites and hop testing</td>
+        <td>30-second chair stand, stair climb, timed up-and-go and 6-minute walk early; single-leg hop tests later.</td>
+        <td data-imp="hop|chair stand|timed up|6-minute">
+          That is the named set <span class="src">Logerstedt 2018</span>. Hop testing "may be considered as <em>one factor</em> to determine return to sport" - Strength of Option Limited <span class="src">AAOS 2022</span>. No symmetry cutoff is established; see item 23.
+        </td>
+      </tr>
+      <tr class="group"><td colspan="5">What can I do to them?</td></tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="13" aria-label="Mark done: Passive range against active"></td><td class="idx">13</td>
+        <td class="name">Passive range against active</td>
+        <td>Take each direction passively and compare with what they produced actively.</td>
+        <td data-imp="passive|active|prom|arom">
+          Passive exceeding active points to inhibition or weakness; both equally limited points to the joint. <span class="prov c">Convention</span> The size of that gap is the finding, not the passive number on its own.
         </td>
       </tr>
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="11" aria-label="Mark done: What is it"></td><td class="idx">11</td>
-        <td class="name">What is it</td>
-        <td>Ligament tests, meniscal tests, patellofemoral tests, clustered from the hypothesis.</td>
-        <td data-imp="ligament|meniscal|cluster|hypothesis">
-          <b>No single knee test is reliable enough to diagnose alone.</b> <span class="src">Rinonapoli 2025</span>
+        <td class="ck"><input type="checkbox" data-ck="14" aria-label="Mark done: End feel, including a springy block"></td><td class="idx">14</td>
+        <td class="name">End feel, including a springy block</td>
+        <td>Take each motion to its limit and name what stops it: capsular, bony, springy, empty, guarding.</td>
+        <td data-imp="end feel|springy|block|capsular">
+          A <b>springy block to extension</b> is the classic displaced-meniscus finding, and it changes the urgency of everything after it. <span class="prov c">Convention</span> Taught universally; no reachable reliability at the knee. <span class="src">no traceable source</span>
         </td>
       </tr>
       <tr>
-        <td class="ck"><input type="checkbox" data-ck="12" aria-label="Mark done: What you do about it"></td><td class="idx">12</td>
-        <td class="name">What you do about it</td>
-        <td>Dose from irritability, match intervention to impairment, name the reassessment marker before treating.</td>
-        <td data-imp="irritability|reassessment|arthroplasty|impairment">
-          <b>Graded evidence covers four areas.</b> Meniscal and cartilage lesions, osteoarthritis, ACL injury and arthroplasty - and almost all of it grades treatment rather than examination. <span class="src">AAOS 2021</span>
+        <td class="ck"><input type="checkbox" data-ck="15" aria-label="Mark done: Patellar mobility and tilt"></td><td class="idx">15</td>
+        <td class="name">Patellar mobility and tilt</td>
+        <td>Glide medially and laterally in slight flexion; assess tilt against the femoral condyles.</td>
+        <td data-imp="patella|glide|tilt|mobility">
+          <span class="prov c">Convention</span> No traceable threshold for what counts as hyper- or hypomobile. <span class="src">no traceable source</span> Compare sides and state what you felt rather than grading it against a number that does not exist.
         </td>
       </tr>
-        </tbody>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="16" aria-label="Mark done: Accessory motion at both joints"></td><td class="idx">16</td>
+        <td class="name">Accessory motion at both joints</td>
+        <td>Tibiofemoral anterior and posterior glide at 20-30&deg;; patellofemoral glide in slight flexion. Grade resistance, compare sides.</td>
+        <td data-imp="accessory|glide|joint play|tibiofemoral">
+          <span class="prov c">Convention</span> Graded resistance is universally taught and has no reachable reliability figure at the knee. <span class="src">no traceable source</span> It is a comparison, not a measurement.
+        </td>
+      </tr>
+      <tr class="group"><td colspan="5">What is short?</td></tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="17" aria-label="Mark done: Quadriceps length"></td><td class="idx">17</td>
+        <td class="name">Quadriceps length</td>
+        <td>Prone knee bend, or Ely's test. Watch the pelvis, not the heel.</td>
+        <td data-imp="quadriceps length|ely|prone knee bend|rectus">
+          The <b>compensatory pelvic rise</b> is the finding students miss: it means you have run out of quadriceps and the rest of the range is coming from the lumbar spine. <span class="prov c">Convention</span> Stop measuring at the rise, not at the heel.
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="18" aria-label="Mark done: Hamstring length"></td><td class="idx">18</td>
+        <td class="name">Hamstring length</td>
+        <td>Passive straight-leg raise, or 90/90 knee extension with the opposite thigh flat on the table.</td>
+        <td data-imp="hamstring|straight leg raise|90/90">
+          <span class="prov c">Convention</span> No threshold or reliability figure reachable at the knee. <span class="src">no traceable source</span> Hold the opposite thigh down, or you are measuring pelvic tilt.
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="19" aria-label="Mark done: Gastrocnemius, because it crosses the knee"></td><td class="idx">19</td>
+        <td class="name">Gastrocnemius, because it crosses the knee</td>
+        <td>Ankle dorsiflexion with the knee straight, then with it bent.</td>
+        <td data-imp="gastrocnemius|dorsiflexion|calf|soleus">
+          The <b>difference between the two</b> is the gastrocnemius contribution - bending the knee takes it off stretch and leaves soleus. <span class="prov c">Convention</span> A knee examination that never touches the ankle misses it entirely.
+        </td>
+      </tr>
+      <tr class="group"><td colspan="5">What is weak?</td></tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="20" aria-label="Mark done: Quadriceps - and whether it is weak or inhibited"></td><td class="idx">20</td>
+        <td class="name">Quadriceps - and whether it is weak or inhibited</td>
+        <td>Dynamometry for a number that repeats. Then reduce pain and effusion and retest.</td>
+        <td data-imp="quadriceps|inhibition|nmes|dynamometer">
+          A grade that improves at once was <b>inhibition</b>, not weakness, and the rest of the plan depends on which it was. The one graded intervention aimed squarely at inhibition is daily NMES to the quadriceps at the highest tolerable intensity after arthroplasty, at moderate evidence quality <span class="src">Bove 2026</span> - an intervention for inhibition, not for load.
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="21" aria-label="Mark done: Hamstrings, and the hamstring-to-quadriceps relationship"></td><td class="idx">21</td>
+        <td class="name">Hamstrings, and the hamstring-to-quadriceps relationship</td>
+        <td>Prone knee flexion against resistance, or dynamometry at matched speeds.</td>
+        <td data-imp="hamstring|ratio|h:q|flexion strength">
+          Record the relationship rather than either number alone. <span class="prov c">Convention</span> No reachable threshold for a normal ratio. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="22" aria-label="Mark done: Hip abductors, every time"></td><td class="idx">22</td>
+        <td class="name">Hip abductors, every time</td>
+        <td>Side-lying or standing with the pelvis controlled, so the trunk cannot supply the force.</td>
+        <td data-imp="hip abductor|gluteus medius|frontal plane">
+          The knee follows the hip in the frontal plane. The graded recommendation is for progressive strength training of the knee <em>and hip</em> muscles together - B <span class="src">Logerstedt 2018</span>, not the knee alone.
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="23" aria-label="Mark done: Limb symmetry, and what it does not license"></td><td class="idx">23</td>
+        <td class="name">Limb symmetry, and what it does not license</td>
+        <td>Compare involved to uninvolved as a percentage, on strength and on hop distance.</td>
+        <td data-imp="limb symmetry|lsi|return to sport|hop">
+          <span class="prov x">Contested</span>Hop testing may be considered as one factor for return to sport - Limited <span class="src">AAOS 2022</span>. No cutoff is established, and the guideline names the disagreement rather than hiding it: the studies behind it tested at 6 months, at a mean of 8.1 months, at 9 months and at 12 months, and disagree on whether waiting longer lowers graft failure. One input among several, never the gate.
+        </td>
+      </tr>
+      <tr class="group"><td colspan="5">Where is it?</td></tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="24" aria-label="Mark done: Joint line, tibiofemoral"></td><td class="idx">24</td>
+        <td class="name">Joint line, tibiofemoral</td>
+        <td>Knee flexed to about 90&deg;; palpate the line medially and laterally, separately.</td>
+        <td data-imp="joint line|tenderness|jlt|meniscus">
+          Sensitive and almost non-specific: Sn <b>0.77</b> (0.68-0.84), Sp <b>0.26</b> (0.18-0.36), OR 1.16 (0.63-2.13) - an interval that includes 1. Reliability poor, &kappa; &le; 0.38. And it reads differently by sex: in men Sn 0.50-0.58 with Sp 0.74-1.00; in women Sn 0.40-0.49 <span class="src">Logerstedt 2018</span>.
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="25" aria-label="Mark done: Patellar borders, tendon, tibial tubercle"></td><td class="idx">25</td>
+        <td class="name">Patellar borders, tendon, tibial tubercle</td>
+        <td>Borders and facets with the knee relaxed, then the tendon and the tubercle.</td>
+        <td data-imp="patella|tendon|tubercle|palpation">
+          <span class="prov c">Convention</span> Localises rather than grades. Tenderness at the tubercle in a skeletally immature athlete is a different problem from tenderness at the tendon in an adult, and palpation is what separates them.
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="26" aria-label="Mark done: Collateral origins and insertions"></td><td class="idx">26</td>
+        <td class="name">Collateral origins and insertions</td>
+        <td>Walk the medial and lateral collaterals from origin to insertion, and palpate the medial joint line separately from the MCL.</td>
+        <td data-imp="collateral|mcl|lcl|ligament palpation">
+          Separating MCL tenderness from medial joint line tenderness is the whole point - they sit millimetres apart and implicate different structures. <span class="prov c">Convention</span> Tenderness narrows the differential and confirms nothing on its own.
+        </td>
+      </tr>
+      <tr class="group"><td colspan="5">What is it?</td></tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="27" aria-label="Mark done: Ligament tests"></td><td class="idx">27</td>
+        <td class="name">Ligament tests</td>
+        <td>Lachman at 20-30&deg;, anterior drawer at 90&deg;, pivot shift, lever sign; varus and valgus stress at 0&deg; and 30&deg;.</td>
+        <td data-imp="lachman|drawer|pivot shift|lever sign">
+          Lachman Sn <b>87.6</b> / Sp <b>88.9</b>; anterior drawer 77.5 / 86.1; pivot shift 65.9 / 94.4 <span class="src">Nguyen 2025</span>. Every one of those comes from 165 patients already indicated for arthroscopy, so expect worse in a clinic. Varus and valgus stress have no reachable accuracy at all. <span class="src">no traceable source</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="28" aria-label="Mark done: Meniscal tests, read against time since injury"></td><td class="idx">28</td>
+        <td class="name">Meniscal tests, read against time since injury</td>
+        <td>McMurray, Apley, Thessaly and joint line tenderness - after you have asked when the injury was.</td>
+        <td data-imp="mcmurray|apley|thessaly|meniscal">
+          <b>McMurray with Apley</b> gave the best accuracy and minimised false positives of six tests in 255 patients <span class="src">Rinonapoli 2025</span>. Three of the four primary-care odds ratios include 1 - Thessaly, Apley and joint line tenderness. Only McMurray's excludes it, and only just, at 1.04 to 3.09 <span class="src">Logerstedt 2018</span>.
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="29" aria-label="Mark done: Patellofemoral tests"></td><td class="idx">29</td>
+        <td class="name">Patellofemoral tests</td>
+        <td>Use them to reproduce and localise the symptom.</td>
+        <td data-imp="patellofemoral|apprehension|grind|pfp">
+          Not to confirm a diagnosis. <span class="src">no traceable source</span> No reachable accuracy exists for any bedside patellofemoral test - searched twice, and the absence is the finding.
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="30" aria-label="Mark done: Interpret as likelihood ratios, and cluster from the hypothesis"></td><td class="idx">30</td>
+        <td class="name">Interpret as likelihood ratios, and cluster from the hypothesis</td>
+        <td>Read each result as a shift in probability, and choose tests that fail in different ways.</td>
+        <td data-imp="likelihood ratio|cluster|probability|lr">
+          The familiar bands are a teaching heuristic, not a traced value. <span class="prov c">Convention</span> What <em>is</em> sourced: the Ottawa rule's +LR of 1.56 with an HSROC AUC of 0.54 makes it a rule-out whatever its authors' summary says <span class="src">Kazemi 2023</span>. Two tests sharing a mechanism give you one test twice.
+        </td>
+      </tr>
+      <tr class="group"><td colspan="5">What do I call it?</td></tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="31" aria-label="Mark done: State a movement diagnosis"></td><td class="idx">31</td>
+        <td class="name">State a movement diagnosis</td>
+        <td>Name what the knee does under load that reproduces the symptom, and in which direction.</td>
+        <td data-imp="movement diagnosis|direction|load">
+          A structural label tells you what is irritated; a movement diagnosis tells you what to change. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="32" aria-label="Mark done: Recognise the syndromes, and their limits"></td><td class="idx">32</td>
+        <td class="name">Recognise the syndromes, and their limits</td>
+        <td>ACL rupture, meniscal tear, patellofemoral pain, osteoarthritis, tendinopathy.</td>
+        <td data-imp="syndrome|acl|osteoarthritis|patellofemoral">
+          Two of them have no reachable bedside criteria at all - patellofemoral pain and knee OA. <span class="src">no traceable source</span> Naming those two stays clinical judgement; <em>managing</em> OA is graded in detail <span class="src">AAOS 2021</span>. Knowing which half of a diagnosis is evidenced is part of making it.
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="33" aria-label="Mark done: Identify relative stiffness above and below"></td><td class="idx">33</td>
+        <td class="name">Identify relative stiffness above and below</td>
+        <td>Look at the hip and the ankle before you treat the knee.</td>
+        <td data-imp="relative stiffness|hip|ankle|compensation">
+          A knee that will not flex borrows from both. <span class="prov c">Convention</span> Motion goes where it is easiest, which is why the painful segment is often the mobile one compensating for a stiff neighbour - and why treating the painful site alone tends to fail.
+        </td>
+      </tr>
+      <tr class="group"><td colspan="5">What do I do about it?</td></tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="34" aria-label="Mark done: Dose from irritability"></td><td class="idx">34</td>
+        <td class="name">Dose from irritability</td>
+        <td>Grade reactivity - pain at rest, night pain, and how long a flare takes to settle - before choosing intensity.</td>
+        <td data-imp="irritability|dose|reactivity|flare">
+          <span class="prov c">Convention</span> at the knee. <span class="src">no traceable source</span> The published irritability classification is a <em>shoulder</em> instrument. Borrowing its logic is reasonable; borrowing its validation is not, and the guide will not pretend otherwise.
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="35" aria-label="Mark done: Match intervention to impairment"></td><td class="idx">35</td>
+        <td class="name">Match intervention to impairment</td>
+        <td>For each intervention chosen, name the impairment it addresses.</td>
+        <td data-imp="intervention|impairment|match|plan">
+          If you cannot name the impairment an intervention targets, it is in the plan for the wrong reason. <span class="prov c">Convention</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="36" aria-label="Mark done: Apply the graded guideline that fits"></td><td class="idx">36</td>
+        <td class="name">Apply the graded guideline that fits</td>
+        <td>Identify which of the four covers what you are treating, then read the grade and the harm statement together.</td>
+        <td data-imp="guideline|graded|evidence|recommendation">
+          Meniscal and cartilage <span class="src">Logerstedt 2018</span>, osteoarthritis <span class="src">AAOS 2021</span>, ACL <span class="src">AAOS 2022</span>, arthroplasty <span class="src">Bove 2026</span>. For OA, exercise is <b>Strong</b> and manual therapy added to it is <b>Limited</b> - two grades apart, which is the ranking to hold on to when a session runs short.
+        </td>
+      </tr>
+      <tr>
+        <td class="ck"><input type="checkbox" data-ck="37" aria-label="Mark done: Define the reassessment marker"></td><td class="idx">37</td>
+        <td class="name">Define the reassessment marker</td>
+        <td>Before treating, name the one measure you will recheck and what result would change your mind.</td>
+        <td data-imp="reassessment|marker|baseline|follow-up">
+          Prefer one of the essential measures - modified stroke test, active ROM, quadriceps strength, joint line tenderness <span class="src">Logerstedt 2018</span> - because those are the ones you already have a baseline for. A marker chosen after the fact is a justification; one chosen in advance is a test.
+        </td>
+      </tr>
+    </tbody>
       </table>
     </div>
     <div class="progressbar"><span id="ckcount">0 / 0</span><span class="track"><span class="fill" id="ckfill"></span></span><span id="flagCount"></span></div>
