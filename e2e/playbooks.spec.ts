@@ -115,7 +115,19 @@ test.describe("Playbook content", () => {
  *  derived from the playbook's own data — its section count, its figure blocks, the length
  *  of its checklist — so a new file under lib/playbooks/ is covered the moment it is added
  *  to PLAYBOOKS, and nothing here needs editing to keep up. */
-test.describe("Playbook page", () => {
+/* SKIPPED while the built playbooks are admin-only — see lib/playbook-access.ts. These
+ * three suites need a reader who can open a playbook page, and CI has no admin: the
+ * workflow copies .env.example, where FOUNDING_FUNDERS_ADMIN_EMAILS is empty, so
+ * isSiteAdmin() is false for every account a test can create.
+ *
+ * They cover the recall and taught-lane components, which have no user-facing surface at
+ * all while the gate holds — the shoulder guide is a standalone document with its own
+ * scripts and is covered separately below. Restore these together with the gate: delete the
+ * .skip and nothing else changes.
+ *
+ * The pure-data suites above are unaffected and still run, so the content bank itself stays
+ * covered. */
+test.describe.skip("Playbook page", () => {
   for (const playbook of PLAYBOOKS) {
     const items = playbookChecklist(playbook);
     const figureBlocks = playbook.sections.flatMap((section) => section.blocks).filter((block) => block.kind === "figure");
@@ -196,7 +208,7 @@ test.describe("Playbook page", () => {
  *  the page test is: what is asserted comes from the playbook's own data, so a new region is
  *  covered by being added to PLAYBOOKS. The checklist is the group under test because every
  *  playbook has exactly one and its columns are fixed, so the expected counts are known. */
-test.describe("Playbook recall", () => {
+test.describe.skip("Playbook recall", () => {
   for (const playbook of PLAYBOOKS) {
     const checklistRows = playbookChecklistRows(playbookChecklist(playbook)).length;
     const figures = playbook.sections.flatMap((s) => s.blocks).filter((b) => b.kind === "figure");
@@ -281,7 +293,7 @@ test.describe("Playbook taught lane", () => {
     }
   });
 
-  test("opens a line under every cell, keeps what is typed, and stays out of recall's way", async ({ page }) => {
+  test.skip("opens a line under every cell, keeps what is typed, and stays out of recall's way", async ({ page }) => {
     const email = `pw-taught-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
     await signUpAndEnterApp(page, email);
     await grantLimbicStudent(email);
@@ -334,9 +346,13 @@ test.describe("Playbook taught lane", () => {
   });
 });
 
-/** The paywall. The playbooks are what Limbic Boards is sold on, so "a .edu sign-in is
- *  enough" is exactly the regression worth a test: it gives the product away without
- *  anything failing. */
+/** The paywall, and the tighter gate sitting on top of it. The playbooks are what Limbic
+ *  Boards is sold on, so "a .edu sign-in is enough" is exactly the regression worth a test:
+ *  it gives the product away without anything failing.
+ *
+ *  While the built playbooks are admin-only (see lib/playbook-access.ts) subscribing is no
+ *  longer enough either, and that is asserted here rather than left to be discovered — the
+ *  day the gate comes off, this test fails and says so. */
 test.describe("Playbook access", () => {
   test("a .edu sign-in alone gets the upgrade, not the guide", async ({ page }) => {
     const email = `pw-gate-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
@@ -347,16 +363,28 @@ test.describe("Playbook access", () => {
     await expect(page.getByText("LimbicStudent Required")).toBeVisible();
     await expect(page.locator(".playbook-hub-card")).toHaveCount(0);
 
-    // A direct link to one playbook upsells rather than dead-ends, and still renders none
-    // of the guide itself.
+    // A direct link to one playbook renders none of the guide itself.
     await page.goto("/student/playbooks/hip");
-    await expect(page.getByRole("link", { name: "Upgrade to LimbicStudent" })).toBeVisible();
     await expect(page.locator(".playbook-check-table")).toHaveCount(0);
+  });
 
-    // And the moment they subscribe, both open.
+  test("a subscriber sees the shoulder guide on the hub, and no built playbook", async ({ page }) => {
+    const email = `pw-locked-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+    await signUpAndEnterApp(page, email);
     await grantLimbicStudent(email);
-    await page.goto("/student/playbooks/hip");
-    await expect(page.locator(".playbook-check-table")).toBeVisible();
+
+    // The hub still opens, and still carries the one guide that is not behind the new gate.
+    await page.goto("/student/playbooks");
+    await expect(page.getByRole("link", { name: "Open" })).toHaveCount(1);
+    await expect(page.locator(`a[href="/student/guides/shoulder-examination"]`)).toHaveCount(1);
+    for (const playbook of PLAYBOOKS) {
+      await expect(page.locator(`a[href="/student/playbooks/${playbook.slug}"]`)).toHaveCount(0);
+    }
+
+    // And a direct link to one is a 404 rather than an upgrade prompt — there is nothing to
+    // sell here at the moment.
+    const direct = await page.request.get("/student/playbooks/hip");
+    expect(direct.status()).toBe(404);
   });
 });
 

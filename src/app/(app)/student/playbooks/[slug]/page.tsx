@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
+import { canSeeBuiltPlaybooks } from "@/lib/playbook-access";
 import { PLAYBOOKS, getPlaybook } from "@/lib/playbook-content";
 import { PlaybookPage } from "@/components/playbook/PlaybookPage";
 import { LimbicStudentGate } from "@/components/student/LimbicStudentGate";
@@ -36,6 +37,12 @@ export default async function PlaybookDetailPage({ params }: { params: Promise<{
   // content/playbooks (see student/guides/shoulder-examination/route.ts). Anyone holding a
   // link to the old one gets the real thing rather than a 404.
   if (slug === RETIRED_SHOULDER_SLUG) redirect("/student/guides/shoulder-examination");
+
+  // Admin-only while the built playbooks are rebuilt — see lib/playbook-access.ts. Checked
+  // after the shoulder redirect above, so a subscriber holding the retired link still lands
+  // on the guide rather than a 404. A 404 rather than the upgrade gate below: there is
+  // nothing to sell here at the moment.
+  if (!(await canSeeBuiltPlaybooks())) notFound();
 
   const playbook = getPlaybook(slug);
   if (!playbook) notFound();

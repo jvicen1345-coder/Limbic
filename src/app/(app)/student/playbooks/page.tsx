@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
+import { canSeeBuiltPlaybooks } from "@/lib/playbook-access";
 import { PLAYBOOKS, playbookChecklist } from "@/lib/playbook-content";
 import { ChevronRightIcon } from "@/components/icons";
 import { StudentGate } from "@/components/student/StudentGate";
@@ -25,6 +26,10 @@ const SUBTITLE =
 export default async function PlaybooksHubPage() {
   const user = await getCurrentUser();
   if (!user) return null;
+
+  // The built playbooks are admin-only while they are rebuilt — see lib/playbook-access.ts.
+  // The shoulder guide below is not covered by it and is unaffected.
+  const showBuilt = await canSeeBuiltPlaybooks();
 
   return (
     <div className="screen-pad atrium-page" style={{ maxWidth: 960 }}>
@@ -53,7 +58,7 @@ export default async function PlaybooksHubPage() {
               <ChevronRightIcon size={14} />
             </Link>
           </div>
-          {PLAYBOOKS.map((playbook) => (
+          {(showBuilt ? PLAYBOOKS : []).map((playbook) => (
             <div className="playbook-hub-card" key={playbook.slug}>
               <h2 className="playbook-hub-card-name">{playbook.name}</h2>
               <p className="playbook-hub-card-desc">{playbook.summary}</p>
