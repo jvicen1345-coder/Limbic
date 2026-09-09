@@ -459,3 +459,39 @@ gives the *error* in textbook estimates (**18°**) and the *size* of age-related
 (**3-5°**), which are worth knowing in their own right, but no normative knee ROM table. The Q
 angle, knee OA bedside criteria, patellofemoral test accuracy and effusion test reliability all
 stand as untraceable.
+
+### Verification pass on the numbers grid, and what it caught
+
+All 24 factual claims in section 02 were checked against the source text verbatim, by string
+match rather than by reading: 24 of 24 present. What that pass could *not* cover was the three
+cells whose sources are not local PDFs, and one of those was wrong in a way that matters.
+
+**`30-90°` limb elevation after arthroplasty.** The cell read "a graded recommendation on
+high-quality evidence". The guideline gives two separate labels — **Quality of Evidence: High**,
+**Recommendation Strength: Moderate** ♦♦♦◊ — and "high-quality evidence" reads as a strong
+recommendation to anyone scanning. Corrected to carry both, with the gap between them as the
+point.
+
+**This is also the clearest evidence yet for the section 10 problem.** The TKA guideline labels
+every recommendation twice, and the guide's section 10 collapses that to one word taken from the
+evidence-quality axis:
+
+| Recommendation | Evidence quality | Strength | Guide currently says |
+|---|---|---|---|
+| Strength training | High | **Strong** | "high" |
+| Cryotherapy and positioning | High | **Moderate** | "high" |
+| NMES | Moderate | Moderate | "moderate" |
+
+So two recommendations that differ in strength are both labelled "high", and a reader has no way
+to see it. Section 10 needs the grade split into quality and strength, not merely moved to its
+own column.
+
+**Newly sourced, from the ACL guideline's minimum examination.** Assessment of "varus and valgus
+laxity at 0 and 30 degrees of flexion, dial testing at 30 and 90 degrees of flexion" is named
+inside a Strong recommendation on high-quality evidence <AAOS 2022>. The guide had those angles
+marked as convention. The *accuracy* of varus and valgus stress is still untraceable — only the
+positions are now sourced, and section 07 says exactly that.
+
+**Knee ROM norms: searched a fourth time, still absent.** None of the four guidelines carries a
+normative or functional knee range in degrees — checked by pattern across all three local PDFs
+and by direct query against the arthroplasty guideline. The gap is real and section 02 states it.
