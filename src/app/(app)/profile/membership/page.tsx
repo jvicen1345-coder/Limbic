@@ -264,7 +264,7 @@ export default async function ProfileMembershipPage({
     {
       key: "student",
       label: "Limbic Student",
-      price: "$5/mo",
+      price: "$3/mo",
       current: onStudent,
       action: onStudent || !student ? null : subscribeToStudentTierAction,
       nonClickableReason: !onStudent && !student ? "Sign in with a .edu email to purchase Limbic Student" : undefined,

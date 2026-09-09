@@ -275,7 +275,7 @@ function AtlasGateCard({ zoneName, canBuyStudent, billingEnabled }: { zoneName: 
       {canBuyStudent ? (
         <form action={subscribeToStudentTierAction}>
           <button type="submit" className="btn btn-primary atlas-gate-card-btn" disabled={!billingEnabled}>
-            Unlock with Limbic Student — $5/mo
+            Unlock with Limbic Student — $3/mo
           </button>
         </form>
       ) : (
@@ -285,7 +285,7 @@ function AtlasGateCard({ zoneName, canBuyStudent, billingEnabled }: { zoneName: 
           disabled
           title="Sign in with a .edu email to purchase Limbic Student"
         >
-          Unlock with Limbic Student — $5/mo
+          Unlock with Limbic Student — $3/mo
         </button>
       )}
       <form action={subscribeToProAction}>
@@ -296,7 +296,7 @@ function AtlasGateCard({ zoneName, canBuyStudent, billingEnabled }: { zoneName: 
       {/* One disclosure covering both buttons above: this card is a single upsell block on
           a dark surface, and the two plans share a monthly cadence, so repeating it per
           button would crowd the card without telling the reader anything more. */}
-      <AutoRenewalTerms price="$5 or $15" cadence="month" inverted />
+      <AutoRenewalTerms price="$3 or $15" cadence="month" inverted />
       <p className="atlas-gate-card-note">Already subscribed? Sign in to access your content.</p>
     </div>
   );
