@@ -18,7 +18,7 @@
  * cancelWellnessPlusAction back the Cancel buttons on Profile → Membership, so a reader can
  * always cancel online in the place this names.
  *
- * `price` is the amount as displayed elsewhere on the surface (e.g. "$15"); omit it where
+ * `price` is the amount as displayed elsewhere on the surface (e.g. "$10"); omit it where
  * one statement covers several plans whose prices are already shown beside their own
  * buttons, as on the plan comparison table. `cadence` is the billing period it recurs on.
  * Pass `inverted` on the dark surfaces (the /pro upsell, Atlas) so the text keeps its

@@ -32,8 +32,8 @@ export function getStripe(): Stripe {
 export type BillablePlan = "pro" | "limbicStudent" | "wellnessPlusMonthly" | "wellnessPlusYearly" | "clinic";
 
 /** Real Price ids created in the Stripe Dashboard (Products & Prices) — see
- *  .env.example/README for the setup steps. Dollar amounts themselves ($15/mo, $3/mo,
- *  $2/mo, $18/yr, $100/mo) live only as display copy in app/(app)/profile/membership/page.tsx
+ *  .env.example/README for the setup steps. Dollar amounts themselves ($10/mo, $3/mo,
+ *  $2/mo, $20/yr, $100/mo) live only as display copy in app/(app)/profile/membership/page.tsx
  *  and app/(app)/wellness/membership/page.tsx; this file never hardcodes a price, only
  *  which env var holds each plan's Price id. */
 export function priceIdForPlan(plan: BillablePlan): string | undefined {

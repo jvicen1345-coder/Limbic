@@ -119,9 +119,9 @@ export default async function WellnessMembershipPage({
                 </button>
               </form>
               <form action={subscribeToWellnessPlusYearlyAction}>
-                <AutoRenewalTerms price="$18" cadence="year" />
+                <AutoRenewalTerms price="$20" cadence="year" />
                 <button type="submit" className="btn btn-secondary" disabled={!billingEnabled}>
-                  $18/year
+                  $20/year
                 </button>
               </form>
             </div>

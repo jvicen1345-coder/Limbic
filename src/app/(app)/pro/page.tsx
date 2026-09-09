@@ -123,9 +123,9 @@ export default async function ProOverviewPage() {
         </div>
       ) : (
         <div className="card elev-sm" style={{ margin: "20px 0 0" }}>
-          <div className="card-kicker">$15 per month — cancel anytime</div>
+          <div className="card-kicker">$10 per month — cancel anytime</div>
           <form action={subscribeToProAction} style={{ marginTop: 10 }}>
-            <AutoRenewalTerms price="$15" cadence="month" />
+            <AutoRenewalTerms price="$10" cadence="month" />
             <button type="submit" className="btn btn-primary" disabled={!billingEnabled}>
               Upgrade to LimbicPRO
             </button>
