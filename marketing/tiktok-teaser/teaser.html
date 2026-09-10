@@ -1,0 +1,294 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#0d1220}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#0d1220;
+  font-family:'Jakarta',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#e7ecf7;
+  -webkit-font-smoothing:antialiased}
+/* Radial-gradient washes rather than filter:blur() circles — same look, but nothing has to
+   re-rasterize a 120px blur on every one of ~1600 frames. */
+.glow{position:absolute;width:1500px;height:1500px;pointer-events:none}
+#g1{background:radial-gradient(circle closest-side,rgba(109,155,245,.30),rgba(109,155,245,.12) 45%,transparent 72%)}
+#g2{background:radial-gradient(circle closest-side,rgba(77,209,238,.20),rgba(77,209,238,.07) 45%,transparent 72%)}
+#grain{position:absolute;inset:0;opacity:.05;pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>")}
+#vig{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 80% at 50% 42%, rgba(13,18,32,0) 40%, rgba(6,9,17,.72) 100%)}
+#bar{position:absolute;top:0;left:0;height:7px;width:0;
+  background:linear-gradient(90deg,#4dd1ee,#6d9bf5);z-index:60}
+.scene{position:absolute;inset:0;display:none;will-change:opacity,transform}
+.scene.on{display:block}
+
+/* ---------- intro ---------- */
+.introline{position:absolute;left:84px;width:912px;font-weight:800;font-size:118px;
+  line-height:1.02;letter-spacing:-4.4px;will-change:transform,opacity}
+
+/* ---------- logo ---------- */
+.logocenter{position:absolute;left:0;right:0;top:600px;text-align:center}
+.mark{width:200px;height:200px;margin:0 auto;display:block;will-change:transform,opacity;
+  filter:drop-shadow(0 30px 70px rgba(109,155,245,.5))}
+.word{margin-top:46px;font-weight:800;font-size:150px;letter-spacing:-6px;line-height:1}
+.tagline{margin-top:28px;font-weight:700;font-size:32px;letter-spacing:6px;
+  text-transform:uppercase;color:#6d9bf5}
+.tagsub{margin-top:58px;font-weight:600;font-size:50px;line-height:1.26;color:#9aa8c9;
+  padding:0 100px;letter-spacing:-1px}
+
+/* ---------- section card ---------- */
+.seccenter{position:absolute;left:0;right:0;top:760px;text-align:center}
+.secrule{width:132px;height:6px;margin:0 auto 46px;background:#4dd1ee;border-radius:3px;
+  transform-origin:50% 50%}
+.sectitle{font-weight:800;font-size:126px;letter-spacing:-5px;line-height:1}
+.seclabel{margin-top:34px;font-weight:600;font-size:44px;letter-spacing:-.8px;color:#9aa8c9}
+
+/* ---------- feature ---------- */
+.chip{position:absolute;left:84px;top:196px;display:flex;align-items:center;gap:18px;
+  font-weight:700;font-size:31px;letter-spacing:6px;text-transform:uppercase;color:#4dd1ee}
+.chip span.dot{width:16px;height:16px;border-radius:50%;background:#4dd1ee;
+  box-shadow:0 0 26px 6px rgba(77,209,238,.6)}
+.fhead{position:absolute;left:84px;top:262px;width:920px;font-weight:800;font-size:92px;
+  line-height:1.03;letter-spacing:-3.4px}
+.fsub{position:absolute;left:84px;width:890px;font-weight:600;font-size:39px;line-height:1.32;
+  letter-spacing:-.8px;color:#9aa8c9}
+.phone{position:absolute;left:190px;width:700px;height:1400px;border-radius:60px;
+  border:11px solid #222b43;overflow:hidden;background:#0d1220;
+  box-shadow:0 50px 120px rgba(0,0,0,.62), 0 0 0 2px rgba(231,236,247,.07) inset;
+  will-change:transform,opacity}
+.phone img{position:absolute;left:0;top:0;width:100%;display:block;will-change:transform}
+.phone .gloss{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(160deg,rgba(255,255,255,.13) 0%,rgba(255,255,255,0) 34%)}
+.phone .fade{position:absolute;left:0;right:0;bottom:0;height:150px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(13,18,32,0),rgba(13,18,32,.72))}
+
+/* ---------- cta ---------- */
+.ctawrap{position:absolute;left:0;right:0;top:680px;text-align:center}
+.ctamark{width:168px;height:168px;margin:0 auto 46px;display:block;
+  filter:drop-shadow(0 24px 56px rgba(109,155,245,.5))}
+.ctaurl{font-weight:800;font-size:118px;letter-spacing:-4px;line-height:1}
+.ctafree{margin-top:44px;display:inline-block;font-weight:800;font-size:44px;letter-spacing:2px;
+  text-transform:uppercase;color:#0d1220;background:#6d9bf5;padding:22px 52px;border-radius:999px}
+.ctasub{margin-top:46px;font-weight:600;font-size:42px;letter-spacing:-.6px;color:#9aa8c9}
+</style></head>
+<body><div id="stage">
+  <div class="glow" id="g1"></div>
+  <div class="glow" id="g2"></div>
+  <div id="grain"></div>
+  <div id="vig"></div>
+  <div id="bar"></div>
+  <div id="scenes"></div>
+</div>
+<script>
+const W=1080,H=1920;
+/* Cross-dissolve length. Every scene's visible life is its own duration plus XF, so the
+   outgoing scene's fade-out runs exactly over the incoming scene's fade-in. */
+const XF=0.52;
+const cl=(x,a,b)=>Math.max(a,Math.min(b,x));
+const eOut=p=>1-Math.pow(1-cl(p,0,1),3);
+const eOut4=p=>1-Math.pow(1-cl(p,0,1),4);
+const eBack=p=>{p=cl(p,0,1);const c=1.6;return 1+(c+1)*Math.pow(p-1,3)+c*Math.pow(p-1,2)};
+const lerp=(a,b,p)=>a+(b-a)*cl(p,0,1);
+
+const MARK='../../public/logo-icon.png';
+const DEF_PAN=[-4,-118];
+
+const root=document.getElementById('scenes');
+const mk=(html)=>{const d=document.createElement('div');d.className='scene';d.innerHTML=html;
+  root.appendChild(d);return d};
+
+/* ============ scene builders ============ */
+function introScene(lines){
+  const s=mk(lines.map((l,i)=>'<div class="introline">'+l+'</div>').join(''));
+  const els=[...s.querySelectorAll('.introline')];
+  return {el:s, update(lt){
+    els.forEach((e,i)=>{
+      const q=eOut((lt+0.34-i*0.52)/0.72);
+      e.style.top=(600+i*132)+'px';
+      e.style.opacity=q.toFixed(3);
+      e.style.transform='translateY('+lerp(54,0,q)+'px)';
+      e.style.color=i===lines.length-1?'#6d9bf5':'#e7ecf7';
+    });
+  }};
+}
+
+function logoScene(){
+  const s=mk('<div class="logocenter">'+
+    '<img class="mark" src="'+MARK+'">'+
+    '<div class="word">Limbic</div>'+
+    '<div class="tagline">The Physical Therapy Platform</div>'+
+    '<div class="tagsub">One platform. Every PT professional.<br>Their entire career.</div></div>');
+  const m=s.querySelector('.mark'), w=s.querySelector('.word'),
+        g=s.querySelector('.tagline'), b=s.querySelector('.tagsub');
+  return {el:s, update(lt){
+    const a=eBack(lt/0.85), c=eOut((lt-0.30)/0.70),
+          d=eOut((lt-0.60)/0.70), e=eOut((lt-0.95)/0.75);
+    m.style.opacity=cl(a,0,1).toFixed(3);
+    m.style.transform='scale('+lerp(0.46,1,a)+') rotate('+lerp(-20,0,a)+'deg)';
+    w.style.opacity=c.toFixed(3);
+    w.style.transform='translateY('+lerp(42,0,c)+'px) scale('+lerp(0.95,1,c)+')';
+    g.style.opacity=d.toFixed(3);
+    g.style.letterSpacing=lerp(14,6,d)+'px';
+    b.style.opacity=e.toFixed(3);
+    b.style.transform='translateY('+lerp(34,0,e)+'px)';
+  }};
+}
+
+function sectionScene(title,label){
+  const s=mk('<div class="seccenter"><div class="secrule"></div>'+
+    '<div class="sectitle">'+title+'</div><div class="seclabel">'+label+'</div></div>');
+  const r=s.querySelector('.secrule'), t=s.querySelector('.sectitle'), l=s.querySelector('.seclabel');
+  return {el:s, update(lt){
+    const a=eOut(lt/0.60), b=eOut((lt-0.14)/0.66), c=eOut((lt-0.38)/0.66);
+    r.style.opacity=a.toFixed(3);
+    r.style.transform='scaleX('+lerp(0.05,1,a)+')';
+    t.style.opacity=b.toFixed(3);
+    t.style.transform='translateY('+lerp(36,0,b)+'px)';
+    l.style.opacity=c.toFixed(3);
+    l.style.transform='translateY('+lerp(24,0,c)+'px)';
+  }};
+}
+
+function featureScene(f,dur){
+  const s=mk('<div class="chip"><span class="dot"></span>'+f.chip+'</div>'+
+    '<div class="fhead">'+f.head+'</div>'+
+    (f.sub?'<div class="fsub">'+f.sub+'</div>':'')+
+    '<div class="phone"><img src="'+f.img+'"><div class="gloss"></div><div class="fade"></div></div>');
+  const chip=s.querySelector('.chip'), head=s.querySelector('.fhead'),
+        sub=s.querySelector('.fsub'), phone=s.querySelector('.phone'),
+        img=s.querySelector('.phone img');
+  const pan=f.pan||DEF_PAN;
+  return {el:s, update(lt){
+    const c=eOut(lt/0.50), h=eOut((lt-0.08)/0.62),
+          v=eOut((lt-0.26)/0.70), ph=eOut4(lt/1.00);
+    chip.style.opacity=c.toFixed(3);
+    chip.style.transform='translateX('+lerp(-38,0,c)+'px)';
+    head.style.opacity=h.toFixed(3);
+    head.style.transform='translateY('+lerp(44,0,h)+'px)';
+    let bottom=262+head.offsetHeight;
+    if(sub){
+      sub.style.top=(bottom+34)+'px';
+      sub.style.opacity=(v*0.98).toFixed(3);
+      sub.style.transform='translateY('+lerp(28,0,v)+'px)';
+      bottom=bottom+34+sub.offsetHeight;
+    }
+    phone.style.top=Math.max(600,bottom+58)+'px';
+    phone.style.opacity=ph.toFixed(3);
+    phone.style.transform='translateY('+lerp(170,0,ph)+'px) scale('+lerp(0.96,1,ph)+')';
+    img.style.transform='translateY('+lerp(pan[0],pan[1],lt/dur)+'px)';
+  }};
+}
+
+function ctaScene(){
+  const s=mk('<div class="ctawrap"><img class="ctamark" src="'+MARK+'">'+
+    '<div class="ctaurl">limbic.center</div>'+
+    '<div class="ctafree">Free to start</div>'+
+    '<div class="ctasub">Students · Clinicians · Patients</div></div>');
+  const m=s.querySelector('.ctamark'), u=s.querySelector('.ctaurl'),
+        f=s.querySelector('.ctafree'), b=s.querySelector('.ctasub');
+  return {el:s, update(lt){
+    const a=eBack(lt/0.80), c=eOut((lt-0.34)/0.68),
+          d=eBack((lt-0.70)/0.85), e=eOut((lt-1.05)/0.68);
+    m.style.opacity=cl(a,0,1).toFixed(3);
+    m.style.transform='scale('+lerp(0.54,1,a)+')';
+    u.style.opacity=c.toFixed(3);
+    u.style.transform='translateY('+lerp(38,0,c)+'px)';
+    f.style.opacity=cl(d,0,1).toFixed(3);
+    const pulse=lt>1.3?1+0.03*Math.sin((lt-1.3)*5.0):1;
+    f.style.transform='scale('+(lerp(0.82,1,d)*pulse)+')';
+    b.style.opacity=(e*0.95).toFixed(3);
+  }};
+}
+
+/* ============ timeline ============ */
+const PLAN=[
+  {d:3.0, s:()=>introScene(['The profession,','the research,','and the public.'])},
+  {d:2.8, s:logoScene},
+
+  {d:3.4, s:()=>featureScene({img:'shots/feed.png', chip:'Your home feed',
+    head:'Current research,<br>tailored to you.',
+    sub:'Live from PubMed, filtered to the topics you follow: studies, guidelines, industry and policy.',
+    pan:[-4,-118]},3.4)},
+  {d:3.4, s:()=>featureScene({img:'shots/search.png', chip:'Search',
+    head:'Look for research<br>in plain English.',
+    sub:'Describe what you need. Limbic turns it into a real PubMed query, then shows you the query it wrote.'},3.4)},
+
+  {d:1.9, s:()=>sectionScene('Limbic Student','Built for the DPT journey')},
+  {d:3.2, s:()=>featureScene({img:'shots/student.png', chip:'The Atrium',
+    head:'Your semester,<br>in one place.',
+    sub:'Class schedule, assignments, rotation countdown, and daily clinical sharpening.'},3.2)},
+  {d:3.4, s:()=>featureScene({img:'shots/playbook.png', chip:'Playbooks',
+    head:'The shoulder screen,<br>in the order<br>you’d perform it.',
+    sub:'Every value marked measured, convention, or contested, with 83 sources linked.',
+    pan:[-2,-112]},3.4)},
+  {d:3.1, s:()=>featureScene({img:'shots/boards.png', chip:'Boards',
+    head:'Daily NPTE reps.',
+    sub:'Term of the day. Board question. Case of the day.'},3.1)},
+  {d:3.4, s:()=>featureScene({img:'shots/atlas.png', chip:'Limbic Atlas',
+    head:'Clinical anatomy,<br>region by region.',
+    sub:'Muscles, conditions, special tests and board pearls. Open to Student and PRO alike.'},3.4)},
+
+  {d:1.9, s:()=>sectionScene('LimbicPRO','For the clinician at the point of care')},
+  {d:3.2, s:()=>featureScene({img:'shots/pro.png', chip:'Clinical Toolbox',
+    head:'Calculators.<br>Decision rules.<br>Special tests.',
+    sub:'Free clinical reference for every PT, grouped by when you’d reach for it.'},3.2)},
+  {d:3.2, s:()=>featureScene({img:'shots/agent.png', chip:'Limbic Agent',
+    head:'Ask a clinical<br>question.',
+    sub:'Grounded in current evidence. Never a diagnosis, always a starting point.',
+    pan:[0,-120]},3.2)},
+  {d:3.4, s:()=>featureScene({img:'shots/movementlab.png', chip:'Movement Lab',
+    head:'224 exercises.<br>19 phased protocols.',
+    sub:'Setup, technique, dosage and precautions, sent straight into a patient’s program.',
+    pan:[-2,-114]},3.4)},
+
+  {d:1.9, s:()=>sectionScene('Health &amp; Wellness','For the people they serve')},
+  {d:3.2, s:()=>featureScene({img:'shots/wellness2.png', chip:'Limbic Wellness+',
+    head:'Tuned to your<br>own numbers.',
+    sub:'Optional, private, and built on the same research your physical therapist uses.'},3.2)},
+  {d:2.8, s:()=>featureScene({img:'shots/games.png', chip:'Limbic Games',
+    head:'A daily habit,<br>not homework.',
+    sub:'Daily Term. Mini Crossword.'},2.8)},
+  {d:2.8, s:()=>featureScene({img:'shots/clips.png', chip:'Limbic Clips',
+    head:'Real PT,<br>in short form.',
+    sub:'Curated and live-sourced rehab clips.'},2.8)},
+
+  {d:4.8, s:ctaScene},
+];
+
+let acc=0;
+const T=PLAN.map(p=>{const seg={a:acc, d:p.d, ...p.s()}; acc+=p.d; return seg});
+const DUR=acc;                        // last scene has no successor to dissolve into
+T.forEach((seg,i)=>{seg.b=seg.a+seg.d+(i===T.length-1?0:XF)});
+
+const g1=document.getElementById('g1'), g2=document.getElementById('g2'),
+      bar=document.getElementById('bar');
+
+/** Fade-in over XF, fade-out over the trailing XF — asymmetric easing (incoming a touch
+ *  quicker than outgoing) keeps the two overlapping scenes from reading as mud. */
+function alphaOf(seg,t){
+  const x=t-seg.a;
+  if(x<0||t>=seg.b) return 0;
+  const fin=seg.a===0?1:cl(x/(XF*0.82),0,1);
+  const fout=cl((seg.b-t)/XF,0,1);
+  return Math.min(fin,fout);
+}
+
+window.__render=function(t){
+  t=cl(t,0,DUR-0.001);
+  bar.style.width=(t/DUR*W)+'px';
+  g1.style.transform='translate('+(-460+170*Math.sin(t*0.22))+'px,'+(-180+300*Math.cos(t*0.16))+'px)';
+  g2.style.transform='translate('+(150+150*Math.cos(t*0.19+1.1))+'px,'+(700+280*Math.sin(t*0.14+2.0))+'px)';
+
+  T.forEach((seg,i)=>{
+    const a=alphaOf(seg,t);
+    if(a<=0){ seg.el.classList.remove('on'); return; }
+    seg.el.classList.add('on');
+    seg.el.style.opacity=a.toFixed(3);
+    seg.el.style.zIndex=String(10+i);
+    // outgoing drifts slightly forward, incoming settles back — a dissolve with depth
+    const x=t-seg.a, tail=cl((x-(seg.d))/XF,0,1);
+    const inn=cl(x/(XF*0.82),0,1);
+    seg.el.style.transform='scale('+(lerp(0.988,1,inn)*lerp(1,1.022,tail))+')';
+    seg.update(x);
+  });
+};
+window.__DUR=DUR;
+</script></body></html>

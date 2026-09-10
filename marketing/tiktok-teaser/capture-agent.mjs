@@ -1,0 +1,27 @@
+import { chromium } from 'playwright-core';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import fs from 'node:fs';
+const OUT = path.join(path.dirname(fileURLToPath(import.meta.url)), 'shots');
+fs.mkdirSync(OUT, { recursive: true });
+const b=await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {});
+const c=await b.newContext({viewport:{width:402,height:874},deviceScaleFactor:3,isMobile:true,hasTouch:true});
+const p=await c.newPage();
+await p.goto('http://localhost:3000/sign-in',{waitUntil:'domcontentloaded'});
+await p.waitForTimeout(1500);
+await p.fill('input[name="email"]','demo@limbic.center');
+await p.fill('input[name="password"]','TeaserDemo!2026');
+await p.click('button[type="submit"]');
+await p.waitForTimeout(4000);
+for(let i=0;i<4;i++){const s=p.getByRole('button',{name:/skip tour|continue$/i});
+  if(await s.count()){try{await s.first().click({timeout:1500});await p.waitForTimeout(900);continue}catch{}} break;}
+await p.goto('http://localhost:3000/agent',{waitUntil:'domcontentloaded'});
+await p.waitForTimeout(3500);
+await p.addStyleTag({content:'nextjs-portal{display:none!important}'});
+const ta=p.locator('.agent-input-bar input');
+await ta.fill('62F, 6 weeks post TKA, flexion stuck at 92 degrees — what should I progress?');
+await p.waitForTimeout(1500);
+console.log('composer value:', await ta.inputValue());
+await p.screenshot({path:OUT+'/agent.png'});
+console.log('agent recaptured');
+await b.close();

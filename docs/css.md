@@ -14,7 +14,7 @@ re-exports the root barrel.
 | `base.css` | Root | Reset, type, `.card` / `.btn` / `.tag` / evidence / forms |
 | `responsive-lg.css` | Root | Shared `min-width: 1024px` type and `.card` padding only |
 | `shell.css`, `tour.css`, `screens.css`, `calendar.css`, `streaks.css`, `onboarding.css`, `programs.css` | `src/app/(app)/layout.tsx` | Authenticated chrome, widgets, and program search (onboarding modal + Profile) |
-| `profile.css` | `(app)/profile/layout.tsx` | Program Timeline rotations |
+| `profile.css` | `(app)/profile/layout.tsx` | Program Timeline rotations, Membership tier table |
 | `<feature>.css` | That feature's `layout.tsx` (or page) | Page-private rules |
 | `metrics.css` | `(app)/wellness/layout.tsx`, `(app)/pro/layout.tsx` | Calculator readouts, rating badges |
 | `research-tools.css` | `(app)/article/layout.tsx`, `(app)/pro/layout.tsx` | Histogram explorer, research-literacy guide |

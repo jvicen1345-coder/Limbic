@@ -5,29 +5,8 @@ import { SaveButton } from "@/components/SaveButton";
 import { ArticleImage } from "@/components/ArticleImage";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { OpenAccessPill } from "@/components/OpenAccessPill";
-import { CheckIcon, NetworkIcon, ChevronRightIcon } from "@/components/icons";
+import { CheckIcon } from "@/components/icons";
 import type { DecoratedArticle } from "@/lib/feed";
-
-/** A direct link into the article's real Threads web (see components/ThreadsWeb.tsx) —
- *  no preview of what it contains, since computing the full web for every card in a feed
- *  grid would mean a Nexus query and article-pool scan per card. */
-function ThreadsTeaser({ articleId }: { articleId: string }) {
-  const router = useRouter();
-  return (
-    <button
-      type="button"
-      className="card-threads-teaser"
-      onClick={(e) => {
-        e.stopPropagation();
-        router.push(`/article/${articleId}?threads=1`);
-      }}
-    >
-      <NetworkIcon size={12} />
-      Explore Connections
-      <ChevronRightIcon size={11} />
-    </button>
-  );
-}
 
 /** Every source already tags an article with its specialty and type label as the first two
  *  entries (see lib/pubmed.ts, lib/news-live.ts) — both already shown elsewhere on the card
@@ -77,7 +56,6 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
           ))}
         </div>
       )}
-      <ThreadsTeaser articleId={article.id} />
     </div>
   );
 }
@@ -118,7 +96,6 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
           {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
           <span>{article.source}</span>
         </div>
-        <ThreadsTeaser articleId={article.id} />
       </div>
     );
   }
@@ -156,9 +133,6 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
         <p className="card-body" style={{ fontSize: 15, margin: "0 auto" }}>
           {article.summary}
         </p>
-        <div style={{ marginTop: 8, display: "flex", justifyContent: "center" }}>
-          <ThreadsTeaser articleId={article.id} />
-        </div>
       </div>
     </div>
   );

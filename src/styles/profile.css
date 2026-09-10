@@ -18,18 +18,39 @@
 }
 
 /* Moved from pro.css — plan comparison table — only /profile/membership uses these */
+/* — Membership: subscription-tier comparison table (see
+   app/(app)/profile/membership/page.tsx) — moved here from pro.css and onboarding.css.
+   The page lives under /profile, which loads only this sheet, so every one of these rules
+   was inert on the one route that renders them: the table fell back to UA defaults, which
+   is why feature labels centred themselves and the column rules vanished. Membership used
+   to sit at /pro/membership, which is how they came to be filed under LimbicPRO. */
 /* — Profile > Membership: subscription-tier comparison table — same overflow-x-scroll
    shape as .pro-table above, plus a sticky first column (feature labels) so the row you're
    reading stays visible while scrolling horizontally to a tier further right — see
    app/(app)/profile/membership/page.tsx. */
+/* Six columns don't fit .screen-pad's 900px cap: minus its 44px gutters that leaves ~812px
+   for a table whose own floor is 800px, so every tier column sat at its minimum and the
+   whole band read as cramped. Only this page opts out, and only once there's actually room
+   for it — the width applies from 1000px up, and the page keeps the shared 900px below
+   that. Two classes so it beats .screen-pad's own max-width regardless of sheet order. */
+@media (min-width: 1000px) {
+  .screen-pad.membership-screen { max-width: 1180px; }
+}
 .plan-compare-wrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--color-divider); border-radius: var(--radius-lg); }
 .plan-compare-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
 .plan-compare-table thead th {
   background: var(--color-card-surface);
-  padding: 20px 14px;
+  /* Roomier than the body rows on purpose: this band carries the name, price and button
+     stack, and is the part that read as tight. */
+  padding: 22px 18px;
   border-bottom: 1px solid var(--color-divider);
   vertical-align: top;
 }
+/* Every tier column the same width, rather than each sized to whatever its name and price
+   happen to measure — five equal shares, with the feature-label column taking the rest.
+   Equal columns are also what makes the Subscribe buttons come out identical, since each
+   is full-width within its own column. */
+.plan-compare-table thead th:not(:first-child) { width: 15%; }
 .plan-compare-table thead th:first-child { text-align: left; position: sticky; left: 0; z-index: 2; }
 .plan-compare-table thead th:not(:first-child) { text-align: center; border-left: 1px solid var(--color-divider); }
 .plan-compare-table tbody th {
@@ -42,7 +63,7 @@
   left: 0;
   background: inherit;
 }
-.plan-compare-table tbody td { text-align: center; padding: 10px 14px; border-left: 1px solid var(--color-divider); }
+.plan-compare-table tbody td { text-align: center; padding: 10px 16px; border-left: 1px solid var(--color-divider); }
 .plan-compare-table tbody tr td, .plan-compare-table tbody tr th { border-bottom: 1px solid var(--color-divider); }
 .plan-compare-table tbody tr:last-child td, .plan-compare-table tbody tr:last-child th { border-bottom: none; }
 .plan-compare-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--color-card-surface) 45%, var(--color-surface)); }
@@ -79,7 +100,24 @@
   padding: 3px 10px;
 }
 .plan-compare-cta-form { width: 100%; margin-top: 2px; }
-.plan-compare-cta { width: 100%; font-size: 12.5px; padding: 7px 10px; }
+/* One size for every purchase button on this page: full width of its (now equal) column,
+   and a fixed height so a primary Subscribe, a disabled one, and the annual button below
+   all match instead of sizing to their own label. */
+.plan-compare-cta {
+  width: 100%;
+  font-size: 12.5px;
+  padding: 7px 10px;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+/* The second, annual option under a tier that bills on two cadences (Wellness+ — see
+   TierConfig.alt in app/(app)/profile/membership/page.tsx). Same size as the button above
+   it, quieter styling, since the monthly plan is the default choice. */
+.plan-compare-cta-alt { margin-top: 6px; }
+
 .plan-compare-check { color: #16a34a; font-weight: 700; }
 .plan-compare-dash { color: var(--color-neutral-700); }
 .plan-compare-soon { color: var(--color-neutral-700); font-style: italic; font-size: 12px; }
@@ -101,9 +139,10 @@
    app's mobile layout (see AppShell's >=1024px desktop-layout switch). */
 .plan-compare-cards { display: none; }
 @media (max-width: 799px) {
-.plan-compare-wrap { display: none; }
-.plan-compare-cards { display: flex; flex-direction: column; gap: 16px; margin: 16px 0; }
+  .plan-compare-wrap { display: none; }
+  .plan-compare-cards { display: flex; flex-direction: column; gap: 16px; margin: 16px 0; }
 }
+
 .plan-compare-card { border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface); }
 .plan-compare-card--current { border-color: var(--color-accent); border-width: 2px; }
 .plan-compare-card-header { background: var(--color-card-surface); padding: 16px; text-align: center; }
@@ -127,7 +166,6 @@
   font-weight: 600;
   padding: 8px 16px;
 }
-
 /* Moved from home.css — credential date fields — only /profile/credentials uses these */
 /* Profile "Professional Dates" date fields (see components/ProfessionalDatesForm.tsx) — a
    real <input type="date"> sits invisibly on top (native picker + keyboard/a11y behavior
@@ -201,3 +239,11 @@
   transition: transform 150ms ease;
 }
 .switch[aria-checked="true"] .switch-thumb { transform: translateX(15px); }
+.plan-compare-renewal-row {
+  padding: 10px 14px 12px;
+  border-top: 1px solid var(--color-neutral-200);
+}
+.plan-compare-renewal-row .auto-renewal-terms {
+  max-width: none;
+  margin: 0;
+}

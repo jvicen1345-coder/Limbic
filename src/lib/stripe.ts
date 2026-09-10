@@ -32,8 +32,8 @@ export function getStripe(): Stripe {
 export type BillablePlan = "pro" | "limbicStudent" | "wellnessPlusMonthly" | "wellnessPlusYearly" | "clinic";
 
 /** Real Price ids created in the Stripe Dashboard (Products & Prices) — see
- *  .env.example/README for the setup steps. Dollar amounts themselves ($15/mo, $5/mo,
- *  $3/mo, $18/yr, $100/mo) live only as display copy in app/(app)/profile/membership/page.tsx
+ *  .env.example/README for the setup steps. Dollar amounts themselves ($10/mo, $3/mo,
+ *  $2/mo, $20/yr, $100/mo) live only as display copy in app/(app)/profile/membership/page.tsx
  *  and app/(app)/wellness/membership/page.tsx; this file never hardcodes a price, only
  *  which env var holds each plan's Price id. */
 export function priceIdForPlan(plan: BillablePlan): string | undefined {
@@ -60,6 +60,32 @@ export function priceIdForPlan(plan: BillablePlan): string | undefined {
  *  about billing being configured at all rather than about one plan. */
 export function planHasPrice(plan: BillablePlan): boolean {
   return !!priceIdForPlan(plan);
+}
+
+/** Whether a purchase button for `plan` should be clickable, and what to say when it
+ *  shouldn't — the shared shape behind every Subscribe/Upgrade/Unlock button in the app
+ *  (see app/(app)/profile/membership, /wellness/membership, /pro and the Atlas gate card),
+ *  so a half-configured plan reads the same wherever the reader meets it.
+ *
+ *  Two distinct "can't buy this" cases, deliberately worded differently:
+ *  `billingEnabled` false means Stripe isn't set up at all, which each page already
+ *  explains in its own banner — the button just goes flat, with no per-plan title to
+ *  compete with that message. A missing Price id for this one plan gets its own title,
+ *  since nothing else on the page accounts for it. */
+export function purchaseButtonState(
+  plan: BillablePlan,
+  label: string,
+  billingEnabled: boolean,
+): { disabled: boolean; title?: string } {
+  if (!billingEnabled) return { disabled: true };
+  if (planHasPrice(plan)) return { disabled: false };
+  return { disabled: true, title: unpricedPlanReason(label) };
+}
+
+/** The one wording for "this plan has no Stripe Price id yet", shared so the Membership
+ *  table, the Wellness+ page, /pro and the Atlas card can't drift apart on it. */
+export function unpricedPlanReason(label: string): string {
+  return `${label} isn't available for purchase yet`;
 }
 
 /** The reverse lookup (webhook events carry a Price id, not a plan name) — see

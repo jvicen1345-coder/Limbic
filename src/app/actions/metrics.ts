@@ -3,6 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { todayKeyInZone } from "@/lib/day";
+import { getTimeZone } from "@/lib/user-time-zone";
+import { recordWellnessActivity } from "@/lib/wellness-activity";
 import { isMetricsLogMetric } from "@/lib/metrics";
 
 /** Shared by every calculator's "Save to my metrics" button and every assessment's "Log
@@ -21,6 +24,9 @@ export async function saveMetricLog(metric: string, value: number, notes?: strin
       notes: notes?.trim() || null,
     },
   });
+  // Any one wellness action a day keeps the streak alive (see lib/wellness-activity.ts).
+  const timeZone = await getTimeZone(user);
+  await recordWellnessActivity(user.id, todayKeyInZone(timeZone), timeZone);
   revalidatePath("/wellness/metrics");
   revalidatePath("/wellness/assess");
   revalidatePath("/wellness");

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
-import { stripeEnabled } from "@/lib/stripe";
+import { stripeEnabled, purchaseButtonState } from "@/lib/stripe";
 import { subscribeToProAction } from "@/app/actions/pro";
 
 export const metadata: Metadata = {
@@ -85,6 +85,7 @@ export default async function ProOverviewPage() {
   if (!user) return null;
 
   const billingEnabled = stripeEnabled();
+  const proPurchase = purchaseButtonState("pro", "LimbicPRO", billingEnabled);
 
   return (
     <div className="screen-pad">
@@ -123,10 +124,10 @@ export default async function ProOverviewPage() {
         </div>
       ) : (
         <div className="card elev-sm" style={{ margin: "20px 0 0" }}>
-          <div className="card-kicker">$15 per month — cancel anytime</div>
+          <div className="card-kicker">$10 per month — cancel anytime</div>
           <form action={subscribeToProAction} style={{ marginTop: 10 }}>
-            <AutoRenewalTerms price="$15" cadence="month" />
-            <button type="submit" className="btn btn-primary" disabled={!billingEnabled}>
+            <AutoRenewalTerms price="$10" cadence="month" />
+            <button type="submit" className="btn btn-primary" disabled={proPurchase.disabled} title={proPurchase.title}>
               Upgrade to LimbicPRO
             </button>
           </form>

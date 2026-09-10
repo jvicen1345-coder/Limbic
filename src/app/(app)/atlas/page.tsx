@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getCurrentUser, hasClinicalReferenceAccess, hasStudentAccess } from "@/lib/session";
-import { stripeEnabled } from "@/lib/stripe";
+import { stripeEnabled, purchaseButtonState } from "@/lib/stripe";
 import { AtlasClient } from "@/components/atlas/AtlasClient";
 
 export const metadata: Metadata = {
@@ -32,7 +32,10 @@ export default async function AtlasPage() {
         hasFullAccess={hasClinicalReferenceAccess(user)}
         isPro={user.isPro}
         canBuyStudent={hasStudentAccess(user)}
-        billingEnabled={stripeEnabled()}
+        purchase={{
+          student: purchaseButtonState("limbicStudent", "Limbic Student", stripeEnabled()),
+          pro: purchaseButtonState("pro", "LimbicPRO", stripeEnabled()),
+        }}
       />
     </div>
   );

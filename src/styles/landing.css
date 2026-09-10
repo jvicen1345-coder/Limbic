@@ -185,9 +185,9 @@
 .landing-feature-card-name { font-family: var(--font-heading); font-weight: 800; font-size: 16.5px; margin: 0 0 8px; }
 .landing-feature-card-body { font-size: 14px; line-height: 1.6; color: var(--color-neutral-700); margin: 0; }
 
-/* — Demo video — sits between features and founding funders. .landing-demo-video-placeholder
-   is a stand-in until the real Loom walkthrough is recorded; swap its contents for the
-   embed's iframe (same wrapper div, same aspect-ratio) once it exists. */
+/* — Demo video — sits between features and founding funders. The tour is vertical 9:16,
+   not 16:9 like the placeholder this replaced, so the player gets a phone-width frame
+   centred in the section rather than a full-width box. */
 .landing-demo { max-width: 800px; margin: 0 auto; padding: 60px 24px; text-align: center; }
 .landing-demo-eyebrow {
   font-size: 12px;
@@ -198,17 +198,29 @@
   margin: 0 0 12px;
 }
 .landing-demo-body { font-size: 16px; line-height: 1.6; color: var(--color-neutral-700); margin: 0 0 32px; }
-.landing-demo-video-placeholder {
+/* Capped in px, not as a percentage: the file is 720px wide, so letting the frame grow
+   past ~380px on a desktop viewport would only upscale it. line-height: 0 keeps the
+   inline video from leaving a descender gap under itself inside the rounded frame. */
+.landing-demo-video {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  background: var(--color-card-surface);
+  max-width: 380px;
+  margin: 0 auto;
   border: 1px solid var(--color-divider);
   border-radius: var(--landing-radius);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  line-height: 0;
 }
-.landing-demo-video-placeholder p { color: var(--color-neutral-700); font-size: 14px; margin: 0; }
+/* A literal rather than a token, and the one place on this page that is right: it matches
+   the video's own background, which is the dark palette in both themes. A token would make
+   the frame flash light behind a dark poster in light mode before the first frame paints. */
+.landing-demo-video-player {
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  background: #0d1220;
+}
+.landing-demo-note { font-size: 13px; color: var(--color-neutral-700); margin: 16px 0 0; }
 
 /* — Section 5: founding funders — a real section, not a thin banner, hence the generous
    vertical padding and the same gold-tint treatment already established on the Wellness
