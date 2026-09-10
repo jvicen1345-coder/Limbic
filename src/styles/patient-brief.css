@@ -1,0 +1,103 @@
+/* Printable patient brief. Shared by /pro/patient-brief, /pro/force-lab assessment
+   print, and the admin Connexion safety-score print route. */
+
+/* Moved from pro.css — printable patient brief — shared by /pro and /admin print routes */
+/* ============================================================================
+   LimbicPRO Patient Document (/pro/patient-brief/[patientId]) — always renders in light
+   mode regardless of the viewer's theme preference (see that page's own comment on why),
+   so every rule below uses literal colors rather than the --color-* custom properties,
+   which would otherwise pick up html[data-theme="dark"]'s dark values. Self-contained by
+   design: nothing here reads from or feeds into the rest of the app's design system.
+   ============================================================================ */
+
+.patient-brief-page {
+  background: #eeede8;
+  min-height: 100vh;
+  color: #1a1a1a;
+}
+.patient-brief-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 20px;
+  background: #1a1a1a;
+  color: #fff;
+}
+.patient-brief-topbar a, .patient-brief-topbar button {
+  font: inherit;
+}
+.patient-brief-doc {
+  max-width: 750px;
+  margin: 28px auto 60px;
+  background: #ffffff;
+  color: #1a1a1a;
+  padding: 48px 56px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+}
+.patient-brief-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid #1a1a1a;
+  margin-bottom: 22px;
+}
+.patient-brief-clinic-name { font-size: 20px; font-weight: 700; }
+.patient-brief-clinic-tagline { font-size: var(--fs-11-5); color: #555; margin-top: 2px; }
+.patient-brief-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 24px;
+  font-size: 12.5px;
+  margin-bottom: 26px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #ddd;
+}
+.patient-brief-meta-label { color: #666; }
+.patient-brief-meta-value { font-weight: 600; }
+.patient-brief-section { margin-bottom: 24px; }
+.patient-brief-section-title { font-size: 13px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 10px; color: #1a1a1a; }
+.patient-brief-summary-text { font-size: 13.5px; line-height: 1.7; white-space: pre-wrap; }
+.patient-brief-hep-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.patient-brief-hep-table th {
+  text-align: left;
+  font-size: var(--fs-10-5);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #666;
+  border-bottom: 1px solid #ccc;
+  padding: 6px 8px 6px 0;
+}
+.patient-brief-hep-row td { padding: 8px 8px 8px 0; border-bottom: 1px solid #eee; }
+.patient-brief-footer {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
+  font-size: var(--fs-10-5);
+  color: #777;
+  line-height: 1.6;
+}
+@media print {
+.patient-brief-topbar { display: none !important; }
+.patient-brief-page { background: #fff !important; min-height: 0; }
+.patient-brief-doc {
+    box-shadow: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    max-width: none;
+  }
+.patient-brief-hep-row, .patient-brief-section { break-inside: avoid; page-break-inside: avoid; }
+}
+/* The topbar was built for two items (back link, print button); the report toggle and
+   Generate Summary button pushed it past what a phone-width row can hold without every
+   child squeezing down to a multi-line sliver — stack everything into its own full-width
+   row instead once it can't fit on one line. */
+@media (max-width: 700px) {
+.patient-brief-topbar { flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px 14px; }
+.patient-brief-topbar > a { order: 1; }
+}

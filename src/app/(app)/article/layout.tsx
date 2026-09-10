@@ -1,3 +1,4 @@
+import "@/styles/research-tools.css";
 import type { ReactNode } from "react";
 import "@/styles/article.css";
 import "@/styles/agent.css";

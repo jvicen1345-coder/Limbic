@@ -1,0 +1,46 @@
+/* Evidence-appraisal tools. Shared by the article reader and /pro/research-literacy. */
+
+/* Moved from wellness.css — appraisal tools — /article and /pro/research-literacy */
+/* ResearchLiteracyGuide's topic cards (see components/pro/ResearchLiteracyGuide.tsx) — a
+   <details>/<summary> card rather than the plain-text summary above, since each topic here
+   is its own standalone card in a list, not a single aside under one calculator. */
+.research-literacy-topic-summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  list-style: none;
+}
+.research-literacy-topic-summary::-webkit-details-marker { display: none; }
+.research-literacy-topic-summary::before {
+  content: "+";
+  display: inline-block;
+  width: 16px;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+.research-literacy-topic[open] .research-literacy-topic-summary::before { content: "–"; }
+/* — Article Histogram Explorer (components/pro/ArticleHistogramExplorer.tsx) — variable
+   picker pills plus a simple single-series bar chart, same "plain div bars sized by
+   percentage height" approach as .vitals-chart- above, just one series instead of stacked
+   segments. */
+.histogram-var-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+.histogram-var-pill {
+  font: 600 12.5px var(--font-body);
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.histogram-var-pill-active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+}
+.histogram-wrap { overflow-x: auto; }
+.histogram-bars { display: flex; gap: 4px; align-items: flex-end; min-width: 320px; height: 120px; padding-top: 8px; }
+.histogram-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px; }
+.histogram-bar { width: 100%; min-height: 3px; border-radius: 3px 3px 0 0; background: var(--color-accent); }
+.histogram-bar-label { font-size: var(--fs-9-5); color: var(--color-neutral-700); white-space: nowrap; transform: rotate(-40deg); transform-origin: top right; margin-top: 4px; }
+.histogram-caption { font-size: var(--fs-11-5); color: var(--color-neutral-600); margin-top: 14px; font-style: italic; }

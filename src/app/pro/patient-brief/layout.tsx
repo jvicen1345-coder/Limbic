@@ -1,3 +1,4 @@
+import "@/styles/patient-brief.css";
 import type { ReactNode } from "react";
 import "@/styles/pro.css";
 

@@ -32,57 +32,6 @@
 .pro-tool-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
 .pro-tool-card-arrow { display: inline-flex; align-items: center; gap: 3px; color: var(--color-accent); font-weight: 600; }
 
-/* — PRO gate / locked state — shared by every /pro/* tool page (see
-   components/pro/ProGate.tsx). Same shell as .wellness-agent-paywall
-   (Limbic Agent's own paywall) so a locked clinical tool reads consistently
-   with every other paid-feature gate in the app rather than inventing a new
-   pattern. */
-.pro-locked {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 48px 24px;
-  border-radius: var(--radius-lg);
-  background: var(--color-card-surface);
-  border: 1px solid var(--color-divider);
-  max-width: 480px;
-  margin: 24px auto 0;
-}
-.pro-locked-list {
-  list-style: none;
-  padding: 0;
-  margin: 16px 0 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: left;
-  width: 100%;
-}
-.pro-locked-list li {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--color-text);
-}
-.pro-locked-list li svg { flex-shrink: 0; margin-top: 2px; color: var(--color-accent); }
-
-/* — Free clinical-reference banner — components/pro/FreeToolBanner.tsx, first element
-   inside every tool page's .screen-pad that dropped its LimbicPRO gate. An inset card
-   (rather than a full-bleed strip) so it sits naturally inside .screen-pad's own
-   max-width column instead of fighting that wrapper's padding at every breakpoint. */
-.free-tool-banner {
-  background: var(--color-card-surface);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-md);
-  padding: 10px 20px;
-  font-size: 13px;
-  color: var(--color-neutral-700);
-  margin: 0 0 16px;
-}
-.free-tool-banner a { color: var(--color-accent); font-weight: 600; }
-
 /* — Disclaimer card — amber left border/tint, reused by both tabs of
    /pro/decision-rules and both tabs of /pro/lab-values. Theme-adaptive amber
    token (unlike the Connexion HIPAA disclaimer's fixed-dark-card literal
@@ -621,104 +570,11 @@
   .ppm-hep-row { grid-template-columns: 1fr; gap: 4px; }
   .ppm-steps { flex-wrap: wrap; }
 }
-
-/* ============================================================================
-   LimbicPRO Patient Document (/pro/patient-brief/[patientId]) — always renders in light
-   mode regardless of the viewer's theme preference (see that page's own comment on why),
-   so every rule below uses literal colors rather than the --color-* custom properties,
-   which would otherwise pick up html[data-theme="dark"]'s dark values. Self-contained by
-   design: nothing here reads from or feeds into the rest of the app's design system.
-   ============================================================================ */
-
-.patient-brief-page {
-  background: #eeede8;
-  min-height: 100vh;
-  color: #1a1a1a;
-}
-.patient-brief-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 20px;
-  background: #1a1a1a;
-  color: #fff;
-}
-.patient-brief-topbar a,
-.patient-brief-topbar button {
-  font: inherit;
-}
-.patient-brief-doc {
-  max-width: 750px;
-  margin: 28px auto 60px;
-  background: #ffffff;
-  color: #1a1a1a;
-  padding: 48px 56px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
-  border-radius: 4px;
-}
-.patient-brief-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding-bottom: 18px;
-  border-bottom: 2px solid #1a1a1a;
-  margin-bottom: 22px;
-}
-.patient-brief-clinic-name { font-size: 20px; font-weight: 700; }
-.patient-brief-clinic-tagline { font-size: var(--fs-11-5); color: #555; margin-top: 2px; }
 .patient-brief-doc-title { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #555; margin-bottom: 4px; }
-.patient-brief-meta-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 24px;
-  font-size: 12.5px;
-  margin-bottom: 26px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid #ddd;
-}
-.patient-brief-meta-label { color: #666; }
-.patient-brief-meta-value { font-weight: 600; }
-.patient-brief-section { margin-bottom: 24px; }
-.patient-brief-section-title { font-size: 13px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 10px; color: #1a1a1a; }
-.patient-brief-summary-text { font-size: 13.5px; line-height: 1.7; white-space: pre-wrap; }
 .patient-brief-hep-name { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-.patient-brief-hep-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-.patient-brief-hep-table th {
-  text-align: left;
-  font-size: var(--fs-10-5);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: #666;
-  border-bottom: 1px solid #ccc;
-  padding: 6px 8px 6px 0;
-}
-.patient-brief-hep-row td { padding: 8px 8px 8px 0; border-bottom: 1px solid #eee; }
-.patient-brief-footer {
-  margin-top: 32px;
-  padding-top: 16px;
-  border-top: 1px solid #ddd;
-  font-size: var(--fs-10-5);
-  color: #777;
-  line-height: 1.6;
-}
 
 @media print {
-  .patient-brief-topbar { display: none !important; }
-  .patient-brief-page { background: #fff !important; min-height: 0; }
-  .patient-brief-doc {
-    box-shadow: none !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
-    max-width: none;
-  }
-  .patient-brief-hep-row,
-  .patient-brief-section { break-inside: avoid; page-break-inside: avoid; }
-  @page { margin: 0.75in; }
-}
+  @page { margin: 0.75in; }}
 
 /* ============================================================================
    Clinician Dashboard — Prompt 1 daily-habit features (Morning Rounds, visit logging,
@@ -1064,18 +920,7 @@
   .clindash-team-patient-row,
   .clindash-transfer-recent-row { flex-direction: column; gap: 2px; }
 }
-
-/* Clinic Setup / Clinic Report — a small centered-card shell within the AppShell layout
-   (Accept Invite stays genuinely standalone, since it must work for a signed-out visitor —
-   see app/clinic/accept-invite/page.tsx). */
-.clindash-standalone-page {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 48px 20px;
-}
 .clindash-standalone-page--wide { max-width: 900px; }
-.clindash-standalone-title { font-family: var(--font-heading); font-size: 22px; margin: 0 0 4px; }
-.clindash-standalone-subtitle { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 20px; }
 
 .clindash-report-section { margin-top: 22px; }
 .clindash-report-section-title { font-family: var(--font-heading); font-size: 16px; margin: 0 0 10px; }
@@ -1330,49 +1175,6 @@
   color: #16a34a;
   background: color-mix(in srgb, #16a34a 14%, transparent);
 }
-
-/* ————————————————————————————————————————————————————————————————
-   Limbic Boards — appended block (see COORDINATION.md: new scoped classes go at the end
-   of this file rather than beside related rules, so parallel sessions' diffs don't
-   collide). Covers the Boards page header, the shared board-question choice list, the
-   missed-question review, the per-system record on the NPTE Breakdown cards, and the
-   Resources tab's link lists.
-   ———————————————————————————————————————————————————————————————— */
-
-/* — page header: title on the left, streak badge and NPTE countdown on the right — */
-.boards-page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 4px;
-}
-.boards-page-title { display: flex; align-items: center; gap: 8px; }
-.boards-page-title h1 { font-size: 24px; margin: 0; }
-.boards-header-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.boards-header-countdown {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 5px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--color-text);
-  background: var(--color-neutral-100);
-  border: 1px solid var(--color-divider);
-  padding: 4px 12px;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-.boards-header-countdown strong {
-  font-family: var(--font-heading);
-  font-size: 15px;
-  color: var(--color-accent-700);
-}
-
-/* — shared answer list for a board question (Daily Sharpening step 1 and the standalone
-     clinician Question of the Day card) — */
-.board-choice-list { display: flex; flex-direction: column; gap: 8px; }
 .board-choice {
   display: flex;
   align-items: center;
@@ -1382,116 +1184,11 @@
 }
 .board-choice--dimmed { opacity: 0.6; }
 .board-choice--wrong { border: 1.5px solid var(--color-accent-700); }
-.board-choice-mark { flex-shrink: 0; font-weight: 700; }
-
-/* — streak dots: a day still to come this week is not a day that was missed — */
-.boards-streak-day-dot--future { background: transparent; box-shadow: inset 0 0 0 1.5px var(--color-divider); }
-.boards-streak-day-label--future { opacity: 0.5; }
 /* Three stats now (current streak, longest streak, accuracy) rather than two. */
 .boards-streak-stats { grid-template-columns: repeat(3, 1fr); }
 
-/* — "where you're losing points" callout above the system grid — */
-.boards-weakest-card {
-  background: var(--color-card-surface);
-  border: 1px solid var(--color-accent);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-  margin-bottom: 14px;
-}
-.boards-weakest-body { font-size: 13px; line-height: 1.6; color: var(--color-text); margin: 8px 0 12px; }
-.boards-weakest-link { display: inline-flex; text-decoration: none; }
-
-/* — NPTE Breakdown system cards, now links into that system's practice set — */
-.npte-system-card { text-decoration: none; color: inherit; transition: border-color 0.15s ease, transform 0.15s ease; }
-.npte-system-card:hover { border-color: var(--color-accent); transform: translateY(-1px); }
-.npte-system-record {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 4px 8px;
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid var(--color-divider);
-}
-.npte-system-record-value { font-family: var(--font-heading); font-weight: 700; font-size: 18px; color: var(--color-text); }
-.npte-system-record-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
-.npte-system-record-cta { width: 100%; text-align: right; font-size: var(--fs-11-5); font-weight: 600; color: var(--color-accent-700); }
-
-/* — missed-question review (Daily Sharpening tab) — */
-.boards-review-empty, .boards-review-intro {
-  font-size: 12.5px;
-  color: var(--color-neutral-700);
-  line-height: 1.6;
-  margin: 8px 0 0;
-}
-.boards-review-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-.boards-review-item { border: 1px solid var(--color-divider); border-radius: 10px; overflow: hidden; }
-.boards-review-toggle {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  padding: 12px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  font: inherit;
-  color: inherit;
-}
-.boards-review-toggle:hover { background: var(--color-neutral-100); }
-.boards-review-question { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; line-height: 1.5; }
-.boards-review-domain { flex-shrink: 0; font-size: var(--fs-10-5); color: var(--color-neutral-700); white-space: nowrap; padding-top: 2px; }
-.boards-review-body { padding: 0 12px 12px; border-top: 1px solid var(--color-divider); }
-.boards-review-answer { display: flex; gap: 8px; font-size: 12.5px; line-height: 1.5; margin: 10px 0 0; }
-.boards-review-answer-label {
-  flex-shrink: 0;
-  font-size: var(--fs-10);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-success);
-  padding-top: 2px;
-  width: 74px;
-}
-.boards-review-answer--yours .boards-review-answer-label { color: var(--color-danger); }
-.boards-review-explanation { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.6; margin: 10px 0 0; }
-.boards-review-practice-link { display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 600; }
-
-/* — Resources tab: practice-by-system rows and the official-source list — */
-.boards-domain-links, .boards-official-links { display: flex; flex-direction: column; gap: 2px; margin-top: 12px; }
-.boards-domain-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 8px;
-  border-radius: 8px;
-  text-decoration: none;
-  color: inherit;
-}
-.boards-domain-link:hover { background: var(--color-neutral-100); }
-.boards-domain-link-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.boards-domain-link-name { font-size: 13px; font-weight: 600; }
-.boards-domain-link-meta { margin-left: auto; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
-.boards-official-link {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 10px 8px;
-  border-radius: 8px;
-  text-decoration: none;
-  color: inherit;
-}
-.boards-official-link:hover { background: var(--color-neutral-100); }
-.boards-official-link-name { font-size: 13px; font-weight: 600; color: var(--color-accent-700); }
-.boards-official-link-desc { font-size: var(--fs-11-5); color: var(--color-neutral-700); line-height: 1.5; }
-
 @media (max-width: 480px) {
-  .boards-review-domain { display: none; }
-  .boards-domain-link-meta { font-size: var(--fs-10-5); }
-  .boards-streak-stat-value { font-size: 22px; }
-}
+  .boards-streak-stat-value { font-size: 22px; }}
 
 /* Extends .clinref-page's wide-desktop treatment (see that class above) to the other
    standalone .screen-pad pages that share its card-grid/accordion shapes — /pro/documentation,
@@ -1636,29 +1333,6 @@
   .connexion-assess-score-btn { width: 44px; height: 44px; font-size: 14px; }
 }
 
-/* Pagination (components/Pagination.tsx) — used by Under Review, APTA News, Saved and Search.
-   Sizing lives here rather than inline so the touch bump below can apply; the component keeps
-   only the active/disabled colours inline. */
-.pagination-nav { display: flex; align-items: center; gap: 4px; margin-top: 22px; flex-wrap: wrap; }
-.pagination-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 32px;
-  height: 32px;
-  padding: 0 8px;
-  border-radius: var(--radius-md);
-  border: none;
-  font: inherit;
-  font-size: 13px;
-  text-decoration: none;
-}
-/* 32px targets 4px apart are the classic "meant to tap 3, got 4". */
-@media (pointer: coarse) {
-  .pagination-nav { gap: 6px; }
-  .pagination-link { min-width: 44px; height: 44px; font-size: 14px; }
-}
-
 /* Remaining sub-44px controls, same coarse-pointer gate as the block above. These are all
    horizontal tab strips and inline text buttons that sat between 12px and 36px tall. */
 @media (pointer: coarse) {
@@ -1683,32 +1357,14 @@
   }
 }
 
-/* Ghost variant of the clip save button — see components/ClipSaveButton.tsx, which used to
-   carry these as inline styles that no media query could reach. */
-.clip-save-btn-ghost { width: 30px; height: 30px; }
-
 /* Final touch-target pass. These sit at the very end because each one has to beat an earlier
    declaration of the same specificity: the checkbox/radio sizing above is undone by the base
    `input[type="checkbox"] { width: 16px }` rule further down the file, and .clip-save-btn-ghost
    is declared just above. */
 @media (pointer: coarse) {
   input[type="checkbox"], input[type="radio"] { width: 22px; height: 22px; }
-  .clip-save-btn-ghost { width: 44px; height: 44px; }
   .home-refresh-pill { min-height: 44px; }
-  .home-question-option { min-height: 44px; }
-}
-
-/* Icon buttons whose pixel size is set per-instance by the component (article/wellness save,
-   delete-exercise, HEP row controls). The size arrives as the --icon-btn-dim custom property
-   rather than an inline width/height, because an inline width wins against every stylesheet
-   rule — which is exactly what kept these below the touch-target floor on phones. */
-.icon-btn-sized { width: var(--icon-btn-dim); height: var(--icon-btn-dim); }
-@media (pointer: coarse) {
-  .icon-btn-sized {
-    width: max(44px, var(--icon-btn-dim));
-    height: max(44px, var(--icon-btn-dim));
-  }
-}
+  .home-question-option { min-height: 44px; }}
 
 /* Small-text floor on phones — see the --fs-* scale defined at the top of this file.
    Nothing drops below 12px at this width; the tiers stay in order so labels still read as
@@ -2384,11 +2040,8 @@
    child squeezing down to a multi-line sliver — stack everything into its own full-width
    row instead once it can't fit on one line. */
 @media (max-width: 700px) {
-  .patient-brief-topbar { flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px 14px; }
-  .patient-brief-topbar > a { order: 1; }
   .pbrief-report-toggle { order: 3; width: 100%; justify-content: center; }
-  .pbrief-topbar-actions { order: 2; width: 100%; justify-content: center; flex-wrap: wrap; }
-}
+  .pbrief-topbar-actions { order: 2; width: 100%; justify-content: center; flex-wrap: wrap; }}
 
 /* ============================================================================
    Force Lab assessment print page's Patient Report tab (ForceLabPatientReportBody.tsx) —
@@ -2561,7 +2214,6 @@
 .hep-exercise-editor { display: flex; flex-direction: column; gap: 10px; }
 .hep-exercise-editor-row { display: flex; flex-direction: column; gap: 6px; }
 .hep-exercise-editor-name-row { display: flex; align-items: flex-start; gap: 6px; }
-.hep-exercise-editor-name-row > .hep-exercise-name-field { flex: 1; }
 .hep-exercise-editor-dosage-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1.4fr 2fr;
@@ -2587,83 +2239,6 @@
   .hep-exercise-editor-dosage-row { grid-template-columns: 1fr 1fr; }
 }
 
-/* Exercise-name autocomplete + "request to add" (ExerciseNameField in HepExerciseList.tsx) —
-   a small absolutely-positioned dropdown under the name input, since the editor row it lives
-   in has no room to push content down without reflowing every other row in the list. */
-.hep-exercise-name-field { position: relative; }
-.hep-exercise-autocomplete {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 5;
-  margin-top: 2px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-}
-.hep-exercise-autocomplete-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 12px;
-  background: none;
-  border: none;
-  border-top: 1px solid var(--color-divider);
-  cursor: pointer;
-  text-align: left;
-  font-size: 13.5px;
-  line-height: 1.3;
-}
-.hep-exercise-autocomplete-row:first-child { border-top: none; }
-/* Not just var(--color-neutral-100) — that's nearly indistinguishable from
-   var(--color-surface) in dark mode, so a hovered row looked identical to its neighbors. */
-.hep-exercise-autocomplete-row:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
-.hep-exercise-autocomplete-name { font-weight: 600; }
-.hep-exercise-autocomplete-region {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-accent);
-  white-space: nowrap;
-  flex-shrink: 0;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
-}
-.hep-exercise-autocomplete-request {
-  display: block;
-  width: 100%;
-  padding: 8px 10px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-accent);
-}
-.hep-exercise-autocomplete-request:hover { background: var(--color-neutral-100); }
-/* Shown instead of the request button above for a licensed-but-not-pro clinician (see
-   ExerciseNameField's isPro gate in HepBuilder.tsx) — requestMovementLabExercise itself is
-   isPro-gated, so a request button here would just fail silently for that account. */
-.hep-exercise-autocomplete-empty { padding: 8px 10px; margin: 0; font-size: 12px; font-style: italic; color: var(--color-neutral-700); }
-.hep-exercise-request-form {
-  margin-top: 6px;
-  padding: 10px;
-  border-radius: var(--radius-md);
-  background: var(--color-neutral-100);
-  border: 1px solid var(--color-divider);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.hep-exercise-request-actions { display: flex; gap: 8px; }
-.hep-exercise-request-sent { font-size: 12px; color: var(--color-accent); margin: 6px 0 0; }
-
 /* Session Exercises' Progression disclosure (SessionExerciseSection.tsx) — per-exercise
    trend built from the same logged sessions the history list above already shows, not a
    separate fetch. */
@@ -2679,3 +2254,9 @@
    as .trm-next-level. */
 .trm-age-bracket { font-size: var(--fs-10-5); color: var(--color-neutral-700); white-space: nowrap; }
 
+/* Moved from legal-admin.css — clinical notes header — only LimbicPRO dashboard uses these */
+/* Clinical-notes form: the "Note" label sits opposite a link out to the full documentation
+   templates (see ClinicalNotesSection.tsx). */
+.clindash-note-label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.clindash-note-templates-link { font-size: var(--fs-11-5); color: var(--color-accent); text-decoration: none; }
+.clindash-note-templates-link:hover { text-decoration: underline; }

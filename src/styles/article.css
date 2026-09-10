@@ -208,17 +208,8 @@
   min-width: 0;
 }
 .cards-grid > * { min-width: 0; }
-.video-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  min-width: 0;
-}
-.video-grid > * { min-width: 0; }
 @media (max-width: 799px) {
-  .cards-grid { grid-template-columns: minmax(0, 1fr); }
-  .video-grid { grid-template-columns: minmax(0, 1fr); }
-}
+  .cards-grid { grid-template-columns: minmax(0, 1fr); }}
 
 /* "Analyze This Study" panel on the article detail page (see
    components/ArticleResearchPanel.tsx, components/ArticleReadingPane.tsx) — collapsed by
@@ -638,4 +629,3 @@
   white-space: nowrap;
   border: 0;
 }
-

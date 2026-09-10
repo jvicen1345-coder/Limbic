@@ -1,3 +1,5 @@
+import "@/styles/paywall.css";
+import "@/styles/metrics.css";
 import type { ReactNode } from "react";
 import "@/styles/wellness.css";
 import "@/styles/vitals.css";
