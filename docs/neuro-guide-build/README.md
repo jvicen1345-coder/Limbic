@@ -10,7 +10,7 @@ carries that exact value.**
 | 2 · Source bank | `sources.md` | done — 14 sources read, 9 usable, 3 existence-only, 2 rejected |
 | 3 · Draft | `content.py` | done — see `draft.md` for why the draft is executable here |
 | 4 · Adversarial verification | `verification.md` | done — 3 defects found and fixed; 68 claim strings machine-checked |
-| 5 · Build the page | `content/playbooks/neuro-examination.html` | done — **served** at `/student/guides/neuro-examination` |
+| 5 · Build the page | `content/playbooks/neuro-examination.html` | done — built and checked; **listed as coming soon**, readable at `/student/guides/neuro-examination` by a site admin only |
 
 ## This is the first guide in the series that is not a joint
 
@@ -62,3 +62,16 @@ how the ISNCSCI standard — the most-cited source here — was read.
 *"Check what the project already cites before declaring anything unreachable."* Done first, and
 it came back empty: the four existing guides cite 80-odd musculoskeletal sources and nothing
 neurologic. This build inherited no source bank and started from zero.
+
+## Publication state
+
+The guide is marked `comingSoon` in `src/lib/guides.ts`, which now means *admin preview* rather
+than *unreachable*: an ordinary reader sees the card, its real counts and a "Coming soon" pill,
+and the route 404s the slug for them; a site admin gets a way in from both the hub and the Boards
+study-guide tab, with the pill still showing so the state is never ambiguous. See
+`canReadGuide` in that file.
+
+Publishing it is deleting one line — the `comingSoon: true` flag on the `neuro-examination`
+entry. Nothing else has to change: the counts, the citations and the storage keys are asserted
+on every guide whether it is published or not (`e2e/playbooks.spec.ts`, "Every guide document,
+published or not"), so the flag decides who can read it and nothing else.

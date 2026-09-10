@@ -29,13 +29,19 @@ export type Guide = {
   sections: number;
   items: number;
   references: number;
-  /** Listed on the hub and the Boards tab, but not yet served: the card shows a "Coming
-   *  soon" marker instead of a way in, and the route 404s the slug for everyone.
+  /** Listed on the hub and the Boards tab, but not yet published: an ordinary reader sees a
+   *  "Coming soon" marker instead of a way in, and the route 404s the slug for them.
    *
-   *  These three were built to the same skeleton as the hip and shoulder and are not yet at
-   *  the same standard — hip and shoulder are the two a reader should be spending time in.
-   *  They stay listed rather than hidden because the counts on their cards are real and the
-   *  work is real; what is not ready is the writing. Delete the flag to publish one. */
+   *  A site admin can open it anyway — see canReadGuide below. An unpublished guide is
+   *  unfinished, not secret, and the person deciding whether it is ready is exactly the
+   *  person who has to be able to read it on the real site rather than from the file. The
+   *  card keeps its "Coming soon" pill for them too, so its state is never ambiguous.
+   *
+   *  The three joint guides here were built to the same skeleton as the hip and shoulder and
+   *  are not yet at the same standard — hip and shoulder are the two a reader should be
+   *  spending time in. They stay listed rather than hidden because the counts on their cards
+   *  are real and the work is real; what is not ready is the writing. Delete the flag to
+   *  publish one. */
   comingSoon?: true;
 };
 
@@ -54,6 +60,7 @@ export const GUIDES: Guide[] = [
   {
     slug: "neuro-examination",
     name: "Neurologic Examination",
+    comingSoon: true,
     description:
       "The adult neurologic screen in the order it is performed \u2014 an order set by dependency, since each phase decides whether the next one can be believed. Carries the sensory and motor scoring the international standards actually define, the reflex scale and the Babinski\u2019s real accuracy, and 18 values flagged as untraceable rather than filled in, because much of this examination is taught everywhere and measured nowhere.",
     short:
@@ -115,9 +122,26 @@ export function guideHref(guide: Guide): string {
   return `/student/guides/${guide.slug}`;
 }
 
-/** Whether this slug may actually be served. A guide marked comingSoon is a known slug that
- *  is deliberately not readable yet, so it fails this the same way an unknown one does — the
- *  route gives both the same 404 rather than confirming which is which. */
-export function isServableGuide(slug: string): boolean {
-  return GUIDES.some((guide) => guide.slug === slug && !guide.comingSoon);
+/** Whether this slug is in the registry at all. Separate from canReadGuide below because an
+ *  unknown slug must stay a 404 for everyone, admins included — the route reaches the
+ *  filesystem with it, so "is this a real guide" and "may this reader have it" are different
+ *  questions and only the second one has an admin exception. */
+export function isKnownGuide(slug: string): boolean {
+  return GUIDES.some((guide) => guide.slug === slug);
+}
+
+/** Whether this slug may actually be served to this reader.
+ *
+ *  A guide marked comingSoon is a known slug that is deliberately not published yet, so for
+ *  an ordinary reader it fails this the same way an unknown one does — the route gives both
+ *  the same 404 rather than confirming which is which. A site admin gets through, because
+ *  the flag marks work in progress rather than anything private, and judging whether a guide
+ *  is ready means reading it as it will actually be served.
+ *
+ *  Entitlement is a separate check the route still makes on top of this one; an admin
+ *  already satisfies it through the access overlay in lib/session.ts getCurrentUser(). */
+export function canReadGuide(slug: string, { admin }: { admin: boolean }): boolean {
+  const guide = GUIDES.find((entry) => entry.slug === slug);
+  if (!guide) return false;
+  return !guide.comingSoon || admin;
 }
