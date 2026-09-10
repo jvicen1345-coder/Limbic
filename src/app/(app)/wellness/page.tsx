@@ -209,8 +209,22 @@ export default async function WellnessOverviewPage() {
   return (
     <div className="screen-pad wellness-hub-page page-enter" style={{ maxWidth: 980 }}>
       <div className="wellness-hub-header">
-        <h1 className="wellness-hub-title">Health and Wellness</h1>
-        <p className="wellness-hub-subtitle">Your personal health hub</p>
+        <div className="wellness-hub-header-row">
+          <div>
+            <h1 className="wellness-hub-title">Health and Wellness</h1>
+            <p className="wellness-hub-subtitle">Your personal health hub</p>
+          </div>
+          {/* Compact badge rather than the full .streak-card Profile uses — this page
+              already carries Quick Actions, the agent banner and the tip above the fold,
+              and a fourth block would push the cards further down for a number that reads
+              fine at a glance. Same treatment as the Boards streak. */}
+          {user.wellnessStreakDays > 0 && (
+            <div className="wellness-hub-streak" title="Log an activity, check in your mood, or save a metric today to keep it going">
+              <span className="wellness-hub-streak-value">{user.wellnessStreakDays}</span>
+              <span className="wellness-hub-streak-unit">day{user.wellnessStreakDays === 1 ? "" : "s"} streak</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Replaces the old Health Snapshot card — what a reader actually comes here to do,

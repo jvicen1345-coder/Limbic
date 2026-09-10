@@ -1179,7 +1179,6 @@ export const RETRACTION_WATCH_ARTICLES: Article[] = [
     "specialty": "ortho",
     "title": "The Value of Adding Transcutaneous Neuromuscular Electrical Stimulation (VitalStim) to Traditional Therapy for Post-stroke Dysphagia: A Randomized Controlled Trial",
     "source": "European Journal of Physical and Rehabilitation Medicine",
-    "sourceUrl": "https://doi.org/unavailable",
     "date": "2015-04-01",
     "readMins": 3,
     "summary": "Retraction issued on 2015-04-01 by European Journal of Physical and Rehabilitation Medicine: Concerns/Issues about Authorship/Affiliation; Copyright Claims; Duplication of Text. See the retraction notice for full details.",

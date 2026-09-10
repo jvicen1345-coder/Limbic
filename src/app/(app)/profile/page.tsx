@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser, isStudentEmail, isAdminEmail } from "@/lib/session";
+import { getCurrentUser, isStudentEmail } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { SUGGESTED_TOPICS } from "@/lib/meta";
 import { allKnownKeywordTopics } from "@/lib/news-live";
@@ -9,12 +9,14 @@ import { TopicChip } from "@/components/TopicChip";
 import { TopicBrowser } from "@/components/TopicBrowser";
 import { ReadingStreakCard } from "@/components/ReadingStreakCard";
 import { GamesStreakCard } from "@/components/GamesStreakCard";
+import { WellnessStreakCard } from "@/components/wellness/WellnessStreakCard";
+import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import { HomeWidgetToggle } from "@/components/HomeWidgetToggle";
 import { DeleteAccountSection } from "@/components/DeleteAccountSection";
 import { AccountSecuritySection } from "@/components/AccountSecuritySection";
 import { SuggestionBoxCard } from "@/components/SuggestionBoxCard";
 import { optInToNexusAction, leaveNexusAction } from "@/app/actions/nexus";
-import { HOME_WIDGETS } from "@/lib/home-widgets";
+import { homeWidgetsFor } from "@/lib/home-widgets";
 import { PROFILE_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
 import { getFoundingFunderStatus } from "@/lib/founding-funders";
@@ -55,7 +57,7 @@ export default async function ProfilePage() {
   // which gates every /nexus route the same way) — this card's copy needs to match that
   // "coming soon" state for everyone else, or "Go to Nexus"/"you're part of Nexus" would
   // be a lie the moment they click through.
-  const isAdminUser = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
+  const nexusVisible = nexusVisibleTo(user);
   const userProgram = isStudent ? await getUserProgram() : null;
 
   return (
@@ -78,6 +80,7 @@ export default async function ProfilePage() {
       <div className="profile-header-grid">
         <ReadingStreakCard streakDays={user.streakDays} />
         <GamesStreakCard streakDays={user.gamesStreakDays} />
+        <WellnessStreakCard streakDays={user.wellnessStreakDays} />
       </div>
 
       {foundingFunderStatus.isFunder && (
@@ -152,6 +155,7 @@ export default async function ProfilePage() {
           isPro={user.isPro}
           headline={user.headline ?? ""}
           bio={user.bio ?? ""}
+          showNexusFields={nexusVisible}
         />
       </CollapsibleCard>
 
@@ -165,9 +169,12 @@ export default async function ProfilePage() {
         />
       </CollapsibleCard>
 
-      <CollapsibleCard title="Nexus" style={{ marginBottom: 18 }}>
-        {isAdminUser ? (
-          user.nexusOptIn ? (
+      {/* Admin-only while Nexus's future is being decided (see lib/nexus-visibility.ts).
+          A non-admin gets no card at all — not a waitlist, not a "coming soon" — because
+          naming it here is exactly the sign we are hiding. */}
+      {nexusVisible && (
+        <CollapsibleCard title="Nexus" style={{ marginBottom: 18 }}>
+          {user.nexusOptIn ? (
             <>
               <p className="card-body" style={{ marginTop: 6 }}>
                 You&rsquo;re part of Nexus, visible in the directory and reachable for connection
@@ -196,33 +203,9 @@ export default async function ProfilePage() {
                 </button>
               </form>
             </>
-          )
-        ) : user.nexusOptIn ? (
-          <>
-            <p className="card-body" style={{ marginTop: 6 }}>
-              Nexus is coming soon, you&rsquo;re on the list and we&rsquo;ll let you know the
-              moment it launches.
-            </p>
-            <form action={leaveNexusAction}>
-              <button type="submit" className="btn btn-ghost" style={{ marginTop: 8 }}>
-                Remove me from the list
-              </button>
-            </form>
-          </>
-        ) : (
-          <>
-            <p className="card-body" style={{ marginTop: 6 }}>
-              Nexus, a networking space for PTs, OTs, and the wider healthcare & wellness
-              community, is coming soon.
-            </p>
-            <form action={optInToNexusAction}>
-              <button type="submit" className="btn btn-primary" style={{ marginTop: 8 }}>
-                Notify me when it launches
-              </button>
-            </form>
-          </>
-        )}
-      </CollapsibleCard>
+          )}
+        </CollapsibleCard>
+      )}
 
       <CollapsibleCard title="Followed topics" style={{ marginBottom: 18 }}>
         <p className="card-body" style={{ marginTop: 2 }}>
@@ -267,7 +250,7 @@ export default async function ProfilePage() {
           Choose what shows up in the sidebar on your home page.
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 10 }}>
-          {HOME_WIDGETS.map((w) => (
+          {homeWidgetsFor(nexusVisible).map((w) => (
             <HomeWidgetToggle key={w.id} id={w.id} label={w.label} visible={!hiddenHomeWidgets.includes(w.id)} />
           ))}
         </div>

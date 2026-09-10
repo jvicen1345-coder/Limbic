@@ -21,10 +21,10 @@ import { PullToRefresh } from "@/components/PullToRefresh";
 import { refreshHomeFeedAction } from "@/app/actions/home";
 import { orderArticlesForGrid, titleFingerprint } from "@/lib/home-grid-rotation";
 import { type NexusSuggestion } from "@/components/NexusSuggestionsCard";
+import type { DailyInsight } from "@/lib/daily-insight";
 import { FoundingFunderBadge } from "@/components/FoundingFunderBadge";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { ArticleType } from "@/lib/types";
-import type { StockView } from "@/lib/stock";
 import type { LicenseView } from "@/lib/license";
 import type { LimbicAgentInsights } from "@/lib/limbic-agent-insights";
 
@@ -54,12 +54,28 @@ const GRID_SIZE = MIN_HOME_CARDS - 1;
 // picture, so this is a safe ceiling to raise — a thin batch just falls short of it.
 const RESEARCH_GRID_SIZE = 14;
 
-// The hero is the single most prominent thing on Home, so it's held to a tighter bar than
-// the grid below it: only genuinely medical sources — PubMed research and the curated AOPT
-// clinical practice guidelines (see lib/orthopt-cpg-static.ts) — never Google-News-sourced
-// industry/equipment coverage (see lib/news-live.ts), even when the type filter tab is set
-// to "All". The grid isn't restricted this way; this only narrows heroPool below.
-const HERO_ELIGIBLE_TYPES: ArticleType[] = ["research", "guideline"];
+// What counts as a genuinely medical source: PubMed research and the curated AOPT clinical
+// practice guidelines (see lib/orthopt-cpg-static.ts). Everything else on Home is
+// Google-News-sourced trade coverage (see lib/news-live.ts) — real news, but not evidence.
+const MEDICAL_TYPES: ArticleType[] = ["research", "guideline"];
+
+// The hero is the single most prominent thing on Home, so only a medical source may hold it,
+// even when the type filter tab is set to "All".
+const HERO_ELIGIBLE_TYPES: ArticleType[] = MEDICAL_TYPES;
+
+// On the "All" tab the grid is split rather than filled purely by rank: everything above the
+// last row must be a medical source, and news/equipment coverage is confined to that last row.
+// Rank alone doesn't produce that — industry and product stories are published far more often
+// than the research and guidelines they sit alongside, so a straight rank-ordered walk fills
+// the grid with trade coverage and buries the evidence a reader came here for.
+//
+// NEWS_ROW_SIZE is one grid row: .cards-grid is two columns on desktop (see src/styles/
+// article.css) and one on mobile, where these are simply the last two cards. A thin batch can
+// leave the medical half short, which pulls the news cards up out of their own row — a
+// cosmetic edge case, and better than backfilling the grid with the coverage this split
+// exists to hold back.
+const NEWS_ROW_SIZE = 2;
+const NEWS_ROW_TYPES: ArticleType[] = ["industry", "ce", "product"];
 
 const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
   { id: "all", label: "All" },
@@ -73,11 +89,12 @@ const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
 export function HomeFeed({
   articles,
   calendarWidget,
-  stocks,
   license,
   savedUnread,
   nexusSuggestions,
   nexusOnWaitlist,
+  showNexus,
+  dailyInsight,
   continueReading,
   homeQuestion,
   dashboard,
@@ -94,11 +111,12 @@ export function HomeFeed({
   articles: DecoratedArticle[];
   /** Server-rendered — see components/LimbicCalendarWidget.tsx, app/(app)/page.tsx. */
   calendarWidget: ReactNode;
-  stocks: StockView[];
   license: LicenseView | null;
   savedUnread: DecoratedArticle[];
   /** null when the viewer hasn't opted into Nexus yet — renders an invitation instead of
    *  a list of people they can't act on. */
+  showNexus: boolean;
+  dailyInsight: DailyInsight | null;
   nexusSuggestions: NexusSuggestion[] | null;
   /** True when the reader has opted into Nexus but nexusSuggestions is still null because
    *  Nexus itself is coming-soon for non-admins (see app/(app)/nexus/layout.tsx) — shows a
@@ -267,20 +285,30 @@ export function HomeFeed({
     [withImage, gridSeenFingerprints]
   );
   const gridArticles = useMemo(() => {
+    // Shared across both passes below (and seeded with the hero's pictures) so the medical
+    // cards and the news row can never land on the same photo as each other or as the hero.
     const seenImages = new Set<string>(heroImages);
-    const picked: DecoratedArticle[] = [];
-    for (const a of orderedForGrid) {
-      if (picked.length >= gridTarget) break;
-      if (heroIds.has(a.id)) continue;
-      if (!a.image || seenImages.has(a.image)) continue;
-      seenImages.add(a.image);
-      picked.push(a);
-    }
-    // gridTarget is a floor this tries to hit, but never at the cost of a repeated picture.
-    // The bundled fallback assigns distinct URLs while its pool has capacity; this remains
-    // a defensive guard for duplicate images supplied by a publisher.
-    return picked;
-  }, [orderedForGrid, heroIds, heroImages, gridTarget]);
+    // Each limit is a floor this tries to hit, but never at the cost of a repeated picture.
+    // The bundled fallback assigns distinct URLs while its pool has capacity; the image check
+    // remains a defensive guard for duplicate images supplied by a publisher.
+    const take = (limit: number, allowedTypes: ArticleType[] | null) => {
+      const picked: DecoratedArticle[] = [];
+      for (const a of orderedForGrid) {
+        if (picked.length >= limit) break;
+        if (heroIds.has(a.id)) continue;
+        if (allowedTypes && !allowedTypes.includes(a.type)) continue;
+        if (!a.image || seenImages.has(a.image)) continue;
+        seenImages.add(a.image);
+        picked.push(a);
+      }
+      return picked;
+    };
+    // On a specific type tab the reader has already asked for exactly one kind of story, so
+    // the medical/news split would have nothing to separate — take the best-ranked of that
+    // type, the same walk this did before the split existed.
+    if (filter !== "all") return take(gridTarget, null);
+    return [...take(gridTarget - NEWS_ROW_SIZE, MEDICAL_TYPES), ...take(NEWS_ROW_SIZE, NEWS_ROW_TYPES)];
+  }, [orderedForGrid, heroIds, heroImages, gridTarget, filter]);
 
   // Arriving via a gap-topic link (see LimbicAgentCard.tsx) drops the reader at the top of
   // the page same as any other Home visit — this carries them the rest of the way down to
@@ -412,7 +440,8 @@ export function HomeFeed({
           calendarWidget={calendarWidget}
           nexusSuggestions={nexusSuggestions}
           nexusOnWaitlist={nexusOnWaitlist}
-          stocks={stocks}
+          showNexus={showNexus}
+          dailyInsight={dailyInsight}
         />
       </div>
     </div>

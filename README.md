@@ -239,7 +239,7 @@ whether that address has an account (`lib/password-reset-rate-limit.ts`).
 
 ## Stripe subscriptions
 
-LimbicPro ($25/mo) and LimbicStudent ($5/mo — see
+LimbicPro ($10/mo) and LimbicStudent ($3/mo — see
 `src/app/(app)/pro/membership/page.tsx`) are real, recurring Stripe subscriptions, not the
 instant demo flip they used to be. LimbicStudent is a single plan (an earlier, separate
 higher "Student PRO+ Boards" tier was retired in favor of one plan covering everything,
@@ -264,8 +264,8 @@ including Limbic Agent eligibility — see `src/app/(app)/student/page.tsx`). Th
 
 **Setup, in the Stripe Dashboard:**
 
-1. Create two Products, each with one recurring monthly Price: LimbicPro ($25) and
-   LimbicStudent ($5). Copy each Price's id (starts `price_...`, **not** the Product id)
+1. Create two Products, each with one recurring monthly Price: LimbicPro ($10) and
+   LimbicStudent ($3). Copy each Price's id (starts `price_...`, **not** the Product id)
    into `STRIPE_PRICE_PRO`/`STRIPE_PRICE_LIMBIC_STUDENT`.
 2. Settings → Billing → Customer portal: click "Activate test link" (test mode) or
    otherwise save a portal configuration at least once — `stripe.billingPortal.sessions

@@ -34,7 +34,7 @@ export function DeleteAccountSection({ hasFoundingSpot }: { hasFoundingSpot: boo
       </div>
       <p className="card-body" style={{ marginTop: 6 }}>
         Permanently delete your account and everything tied to it, saved articles, reading
-        history, Nexus connections and messages, HEP programs, calendar events, and vitals.
+        history, connections and messages, HEP programs, calendar events, and vitals.
         This can&rsquo;t be undone.
       </p>
       <button
@@ -58,7 +58,7 @@ export function DeleteAccountSection({ hasFoundingSpot }: { hasFoundingSpot: boo
 
             <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--color-text)", margin: 0 }}>
               This permanently deletes your account and everything tied to it, saved
-              articles, reading history, Nexus connections and messages, HEP programs,
+              articles, reading history, connections and messages, HEP programs,
               calendar events, and vitals. This can&rsquo;t be undone.
             </p>
             {hasFoundingSpot && (
