@@ -52,6 +52,17 @@ export const GUIDES: Guide[] = [
     references: 83,
   },
   {
+    slug: "neuro-examination",
+    name: "Neurologic Examination",
+    description:
+      "The adult neurologic screen in the order it is performed \u2014 an order set by dependency, since each phase decides whether the next one can be believed. Carries the sensory and motor scoring the international standards actually define, the reflex scale and the Babinski\u2019s real accuracy, and 18 values flagged as untraceable rather than filled in, because much of this examination is taught everywhere and measured nowhere.",
+    short:
+      "The adult neurologic screen in dependency order, with 18 values flagged as untraceable rather than filled in.",
+    sections: 15,
+    items: 39,
+    references: 12,
+  },
+  {
     slug: "hip-examination",
     name: "Hip Examination",
     description:

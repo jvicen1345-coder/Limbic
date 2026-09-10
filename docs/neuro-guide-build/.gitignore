@@ -1,0 +1,4 @@
+# Third-party source text, re-fetched by verify.py rather than committed.
+*.txt
+*.html
+__pycache__/
