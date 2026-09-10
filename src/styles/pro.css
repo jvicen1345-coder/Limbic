@@ -1668,8 +1668,6 @@
 
   .sliding-tab { padding-top: 13px; padding-bottom: 13px; }
   .boards-tab { padding-top: 15px; padding-bottom: 15px; }
-  /* An 11.5px inline button that computed to ~12px tall — the "N threads" teaser on feed cards. */
-  .card-threads-teaser { padding: 8px 0; }
 }
 
 /* The generic control classes, brought up to the same 44px floor on touch. .btn covers most
@@ -1680,8 +1678,7 @@
   .btn,
   .sub-tab,
   .sliding-tab,
-  .wellness-chip,
-  .card-threads-teaser {
+  .wellness-chip {
     min-height: 44px;
   }
 }
