@@ -161,24 +161,26 @@ function CoAdminPanel({
   };
 
   return (
-    <div style={{ padding: "6px 0 10px" }}>
+    // Capped rather than left to fill the cell: this row spans a table that is wider than its
+    // scroll container, so a grid sized off the cell put its last column past the right edge
+    // where an owner would never scroll to find it.
+    <div style={{ padding: "6px 0 10px", maxWidth: 720 }}>
       <div style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", marginBottom: 8 }}>
         {canManage
           ? "Pick the behind-the-scenes areas this person can open. Everything else stays hidden from them, and revoking an area takes effect on their next page load."
           : "Read-only — only a full admin can change co-admin access."}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 8 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))", gap: "10px 14px" }}>
         {ADMIN_AREAS.map((area) => {
           const active = areas.includes(area);
           return (
-            <div key={area} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+            <div key={area} style={{ display: "flex", flexDirection: "column", gap: 3, alignItems: "flex-start" }}>
               <button
                 type="button"
                 disabled={!canManage || pending === area}
                 onClick={() => toggle(area)}
                 className="btn"
                 style={{
-                  flex: "0 0 auto",
                   fontSize: "var(--fs-11)",
                   padding: "2px 8px",
                   borderRadius: 999,
@@ -384,13 +386,21 @@ export function AccountsAdminTable({
                       />
                     </td>
                     <td style={{ padding: "6px 0 6px 10px" }}>
-                      <DeleteButton
-                        userId={u.id}
-                        onDeleted={() => {
-                          setRows((prev) => prev.filter((r) => r.id !== u.id));
-                          router.refresh();
-                        }}
-                      />
+                      {/* Same "don't offer a control that can only fail" rule as the Co-Admin
+                          panel: deleteUserAction refuses to let a co-admin delete an owner's
+                          account (see app/actions/admin.ts), so their row doesn't carry the
+                          button. Owners still see it on each other's rows. */}
+                      {u.isOwnerAdmin && !canManageAdmins ? (
+                        <span style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)" }}>—</span>
+                      ) : (
+                        <DeleteButton
+                          userId={u.id}
+                          onDeleted={() => {
+                            setRows((prev) => prev.filter((r) => r.id !== u.id));
+                            router.refresh();
+                          }}
+                        />
+                      )}
                     </td>
                   </tr>
                   {expandedCoAdminId === u.id && !u.isOwnerAdmin && (

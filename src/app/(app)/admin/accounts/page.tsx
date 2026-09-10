@@ -66,7 +66,10 @@ export default async function AdminAccountsPage() {
   }));
 
   return (
-    <div className="screen-pad" style={{ maxWidth: 960, margin: "0 auto" }}>
+    /* Wider than the 960 the other admin pages use: this table carries eleven columns since
+       Co-Admin joined it, and at 960 the per-row Delete button sat outside the visible width
+       of its own scroll container. */
+    <div className="screen-pad" style={{ maxWidth: 1180, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Accounts</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
         Every registered account, {rows.length} total.{" "}
