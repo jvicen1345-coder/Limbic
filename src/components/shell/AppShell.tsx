@@ -41,6 +41,9 @@ export interface AppShellProps {
   isStudent: boolean;
   isVerifiedStudent: boolean;
   isAdmin: boolean;
+  /** Whether Nexus exists for this reader at all — lib/nexus-visibility.ts, evaluated in
+   *  app/(app)/layout.tsx because that module is server-only. */
+  showNexus: boolean;
   /** See lib/user-role.ts zoneTwoOrder() — computed in app/(app)/layout.tsx off the
    *  account's userRole. */
   zoneTwoOrder: ZoneTwoKey[];
@@ -59,6 +62,7 @@ export function AppShell({
   isStudent,
   isVerifiedStudent,
   isAdmin,
+  showNexus,
   zoneTwoOrder,
   clinicMembership,
   children,
@@ -76,6 +80,7 @@ export function AppShell({
     isStudent,
     isVerifiedStudent,
     isAdmin,
+    showNexus,
     aptaCount: navigationBadges?.aptaCount,
     nexusRequestCount: navigationBadges?.nexusRequestCount,
     zoneTwoOrder,
