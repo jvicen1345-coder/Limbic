@@ -5,6 +5,7 @@ import {
   cancelProAction,
   subscribeToStudentTierAction,
   subscribeToWellnessPlusFromProfileAction,
+  subscribeToWellnessPlusYearlyFromProfileAction,
 } from "@/app/actions/pro";
 import { PROFILE_TABS } from "@/lib/section-nav";
 import { SubTabs } from "@/components/SubTabs";
@@ -141,6 +142,25 @@ interface TierConfig {
   /** Which Stripe plan this tier's `action` buys, when it buys one — read by
    *  withPricingGuard below to check that plan actually has a Price id configured. */
   plan?: BillablePlan;
+  /** A second purchase option for a tier billed on two cadences — Wellness+ sells the same
+   *  membership monthly or annually, and the annual Price was only ever offered on
+   *  /wellness/membership, never here. Rendered as its own button under the primary one,
+   *  and guarded on its own Price id: the two cadences are separate Stripe Prices, so one
+   *  can be configured while the other isn't. */
+  alt?: AltCta;
+}
+
+interface AltCta {
+  label: string;
+  action: (() => Promise<void>) | null;
+  nonClickableReason?: string;
+  plan: BillablePlan;
+  /** Drives this option's own renewal disclosure — an annual plan must not be sold under a
+   *  sentence promising monthly renewal (see components/AutoRenewalTerms.tsx on why the
+   *  wording has to match the button it sits with). */
+  cadence: "month" | "year";
+  /** The amount as displayed on the button, for that disclosure. */
+  price: string;
 }
 
 /** A tier whose Stripe Price id was never filled in can't start a checkout: startCheckout
@@ -153,8 +173,13 @@ interface TierConfig {
  *  button on this page is already disabled behind the "Payments aren't set up yet" banner,
  *  and re-labelling them all here would just bury that clearer message. */
 function withPricingGuard(tier: TierConfig, billingEnabled: boolean): TierConfig {
-  if (!tier.action || !tier.plan || !billingEnabled || planHasPrice(tier.plan)) return tier;
-  return { ...tier, action: null, nonClickableReason: unpricedPlanReason(tier.label) };
+  const alt =
+    tier.alt && tier.alt.action && billingEnabled && !planHasPrice(tier.alt.plan)
+      ? { ...tier.alt, action: null, nonClickableReason: unpricedPlanReason(`${tier.label} annual`) }
+      : tier.alt;
+  const guarded = alt === tier.alt ? tier : { ...tier, alt };
+  if (!guarded.action || !guarded.plan || !billingEnabled || planHasPrice(guarded.plan)) return guarded;
+  return { ...guarded, action: null, nonClickableReason: unpricedPlanReason(guarded.label) };
 }
 
 /** Renders one tier's name/price/subscribe-button-or-current-pill — shared between the
@@ -197,6 +222,30 @@ function TierHeader({
           <button type="button" className="btn btn-secondary plan-compare-cta" disabled title={tier.nonClickableReason}>
             Subscribe
           </button>
+        )
+      )}
+      {/* The annual option, for a tier that sells one (Wellness+). Hidden once the reader is
+          already on the tier — the Current Plan pill above replaces the whole purchase
+          stack, and the Customer Portal is where an existing subscriber changes cadence. */}
+      {!tier.current && !tier.comingSoon && tier.alt && (
+        tier.alt.action ? (
+          <form action={tier.alt.action} className="plan-compare-cta-form plan-compare-cta-alt">
+            <button type="submit" className="btn btn-secondary plan-compare-cta" disabled={!billingEnabled}>
+              {tier.alt.label}
+            </button>
+            {showRenewalTerms && <AutoRenewalTerms price={tier.alt.price} cadence={tier.alt.cadence} />}
+          </form>
+        ) : (
+          tier.alt.nonClickableReason && (
+            <button
+              type="button"
+              className="btn btn-secondary plan-compare-cta plan-compare-cta-alt"
+              disabled
+              title={tier.alt.nonClickableReason}
+            >
+              {tier.alt.label}
+            </button>
+          )
         )
       )}
     </div>
@@ -260,7 +309,21 @@ export default async function ProfileMembershipPage({
 
   const TIER_DEFS: TierConfig[] = [
     { key: "free", label: "Free", price: "$0", current: onFree, action: null },
-    { key: "wellness", label: "Limbic Wellness+", price: "$2/mo", current: onWellness, action: onWellness ? null : subscribeToWellnessPlusFromProfileAction, plan: "wellnessPlusMonthly" },
+    {
+      key: "wellness",
+      label: "Limbic Wellness+",
+      price: "$2/mo",
+      current: onWellness,
+      action: onWellness ? null : subscribeToWellnessPlusFromProfileAction,
+      plan: "wellnessPlusMonthly",
+      alt: {
+        label: "$20/year",
+        action: onWellness ? null : subscribeToWellnessPlusYearlyFromProfileAction,
+        plan: "wellnessPlusYearly",
+        cadence: "year",
+        price: "$20",
+      },
+    },
     {
       key: "student",
       label: "Limbic Student",
@@ -278,9 +341,13 @@ export default async function ProfileMembershipPage({
   // Whether any tier can actually be bought right now — a reader who is already on the top
   // tier, or who sees "Coming Soon" everywhere, has no consent to disclose anything about.
   const hasPurchasableTier = TIERS.some((t) => t.action !== null);
+  // The shared disclosure below covers monthly renewal. An annual button on the same table
+  // is not covered by that sentence, so it gets its own — the terms have to match the
+  // button they sit with (see components/AutoRenewalTerms.tsx).
+  const annualCta = TIERS.find((t) => !t.current && !t.comingSoon && t.alt?.cadence === "year")?.alt;
 
   return (
-    <div className="screen-pad">
+    <div className="screen-pad membership-screen">
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Profile</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
         {onFree ? "Compare Limbic's membership tiers and upgrade any time." : "You're a member, thanks for supporting Limbic."}
@@ -351,6 +418,7 @@ export default async function ProfileMembershipPage({
                     and reads as one line — see TierHeader's showRenewalTerms note. */}
                 <td colSpan={TIERS.length + 1} className="plan-compare-renewal-row">
                   <AutoRenewalTerms cadence="month" />
+                  {annualCta && <AutoRenewalTerms price={annualCta.price} cadence={annualCta.cadence} />}
                 </td>
               </tr>
             )}

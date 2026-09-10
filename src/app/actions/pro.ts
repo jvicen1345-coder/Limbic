@@ -107,6 +107,14 @@ export async function subscribeToWellnessPlusFromProfileAction() {
   await startCheckout("wellnessPlusMonthly", "/profile/membership");
 }
 
+/** The annual counterpart to subscribeToWellnessPlusFromProfileAction above — same Price as
+ *  subscribeToWellnessPlusYearlyAction, returning to /profile/membership instead, so the
+ *  comparison table's own annual button lands the reader back on the page they bought
+ *  from. */
+export async function subscribeToWellnessPlusYearlyFromProfileAction() {
+  await startCheckout("wellnessPlusYearly", "/profile/membership");
+}
+
 /** Clinic PRO — billing-only for now, same shape as LimbicWellness+ above (see
  *  app/(app)/profile/membership/page.tsx's comparison table). */
 export async function subscribeToClinicAction() {
