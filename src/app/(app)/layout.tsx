@@ -7,6 +7,7 @@ import "@/styles/onboarding.css";
 import "@/styles/programs.css";
 import { redirect } from "next/navigation";
 import { getCurrentUser, hasStudentAccess, hasLicenseAccess, isAdminEmail } from "@/lib/session";
+import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import { SPECIALTY_META } from "@/lib/meta";
 import { AppShell } from "@/components/AppShell";
 import { OnboardingRoleModal } from "@/components/OnboardingRoleModal";
@@ -43,6 +44,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // This is derivable from the already-loaded user. Calling isSiteAdmin() here would read
   // the session again (request-cached now, but still unnecessary work on the hot path).
   const isAdmin = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
+  // Not the same question as isAdmin, even though the answer matches today: the nav asks
+  // "does Nexus exist for this reader", which lib/nexus-visibility.ts owns for every
+  // surface. NavContent is a client component and cannot call it — lib/session.ts is
+  // server-only — so the predicate is evaluated here and passed down, which is what keeps
+  // the sidebar from drifting away from the routes when that call is revisited.
+  const showNexus = nexusVisibleTo(user);
 
   return (
     <AppShell
@@ -55,6 +62,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       isStudent={hasStudentAccess(user)}
       isVerifiedStudent={user.studentTier === "limbicStudent"}
       isAdmin={isAdmin}
+      showNexus={showNexus}
       zoneTwoOrder={zoneTwoOrder(user.userRole)}
       clinicMembership={clinicMembership}
     >

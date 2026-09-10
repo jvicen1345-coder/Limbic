@@ -73,6 +73,11 @@ interface NavContentProps {
   /** True for a site admin account (see lib/admin.ts isSiteAdmin) — gates the Admin section
    *  below, hidden entirely for everyone else. */
   isAdmin: boolean;
+  /** Whether Nexus exists for this reader (lib/nexus-visibility.ts). Passed in rather than
+   *  computed here: that module reaches lib/session.ts, which is server-only, and this is a
+   *  client component. Distinct from isAdmin on purpose — the two agree today, but relaxing
+   *  the predicate should light the nav up without also handing out the Admin section. */
+  showNexus: boolean;
   /** Populated after mount by /api/navigation-badges; absent while loading or on failure. */
   aptaCount?: number;
   /** Populated with the same non-blocking request as aptaCount. */
@@ -94,7 +99,7 @@ interface NavContentProps {
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-export function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, isAdmin, aptaCount, nexusRequestCount, zoneTwoOrder, clinicMembership, onNavigate }: NavContentProps) {
+export function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, isAdmin, showNexus, aptaCount, nexusRequestCount, zoneTwoOrder, clinicMembership, onNavigate }: NavContentProps) {
   const pathname = usePathname();
   // Accordion behavior — at most one of the eight expandable sections open at a time, so
   // opening one always collapses whatever else was open, rather than letting the list grow
@@ -262,7 +267,7 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
         )}
       </>
     ),
-    nexus: isAdmin ? (
+    nexus: showNexus ? (
       <>
         <NavToggle
           icon={<UsersIcon />}
@@ -294,8 +299,10 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
         )}
       </>
     ) : (
-      // Nexus does not exist for a non-admin (see lib/nexus-visibility.ts) — no entry, not
-      // even a link to a waitlist, since every /nexus/* route 404s for them anyway.
+      // Nexus does not exist for a reader it is hidden from (see lib/nexus-visibility.ts)
+      // — no entry, not even a link to a waitlist, since every /nexus/* route 404s for them
+      // anyway. Both surfaces this component feeds (desktop sidebar, mobile drawer) read
+      // the same value, so they cannot disagree.
       null
     ),
     saved: (

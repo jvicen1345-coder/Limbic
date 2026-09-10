@@ -281,7 +281,6 @@ export default async function HomePage() {
       nexusSuggestions={nexusSuggestions}
       showNexus={nexusVisibleTo(user)}
       dailyInsight={dailyInsight}
-      nexusOnWaitlist={false}
       continueReading={continueReading}
       homeQuestion={{
         dateKey: homeQuestionDateKey,
