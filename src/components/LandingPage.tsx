@@ -33,10 +33,6 @@ const FEATURES = [
     body: "Every article connected to the research it came from. Follow the evidence anywhere.",
   },
   {
-    name: "Limbic Nexus",
-    body: "The professional network built for physical therapy. Not adapted from somewhere else.",
-  },
-  {
     name: "Limbic Games",
     body: "Daily habit-building games that make staying current feel less like studying.",
   },
