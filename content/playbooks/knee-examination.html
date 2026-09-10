@@ -1382,54 +1382,63 @@ a{color:var(--accent)}
     </figure>
 
     <figure>
-      <p class="figtitle">The knee locks by rotating, not by arriving at zero</p>
-      <svg viewBox="0 0 620 340" role="img" aria-label="The right tibial plateau seen from above, with the two femoral condyles drawn on it as long ovals. In the flexed panel the tubercle points straight forward. In the extended panel the condyles have not moved and the whole plateau beneath them has turned about thirteen degrees, swinging the tibial tubercle laterally and seating the joint surfaces.">
-        <line x1="322" y1="26" x2="322" y2="312" stroke="currentColor" stroke-width="1" opacity=".16"></line>
-        <text class="mono big" x="212" y="42" text-anchor="middle">flexed</text>
-        <text class="mono big" x="470" y="42" text-anchor="middle">end of extension</text>
+      <p class="figtitle">The knee locks by rotating - and which bone turns depends on the foot</p>
+      <svg viewBox="0 0 620 372" role="img" aria-label="The right tibial plateau seen from above, drawn twice. With the foot free the femur is fixed and the tibia turns laterally about thirteen degrees through the last of extension, swinging the tibial tubercle toward the outside of the limb. With the foot planted the tibia cannot turn, so the femur turns medially on it instead and the line between the two condyles sweeps round while the plateau stays where it is. The relative motion is the same in both.">
+        <line x1="310" y1="28" x2="310" y2="348" stroke="currentColor" stroke-width="1" opacity=".16"></line>
+        <text class="mono big" x="150" y="44" text-anchor="middle">open chain - foot free</text>
+        <text class="mono big" x="470" y="44" text-anchor="middle">closed chain - foot planted</text>
 
-        <g>
-          <path d="M 112 150 C 112 108 140 88 182 86 C 228 84 274 92 300 108 C 314 118 312 150 308 164 C 300 192 262 214 208 214 C 156 214 120 190 112 150 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.8"></path>
-          <path d="M 134 112 C 108 138 108 168 136 190" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" opacity=".3"></path>
-          <path d="M 286 106 C 316 134 316 172 284 194" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" opacity=".3"></path>
-          <path d="M 202 142 L 206 124 L 210 142 Z M 214 142 L 218 124 L 222 142 Z" fill="currentColor" opacity=".6"></path>
-          <path d="M 198 212 L 226 212 L 222 240 L 202 240 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.8"></path>
+        <path d="M 46 172 C 46 132 74 110 114 108 C 158 106 202 114 232 130 C 254 142 254 176 248 196 C 236 228 192 248 140 248 C 86 248 54 218 46 172 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.8"></path>
+        <path d="M 84 124 C 52 152 52 196 86 224" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" opacity=".28"></path>
+        <path d="M 224 118 C 258 150 256 200 220 228" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" opacity=".28"></path>
+        <path d="M 140 160 L 145 138 L 150 160 Z M 154 160 L 159 138 L 164 160 Z" fill="currentColor" opacity=".6"></path>
+        <path d="M 130 246 L 170 246 L 164 292 L 136 292 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.8"></path>
+        <g transform="rotate(13 150 177)">
+          <path d="M 46 172 C 46 132 74 110 114 108 C 158 106 202 114 232 130 C 254 142 254 176 248 196 C 236 228 192 248 140 248 C 86 248 54 218 46 172 Z" fill="none" stroke="var(--mod)" stroke-width="1.6" stroke-dasharray="4 4" opacity=".5"></path>
+          <path d="M 130 246 L 170 246 L 164 292 L 136 292 Z" fill="var(--mod)" fill-opacity=".16" stroke="var(--mod)" stroke-width="2.2" stroke-dasharray="5 4"></path>
         </g>
-        <ellipse cx="164" cy="148" rx="15" ry="50" fill="var(--accent)" fill-opacity=".12" stroke="var(--accent)" stroke-width="2.1"></ellipse>
-        <ellipse cx="260" cy="146" rx="15" ry="56" fill="var(--accent)" fill-opacity=".12" stroke="var(--accent)" stroke-width="2.1"></ellipse>
-        <line x1="212" y1="82" x2="212" y2="252" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 4" opacity=".45"></line>
-        <text class="mono" x="212" y="278" text-anchor="middle" opacity=".75">tubercle points forward</text>
+        <ellipse cx="104" cy="174" rx="17" ry="50" fill="var(--accent)" fill-opacity=".13" stroke="var(--accent)" stroke-width="2.2"></ellipse>
+        <ellipse cx="200" cy="172" rx="17" ry="56" fill="var(--accent)" fill-opacity=".13" stroke="var(--accent)" stroke-width="2.2"></ellipse>
+        <line x1="104" y1="174" x2="200" y2="172" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="4 4"></line>
+        <line x1="150" y1="177" x2="150" y2="284" stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 4" opacity=".5"></line>
+        <line x1="150" y1="177" x2="126.4" y2="279.3" stroke="var(--mod)" stroke-width="2.6" stroke-linecap="round"></line>
+        <path d="M 150 299 A 122 122 0 0 1 122.6 295.9" fill="none" stroke="var(--mod)" stroke-width="2.2"></path>
+        <path d="M 130 291 L 120 296.5 L 129.5 301.5 Z" fill="var(--mod)"></path>
+        <line x1="238" y1="98" x2="212" y2="126" stroke="currentColor" stroke-width="1" opacity=".5"></line>
+        <text class="mono" x="242" y="101" fill="var(--accent)">femur - fixed</text>
+        <line x1="238" y1="268" x2="172" y2="272" stroke="currentColor" stroke-width="1" opacity=".5"></line>
+        <text class="mono" x="242" y="271" fill="var(--mod)">tibia - turns</text>
+        <text class="mono big" x="112" y="310" text-anchor="end" fill="var(--mod)">13&deg;</text>
+        <text class="mono" x="150" y="352" text-anchor="middle" fill="var(--mod)">the tibia turns laterally</text>
 
-        <g transform="rotate(13 470 148)">
-          <path d="M 370 150 C 370 108 398 88 440 86 C 486 84 532 92 558 108 C 572 118 570 150 566 164 C 558 192 520 214 466 214 C 414 214 378 190 370 150 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.8"></path>
-          <path d="M 392 112 C 366 138 366 168 394 190" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" opacity=".3"></path>
-          <path d="M 544 106 C 574 134 574 172 542 194" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" opacity=".3"></path>
-          <path d="M 460 142 L 464 124 L 468 142 Z M 472 142 L 476 124 L 480 142 Z" fill="currentColor" opacity=".6"></path>
-          <path d="M 456 212 L 484 212 L 480 240 L 460 240 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.8"></path>
+        <path d="M 366 172 C 366 132 394 110 434 108 C 478 106 522 114 552 130 C 574 142 574 176 568 196 C 556 228 512 248 460 248 C 406 248 374 218 366 172 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.8"></path>
+        <path d="M 404 124 C 372 152 372 196 406 224" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" opacity=".28"></path>
+        <path d="M 544 118 C 578 150 576 200 540 228" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" opacity=".28"></path>
+        <path d="M 460 160 L 465 138 L 470 160 Z M 474 160 L 479 138 L 484 160 Z" fill="currentColor" opacity=".6"></path>
+        <path d="M 450 246 L 490 246 L 484 292 L 456 292 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.8"></path>
+        <g transform="rotate(-13 470 177)" opacity=".8">
+          <ellipse cx="424" cy="174" rx="17" ry="50" fill="var(--mod)" fill-opacity=".14" stroke="var(--mod)" stroke-width="2.2" stroke-dasharray="5 4"></ellipse>
+          <ellipse cx="520" cy="172" rx="17" ry="56" fill="var(--mod)" fill-opacity=".14" stroke="var(--mod)" stroke-width="2.2" stroke-dasharray="5 4"></ellipse>
         </g>
-        <ellipse cx="422" cy="148" rx="15" ry="50" fill="var(--accent)" fill-opacity=".12" stroke="var(--accent)" stroke-width="2.1"></ellipse>
-        <ellipse cx="518" cy="146" rx="15" ry="56" fill="var(--accent)" fill-opacity=".12" stroke="var(--accent)" stroke-width="2.1"></ellipse>
-        <line x1="470" y1="82" x2="470" y2="256" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 4" opacity=".45"></line>
-        <line x1="470" y1="148" x2="445.7" y2="253.3" stroke="var(--mod)" stroke-width="2.4" stroke-linecap="round"></line>
-        <path d="M 470 266 A 118 118 0 0 0 443.4 263" fill="none" stroke="var(--mod)" stroke-width="2.2"></path>
-        <path d="M 450 258 L 441 263.5 L 450 268.5 Z" fill="var(--mod)"></path>
-        <text class="mono big" x="410" y="292" text-anchor="end" fill="var(--mod)">13&deg;</text>
-        <text class="mono" x="512" y="290" text-anchor="middle" opacity=".75">tubercle swings laterally</text>
-
-        <line x1="100" y1="146" x2="147" y2="147" stroke="currentColor" stroke-width="1" opacity=".5"></line>
-        <text class="mono" x="96" y="149" text-anchor="end" fill="var(--accent)">condyles</text>
-        <line x1="100" y1="182" x2="120" y2="178" stroke="currentColor" stroke-width="1" opacity=".5"></line>
-        <text class="mono" x="96" y="183" text-anchor="end">menisci</text>
-        <line x1="100" y1="110" x2="206" y2="128" stroke="currentColor" stroke-width="1" opacity=".5"></line>
-        <text class="mono" x="96" y="115" text-anchor="end">eminence</text>
-        <line x1="100" y1="228" x2="196" y2="226" stroke="currentColor" stroke-width="1" opacity=".5"></line>
-        <text class="mono" x="96" y="231" text-anchor="end">tubercle</text>
+        <ellipse cx="424" cy="174" rx="17" ry="50" fill="var(--accent)" fill-opacity=".13" stroke="var(--accent)" stroke-width="2.2"></ellipse>
+        <ellipse cx="520" cy="172" rx="17" ry="56" fill="var(--accent)" fill-opacity=".13" stroke="var(--accent)" stroke-width="2.2"></ellipse>
+        <line x1="384.2" y1="171.4" x2="555.8" y2="182.6" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-dasharray="5 4"></line>
+        <line x1="385.1" y1="190.9" x2="554.9" y2="163.1" stroke="var(--mod)" stroke-width="2.6" stroke-linecap="round"></line>
+        <circle cx="470" cy="177" r="3.4" fill="currentColor" opacity=".65"></circle>
+        <path d="M 376.2 170.9 A 94 94 0 0 0 377.2 192.1" fill="none" stroke="var(--mod)" stroke-width="2.2"></path>
+        <path d="M 378.4 199 L 380.5 187.5 L 372.6 188.8 Z" fill="var(--mod)"></path>
+        <line x1="532" y1="310" x2="488" y2="288" stroke="currentColor" stroke-width="1" opacity=".5"></line>
+        <text class="mono" x="612" y="313" text-anchor="end">tibia - fixed</text>
+        <line x1="534" y1="118" x2="510" y2="138" stroke="currentColor" stroke-width="1" opacity=".5"></line>
+        <text class="mono" x="612" y="103" text-anchor="end" fill="var(--mod)">femur - turns</text>
+        <text class="mono big" x="366" y="216" text-anchor="end" fill="var(--mod)">13&deg;</text>
+        <text class="mono" x="470" y="352" text-anchor="middle" fill="var(--mod)">the femur turns medially</text>
       </svg>
       <div class="figgrid" style="grid-template-columns:repeat(2,1fr)">
-        <div><span class="lbl">Flexed</span><span class="t2">The plateau sits square beneath the condyles and the tubercle points straight forward. Nothing is seated; the joint is free to roll and glide.</span></div>
-        <div><span class="lbl">End of extension</span><span class="t2">The condyle ovals are drawn in the same place in both panels. Everything under them has turned - which is the point: the tibia rotates laterally through the last of the range and the surfaces seat.</span></div>
+        <div><span class="lbl">Foot free</span><span class="t2">The femur is fixed and the tibia turns laterally underneath it. You read it at the tubercle, which swings toward the outside of the limb - not at the rim of the joint, which barely moves.</span></div>
+        <div><span class="lbl">Foot planted</span><span class="t2">The tibia cannot turn, so the femur turns medially on it instead. The condyles sweep round while the plateau stays where it is. Same relative motion, opposite bone - and the one you will actually watch in standing.</span></div>
       </div>
-      <figcaption><b>Full extension is a rotation, not only an angle.</b> That is why a knee can read 0&deg; on a goniometer and still not be locked, and why the first thing that happens in flexion is the unlocking rotation rather than flexion itself. It is also why a stiff, painful terminal extension can have nothing to do with the last few degrees of the arc. <span class="prov c">Convention</span> The mechanism and the 10-15&deg; figure are universally taught - the panel is drawn at 13&deg;, in the middle of that range; no reachable study measures either at the knee <span class="src">no traceable source</span>, so the drawing carries the idea rather than a value you can quote.</figcaption>
+      <figcaption><b>Full extension is a rotation, not only an angle.</b> That is why a knee can read 0&deg; on a goniometer and still not be locked, and why the first thing that happens in flexion is the unlocking rotation rather than flexion itself. It is also why a stiff, painful terminal extension can have nothing to do with the last few degrees of the arc. Which bone you see turning is a consequence of the foot, not of the knee: the two panels are one motion described from either end. <span class="prov c">Convention</span> The mechanism, the open- and closed-chain descriptions and the 10-15&deg; figure are all universally taught - the panels are drawn at 13&deg;, in the middle of that range - and none of them is traceable to a study you can read <span class="src">no traceable source</span>, so the drawing carries the idea rather than a value you can quote.</figcaption>
     </figure>
   </section>
 
