@@ -36,6 +36,7 @@ import {
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { StudentVerifiedBadge } from "@/components/StudentVerifiedBadge";
 import { NavLink, NavToggle, FoundingFundersNavLink } from "./nav-items";
+import type { AdminArea } from "@/lib/admin-areas";
 
 /** The eight expandable sidebar sections — see the accordion state in NavContent below. */
 type SidebarSection = "nexus" | "pro" | "connexion" | "student" | "wellness" | "saved" | "articles" | "admin";
@@ -70,23 +71,32 @@ interface NavContentProps {
    *  (see components/StudentVerifiedBadge.tsx), same "paid tier gets a small trust signal"
    *  idea as the Founding Funder badge elsewhere in the app. */
   isVerifiedStudent: boolean;
-  /** True for a site admin account (see lib/admin.ts isSiteAdmin) — gates the Admin section
-   *  below, hidden entirely for everyone else. */
-  isAdmin: boolean;
+  /** Whether Nexus is visible to this account at all (see lib/nexus-visibility.ts) — an
+   *  unreleased-feature gate that happens to be keyed off the same admin allowlist, NOT an
+   *  admin-tooling permission. It stayed owner-only when admin tooling was split into
+   *  delegable areas: a co-admin brought in to work the license queue has not been let into
+   *  an unreleased product surface. */
+  nexusVisible: boolean;
+  /** The admin areas this account can open (see lib/admin-areas.ts) — the whole list for an
+   *  owner on FOUNDING_FUNDERS_ADMIN_EMAILS, whatever an owner has delegated for a co-admin,
+   *  and empty for everyone else, which hides the Admin section entirely. Each link below is
+   *  gated on its own area, so a co-admin's sidebar lists exactly the screens they can
+   *  actually open rather than a set of links that redirect them home. */
+  adminAreas: AdminArea[];
   /** Populated after mount by /api/navigation-badges; absent while loading or on failure. */
   aptaCount?: number;
   /** Populated with the same non-blocking request as aptaCount. */
   nexusRequestCount?: number;
   /** The seven-section order from lib/user-role.ts zoneTwoOrder(), computed in
    *  app/(app)/layout.tsx off the account's userRole — every section still renders
-   *  (isStudent/isAdmin above are the only actual visibility gates), this just changes
+   *  (isStudent/adminAreas above are the only actual visibility gates), this just changes
    *  which order they render in. */
   zoneTwoOrder: ZoneTwoKey[];
   /** Clinic PRO team membership (see getClinicMembershipInfo in app/actions/clinic-pro.ts)
    *  — null for an account with no active clinic membership, in which case none of the
-   *  clinic-specific nav below renders. isAdmin on this object (not the site-admin `isAdmin`
-   *  prop above, an unrelated concept) gates "Team Dashboard"/"Clinic Report"; every member
-   *  including a non-admin one gets the footer's clinic-name pill. */
+   *  clinic-specific nav below renders. isAdmin on this object (nothing to do with site
+   * admin or the areas above, an unrelated concept) gates "Team Dashboard"/"Clinic Report"; every
+   * member including a non-admin one gets the footer's clinic-name pill. */
   clinicMembership: { clinicName: string; isAdmin: boolean } | null;
   /** Called after any nav link is clicked — used to close the mobile drawer on navigation. */
   onNavigate?: () => void;
@@ -94,8 +104,10 @@ interface NavContentProps {
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-export function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, isAdmin, aptaCount, nexusRequestCount, zoneTwoOrder, clinicMembership, onNavigate }: NavContentProps) {
+export function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, nexusVisible, adminAreas, aptaCount, nexusRequestCount, zoneTwoOrder, clinicMembership, onNavigate }: NavContentProps) {
   const pathname = usePathname();
+  /** Whether this account holds one admin area — used per Admin link below. */
+  const has = (area: AdminArea) => adminAreas.includes(area);
   // Accordion behavior — at most one of the eight expandable sections open at a time, so
   // opening one always collapses whatever else was open, rather than letting the list grow
   // without bound. Starts on whichever section the current route already belongs to (so
@@ -262,7 +274,7 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
         )}
       </>
     ),
-    nexus: isAdmin ? (
+    nexus: nexusVisible ? (
       <>
         <NavToggle
           icon={<UsersIcon />}
@@ -346,7 +358,7 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
         <Fragment key={key}>{zoneTwoSections[key]}</Fragment>
       ))}
 
-      {isAdmin && (
+      {adminAreas.length > 0 && (
         <>
           <NavToggle
             icon={<LockIcon />}
@@ -356,22 +368,59 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
           />
           {adminExpanded && (
             <>
-              <NavLink href="/admin/appraisals" icon={<FileTextIcon />} label="Appraisals" bold={false} onNavigate={onNavigate} />
-              <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
-              <NavLink href="/admin/licenses" icon={<CheckCircleIcon />} label="License Queue" bold={false} onNavigate={onNavigate} />
-              <NavLink href="/admin/copyright" icon={<ShieldIcon />} label="Copyright Notices" bold={false} onNavigate={onNavigate} />
-              <NavLink href="/admin/connexion-visits" icon={<ShieldIcon />} label="Connexion Visits" bold={false} onNavigate={onNavigate} />
-              <NavLink href="/admin/connexion-safety-score" icon={<ShieldIcon />} label="Connexion Safety Score" bold={false} onNavigate={onNavigate} />
-              <NavLink href="/admin/boards-tagging" icon={<GraduationCapIcon />} label="Boards Question Tagging" bold={false} onNavigate={onNavigate} />
-              <NavLink href="/admin/accounts" icon={<UsersIcon />} label="Accounts" bold={false} onNavigate={onNavigate} />
-              <NavLink href="/admin/programs" icon={<GraduationCapIcon />} label="Programs" bold={false} onNavigate={onNavigate} />
-              <NavLink
-                href="/admin/movement-lab-requests"
-                icon={<DumbbellIcon />}
-                label="Movement Lab Requests"
-                bold={false}
-                onNavigate={onNavigate}
-              />
+              {/* One `has(...)` per link rather than one check for the whole section: a
+                  co-admin holds some areas and not others, and a link they cannot open is
+                  worse than no link — it looks like the app losing their session when
+                  hasAdminArea() bounces them back to Home. An owner holds every area, so
+                  this renders exactly what it always did for them. */}
+              {has("appraisals") && (
+                <NavLink href="/admin/appraisals" icon={<FileTextIcon />} label="Appraisals" bold={false} onNavigate={onNavigate} />
+              )}
+              {has("suggestions") && (
+                <NavLink href="/admin/suggestions" icon={<MessageCircleIcon />} label="Suggestions" bold={false} onNavigate={onNavigate} />
+              )}
+              {has("licenses") && (
+                <NavLink href="/admin/licenses" icon={<CheckCircleIcon />} label="License Queue" bold={false} onNavigate={onNavigate} />
+              )}
+              {has("copyright") && (
+                <NavLink href="/admin/copyright" icon={<ShieldIcon />} label="Copyright Notices" bold={false} onNavigate={onNavigate} />
+              )}
+              {has("connexion") && (
+                <NavLink href="/admin/connexion-visits" icon={<ShieldIcon />} label="Connexion Visits" bold={false} onNavigate={onNavigate} />
+              )}
+              {has("connexion") && (
+                <NavLink
+                  href="/admin/connexion-safety-score"
+                  icon={<ShieldIcon />}
+                  label="Connexion Safety Score"
+                  bold={false}
+                  onNavigate={onNavigate}
+                />
+              )}
+              {has("boardsTagging") && (
+                <NavLink
+                  href="/admin/boards-tagging"
+                  icon={<GraduationCapIcon />}
+                  label="Boards Question Tagging"
+                  bold={false}
+                  onNavigate={onNavigate}
+                />
+              )}
+              {has("accounts") && (
+                <NavLink href="/admin/accounts" icon={<UsersIcon />} label="Accounts" bold={false} onNavigate={onNavigate} />
+              )}
+              {has("programs") && (
+                <NavLink href="/admin/programs" icon={<GraduationCapIcon />} label="Programs" bold={false} onNavigate={onNavigate} />
+              )}
+              {has("movementLab") && (
+                <NavLink
+                  href="/admin/movement-lab-requests"
+                  icon={<DumbbellIcon />}
+                  label="Movement Lab Requests"
+                  bold={false}
+                  onNavigate={onNavigate}
+                />
+              )}
             </>
           )}
         </>

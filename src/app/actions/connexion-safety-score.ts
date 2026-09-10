@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { getCurrentUser } from "@/lib/session";
 import {
   allSafetyScoreItems,
@@ -12,7 +12,7 @@ import {
 } from "@/lib/connexion-safety-score";
 
 async function requireSiteAdminUser() {
-  if (!(await isSiteAdmin())) return null;
+  if (!(await hasAdminArea("connexion"))) return null;
   return getCurrentUser();
 }
 
@@ -137,7 +137,7 @@ export interface SafetyAssessmentListItem {
 }
 
 export async function listSafetyAssessments(): Promise<SafetyAssessmentListItem[]> {
-  if (!(await isSiteAdmin())) return [];
+  if (!(await hasAdminArea("connexion"))) return [];
 
   const rows = await prisma.connexionSafetyAssessment.findMany({
     orderBy: { assessmentDate: "desc" },
@@ -177,7 +177,7 @@ function safeParse<T>(json: string, fallback: T): T {
 /** Fetches one assessment with its JSON columns parsed back into the shapes
  *  SafetyAssessmentForm/print pages consume — used by both the edit page and the print page. */
 export async function getSafetyAssessment(id: string): Promise<SafetyAssessmentDetail | null> {
-  if (!(await isSiteAdmin())) return null;
+  if (!(await hasAdminArea("connexion"))) return null;
 
   const r = await prisma.connexionSafetyAssessment.findUnique({ where: { id }, include: { administeredBy: { select: { name: true } } } });
   if (!r) return null;

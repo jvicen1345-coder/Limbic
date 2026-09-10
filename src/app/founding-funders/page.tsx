@@ -3,7 +3,7 @@ import "@/styles/founding-funders.css";
 import "@/styles/onboarding.css";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import {
   getFoundingFundersData,
   confirmFoundingFunderPaymentIfNeeded,
@@ -79,8 +79,8 @@ const TIMELINE = [
 // Public — a signed-out visitor can read the pitch and join the waitlist without an
 // account (see robots.ts, which allow-lists this path specifically for that reason).
 // getFoundingFundersData()/joinWaitlistAction() below don't touch any per-user data, and
-// the admin-only panels stay gated behind isSiteAdmin(), which already safely returns
-// false for a signed-out visitor.
+// the admin-only panels stay gated behind hasAdminArea("foundingFunders"), which already safely
+// returns false for a signed-out visitor.
 export default async function FoundingFundersPage({
   searchParams,
 }: {
@@ -96,7 +96,7 @@ export default async function FoundingFundersPage({
   if (success === "true" && sessionId) await confirmFoundingFunderPaymentIfNeeded(sessionId);
   if (canceled === "true" && sessionId) await cleanupCanceledFoundingFunderCheckout(sessionId);
 
-  const [data, isAdmin] = await Promise.all([getFoundingFundersData(), isSiteAdmin()]);
+  const [data, isAdmin] = await Promise.all([getFoundingFundersData(), hasAdminArea("foundingFunders")]);
   const slots = Array.from({ length: data.totalSlots }, (_, i) => data.funders[i] ?? null);
   // Only fetched for an admin — no reason to run these for every visitor.
   const [registeredUsers, rosterEntries] = isAdmin

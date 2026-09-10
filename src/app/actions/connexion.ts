@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { CONNEXION_CONSENT_TEXT } from "@/lib/connexion-consent";
 
 export interface SubmitVisitRequestInput {
@@ -71,10 +71,10 @@ export interface AdminActionResult {
 }
 
 /** Admin-only status update for /admin/connexion-visits' per-row dropdown — same
- *  isSiteAdmin() gate and AdminActionResult shape as verifyLicenseAction/rejectLicenseAction
- *  in app/actions/license.ts. */
+ *  hasAdminArea("connexion") gate and AdminActionResult shape as verifyLicenseAction/
+ *  rejectLicenseAction in app/actions/license.ts. */
 export async function updateVisitRequestStatusAction(id: string, status: ConnexionVisitStatus): Promise<AdminActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("connexion"))) return { ok: false, error: "Not authorized." };
   if (!VISIT_STATUSES.includes(status)) return { ok: false, error: "Invalid status." };
 
   await prisma.connexionVisitRequest.update({ where: { id }, data: { status } });

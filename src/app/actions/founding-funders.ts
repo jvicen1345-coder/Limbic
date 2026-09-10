@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { getStripe, stripeEnabled, paymentIntentIdFromSession } from "@/lib/stripe";
 import { FOUNDING_FUNDERS_TOTAL_SLOTS } from "@/lib/founding-funders-config";
 import { nextFoundingFunderNumber } from "@/lib/founding-funders";
@@ -88,7 +88,7 @@ export async function claimFoundingSpotAction(input: {
 }): Promise<ClaimSpotResult> {
   const currentCount = await prisma.foundingFunder.count({ where: { paymentStatus: { in: ["confirmed", "pending"] } } });
 
-  if (!(await isSiteAdmin())) {
+  if (!(await hasAdminArea("foundingFunders"))) {
     return { ok: false, error: "Not authorized.", claimedCount: currentCount };
   }
 
@@ -273,7 +273,7 @@ export async function cleanupCanceledFoundingFunderCheckout(sessionId: string): 
  *  before STRIPE_WEBHOOK_SECRET was configured, etc). Same effect as the webhook/backup-check
  *  paths, just admin-triggered instead of Stripe-triggered. */
 export async function confirmFoundingFunderPaymentAction(id: string): Promise<{ ok: boolean; error?: string }> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("foundingFunders"))) return { ok: false, error: "Not authorized." };
 
   const record = await prisma.foundingFunder.findUnique({ where: { id } });
   if (!record) return { ok: false, error: "That claim no longer exists." };
@@ -297,7 +297,7 @@ export async function confirmFoundingFunderPaymentAction(id: string): Promise<{ 
 /** Admin-only — deletes a FoundingFunder row outright (typically a stale pending claim that
  *  never completed payment), reopening that spot for someone else. */
 export async function removeFoundingFunderAction(id: string): Promise<{ ok: boolean; error?: string }> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("foundingFunders"))) return { ok: false, error: "Not authorized." };
 
   await prisma.foundingFunder.delete({ where: { id } });
   revalidatePath("/founding-funders");

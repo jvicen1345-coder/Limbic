@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { getCurrentUser } from "@/lib/session";
 import {
   APPRAISAL_STATUSES,
@@ -20,13 +20,12 @@ import { lookupStudyMetadata, resolvePubmedAbstract, type StudyMetadata } from "
  * Admin-only actions behind /admin/appraisals (see lib/appraisal.ts for the design, and
  * lib/appraisal-draft.ts for what is and is not sent to a model).
  *
- * Three rules hold across all of them. Every action re-checks isSiteAdmin() itself rather
- * than trusting the page that rendered the button, since each is a callable endpoint in its
- * own right (same reasoning as app/actions/copyright.ts). Every input is re-normalised
- * server-side through coerceInput() below, so a hand-rolled request cannot store a shape the
- * reader surface will later choke on. And publishing is guarded by publishBlockers() here as
- * well as in the editor — the editor's copy of that check is a courtesy to the writer, not
- * the enforcement.
+ * Three rules hold across all of them. Every action re-checks hasAdminArea("appraisals") itself
+ * rather than trusting the page that rendered the button, since each is a callable endpoint in its
+ * own right (same reasoning as app/actions/copyright.ts). Every input is re-normalised server-side
+ * through coerceInput() below, so a hand-rolled request cannot store a shape the reader surface
+ * will later choke on. And publishing is guarded by publishBlockers() here as well as in the editor
+ * — the editor's copy of that check is a courtesy to the writer, not the enforcement.
  */
 
 export interface AppraisalActionResult {
@@ -119,7 +118,7 @@ function coerceTags(raw: unknown): string[] {
 }
 
 async function requireAdminUser(): Promise<{ id: string } | null> {
-  if (!(await isSiteAdmin())) return null;
+  if (!(await hasAdminArea("appraisals"))) return null;
   const user = await getCurrentUser();
   return user ? { id: user.id } : null;
 }

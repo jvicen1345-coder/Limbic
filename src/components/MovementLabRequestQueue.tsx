@@ -71,7 +71,7 @@ function MatchCell({ match, requestedRegion }: { match: RequestMatch | null; req
 }
 
 /** Admin-only Mark Added/Decline queue (see app/(app)/admin/movement-lab-requests/page.tsx,
- *  which gates on isSiteAdmin() before this ever renders) — same shape as
+ *  which gates on hasAdminArea("movementLab") before this ever renders) — same shape as
  *  LicenseVerificationQueue.tsx. "Mark Added" doesn't write anything into Movement Lab
  *  itself (a static TS catalog, not a database table) — it just records that an admin has
  *  since added the exercise to the appropriate region file by hand. */

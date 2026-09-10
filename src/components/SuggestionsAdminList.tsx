@@ -11,7 +11,7 @@ export interface SuggestionRow {
   createdAt: string;
 }
 
-/** Admin-only list — the page itself already gated on isSiteAdmin() before rendering this,
+/** Admin-only list — the page itself already gated on hasAdminArea("suggestions") before rendering this,
  *  same trust boundary as components/founding-funders/FoundingAdminPanel.tsx (the server
  *  action re-checks admin status independently regardless). */
 export function SuggestionsAdminList({ suggestions }: { suggestions: SuggestionRow[] }) {

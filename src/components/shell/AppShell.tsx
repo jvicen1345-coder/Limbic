@@ -16,6 +16,7 @@ import {
 import { readStoredThemePreference, resolveTheme } from "@/lib/theme-client";
 import { NavContent } from "./NavContent";
 import { BottomNavLink } from "./nav-items";
+import type { AdminArea } from "@/lib/admin-areas";
 
 interface NavigationBadges {
   aptaCount: number;
@@ -40,7 +41,10 @@ export interface AppShellProps {
   isPro: boolean;
   isStudent: boolean;
   isVerifiedStudent: boolean;
-  isAdmin: boolean;
+  /** See NavContentProps' doc comments on these two — one is an unreleased-product gate, the
+   *  other is which admin tooling this account may open. */
+  nexusVisible: boolean;
+  adminAreas: AdminArea[];
   /** See lib/user-role.ts zoneTwoOrder() — computed in app/(app)/layout.tsx off the
    *  account's userRole. */
   zoneTwoOrder: ZoneTwoKey[];
@@ -58,7 +62,8 @@ export function AppShell({
   isPro,
   isStudent,
   isVerifiedStudent,
-  isAdmin,
+  nexusVisible,
+  adminAreas,
   zoneTwoOrder,
   clinicMembership,
   children,
@@ -75,7 +80,8 @@ export function AppShell({
     isPro,
     isStudent,
     isVerifiedStudent,
-    isAdmin,
+    nexusVisible,
+    adminAreas,
     aptaCount: navigationBadges?.aptaCount,
     nexusRequestCount: navigationBadges?.nexusRequestCount,
     zoneTwoOrder,

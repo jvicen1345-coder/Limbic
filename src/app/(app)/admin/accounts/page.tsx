@@ -1,14 +1,25 @@
 import { redirect } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea, isSiteAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/db";
-import { compedAreas } from "@/lib/session";
+import { compedAreas, isAdminEmail } from "@/lib/session";
+import { parseAdminAreas } from "@/lib/admin-areas";
 import { AccountsAdminTable } from "@/components/AccountsAdminTable";
 
-/** Admin-only — every account, with a delete button per row (see AccountsAdminTable.tsx,
- *  deleteUserAction in app/actions/admin.ts). Same "must be admin" redirect idiom as
- *  /admin/suggestions, /admin/licenses, /admin/connexion-visits. */
+/** The Accounts area — every account, with a delete button per row (see
+ *  AccountsAdminTable.tsx, deleteUserAction in app/actions/admin.ts). Same "must hold this
+ *  area" redirect idiom as /admin/suggestions, /admin/licenses, /admin/connexion-visits.
+ *
+ *  Also where co-admins are appointed and un-appointed (the Co-Admin column), which is why
+ *  this page asks two separate questions rather than one: holding the Accounts area is what
+ *  gets you in, and being an allowlist owner is what lets you change who else is an admin. */
 export default async function AdminAccountsPage() {
-  if (!(await isSiteAdmin())) redirect("/home");
+  if (!(await hasAdminArea("accounts"))) redirect("/home");
+  // Co-admin access is the one thing on this page an Accounts co-admin can look at but not
+  // change — only an allowlist owner can appoint or remove one (see the note above
+  // grantAdminAreaAction in app/actions/admin.ts). The chips render read-only below when
+  // this is false; the server actions refuse either way, this just stops the page from
+  // offering a control that would only ever fail.
+  const canManageAdmins = await isSiteAdmin();
 
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
@@ -19,6 +30,7 @@ export default async function AdminAccountsPage() {
       licenseEmail: true,
       licenseNumber: true,
       isGuest: true,
+      adminAreas: true,
       passwordHash: true,
       googleId: true,
       isPro: true,
@@ -40,6 +52,10 @@ export default async function AdminAccountsPage() {
     hasGoogle: u.googleId != null,
     isPro: u.isPro,
     grantedAccess: compedAreas(u),
+    adminAreas: parseAdminAreas(u.adminAreas),
+    // An owner holds every area through the env allowlist, not through this column, so the
+    // row says so instead of showing ten empty chips that can't be filled in.
+    isOwnerAdmin: isAdminEmail(u.email) || isAdminEmail(u.licenseEmail),
     isFoundingFunder: u.foundingFunder?.paymentStatus === "confirmed",
     createdAt: u.createdAt.toISOString(),
     // Stamped on every Home visit (see lib/session.ts recordHomeVisit) — the closest thing
@@ -53,11 +69,14 @@ export default async function AdminAccountsPage() {
     <div className="screen-pad" style={{ maxWidth: 960, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Accounts</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
-        Every registered account, {rows.length} total. Visible only to site admins.
+        Every registered account, {rows.length} total.{" "}
+        {canManageAdmins
+          ? "Use Co-Admin to give someone access to specific behind-the-scenes areas, or to take it back."
+          : "Co-admin access is shown here but can only be changed by a full admin."}
       </p>
 
       <div className="card elev-sm">
-        <AccountsAdminTable rows={rows} />
+        <AccountsAdminTable rows={rows} canManageAdmins={canManageAdmins} />
       </div>
     </div>
   );

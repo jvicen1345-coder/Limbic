@@ -293,6 +293,42 @@ live. Worth a real end-to-end test (a real test-mode checkout, confirming `isPro
 canceling via the portal, confirming it un-flips at period end) the first time this runs
 somewhere with real egress.
 
+## Admin access: owners and co-admins
+
+Admin is split in two, because "can work the license queue" and "can delete any account"
+should not be the same grant.
+
+- **Owners** are the emails in `FOUNDING_FUNDERS_ADMIN_EMAILS` (matched against either a
+  General sign-in email or a PT license sign-in's email, case-insensitively). An owner holds
+  every admin area, gets every paid tier and student-only area overlaid onto their account
+  (see `lib/session.ts` `getCurrentUser()`), and is the only kind of account that can appoint
+  or remove a co-admin. Leave the variable unset and there are no owners at all — every admin
+  surface stays closed and nobody can be appointed.
+- **Co-admins** are ordinary accounts an owner grants specific *areas* to from the Co-Admin
+  column on `/admin/accounts`. The areas are one per admin screen — Accounts, License Queue,
+  Suggestions, Copyright Notices, Appraisals, Boards Tagging, Programs, Movement Lab
+  Requests, Connexion, Founding Funders — listed in
+  [`src/lib/admin-areas.ts`](src/lib/admin-areas.ts) with a description of what each one
+  opens up. A co-admin's sidebar lists exactly the screens they hold, and any other
+  `/admin/*` URL redirects them home.
+
+Three properties are worth knowing when changing this:
+
+1. **Every page and every server action re-checks its own area** through `hasAdminArea()`
+   ([`src/lib/admin.ts`](src/lib/admin.ts)). A Server Action is a callable endpoint, so the
+   page's redirect is never the enforcement — adding an admin action means adding its check.
+2. **Only an owner can change who is an admin.** `grantAdminAreaAction`/
+   `revokeAdminAreaAction` gate on the env allowlist rather than on the Accounts area, so a
+   co-admin who can delete accounts still cannot appoint anyone or widen their own access.
+   For the same reason, a co-admin cannot delete an owner's account.
+3. **Co-admin access is not a subscription.** Unlike the owner allowlist, `User.adminAreas`
+   is deliberately absent from the paid-tier overlay: delegating the license queue does not
+   hand anyone LimbicPro. Comp a tier explicitly with the Granted Access chips if that is
+   what you meant.
+
+Revoking takes effect on the co-admin's next request — nothing about their access is baked
+into their session cookie.
+
 ## Founding Funders payments
 
 The one-time $40 "Claim a Spot" purchase on `/founding-funders` (see

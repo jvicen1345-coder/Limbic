@@ -6,7 +6,8 @@ import "@/styles/streaks.css";
 import "@/styles/onboarding.css";
 import "@/styles/programs.css";
 import { redirect } from "next/navigation";
-import { getCurrentUser, hasStudentAccess, hasLicenseAccess, isAdminEmail } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess, hasLicenseAccess, adminAreasForUser } from "@/lib/session";
+import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import { SPECIALTY_META } from "@/lib/meta";
 import { AppShell } from "@/components/AppShell";
 import { OnboardingRoleModal } from "@/components/OnboardingRoleModal";
@@ -40,9 +41,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   ]);
 
   const hasLicense = hasLicenseAccess(user);
-  // This is derivable from the already-loaded user. Calling isSiteAdmin() here would read
-  // the session again (request-cached now, but still unnecessary work on the hot path).
-  const isAdmin = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
+  // Both are derivable from the already-loaded user. Calling the lib/admin.ts wrappers here
+  // would read the session again (request-cached now, but still unnecessary work on the hot
+  // path). They are two different questions despite both having been "is this an admin"
+  // once: nexusVisibleTo is an unreleased-feature gate that stays on the owner allowlist,
+  // while adminAreas is the delegable admin tooling a co-admin can hold part of (see
+  // lib/admin-areas.ts).
+  const adminAreas = adminAreasForUser(user);
 
   return (
     <AppShell
@@ -54,7 +59,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       isPro={user.isPro}
       isStudent={hasStudentAccess(user)}
       isVerifiedStudent={user.studentTier === "limbicStudent"}
-      isAdmin={isAdmin}
+      nexusVisible={nexusVisibleTo(user)}
+      adminAreas={adminAreas}
       zoneTwoOrder={zoneTwoOrder(user.userRole)}
       clinicMembership={clinicMembership}
     >

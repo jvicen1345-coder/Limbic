@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { getOutreachRecords, getStates, getRegions } from "@/app/actions/dpt-programs";
 import { InstitutionalTargetsTable } from "@/components/admin/InstitutionalTargetsTable";
 
@@ -7,7 +7,7 @@ import { InstitutionalTargetsTable } from "@/components/admin/InstitutionalTarge
  *  DPTProgram rows the public /programs directory reads (see app/actions/dpt-programs.ts).
  *  Same "must be admin" redirect idiom as every other /admin page. */
 export default async function AdminProgramsPage() {
-  if (!(await isSiteAdmin())) redirect("/home");
+  if (!(await hasAdminArea("programs"))) redirect("/home");
 
   const [rows, states, regions] = await Promise.all([getOutreachRecords(), getStates(), getRegions()]);
 
