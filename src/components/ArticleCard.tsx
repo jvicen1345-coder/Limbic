@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { SaveButton } from "@/components/SaveButton";
 import { ArticleImage } from "@/components/ArticleImage";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
@@ -19,120 +19,138 @@ function extraContextTags(article: DecoratedArticle): string[] {
   return article.tags.filter((t) => !shown.has(t)).slice(0, 2);
 }
 
+/**
+ * Feed card. Whole-card navigation uses an overlay Link (no useRouter) so Home's server
+ * composition can SSR real card HTML; SaveButton / OpenAccessPill stay interactive above
+ * the hit target. Remains a Client Component because SearchScreen imports it directly.
+ */
 export function ArticleCard({ article }: { article: DecoratedArticle }) {
-  const router = useRouter();
   const extraTags = extraContextTags(article);
   return (
-    <div
-      className="card elev-sm card-hoverable"
-      style={{ cursor: "pointer" }}
-      onClick={() => router.push(`/article/${article.id}`)}
-    >
-      {article.image && <ArticleImage key={article.id} src={article.image} height={120} />}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          {article.isNew && <NewBadge />}
-          {article.isRead && <ReadBadge />}
-          {article.typeLabel} · {article.dateLabel}
-        </div>
-        <SaveButton articleId={article.id} saved={article.saved} size="sm" article={article} />
-      </div>
-      <div className="card-title" style={{ marginTop: 6 }}>
-        {article.title}
-      </div>
-      <p className="card-body">{article.summary}</p>
-      <div className="card-meta">
-        <span className={article.typeTagClass}>{article.specialtyLabel}</span>
-        {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
-        <OpenAccessPill doi={article.doi} />
-        <span>{article.source}</span>
-      </div>
-      {extraTags.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-          {extraTags.map((t) => (
-            <span key={t} className="tag tag-outline" style={{ fontSize: "var(--fs-10-5)" }}>
-              {t}
-            </span>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/** The Home hero: HeroFeed only ever hands this an image-having article (see
- *  HomeFeed.tsx's heroPool, filtered off withImage) — the plain-layout fallback below is
- *  defensive for any future/other caller, not something a reader can hit today. When
- *  there's an image, title/source/evidence/read-time/date all sit on the photo itself
- *  (above a bottom gradient — see .hero-card-* in src/styles) and the space below the
- *  photo is kept to just the summary, so the card reads as one clean photo-led moment
- *  rather than a second copy of the same meta row ArticleCard already shows in the grid. */
-export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
-  const router = useRouter();
-
-  if (!article.image) {
-    return (
-      <div
-        className="card elev-md card-hoverable"
-        style={{ cursor: "pointer", padding: 26 }}
-        onClick={() => router.push(`/article/${article.id}`)}
-      >
+    <div className="card elev-sm card-hoverable article-card">
+      <Link
+        href={`/article/${article.id}`}
+        className="article-card__hit"
+        aria-label={article.title}
+        tabIndex={-1}
+      />
+      <div className="article-card__body">
+        {article.image && <ArticleImage key={article.id} src={article.image} height={120} />}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
           <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {article.isNew && <NewBadge />}
             {article.isRead && <ReadBadge />}
             {article.typeLabel} · {article.dateLabel}
           </div>
-          <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
+          <span className="article-card__interactive">
+            <SaveButton articleId={article.id} saved={article.saved} size="sm" article={article} />
+          </span>
         </div>
-        <div className="card-title" style={{ marginTop: 8, fontSize: 22 }}>
+        <div className="card-title" style={{ marginTop: 6 }}>
           {article.title}
         </div>
-        <p className="card-body" style={{ fontSize: 15 }}>
-          {article.summary}
-        </p>
+        <p className="card-body">{article.summary}</p>
         <div className="card-meta">
           <span className={article.typeTagClass}>{article.specialtyLabel}</span>
           {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
+          <span className="article-card__interactive">
+            <OpenAccessPill doi={article.doi} />
+          </span>
           <span>{article.source}</span>
+        </div>
+        {extraTags.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+            {extraTags.map((t) => (
+              <span key={t} className="tag tag-outline" style={{ fontSize: "var(--fs-10-5)" }}>
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** The Home hero: HeroFeed only ever hands this an image-having article (see
+ *  HomeFeed's heroPool). When there's an image, title/source/evidence sit on the photo
+ *  itself; the space below stays to the summary. */
+export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
+  if (!article.image) {
+    return (
+      <div className="card elev-md card-hoverable article-card" style={{ padding: 26 }}>
+        <Link
+          href={`/article/${article.id}`}
+          className="article-card__hit"
+          aria-label={article.title}
+          tabIndex={-1}
+        />
+        <div className="article-card__body">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+            <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              {article.isNew && <NewBadge />}
+              {article.isRead && <ReadBadge />}
+              {article.typeLabel} · {article.dateLabel}
+            </div>
+            <span className="article-card__interactive">
+              <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
+            </span>
+          </div>
+          <div className="card-title" style={{ marginTop: 8, fontSize: 22 }}>
+            {article.title}
+          </div>
+          <p className="card-body" style={{ fontSize: 15 }}>
+            {article.summary}
+          </p>
+          <div className="card-meta">
+            <span className={article.typeTagClass}>{article.specialtyLabel}</span>
+            {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
+            <span>{article.source}</span>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className="card elev-md card-hoverable"
-      style={{ cursor: "pointer", padding: 0, overflow: "hidden" }}
-      onClick={() => router.push(`/article/${article.id}`)}
-    >
-      <div className="hero-card-media">
-        <ArticleImage key={article.id} src={article.image} fill />
-        <div className="hero-card-topleft">
-          <span className={article.typeTagClass}>{article.specialtyLabel}</span>
-          {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
-          <OpenAccessPill doi={article.doi} />
+    <div className="card elev-md card-hoverable article-card" style={{ padding: 0, overflow: "hidden" }}>
+      <Link
+        href={`/article/${article.id}`}
+        className="article-card__hit"
+        aria-label={article.title}
+        tabIndex={-1}
+      />
+      <div className="article-card__body">
+        <div className="hero-card-media">
+          <ArticleImage key={article.id} src={article.image} fill />
+          <div className="hero-card-topleft">
+            <span className={article.typeTagClass}>{article.specialtyLabel}</span>
+            {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
+            <span className="article-card__interactive">
+              <OpenAccessPill doi={article.doi} />
+            </span>
+          </div>
+          <div className="hero-card-topright">
+            <span className="hero-card-meta-pill">{article.dateLabel}</span>
+            <span className="hero-card-save-wrap article-card__interactive">
+              <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
+            </span>
+          </div>
         </div>
-        <div className="hero-card-topright">
-          <span className="hero-card-meta-pill">{article.dateLabel}</span>
-          <span className="hero-card-save-wrap" onClick={(e) => e.stopPropagation()}>
-            <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
-          </span>
+        <div style={{ padding: "16px 20px 0", textAlign: "center" }}>
+          <div className="hero-card-title">{article.title}</div>
+          <div className="hero-card-source" style={{ justifyContent: "center" }}>
+            {article.source}
+            {(article.isNew || article.isRead) && <span className="hero-card-source-sep">·</span>}
+            {article.isNew && <NewBadge />}
+            {article.isRead && <ReadBadge />}
+          </div>
         </div>
-      </div>
-      <div style={{ padding: "16px 20px 0", textAlign: "center" }}>
-        <div className="hero-card-title">{article.title}</div>
-        <div className="hero-card-source" style={{ justifyContent: "center" }}>
-          {article.source}
-          {(article.isNew || article.isRead) && <span className="hero-card-source-sep">·</span>}
-          {article.isNew && <NewBadge />}
-          {article.isRead && <ReadBadge />}
+        <div style={{ padding: "10px 20px 18px", textAlign: "center" }}>
+          <p className="card-body" style={{ fontSize: 15, margin: "0 auto" }}>
+            {article.summary}
+          </p>
         </div>
-      </div>
-      <div style={{ padding: "10px 20px 18px", textAlign: "center" }}>
-        <p className="card-body" style={{ fontSize: 15, margin: "0 auto" }}>
-          {article.summary}
-        </p>
       </div>
     </div>
   );

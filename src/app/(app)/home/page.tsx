@@ -43,9 +43,15 @@ const SAVED_UNREAD_SIZE = 3;
 // pages. Remaining articles receive bundled photos now and can be warmed on a later load.
 const IMAGE_CACHE_WARM_LIMIT = 16;
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ topic?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!user) return null; // layout already redirects; guards TS narrowing below
+
+  const { topic: topicParam = null } = await searchParams;
 
   // Capture the previous visit cutoff for "new since last visit" badges, then stamp
   // lastVisitedAt after the response so the Prisma write is off the HTML critical path
@@ -329,6 +335,7 @@ export default async function HomePage() {
       showMigrationReminderBanner={showMigrationReminderBanner}
       showGraduationTransitionCard={showGraduationTransitionCard}
       getTheAppDismissed={user.getTheAppDismissed}
+      topicParam={topicParam}
     />
     </>
   );

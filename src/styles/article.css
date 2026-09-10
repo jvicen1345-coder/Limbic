@@ -635,3 +635,23 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* ArticleCard / HeroArticleCard: whole-card navigation via an overlay <Link> so the card
+   markup can stay free of useRouter while SaveButton / OpenAccessPill remain clickable. */
+.article-card {
+  position: relative;
+}
+.article-card__hit {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+}
+.article-card__body {
+  position: relative;
+  z-index: 0;
+}
+.article-card__interactive {
+  position: relative;
+  z-index: 1;
+}
