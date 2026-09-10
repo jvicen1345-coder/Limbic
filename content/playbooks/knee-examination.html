@@ -563,6 +563,9 @@ figure.labels-hidden.labels-shown figcaption,
 figure.labels-hidden.caption-shown figcaption{filter:none; user-select:auto; cursor:default}
 /* the legend beside a figure answers the same question its labels do - hide it with them.
    .lbl is the prompt ("Narrow pelvis"), so it stays readable like a table's first column. */
+/* the key that says what you are looking at is the frame of the question, not its answer.
+   The blur is set as an SVG filter attribute; a CSS filter outranks it, so this wins. */
+figure.labels-hidden svg .figkey text{filter:none !important; opacity:1; cursor:default}
 figure.labels-hidden .figgrid .t1,
 figure.labels-hidden .figgrid .t2{filter:blur(5px); user-select:none; cursor:pointer}
 figure.labels-hidden .figgrid > div{cursor:pointer}
@@ -1343,12 +1346,12 @@ a{color:var(--accent)}
         <path d="M 444 122 Q 453 152 462 122" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"></path>
         <path d="M 400 176 L 508 176 L 508 195 L 400 176 Z" fill="var(--hi)" fill-opacity=".42" stroke="var(--hi)" stroke-width="1.2" stroke-dasharray="4 3"></path>
         <g transform="rotate(10 400 176)">
-          <path d="M 388 184 L 400 184 L 404 286 L 392 286 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"></path>
+          <path d="M 388 184 L 400 184 L 403 276 L 391 276 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"></path>
           <ellipse cx="396" cy="188" rx="9" ry="11" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"></ellipse>
           <path d="M 400 176 L 508 176 L 500 198 L 408 198 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.7"></path>
           <path d="M 408 176 Q 424 160 442 174 L 432 176 Z" fill="currentColor" fill-opacity=".24" stroke="currentColor" stroke-width="1.2"></path>
           <path d="M 500 176 Q 484 160 466 174 L 476 176 Z" fill="currentColor" fill-opacity=".24" stroke="currentColor" stroke-width="1.2"></path>
-          <path d="M 414 198 L 494 198 L 484 300 L 424 300 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.7"></path>
+          <path d="M 414 198 L 494 198 L 486 288 L 422 288 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.7"></path>
         </g>
         <path d="M 440 172 Q 452 154 468 124 M 466 172 Q 452 156 438 124" fill="none" stroke="var(--mod)" stroke-width="6" stroke-linecap="round" stroke-dasharray="8 6" opacity=".4"></path>
         <path d="M 493 120 L 501 119 L 507 158 L 499 160 Z" fill="var(--accent)" fill-opacity=".85" stroke="var(--accent)" stroke-width="1"></path>
@@ -1371,7 +1374,7 @@ a{color:var(--accent)}
         <path d="M 336 236 L 336 264 M 336 264 L 350 288" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity=".45"></path>
         <circle cx="336" cy="264" r="4" fill="currentColor" opacity=".45"></circle>
         <path d="M 336 288 A 24 24 0 0 0 346 285" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"></path>
-        <text class="mono" x="332" y="268" text-anchor="end" opacity=".6">30&deg;</text>
+        <text class="mono" x="324" y="268" text-anchor="end" opacity=".6">30&deg;</text>
         <text class="mono big" x="452" y="320" text-anchor="middle" fill="var(--hi)">medial joint line opens</text>
       </svg>
       <div class="figgrid" style="grid-template-columns:repeat(2,1fr)">
@@ -1383,8 +1386,36 @@ a{color:var(--accent)}
 
     <figure>
       <p class="figtitle">The knee locks by rotating - and which bone turns depends on the foot</p>
-      <svg viewBox="0 0 620 372" role="img" aria-label="The right tibial plateau seen from above, drawn twice. With the foot free the femur is fixed and the tibia turns laterally about thirteen degrees through the last of extension, swinging the tibial tubercle toward the outside of the limb. With the foot planted the tibia cannot turn, so the femur turns medially on it instead and the line between the two condyles sweeps round while the plateau stays where it is. The relative motion is the same in both.">
-        <line x1="310" y1="28" x2="310" y2="348" stroke="currentColor" stroke-width="1" opacity=".16"></line>
+      <svg viewBox="0 0 620 496" role="img" aria-label="A key at the top shows a right knee from the side, cut horizontally through the joint line, with an arrow looking straight down onto the cut - that is the view both panels below use. A compass gives the four directions: posterior at the top, anterior at the bottom, lateral to the left, medial to the right. Below, the right tibial plateau is drawn twice with the femur's two condyles resting on it. With the foot free the femur is fixed and the tibia turns laterally about thirteen degrees through the last of extension, swinging the tibial tubercle toward the outside of the limb. With the foot planted the tibia cannot turn, so the femur turns medially on it instead and the line between the two condyles sweeps round while the plateau stays where it is. The relative motion is the same in both."">
+        <g class="figkey">
+        <path d="M 66 22 L 84 22 L 87 56 L 63 56 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"></path>
+        <circle cx="74" cy="68" r="16" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"></circle>
+        <ellipse cx="96" cy="62" rx="6" ry="10" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"></ellipse>
+        <path d="M 56 88 L 98 88 L 94 100 L 60 100 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"></path>
+        <path d="M 63 100 L 90 100 L 88 126 L 66 126 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"></path>
+        <ellipse cx="91" cy="108" rx="4" ry="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.3"></ellipse>
+        <line x1="40" y1="86" x2="152" y2="86" stroke="var(--mod)" stroke-width="1.6" stroke-dasharray="5 4"></line>
+        <line x1="134" y1="38" x2="134" y2="76" stroke="var(--mod)" stroke-width="2"></line>
+        <path d="M 129 74 L 134 84 L 139 74 Z" fill="var(--mod)"></path>
+        <text class="mono" x="90" y="142" text-anchor="middle" opacity=".7">right knee, from the side</text>
+
+        <text class="mono" x="180" y="52">Cut through the joint line and</text>
+        <text class="mono" x="180" y="70">look straight down: that is the</text>
+        <text class="mono" x="180" y="88">right tibia below, with the two</text>
+        <text class="mono" x="180" y="106">femoral condyles resting on it.</text>
+
+        <line x1="532" y1="52" x2="532" y2="92" stroke="currentColor" stroke-width="1.4" opacity=".55"></line>
+        <line x1="510" y1="72" x2="556" y2="72" stroke="currentColor" stroke-width="1.4" opacity=".55"></line>
+        <path d="M 528 56 L 532 48 L 536 56 Z M 528 88 L 532 96 L 536 88 Z M 514 68 L 506 72 L 514 76 Z M 552 68 L 560 72 L 552 76 Z" fill="currentColor" opacity=".55"></path>
+        <text class="mono" x="532" y="40" text-anchor="middle" opacity=".7">posterior</text>
+        <text class="mono" x="532" y="112" text-anchor="middle" opacity=".7">anterior</text>
+        <text class="mono" x="500" y="76" text-anchor="end" opacity=".7">lateral</text>
+        <text class="mono" x="564" y="76" opacity=".7">medial</text>
+        <line x1="24" y1="158" x2="596" y2="158" stroke="currentColor" stroke-width="1" opacity=".16"></line>
+        </g>
+
+        <g transform="translate(0,124)">
+        <line x1="310" y1="82" x2="310" y2="348" stroke="currentColor" stroke-width="1" opacity=".16"></line>
         <text class="mono big" x="150" y="44" text-anchor="middle">open chain - foot free</text>
         <text class="mono big" x="470" y="44" text-anchor="middle">closed chain - foot planted</text>
 
@@ -1407,7 +1438,8 @@ a{color:var(--accent)}
         <line x1="238" y1="98" x2="212" y2="126" stroke="currentColor" stroke-width="1" opacity=".5"></line>
         <text class="mono" x="242" y="101" fill="var(--accent)">femur - fixed</text>
         <line x1="238" y1="268" x2="172" y2="272" stroke="currentColor" stroke-width="1" opacity=".5"></line>
-        <text class="mono" x="242" y="271" fill="var(--mod)">tibia - turns</text>
+        <text class="mono" x="242" y="268" fill="var(--mod)">tibial tubercle</text>
+        <text class="mono" x="242" y="284" fill="var(--mod)">- turns with it</text>
         <text class="mono big" x="112" y="310" text-anchor="end" fill="var(--mod)">13&deg;</text>
         <text class="mono" x="150" y="352" text-anchor="middle" fill="var(--mod)">the tibia turns laterally</text>
 
@@ -1433,6 +1465,7 @@ a{color:var(--accent)}
         <text class="mono" x="612" y="103" text-anchor="end" fill="var(--mod)">femur - turns</text>
         <text class="mono big" x="366" y="216" text-anchor="end" fill="var(--mod)">13&deg;</text>
         <text class="mono" x="470" y="352" text-anchor="middle" fill="var(--mod)">the femur turns medially</text>
+        </g>
       </svg>
       <div class="figgrid" style="grid-template-columns:repeat(2,1fr)">
         <div><span class="lbl">Foot free</span><span class="t2">The femur is fixed and the tibia turns laterally underneath it. You read it at the tubercle, which swings toward the outside of the limb - not at the rim of the joint, which barely moves.</span></div>
