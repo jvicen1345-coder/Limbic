@@ -127,17 +127,19 @@ export function HomeFeedInteractive({
               <SlidingTabs tabs={TYPE_TABS} active={filter} onChange={setFilter} />
             </div>
 
-            {heroPool.length > 0 && (
-              <div style={{ marginBottom: 16 }}>
-                <HeroFeed articles={heroPool} />
-              </div>
-            )}
+            <div data-tour="home-feed">
+              {heroPool.length > 0 && (
+                <div style={{ marginBottom: 16 }}>
+                  <HeroFeed articles={heroPool} />
+                </div>
+              )}
 
-            {TYPE_TABS.map((tab) => (
-              <div key={tab.id} hidden={tab.id !== filter} data-tour={tab.id === filter ? "home-feed" : undefined}>
-                {panels[tab.id].grid}
-              </div>
-            ))}
+              {TYPE_TABS.map((tab) => (
+                <div key={tab.id} hidden={tab.id !== filter}>
+                  {panels[tab.id].grid}
+                </div>
+              ))}
+            </div>
 
             <div className="home-refresh-pill-wrap">
               <button type="button" className="home-refresh-pill" disabled={pending} onClick={handlePullRefresh}>
