@@ -26,6 +26,7 @@ content.
 
 ```bash
 npm install
+cp .env.example .env        # local SQLite; see that file for optional API keys
 npx prisma migrate deploy   # or `npx prisma migrate dev` in development
 npm run dev
 ```
@@ -35,17 +36,59 @@ continue as a guest. Guests can read/search/save articles and personalize their 
 but Home Exercise Programs, APTA News, and Under Review are gated behind having a
 license on file (matching the source design).
 
-## Testing
+Before opening a pull request, run the [Development checks](#development-checks) below.
+
+## Development checks
+
+Local quality gates and what GitHub Actions runs on every PR and every push to `main`.
+Shipping the site is still [Vercel](#deploying-vercel--turso) — CI does not deploy.
+
+### Local commands
 
 ```bash
-npm test   # runs the Playwright suite in e2e/ (playwright.config.ts)
+npm run lint         # ESLint
+npm run typecheck    # tsc --noEmit
+npm run test:unit    # Node's test runner on src/**/*.test.ts
+npm test             # Playwright e2e in e2e/
 ```
 
-These are real end-to-end tests, not mocks — they drive a headless browser against your
-local dev server (started automatically if one isn't already running on :3000) and the
-local SQLite `dev.db`, so `.env` needs to be set up first (see "Getting started" above).
-Currently covers the landing page and the sign-in/sign-up/onboarding flow, including a
-regression test for the sign-in rate limiter (see "Password auth & reset emails" below).
+Unit tests use Node's built-in runner (not Vitest). They currently cover CSS payload and
+route-sheet reachability guards plus a few library helpers.
+
+`npm test` is Playwright against a real app and the local SQLite `dev.db` — there is no
+mocked backend. Locally it starts `next dev` if nothing is already on `:3000`, or reuses
+that server. Copy [`.env.example`](.env.example) to `.env` and apply migrations first
+(see [Getting started](#getting-started)). The first time you run e2e locally:
+
+```bash
+npx playwright install chromium
+```
+
+Auth/onboarding coverage includes a regression for the sign-in rate limiter (see
+[Password auth & reset emails](#password-auth--reset-emails) below). The suite also walks
+other critical journeys in `e2e/`; it is not a full product tour.
+
+### CI
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every **pull request** and
+every **push to `main`** (Node 22). Two jobs:
+
+1. **Typecheck and lint** — `npm ci`, then `npm run typecheck`, `npm run lint`, and
+   `npm run test:unit`.
+2. **End-to-end (Playwright)** — `npm ci`, copy `.env.example` to `.env` with a generated
+   `SESSION_SECRET`, apply migrations, install Chromium, then `npm test`. Under `CI=true`,
+   Playwright builds the app (`npm run build`) and serves that build instead of `next dev`.
+
+CI uses file SQLite (`DATABASE_URL=file:./dev.db` from `.env.example`) and stub/empty
+secrets except the generated session key. It does not exercise live Stripe, Resend, or
+other paid APIs.
+
+### CD
+
+Every push to the GitHub branch connected in Vercel
+[redeploys](#deploying-vercel--turso). The build command is
+`node scripts/apply-migrations.mjs && next build` (`npm run build`): migrations against
+the configured database, then `next build`. CI is the quality gate; Vercel is what ships.
 
 ## Deploying (Vercel + Turso)
 
