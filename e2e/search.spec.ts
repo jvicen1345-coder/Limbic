@@ -45,9 +45,9 @@ test.describe("search", () => {
     await expect(page.getByText("Achilles Pain, Stiffness, and Muscle Power Deficits")).toBeVisible();
     await expect(page.getByText("Neck Pain: Revision 2017")).toHaveCount(0);
 
-    const save = page.getByRole("button", { name: "Save" }).first();
+    const save = page.getByRole("main").getByRole("button", { name: "Save", exact: true });
     await expect(save).toBeVisible();
     await save.click();
-    await expect(page.getByRole("button", { name: "Remove from saved" }).first()).toBeVisible();
+    await expect(page.getByRole("main").getByRole("button", { name: "Remove from saved", exact: true })).toBeVisible();
   });
 });
