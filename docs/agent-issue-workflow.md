@@ -4,14 +4,30 @@ Use this workflow for every issue-based change. The goal is not only to make the
 change, but to establish what the issue means, keep its record current, and explain the
 effect on the website in terms a reviewer or product owner can understand.
 
+## Standing roles
+
+- **Limbic Triage (Grok Bot)** runs step 1 for unclaimed issues: compare the issue title,
+  body, and acceptance criteria to `origin/main` via authenticated `gh`; refresh title,
+  body, scope, links, labels, and acceptance criteria; then comment that the issue is
+  ready for Intake. Issue writes use `gh` as Evicencio-05 (push + triage). Cloud agents
+  and the GitHub connector PAT receive 403 on issue writes. Do not tell implementers to
+  edit issues themselves.
+- **Limbic Intake** claims up to two ready issues and implements them via Cursor
+  CloudAgent on environment `limbic-env`, following the rest of this workflow and
+  `COORDINATION.md`.
+- **Limbic Issue Bot** owns this document and ad-hoc desk / merge digest work. It does
+  not run standing intake or triage.
+
 ## 1. Establish the issue as the current source of work
 
 - Identify the exact issue, repository, and current branch/base branch.
 - Read the issue title, body, labels, comments, linked pull requests, and related issues.
 - Compare the issue with the current repository and `origin/main`; do not assume the issue's
   original description still matches the product.
-- Refresh the issue's title, description, scope, links, and acceptance criteria when access
-  and authorization permit. Record what changed and why.
+- When the issue is unclaimed, refreshing the title, description, scope, links, labels,
+  and acceptance criteria is Limbic Triage's job. Implementers do not edit the issue.
+- Implementers record **Observed** when the issue was already refreshed, or when an
+  issue write returned 403.
 - Separate facts observed in the issue or repository from inferences and requested behavior.
 
 If GitHub access is unavailable or unauthenticated, do not invent issue metadata or claim that
