@@ -1,13 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Chip } from "@/components/Chip";
-import { ArticleCard } from "@/components/ArticleCard";
+import { ArticleCard, type ArticleCardModel } from "@/components/ArticleCard";
 import { Pagination } from "@/components/Pagination";
 import { SearchIcon, RefreshIcon } from "@/components/icons";
 import { aiPubmedSearchAction, type AiSearchResult } from "@/app/actions/ai-search";
-import { paginate } from "@/lib/pagination";
-import type { DecoratedArticle } from "@/lib/feed";
+import { searchArticlesHref, type SearchSpecialtyFilter, type SearchTypeFilter } from "@/lib/search-articles";
 import type { ArticleType, Specialty } from "@/lib/types";
 
 const TYPE_TABS: { id: ArticleType | "all"; label: string }[] = [
@@ -80,52 +80,76 @@ function AiPubmedSearch({ onResult }: { onResult: (result: AiSearchResult | null
 
 export function SearchScreen({
   articles,
+  resultCount,
+  page,
+  totalPages,
   initialType = "all",
   initialSpecialty = "all",
   initialQuery = "",
   initialNewOnly = false,
-  todayStr,
 }: {
-  articles: DecoratedArticle[];
-  initialType?: ArticleType | "all";
+  articles: ArticleCardModel[];
+  resultCount: number;
+  page: number;
+  totalPages: number;
+  initialType?: SearchTypeFilter;
   /** Pre-selects the Specialty chip — set via /search?specialty=... (see
    *  lib/threads.ts's per-article-type node links, the first caller of this). */
-  initialSpecialty?: Specialty | "all";
+  initialSpecialty?: SearchSpecialtyFilter;
   initialQuery?: string;
   /** True when arriving from the Home dashboard's Studies/Guidelines tile (via
    *  /search?new=1) — starts the results filtered down to just today's new items,
    *  matching the count shown on that tile (see components/DailyDashboard.tsx). */
   initialNewOnly?: boolean;
-  /** The same server-local "today" the dashboard tile counts were computed against (see
-   *  lib/today.ts) — required whenever initialNewOnly can be true. */
-  todayStr?: string;
 }) {
+  const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
-  const [type, setType] = useState<ArticleType | "all">(initialType);
-  const [specialty, setSpecialty] = useState<Specialty | "all">(initialSpecialty);
+  const [type, setType] = useState<SearchTypeFilter>(initialType);
+  const [specialty, setSpecialty] = useState<SearchSpecialtyFilter>(initialSpecialty);
   const [newOnly, setNewOnly] = useState(initialNewOnly);
-  const [page, setPage] = useState(1);
   const [aiResult, setAiResult] = useState<AiSearchResult | null>(null);
 
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    let list = articles.filter((a) => {
-      if (type !== "all" && a.type !== type) return false;
-      if (specialty !== "all" && a.specialty !== specialty) return false;
-      if (newOnly && a.date !== todayStr) return false;
-      if (!q) return true;
-      return (
-        a.title.toLowerCase().includes(q) ||
-        a.summary.toLowerCase().includes(q) ||
-        a.tags.some((t) => t.toLowerCase().includes(q)) ||
-        a.source.toLowerCase().includes(q)
-      );
-    });
-    list = list.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    return list;
-  }, [articles, query, type, specialty, newOnly, todayStr]);
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
+  useEffect(() => {
+    setType(initialType);
+  }, [initialType]);
+  useEffect(() => {
+    setSpecialty(initialSpecialty);
+  }, [initialSpecialty]);
+  useEffect(() => {
+    setNewOnly(initialNewOnly);
+  }, [initialNewOnly]);
 
-  const { pageItems, totalPages, page: clampedPage } = useMemo(() => paginate(results, page), [results, page]);
+  function navigate(next: {
+    type?: SearchTypeFilter;
+    specialty?: SearchSpecialtyFilter;
+    q?: string;
+    newOnly?: boolean;
+    page?: number;
+  }) {
+    router.replace(
+      searchArticlesHref({
+        type: next.type ?? type,
+        specialty: next.specialty ?? specialty,
+        q: next.q ?? query,
+        newOnly: next.newOnly ?? newOnly,
+        page: next.page ?? 1,
+      })
+    );
+  }
+
+  useEffect(() => {
+    const handle = window.setTimeout(() => {
+      if (query.trim() === initialQuery.trim()) return;
+      navigate({ q: query, page: 1 });
+    }, 300);
+    return () => window.clearTimeout(handle);
+    // Filter chips navigate immediately; this effect only republishes `q` after the reader
+    // pauses typing so each keystroke does not refetch the pool.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, initialQuery]);
 
   return (
     <div className="screen-pad">
@@ -172,9 +196,16 @@ export function SearchScreen({
               }}
             >
               <span style={{ fontSize: 13, color: "var(--color-accent-800)" }}>
-                Showing only what&rsquo;s new today, {results.length} {results.length === 1 ? "item" : "items"}
+                Showing only what&rsquo;s new today, {resultCount} {resultCount === 1 ? "item" : "items"}
               </span>
-              <button type="button" className="btn btn-ghost" onClick={() => setNewOnly(false)}>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => {
+                  setNewOnly(false);
+                  navigate({ newOnly: false, page: 1 });
+                }}
+              >
                 Show all
               </button>
             </div>
@@ -185,10 +216,7 @@ export function SearchScreen({
               className="input"
               placeholder="Search articles, topics, sources…"
               value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setPage(1);
-              }}
+              onChange={(e) => setQuery(e.target.value)}
             />
           </div>
 
@@ -202,7 +230,7 @@ export function SearchScreen({
                 active={type === t.id}
                 onClick={() => {
                   setType(t.id);
-                  setPage(1);
+                  navigate({ type: t.id, page: 1 });
                 }}
               >
                 {t.label}
@@ -220,7 +248,7 @@ export function SearchScreen({
                 active={specialty === t.id}
                 onClick={() => {
                   setSpecialty(t.id);
-                  setPage(1);
+                  navigate({ specialty: t.id, page: 1 });
                 }}
               >
                 {t.label}
@@ -229,10 +257,10 @@ export function SearchScreen({
           </div>
 
           <div style={{ fontSize: 13, color: "var(--color-neutral-700)", marginBottom: 10 }}>
-            {results.length} {results.length === 1 ? "result" : "results"}
+            {resultCount} {resultCount === 1 ? "result" : "results"}
           </div>
 
-          {results.length === 0 ? (
+          {resultCount === 0 ? (
             <div style={{ textAlign: "center", padding: "48px 16px", color: "var(--color-neutral-700)" }}>
               <SearchIcon size={26} style={{ color: "var(--color-neutral-400)", marginBottom: 10 }} />
               <div style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text)" }}>
@@ -255,11 +283,11 @@ export function SearchScreen({
           ) : (
             <>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {pageItems.map((a) => (
+                {articles.map((a) => (
                   <ArticleCard key={a.id} article={a} />
                 ))}
               </div>
-              <Pagination page={clampedPage} totalPages={totalPages} onPageChange={setPage} />
+              <Pagination page={page} totalPages={totalPages} onPageChange={(next) => navigate({ page: next })} />
             </>
           )}
         </>

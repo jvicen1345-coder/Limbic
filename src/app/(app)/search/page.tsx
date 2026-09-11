@@ -4,37 +4,41 @@ import { getArticles } from "@/lib/articles";
 import { decorateArticle } from "@/lib/feed";
 import { SearchScreen } from "@/components/SearchScreen";
 import { todayLocalDateStr } from "@/lib/today";
-import type { ArticleType, Specialty } from "@/lib/types";
-
-const VALID_TYPES: ArticleType[] = ["research", "guideline", "industry", "ce", "product"];
-const VALID_SPECIALTIES: Specialty[] = ["ortho", "neuro", "sports", "pediatric", "geriatric"];
+import { paginate } from "@/lib/pagination";
+import { filterSearchArticles, parseSearchQuery, toSearchArticle } from "@/lib/search-articles";
 
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string; specialty?: string; q?: string; new?: string }>;
+  searchParams: Promise<{ type?: string; specialty?: string; q?: string; new?: string; page?: string }>;
 }) {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const [articles, savedRows, { type, specialty, q, new: newParam }] = await Promise.all([
+  const [articles, savedRows, rawParams] = await Promise.all([
     getArticles(),
     prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true } }),
     searchParams,
   ]);
   const savedIds = savedRows.map((r) => r.articleId);
-  const decorated = articles.map((a) => decorateArticle(a, savedIds));
-  const initialType = VALID_TYPES.includes(type as ArticleType) ? (type as ArticleType) : "all";
-  const initialSpecialty = VALID_SPECIALTIES.includes(specialty as Specialty) ? (specialty as Specialty) : "all";
+  const query = parseSearchQuery(rawParams);
+  const todayStr = todayLocalDateStr();
+  const matches = filterSearchArticles(articles, query, todayStr);
+  const { pageItems, page, totalPages } = paginate(matches, query.page);
+  // Decorate and trim only the current page — the rest of the live + PubMed + CPG pool
+  // stays on the server so the Search document does not serialize it for client filtering.
+  const cards = pageItems.map((a) => toSearchArticle(decorateArticle(a, savedIds)));
 
   return (
     <SearchScreen
-      articles={decorated}
-      initialType={initialType}
-      initialSpecialty={initialSpecialty}
-      initialQuery={q ?? ""}
-      initialNewOnly={newParam === "1"}
-      todayStr={todayLocalDateStr()}
+      articles={cards}
+      resultCount={matches.length}
+      page={page}
+      totalPages={totalPages}
+      initialType={query.type}
+      initialSpecialty={query.specialty}
+      initialQuery={query.q}
+      initialNewOnly={query.newOnly}
     />
   );
 }
