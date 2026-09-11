@@ -101,3 +101,198 @@
 .patient-brief-topbar { flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px 14px; }
 .patient-brief-topbar > a { order: 1; }
 }
+
+/* Visual progress tracker panels (issue #457) — literal colors, always light-mode, same
+   prefix as the rest of this printable document. Panels with no data are omitted in the
+   markup; these rules only style panels that actually rendered. */
+.patient-brief-panel {
+  margin-bottom: 22px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.patient-brief-panel-intro {
+  font-size: 12.5px;
+  color: #555;
+  line-height: 1.55;
+  margin: 0 0 10px;
+}
+.patient-brief-plain-label {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+}
+.patient-brief-muted {
+  font-size: var(--fs-10-5);
+  color: #666;
+  margin: 6px 0 0;
+}
+.patient-brief-goal-banner {
+  background: #f5f5f3;
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.patient-brief-goal-quote {
+  font-size: 16px;
+  line-height: 1.45;
+  margin: 0;
+  color: #1a1a1a;
+}
+.patient-brief-goal-long {
+  font-size: 13px;
+  color: #555;
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+.patient-brief-outcome-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.patient-brief-outcome-card {
+  border: 1px solid #e6e6e2;
+  border-left: 4px solid #c8c8c2;
+  border-radius: 4px;
+  padding: 10px 12px 12px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  background: #fff;
+}
+.patient-brief-verdict--good { border-left-color: #16a34a; }
+.patient-brief-verdict--warn { border-left-color: #c9853a; }
+.patient-brief-verdict--bad { border-left-color: #dc2626; }
+.patient-brief-outcome-name {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #1a1a1a;
+}
+.patient-brief-spark {
+  display: block;
+  width: 100%;
+  height: 64px;
+  background: #fafaf7;
+  border-radius: 4px;
+  margin-top: 6px;
+}
+.patient-brief-spark-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-10);
+  color: #777;
+  margin-top: 4px;
+}
+.patient-brief-bar-track {
+  display: block;
+  width: 100%;
+  height: 10px;
+  background: #eee;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.patient-brief-bar-fill {
+  display: block;
+  height: 10px;
+  background: #3b6fe0;
+  border-radius: 5px;
+}
+.patient-brief-bar-fill--left { background: #3b6fe0; }
+.patient-brief-bar-fill--right { background: #c9853a; }
+.patient-brief-plan-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #555;
+}
+.patient-brief-strength-card {
+  padding: 8px 0 10px;
+  border-bottom: 1px solid #eee;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.patient-brief-strength-card:last-child { border-bottom: none; }
+.patient-brief-strength-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.patient-brief-strength-name { font-size: 13.5px; font-weight: 700; color: #1a1a1a; }
+.patient-brief-lsi-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  font-size: var(--fs-11);
+  font-weight: 700;
+}
+.patient-brief-strength-bar-row .patient-brief-bar-track { flex: 1; width: auto; min-width: 0; }
+.patient-brief-strength-side { width: 40px; flex-shrink: 0; color: #666; }
+.patient-brief-strength-value { width: 64px; flex-shrink: 0; text-align: right; }
+.patient-brief-change-row {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.patient-brief-change-row:last-child { border-bottom: none; }
+.patient-brief-progress-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.patient-brief-progress-table th {
+  text-align: left;
+  font-size: var(--fs-10-5);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #666;
+  border-bottom: 1px solid #ccc;
+  padding: 6px 8px 6px 0;
+}
+.patient-brief-progress-table td { padding: 8px 8px 8px 0; border-bottom: 1px solid #eee; }
+.patient-brief-goal-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
+}
+.patient-brief-goal-col-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: #1a1a1a;
+}
+.patient-brief-goal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.patient-brief-goal-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+.patient-brief-goal-text { display: block; font-size: 13px; color: #1a1a1a; }
+@media print {
+.patient-brief-panel,
+.patient-brief-outcome-card,
+.patient-brief-strength-card,
+.patient-brief-change-row,
+.patient-brief-spark {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.patient-brief-goal-banner,
+.patient-brief-outcome-card,
+.patient-brief-spark { background: #fff !important; }
+.patient-brief-page { background: #fff !important; }
+}
+@media (max-width: 700px) {
+.patient-brief-doc { margin: 16px 12px 40px; padding: 28px 20px; }
+.patient-brief-meta-grid { grid-template-columns: 1fr; }
+.patient-brief-outcome-grid,
+.patient-brief-goal-cols { grid-template-columns: 1fr; }
+.patient-brief-strength-bar-row { gap: 8px; }
+.patient-brief-progress-table { font-size: 12px; }
+}
