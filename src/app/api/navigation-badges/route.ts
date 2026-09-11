@@ -31,9 +31,11 @@ export async function GET() {
       : Promise.resolve(0),
   ]);
 
-  // Match Home's "new since your last visit" cutoff. On a Home hard load, recordHomeVisit
-  // completes before this post-hydration request begins, so the badge reflects that visit
-  // instead of briefly showing articles the reader has just landed on Home to see.
+  // Match Home's "new since your last visit" cutoff. Home stamps lastVisitedAt via after()
+  // so the write is off the HTML critical path; this post-hydration request usually lands
+  // after that stamp, clearing APTA counts the reader has just opened Home to see. If it
+  // races ahead of after(), the badge briefly uses the previous visit — same articles the
+  // feed is already badging as new.
   const sinceVisit = user.lastVisitedAt?.getTime() ?? 0;
   const aptaCount = aptaArticles.filter((article) => new Date(article.date).getTime() > sinceVisit).length;
 
