@@ -8,7 +8,6 @@ import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import { SPECIALTY_META } from "@/lib/meta";
 import { AppShell } from "@/components/AppShell";
 import { zoneTwoOrder } from "@/lib/user-role";
-import { getClinicMembershipInfo } from "@/app/actions/clinic-pro";
 import { TimeZoneSync } from "@/components/TimeZoneSync";
 import { TourHost } from "@/components/TourHost";
 import { getTimeZone } from "@/lib/user-time-zone";
@@ -29,18 +28,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     return <OnboardingRoleModal />;
   }
 
-  // Only data that changes the shell's structure stays on the blocking path. The three
-  // numeric badges load after hydration from /api/navigation-badges, so a cold Google News
-  // RSS request can never hold up the authenticated shell. Clinic membership still belongs
-  // here because it controls which clinic navigation renders; time zone stays because child
-  // pages key calendar-day data from the same server value.
-  const [clinicMembership, timeZone] = await Promise.all([
-    getClinicMembershipInfo(),
-    // Resolved here as well as in each page that keys something on a calendar date, so
-    // TimeZoneSync below can tell whether the zone the server just rendered against is the
-    // one the reader is actually in (see components/TimeZoneSync.tsx).
-    getTimeZone(user),
-  ]);
+  // Only data that changes the shell's structure stays on the blocking path. Numeric badges
+  // and the clinic-name footer pill load after hydration from /api/navigation-badges — the
+  // pill is nonessential chrome (it does not gate which nav items exist). Time zone stays
+  // because child pages key calendar-day data from the same server value.
+  const timeZone = await getTimeZone(user);
 
   const hasLicense = hasLicenseAccess(user);
   // This is derivable from the already-loaded user. Calling isSiteAdmin() here would read
@@ -66,7 +58,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       isAdmin={isAdmin}
       showNexus={showNexus}
       zoneTwoOrder={zoneTwoOrder(user.userRole)}
-      clinicMembership={clinicMembership}
     >
       <TimeZoneSync serverTimeZone={timeZone} />
       {/* Mounted for the whole app rather than by Home, which is why tour.css stays on

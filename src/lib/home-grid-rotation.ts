@@ -25,11 +25,11 @@ export function titleFingerprint(title: string): string {
  * Reorders the ranked article pool so articles the reader hasn't seen in the grid yet
  * (since their last Refresh click — see app/actions/home.ts refreshHomeFeedAction) sort
  * ahead of ones they have, each group keeping its existing relative rank order. Called
- * client-side from components/HomeFeed.tsx, only for the grid's own selection — the hero
- * and the rest of the ranked feed read straight off the original `articles` prop, so
- * Refresh rotates which articles fill the grid without disturbing "best-ranked content
- * first" anywhere else. No server-only APIs here (no prisma, no secrets) — safe to bundle
- * into the client.
+ * from lib/home-feed-selection.ts (server first paint and client tab switches), only for
+ * the grid's own selection — the hero and the rest of the ranked feed read straight off
+ * the original `articles` prop, so Refresh rotates which articles fill the grid without
+ * disturbing "best-ranked content first" anywhere else. No server-only APIs here (no
+ * prisma, no secrets) — safe to bundle into the client.
  */
 export function orderArticlesForGrid<T extends Article>(articles: T[], gridSeenFingerprints: string[]): T[] {
   const seenSet = new Set(gridSeenFingerprints);
