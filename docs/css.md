@@ -13,11 +13,19 @@ re-exports the root barrel.
 | `tokens.css` | Root layout via `index.css` | `:root` and `html[data-theme="dark"]` |
 | `base.css` | Root | Reset, type, `.card` / `.btn` / `.tag` / evidence / forms |
 | `responsive-lg.css` | Root | Shared `min-width: 1024px` type and `.card` padding only |
-| `shell.css`, `tour.css`, `screens.css`, `calendar.css`, `streaks.css`, `onboarding.css`, `programs.css` | `src/app/(app)/layout.tsx` | Authenticated chrome, widgets, and program search (onboarding modal + Profile) |
+| `shell.css`, `tour.css`, `screens.css`, `programs.css` | `src/app/(app)/layout.tsx` | Authenticated chrome. `tour.css` stays here on purpose — `TourHost` is mounted for the whole signed-in app. Program search stays because the role onboarding modal (dynamically imported) and Profile both use it. |
+| `calendar.css` | `(app)/calendar`, `(app)/home`, `(app)/profile`, calculators / lab-values / dashboard | Calendar page, Home widget, and `.cal-modal-*` consumers |
+| `onboarding.css` | `/onboarding`, `/sign-in`, and the routes that still render those classes (Profile, Atrium, Atlas, clinic setup) | Role cards, theme picker, terms. The role modal imports this sheet itself. |
+| `streaks.css` | `(app)/profile/layout.tsx`, `(app)/boards/layout.tsx` | Streak cards and the Boards header pill |
 | `profile.css` | `(app)/profile/layout.tsx` | Program Timeline rotations, Membership tier table |
 | `<feature>.css` | That feature's `layout.tsx` (or page) | Page-private rules |
-| `metrics.css` | `(app)/wellness/layout.tsx`, `(app)/pro/layout.tsx` | Calculator readouts, rating badges |
-| `research-tools.css` | `(app)/article/layout.tsx`, `(app)/pro/layout.tsx` | Histogram explorer, research-literacy guide |
+| `pro.css` | Toolbox routes under `/pro/*` (not the parent layout, not special-tests) | Shared `.pro-*` toolbox primitives |
+| `pro-dashboard.css` | `/pro/dashboard`, clinic setup/report, Force Lab | `.clindash-*` |
+| `pro-force-lab.css` | `/pro/force-lab`, dashboard Force Lab cards | `.forcelab-*` |
+| `pro-special-tests.css` | `/pro/special-tests` | The handful of toolbox rules that page needs |
+| `playbooks.css` | `(app)/student/playbooks/layout.tsx` | Playbook hub + reader; not the Atrium hub |
+| `metrics.css` | `(app)/wellness/layout.tsx`, `(app)/pro/research-literacy/layout.tsx` | Calculator readouts, rating badges |
+| `research-tools.css` | `(app)/article/layout.tsx`, `(app)/pro/research-literacy/layout.tsx` | Histogram explorer, research-literacy guide |
 | `patient-brief.css` | `pro/patient-brief`, `pro/force-lab`, `admin/connexion-safety-score` layouts | Printable patient brief |
 | `paywall.css` | `(app)/wellness/layout.tsx`, `(app)/connexion/layout.tsx` | Agent paywall notice |
 

@@ -210,6 +210,12 @@
 .cards-grid > * { min-width: 0; }
 @media (max-width: 799px) {
   .cards-grid { grid-template-columns: minmax(0, 1fr); }}
+/* Hide an unpaired trailing card on paginated 2-column grids (Search, Saved).
+   Lived in streaks.css when that sheet was global to the signed-in shell (#465).
+   Home opts out via .home-cards-grid in home.css. */
+@media (min-width: 800px) {
+  .cards-grid > *:last-child:nth-child(odd) { display: none; }
+}
 
 /* "Analyze This Study" panel on the article detail page (see
    components/ArticleResearchPanel.tsx, components/ArticleReadingPane.tsx) — collapsed by

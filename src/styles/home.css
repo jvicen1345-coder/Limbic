@@ -165,6 +165,84 @@
   .cards-grid.home-cards-grid { gap: 24px; }
 }
 
+/* Home used to pull article.css for this grid and nexus.css for the avatar /
+   topic-filter pill (#465). Copies so Home can drop those sheets; article.css
+   and nexus.css keep their originals for /article, /news, /search, /nexus. */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 0;
+}
+.cards-grid > * { min-width: 0; }
+@media (max-width: 799px) {
+  .cards-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (min-width: 800px) {
+  .cards-grid > *:last-child:nth-child(odd) { display: none; }
+  .cards-grid.home-cards-grid > *:last-child:nth-child(odd) { display: block; }
+}
+
+.avatar {
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  border-radius: 999px; background: var(--color-accent-100); color: var(--color-accent-700);
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  overflow: hidden;
+}
+
+.topic-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+  font-size: 12.5px;
+  padding: 6px 8px 6px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+  animation: fade-in 0.3s ease;
+}
+.topic-filter-pill button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent-800);
+  cursor: pointer;
+}
+.topic-filter-pill button:hover {
+  background: color-mix(in srgb, var(--color-accent) 28%, transparent);
+}
+@media (pointer: coarse) {
+  .topic-filter-pill button { width: 28px; height: 28px; }
+}
+
+.home-refresh-pill-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.home-refresh-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-card-surface);
+  color: var(--color-neutral-700);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.home-refresh-pill:hover { background: var(--color-neutral-100); }
+.home-refresh-pill:disabled { cursor: default; opacity: 0.7; }
+
 /* Moved from agent.css — threads teaser card — Home and Search */
 /* — Feed-card Threads teaser (see components/ArticleCard.tsx) — a direct, always-visible
    link into the article's real Threads web, not a hover-revealed preview. */
