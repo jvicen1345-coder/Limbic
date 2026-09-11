@@ -18,9 +18,15 @@
  * list that mirrors the Admin nav is the list they can answer it from. `connexion` is the
  * one exception, covering both Connexion screens (visits and safety scores) because they
  * are one job — the same person triages a visit request and scores the home it is for.
+ *
+ * /admin/accounts is deliberately absent and is NOT delegable. It is the reader list — every
+ * account's email, sign-in method and billing state — plus account deletion, paid-tier comps,
+ * and the controls that appoint co-admins in the first place. It stays with the owner
+ * accounts on FOUNDING_FUNDERS_ADMIN_EMAILS (see isSiteAdmin in lib/admin.ts), so there is no
+ * area to grant and nothing for a co-admin to see there. Adding it back here would make the
+ * whole reader list one click away for anyone holding any area, so don't.
  */
 export const ADMIN_AREAS = [
-  "accounts",
   "licenses",
   "suggestions",
   "copyright",
@@ -38,7 +44,6 @@ export type AdminArea = (typeof ADMIN_AREAS)[number];
  *  (see components/shell/NavContent.tsx), so an owner picking areas and a co-admin reading
  *  their sidebar are looking at the same words. */
 export const ADMIN_AREA_LABELS: Record<AdminArea, string> = {
-  accounts: "Accounts",
   licenses: "License Queue",
   suggestions: "Suggestions",
   copyright: "Copyright Notices",
@@ -54,8 +59,6 @@ export const ADMIN_AREA_LABELS: Record<AdminArea, string> = {
  *  sounds harmless and means "can delete any account and comp any paid tier." An owner
  *  should be able to see the blast radius of a grant without reading the source. */
 export const ADMIN_AREA_DESCRIPTIONS: Record<AdminArea, string> = {
-  accounts:
-    "View every account, delete accounts, and comp paid tiers. Does not include granting co-admin access.",
   licenses: "Verify or reject PT license submissions.",
   suggestions: "Read and clear reader suggestions.",
   copyright: "Work the DMCA queue: record notices, take content down, restore it, suspend repeat infringers.",

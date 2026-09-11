@@ -1,25 +1,21 @@
 import { redirect } from "next/navigation";
-import { hasAdminArea, isSiteAdmin } from "@/lib/admin";
+import { isSiteAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { compedAreas, isAdminEmail } from "@/lib/session";
 import { parseAdminAreas } from "@/lib/admin-areas";
 import { AccountsAdminTable } from "@/components/AccountsAdminTable";
 
-/** The Accounts area — every account, with a delete button per row (see
- *  AccountsAdminTable.tsx, deleteUserAction in app/actions/admin.ts). Same "must hold this
- *  area" redirect idiom as /admin/suggestions, /admin/licenses, /admin/connexion-visits.
+/** Owner-only — every account, with a delete button per row (see AccountsAdminTable.tsx,
+ *  deleteUserAction in app/actions/admin.ts), and the Co-Admin column that appoints and
+ *  un-appoints co-admins.
  *
- *  Also where co-admins are appointed and un-appointed (the Co-Admin column), which is why
- *  this page asks two separate questions rather than one: holding the Accounts area is what
- *  gets you in, and being an allowlist owner is what lets you change who else is an admin. */
+ *  The one admin page with no delegable area behind it (see lib/admin-areas.ts): it carries
+ *  the whole reader list — every email, sign-in method and billing state — along with account
+ *  deletion and the controls that hand out admin access. So unlike /admin/suggestions or
+ *  /admin/licenses, which gate on holding their area, this gates on being an allowlist owner,
+ *  and a co-admin is redirected home like anyone else. */
 export default async function AdminAccountsPage() {
-  if (!(await hasAdminArea("accounts"))) redirect("/home");
-  // Co-admin access is the one thing on this page an Accounts co-admin can look at but not
-  // change — only an allowlist owner can appoint or remove one (see the note above
-  // grantAdminAreaAction in app/actions/admin.ts). The chips render read-only below when
-  // this is false; the server actions refuse either way, this just stops the page from
-  // offering a control that would only ever fail.
-  const canManageAdmins = await isSiteAdmin();
+  if (!(await isSiteAdmin())) redirect("/home");
 
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
@@ -72,14 +68,12 @@ export default async function AdminAccountsPage() {
     <div className="screen-pad" style={{ maxWidth: 1180, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Accounts</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
-        Every registered account, {rows.length} total.{" "}
-        {canManageAdmins
-          ? "Use Co-Admin to give someone access to specific behind-the-scenes areas, or to take it back."
-          : "Co-admin access is shown here but can only be changed by a full admin."}
+        Every registered account, {rows.length} total. Use Co-Admin to give someone access to
+        specific behind-the-scenes areas, or to take it back.
       </p>
 
       <div className="card elev-sm">
-        <AccountsAdminTable rows={rows} canManageAdmins={canManageAdmins} />
+        <AccountsAdminTable rows={rows} />
       </div>
     </div>
   );

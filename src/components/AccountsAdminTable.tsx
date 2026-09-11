@@ -125,22 +125,19 @@ function CoAdminCell({ row, expanded, onToggle }: { row: AccountRow; expanded: b
 }
 
 /** The expanded Co-Admin panel for one row — every admin area as a toggle, with what the
- *  area actually opens up written under it. Ten chips is too much to live inside a table
+ *  area actually opens up written under it. Nine chips is too much to live inside a table
  *  cell, so the cell shows a summary and this drops into a full-width row underneath it.
  *
- *  Read-only (`canManage` false) for an Accounts co-admin looking at the same page: they can
- *  see who holds what, which is genuinely useful when working accounts, but only an
- *  allowlist owner can change it (see requireOwnerForTarget in app/actions/admin.ts). The
- *  server refuses either way; this just doesn't dangle a control that would always fail. */
+ *  Everyone who can see this page can use it: /admin/accounts is owner-only (see the note in
+ *  lib/admin-areas.ts on why it has no delegable area), so there is no reader here who could
+ *  look at these controls but not work them. */
 function CoAdminPanel({
   userId,
   areas,
-  canManage,
   onChange,
 }: {
   userId: string;
   areas: AdminArea[];
-  canManage: boolean;
   onChange: (areas: AdminArea[]) => void;
 }) {
   const [pending, setPending] = useState<AdminArea | null>(null);
@@ -166,9 +163,9 @@ function CoAdminPanel({
     // where an owner would never scroll to find it.
     <div style={{ padding: "6px 0 10px", maxWidth: 720 }}>
       <div style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", marginBottom: 8 }}>
-        {canManage
-          ? "Pick the behind-the-scenes areas this person can open. Everything else stays hidden from them, and revoking an area takes effect on their next page load."
-          : "Read-only — only a full admin can change co-admin access."}
+        Pick the behind-the-scenes areas this person can open. Everything else — this page
+        included — stays hidden from them, and revoking an area takes effect on their next page
+        load.
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))", gap: "10px 14px" }}>
         {ADMIN_AREAS.map((area) => {
@@ -177,23 +174,18 @@ function CoAdminPanel({
             <div key={area} style={{ display: "flex", flexDirection: "column", gap: 3, alignItems: "flex-start" }}>
               <button
                 type="button"
-                disabled={!canManage || pending === area}
+                disabled={pending === area}
                 onClick={() => toggle(area)}
                 className="btn"
                 style={{
                   fontSize: "var(--fs-11)",
                   padding: "2px 8px",
                   borderRadius: 999,
-                  cursor: canManage ? "pointer" : "default",
                   border: active ? "1px solid var(--color-accent)" : "1px solid var(--color-neutral-300)",
                   background: active ? "color-mix(in srgb, var(--color-accent) 16%, transparent)" : "transparent",
                   color: active ? "var(--color-accent)" : "var(--color-neutral-700)",
                 }}
-                title={
-                  canManage
-                    ? `${active ? "Revoke" : "Grant"} ${ADMIN_AREA_LABELS[area]}`
-                    : ADMIN_AREA_LABELS[area]
-                }
+                title={`${active ? "Revoke" : "Grant"} ${ADMIN_AREA_LABELS[area]}`}
               >
                 {pending === area ? "\u2026" : ADMIN_AREA_LABELS[area]}
               </button>
@@ -277,18 +269,10 @@ function signInMethodLabel(row: Pick<AccountRow, "hasGoogle" | "hasPassword">): 
   return methods.length > 0 ? methods.join(", ") : "None";
 }
 
-/** /admin/accounts (gated by hasAdminArea("accounts") in that page) — every account, with a delete
+/** /admin/accounts (owner-only, gated by isSiteAdmin() in that page) — every account, with a delete
  *  button per row. Client component only for that delete interaction; the row data itself
  *  is fetched server-side and passed in once. */
-export function AccountsAdminTable({
-  rows: initialRows,
-  canManageAdmins,
-}: {
-  rows: AccountRow[];
-  /** True only for an allowlist owner (see isSiteAdmin in lib/admin.ts) — everyone else who
-   *  can reach this page sees the Co-Admin panel read-only. */
-  canManageAdmins: boolean;
-}) {
+export function AccountsAdminTable({ rows: initialRows }: { rows: AccountRow[] }) {
   const [rows, setRows] = useState(initialRows);
   // At most one Co-Admin panel open at a time: it is a full-width row of ten labelled
   // toggles, and two of them open at once turns the table into a wall.
@@ -386,21 +370,13 @@ export function AccountsAdminTable({
                       />
                     </td>
                     <td style={{ padding: "6px 0 6px 10px" }}>
-                      {/* Same "don't offer a control that can only fail" rule as the Co-Admin
-                          panel: deleteUserAction refuses to let a co-admin delete an owner's
-                          account (see app/actions/admin.ts), so their row doesn't carry the
-                          button. Owners still see it on each other's rows. */}
-                      {u.isOwnerAdmin && !canManageAdmins ? (
-                        <span style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)" }}>—</span>
-                      ) : (
-                        <DeleteButton
-                          userId={u.id}
-                          onDeleted={() => {
-                            setRows((prev) => prev.filter((r) => r.id !== u.id));
-                            router.refresh();
-                          }}
-                        />
-                      )}
+                      <DeleteButton
+                        userId={u.id}
+                        onDeleted={() => {
+                          setRows((prev) => prev.filter((r) => r.id !== u.id));
+                          router.refresh();
+                        }}
+                      />
                     </td>
                   </tr>
                   {expandedCoAdminId === u.id && !u.isOwnerAdmin && (
@@ -409,7 +385,6 @@ export function AccountsAdminTable({
                         <CoAdminPanel
                           userId={u.id}
                           areas={u.adminAreas}
-                          canManage={canManageAdmins}
                           onChange={(areas) =>
                             setRows((prev) => prev.map((r) => (r.id === u.id ? { ...r, adminAreas: areas } : r)))
                           }

@@ -83,6 +83,11 @@ interface NavContentProps {
    *  gated on its own area, so a co-admin's sidebar lists exactly the screens they can
    *  actually open rather than a set of links that redirect them home. */
   adminAreas: AdminArea[];
+  /** True only for an owner on FOUNDING_FUNDERS_ADMIN_EMAILS. Gates the one Admin link with
+   *  no area behind it: /admin/accounts carries the reader list, account deletion and the
+   *  co-admin controls themselves, so it is owner-only and never delegated (see
+   *  lib/admin-areas.ts). Everything else in this section goes by area. */
+  isOwnerAdmin: boolean;
   /** Populated after mount by /api/navigation-badges; absent while loading or on failure. */
   aptaCount?: number;
   /** Populated with the same non-blocking request as aptaCount. */
@@ -104,7 +109,7 @@ interface NavContentProps {
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-export function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, nexusVisible, adminAreas, aptaCount, nexusRequestCount, zoneTwoOrder, clinicMembership, onNavigate }: NavContentProps) {
+export function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, nexusVisible, adminAreas, isOwnerAdmin, aptaCount, nexusRequestCount, zoneTwoOrder, clinicMembership, onNavigate }: NavContentProps) {
   const pathname = usePathname();
   /** Whether this account holds one admin area — used per Admin link below. */
   const has = (area: AdminArea) => adminAreas.includes(area);
@@ -406,7 +411,7 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
                   onNavigate={onNavigate}
                 />
               )}
-              {has("accounts") && (
+              {isOwnerAdmin && (
                 <NavLink href="/admin/accounts" icon={<UsersIcon />} label="Accounts" bold={false} onNavigate={onNavigate} />
               )}
               {has("programs") && (

@@ -6,7 +6,7 @@ import "@/styles/streaks.css";
 import "@/styles/onboarding.css";
 import "@/styles/programs.css";
 import { redirect } from "next/navigation";
-import { getCurrentUser, hasStudentAccess, hasLicenseAccess, adminAreasForUser } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess, hasLicenseAccess, adminAreasForUser, isAdminEmail } from "@/lib/session";
 import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import { SPECIALTY_META } from "@/lib/meta";
 import { AppShell } from "@/components/AppShell";
@@ -48,6 +48,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // while adminAreas is the delegable admin tooling a co-admin can hold part of (see
   // lib/admin-areas.ts).
   const adminAreas = adminAreasForUser(user);
+  // /admin/accounts has no area of its own — it is owner-only (see lib/admin-areas.ts), so
+  // the sidebar needs this alongside the areas to decide whether to list it.
+  const isOwnerAdmin = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
 
   return (
     <AppShell
@@ -61,6 +64,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       isVerifiedStudent={user.studentTier === "limbicStudent"}
       nexusVisible={nexusVisibleTo(user)}
       adminAreas={adminAreas}
+      isOwnerAdmin={isOwnerAdmin}
       zoneTwoOrder={zoneTwoOrder(user.userRole)}
       clinicMembership={clinicMembership}
     >

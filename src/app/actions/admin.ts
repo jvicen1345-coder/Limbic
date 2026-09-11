@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { isSiteAdmin, hasAdminArea } from "@/lib/admin";
+import { isSiteAdmin } from "@/lib/admin";
 import { getCurrentUser, compedAreas, isAdminEmail, type GrantArea } from "@/lib/session";
 import { ADMIN_AREAS, parseAdminAreas, type AdminArea } from "@/lib/admin-areas";
 
@@ -12,8 +12,9 @@ export interface DeleteUserResult {
 }
 
 /**
- * Accounts-area admins only (see lib/admin.ts hasAdminArea) — deletes one account and everything
- * that cascades off it in schema.prisma (saved articles, reading/games/boards history, HEP
+ * Owner-only, like the rest of /admin/accounts (see lib/admin.ts isSiteAdmin, and the note in
+ * lib/admin-areas.ts on why this page has no delegable area) — deletes one account and
+ * everything that cascades off it in schema.prisma (saved articles, reading/games/boards history, HEP
  * programs, calendar events, vitals, Nexus posts/likes/comments/connections/messages), leaving
  * everyone else's data untouched — see app/(app)/admin/accounts/page.tsx, the per-row "Delete"
  * button this backs.
@@ -25,20 +26,11 @@ export interface DeleteUserResult {
  */
 export async function deleteUserAction(userId: string): Promise<DeleteUserResult> {
   const admin = await getCurrentUser();
-  if (!admin || !(await hasAdminArea("accounts"))) return { ok: false, error: "Not authorized." };
+  if (!admin || !(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
   if (userId === admin.id) return { ok: false, error: "Use Profile to delete your own account." };
 
   const target = await prisma.user.findUnique({ where: { id: userId } });
   if (!target) return { ok: false, error: "That account no longer exists." };
-  // A co-admin holding the Accounts area can delete accounts — but not the accounts that
-  // hand out admin access in the first place. Deleting an owner's row wouldn't promote
-  // anyone (the allowlist is an env var, and that email can just sign up again), but it
-  // would lock the person who appointed them out of their own history, and no delegated
-  // area should reach that far. Owners can still delete each other.
-  const targetIsOwner = isAdminEmail(target.email) || isAdminEmail(target.licenseEmail);
-  if (targetIsOwner && !(await isSiteAdmin())) {
-    return { ok: false, error: "Only a full admin can delete a full admin's account." };
-  }
 
   await prisma.$transaction([
     prisma.foundingFunderWaitlist.deleteMany({ where: { email: target.email ?? "" } }),
@@ -55,14 +47,14 @@ export interface GrantAccessResult {
 }
 
 /**
- * Accounts-area admins only (see lib/admin.ts hasAdminArea) — comps `area` (LimbicPro,
+ * Owner-only, like the rest of /admin/accounts — comps `area` (LimbicPro,
  * LimbicStudent, or LimbicWellness+) for one account for free, without touching that account's real
  * isPro/studentTier/isWellnessPlus columns or anything Stripe's webhook keeps in sync with them
  * (see User.compedAccess in schema.prisma and the overlay in lib/session.ts getCurrentUser()) — see
  * the "Granted Access" controls on /admin/accounts (AccountsAdminTable.tsx), the button this backs.
  */
 export async function grantAccessAction(userId: string, area: GrantArea): Promise<GrantAccessResult> {
-  if (!(await hasAdminArea("accounts"))) return { ok: false, error: "Not authorized." };
+  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
 
   const target = await prisma.user.findUnique({ where: { id: userId }, select: { compedAccess: true } });
   if (!target) return { ok: false, error: "That account no longer exists." };
@@ -79,7 +71,7 @@ export async function grantAccessAction(userId: string, area: GrantArea): Promis
 /** The revoke half of grantAccessAction above — removes just `area` from this account's
  *  grants, leaving any other comped areas (and its real billing state) untouched. */
 export async function revokeAccessAction(userId: string, area: GrantArea): Promise<GrantAccessResult> {
-  if (!(await hasAdminArea("accounts"))) return { ok: false, error: "Not authorized." };
+  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
 
   const target = await prisma.user.findUnique({ where: { id: userId }, select: { compedAccess: true } });
   if (!target) return { ok: false, error: "That account no longer exists." };
@@ -106,12 +98,12 @@ export interface AdminAreaResult {
  * Owner-only — the two functions below are what make co-admins possible, and the only two
  * places in the app that write User.adminAreas.
  *
- * They gate on isSiteAdmin() (the FOUNDING_FUNDERS_ADMIN_EMAILS allowlist) rather than on
- * hasAdminArea("accounts") like everything else in this file, and that difference is the
+ * They gate on isSiteAdmin() (the FOUNDING_FUNDERS_ADMIN_EMAILS allowlist), which is the
  * whole security model: an admin area is data an admin could otherwise grant themselves, so
  * the ability to hand one out has to live with an identity that no amount of database access
- * can forge. A co-admin with the Accounts area can delete accounts and comp subscriptions —
- * but they cannot appoint another admin, and they cannot widen their own access.
+ * can forge. That is also why the page they live on has no delegable area of its own (see
+ * lib/admin-areas.ts) — a co-admin never reaches these controls, or the reader list beside
+ * them, at all.
  *
  * That also means an owner can always take access back: revoking is the same allowlist
  * identity acting on the same column, and it takes effect on the co-admin's very next

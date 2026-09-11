@@ -305,12 +305,16 @@ should not be the same grant.
   or remove a co-admin. Leave the variable unset and there are no owners at all — every admin
   surface stays closed and nobody can be appointed.
 - **Co-admins** are ordinary accounts an owner grants specific *areas* to from the Co-Admin
-  column on `/admin/accounts`. The areas are one per admin screen — Accounts, License Queue,
+  column on `/admin/accounts`. The areas are one per admin screen — License Queue,
   Suggestions, Copyright Notices, Appraisals, Boards Tagging, Programs, Movement Lab
   Requests, Connexion, Founding Funders — listed in
   [`src/lib/admin-areas.ts`](src/lib/admin-areas.ts) with a description of what each one
   opens up. A co-admin's sidebar lists exactly the screens they hold, and any other
   `/admin/*` URL redirects them home.
+- **`/admin/accounts` is owner-only and has no area.** It carries the whole reader list —
+  every email, sign-in method and billing state — plus account deletion, paid-tier comps, and
+  the co-admin controls themselves. A co-admin never sees it, whatever else they hold, and
+  there is no grant that would open it. Don't add one back to `ADMIN_AREAS`.
 
 Three properties are worth knowing when changing this:
 
@@ -318,9 +322,9 @@ Three properties are worth knowing when changing this:
    ([`src/lib/admin.ts`](src/lib/admin.ts)). A Server Action is a callable endpoint, so the
    page's redirect is never the enforcement — adding an admin action means adding its check.
 2. **Only an owner can change who is an admin.** `grantAdminAreaAction`/
-   `revokeAdminAreaAction` gate on the env allowlist rather than on the Accounts area, so a
-   co-admin who can delete accounts still cannot appoint anyone or widen their own access.
-   For the same reason, a co-admin cannot delete an owner's account.
+   `revokeAdminAreaAction` gate on the env allowlist, which is also why the page they live on
+   is owner-only: admin areas are data an admin could otherwise grant themselves, so the right
+   to edit that data stays with an identity the database can't forge.
 3. **Co-admin access is not a subscription.** Unlike the owner allowlist, `User.adminAreas`
    is deliberately absent from the paid-tier overlay: delegating the license queue does not
    hand anyone LimbicPro. Comp a tier explicitly with the Granted Access chips if that is

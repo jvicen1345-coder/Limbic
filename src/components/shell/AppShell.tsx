@@ -45,6 +45,7 @@ export interface AppShellProps {
    *  other is which admin tooling this account may open. */
   nexusVisible: boolean;
   adminAreas: AdminArea[];
+  isOwnerAdmin: boolean;
   /** See lib/user-role.ts zoneTwoOrder() — computed in app/(app)/layout.tsx off the
    *  account's userRole. */
   zoneTwoOrder: ZoneTwoKey[];
@@ -64,6 +65,7 @@ export function AppShell({
   isVerifiedStudent,
   nexusVisible,
   adminAreas,
+  isOwnerAdmin,
   zoneTwoOrder,
   clinicMembership,
   children,
@@ -82,6 +84,7 @@ export function AppShell({
     isVerifiedStudent,
     nexusVisible,
     adminAreas,
+    isOwnerAdmin,
     aptaCount: navigationBadges?.aptaCount,
     nexusRequestCount: navigationBadges?.nexusRequestCount,
     zoneTwoOrder,

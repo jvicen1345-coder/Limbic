@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { ADMIN_AREA_LABELS } from "@/lib/admin-areas";
+import { ADMIN_AREAS, ADMIN_AREA_LABELS } from "@/lib/admin-areas";
 import { freshEmail, setUserColumn, signUpAndEnterApp } from "./helpers";
 
 /**
@@ -37,13 +37,21 @@ test("a co-admin gets exactly the admin areas they were granted", async ({ page 
   await page.goto("/home");
   await page.getByRole("button", { name: "Admin", exact: true }).click();
   await expect(page.getByRole("link", { name: ADMIN_AREA_LABELS.licenses })).toBeVisible();
-  // The two other Admin links most likely to be mistaken for "always shown" — Accounts
-  // because it is where co-admins are managed, Copyright because it carries the DMCA queue.
-  await expect(page.getByRole("link", { name: ADMIN_AREA_LABELS.accounts })).toHaveCount(0);
   await expect(page.getByRole("link", { name: ADMIN_AREA_LABELS.copyright })).toHaveCount(0);
 
   await page.goto("/admin/licenses");
   await expect(page).toHaveURL(/\/admin\/licenses$/);
+  await page.goto("/admin/accounts");
+  await expect(page).toHaveURL(/\/home$/);
+
+  // Accounts is owner-only and has no area at all (see lib/admin-areas.ts), so holding
+  // *every* delegable area still doesn't open it — the reader list, account deletion and the
+  // co-admin controls stay with the allowlist. This is the assertion that would catch someone
+  // "fixing" it by adding an accounts area back to the list.
+  await setUserColumn(email, "adminAreas", JSON.stringify([...ADMIN_AREAS]));
+  await page.goto("/admin/licenses");
+  await expect(page.getByRole("link", { name: ADMIN_AREA_LABELS.copyright })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Accounts" })).toHaveCount(0);
   await page.goto("/admin/accounts");
   await expect(page).toHaveURL(/\/home$/);
 });
