@@ -110,19 +110,6 @@ export function SearchScreen({
   const [newOnly, setNewOnly] = useState(initialNewOnly);
   const [aiResult, setAiResult] = useState<AiSearchResult | null>(null);
 
-  useEffect(() => {
-    setQuery(initialQuery);
-  }, [initialQuery]);
-  useEffect(() => {
-    setType(initialType);
-  }, [initialType]);
-  useEffect(() => {
-    setSpecialty(initialSpecialty);
-  }, [initialSpecialty]);
-  useEffect(() => {
-    setNewOnly(initialNewOnly);
-  }, [initialNewOnly]);
-
   function navigate(next: {
     type?: SearchTypeFilter;
     specialty?: SearchSpecialtyFilter;
