@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import "@/styles/pro.css";
+import "@/styles/onboarding.css";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { stripeEnabled, purchaseButtonState } from "@/lib/stripe";

@@ -235,3 +235,12 @@ html[data-theme="dark"] .nav-founding-link-active {
   color: var(--color-text);
 }
 
+/* License / verified-student pills — used by NavContent on every authenticated
+   route (StudentVerifiedBadge) and by ProfessionalCredentialsCard on Profile.
+   Lived in calendar.css; moved here so calendar.css can leave the app layout (#465). */
+.license-badge { display: inline-flex; align-items: center; font-size: var(--fs-11-5); font-weight: 700; padding: 3px 10px; border-radius: 999px; flex-shrink: 0; }
+.license-badge--student { color: var(--color-accent-700); background: color-mix(in srgb, var(--color-accent) 16%, transparent); }
+.license-badge--pending { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
+.license-badge--verified { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 16%, transparent); }
+.license-badge--rejected { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 16%, transparent); }
+

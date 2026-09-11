@@ -1,0 +1,776 @@
+/* ============================================================================
+   LimbicPRO Clinician Dashboard (/pro/dashboard) — extracted from pro.css (#465).
+   Loaded only from dashboard / clinic-report / clinic-setup / force-lab routes
+   (and print layouts that reuse these shapes). Prefixed .clindash- throughout.
+   ============================================================================ */
+
+/* ============================================================================
+   LimbicPRO Clinician Dashboard (/pro/dashboard) — see app/pro/dashboard/page.tsx
+   and components/pro/dashboard/*.tsx. Prefixed .clindash- throughout so nothing here
+   collides with the rest of the app's class names. Reuses the existing design
+   language (.card/.card-kicker/.field/.input/.btn/.tag) rather than inventing a
+   second one — new classes here are purely for this page's own layout shapes
+   (the 3-column grid, stat tiles, the outcome trend chart) that nothing else needs.
+   ============================================================================ */
+
+.clindash-page { max-width: 1400px; margin: 0 auto; }
+
+/* — Daily Brief bar — four stat tiles, full width above the three columns. Grid (not
+   the existing .dashboard-metrics-row flex row) specifically so the mobile breakpoint
+   below can go to a real 2x2 instead of a single stacked column. */
+.clindash-brief-row {
+  display: grid;
+  /* auto-fit (not a fixed repeat(4, ...)) so the Clinic PRO fifth tile ("Clinic Patients
+     Today" — see DailyBriefBar.tsx) fits alongside the original four without a separate
+     modifier class; at normal desktop widths four or five tiles both land one per row. */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.clindash-brief-tile { padding: 14px 16px; }
+.clindash-brief-tile-label {
+  font-size: var(--fs-11);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin-bottom: 6px;
+}
+.clindash-brief-tile-value { font-family: var(--font-heading); font-size: 24px; line-height: 1.1; }
+
+/* — Three-column layout — */
+.clindash-columns {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr) 280px;
+  gap: 20px;
+  align-items: start;
+}
+.clindash-col-patients,
+.clindash-col-research { min-width: 0; }
+.clindash-col-workspace { min-width: 0; }
+
+/* — Patient panel (left column) — */
+.clindash-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.clindash-panel-header .card-kicker { margin: 0; }
+.clindash-add-patient-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+}
+.clindash-add-patient-actions { display: flex; gap: 8px; }
+.clindash-hipaa-note {
+  font-size: var(--fs-11);
+  line-height: 1.4;
+  color: var(--color-warn);
+  background: color-mix(in srgb, var(--color-warn) 12%, transparent);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+}
+.clindash-patient-list { display: flex; flex-direction: column; gap: 6px; }
+.clindash-patient-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  border-left: 3px solid transparent;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.clindash-patient-card:hover { background: var(--color-neutral-100); }
+.clindash-patient-card--selected { border-left-color: var(--color-accent); background: var(--color-accent-100); }
+.clindash-patient-card-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.clindash-patient-code { font-weight: 700; font-size: 13.5px; }
+.clindash-reassess-dot { width: 7px; height: 7px; border-radius: 999px; background: #c9853a; flex-shrink: 0; }
+.clindash-patient-condition {
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.clindash-patient-progress { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 3px; }
+.clindash-empty-state { font-size: 13px; color: var(--color-neutral-700); padding: 8px 2px; line-height: 1.5; }
+
+/* — Main workspace (center column) — */
+.clindash-workspace-greeting { font-size: 22px; margin: 0 0 4px; }
+.clindash-workspace-sub { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 18px; }
+.clindash-quick-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+.clindash-patient-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.clindash-patient-header-code { font-family: var(--font-heading); font-size: 24px; }
+.clindash-patient-header-condition { font-size: 13.5px; color: var(--color-neutral-700); margin-top: 2px; }
+.clindash-patient-header-pills { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+.clindash-status-pill { font-size: var(--fs-11); font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+.clindash-status-pill--active { background: color-mix(in srgb, var(--color-success) 18%, transparent); color: var(--color-success); }
+.clindash-status-pill--discharged { background: var(--color-neutral-200); color: var(--color-neutral-700); }
+.clindash-patient-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.clindash-discharge-btn { color: var(--color-danger); background: none; border: 1px solid var(--color-divider); }
+
+.clindash-section { margin-bottom: 22px; }
+.clindash-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.clindash-section-header .card-kicker { margin: 0; }
+
+.clindash-brief-box {
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-100);
+  border: 1px solid var(--color-accent-300);
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+.clindash-brief-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.clindash-brief-generated-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.clindash-disclaimer { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 8px; line-height: 1.5; }
+
+.clindash-visit-progress-label { font-family: var(--font-heading); font-size: 18px; margin-bottom: 8px; }
+.clindash-progress-bar { height: 8px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
+.clindash-progress-bar-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
+.clindash-visit-dates { display: flex; gap: 18px; margin-top: 8px; font-size: 12px; color: var(--color-neutral-700); }
+
+.clindash-outcome-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.clindash-outcome-table th {
+  text-align: left;
+  font-size: var(--fs-10-5);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  padding: 0 8px 6px 0;
+  font-weight: 600;
+}
+.clindash-outcome-row { cursor: pointer; }
+.clindash-outcome-row td { padding: 8px 8px 8px 0; border-top: 1px solid var(--color-divider); }
+.clindash-outcome-row:hover td { background: var(--color-neutral-100); }
+.clindash-trend-arrow { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 12px; }
+.clindash-trend-arrow--up { color: var(--color-success); }
+.clindash-trend-arrow--down { color: var(--color-danger); }
+.clindash-trend-arrow--flat { color: var(--color-neutral-600); }
+.clindash-outcome-history { padding: 4px 0 10px; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.clindash-outcome-history-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed var(--color-divider); }
+
+.clindash-trend-chart-wrap { margin-top: 6px; padding: 10px 4px 4px; }
+.clindash-trend-chart-name { font-size: var(--fs-11-5); font-weight: 600; margin-bottom: 6px; }
+.clindash-trend-chart { position: relative; height: 70px; overflow: hidden; }
+/* width/height 100% is required, not just inset:0 -- an absolutely positioned <svg> with no
+   explicit size is a *replaced element with an intrinsic aspect ratio* (from its viewBox),
+   so per the CSS sizing algorithm for absolutely positioned replaced elements it sizes
+   itself to preserve that 1:1 ratio instead of stretching to fill top/right/bottom/left:0
+   the way a non-replaced <div> would -- it rendered as a 582x582 square blowing out of this
+   70px-tall box until these were added. */
+.clindash-trend-chart-line { position: absolute; inset: 0; width: 100%; height: 100%; }
+.clindash-trend-point {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  transform: translate(-50%, 50%);
+}
+.clindash-trend-label { position: absolute; font-size: var(--fs-10); color: var(--color-neutral-700); white-space: nowrap; }
+.clindash-trend-need-more { font-size: var(--fs-11-5); color: var(--color-neutral-700); font-style: italic; margin-top: 4px; }
+
+.clindash-inline-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+}
+.clindash-inline-form-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.clindash-inline-form-row > * { flex: 1; min-width: 110px; }
+.clindash-inline-form-actions { display: flex; gap: 8px; }
+
+/* Outcome Measures' "Pull from a saved test" quick-fill list (OutcomeMeasuresSection.tsx) —
+   the clinician's own past Calculators results (see /pro/calculators) matching the
+   currently-selected measure, one click away from filling in Score/Max Score below. */
+.clindash-outcome-pull { display: flex; flex-direction: column; gap: 4px; }
+.clindash-outcome-pull-label { font-size: var(--fs-10-5); text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-neutral-700); }
+.clindash-outcome-pull-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.clindash-outcome-pull-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-accent-300);
+  background: var(--color-accent-100);
+  color: var(--color-accent);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.clindash-outcome-pull-date { font-weight: 400; color: var(--color-neutral-700); }
+
+.clindash-hep-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--color-divider); font-size: 13px; }
+.clindash-hep-item:first-child { border-top: none; }
+.clindash-hep-item-name { font-weight: 600; }
+.clindash-hep-item-date { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+
+.clindash-note-item { padding: 10px 0; border-top: 1px solid var(--color-divider); cursor: pointer; }
+.clindash-note-item:first-child { border-top: none; }
+.clindash-note-item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.clindash-note-type-pill { font-size: var(--fs-10-5); font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--color-accent-100); color: var(--color-accent-700); }
+.clindash-note-preview { font-size: 12.5px; margin-top: 4px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.clindash-note-full { font-size: 12.5px; margin-top: 4px; line-height: 1.5; white-space: pre-wrap; }
+
+/* — Quick tools (right column) — */
+.clindash-quick-tools { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+
+/* — Zone 3: Practice Metrics — */
+.clindash-metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-top: 24px; }
+.clindash-metric-card-value { font-family: var(--font-heading); font-size: 26px; margin: 6px 0 2px; }
+.clindash-metric-card-sub { font-size: 12px; color: var(--color-neutral-700); }
+.clindash-region-bars { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.clindash-region-bar-row { display: flex; align-items: center; gap: 8px; font-size: var(--fs-11-5); }
+.clindash-region-bar-label { width: 92px; flex-shrink: 0; color: var(--color-neutral-700); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.clindash-region-bar-track { flex: 1; height: 10px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; }
+.clindash-region-bar-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
+.clindash-region-bar-count { width: 18px; flex-shrink: 0; text-align: right; color: var(--color-neutral-700); }
+.clindash-reassess-rate--ok { color: var(--color-success); }
+.clindash-reassess-rate--high { color: #c9853a; }
+
+/* — Zone 4: expansion placeholder — */
+.clindash-expansion-card {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--color-divider);
+  color: var(--color-neutral-700);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .clindash-brief-row { grid-template-columns: repeat(2, 1fr); }
+  .clindash-columns { grid-template-columns: 1fr; }
+  .clindash-metrics-row { grid-template-columns: 1fr; }
+}
+
+/* — Prepare for Patient modal (components/pro/dashboard/PreparePatientModal.tsx) — sits
+   in the same .cal-modal-backdrop overlay every other modal in this app uses, just with
+   its own larger card (spec calls for a full-screen review flow, not a small form) rather
+   than reusing .cal-modal's fixed 420px width. */
+.ppm-modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 720px;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+.ppm-steps { display: flex; gap: 8px; margin-bottom: 20px; }
+.ppm-step { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.ppm-step-bar { height: 4px; border-radius: 999px; background: var(--color-divider); }
+.ppm-step-bar--active,
+.ppm-step-bar--done { background: var(--color-accent); }
+.ppm-step-label { font-size: var(--fs-10-5); color: var(--color-neutral-700); }
+.ppm-step-label--active { color: var(--color-accent-700); font-weight: 600; }
+.ppm-step-heading { font-family: var(--font-heading); font-size: 19px; margin-bottom: 14px; }
+.ppm-textarea { width: 100%; min-height: 160px; font: inherit; font-size: 13.5px; line-height: 1.6; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--color-divider); background: var(--color-surface); color: var(--color-text); resize: vertical; }
+.ppm-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; gap: 10px; }
+.ppm-actions-right { display: flex; gap: 8px; }
+.ppm-hep-row { display: grid; grid-template-columns: 1.4fr 0.6fr 0.6fr 0.8fr 1fr; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--color-divider); }
+.ppm-hep-row:first-child { border-top: none; }
+.ppm-hep-row-name { font-size: 12.5px; font-weight: 600; }
+.ppm-details-grid { display: flex; flex-direction: column; gap: 12px; }
+.ppm-details-row { display: flex; flex-direction: column; gap: 4px; }
+.ppm-details-label { font-size: var(--fs-11); color: var(--color-neutral-700); }
+.ppm-details-static { font-size: 13.5px; padding: 8px 0; }
+.ppm-patient-name-line { font-size: 13.5px; color: var(--color-neutral-700); border-bottom: 1px solid var(--color-divider); padding-bottom: 10px; }
+.ppm-patient-name-note { font-size: var(--fs-11); color: var(--color-warn); margin-top: 4px; }
+.ppm-download-wrap { text-align: center; padding: 30px 10px; }
+.ppm-download-instruction { font-size: 12px; color: var(--color-neutral-700); margin-top: 12px; max-width: 380px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+
+@media (max-width: 700px) {
+  .ppm-hep-row { grid-template-columns: 1fr; gap: 4px; }
+  .ppm-steps { flex-wrap: wrap; }
+}
+.patient-brief-doc-title { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #555; margin-bottom: 4px; }
+.patient-brief-hep-name { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+
+@media print {
+  @page { margin: 0.75in; }}
+
+/* ============================================================================
+   Clinician Dashboard — Prompt 1 daily-habit features (Morning Rounds, visit logging,
+   outcome-milestone banners, End of Day summary). Extends the .clindash-* block above —
+   same naming convention, same reuse-existing-tokens approach.
+   ============================================================================ */
+
+.clindash-morning-title { font-size: 22px; margin: 0 0 2px; }
+.clindash-morning-date { font-size: 13.5px; color: var(--color-neutral-700); margin: 0 0 18px; }
+
+.clindash-eod-card { padding: 20px; margin-bottom: 20px; }
+/* Label only — .card-kicker carries the type. It used to set its own 16px heading font,
+   which matched nothing else on the screen: too big and too plain to read as a card label
+   like "Today's Patients" beside it, and directly above the "Morning Rounds" h1, which it
+   competed with rather than deferring to. */
+.clindash-eod-header { margin-bottom: 12px; }
+.clindash-eod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.clindash-eod-stat-value { font-family: var(--font-heading); font-size: 22px; }
+.clindash-eod-stat-value--danger { color: var(--color-danger); }
+.clindash-eod-stat-label { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
+.clindash-eod-note { font-size: 12px; color: var(--color-neutral-700); margin-top: 12px; }
+.clindash-eod-actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+
+.clindash-today-list { display: flex; flex-direction: column; gap: 8px; }
+.clindash-today-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+}
+.clindash-today-row-main { min-width: 0; }
+.clindash-today-row-code { font-weight: 700; font-size: 13.5px; }
+.clindash-today-row-condition { font-size: 12px; color: var(--color-neutral-700); }
+.clindash-today-row-outcome { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
+
+.clindash-reminders-header { color: #c9853a; margin: 0 0 8px; }
+.clindash-reminder-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #c9853a 10%, transparent);
+  border: 1px solid color-mix(in srgb, #c9853a 30%, transparent);
+  margin-bottom: 8px;
+}
+.clindash-reminder-row-main { min-width: 0; }
+.clindash-reminder-row-code { font-weight: 700; font-size: 13px; }
+.clindash-reminder-row-condition { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+
+.clindash-quickstats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+.clindash-quickstat-tile { padding: 12px 14px; text-align: center; }
+.clindash-quickstat-value { font-family: var(--font-heading); font-size: 20px; }
+.clindash-quickstat-label { font-size: var(--fs-10-5); color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 3px; }
+
+.clindash-switch-view-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font: inherit;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  margin-top: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.clindash-patient-search-wrap { margin-top: 8px; }
+.clindash-patient-search-results { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.clindash-patient-search-result {
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.clindash-visit-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-100);
+  border: 1px solid var(--color-accent-300);
+  margin-bottom: 16px;
+}
+.clindash-visit-banner-actions { display: flex; align-items: center; gap: 8px; }
+.clindash-visit-banner-confirm { font-size: 13px; font-weight: 600; color: var(--color-success); }
+
+.clindash-milestone-banner {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #c9853a 10%, transparent);
+  border: 1px solid #c9853a;
+  margin-bottom: 16px;
+}
+.clindash-milestone-banner-text { font-size: 13.5px; color: var(--color-text); margin-bottom: 8px; }
+.clindash-milestone-banner-actions { display: flex; align-items: center; gap: 14px; }
+.clindash-milestone-banner-dismiss { font-size: 12px; color: var(--color-neutral-700); background: none; border: none; cursor: pointer; padding: 0; }
+
+.clindash-reassess-pill {
+  font-size: var(--fs-9-5);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #c9853a 18%, transparent);
+  color: #c9853a;
+}
+
+@media (max-width: 700px) {
+  .clindash-eod-grid { grid-template-columns: 1fr 1fr; }
+  .clindash-quickstats-row { grid-template-columns: 1fr; }
+  .clindash-today-row { flex-direction: column; align-items: flex-start; }
+  .clindash-reminder-row { flex-direction: column; align-items: flex-start; }
+}
+
+/* ============================================================================
+   Clinician Dashboard — Prompt 2 clinical-intelligence features (Condition Intelligence
+   card, outcome benchmarking, treatment idea generator, red flag monitor).
+   ============================================================================ */
+
+.clindash-ci-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px; }
+.clindash-ci-section-title { font-size: var(--fs-10-5); text-transform: uppercase; letter-spacing: 0.03em; color: var(--color-neutral-700); margin-bottom: 5px; }
+.clindash-ci-measures { display: flex; flex-wrap: wrap; gap: 6px; }
+.clindash-ci-measure-pill {
+  font-size: var(--fs-11);
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+  border: 1px solid var(--color-accent-300);
+  cursor: pointer;
+}
+.clindash-ci-text { font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.5; }
+.clindash-ci-pearl { font-size: 12.5px; color: var(--color-neutral-700); font-style: italic; line-height: 1.5; }
+.clindash-ci-find-link { display: inline; font-size: var(--fs-11-5); margin-left: 6px; color: var(--color-accent); text-decoration: none; }
+.clindash-ci-find-link:hover { text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .clindash-ci-grid { grid-template-columns: 1fr; }
+}
+
+.clindash-benchmark-line { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 2px; }
+.clindash-benchmark-pill { display: inline-block; font-size: var(--fs-10); font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-top: 4px; }
+.clindash-benchmark-pill--good { background: color-mix(in srgb, var(--color-success) 16%, transparent); color: var(--color-success); }
+.clindash-benchmark-pill--warn { background: color-mix(in srgb, #c9853a 16%, transparent); color: #c9853a; }
+.clindash-benchmark-pill--bad { background: color-mix(in srgb, var(--color-danger) 14%, transparent); color: var(--color-danger); }
+
+.clindash-alert-banner {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #c9853a 10%, transparent);
+  border: 1px solid #c9853a;
+  margin-bottom: 16px;
+}
+.clindash-alert-header { font-weight: 700; color: #c9853a; margin-bottom: 8px; }
+.clindash-alert-list { display: flex; flex-direction: column; gap: 8px; }
+.clindash-alert-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; font-size: 13px; }
+.clindash-alert-item-text { display: flex; gap: 6px; }
+.clindash-alert-item-text::before { content: "•"; flex-shrink: 0; }
+.clindash-alert-item-dismiss {
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+.clindash-alert-footer { margin-top: 10px; font-size: var(--fs-11-5); }
+
+/* ============================================================================
+   Clinician Dashboard — Prompt 3 practice-building features (Episode Length Tracker,
+   Discharge Summary Generator, Goal Bank Integration, Referral Tracker).
+   ============================================================================ */
+
+.clindash-goal-row { padding: 10px 0; border-top: 1px solid var(--color-divider); }
+.clindash-goal-row:first-child { border-top: none; }
+.clindash-goal-row--met { color: var(--color-neutral-700); }
+.clindash-goal-row--not-met .clindash-goal-text { text-decoration: line-through; color: var(--color-neutral-700); }
+.clindash-goal-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.clindash-goal-text { font-size: 13px; line-height: 1.5; flex: 1; min-width: 200px; }
+.clindash-goal-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.clindash-goal-timeframe { font-size: var(--fs-11); color: var(--color-neutral-700); }
+.clindash-goal-status-select { font-size: var(--fs-11-5); padding: 3px 6px; border-radius: var(--radius-md); border: 1px solid var(--color-divider); background: var(--color-surface); color: var(--color-text); }
+.clindash-goal-met-check { color: var(--color-success); }
+
+.clindash-suggested-goals { margin-top: 10px; padding: 10px; border-radius: var(--radius-md); background: var(--color-surface); border: 1px solid var(--color-divider); }
+.clindash-suggested-goals-title { font-size: var(--fs-10-5); text-transform: uppercase; letter-spacing: 0.03em; color: var(--color-neutral-700); margin-bottom: 6px; }
+.clindash-suggested-goal-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px dashed var(--color-divider); font-size: 12px; }
+.clindash-suggested-goal-row:first-child { border-top: none; }
+.clindash-suggested-goal-use { font-size: var(--fs-11); flex-shrink: 0; }
+
+.clindash-discharge-summary-box { padding: 14px 16px; border-radius: var(--radius-md); background: var(--color-neutral-100); font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
+.clindash-discharge-summary-date { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 8px; }
+
+.clindash-region-stat-table { width: 100%; font-size: var(--fs-11-5); margin-top: 8px; border-collapse: collapse; }
+.clindash-region-stat-table td { padding: 4px 0; border-top: 1px dashed var(--color-divider); }
+.clindash-region-stat-table tr:first-child td { border-top: none; }
+
+@media (max-width: 700px) {
+  .clindash-goal-top { flex-direction: column; align-items: flex-start; }
+}
+
+/* ============================================================================
+   Clinician Dashboard — Prompt 4 professional-connection features (Specialty Research
+   Digest, Clinical Question Log, Peer Comparison benchmarks). The CE Countdown card that
+   used to live here was removed from the dashboard; .clindash-ce-progress-bar/-fill below
+   are kept — TeamOverview.tsx's own seats-used bar still uses them. */
+
+.clindash-ce-progress-bar { height: 7px; border-radius: 999px; background: var(--color-neutral-200); overflow: hidden; margin: 12px 0 6px; }
+.clindash-ce-progress-fill { height: 100%; background: var(--color-accent); border-radius: 999px; }
+
+.clindash-question-log { margin-top: 16px; }
+.clindash-question-card {
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  margin-bottom: 8px;
+}
+.clindash-question-text {
+  font-size: 12.5px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.clindash-question-date { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 3px; }
+.clindash-question-actions { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.clindash-question-ask { font-size: var(--fs-11-5); color: var(--color-accent); background: none; border: none; cursor: pointer; padding: 0; font-weight: 600; }
+.clindash-question-delete { font-size: var(--fs-11-5); color: var(--color-danger); background: none; border: none; cursor: pointer; padding: 0; }
+.clindash-question-answered-label { display: flex; align-items: center; gap: 5px; font-size: var(--fs-11-5); color: var(--color-success); cursor: pointer; }
+.clindash-question-see-all { display: block; text-align: center; font-size: var(--fs-11-5); margin-top: 4px; }
+
+.clindash-benchmarks-section { margin-top: 24px; }
+.clindash-benchmarks-header { font-family: var(--font-heading); font-size: 17px; }
+.clindash-benchmarks-subtitle { font-size: 12px; color: var(--color-neutral-700); margin: 2px 0 14px; }
+.clindash-benchmark-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.clindash-benchmark-card-measure { font-weight: 700; font-size: 13.5px; margin-bottom: 4px; }
+.clindash-benchmark-card-stat { font-size: 12px; color: var(--color-neutral-700); margin-bottom: 2px; }
+.clindash-benchmark-card-verdict { font-size: 12.5px; font-weight: 600; margin-top: 6px; }
+.clindash-benchmark-card-verdict--good { color: var(--color-success); }
+.clindash-benchmark-card-verdict--warn { color: #c9853a; }
+.clindash-benchmark-card-verdict--bad { color: var(--color-danger); }
+.clindash-benchmark-card-source { font-size: var(--fs-10-5); color: var(--color-neutral-700); margin-top: 6px; }
+.clindash-benchmarks-disclaimer { font-size: var(--fs-11); color: var(--color-neutral-700); margin-top: 12px; line-height: 1.5; }
+
+/* ============================================================================
+   Clinic PRO expansion — Team Overview tab (components/pro/dashboard/TeamOverview.tsx),
+   the Clinic Setup / Accept Invite / Clinic Report pages, and the sidebar's clinic-name
+   pill (see .nav-footer-clinic-pill above). Same .clindash- prefix convention as the rest
+   of this dashboard's CSS.
+   ============================================================================ */
+
+/* flex-wrap: wrap — added for Force Lab's 3rd tab (Paste Assessment): a `nowrap` flex row
+   whose items don't fit doesn't wrap to a new line, it overflows past the row's own bounds
+   into whatever sits next to it (here, the Strength Profile column) since CSS Grid columns
+   don't clip overflowing children by default. Only changes behavior once a row's tabs don't
+   fit at their natural width — a no-op for every other .clindash-tab-bar usage (e.g. Clinic
+   PRO Team Overview's 2 tabs), which already fit on one line. */
+.clindash-tab-bar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--color-divider); }
+.clindash-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 4px 10px;
+  margin-right: 20px;
+  font: 600 13.5px var(--font-body);
+  color: var(--color-neutral-700);
+  cursor: pointer;
+}
+.clindash-tab--active { color: var(--color-text); border-bottom-color: var(--color-accent); }
+
+.clindash-team-overview { margin-top: 4px; }
+.clindash-team-table-wrap { overflow-x: auto; }
+.clindash-team-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.clindash-team-table th {
+  text-align: left;
+  font-size: var(--fs-10-5);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-neutral-700);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-divider);
+  white-space: nowrap;
+}
+.clindash-team-table td { padding: 8px; border-bottom: 1px solid var(--color-divider); white-space: nowrap; }
+.clindash-team-row { cursor: pointer; }
+.clindash-team-row:hover { background: var(--color-accent-100); }
+.clindash-team-row-detail td { background: color-mix(in srgb, var(--color-surface-2) 60%, transparent); white-space: normal; }
+.clindash-team-patient-row {
+  display: flex;
+  gap: 14px;
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  padding: 3px 0;
+}
+.clindash-team-patient-row span:first-child { font-weight: 600; color: var(--color-text); min-width: 70px; }
+.clindash-team-you-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+
+.clindash-seats-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--color-divider); }
+.clindash-seats-label { font-size: 12.5px; font-weight: 600; margin-bottom: 6px; }
+.clindash-seats-price { font-size: var(--fs-11); color: var(--color-neutral-700); margin: 6px 0 0; }
+.clindash-seats-add-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.clindash-transfer-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--color-divider); }
+.clindash-transfer-recent { margin-top: 14px; }
+.clindash-transfer-recent-row {
+  display: flex;
+  gap: 14px;
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  padding: 5px 0;
+  border-top: 1px dashed var(--color-divider);
+}
+.clindash-transfer-recent-row span:first-child { font-weight: 600; color: var(--color-text); min-width: 70px; }
+
+@media (max-width: 700px) {
+  .clindash-team-patient-row,
+  .clindash-transfer-recent-row { flex-direction: column; gap: 2px; }
+}
+.clindash-standalone-page--wide { max-width: 900px; }
+
+.clindash-report-section { margin-top: 22px; }
+.clindash-report-section-title { font-family: var(--font-heading); font-size: 16px; margin: 0 0 10px; }
+.clindash-report-stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.clindash-report-stat-card { padding: 12px 14px; }
+.clindash-report-stat-value { font-family: var(--font-heading); font-size: 22px; }
+.clindash-report-stat-label { font-size: var(--fs-11); color: var(--color-neutral-700); }
+.clindash-report-history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  padding: 8px 0;
+  border-top: 1px dashed var(--color-divider);
+}
+
+@media print {
+  .clindash-report-no-print { display: none !important; }
+  /* Clinic Report's "Download Report" (window.print()) is the one print flow that lives
+     inside the AppShell layout — every other printable page (patient brief) is standalone
+     with no chrome to begin with. Hides the sidebar/topbar/bottomnav wrapper for any page
+     printed from inside (app), not just this one. */
+  .app-sidebar, .app-mobile-topbar, .app-bottomnav { display: none !important; }
+}
+
+/* Edit / Delete on one logged entry in the Session Exercises history
+   (SessionExerciseSection.tsx). Pushed to the right of the "Visit N · date" line the
+   entry already had, so correcting a past session doesn't cost the list a second row. */
+.clindash-session-exercise-actions { display: flex; gap: 10px; margin-left: auto; }
+.clindash-session-exercise-action {
+  font-size: var(--fs-11-5);
+  color: var(--color-accent-700);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.clindash-session-exercise-action:hover:not(:disabled) { text-decoration: underline; }
+.clindash-session-exercise-action:disabled { opacity: 0.5; cursor: default; }
+.clindash-session-exercise-action--danger { color: var(--color-danger); }
+
+/* — Dashboard side — */
+.intake-inbox { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.intake-empty { font-size: 12.5px; color: var(--color-neutral-700); margin: 0; line-height: 1.5; }
+.intake-fresh-link { background: var(--color-neutral-100); border-radius: var(--radius-md); padding: 10px 12px; }
+.intake-fresh-link-label { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin-bottom: 6px; }
+.intake-fresh-link-row { display: flex; gap: 8px; }
+.intake-fresh-link-row .input { font-size: 11.5px; }
+
+.intake-submission { border-top: 1px solid var(--color-divider); padding: 10px 0; }
+.intake-submission:first-of-type { border-top: none; }
+.intake-submission-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.intake-submission-name { font-weight: 600; font-size: 13px; }
+.intake-submission-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.intake-answers { display: flex; flex-direction: column; gap: 3px; margin-top: 7px; }
+.intake-answer-line { display: flex; gap: 8px; font-size: 12px; line-height: 1.45; }
+.intake-answer-label {
+  flex: 0 0 76px;
+  font-weight: 700;
+  font-size: var(--fs-10-5);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-accent-700);
+  padding-top: 1px;
+}
+.intake-answer-value { flex: 1; }
+.intake-attach-note { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 0; line-height: 1.45; }
+.intake-open-link { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 0; }
+.intake-open-link-label { font-size: 12.5px; font-weight: 600; }
+.intake-open-link-meta { font-size: var(--fs-11-5); color: var(--color-neutral-700); }
+.intake-open-link-actions { display: flex; gap: 10px; flex-shrink: 0; }
+
+/* Session date + patient delete — see SessionExerciseSection.tsx and PatientWorkspace.tsx. */
+.clindash-session-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* Delete is not Discharge. Discharge is the ordinary end of a course of treatment and gets
+   the muted outline above; this one destroys the record, so it reads as destructive from
+   across the header rather than only in its confirmation dialog. */
+.clindash-delete-patient-btn {
+  color: var(--color-danger);
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 45%, transparent);
+}
+.clindash-delete-patient-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+}
+.clindash-delete-patient-error { font-size: var(--fs-11-5); color: var(--color-danger); margin: 8px 0 0; }
+
+@media (max-width: 640px) {
+  .clindash-session-form-row { grid-template-columns: 1fr; }
+}
+
+/* The two actions on the Home Exercise Program section header (see
+   components/pro/dashboard/HEPSection.tsx). Moved with the rest of the dashboard
+   sheet (#465) — these two rules had been appended after the Clinical Reference
+   block in the old monolith. */
+.clindash-hep-actions { display: flex; align-items: center; gap: 4px; }
+.clindash-hep-build {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-neutral-700);
+  white-space: nowrap;
+  padding: 4px 2px;
+}
+.clindash-hep-build:hover { color: var(--color-accent); text-decoration: underline; }
+
+/* Touch-device 16px floor — these fields opted out of .input or override it.
+   Lived at the end of the pro.css monolith; kept with the dashboard sheet so
+   /pro/dashboard still gets them after #465. */
+@media (pointer: coarse) {
+  .ppm-textarea,
+  .clindash-goal-status-select { font-size: 16px; }
+  .clindash-goal-status-select { min-height: 44px; }
+}
