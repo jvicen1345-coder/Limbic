@@ -230,9 +230,24 @@
   font-size: var(--fs-11);
   font-weight: 700;
 }
+.patient-brief-strength-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
 .patient-brief-strength-bar-row .patient-brief-bar-track { flex: 1; width: auto; min-width: 0; }
 .patient-brief-strength-side { width: 40px; flex-shrink: 0; color: #666; }
 .patient-brief-strength-value { width: 64px; flex-shrink: 0; text-align: right; }
+.patient-brief-bar-track,
+.patient-brief-bar-fill,
+.patient-brief-outcome-card,
+.patient-brief-lsi-pill,
+.patient-brief-goal-banner {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
 .patient-brief-change-row {
   padding: 8px 0;
   border-bottom: 1px solid #eee;
