@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { getWellnessArticles, WELLNESS_VIDEOS } from "@/lib/articles";
@@ -9,10 +9,17 @@ import { computeWellnessSet, withOpenedId, WELLNESS_ARTICLE_TARGET, WELLNESS_VID
 /** Recomputes both the article and video sets, swapping out anything the reader has opened
  *  since they were last shown for unopened pool candidates — see lib/wellness-rotation.ts
  *  computeWellnessSet for the actual keep/replace logic. Unlike a plain page load, this is
- *  the one path that's allowed to drop opened items even though they're still valid. */
+ *  the one path that's allowed to drop opened items even though they're still valid.
+ *
+ *  updateTag (not revalidateTag) because this is a read-your-own-click action — the
+ *  reader who clicked Refresh should see a fresh RSS pool on this very next request,
+ *  matching Home's live-news refresh (see app/actions/home.ts). Must run before
+ *  getWellnessArticles() so the rotation below reads the busted cache. */
 export async function refreshWellnessAction() {
   const user = await getCurrentUser();
   if (!user) return;
+
+  updateTag("live-wellness");
 
   const articlePool = await getWellnessArticles();
   const openedIds = (user.wellnessOpenedIds as string[]) ?? [];
