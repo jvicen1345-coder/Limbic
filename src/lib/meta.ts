@@ -11,6 +11,7 @@ export const TYPE_META: Record<ArticleType, { label: string; tag: string }> = {
 export const SPECIALTY_META: Record<Specialty, string> = {
   ortho: "Orthopedic",
   neuro: "Neurologic",
+  cardiopulm: "Cardiopulmonary",
   sports: "Sports",
   pediatric: "Pediatric",
   geriatric: "Geriatric",
@@ -25,6 +26,7 @@ export const PAGE_SIZE = 12;
 export const SPECIALTIES: { id: Specialty; label: string }[] = [
   { id: "ortho", label: "Orthopedic" },
   { id: "neuro", label: "Neurologic" },
+  { id: "cardiopulm", label: "Cardiopulmonary" },
   { id: "sports", label: "Sports" },
   { id: "pediatric", label: "Pediatric" },
   { id: "geriatric", label: "Geriatric" },

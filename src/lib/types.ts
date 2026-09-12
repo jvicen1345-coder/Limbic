@@ -1,5 +1,5 @@
 export type ArticleType = "research" | "guideline" | "industry" | "ce" | "product";
-export type Specialty = "ortho" | "neuro" | "sports" | "pediatric" | "geriatric";
+export type Specialty = "ortho" | "neuro" | "cardiopulm" | "sports" | "pediatric" | "geriatric";
 
 /** Where an article sits in the evidence hierarchy — see lib/evidence.ts for labels,
  *  colors, and one-sentence explanations per level. PubMed articles get RCT/SR/MA/Review

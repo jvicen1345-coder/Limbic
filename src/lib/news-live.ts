@@ -157,6 +157,7 @@ export function estimateReadMins(text: string): number {
 const SPECIALTY_KEYWORDS: Record<Specialty, string[]> = {
   ortho: ["orthopedic", "orthopaedic", "knee", "hip", "spine", "joint", "acl", "fracture", "shoulder", "back pain"],
   neuro: ["stroke", "neurologic", "neurological", "vestibular", "parkinson", "brain injury", "multiple sclerosis", "spinal cord"],
+  cardiopulm: ["cardiopulmonary", "cardiac rehab", "cardiac rehabilitation", "pulmonary rehab", "pulmonary rehabilitation", "copd", "heart failure", "pulmonary disease", "icu mobility", "post-covid"],
   sports: ["sports", "athlete", "athletic", "concussion", "return to play", "return-to-sport", "ncaa", "combine"],
   pediatric: ["pediatric", "paediatric", "children", "child", "infant", "cerebral palsy", "toddler"],
   geriatric: ["geriatric", "older adult", "elderly", "senior", "fall risk", "falls prevention", "aging"],
