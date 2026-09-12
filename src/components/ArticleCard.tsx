@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { SaveButton } from "@/components/SaveButton";
 import { ArticleImage } from "@/components/ArticleImage";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
@@ -19,15 +19,16 @@ function extraContextTags(article: DecoratedArticle): string[] {
   return article.tags.filter((t) => !shown.has(t)).slice(0, 2);
 }
 
+/**
+ * Feed card. The title is a real <Link> (keyboard-reachable) stretched across the card so
+ * Home can SSR card HTML without useRouter; SaveButton / OpenAccessPill sit above the
+ * stretch. Remains a Client Component because SearchScreen imports it directly.
+ */
 export function ArticleCard({ article }: { article: DecoratedArticle }) {
-  const router = useRouter();
   const extraTags = extraContextTags(article);
+  const href = `/article/${article.id}`;
   return (
-    <div
-      className="card elev-sm card-hoverable"
-      style={{ cursor: "pointer" }}
-      onClick={() => router.push(`/article/${article.id}`)}
-    >
+    <div className="card elev-sm card-hoverable article-card">
       {article.image && <ArticleImage key={article.id} src={article.image} height={120} />}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -35,16 +36,20 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
           {article.isRead && <ReadBadge />}
           {article.typeLabel} · {article.dateLabel}
         </div>
-        <SaveButton articleId={article.id} saved={article.saved} size="sm" article={article} />
+        <span className="article-card__interactive">
+          <SaveButton articleId={article.id} saved={article.saved} size="sm" article={article} />
+        </span>
       </div>
-      <div className="card-title" style={{ marginTop: 6 }}>
+      <Link href={href} className="card-title article-card__title" style={{ marginTop: 6 }}>
         {article.title}
-      </div>
+      </Link>
       <p className="card-body">{article.summary}</p>
       <div className="card-meta">
         <span className={article.typeTagClass}>{article.specialtyLabel}</span>
         {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
-        <OpenAccessPill doi={article.doi} />
+        <span className="article-card__interactive">
+          <OpenAccessPill doi={article.doi} />
+        </span>
         <span>{article.source}</span>
       </div>
       {extraTags.length > 0 && (
@@ -61,33 +66,26 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
 }
 
 /** The Home hero: HeroFeed only ever hands this an image-having article (see
- *  HomeFeed.tsx's heroPool, filtered off withImage) — the plain-layout fallback below is
- *  defensive for any future/other caller, not something a reader can hit today. When
- *  there's an image, title/source/evidence/read-time/date all sit on the photo itself
- *  (above a bottom gradient — see .hero-card-* in src/styles) and the space below the
- *  photo is kept to just the summary, so the card reads as one clean photo-led moment
- *  rather than a second copy of the same meta row ArticleCard already shows in the grid. */
+ *  HomeFeed's heroPool). When there's an image, title/source/evidence sit on the photo
+ *  itself; the space below stays to the summary. */
 export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
-  const router = useRouter();
-
+  const href = `/article/${article.id}`;
   if (!article.image) {
     return (
-      <div
-        className="card elev-md card-hoverable"
-        style={{ cursor: "pointer", padding: 26 }}
-        onClick={() => router.push(`/article/${article.id}`)}
-      >
+      <div className="card elev-md card-hoverable article-card" style={{ padding: 26 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
           <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {article.isNew && <NewBadge />}
             {article.isRead && <ReadBadge />}
             {article.typeLabel} · {article.dateLabel}
           </div>
-          <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
+          <span className="article-card__interactive">
+            <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
+          </span>
         </div>
-        <div className="card-title" style={{ marginTop: 8, fontSize: 22 }}>
+        <Link href={href} className="card-title article-card__title" style={{ marginTop: 8, fontSize: 22 }}>
           {article.title}
-        </div>
+        </Link>
         <p className="card-body" style={{ fontSize: 15 }}>
           {article.summary}
         </p>
@@ -101,27 +99,27 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
   }
 
   return (
-    <div
-      className="card elev-md card-hoverable"
-      style={{ cursor: "pointer", padding: 0, overflow: "hidden" }}
-      onClick={() => router.push(`/article/${article.id}`)}
-    >
+    <div className="card elev-md card-hoverable article-card" style={{ padding: 0, overflow: "hidden" }}>
       <div className="hero-card-media">
         <ArticleImage key={article.id} src={article.image} fill />
         <div className="hero-card-topleft">
           <span className={article.typeTagClass}>{article.specialtyLabel}</span>
           {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
-          <OpenAccessPill doi={article.doi} />
+          <span className="article-card__interactive">
+            <OpenAccessPill doi={article.doi} />
+          </span>
         </div>
         <div className="hero-card-topright">
           <span className="hero-card-meta-pill">{article.dateLabel}</span>
-          <span className="hero-card-save-wrap" onClick={(e) => e.stopPropagation()}>
+          <span className="hero-card-save-wrap article-card__interactive">
             <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
           </span>
         </div>
       </div>
       <div style={{ padding: "16px 20px 0", textAlign: "center" }}>
-        <div className="hero-card-title">{article.title}</div>
+        <Link href={href} className="hero-card-title article-card__title">
+          {article.title}
+        </Link>
         <div className="hero-card-source" style={{ justifyContent: "center" }}>
           {article.source}
           {(article.isNew || article.isRead) && <span className="hero-card-source-sep">·</span>}

@@ -1,3 +1,4 @@
+import "@/styles/paywall.css";
 import type { ReactNode } from "react";
 import "@/styles/connexion.css";
 

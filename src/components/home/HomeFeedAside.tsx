@@ -15,7 +15,6 @@ export function HomeFeedAside({
   savedUnread,
   calendarWidget,
   nexusSuggestions,
-  nexusOnWaitlist,
   showNexus,
   dailyInsight,
 }: {
@@ -25,8 +24,7 @@ export function HomeFeedAside({
   savedUnread: DecoratedArticle[];
   calendarWidget: ReactNode;
   nexusSuggestions: NexusSuggestion[] | null;
-  nexusOnWaitlist: boolean;
-  /** False for every non-admin — see lib/nexus-visibility.ts. */
+  /** Whether Nexus exists for this reader at all — see lib/nexus-visibility.ts. */
   showNexus: boolean;
   /** null when this reader has no article pool to draw one from yet. */
   dailyInsight: DailyInsight | null;
@@ -44,7 +42,7 @@ export function HomeFeedAside({
           (nexusSuggestions ? (
             <NexusSuggestionsCard people={nexusSuggestions} />
           ) : (
-            <NexusJoinPromptCard onWaitlist={nexusOnWaitlist} />
+            <NexusJoinPromptCard />
           ))}
       </div>
     </aside>

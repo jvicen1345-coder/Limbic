@@ -26,6 +26,7 @@ test.describe("navigation badges", () => {
       aptaCount: expect.any(Number),
       nexusRequestCount: 0,
       savedCount: 0,
+      clinicMembership: null,
     });
 
     let markRequestStarted!: () => void;
@@ -44,7 +45,7 @@ test.describe("navigation badges", () => {
         status: 200,
         contentType: "application/json",
         headers: { "Cache-Control": "private, no-store" },
-        body: JSON.stringify({ aptaCount: 4, nexusRequestCount: 2, savedCount: 7 }),
+        body: JSON.stringify({ aptaCount: 4, nexusRequestCount: 2, savedCount: 7, clinicMembership: null }),
       });
     });
 

@@ -71,12 +71,12 @@ interface NavContentProps {
    *  (see components/StudentVerifiedBadge.tsx), same "paid tier gets a small trust signal"
    *  idea as the Founding Funder badge elsewhere in the app. */
   isVerifiedStudent: boolean;
-  /** Whether Nexus is visible to this account at all (see lib/nexus-visibility.ts) — an
-   *  unreleased-feature gate that happens to be keyed off the same admin allowlist, NOT an
-   *  admin-tooling permission. It stayed owner-only when admin tooling was split into
-   *  delegable areas: a co-admin brought in to work the license queue has not been let into
-   *  an unreleased product surface. */
-  nexusVisible: boolean;
+  /** Whether Nexus exists for this reader (lib/nexus-visibility.ts). Passed in rather than
+   *  computed here: that module reaches lib/session.ts, which is server-only, and this is a
+   *  client component. Deliberately NOT the admin areas below — Nexus is an unreleased
+   *  product surface keyed off the owner allowlist, so splitting admin into delegable areas
+   *  didn't let a co-admin into it. */
+  showNexus: boolean;
   /** The admin areas this account can open (see lib/admin-areas.ts) — the whole list for an
    *  owner on FOUNDING_FUNDERS_ADMIN_EMAILS, whatever an owner has delegated for a co-admin,
    *  and empty for everyone else, which hides the Admin section entirely. Each link below is
@@ -109,7 +109,7 @@ interface NavContentProps {
 
 /** The full nav — links, section labels, and the "signed in as" footer — shared by the
  *  desktop sidebar and the mobile drawer so the two never drift out of sync. */
-export function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, nexusVisible, adminAreas, isOwnerAdmin, aptaCount, nexusRequestCount, zoneTwoOrder, clinicMembership, onNavigate }: NavContentProps) {
+export function NavContent({ profileName, specialtyLabel, practiceState, school, hasLicense, isPro, isStudent, isVerifiedStudent, showNexus, adminAreas, isOwnerAdmin, aptaCount, nexusRequestCount, zoneTwoOrder, clinicMembership, onNavigate }: NavContentProps) {
   const pathname = usePathname();
   /** Whether this account holds one admin area — used per Admin link below. */
   const has = (area: AdminArea) => adminAreas.includes(area);
@@ -279,7 +279,7 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
         )}
       </>
     ),
-    nexus: nexusVisible ? (
+    nexus: showNexus ? (
       <>
         <NavToggle
           icon={<UsersIcon />}
@@ -311,8 +311,10 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
         )}
       </>
     ) : (
-      // Nexus does not exist for a non-admin (see lib/nexus-visibility.ts) — no entry, not
-      // even a link to a waitlist, since every /nexus/* route 404s for them anyway.
+      // Nexus does not exist for a reader it is hidden from (see lib/nexus-visibility.ts)
+      // — no entry, not even a link to a waitlist, since every /nexus/* route 404s for them
+      // anyway. Both surfaces this component feeds (desktop sidebar, mobile drawer) read
+      // the same value, so they cannot disagree.
       null
     ),
     saved: (

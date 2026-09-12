@@ -57,7 +57,7 @@ const FETCH_TIMEOUT_MS = 8000;
  *  be contacted looks evasive whether or not it means to be. */
 const USER_AGENT = "Mozilla/5.0 (compatible; LimbicPTNews/1.0; +https://limbic.center)";
 
-async function fetchXml(url: string): Promise<string | null> {
+async function fetchXml(url: string, tags: string[] = ["live-news"]): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
@@ -69,10 +69,13 @@ async function fetchXml(url: string): Promise<string | null> {
       // and skips this fetch entirely while it's still warm, this fetch-level cache
       // never got a chance to serve a hit at all; by the time the outer cache expired,
       // this one always had too. Widened to 30min and aligned with the aggregation
-      // `revalidate` so the two layers actually agree. Tagged so the Home refresh
-      // button (see app/actions/home.ts) can force a fresh pull on demand via
-      // updateTag, without waiting out either window.
-      next: { revalidate: 1800, tags: ["live-news"] },
+      // `revalidate` so the two layers actually agree. Tagged so Home (`live-news`) and
+      // Wellness (`live-wellness`) refresh buttons can force a fresh pull on demand via
+      // updateTag, without waiting out either window. Wellness queries pass their own
+      // tag so a Wellness Refresh does not bust Home's industry/product RSS, and Home
+      // Refresh does not bust the Wellness aggregation (Wellness is deliberately not
+      // on the Home feed — see the file header).
+      next: { revalidate: 1800, tags },
     });
     if (!res.ok) return null;
     return await res.text();
@@ -96,10 +99,12 @@ type RawItem = GoogleNewsItem;
 
 /** Exported so other live sources (e.g. lib/apta-news.ts) can search Google News for a
  *  topic that doesn't have its own dedicated feed, using the same mechanism as this file's
- *  own category queries below — including its terms-of-service caveat, see the file header. */
-export async function fetchGoogleNewsRss(query: string): Promise<GoogleNewsItem[]> {
+ *  own category queries below — including its terms-of-service caveat, see the file header.
+ *  `tags` defaults to `live-news`; Wellness passes `live-wellness` so its fetch-level
+ *  cache invalidates independently of Home. */
+export async function fetchGoogleNewsRss(query: string, tags: string[] = ["live-news"]): Promise<GoogleNewsItem[]> {
   const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
-  const xml = await fetchXml(url);
+  const xml = await fetchXml(url, tags);
   if (!xml) return [];
   try {
     const feed = await parser.parseString(xml);
@@ -342,33 +347,44 @@ const WELLNESS_QUERIES = [
   "healthy aging mobility strength exercise",
 ];
 
-export async function fetchLiveWellness(): Promise<WellnessArticle[]> {
-  const results = await Promise.all(WELLNESS_QUERIES.map((q) => fetchGoogleNewsRss(q)));
+/** Fetches and normalizes live wellness articles across WELLNESS_QUERIES. Never throws —
+ *  a query that fails to load simply contributes zero articles.
+ *
+ *  Cached across requests the same way as fetchLiveArticles, so Overview / Articles /
+ *  Nutrition callers share one snapshot instead of firing four Google News RSS queries
+ *  on every load. Tagged `live-wellness` (not `live-news`) so Wellness Refresh can bust
+ *  it without invalidating Home's industry/product aggregation. */
+export const fetchLiveWellness = unstable_cache(
+  async (): Promise<WellnessArticle[]> => {
+    const results = await Promise.all(WELLNESS_QUERIES.map((q) => fetchGoogleNewsRss(q, ["live-wellness"])));
 
-  const seen = new Set<string>();
-  const articles: WellnessArticle[] = [];
-  for (const items of results) {
-    for (const item of items) {
-      const link = item.link;
-      const title = (item.title || "").trim();
-      if (!link || !title) continue;
-      const id = stableId(link);
-      if (seen.has(id)) continue;
-      seen.add(id);
-      const snippet = stripHtml(item.contentSnippet || item.content || "");
-      const source = sourceName(item, title);
-      const cleanTitle = title.replace(new RegExp(` - ${source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`), "").trim();
-      articles.push({
-        id,
-        source,
-        sourceUrl: link,
-        date: toIsoDate(item),
-        readMins: estimateReadMins(snippet || title),
-        title: cleanTitle || title,
-        summary: (snippet.length > 20 ? snippet : title).slice(0, 200),
-        tags: [],
-      });
+    const seen = new Set<string>();
+    const articles: WellnessArticle[] = [];
+    for (const items of results) {
+      for (const item of items) {
+        const link = item.link;
+        const title = (item.title || "").trim();
+        if (!link || !title) continue;
+        const id = stableId(link);
+        if (seen.has(id)) continue;
+        seen.add(id);
+        const snippet = stripHtml(item.contentSnippet || item.content || "");
+        const source = sourceName(item, title);
+        const cleanTitle = title.replace(new RegExp(` - ${source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`), "").trim();
+        articles.push({
+          id,
+          source,
+          sourceUrl: link,
+          date: toIsoDate(item),
+          readMins: estimateReadMins(snippet || title),
+          title: cleanTitle || title,
+          summary: (snippet.length > 20 ? snippet : title).slice(0, 200),
+          tags: [],
+        });
+      }
     }
-  }
-  return articles.slice(0, 24);
-}
+    return articles.slice(0, 24);
+  },
+  ["live-wellness-aggregation"],
+  { revalidate: 1800, tags: ["live-wellness"] }
+);

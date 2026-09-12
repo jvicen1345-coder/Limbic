@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
-import { isServableGuide } from "@/lib/guides";
+import { canReadGuide } from "@/lib/guides";
+import { isSiteAdmin } from "@/lib/admin";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 
 /**
@@ -46,7 +47,15 @@ export async function GET(_request: Request, { params }: { params: Promise<{ gui
   // An unknown slug, a slug still marked coming soon, and an unentitled reader all get the
   // same 404: there is nothing here to upsell, the hub does that, and a 403 would confirm
   // which guides exist and which are merely unfinished.
-  if (!isServableGuide(slug) || !user || !hasStudentAccess(user) || user.studentTier !== "limbicStudent") {
+  //
+  // The one exception is a site admin, who may read a guide that is still marked coming
+  // soon — the flag means unfinished, not private, and deciding whether one is ready means
+  // reading it served rather than out of the file. An unknown slug is still a 404 for them:
+  // that check guards the filesystem read below, not a publication state. The entitlement
+  // checks stay in force for everyone, and an admin already passes them through the access
+  // overlay in lib/session.ts getCurrentUser().
+  const admin = await isSiteAdmin();
+  if (!canReadGuide(slug, { admin }) || !user || !hasStudentAccess(user) || user.studentTier !== "limbicStudent") {
     return new NextResponse("Not found", { status: 404 });
   }
 

@@ -447,7 +447,9 @@ export async function clearBackupSigninFlag() {
 
 /** Stamps "now" as the user's latest home-feed visit and returns the *previous* value —
  *  the cutoff the feed uses to badge articles published "since you were last here",
- *  captured before it's overwritten. */
+ *  captured before it's overwritten. Home calls this from `after()` so the write is not on
+ *  the HTML critical path; callers that still need the previous cutoff should read
+ *  `user.lastVisitedAt` before scheduling the stamp. */
 export async function recordHomeVisit(user: User): Promise<Date | null> {
   const previous = user.lastVisitedAt;
   await prisma.user.update({ where: { id: user.id }, data: { lastVisitedAt: new Date() } });

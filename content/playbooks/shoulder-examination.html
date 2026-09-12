@@ -271,7 +271,11 @@ figure svg{display:block; width:100%; max-width:660px; height:auto; margin:0 aut
   figure{overflow-x:hidden}
   figure svg{min-width:0}
 }
-figure text{font-family:var(--font-body); font-size:12px; fill:currentColor}
+/* :not([fill]) matters: a presentation attribute loses to a CSS rule, so a plain
+   `figure text{fill:currentColor}` silently overrode every fill= on every label and
+   painted the whole legend one colour. */
+figure text:not([fill]){font-family:var(--font-body); font-size:12px; fill:currentColor}
+figure text[fill]{font-family:var(--font-body); font-size:12px}
 figure text.mono{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em}
 figure text.big{font-family:var(--font-mono); font-size:13px; font-weight:600}
 @media (max-width:700px){

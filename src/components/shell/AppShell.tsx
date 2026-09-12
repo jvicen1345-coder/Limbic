@@ -22,14 +22,23 @@ interface NavigationBadges {
   aptaCount: number;
   nexusRequestCount: number;
   savedCount: number;
+  clinicMembership: { clinicName: string; isAdmin: boolean } | null;
+}
+
+function isClinicMembership(value: unknown): value is { clinicName: string; isAdmin: boolean } {
+  if (!value || typeof value !== "object") return false;
+  const membership = value as Record<string, unknown>;
+  return typeof membership.clinicName === "string" && typeof membership.isAdmin === "boolean";
 }
 
 function isNavigationBadges(value: unknown): value is NavigationBadges {
   if (!value || typeof value !== "object") return false;
   const badges = value as Record<string, unknown>;
-  return [badges.aptaCount, badges.nexusRequestCount, badges.savedCount].every(
+  const countsOk = [badges.aptaCount, badges.nexusRequestCount, badges.savedCount].every(
     (count) => typeof count === "number" && Number.isInteger(count) && count >= 0,
   );
+  if (!countsOk) return false;
+  return badges.clinicMembership === null || isClinicMembership(badges.clinicMembership);
 }
 
 export interface AppShellProps {
@@ -41,16 +50,16 @@ export interface AppShellProps {
   isPro: boolean;
   isStudent: boolean;
   isVerifiedStudent: boolean;
-  /** See NavContentProps' doc comments on these two — one is an unreleased-product gate, the
-   *  other is which admin tooling this account may open. */
-  nexusVisible: boolean;
+  /** Whether Nexus exists for this reader at all — lib/nexus-visibility.ts, evaluated in
+   *  app/(app)/layout.tsx because that module is server-only. */
+  showNexus: boolean;
+  /** See NavContentProps' doc comments on these two — which admin tooling this account may
+   *  open, and whether it is an allowlist owner (the one Admin screen with no area). */
   adminAreas: AdminArea[];
   isOwnerAdmin: boolean;
   /** See lib/user-role.ts zoneTwoOrder() — computed in app/(app)/layout.tsx off the
    *  account's userRole. */
   zoneTwoOrder: ZoneTwoKey[];
-  /** See NavContentProps' own doc comment on this same field. */
-  clinicMembership: { clinicName: string; isAdmin: boolean } | null;
   children: React.ReactNode;
 }
 
@@ -63,11 +72,10 @@ export function AppShell({
   isPro,
   isStudent,
   isVerifiedStudent,
-  nexusVisible,
+  showNexus,
   adminAreas,
   isOwnerAdmin,
   zoneTwoOrder,
-  clinicMembership,
   children,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -82,13 +90,13 @@ export function AppShell({
     isPro,
     isStudent,
     isVerifiedStudent,
-    nexusVisible,
+    showNexus,
     adminAreas,
     isOwnerAdmin,
     aptaCount: navigationBadges?.aptaCount,
     nexusRequestCount: navigationBadges?.nexusRequestCount,
     zoneTwoOrder,
-    clinicMembership,
+    clinicMembership: navigationBadges?.clinicMembership ?? null,
   };
   // Extends the Atrium's warm palette out to the surrounding chrome (sidebar/topbar/
   // drawer/bottomnav) whenever any Atrium route is active — see .app-root--atrium in
@@ -113,8 +121,8 @@ export function AppShell({
   }, []);
 
   // AppShell persists across ordinary App Router navigations, so one background read per
-  // hard load is enough. These counts used to be awaited by the server layout alongside a
-  // Google News RSS request, delaying the entire authenticated shell. A failed or malformed
+  // hard load is enough. These counts (and the clinic footer pill) used to be awaited by
+  // the server layout, delaying the entire authenticated shell. A failed or malformed
   // response deliberately leaves every count absent rather than showing a false zero.
   useEffect(() => {
     const controller = new AbortController();

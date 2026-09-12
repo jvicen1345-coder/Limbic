@@ -1,0 +1,25 @@
+/* /pro/special-tests only (#465). The rest of the LimbicPRO toolbox lives in
+   pro.css / pro-dashboard.css / pro-force-lab.css and is not loaded here.
+   Accordion + filter chips come from base.css. */
+
+/* Per-tab empty state — same rule as Clinical Reference's .clinref-empty. */
+.clinref-empty {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 14px 0 0;
+}
+
+.pro-wide-page { max-width: 1500px; }
+
+@media (min-width: 1240px) {
+  .pro-wide-page .pro-accordion {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .pro-wide-page .pro-grid-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 2000px) {
+  .pro-wide-page .pro-grid-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}

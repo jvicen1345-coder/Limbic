@@ -4,7 +4,7 @@
 .crossword-page-pad { width: 100%; max-width: 1200px; margin: 0 auto; padding: 32px 24px 60px; box-sizing: border-box; }
 /* Shared by the Mini Crossword and Daily Term headers — same "back to the hub" affordance,
    so the rule carries both names rather than Daily Term borrowing a crossword- class. */
-.crossword-back-link, .game-back-link {
+.crossword-back-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -241,4 +241,3 @@
   0% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
   100% { transform: translateY(260px) rotate(360deg); opacity: 0; }
 }
-

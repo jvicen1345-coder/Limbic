@@ -43,33 +43,126 @@ const SAVED_UNREAD_SIZE = 3;
 // pages. Remaining articles receive bundled photos now and can be warmed on a later load.
 const IMAGE_CACHE_WARM_LIMIT = 16;
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ topic?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!user) return null; // layout already redirects; guards TS narrowing below
 
-  const [articles, savedRows, readRows, previousVisit, lastReadArticle, backupSigninFlag, migrationBannerDismissed] =
-    await Promise.all([
-      getArticles(),
-      prisma.savedArticle.findMany({ where: { userId: user.id }, select: { articleId: true, createdAt: true } }),
-      // Ordered most-recently-touched first — also feeds buildLimbicAgentInsights below,
-      // which needs that ordering to find each topic's most recent read in one pass.
-      prisma.readArticle.findMany({
-        where: { userId: user.id },
-        orderBy: { updatedAt: "desc" },
-        // scrollProgress feeds rankFeed's implicit affinity model below (a completed read
-        // counts for more than a bounce) — updatedAt/articleId alone used to be enough
-        // when this only fed buildLimbicAgentInsights' recency lookup.
-        select: { articleId: true, updatedAt: true, scrollProgress: true },
-      }),
-      recordHomeVisit(user),
-      prisma.readArticle.findFirst({
-        where: { userId: user.id },
-        orderBy: { updatedAt: "desc" },
-        select: { articleId: true, scrollProgress: true },
-      }),
-      hasBackupSigninFlag(),
-      hasMigrationBannerDismissed(),
-    ]);
+  const { topic: topicParam = null } = await searchParams;
+
+  // Capture the previous visit cutoff for "new since last visit" badges, then stamp
+  // lastVisitedAt after the response so the Prisma write is off the HTML critical path
+  // (same after() pattern as the image-cache warmer below).
+  const previousVisit = user.lastVisitedAt;
+  after(() => recordHomeVisit(user));
+
+  const isAdminUser = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
+
+  // Suggestions are only meaningful (and only shown) once the viewer has opted into
+  // Nexus themselves — otherwise the aside offers a join prompt instead (see HomeFeed).
+  // Nexus itself is gated to admins only for now (see app/(app)/nexus/layout.tsx) — a
+  // non-admin's nexusOptIn just means "on the waitlist," so real suggested-people data
+  // (names, headlines, working Connect buttons) must not reach the Home sidebar for them
+  // the way it does for an admin, even though the flag is set the same way for both.
+  const nexusSuggestionsPromise: Promise<NexusSuggestion[] | null> =
+    user.nexusOptIn && isAdminUser
+      ? (async () => {
+          await ensureNexusSeedData();
+          const [nexusCandidates, connectionStates] = await Promise.all([
+            prisma.user.findMany({
+              where: { id: { not: user.id }, isGuest: false, nexusOptIn: true },
+              select: { id: true, name: true, headline: true },
+              orderBy: { createdAt: "asc" },
+              take: 25,
+            }),
+            getConnectionStates(user.id),
+          ]);
+          return nexusCandidates
+            .filter((p) => (connectionStates.get(p.id) ?? { status: "none" as const }).status === "none")
+            .slice(0, NEXUS_SUGGESTIONS_SIZE)
+            .map((p) => ({ id: p.id, name: p.name, headline: p.headline, state: { status: "none" } }));
+        })()
+      : Promise.resolve(null);
+
+  const articlesPromise = getArticles();
+  const savedRowsPromise = prisma.savedArticle.findMany({
+    where: { userId: user.id },
+    select: { articleId: true, createdAt: true },
+  });
+  // Ordered most-recently-touched first — also feeds buildLimbicAgentInsights and
+  // Continue Reading below (readRows[0] is the most recent), which need that ordering
+  // to find each topic's most recent read / the resume card in one pass.
+  const readRowsPromise = prisma.readArticle.findMany({
+    where: { userId: user.id },
+    orderBy: { updatedAt: "desc" },
+    // scrollProgress feeds rankFeed's implicit affinity model below (a completed read
+    // counts for more than a bounce) — updatedAt/articleId alone used to be enough
+    // when this only fed buildLimbicAgentInsights' recency lookup.
+    select: { articleId: true, updatedAt: true, scrollProgress: true },
+  });
+  const timeZonePromise = getTimeZone(user);
+  // Home's own general-audience "Question of the Day" (see components/HomeQuestionCard.tsx)
+  // — distinct from Limbic Boards' student-facing daily question, which stays on
+  // app/(app)/boards/sharpening/page.tsx. Same todayDateKey() rotation + DailyCompletion
+  // persistence pattern as every other daily game in this app. Nested on timeZonePromise
+  // so it starts as soon as the zone resolves, still inside the single page Promise.all.
+  const homeQuestionPromise = timeZonePromise.then(async (timeZone) => {
+    const dateKey = todayDateKey(timeZone);
+    const completion = await prisma.dailyCompletion.findUnique({
+      where: { userId_kind_dateKey: { userId: user.id, kind: "homeQuestion", dateKey } },
+    });
+    return { dateKey, completion };
+  });
+  // Image preparation needs the ranked unread pool, which needs articles + saved + read.
+  // Start that chain as soon as those three resolve — do not wait for timezone / Nexus /
+  // founding-funder. Image preparation is a single cache read plus synchronous bundled
+  // fallbacks; third-party image requests run only after the response below.
+  const homeImagesPromise = Promise.all([articlesPromise, savedRowsPromise, readRowsPromise]).then(
+    ([articles, savedRows, readRows]) => {
+      const rankedAll = rankFeed({
+        articles,
+        specialty: user.specialty as Specialty,
+        followedTopics: user.followedTopics as unknown as string[],
+        readRows,
+        savedRows,
+        llmProfile: parseInterestProfile(user.llmInterestProfile),
+      });
+      // Already-read articles don't resurface as fresh recommendations on Home — Continue
+      // Reading (below) is the dedicated path back to something already opened, and every
+      // other Home surface (hero, grid, type tabs — all built from `ranked`) is meant to be
+      // "what's new for you". Filtered before prepareHomeImages so the "every visible card
+      // needs a real picture" guarantee sizes itself off the actual unread pool.
+      const readIdSet = new Set(readRows.map((r) => r.articleId));
+      return prepareHomeImages(rankedAll.filter((a) => !readIdSet.has(a.id)));
+    }
+  );
+
+  const [
+    articles,
+    savedRows,
+    readRows,
+    backupSigninFlag,
+    migrationBannerDismissed,
+    visitorHour,
+    homeQuestionState,
+    nexusSuggestions,
+    foundingFunderStatus,
+    homeImages,
+  ] = await Promise.all([
+    articlesPromise,
+    savedRowsPromise,
+    readRowsPromise,
+    hasBackupSigninFlag(),
+    hasMigrationBannerDismissed(),
+    visitorHourOfDay(),
+    homeQuestionPromise,
+    nexusSuggestionsPromise,
+    getFoundingFunderStatus(user.id),
+    homeImagesPromise,
+  ]);
 
   // Same server-clock snapshot DailyDashboard's greeting/date use further down — one `now`
   // for the whole render rather than separate Date.now() calls scattered through it.
@@ -127,92 +220,37 @@ export default async function HomePage() {
   })();
   const credential = credentialFromName(user.name);
   const greetingName = firstNameOf(user.name);
-  const greeting = `${timeOfDayGreeting(await visitorHourOfDay())}, ${greetingName}${credential ? `, ${credential}` : ""}`;
+  const greeting = `${timeOfDayGreeting(visitorHour)}, ${greetingName}${credential ? `, ${credential}` : ""}`;
   const dateLabel = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
   const newStudiesToday = articles.filter((a) => a.type === "research" && a.date === todayStr).length;
   const newGuidelinesToday = articles.filter((a) => a.type === "guideline" && a.date === todayStr).length;
   const ceHoursCompleted = (user.ceCategories as unknown as CeCategory[]).reduce((sum, c) => sum + c.completed, 0);
 
-  // Home's own general-audience "Question of the Day" (see components/HomeQuestionCard.tsx)
-  // — distinct from Limbic Boards' student-facing daily question, which stays on
-  // app/(app)/boards/sharpening/page.tsx. Same todayDateKey() rotation + DailyCompletion
-  // persistence pattern as every other daily game in this app.
-  const homeQuestionDateKey = todayDateKey(await getTimeZone(user));
+  const homeQuestionDateKey = homeQuestionState.dateKey;
   const homeQuestion = homeQuestionForDate(homeQuestionDateKey);
-  const homeQuestionCompletionPromise = prisma.dailyCompletion.findUnique({
-    where: { userId_kind_dateKey: { userId: user.id, kind: "homeQuestion", dateKey: homeQuestionDateKey } },
-  });
+  const homeQuestionCompletion = homeQuestionState.completion;
 
   // Falls back to null (renders nothing — see ContinueReadingCard) if there's no reading
   // history yet, or if the most recently read article has since dropped out of the current
   // pool (a live-sourced article can churn out from under an old ReadArticle row).
+  const lastReadArticle = readRows[0] ?? null;
   const lastReadArticleMeta = lastReadArticle ? articles.find((a) => a.id === lastReadArticle.articleId) : null;
   const continueReading = lastReadArticleMeta
     ? (() => {
-        const pct = Math.round(lastReadArticle!.scrollProgress * 100);
+        const pct = Math.round(lastReadArticle.scrollProgress * 100);
         return {
           articleId: lastReadArticleMeta.id,
           title: lastReadArticleMeta.title,
-          progress: lastReadArticle!.scrollProgress,
+          progress: lastReadArticle.scrollProgress,
           progressLabel: pct < 1 ? "Just started" : `${pct}% read`,
         };
       })()
     : null;
 
-  // Already-read articles don't resurface as fresh recommendations on Home — Continue
-  // Reading (below) is the dedicated path back to something already opened, and every
-  // other Home surface (hero, grid, type tabs — all built from `ranked`) is meant to be
-  // "what's new for you". Filtered before resolveHomeImages/attachTopicImages run below so
-  // the "every visible card needs a real picture" guarantee sizes itself off the actual
-  // unread pool instead of coming up short after read articles get dropped later.
-  const rankedAll = rankFeed({
-    articles,
-    specialty: user.specialty as Specialty,
-    followedTopics: user.followedTopics as unknown as string[],
-    readRows,
-    savedRows,
-    llmProfile: parseInterestProfile(user.llmInterestProfile),
-  });
-  const ranked = rankedAll.filter((a) => !readIdSet.has(a.id));
-
   const ceEvents = articles
     .filter((a) => a.type === "ce")
     .map((a) => ({ id: a.id, date: a.date, title: a.title, source: a.source }));
 
-  // Independent of each other, so run concurrently. Image preparation is a single cache
-  // read plus synchronous bundled fallbacks; third-party image requests run only after the
-  // response below. Suggestions are only meaningful (and only shown) once the viewer has opted into
-  // Nexus themselves — otherwise the aside offers a join prompt instead (see HomeFeed).
-  // Nexus itself is gated to admins only for now (see app/(app)/nexus/layout.tsx) — a
-  // non-admin's nexusOptIn just means "on the waitlist," so real suggested-people data
-  // (names, headlines, working Connect buttons) must not reach the Home sidebar for them
-  // the way it does for an admin, even though the flag is set the same way for both.
-  const isAdminUser = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
-  const nexusSuggestionsPromise: Promise<NexusSuggestion[] | null> = user.nexusOptIn && isAdminUser
-    ? (async () => {
-        await ensureNexusSeedData();
-        const [nexusCandidates, connectionStates] = await Promise.all([
-          prisma.user.findMany({
-            where: { id: { not: user.id }, isGuest: false, nexusOptIn: true },
-            select: { id: true, name: true, headline: true },
-            orderBy: { createdAt: "asc" },
-            take: 25,
-          }),
-          getConnectionStates(user.id),
-        ]);
-        return nexusCandidates
-          .filter((p) => (connectionStates.get(p.id) ?? { status: "none" as const }).status === "none")
-          .slice(0, NEXUS_SUGGESTIONS_SIZE)
-          .map((p) => ({ id: p.id, name: p.name, headline: p.headline, state: { status: "none" } }));
-      })()
-    : Promise.resolve(null);
-
-  const [homeImages, nexusSuggestions, homeQuestionCompletion, foundingFunderStatus] = await Promise.all([
-    prepareHomeImages(ranked),
-    nexusSuggestionsPromise,
-    homeQuestionCompletionPromise,
-    getFoundingFunderStatus(user.id),
-  ]);
   // null hides the number next to the greeting entirely — either not a confirmed funder, or
   // the reader's turned their badge off (see components/FoundingFunderBadgeCard.tsx).
   const foundingFunderNumber =
@@ -281,7 +319,6 @@ export default async function HomePage() {
       nexusSuggestions={nexusSuggestions}
       showNexus={nexusVisibleTo(user)}
       dailyInsight={dailyInsight}
-      nexusOnWaitlist={false}
       continueReading={continueReading}
       homeQuestion={{
         dateKey: homeQuestionDateKey,
@@ -298,6 +335,7 @@ export default async function HomePage() {
       showMigrationReminderBanner={showMigrationReminderBanner}
       showGraduationTransitionCard={showGraduationTransitionCard}
       getTheAppDismissed={user.getTheAppDismissed}
+      topicParam={topicParam}
     />
     </>
   );

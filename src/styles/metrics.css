@@ -1,0 +1,30 @@
+/* Calculator readouts and rating badges. Shared by Wellness metrics cards and the
+   LimbicPRO generalizability checker. */
+
+/* Moved from wellness.css — calculator readouts + rating badges — Wellness metrics cards and LimbicPRO */
+.wellness-calc-result {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-divider);
+}
+.wellness-calc-result-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.wellness-calc-result-value { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 28px; }
+.wellness-calc-result-unit { font-size: 12.5px; color: var(--color-neutral-700); }
+/* Pins each card's result block to the bottom of its (now stretched) card, so all four
+   results line up on the same baseline instead of trailing at whatever height each card's
+   own description/input text happens to end. */
+.metrics-calc-grid .wellness-calc-result { margin-top: auto; }
+/* — Status badges (BMI/HRV/VO2 Max/RPE categories) — */
+.wellness-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--fs-11-5);
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.wellness-badge-poor { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 15%, transparent); }
+.wellness-badge-fair { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
+.wellness-badge-good { color: var(--color-vitals-mobility); background: color-mix(in srgb, var(--color-vitals-mobility) 16%, transparent); }
+.wellness-badge-excellent { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 16%, transparent); }
+.wellness-badge-superior { color: var(--color-migration-gold); background: color-mix(in srgb, var(--color-migration-gold) 18%, transparent); }

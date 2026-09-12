@@ -1408,3 +1408,150 @@ html[data-theme="dark"] .app-root--atrium {
     grid-template-columns: 1fr;
   }
 }
+
+/* Moved from jv.css — syllabus UI — Student Atrium and admin/programs */
+/* Syllabus tracker (app/(app)/student/assignments/page.tsx, components/student/
+   SyllabiManager.tsx) — feeds the Atrium's This Week card (see .atrium-week-panel above).
+   Reuses the sitewide .field/.input/.btn primitives throughout; only the add-tabs, review
+   table, and existing-syllabi list below are page-specific. */
+.syllabi-add-section {
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.syllabi-add-tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--atrium-border); }
+.syllabi-add-tab {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 4px 10px;
+  margin-right: 16px;
+  cursor: pointer;
+}
+.syllabi-add-tab--active { color: var(--color-accent); border-bottom-color: var(--color-accent); }
+.syllabi-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 640px) {
+.syllabi-form-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.syllabi-error { font-size: 12.5px; color: var(--color-danger); margin: 10px 0 0; }
+.syllabi-review-title { font-size: 13px; color: var(--color-neutral-700); margin: 0 0 12px; }
+.syllabi-review-table-wrap { overflow-x: auto; }
+.syllabi-review-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.syllabi-review-table th {
+  text-align: left;
+  font-size: var(--fs-11);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-neutral-700);
+  padding: 0 8px 8px 0;
+}
+.syllabi-review-table td { padding: 5px 8px 5px 0; vertical-align: middle; }
+.syllabi-review-table .input { min-height: 34px; font-size: 13px; }
+.syllabi-review-course { font-size: 12px; color: var(--color-neutral-700); white-space: nowrap; }
+.syllabi-row-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+  padding: 6px;
+}
+.syllabi-row-delete:hover { color: var(--color-danger); }
+.syllabi-review-actions { display: flex; gap: 10px; margin-top: 16px; }
+.syllabi-list { margin-top: 8px; }
+.syllabi-card {
+  background: var(--atrium-surface);
+  border: 1px solid var(--atrium-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.syllabi-card-summary { cursor: pointer; }
+.syllabi-card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 15px; }
+.syllabi-card-meta { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+.syllabi-card-actions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.syllabi-delete-btn {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.syllabi-delete-btn:hover { color: var(--color-danger); }
+
+/* Moved from boards.css — NPTE resource list — only /student/resources uses these */
+/* — FSBPT/NPTE resource links (app/(app)/student/resources/page.tsx) — kept the
+   "boards-"-prefixed class names even after these two cards moved out of Limbic Boards'
+   Resources tab (components/BoardsTabs.tsx) to their own free, no-subscription-required
+   page, since renaming a class is pure churn with no visible effect. .boards-resource-
+   disclaimer is still shared with Boards' own Research & Stats tab description, so it stays
+   put either way. The FSBPT link list's arrow is a literal unicode character via ::after,
+   same "no icon component" approach .article-related-arrow already uses elsewhere, not a
+   new icon. Boards' own Resources tab (Study Strategy/Coming Soon cards) has its own
+   classes below unrelated to this block — the Study Strategy numbered steps mirror
+   /connexion/protocol's .connexion-step-number treatment (a large, muted background
+   number) but in brand blue instead of Connexion's gold; the Coming Soon card's muted
+   background/border is set inline on the element itself (see LimbicAgentCard.tsx for the
+   same "override .card's background inline, not via a new class" convention) — only its
+   list/badge need dedicated classes here. */
+.boards-resource-link-list { display: flex; flex-direction: column; }
+.boards-resource-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-divider);
+  text-decoration: none;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+.boards-resource-link:last-child { border-bottom: none; }
+.boards-resource-link::after {
+  content: "↗";
+  font-size: 14px;
+  color: var(--color-accent);
+  flex-shrink: 0;
+  transition: transform 150ms ease;
+}
+.boards-resource-link:hover::after { transform: translate(2px, -2px); }
+.boards-resource-disclaimer { font-size: var(--fs-11-5); color: var(--color-neutral-700); margin: 12px 0 0; }
+/* Official NPTE Resources card — lives on app/(app)/student/resources/page.tsx's own
+   960px-wide page (see .atrium-page), not squeezed into Boards' narrower 760px column
+   anymore, so this is back to 3 columns. Its own richer title+description treatment
+   (unlike the plain link list above) is worth the extra width, since these 4 already had
+   real descriptions worth keeping rather than flattening into .boards-resource-link. */
+.boards-npte-resource-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 8px 0 12px; }
+.boards-npte-resource-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-200);
+  text-decoration: none;
+  transition: border-color 150ms ease;
+}
+.boards-npte-resource-card:hover { border-color: var(--color-accent); }
+.boards-npte-resource-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.boards-npte-resource-title svg { color: var(--color-accent); flex-shrink: 0; }
+.boards-npte-resource-desc { font-size: 12px; color: var(--color-neutral-700); line-height: 1.45; margin: 0; }
+@media (max-width: 799px) {
+.boards-npte-resource-grid { grid-template-columns: minmax(0, 1fr); }
+}
