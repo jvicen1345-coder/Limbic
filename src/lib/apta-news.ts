@@ -1,7 +1,8 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
 import type { Article } from "@/lib/types";
-import { classify, fetchGoogleNewsRss, stripHtml, sourceName, toIsoDate, estimateReadMins } from "@/lib/news-live";
+import { fetchGoogleNewsRss, stripHtml, sourceName, toIsoDate, estimateReadMins } from "@/lib/news-live";
+import { classify } from "@/lib/classify";
 
 /**
  * APTA News section — third-party reporting *about* APTA, found via a Google News RSS

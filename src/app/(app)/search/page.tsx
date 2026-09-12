@@ -7,7 +7,7 @@ import { todayLocalDateStr } from "@/lib/today";
 import type { ArticleType, Specialty } from "@/lib/types";
 
 const VALID_TYPES: ArticleType[] = ["research", "guideline", "industry", "ce", "product"];
-const VALID_SPECIALTIES: Specialty[] = ["ortho", "neuro", "sports", "pediatric", "geriatric"];
+const VALID_SPECIALTIES: Specialty[] = ["ortho", "neuro", "cardiopulm", "sports", "pediatric", "geriatric"];
 
 export default async function SearchPage({
   searchParams,

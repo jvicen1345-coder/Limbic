@@ -6,8 +6,30 @@
  */
 
 import { questionsForSpecialty, type BoardQuestion } from "@/lib/board-content";
+// Aliased: this file already declares its own local `Specialty` interface below (the
+// Student Specialty Track's content shape), unrelated to lib/types.ts's Specialty string
+// union that Article/Clip use.
+import type { Specialty as ArticleSpecialty } from "@/lib/types";
 
 export type SpecialtySlug = "musculoskeletal" | "neurological" | "cardiopulmonary" | "pediatrics" | "geriatrics" | "sports";
+
+/** Crosswalk to the Research/Wellness/Clips Specialty taxonomy (lib/types.ts) — the two
+ *  enums exist for different features (this one names the six Student Specialty Track hubs;
+ *  Specialty tags live articles/clips) and don't share spelling, but they describe the same
+ *  six clinical domains. This being a `Record<SpecialtySlug, ArticleSpecialty>` is the whole
+ *  point: it's not read anywhere at runtime, it exists so TypeScript refuses to compile if a
+ *  new specialty track is ever added here without a maintainer also deciding its
+ *  Research-side equivalent — the exact drift that previously shipped a "cardiopulmonary"
+ *  track with no matching Specialty, silently mis-tagging every cardiopulmonary study as
+ *  "ortho" (see lib/classify.ts). Checked for real in specialty-content.test.ts. */
+export const SPECIALTY_SLUG_TO_SPECIALTY: Record<SpecialtySlug, ArticleSpecialty> = {
+  musculoskeletal: "ortho",
+  neurological: "neuro",
+  cardiopulmonary: "cardiopulm",
+  pediatrics: "pediatric",
+  geriatrics: "geriatric",
+  sports: "sports",
+};
 
 export interface SpecialtyCondition {
   name: string;

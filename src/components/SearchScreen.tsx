@@ -23,6 +23,7 @@ const SPECIALTY_TABS: { id: Specialty | "all"; label: string }[] = [
   { id: "all", label: "All" },
   { id: "ortho", label: "Orthopedic" },
   { id: "neuro", label: "Neurologic" },
+  { id: "cardiopulm", label: "Cardiopulmonary" },
   { id: "sports", label: "Sports" },
   { id: "pediatric", label: "Pediatric" },
   { id: "geriatric", label: "Geriatric" },
