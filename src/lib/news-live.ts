@@ -2,8 +2,9 @@ import "server-only";
 import Parser from "rss-parser";
 import { createHash } from "node:crypto";
 import { unstable_cache } from "next/cache";
-import type { Article, ArticleType, Specialty, WellnessArticle } from "@/lib/types";
+import type { Article, ArticleType, WellnessArticle } from "@/lib/types";
 import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
+import { classify } from "@/lib/classify";
 
 /**
  * Live news sourcing.
@@ -28,15 +29,18 @@ import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
  * default. General health/wellness content lives only on the Health & Wellness page
  * (`fetchLiveWellness` below), never here.
  *
- * Results are keyword-classified into a specialty (ortho/neuro/sports/pediatric/geriatric)
- * the same way a real aggregator would bucket free-text into fixed categories — it's a
- * heuristic, not a guarantee, and is documented as such here rather than presented as more
- * rigorous than it is.
+ * Results are keyword-classified into a specialty (ortho/neuro/cardiopulm/sports/pediatric/
+ * geriatric) the same way a real aggregator would bucket free-text into fixed categories —
+ * it's a heuristic, not a guarantee, and is documented as such here rather than presented as
+ * more rigorous than it is. classify() itself, along with the keyword tables it reads from
+ * (specialty, type, and exercise/technique), now lives in lib/classify.ts — a plain module
+ * with no "server-only" import, since it's pure text matching and this way it can be unit
+ * tested directly (see e2e/classify.spec.ts) without a running server.
  *
  * "Guideline" is deliberately not a reachable outcome of that classifier (see the empty
- * TYPE_KEYWORDS.guideline below) — "Guidelines" means the real, curated AOPT clinical
- * practice guidelines in lib/orthopt-cpg-static.ts, not a news story that happens to use
- * the word "guideline". classify() can still be handed a "guideline" defaultType in
+ * TYPE_KEYWORDS.guideline in lib/classify.ts) — "Guidelines" means the real, curated AOPT
+ * clinical practice guidelines in lib/orthopt-cpg-static.ts, not a news story that happens to
+ * use the word "guideline". classify() can still be handed a "guideline" defaultType in
  * principle, but nothing calls it with one anymore.
  *
  * "CE & Events" is intentionally NOT sourced live: the home-feed calendar needs a precise
@@ -152,118 +156,6 @@ export function toIsoDate(item: GoogleNewsItem): string {
 export function estimateReadMins(text: string): number {
   const words = text.split(/\s+/).filter(Boolean).length;
   return Math.max(2, Math.round(words / 200) || 2);
-}
-
-const SPECIALTY_KEYWORDS: Record<Specialty, string[]> = {
-  ortho: ["orthopedic", "orthopaedic", "knee", "hip", "spine", "joint", "acl", "fracture", "shoulder", "back pain"],
-  neuro: ["stroke", "neurologic", "neurological", "vestibular", "parkinson", "brain injury", "multiple sclerosis", "spinal cord"],
-  cardiopulm: ["cardiopulmonary", "cardiac rehab", "cardiac rehabilitation", "pulmonary rehab", "pulmonary rehabilitation", "copd", "heart failure", "pulmonary disease", "icu mobility", "post-covid"],
-  sports: ["sports", "athlete", "athletic", "concussion", "return to play", "return-to-sport", "ncaa", "combine"],
-  pediatric: ["pediatric", "paediatric", "children", "child", "infant", "cerebral palsy", "toddler"],
-  geriatric: ["geriatric", "older adult", "elderly", "senior", "fall risk", "falls prevention", "aging"],
-};
-
-const TYPE_KEYWORDS: Record<ArticleType, string[]> = {
-  research: ["study", "trial", "researchers", "journal", "randomized", "cohort", "findings"],
-  // Empty on purpose: "Guidelines" now means the real, curated AOPT clinical practice
-  // guidelines in lib/orthopt-cpg-static.ts, not a keyword guess off general news search —
-  // see lib/articles.ts. An empty keyword list means classify() can never award a Google
-  // News result "guideline" as its best-match type.
-  guideline: [],
-  industry: ["cms", "medicare", "medicaid", "reimbursement", "policy", "legislation", "law", "insurer", "payer", "regulation"],
-  ce: ["webinar", "conference", "continuing education", "ce credit", "course", "csm", "symposium"],
-  product: ["device", "wearable", "equipment", "fda clearance", "fda-cleared", "launch", "software", "app"],
-};
-
-function titleCase(s: string): string {
-  return s.replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-/** A handful of keyword literals are acronyms that title-casing mangles ("Cms" instead of
- *  "CMS"), or are spelling variants of the same thing ("fda clearance" / "fda-cleared") —
- *  normalized here so they don't show up as separate near-duplicate topic chips. */
-const KEYWORD_LABEL_OVERRIDES: Record<string, string> = {
-  cms: "CMS",
-  ncaa: "NCAA",
-  csm: "CSM",
-  acl: "ACL",
-  "fda clearance": "FDA Clearance",
-  "fda-cleared": "FDA Clearance",
-};
-
-/** Keywords that just restate the specialty/type label already guaranteed to be on the
- *  article (SPECIALTY_META / TYPE_META add that label separately, unconditionally) —
- *  not useful as a distinct followable topic, so dropped rather than kept as a duplicate. */
-const SUPPRESSED_KEYWORDS = new Set([
-  "pediatric",
-  "paediatric",
-  "geriatric",
-  "sports",
-  "neurologic",
-  "neurological",
-  "orthopedic",
-  "orthopaedic",
-  "guideline",
-  "equipment",
-]);
-
-/** Returns the display label for a matched keyword, or null if it should be dropped —
- *  see SUPPRESSED_KEYWORDS and KEYWORD_LABEL_OVERRIDES above. */
-function keywordLabel(kw: string): string | null {
-  const lower = kw.toLowerCase();
-  if (SUPPRESSED_KEYWORDS.has(lower)) return null;
-  return KEYWORD_LABEL_OVERRIDES[lower] ?? titleCase(kw);
-}
-
-export function classify(
-  text: string,
-  defaultType: ArticleType
-): { type: ArticleType; specialty: Specialty; matchedKeywords: string[]; typeConfident: boolean } {
-  const lower = text.toLowerCase();
-  let bestSpecialty: Specialty = "ortho";
-  let bestSpecialtyHits = 0;
-  let bestSpecialtyKeywords: string[] = [];
-  (Object.keys(SPECIALTY_KEYWORDS) as Specialty[]).forEach((sp) => {
-    const matched = SPECIALTY_KEYWORDS[sp].filter((kw) => lower.includes(kw));
-    if (matched.length > bestSpecialtyHits) {
-      bestSpecialtyHits = matched.length;
-      bestSpecialty = sp;
-      // Every keyword that matched the winning specialty, not just the first — a followed
-      // topic like "ACL" or "fall risk" only ever affects ranking (see rankFeed) if it
-      // actually ends up in the article's tags, so a single kept keyword per article made
-      // most of the long-tail topic list effectively inert.
-      bestSpecialtyKeywords = matched;
-    }
-  });
-
-  let type = defaultType;
-  let bestTypeHits = 0;
-  let bestTypeKeywords: string[] = [];
-  (Object.keys(TYPE_KEYWORDS) as ArticleType[]).forEach((t) => {
-    const matched = TYPE_KEYWORDS[t].filter((kw) => lower.includes(kw));
-    if (matched.length > bestTypeHits) {
-      bestTypeHits = matched.length;
-      type = t;
-      bestTypeKeywords = matched;
-    }
-  });
-
-  const matchedKeywords = [...bestSpecialtyKeywords, ...bestTypeKeywords]
-    .map(keywordLabel)
-    .filter((k): k is string => k !== null);
-  return { type, specialty: bestSpecialty, matchedKeywords, typeConfident: bestTypeHits > 0 };
-}
-
-/** Every keyword-derived topic label classify() can ever produce, normalized the same way
- *  and deduplicated — independent of which articles happen to be loaded right now. Used to
- *  populate Profile's "Add more" topic list so it doesn't shrink or grow as live sources
- *  refresh (classify() only keeps the first-matched keyword per article, so plenty of these
- *  never win that slot for any currently-loaded article, and would otherwise never appear
- *  as a followable topic at all). */
-export function allKnownKeywordTopics(): string[] {
-  const allKeywords = [...Object.values(SPECIALTY_KEYWORDS).flat(), ...Object.values(TYPE_KEYWORDS).flat()];
-  const labels = allKeywords.map(keywordLabel).filter((k): k is string => k !== null);
-  return Array.from(new Set(labels)).sort();
 }
 
 const CATEGORY_QUERIES: { type: ArticleType; query: string }[] = [

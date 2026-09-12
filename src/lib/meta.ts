@@ -42,7 +42,7 @@ export const TYPES: { id: ArticleType; label: string }[] = [
 
 /** The canonical specialty/type labels — used both as Profile's "Suggested" topic chips
  *  and as the picker on the onboarding screen (app/onboarding/page.tsx). Kept separate
- *  from the long-tail keyword-derived topics (see lib/news-live.ts allKnownKeywordTopics),
+ *  from the long-tail keyword-derived topics (see lib/classify.ts allKnownKeywordTopics),
  *  which come from a fixed vocabulary rather than whatever's currently loaded. */
 export const SUGGESTED_TOPICS = [...SPECIALTIES.map((s) => s.label), ...TYPES.map((t) => t.label)];
 

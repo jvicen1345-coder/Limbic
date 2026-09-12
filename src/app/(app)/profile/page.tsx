@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getCurrentUser, isStudentEmail } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { SUGGESTED_TOPICS } from "@/lib/meta";
-import { allKnownKeywordTopics } from "@/lib/news-live";
+import { allKnownKeywordTopics } from "@/lib/classify";
 import { ProfileForm } from "@/components/ProfileForm";
 import { GetTheAppCard } from "@/components/GetTheAppCard";
 import { TopicChip } from "@/components/TopicChip";

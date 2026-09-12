@@ -2,7 +2,7 @@ import "server-only";
 import { XMLParser } from "fast-xml-parser";
 import { unstable_cache } from "next/cache";
 import type { Article, EvidenceLevel } from "@/lib/types";
-import { classify } from "@/lib/news-live";
+import { classify } from "@/lib/classify";
 import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
 
 /**
@@ -11,7 +11,8 @@ import { SPECIALTY_META, TYPE_META } from "@/lib/meta";
  *
  * Three round trips: esearch (find matching PMIDs) → esummary (title/journal/date) →
  * efetch in XML (abstract text). Specialty is still keyword-classified the same way as
- * lib/news-live.ts, since PubMed doesn't tag articles by PT specialty.
+ * lib/news-live.ts (both call the shared classify() in lib/classify.ts), since PubMed
+ * doesn't tag articles by PT specialty.
  */
 
 const EUTILS = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";

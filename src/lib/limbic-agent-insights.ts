@@ -63,7 +63,7 @@ export function buildLimbicAgentInsights(
   }
 
   // Followed topics can include non-clinical keywords Profile's "Add more" list surfaces
-  // alongside genuine clinical ones (see lib/news-live.ts allKnownKeywordTopics) — e.g.
+  // alongside genuine clinical ones (see lib/classify.ts allKnownKeywordTopics) — e.g.
   // "Legislation" or "Athlete" — which have no business showing up as a clinical gap to
   // close (see lib/clinical-relevance.ts). filterClinicalGapTopics also normalizes
   // near-duplicates ("Athletic" -> "athlete") so they can't both appear; the lookup below
