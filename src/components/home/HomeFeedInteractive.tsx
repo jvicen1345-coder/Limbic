@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { SearchIcon, XIcon, DownloadIcon, RefreshIcon } from "@/components/icons";
 import { SlidingTabs } from "@/components/SlidingTabs";
 import { HeroFeed } from "@/components/HeroFeed";
+import { ArticleCard } from "@/components/ArticleCard";
 import { RefreshHomeFeedButton } from "@/components/RefreshHomeFeedButton";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { refreshHomeFeedAction } from "@/app/actions/home";
@@ -14,17 +15,20 @@ import type { DecoratedArticle } from "@/lib/feed";
 
 export type HomeFeedPanel = {
   heroPool: DecoratedArticle[];
-  /** Server-rendered grid (and empty-state copy) for this tab. */
-  grid: ReactNode;
+  gridArticles: DecoratedArticle[];
   gridFingerprints: string[];
+  emptyMessage: string | null;
 };
 
 /**
  * Home's interactive chrome — tabs, topic pill, pull-to-refresh, and Refresh — around
- * server-rendered greeting / panels / aside. Default tab content is already in the HTML;
+ * server-rendered greeting / dashboard / aside. Default tab content is already in the HTML;
  * switching tabs only toggles which prebuilt panel is visible (same pattern as
  * WellnessOverviewTabs). Hero pools stay as data so Refresh can rotate the grid without
- * replacing the pinned hero.
+ * replacing the pinned hero. Grid cards are rendered here (not server-built ReactNode) so
+ * the active tab's grid can be filtered against whichever hero is actually on screen — see
+ * the heroImages check below, which is what stops a rotated-in grid card from repeating the
+ * still-pinned hero's picture.
  */
 export function HomeFeedInteractive({
   topicParam,
@@ -134,11 +138,38 @@ export function HomeFeedInteractive({
                 </div>
               )}
 
-              {TYPE_TABS.map((tab) => (
-                <div key={tab.id} hidden={tab.id !== filter}>
-                  {panels[tab.id].grid}
-                </div>
-              ))}
+              {TYPE_TABS.map((tab) => {
+                const isActive = tab.id === filter;
+                const tabPanel = panels[tab.id];
+                // Only the active tab can be showing a hero pinned from a previous Refresh
+                // (switching tabs resets the pin to that tab's own fresh selection — see
+                // heroPinKey above), so only its grid needs rechecking against what's
+                // actually on screen as hero right now. selectHomeFeed already dedupes a
+                // tab's own fresh hero+grid pair against each other server-side; this catches
+                // the case that pairing can't see — a grid rotated by Refresh landing on the
+                // same image as the hero that Refresh deliberately left in place.
+                const effectiveHeroPool = isActive ? heroPool : tabPanel.heroPool;
+                const heroImages = new Set(
+                  effectiveHeroPool.map((a) => a.image).filter((img): img is string => !!img)
+                );
+                const gridArticles = isActive
+                  ? tabPanel.gridArticles.filter((a) => !a.image || !heroImages.has(a.image))
+                  : tabPanel.gridArticles;
+                const showEmptyMessage =
+                  tabPanel.emptyMessage && effectiveHeroPool.length === 0 && gridArticles.length === 0;
+                return (
+                  <div key={tab.id} hidden={!isActive}>
+                    {showEmptyMessage && (
+                      <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>{tabPanel.emptyMessage}</p>
+                    )}
+                    <div className="cards-grid home-cards-grid">
+                      {gridArticles.map((a) => (
+                        <ArticleCard key={a.id} article={a} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             <div className="home-refresh-pill-wrap">

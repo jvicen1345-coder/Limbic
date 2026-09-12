@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ArticleCard } from "@/components/ArticleCard";
 import { type ContinueReadingData } from "@/components/ContinueReadingCard";
 import { type HomeQuestionData } from "@/components/HomeQuestionCard";
 import { HomeFeedAside } from "./HomeFeedAside";
@@ -26,9 +25,15 @@ import {
 import { titleFingerprint } from "@/lib/home-grid-rotation";
 
 /**
- * Signed-in Home — Server Component. Greeting, dashboard, aside, and every tab's article
- * grid are rendered to HTML here so LCP does not wait on a client island. Tabs / refresh /
- * pull-to-refresh stay in HomeFeedInteractive.
+ * Signed-in Home — Server Component. Greeting, dashboard, and aside are rendered to HTML
+ * here. Each tab's hero pool and grid *articles* are selected here too (selectHomeFeed
+ * already dedupes a tab's own hero+grid pair against each other), but handed to
+ * HomeFeedInteractive as data rather than pre-rendered cards: Refresh pins the old hero in
+ * place client-side while swapping in a freshly selected grid, and only the client knows
+ * which hero is actually still on screen at that moment — so the final card markup has to
+ * be built there, where that check can happen. HomeFeedInteractive is still a Server
+ * Component's worth of markup on first load ("use client" doesn't opt a component out of
+ * SSR), so this doesn't cost LCP.
  */
 export function HomeFeed({
   articles,
@@ -101,19 +106,9 @@ export function HomeFeed({
           : null;
       const panel: HomeFeedPanel = {
         heroPool: selection.heroPool,
+        gridArticles: selection.gridArticles,
         gridFingerprints: selection.gridArticles.map((a) => titleFingerprint(a.title)),
-        grid: (
-          <>
-            {emptyMessage && (
-              <p style={{ fontSize: 14, color: "var(--color-neutral-700)" }}>{emptyMessage}</p>
-            )}
-            <div className="cards-grid home-cards-grid">
-              {selection.gridArticles.map((a) => (
-                <ArticleCard key={a.id} article={a} />
-              ))}
-            </div>
-          </>
-        ),
+        emptyMessage,
       };
       return [tab.id, panel] as const;
     }),
