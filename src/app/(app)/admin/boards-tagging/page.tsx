@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { getBoardsQuestionsForTagging } from "@/app/actions/boards-tagging";
 import { BoardsTaggingAdminList } from "@/components/BoardsTaggingAdminList";
 
@@ -10,7 +10,7 @@ import { BoardsTaggingAdminList } from "@/components/BoardsTaggingAdminList";
  *  app/actions/boards-tagging.ts for why this is a separate tag table rather than columns
  *  on a BoardsQuestion model (Boards questions are a static array, not a DB table). */
 export default async function AdminBoardsTaggingPage() {
-  if (!(await isSiteAdmin())) redirect("/home");
+  if (!(await hasAdminArea("boardsTagging"))) redirect("/home");
 
   const questions = await getBoardsQuestionsForTagging();
   const taggedCount = questions.filter((q) => q.bodyRegions.length > 0).length;

@@ -208,6 +208,18 @@ model User {
   // state (and the Stripe webhook that drives it) stays exactly what it really is.
   compedAccess Json @default("[]")
 
+  // Co-admin access — the behind-the-scenes areas this account can open without being on
+  // the FOUNDING_FUNDERS_ADMIN_EMAILS allowlist (see lib/admin-areas.ts for the areas,
+  // lib/admin.ts hasAdminArea for the gate, and the Co-Admin controls on /admin/accounts).
+  // JSON-encoded AdminArea[] rather than a column per area: the set of admin screens changes
+  // with the app, and a migration per screen would be silly — same reasoning as toursSeen.
+  //
+  // Deliberately NOT wired into getCurrentUser()'s paid-tier overlay the way the admin-email
+  // allowlist is: a co-admin is given a job to do, not a free subscription, so their
+  // isPro/studentTier/isWellnessPlus stay whatever they really are. An owner who wants to
+  // comp a co-admin a tier does it explicitly through compedAccess above.
+  adminAreas Json @default("[]")
+
   // Timestamp of the previous home-feed load, captured before it's overwritten with the
   // current one — this is what lets the feed tell "published since you were last here"
   // apart from everything else (see lib/session.ts recordVisitAndGetPrevious).

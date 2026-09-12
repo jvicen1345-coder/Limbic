@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { getCurrentUser } from "@/lib/session";
 import {
   NOTICE_TARGET_TYPES,
@@ -14,7 +14,7 @@ import {
  * app/dmca/page.tsx. Recording a notice, taking material down, rejecting or reinstating it,
  * and suspending a repeat infringer.
  *
- * Two rules hold across all of them. Every action re-checks isSiteAdmin() itself rather
+ * Two rules hold across all of them. Every action re-checks hasAdminArea("copyright") itself rather
  * than trusting the page that rendered the button, since each is a callable endpoint in its
  * own right (same reasoning as app/actions/admin.ts). And nothing here ever hard-deletes:
  * a takedown sets removedAt, a suspension sets suspendedAt, and a resolved notice keeps its
@@ -54,7 +54,7 @@ export async function recordCopyrightNoticeAction(input: {
   targetId: string;
   notes?: string;
 }): Promise<CopyrightActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
 
   const complainantName = input.complainantName.trim();
   const complainantEmail = input.complainantEmail.trim();
@@ -101,7 +101,7 @@ export async function recordCopyrightNoticeAction(input: {
  * to resolve rather than getting stuck.
  */
 export async function removeReportedContentAction(noticeId: string): Promise<CopyrightActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
 
   const notice = await prisma.copyrightNotice.findUnique({ where: { id: noticeId } });
   if (!notice) return { ok: false, error: "That notice no longer exists." };
@@ -134,7 +134,7 @@ export async function rejectCopyrightNoticeAction(
   noticeId: string,
   reason: string
 ): Promise<CopyrightActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
   const trimmed = reason.trim();
   if (!trimmed) return { ok: false, error: "Give a reason for rejecting this notice." };
 
@@ -166,7 +166,7 @@ export async function reinstateContentAction(
   noticeId: string,
   reason: string
 ): Promise<CopyrightActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
   const trimmed = reason.trim();
   if (!trimmed) return { ok: false, error: "Give a reason for reinstating this content." };
 
@@ -205,7 +205,7 @@ export async function reinstateContentAction(
  */
 export async function suspendUserAction(userId: string, reason: string): Promise<CopyrightActionResult> {
   const admin = await getCurrentUser();
-  if (!admin || !(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!admin || !(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
   if (userId === admin.id) return { ok: false, error: "You can't suspend your own account." };
 
   const trimmed = reason.trim();
@@ -226,7 +226,7 @@ export async function suspendUserAction(userId: string, reason: string): Promise
 
 /** Lifts a suspension — a counter-notice held up, or the suspension was a mistake. */
 export async function unsuspendUserAction(userId: string): Promise<CopyrightActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
 
   const target = await prisma.user.findUnique({ where: { id: userId } });
   if (!target) return { ok: false, error: "That account no longer exists." };

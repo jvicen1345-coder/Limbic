@@ -122,7 +122,7 @@ function UpdateForm({
   );
 }
 
-/** /admin/programs (gated by isSiteAdmin() in that page) — outreach tracking over the same
+/** /admin/programs (gated by hasAdminArea("programs") in that page) — outreach tracking over the same
  *  235 seeded DPTProgram rows the public directory reads (see app/actions/dpt-programs.ts
  *  getOutreachRecords/upsertOutreachRecord). A program with no InstitutionalOutreach row yet
  *  just reads as status "not_contacted" throughout (see statusOf above) rather than needing

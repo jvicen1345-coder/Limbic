@@ -1,9 +1,16 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { Fragment, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { deleteUserAction, grantAccessAction, revokeAccessAction } from "@/app/actions/admin";
+import {
+  deleteUserAction,
+  grantAccessAction,
+  revokeAccessAction,
+  grantAdminAreaAction,
+  revokeAdminAreaAction,
+} from "@/app/actions/admin";
 import type { GrantArea } from "@/lib/session";
+import { ADMIN_AREAS, ADMIN_AREA_LABELS, ADMIN_AREA_DESCRIPTIONS, type AdminArea } from "@/lib/admin-areas";
 
 export interface AccountRow {
   id: string;
@@ -16,6 +23,12 @@ export interface AccountRow {
   hasGoogle: boolean;
   isPro: boolean;
   grantedAccess: GrantArea[];
+  /** The behind-the-scenes areas this account has been delegated (see User.adminAreas in
+   *  schema.prisma). Always empty for an owner — see isOwnerAdmin below. */
+  adminAreas: AdminArea[];
+  /** On the FOUNDING_FUNDERS_ADMIN_EMAILS allowlist, so they hold every area regardless of
+   *  the column above, and no chip on this page can add to or take from that. */
+  isOwnerAdmin: boolean;
   isFoundingFunder: boolean;
   createdAt: string;
   lastVisitedAt: string | null;
@@ -79,6 +92,114 @@ function GrantedAccessChips({ userId, grantedAccess }: { userId: string; granted
       })}
       {error && <span style={{ fontSize: "var(--fs-11)", color: "var(--color-danger)" }}>{error}</span>}
     </span>
+  );
+}
+
+/** One row's Co-Admin cell — a summary plus the toggle that opens the panel below it. Kept
+ *  deliberately quiet (a count, not ten chips) because most rows are ordinary readers and
+ *  this column would otherwise dominate a table whose job is accounts, not permissions. */
+function CoAdminCell({ row, expanded, onToggle }: { row: AccountRow; expanded: boolean; onToggle: () => void }) {
+  // An owner's access comes from FOUNDING_FUNDERS_ADMIN_EMAILS, not from a column this page
+  // can write, so there is nothing here to toggle — say where it comes from instead.
+  if (row.isOwnerAdmin) {
+    return (
+      <span style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)" }} title="On FOUNDING_FUNDERS_ADMIN_EMAILS — holds every area">
+        Full admin
+      </span>
+    );
+  }
+
+  const count = row.adminAreas.length;
+  return (
+    <button
+      type="button"
+      className="btn btn-ghost"
+      style={{ fontSize: 12, padding: "2px 8px" }}
+      aria-expanded={expanded}
+      onClick={onToggle}
+    >
+      {count === 0 ? "None" : `${count} ${count === 1 ? "area" : "areas"}`}
+      <span aria-hidden style={{ marginLeft: 6, color: "var(--color-neutral-700)" }}>{expanded ? "\u2303" : "\u2304"}</span>
+    </button>
+  );
+}
+
+/** The expanded Co-Admin panel for one row — every admin area as a toggle, with what the
+ *  area actually opens up written under it. Nine chips is too much to live inside a table
+ *  cell, so the cell shows a summary and this drops into a full-width row underneath it.
+ *
+ *  Everyone who can see this page can use it: /admin/accounts is owner-only (see the note in
+ *  lib/admin-areas.ts on why it has no delegable area), so there is no reader here who could
+ *  look at these controls but not work them. */
+function CoAdminPanel({
+  userId,
+  areas,
+  onChange,
+}: {
+  userId: string;
+  areas: AdminArea[];
+  onChange: (areas: AdminArea[]) => void;
+}) {
+  const [pending, setPending] = useState<AdminArea | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const toggle = (area: AdminArea) => {
+    setError(null);
+    setPending(area);
+    const granted = areas.includes(area);
+    const action = granted ? revokeAdminAreaAction : grantAdminAreaAction;
+    action(userId, area).then((result) => {
+      setPending(null);
+      // Renders from the server's answer rather than from an optimistic guess: this is an
+      // access-control list, and it should show what was actually stored.
+      if (result.ok && result.areas) onChange(result.areas);
+      else setError(result.error ?? "Something went wrong.");
+    });
+  };
+
+  return (
+    // Capped rather than left to fill the cell: this row spans a table that is wider than its
+    // scroll container, so a grid sized off the cell put its last column past the right edge
+    // where an owner would never scroll to find it.
+    <div style={{ padding: "6px 0 10px", maxWidth: 720 }}>
+      <div style={{ fontSize: "var(--fs-11-5)", color: "var(--color-neutral-700)", marginBottom: 8 }}>
+        Pick the behind-the-scenes areas this person can open. Everything else — this page
+        included — stays hidden from them, and revoking an area takes effect on their next page
+        load.
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))", gap: "10px 14px" }}>
+        {ADMIN_AREAS.map((area) => {
+          const active = areas.includes(area);
+          return (
+            <div key={area} style={{ display: "flex", flexDirection: "column", gap: 3, alignItems: "flex-start" }}>
+              <button
+                type="button"
+                disabled={pending === area}
+                onClick={() => toggle(area)}
+                className="btn"
+                style={{
+                  fontSize: "var(--fs-11)",
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                  border: active ? "1px solid var(--color-accent)" : "1px solid var(--color-neutral-300)",
+                  background: active ? "color-mix(in srgb, var(--color-accent) 16%, transparent)" : "transparent",
+                  color: active ? "var(--color-accent)" : "var(--color-neutral-700)",
+                }}
+                title={`${active ? "Revoke" : "Grant"} ${ADMIN_AREA_LABELS[area]}`}
+              >
+                {pending === area ? "\u2026" : ADMIN_AREA_LABELS[area]}
+              </button>
+              <span style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", lineHeight: 1.35 }}>
+                {ADMIN_AREA_DESCRIPTIONS[area]}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      {error && (
+        <p style={{ fontSize: "var(--fs-11-5)", color: "var(--color-danger)", margin: "8px 0 0" }}>{error}</p>
+      )}
+    </div>
   );
 }
 
@@ -148,11 +269,14 @@ function signInMethodLabel(row: Pick<AccountRow, "hasGoogle" | "hasPassword">): 
   return methods.length > 0 ? methods.join(", ") : "None";
 }
 
-/** /admin/accounts (gated by isSiteAdmin() in that page) — every account, with a delete
+/** /admin/accounts (owner-only, gated by isSiteAdmin() in that page) — every account, with a delete
  *  button per row. Client component only for that delete interaction; the row data itself
  *  is fetched server-side and passed in once. */
 export function AccountsAdminTable({ rows: initialRows }: { rows: AccountRow[] }) {
   const [rows, setRows] = useState(initialRows);
+  // At most one Co-Admin panel open at a time: it is a full-width row of ten labelled
+  // toggles, and two of them open at once turns the table into a wall.
+  const [expandedCoAdminId, setExpandedCoAdminId] = useState<string | null>(null);
   // Hidden by default — guest accounts are throwaway, unauthenticated sessions (see
   // User.isGuest in schema.prisma) rather than real registrations, so they'd otherwise
   // drown out the accounts an admin is actually here to manage. Still a toggle, not a
@@ -211,41 +335,64 @@ export function AccountsAdminTable({ rows: initialRows }: { rows: AccountRow[] }
                 <th style={{ padding: "4px 10px", fontWeight: 600 }}>Pro</th>
                 <th style={{ padding: "4px 10px", fontWeight: 600 }}>Founding Funder</th>
                 <th style={{ padding: "4px 10px", fontWeight: 600 }}>Granted Access</th>
+                <th style={{ padding: "4px 10px", fontWeight: 600 }}>Co-Admin</th>
                 <th style={{ padding: "4px 0 4px 10px", fontWeight: 600 }} />
               </tr>
             </thead>
             <tbody>
               {visibleRows.map((u) => (
-                <tr key={u.id} style={{ borderTop: "1px solid var(--color-neutral-200)" }}>
-                  <td style={{ padding: "6px 10px 6px 0" }}>{u.name}</td>
-                  <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)" }}>
-                    {u.email ?? u.licenseEmail ?? u.licenseNumber ?? "N/A"}
-                  </td>
-                  <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
-                    {new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                  </td>
-                  <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
-                    {u.lastVisitedAt
-                      ? new Date(u.lastVisitedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-                      : "Never"}
-                  </td>
-                  <td style={{ padding: "6px 10px" }}>{u.isGuest ? "Yes" : ""}</td>
-                  <td style={{ padding: "6px 10px" }}>{signInMethodLabel(u)}</td>
-                  <td style={{ padding: "6px 10px" }}>{u.isPro ? "Yes" : ""}</td>
-                  <td style={{ padding: "6px 10px" }}>{u.isFoundingFunder ? "Yes" : ""}</td>
-                  <td style={{ padding: "6px 10px" }}>
-                    <GrantedAccessChips userId={u.id} grantedAccess={u.grantedAccess} />
-                  </td>
-                  <td style={{ padding: "6px 0 6px 10px" }}>
-                    <DeleteButton
-                      userId={u.id}
-                      onDeleted={() => {
-                        setRows((prev) => prev.filter((r) => r.id !== u.id));
-                        router.refresh();
-                      }}
-                    />
-                  </td>
-                </tr>
+                <Fragment key={u.id}>
+                  <tr style={{ borderTop: "1px solid var(--color-neutral-200)" }}>
+                    <td style={{ padding: "6px 10px 6px 0" }}>{u.name}</td>
+                    <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)" }}>
+                      {u.email ?? u.licenseEmail ?? u.licenseNumber ?? "N/A"}
+                    </td>
+                    <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
+                      {new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </td>
+                    <td style={{ padding: "6px 10px", color: "var(--color-neutral-700)", whiteSpace: "nowrap" }}>
+                      {u.lastVisitedAt
+                        ? new Date(u.lastVisitedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                        : "Never"}
+                    </td>
+                    <td style={{ padding: "6px 10px" }}>{u.isGuest ? "Yes" : ""}</td>
+                    <td style={{ padding: "6px 10px" }}>{signInMethodLabel(u)}</td>
+                    <td style={{ padding: "6px 10px" }}>{u.isPro ? "Yes" : ""}</td>
+                    <td style={{ padding: "6px 10px" }}>{u.isFoundingFunder ? "Yes" : ""}</td>
+                    <td style={{ padding: "6px 10px" }}>
+                      <GrantedAccessChips userId={u.id} grantedAccess={u.grantedAccess} />
+                    </td>
+                    <td style={{ padding: "6px 10px", whiteSpace: "nowrap" }}>
+                      <CoAdminCell
+                        row={u}
+                        expanded={expandedCoAdminId === u.id}
+                        onToggle={() => setExpandedCoAdminId((prev) => (prev === u.id ? null : u.id))}
+                      />
+                    </td>
+                    <td style={{ padding: "6px 0 6px 10px" }}>
+                      <DeleteButton
+                        userId={u.id}
+                        onDeleted={() => {
+                          setRows((prev) => prev.filter((r) => r.id !== u.id));
+                          router.refresh();
+                        }}
+                      />
+                    </td>
+                  </tr>
+                  {expandedCoAdminId === u.id && !u.isOwnerAdmin && (
+                    <tr>
+                      <td colSpan={11} style={{ padding: "0 10px 0 0" }}>
+                        <CoAdminPanel
+                          userId={u.id}
+                          areas={u.adminAreas}
+                          onChange={(areas) =>
+                            setRows((prev) => prev.map((r) => (r.id === u.id ? { ...r, adminAreas: areas } : r)))
+                          }
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
               ))}
             </tbody>
           </table>

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { nameFromEmail } from "@/lib/meta";
 import { hashPassword, verifyPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";
 import { TERMS_VERSION } from "@/lib/legal-terms";
+import { ADMIN_AREAS, parseAdminAreas, type AdminArea } from "@/lib/admin-areas";
 import type { User } from "@/generated/prisma/client";
 
 const COOKIE_NAME = "pt_news_session";
@@ -73,6 +74,23 @@ export function isAdminEmail(email: string | null | undefined): boolean {
   if (!email) return false;
   const allowed = adminAllowlist();
   return allowed.length > 0 && allowed.includes(email.trim().toLowerCase());
+}
+
+/** Every admin area `user` can open — the whole list for an account on the allowlist above,
+ *  whatever an owner has delegated to it otherwise (see User.adminAreas in schema.prisma and
+ *  the Co-Admin controls on /admin/accounts), and an empty list for everyone else.
+ *
+ *  Pure and synchronous, taking the already-loaded row rather than reading the session
+ *  itself, because app/(app)/layout.tsx needs this on the hot path for an account it has
+ *  already fetched. lib/admin.ts wraps it for the far more common "I only have a request"
+ *  case — call hasAdminArea() there rather than this unless you already hold the user.
+ *
+ *  Note what is deliberately absent: unlike the allowlist, a co-admin grant does NOT feed
+ *  getCurrentUser()'s paid-tier overlay below. Delegating the license queue to someone is
+ *  not a decision to hand them LimbicPro, and the two should stay separately grantable. */
+export function adminAreasForUser(user: { email: string | null; licenseEmail: string | null; adminAreas: unknown }): AdminArea[] {
+  if (isAdminEmail(user.email) || isAdminEmail(user.licenseEmail)) return [...ADMIN_AREAS];
+  return parseAdminAreas(user.adminAreas);
 }
 
 /** The three paid tiers a site admin can comp for a specific account without that account

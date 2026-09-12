@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { SuggestionsAdminList } from "@/components/SuggestionsAdminList";
 
@@ -9,7 +9,7 @@ import { SuggestionsAdminList } from "@/components/SuggestionsAdminList";
  *  than conditionally rendered since this whole page has nothing for a non-admin — same
  *  "must be signed in" idiom app/(app)/layout.tsx already uses, extended to admin status. */
 export default async function AdminSuggestionsPage() {
-  if (!(await isSiteAdmin())) redirect("/home");
+  if (!(await hasAdminArea("suggestions"))) redirect("/home");
 
   const rows = await prisma.suggestion.findMany({ orderBy: { createdAt: "desc" } });
   const suggestions = rows.map((r) => ({ id: r.id, body: r.body, createdAt: r.createdAt.toISOString() }));

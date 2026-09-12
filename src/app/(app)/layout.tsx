@@ -3,7 +3,7 @@ import "@/styles/tour.css";
 import "@/styles/screens.css";
 import "@/styles/programs.css";
 import { redirect } from "next/navigation";
-import { getCurrentUser, hasStudentAccess, hasLicenseAccess, isAdminEmail } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess, hasLicenseAccess, adminAreasForUser, isAdminEmail } from "@/lib/session";
 import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import { SPECIALTY_META } from "@/lib/meta";
 import { AppShell } from "@/components/AppShell";
@@ -35,15 +35,21 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const timeZone = await getTimeZone(user);
 
   const hasLicense = hasLicenseAccess(user);
-  // This is derivable from the already-loaded user. Calling isSiteAdmin() here would read
-  // the session again (request-cached now, but still unnecessary work on the hot path).
-  const isAdmin = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
-  // Not the same question as isAdmin, even though the answer matches today: the nav asks
-  // "does Nexus exist for this reader", which lib/nexus-visibility.ts owns for every
-  // surface. NavContent is a client component and cannot call it — lib/session.ts is
-  // server-only — so the predicate is evaluated here and passed down, which is what keeps
-  // the sidebar from drifting away from the routes when that call is revisited.
+  // All three are derivable from the already-loaded user. Calling the lib/admin.ts wrappers
+  // here would read the session again (request-cached now, but still unnecessary work on the
+  // hot path).
+  //
+  // The nav asks "does Nexus exist for this reader", which lib/nexus-visibility.ts owns for
+  // every surface. NavContent is a client component and cannot call it — lib/session.ts is
+  // server-only — so the predicate is evaluated here and passed down, which is what keeps the
+  // sidebar from drifting away from the routes when that call is revisited. That stays a
+  // separate question from admin tooling: splitting admin into delegable areas deliberately
+  // did not let a co-admin into an unreleased product surface.
   const showNexus = nexusVisibleTo(user);
+  const adminAreas = adminAreasForUser(user);
+  // /admin/accounts has no area of its own — it is owner-only (see lib/admin-areas.ts), so
+  // the sidebar needs this alongside the areas to decide whether to list it.
+  const isOwnerAdmin = isAdminEmail(user.email) || isAdminEmail(user.licenseEmail);
 
   return (
     <AppShell
@@ -55,8 +61,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       isPro={user.isPro}
       isStudent={hasStudentAccess(user)}
       isVerifiedStudent={user.studentTier === "limbicStudent"}
-      isAdmin={isAdmin}
       showNexus={showNexus}
+      adminAreas={adminAreas}
+      isOwnerAdmin={isOwnerAdmin}
       zoneTwoOrder={zoneTwoOrder(user.userRole)}
     >
       <TimeZoneSync serverTimeZone={timeZone} />

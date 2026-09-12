@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { SafetyAssessmentForm } from "@/components/connexion/SafetyAssessmentForm";
 
@@ -7,7 +7,7 @@ import { SafetyAssessmentForm } from "@/components/connexion/SafetyAssessmentFor
  *  link on VisitRequestsAdminList) pre-fills the client name from that lead and links the
  *  saved assessment back to it. */
 export default async function NewConnexionSafetyScorePage({ searchParams }: { searchParams: Promise<{ visitRequestId?: string }> }) {
-  if (!(await isSiteAdmin())) redirect("/home");
+  if (!(await hasAdminArea("connexion"))) redirect("/home");
 
   const { visitRequestId } = await searchParams;
   const visitRequest = visitRequestId ? await prisma.connexionVisitRequest.findUnique({ where: { id: visitRequestId } }) : null;

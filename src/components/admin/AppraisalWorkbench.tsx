@@ -41,7 +41,7 @@ export interface AppraisalRow {
 
 /**
  * The appraisal workbench (see app/(app)/admin/appraisals/page.tsx, which gates on
- * isSiteAdmin() before this renders; lib/appraisal.ts for the design).
+ * hasAdminArea("appraisals") before this renders; lib/appraisal.ts for the design).
  *
  * The single most important thing about this form is a field it does not have. There is no
  * box to paste an abstract into and no box to paste an article into, because the whole

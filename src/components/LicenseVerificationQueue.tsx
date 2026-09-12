@@ -17,8 +17,8 @@ export interface PendingLicenseRow {
 }
 
 /** Admin-only Verify/Reject queue (see app/(app)/admin/licenses/page.tsx, which gates on
- *  isSiteAdmin() before this ever renders) — a client component only because Verify/Reject
- *  need a pending state and a way to refresh the list after acting. */
+ *  hasAdminArea("licenses") before this ever renders) — a client component only because
+ *  Verify/Reject need a pending state and a way to refresh the list after acting. */
 export function LicenseVerificationQueue({ rows }: { rows: PendingLicenseRow[] }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();

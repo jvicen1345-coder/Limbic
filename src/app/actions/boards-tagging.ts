@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { BOARD_QUESTIONS, type BoardQuestion } from "@/lib/board-content";
 
 export interface TaggedBoardQuestion {
@@ -27,7 +27,7 @@ function parseJsonArray(raw: string): string[] {
  *  app/(app)/admin/boards-tagging. Admin-only; returns an empty list for anyone else rather
  *  than throwing, same defensive shape as the rest of this app's admin-only actions. */
 export async function getBoardsQuestionsForTagging(): Promise<TaggedBoardQuestion[]> {
-  if (!(await isSiteAdmin())) return [];
+  if (!(await hasAdminArea("boardsTagging"))) return [];
 
   const tags = await prisma.boardsQuestionTag.findMany();
   const tagByQuestionId = new Map(tags.map((t) => [t.questionId, t]));
@@ -47,7 +47,7 @@ export async function getBoardsQuestionsForTagging(): Promise<TaggedBoardQuestio
 /** Admin-only — upserts one question's region/muscle-group tags (see BoardsQuestionTag in
  *  schema.prisma). A no-op for anyone else. */
 export async function updateQuestionTags(questionId: string, bodyRegions: string[], muscleGroups: string[]): Promise<void> {
-  if (!(await isSiteAdmin())) return;
+  if (!(await hasAdminArea("boardsTagging"))) return;
   if (!BOARD_QUESTIONS.some((q) => q.id === questionId)) return;
 
   await prisma.boardsQuestionTag.upsert({

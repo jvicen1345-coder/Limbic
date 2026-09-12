@@ -24,7 +24,7 @@ const STATUS_OPTIONS: { value: ConnexionVisitStatus; label: string }[] = [
   { value: "completed", label: "Completed" },
 ];
 
-/** Admin-only status queue for /admin/connexion-visits (gated by isSiteAdmin() in that
+/** Admin-only status queue for /admin/connexion-visits (gated by hasAdminArea("connexion") in that
  *  page). Client component only for the per-row status dropdown — same
  *  useTransition + router.refresh() pattern as LicenseVerificationQueue. */
 export function VisitRequestsAdminList({ rows }: { rows: VisitRequestRow[] }) {

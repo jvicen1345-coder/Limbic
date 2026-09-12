@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { MovementLabRequestQueue } from "@/components/MovementLabRequestQueue";
 import { searchExercisesScored } from "@/lib/movement-lab";
@@ -39,7 +39,7 @@ function findMatch(name: string): RequestMatch | null {
  *  app/actions/movement-lab-requests.ts). Same "must be admin" redirect idiom as
  *  /admin/suggestions and /admin/licenses. */
 export default async function AdminMovementLabRequestsPage() {
-  if (!(await isSiteAdmin())) redirect("/home");
+  if (!(await hasAdminArea("movementLab"))) redirect("/home");
 
   const pending = await prisma.movementLabExerciseRequest.findMany({
     where: { status: "pending" },
