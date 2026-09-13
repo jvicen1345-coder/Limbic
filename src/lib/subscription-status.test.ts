@@ -76,8 +76,8 @@ describe("subscriptionCardModel", () => {
   it("shows Free + status and never a countdown", () => {
     const model = subscriptionCardModel(flags(), NOW);
     assert.equal(model.planName, "Free");
-    assert.equal(model.status, "No paid plan");
-    assert.deepEqual(model.statusParts, ["No paid plan"]);
+    assert.equal(model.status, "Free plan");
+    assert.deepEqual(model.statusParts, ["Free plan"]);
     assert.equal(model.daysRemaining, null);
     assert.doesNotMatch(model.status, /day/);
   });

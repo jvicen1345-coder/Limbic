@@ -68,7 +68,7 @@ export function subscriptionCardModel(user: SubscriptionFlags, now = new Date())
   const daysRemaining = daysRemainingFromPeriodEnd(user.stripeCurrentPeriodEnd, now);
 
   if (planKey === "free") {
-    return { planKey, planName, status: "No paid plan", statusParts: ["No paid plan"], daysRemaining: null };
+    return { planKey, planName, status: "Free plan", statusParts: ["Free plan"], daysRemaining: null };
   }
 
   const parts = ["Active"];

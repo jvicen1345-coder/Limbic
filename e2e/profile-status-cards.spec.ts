@@ -21,7 +21,7 @@ test.describe("Profile status cards", () => {
     await expect(role.getByText("Physical Therapist", { exact: true })).toBeVisible();
     await expect(theme.getByText("System", { exact: true })).toBeVisible();
     await expect(subscription.getByText("Free", { exact: true })).toBeVisible();
-    await expect(subscription.getByText("No paid plan")).toBeVisible();
+    await expect(subscription.getByText("Free plan")).toBeVisible();
     await expect(subscription.getByText(/days? left/)).toHaveCount(0);
 
     await expect(page.getByText("Reading activity")).toHaveCount(0);
@@ -50,7 +50,9 @@ test.describe("Profile status cards", () => {
     await page.goto("/profile");
 
     await page.locator(".profile-status-card").filter({ hasText: "Role" }).click();
-    await expect(page.locator("#profile-role")).toBeInViewport();
+    const roleSection = page.locator("#profile-role");
+    await expect(roleSection).toBeInViewport();
+    await expect(roleSection.locator(".role-cards")).toBeVisible();
 
     await page.locator(".profile-status-card").filter({ hasText: "Theme" }).click();
     const themeCard = page.locator("#profile-theme");

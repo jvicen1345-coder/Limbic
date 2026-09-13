@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { RoleCards } from "@/components/RoleCards";
 import { updateUserRoleAction } from "@/app/actions/user-role";
 import { USER_ROLES, type UserRole } from "@/lib/user-role";
@@ -15,6 +15,13 @@ export function UserRoleSection({ role }: { role: UserRole | null }) {
   const [pending, startTransition] = useTransition();
 
   const currentLabel = USER_ROLES.find((r) => r.value === role)?.label ?? "Not set";
+
+  useEffect(() => {
+    const enter = () => setEditing(true);
+    if (window.location.hash === "#profile-role") enter();
+    window.addEventListener("limbic:edit-role", enter);
+    return () => window.removeEventListener("limbic:edit-role", enter);
+  }, []);
 
   return (
     <div id="profile-role" className="card elev-sm" style={{ marginBottom: 18, scrollMarginTop: 24 }}>

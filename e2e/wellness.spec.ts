@@ -25,8 +25,14 @@ test.describe("wellness", () => {
     const refresh = page.getByRole("button", { name: "Refresh", exact: true });
     await expect(refresh).toBeVisible();
 
+    // Click stays on this page. The accessible name is pinned by aria-label="Refresh"
+    // even while the visible label is "Refreshing…" (a 15s exact-name lookup used to
+    // miss the button mid-action when live RSS was slow — "element(s) not found").
+    // toBeEnabled waits out the Server Action; the heading proves the page did not
+    // navigate away if the stream aborts mid-refresh.
     await refresh.click();
-    await expect(page.getByRole("button", { name: "Refresh", exact: true })).toBeEnabled();
+    await expect(page.getByRole("heading", { name: "Wellness Articles & Videos" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Refresh", exact: true })).toBeEnabled({ timeout: 30_000 });
     await expect(page).toHaveURL(/\/wellness\/articles/);
     await expect(page.getByRole("heading", { name: "Wellness Articles & Videos" })).toBeVisible();
     await expect(page.getByText("Video recommendations")).toBeVisible();
