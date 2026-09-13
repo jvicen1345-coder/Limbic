@@ -2,12 +2,15 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import { claimFoundingSpotAction } from "@/app/actions/founding-funders";
+import { FOUNDING_CLAIM_COADMIN_NOTE, foundingClaimSuccessCopy } from "@/lib/founding-funders-authz";
+import { FOUNDING_FUNDERS_TOTAL_SLOTS } from "@/lib/founding-funders-config";
 
-/** Only rendered for accounts on the FOUNDING_FUNDERS_ADMIN_EMAILS allowlist (see
- *  app/founding-funders/page.tsx, lib/admin.ts isSiteAdmin) — the manual "mark this Zelle
- *  payment as confirmed" tool until a real payment flow exists. Deliberately styled plain
- *  (see .ff-admin in src/styles), not part of the letter's visual language. */
-export function FoundingAdminPanel() {
+/** Rendered for anyone with foundingFunders (see app/founding-funders/page.tsx). The form
+ *  records a founding spot; writing isPro is owner-only and never self (#497,
+ *  claimFoundingSpotAction). Co-admins see a short note that Pro comps go through
+ *  /admin/accounts. Deliberately styled plain (see .ff-admin in src/styles), not
+ *  part of the letter's visual language. */
+export function FoundingAdminPanel({ isOwner }: { isOwner: boolean }) {
   const [identifier, setIdentifier] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [credential, setCredential] = useState("");
@@ -20,7 +23,14 @@ export function FoundingAdminPanel() {
     startTransition(async () => {
       const result = await claimFoundingSpotAction({ identifier, displayName, credential });
       if (result.ok) {
-        setMessage({ ok: true, text: `Claimed, ${result.claimedCount} of 25 spots filled.` });
+        setMessage({
+          ok: true,
+          text: foundingClaimSuccessCopy({
+            claimedCount: result.claimedCount,
+            totalSlots: FOUNDING_FUNDERS_TOTAL_SLOTS,
+            grantedPro: result.grantedPro === true,
+          }),
+        });
         setIdentifier("");
         setDisplayName("");
         setCredential("");
@@ -33,6 +43,7 @@ export function FoundingAdminPanel() {
   return (
     <div className="ff-admin">
       <p className="ff-admin-title">Admin, claim a founding spot</p>
+      {!isOwner && <p className="ff-admin-note">{FOUNDING_CLAIM_COADMIN_NOTE}</p>}
       <form className="ff-admin-form" onSubmit={onSubmit}>
         <input
           className="input"

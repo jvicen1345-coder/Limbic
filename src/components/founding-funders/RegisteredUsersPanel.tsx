@@ -1,5 +1,6 @@
-/** Read-only, so this stays a server component — no client-side state needed. Same admin
- *  gate as FoundingAdminPanel (see app/founding-funders/page.tsx). Shows
+/** Read-only, so this stays a server component — no client-side state needed. Owner-only
+ *  (isSiteAdmin on app/founding-funders/page.tsx), not the foundingFunders co-admin gate —
+ *  this is the all-users PII + billing roster #497 pulled off the delegated area. Shows
  *  whichever sign-in identifier the account actually has — a General sign-in sets `email`,
  *  a PT license sign-in sets `licenseNumber`/`licenseEmail`, never both at once (see
  *  lib/session.ts). */

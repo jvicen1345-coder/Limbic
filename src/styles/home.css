@@ -147,16 +147,6 @@
 }
 
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-/* Profile "Professional Dates" save confirmation (see components/ProfessionalDatesForm.tsx)
-   — plays once per save rather than looping, unlike the other keyframe animations in this
-   file (spin, the agent-node pulses): mounted on save, unmounted via a matching-length
-   setTimeout once it's finished rather than left sitting at opacity 0 in the DOM. */
-@keyframes fade-in-out {
-  0% { opacity: 0; transform: scale(0.8); }
-  20% { opacity: 1; transform: scale(1); }
-  75% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(0.8); }
-}
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 /* Continue Reading's progress bar (see components/ContinueReadingCard.tsx). */
 .progress-bar-fade-in { animation: fade-in 0.5s ease; }

@@ -32,6 +32,9 @@ import { dateToLocalIso } from "@/lib/limbic-calendar";
 import { getUserProgram } from "@/app/actions/dpt-programs";
 import { CollapsibleCard } from "@/components/CollapsibleCard";
 
+// Native exclusive `<details>` group — opening one Profile card closes the others.
+const PROFILE_CARD_GROUP = "profile";
+
 // The long tail of keyword topics not already covered by SUGGESTED_TOPICS — comes from a
 // fixed vocabulary rather than whatever's currently loaded (see allKnownKeywordTopics).
 const BROWSABLE_TOPICS = allKnownKeywordTopics().filter((t) => !SUGGESTED_TOPICS.includes(t));
@@ -122,7 +125,7 @@ export default async function ProfilePage() {
         />
       )}
 
-      <CollapsibleCard title="Theme" style={{ marginBottom: 18 }}>
+      <CollapsibleCard title="Theme" name={PROFILE_CARD_GROUP} style={{ marginBottom: 18 }}>
       <ThemeSection
         initialTheme={
           user.themePreference === "light" || user.themePreference === "dark" ? user.themePreference : "system"
@@ -130,7 +133,7 @@ export default async function ProfilePage() {
         />
       </CollapsibleCard>
 
-      <CollapsibleCard title="Platform Tour" style={{ marginBottom: 18 }}>
+      <CollapsibleCard title="Platform Tour" name={PROFILE_CARD_GROUP} style={{ marginBottom: 18 }}>
         <p className="card-body" style={{ marginTop: 2, marginBottom: 14 }}>
           Replay the welcome tour, or take a longer walkthrough of one section.
         </p>
@@ -143,7 +146,7 @@ export default async function ProfilePage() {
         />
       </CollapsibleCard>
 
-      <CollapsibleCard title="About you" style={{ marginBottom: 18 }}>
+      <CollapsibleCard title="About you" name={PROFILE_CARD_GROUP} style={{ marginBottom: 18 }}>
         <ProfileForm
           name={user.name}
           specialty={user.specialty}
@@ -159,9 +162,9 @@ export default async function ProfilePage() {
         />
       </CollapsibleCard>
 
-      <GetTheAppCard />
+      <GetTheAppCard name={PROFILE_CARD_GROUP} />
 
-      <CollapsibleCard title="Account security" style={{ marginBottom: 18 }}>
+      <CollapsibleCard title="Account security" name={PROFILE_CARD_GROUP} style={{ marginBottom: 18 }}>
         <AccountSecuritySection
           backupEmail={user.backupEmail}
           backupEmailAddedAt={user.backupEmailAddedAt?.toISOString() ?? null}
@@ -173,7 +176,7 @@ export default async function ProfilePage() {
           A non-admin gets no card at all — not a waitlist, not a "coming soon" — because
           naming it here is exactly the sign we are hiding. */}
       {nexusVisible && (
-        <CollapsibleCard title="Nexus" style={{ marginBottom: 18 }}>
+        <CollapsibleCard title="Nexus" name={PROFILE_CARD_GROUP} style={{ marginBottom: 18 }}>
           {user.nexusOptIn ? (
             <>
               <p className="card-body" style={{ marginTop: 6 }}>
@@ -207,7 +210,7 @@ export default async function ProfilePage() {
         </CollapsibleCard>
       )}
 
-      <CollapsibleCard title="Followed topics" style={{ marginBottom: 18 }}>
+      <CollapsibleCard title="Followed topics" name={PROFILE_CARD_GROUP} style={{ marginBottom: 18 }}>
         <p className="card-body" style={{ marginTop: 2 }}>
           Tap a topic to prioritize it in your home feed.
         </p>
@@ -245,7 +248,7 @@ export default async function ProfilePage() {
         <TopicBrowser topics={BROWSABLE_TOPICS} followedTopics={followedTopics} />
       </CollapsibleCard>
 
-      <CollapsibleCard title="Home page widgets" style={{ marginTop: 18 }}>
+      <CollapsibleCard title="Home page widgets" name={PROFILE_CARD_GROUP} style={{ marginTop: 18 }}>
         <p className="card-body" style={{ marginTop: 2 }}>
           Choose what shows up in the sidebar on your home page.
         </p>

@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { hasAdminArea } from "@/lib/admin";
-import { getCurrentUser } from "@/lib/session";
+import { copyrightOwnerTargetError } from "@/lib/copyright-owner-guard";
+import { getCurrentUser, isAdminEmail } from "@/lib/session";
 import {
   NOTICE_TARGET_TYPES,
   type NoticeTargetType,
@@ -201,7 +202,10 @@ export async function reinstateContentAction(
  * these circumstances, for this reason" is precisely the showing §512(i) wants.
  *
  * The account keeps its content and its notice history; only access is withdrawn. Refuses
- * to suspend the admin's own account, same guard as deleteUserAction.
+ * to suspend the admin's own account, same guard as deleteUserAction. Also refuses when
+ * the target is an allowlist owner (isAdminEmail on email / licenseEmail): a copyright
+ * co-admin who can suspend the owner who appointed them locks that owner out of
+ * /admin/accounts, which is the only place the grant can be revoked (issue #496).
  */
 export async function suspendUserAction(userId: string, reason: string): Promise<CopyrightActionResult> {
   const admin = await getCurrentUser();
@@ -214,6 +218,13 @@ export async function suspendUserAction(userId: string, reason: string): Promise
   const target = await prisma.user.findUnique({ where: { id: userId } });
   if (!target) return { ok: false, error: "That account no longer exists." };
 
+  const ownerBlocked = copyrightOwnerTargetError({
+    action: "suspend",
+    targetIsOwner: isAdminEmail(target.email) || isAdminEmail(target.licenseEmail),
+    actorIsOwner: isAdminEmail(admin.email) || isAdminEmail(admin.licenseEmail),
+  });
+  if (ownerBlocked) return { ok: false, error: ownerBlocked };
+
   await prisma.user.update({
     where: { id: userId },
     data: { suspendedAt: new Date(), suspendedReason: trimmed },
@@ -224,12 +235,27 @@ export async function suspendUserAction(userId: string, reason: string): Promise
   return { ok: true };
 }
 
-/** Lifts a suspension — a counter-notice held up, or the suspension was a mistake. */
+/**
+ * Lifts a suspension — a counter-notice held up, or the suspension was a mistake.
+ *
+ * An owner cannot be suspended through this surface, but a row can still be flagged in
+ * the database. Only another allowlist owner may lift that; a copyright co-admin cannot
+ * (same owner-target rule as suspend, issue #496). Ordinary readers stay liftable by
+ * anyone who holds the copyright area.
+ */
 export async function unsuspendUserAction(userId: string): Promise<CopyrightActionResult> {
-  if (!(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
+  const admin = await getCurrentUser();
+  if (!admin || !(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
 
   const target = await prisma.user.findUnique({ where: { id: userId } });
   if (!target) return { ok: false, error: "That account no longer exists." };
+
+  const ownerBlocked = copyrightOwnerTargetError({
+    action: "unsuspend",
+    targetIsOwner: isAdminEmail(target.email) || isAdminEmail(target.licenseEmail),
+    actorIsOwner: isAdminEmail(admin.email) || isAdminEmail(admin.licenseEmail),
+  });
+  if (ownerBlocked) return { ok: false, error: ownerBlocked };
 
   await prisma.user.update({
     where: { id: userId },
