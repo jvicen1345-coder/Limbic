@@ -56,6 +56,7 @@ test("a co-admin gets exactly the admin areas they were granted", async ({ page 
   await setUserColumn(email, "adminAreas", JSON.stringify([...ADMIN_AREAS]));
   await page.goto("/admin/licenses");
   await expect(page.getByRole("link", { name: ADMIN_AREA_LABELS.copyright })).toBeVisible();
+  await expect(page.getByRole("link", { name: ADMIN_AREA_LABELS.boardsTagging })).toBeVisible();
   await expect(page.getByRole("link", { name: "Accounts" })).toHaveCount(0);
   await expect(page.locator(".app-sidebar").getByRole("link", { name: ADMIN_AREA_LABELS.foundingFunders })).toHaveCount(2);
   await page.goto("/admin/accounts");

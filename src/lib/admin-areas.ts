@@ -55,7 +55,7 @@ export const ADMIN_AREA_LABELS: Record<AdminArea, string> = {
   suggestions: "Suggestions",
   copyright: "Copyright Notices",
   appraisals: "Appraisals",
-  boardsTagging: "Boards Tagging",
+  boardsTagging: "Boards Question Tagging",
   programs: "Programs",
   movementLab: "Movement Lab Requests",
   connexion: "Connexion",
