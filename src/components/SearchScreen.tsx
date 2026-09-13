@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Chip } from "@/components/Chip";
 import { ArticleCard, type ArticleCardModel } from "@/components/ArticleCard";
@@ -104,11 +104,20 @@ export function SearchScreen({
   initialNewOnly?: boolean;
 }) {
   const router = useRouter();
+  const queryInputRef = useRef<HTMLInputElement>(null);
+  const [isPending, startTransition] = useTransition();
   const [query, setQuery] = useState(initialQuery);
+  const [committedQuery, setCommittedQuery] = useState(initialQuery);
   const [type, setType] = useState<SearchTypeFilter>(initialType);
   const [specialty, setSpecialty] = useState<SearchSpecialtyFilter>(initialSpecialty);
   const [newOnly, setNewOnly] = useState(initialNewOnly);
   const [aiResult, setAiResult] = useState<AiSearchResult | null>(null);
+  const resultsPending =
+    isPending ||
+    type !== initialType ||
+    specialty !== initialSpecialty ||
+    newOnly !== initialNewOnly ||
+    committedQuery.trim() !== initialQuery.trim();
 
   function navigate(next: {
     type?: SearchTypeFilter;
@@ -117,15 +126,20 @@ export function SearchScreen({
     newOnly?: boolean;
     page?: number;
   }) {
-    router.replace(
-      searchArticlesHref({
-        type: next.type ?? type,
-        specialty: next.specialty ?? specialty,
-        q: next.q ?? query,
-        newOnly: next.newOnly ?? newOnly,
-        page: next.page ?? 1,
-      })
-    );
+    const nextQ = next.q ?? query;
+    setCommittedQuery(nextQ);
+    startTransition(() => {
+      router.replace(
+        searchArticlesHref({
+          type: next.type ?? type,
+          specialty: next.specialty ?? specialty,
+          q: nextQ,
+          newOnly: next.newOnly ?? newOnly,
+          page: next.page ?? 1,
+        }),
+        { scroll: false }
+      );
+    });
   }
 
   useEffect(() => {
@@ -138,6 +152,14 @@ export function SearchScreen({
     // pauses typing so each keystroke does not refetch the pool.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, initialQuery]);
+
+  // `q` is not on the remount key (typing would drop focus). Sync the box from the
+  // URL only when the reader is not mid-type — back/forward and chip remounts.
+  useEffect(() => {
+    if (queryInputRef.current === document.activeElement) return;
+    setQuery(initialQuery);
+    setCommittedQuery(initialQuery);
+  }, [initialQuery]);
 
   return (
     <div className="screen-pad">
@@ -184,7 +206,10 @@ export function SearchScreen({
               }}
             >
               <span style={{ fontSize: 13, color: "var(--color-accent-800)" }}>
-                Showing only what&rsquo;s new today, {resultCount} {resultCount === 1 ? "item" : "items"}
+                Showing only what&rsquo;s new today
+                {resultsPending
+                  ? ", updating…"
+                  : `, ${resultCount} ${resultCount === 1 ? "item" : "items"}`}
               </span>
               <button
                 type="button"
@@ -200,7 +225,10 @@ export function SearchScreen({
           )}
 
           <div className="field" style={{ marginBottom: 16 }}>
+            <label htmlFor="search-articles-q">Search articles</label>
             <input
+              id="search-articles-q"
+              ref={queryInputRef}
               className="input"
               placeholder="Search articles, topics, sources…"
               value={query}
@@ -244,40 +272,51 @@ export function SearchScreen({
             ))}
           </div>
 
-          <div style={{ fontSize: 13, color: "var(--color-neutral-700)", marginBottom: 10 }}>
-            {resultCount} {resultCount === 1 ? "result" : "results"}
+          <div
+            style={{ fontSize: 13, color: "var(--color-neutral-700)", marginBottom: 10 }}
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {resultsPending
+              ? "Updating results…"
+              : `${resultCount} ${resultCount === 1 ? "result" : "results"}`}
           </div>
 
-          {resultCount === 0 ? (
-            <div style={{ textAlign: "center", padding: "48px 16px", color: "var(--color-neutral-700)" }}>
-              <SearchIcon size={26} style={{ color: "var(--color-neutral-400)", marginBottom: 10 }} />
-              <div style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text)" }}>
-                No articles found, try a different filter
+          <div
+            className={resultsPending ? "search-results search-results--pending" : "search-results"}
+            aria-busy={resultsPending}
+          >
+            {resultCount === 0 ? (
+              <div style={{ textAlign: "center", padding: "48px 16px", color: "var(--color-neutral-700)" }}>
+                <SearchIcon size={26} style={{ color: "var(--color-neutral-400)", marginBottom: 10 }} />
+                <div style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text)" }}>
+                  No articles found, try a different filter
+                </div>
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 5,
+                    fontSize: 12.5,
+                    marginTop: 6,
+                    color: "var(--color-neutral-600)",
+                  }}
+                >
+                  <RefreshIcon size={12} />
+                  Clearing a filter or refreshing may turn up more results
+                </div>
               </div>
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 5,
-                  fontSize: 12.5,
-                  marginTop: 6,
-                  color: "var(--color-neutral-600)",
-                }}
-              >
-                <RefreshIcon size={12} />
-                Clearing a filter or refreshing may turn up more results
-              </div>
-            </div>
-          ) : (
-            <>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {articles.map((a) => (
-                  <ArticleCard key={a.id} article={a} />
-                ))}
-              </div>
-              <Pagination page={page} totalPages={totalPages} onPageChange={(next) => navigate({ page: next })} />
-            </>
-          )}
+            ) : (
+              <>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {articles.map((a) => (
+                    <ArticleCard key={a.id} article={a} />
+                  ))}
+                </div>
+                <Pagination page={page} totalPages={totalPages} onPageChange={(next) => navigate({ page: next })} />
+              </>
+            )}
+          </div>
         </>
       )}
     </div>

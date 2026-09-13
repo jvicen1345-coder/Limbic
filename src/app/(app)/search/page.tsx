@@ -5,7 +5,7 @@ import { decorateArticle } from "@/lib/feed";
 import { SearchScreen } from "@/components/SearchScreen";
 import { todayLocalDateStr } from "@/lib/today";
 import { paginate } from "@/lib/pagination";
-import { filterSearchArticles, parseSearchQuery, searchArticlesHref, toSearchArticle } from "@/lib/search-articles";
+import { filterSearchArticles, parseSearchQuery, searchScreenRemountKey, toSearchArticle } from "@/lib/search-articles";
 
 export default async function SearchPage({
   searchParams,
@@ -31,10 +31,9 @@ export default async function SearchPage({
 
   return (
     <SearchScreen
-      key={searchArticlesHref({
+      key={searchScreenRemountKey({
         type: query.type,
         specialty: query.specialty,
-        q: query.q,
         newOnly: query.newOnly,
       })}
       articles={cards}

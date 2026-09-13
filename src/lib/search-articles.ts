@@ -92,6 +92,23 @@ export function searchArticlesHref(input: {
   return qs ? `/search?${qs}` : "/search";
 }
 
+/**
+ * Remount key for SearchScreen. Chips and "new today" stay URL-driven (no
+ * prop-sync effects). `q` and `page` are omitted so the 300ms query debounce
+ * and pagination do not remount the input mid-type.
+ */
+export function searchScreenRemountKey(input: {
+  type?: SearchTypeFilter;
+  specialty?: SearchSpecialtyFilter;
+  newOnly?: boolean;
+}): string {
+  return searchArticlesHref({
+    type: input.type,
+    specialty: input.specialty,
+    newOnly: input.newOnly,
+  });
+}
+
 export function articleMatchesSearch(
   article: Pick<Article, "type" | "specialty" | "date" | "title" | "summary" | "tags" | "source">,
   query: Pick<SearchQuery, "type" | "specialty" | "q" | "newOnly">,

@@ -7,6 +7,7 @@ import {
   filterSearchArticles,
   parseSearchQuery,
   searchArticlesHref,
+  searchScreenRemountKey,
   toSearchArticle,
 } from "./search-articles";
 
@@ -73,6 +74,21 @@ describe("search filter params", () => {
     assert.equal(
       searchArticlesHref({ type: "research", specialty: "ortho", q: "ACL", newOnly: true, page: 2 }),
       "/search?type=research&specialty=ortho&q=ACL&new=1&page=2"
+    );
+  });
+
+  it("remounts SearchScreen on chips, not on q or page", () => {
+    assert.equal(
+      searchScreenRemountKey({ type: "guideline", specialty: "ortho", newOnly: false }),
+      "/search?type=guideline&specialty=ortho"
+    );
+    assert.equal(
+      searchScreenRemountKey({ type: "guideline", specialty: "ortho", newOnly: false }),
+      searchArticlesHref({ type: "guideline", specialty: "ortho" })
+    );
+    assert.notEqual(
+      searchScreenRemountKey({ type: "guideline", specialty: "ortho", newOnly: false }),
+      searchArticlesHref({ type: "guideline", specialty: "ortho", q: "neck", page: 2 })
     );
   });
 });

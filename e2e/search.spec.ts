@@ -40,8 +40,10 @@ test.describe("search", () => {
     await page.goto("/search?type=guideline");
     await expect(page.getByRole("heading", { name: "Search" })).toBeVisible();
 
-    await page.getByPlaceholder("Search articles, topics, sources…").fill("achilles");
+    const searchBox = page.getByLabel("Search articles");
+    await searchBox.fill("achilles");
     await expect(page).toHaveURL(/q=achilles/i, { timeout: 10_000 });
+    await expect(searchBox).toBeFocused();
     await expect(page.getByText("Achilles Pain, Stiffness, and Muscle Power Deficits")).toBeVisible();
     await expect(page.getByText("Neck Pain: Revision 2017")).toHaveCount(0);
 
