@@ -17,12 +17,19 @@ effect on the website in terms a reviewer or product owner can understand.
   comments that the issue is current. Issue writes use `gh` as Evicencio-05
   (push + triage). Cloud agents and the GitHub connector PAT receive 403 on
   issue writes. Do not tell implementers to edit issues themselves.
-- **Limbic Issue Bot** owns this document and ad-hoc desk / merge digest work. It does
-  not run standing intake or triage.
+- **Limbic Core** (the fleet desk; formerly Limbic Issue Bot) owns this document
+  and ad-hoc desk / merge digest work. It does not run standing intake or triage.
+  When the fleet has cleared a PR for merge — required reviewers, mergeable, and
+  Typecheck/lint, Playwright, and Vercel green — Limbic Core posts one GitHub PR
+  comment via authenticated `gh` starting with the exact text `Fleet CLEAR`,
+  listing UX / PR Review / Security as CLEAR or N/A. Do not comment from green
+  CI alone. Review bots stay chat-only (no GitHub review comments). JV
+  self-merges are not expected to have this stamp before merge; a merged
+  fleet-authored PR without `Fleet CLEAR` was not fleet-cleared.
 
 **Observed:** collaborator JV (`jvicen1345-coder`) does not have the Grok Bot fleet
 and merges their own PRs on GitHub without pre-merge fleet review. After those
-merges, **Limbic Issue Bot** reviews the landed change (PR Review; UX if the
+merges, **Limbic Core** reviews the landed change (PR Review; UX if the
 change is UI; Security if auth/XSS), files follow-up issues via `gh`, and
 **Limbic Intake** / **Limbic Triage** claim and fix them. Do not block or revert
 those merges. Fleet-authored PRs still get pre-merge clearance when asked.
