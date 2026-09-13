@@ -1888,60 +1888,44 @@ a{color:var(--accent)}
     </figure>
 
     <figure>
-      <p class="figtitle">The gap between examiners is wider than the gap between tests</p>
-      <svg viewBox="0 0 620 330" role="img" aria-label="Sensitivity plotted against one minus specificity for meniscal tests. A diagonal marks the line of no information. The four tests performed by primary care clinicians - McMurray, Apley, Thessaly and joint line tenderness - all sit within a few points of that diagonal. The same McMurray performed by orthopaedic surgeons on a trauma cohort sits far above it. The vertical gap between the two McMurray points is larger than the whole spread of the four.">
-        <line x1="110" y1="280" x2="346" y2="280" stroke="currentColor" stroke-width="1" opacity=".45"></line>
-        <line x1="110" y1="280" x2="110" y2="44" stroke="currentColor" stroke-width="1" opacity=".45"></line>
-        <line x1="110" y1="280" x2="340" y2="50" stroke="currentColor" stroke-width="1" stroke-dasharray="5 4" opacity=".5"></line>
-        <text class="mono" x="346" y="44" opacity=".65">no information</text>
-        <line x1="342" y1="48" x2="336" y2="54" stroke="currentColor" stroke-width="1" opacity=".5"></line>
+      <p class="figtitle">The same manoeuvre, two pairs of hands</p>
+      <svg viewBox="0 0 620 310" role="img" aria-label="McMurray's sensitivity and specificity in two studies, drawn as two slopes. In primary care hands sensitivity is 58 percent and specificity 56 percent. In the hands of orthopaedic surgeons examining a trauma cohort, sensitivity is 91 percent and specificity 55 percent. The sensitivity line climbs 33 points; the specificity line is flat, moving one. A bracket on the left spans 53 to 77 percent, the sensitivity of all four meniscal tests in primary care - a 24 point spread, smaller than the 33 between the two pairs of hands.">
+        <line x1="240" y1="56" x2="240" y2="266" stroke="currentColor" stroke-width="1" opacity=".3"></line>
+        <line x1="500" y1="56" x2="500" y2="266" stroke="currentColor" stroke-width="1" opacity=".3"></line>
+        <text class="mono big" x="240" y="30" text-anchor="middle">primary care</text>
+        <text class="mono" x="240" y="46" text-anchor="middle" opacity=".65">292 patients, 75 controls</text>
+        <text class="mono big" x="500" y="30" text-anchor="middle">orthopaedic surgeons</text>
+        <text class="mono" x="500" y="46" text-anchor="middle" opacity=".65">255 patients, trauma cohort</text>
 
-        <line x1="110" y1="284" x2="110" y2="288" stroke="currentColor" stroke-width="1" opacity=".45"></line>
-        <line x1="225" y1="284" x2="225" y2="288" stroke="currentColor" stroke-width="1" opacity=".45"></line>
-        <line x1="340" y1="284" x2="340" y2="288" stroke="currentColor" stroke-width="1" opacity=".45"></line>
-        <text class="mono" x="110" y="300" text-anchor="middle" opacity=".6">0</text>
-        <text class="mono" x="225" y="300" text-anchor="middle" opacity=".6">0.5</text>
-        <text class="mono" x="340" y="300" text-anchor="middle" opacity=".6">1</text>
-        <text class="mono" x="225" y="320" text-anchor="middle" opacity=".7">1 &minus; specificity</text>
-        <line x1="106" y1="280" x2="102" y2="280" stroke="currentColor" stroke-width="1" opacity=".45"></line>
-        <line x1="106" y1="165" x2="102" y2="165" stroke="currentColor" stroke-width="1" opacity=".45"></line>
-        <line x1="106" y1="50" x2="102" y2="50" stroke="currentColor" stroke-width="1" opacity=".45"></line>
-        <text class="mono" x="96" y="283" text-anchor="end" opacity=".6">0</text>
-        <text class="mono" x="96" y="168" text-anchor="end" opacity=".6">0.5</text>
-        <text class="mono" x="96" y="53" text-anchor="end" opacity=".6">1</text>
-        <text class="mono" x="62" y="165" text-anchor="middle" opacity=".7" transform="rotate(-90 62 165)">sensitivity</text>
+        <line x1="196" y1="138" x2="196" y2="234" stroke="var(--accent)" stroke-width="2.2"></line>
+        <line x1="196" y1="138" x2="208" y2="138" stroke="var(--accent)" stroke-width="2.2"></line>
+        <line x1="196" y1="234" x2="208" y2="234" stroke="var(--accent)" stroke-width="2.2"></line>
+        <text class="mono" x="190" y="180" text-anchor="end" fill="var(--accent)">all four tests</text>
+        <text class="mono" x="190" y="196" text-anchor="end" fill="var(--accent)">53% - 77%</text>
 
-        <line x1="211.2" y1="146.6" x2="213.5" y2="70.7" stroke="var(--mod)" stroke-width="2.2" stroke-dasharray="5 4"></line>
-        <text class="mono" x="196" y="100" text-anchor="end" fill="var(--mod)">same test,</text>
-        <text class="mono" x="196" y="116" text-anchor="end" fill="var(--mod)">other hands</text>
+        <line x1="232" y1="214" x2="492" y2="82" stroke="var(--accent)" stroke-width="2.2"></line>
+        <line x1="248" y1="222" x2="508" y2="226" stroke="var(--mod)" stroke-width="2.2"></line>
+        <circle cx="232" cy="214" r="4" fill="var(--accent)"></circle>
+        <circle cx="492" cy="82" r="4" fill="var(--accent)"></circle>
+        <circle cx="248" cy="222" r="4" fill="var(--mod)"></circle>
+        <circle cx="508" cy="226" r="4" fill="var(--mod)"></circle>
 
-        <circle cx="211.2" cy="146.6" r="7" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.2"></circle>
-        <circle cx="218.1" cy="158.1" r="7" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.2"></circle>
-        <circle cx="250.3" cy="128.2" r="7" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.2"></circle>
-        <circle cx="280.2" cy="102.9" r="7" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.2"></circle>
-        <circle cx="213.5" cy="70.7" r="9" fill="var(--surface)" stroke="var(--surface)" stroke-width="2.2"></circle>
-        <circle cx="213.5" cy="70.7" r="7.5" fill="var(--mod)"></circle>
+        <text class="mono big" x="226" y="200" text-anchor="middle" fill="var(--accent)">58%</text>
+        <text class="mono big" x="252" y="244" text-anchor="middle" fill="var(--mod)">56%</text>
+        <text class="mono big" x="504" y="88" fill="var(--accent)">91%</text>
+        <text class="mono" x="504" y="106" fill="var(--accent)">sensitivity</text>
+        <text class="mono big" x="520" y="232" fill="var(--mod)">55%</text>
+        <text class="mono" x="520" y="250" fill="var(--mod)">specificity</text>
 
-        <line x1="360" y1="72" x2="223" y2="71" stroke="currentColor" stroke-width="1" opacity=".5"></line>
-        <text class="mono" x="364" y="75" fill="var(--mod)">McMurray &middot; surgeons</text>
-        <line x1="360" y1="102" x2="289" y2="103" stroke="currentColor" stroke-width="1" opacity=".5"></line>
-        <text class="mono" x="364" y="105" fill="var(--accent)">joint line tenderness</text>
-        <line x1="360" y1="126" x2="259" y2="128" stroke="currentColor" stroke-width="1" opacity=".5"></line>
-        <text class="mono" x="364" y="129" fill="var(--accent)">Thessaly</text>
-        <line x1="360" y1="150" x2="220" y2="147" stroke="currentColor" stroke-width="1" opacity=".5"></line>
-        <text class="mono" x="364" y="153" fill="var(--accent)">McMurray &middot; primary care</text>
-        <line x1="360" y1="174" x2="227" y2="159" stroke="currentColor" stroke-width="1" opacity=".5"></line>
-        <text class="mono" x="364" y="177" fill="var(--accent)">Apley</text>
-
-        <text class="mono" x="364" y="222" opacity=".7">A test on the diagonal calls</text>
-        <text class="mono" x="364" y="238" opacity=".7">positive as often in a knee</text>
-        <text class="mono" x="364" y="254" opacity=".7">with a tear as in one without.</text>
+        <text class="mono" x="318" y="136" text-anchor="middle" fill="var(--accent)">33 points</text>
+        <text class="mono" x="378" y="248" text-anchor="middle" fill="var(--mod)">1 point</text>
+        <text class="mono" x="340" y="292" text-anchor="middle" opacity=".75">changing hands moved it 33 points. Changing the test moves 24.</text>
       </svg>
       <div class="figgrid" style="grid-template-columns:repeat(2,1fr)">
-        <div><span class="lbl">Four tests, one pair of hands</span><span class="t2">In primary care all four meniscal tests sit within a few points of the diagonal. Choosing between them is choosing between four ways of learning almost nothing.</span></div>
-        <div><span class="lbl">One test, two pairs of hands</span><span class="t2">The same McMurray, by orthopaedic surgeons on a trauma cohort, sits far off the line. The vertical gap between the two McMurray dots is bigger than the whole spread of the four beneath it.</span></div>
+        <div><span class="lbl">What the hands changed</span><span class="t2">The same manoeuvre caught 58% of tears in one study and 91% in the other - a 33-point swing, larger than the 24 points that separate the best of the four meniscal tests from the worst.</span></div>
+        <div><span class="lbl">What they did not change</span><span class="t2">Specificity sat at 56% and 55%. Both sets of hands called a healthy knee positive at the same rate; the difference is entirely in what they caught, not in what they ruled out.</span></div>
       </div>
-      <figcaption><b>Distance above the diagonal is the only thing on this plot worth reading.</b> The four hollow points are McMurray <b>0.58/0.56</b>, Apley <b>0.53/0.53</b>, Thessaly <b>0.66/0.39</b> and joint line tenderness <b>0.77/0.26</b>, all from primary care clinicians examining 292 patients and 75 healthy controls <span class="src">Logerstedt 2018</span>. The filled point is McMurray at <b>0.91/0.55</b>, two blinded orthopaedic surgeons, 255 patients aged 20-45 at 5-7 days after injury <span class="src">Rinonapoli 2025</span>. <b>Those two dots differ in who examined and in who was examined, at the same time, and nothing here can separate the two.</b> A trauma cohort with 188 confirmed tears in 255 carries a pretest probability a mixed primary-care population does not, and that alone inflates sensitivity. Read the gap as the size of what you are not controlling for - not as a league table of examiners.</figcaption>
+      <figcaption><b>The bracket is the whole argument.</b> It spans every meniscal test in primary-care hands - Apley <b>0.53</b>, McMurray <b>0.58</b>, Thessaly <b>0.66</b>, joint line tenderness <b>0.77</b> for sensitivity, 292 patients and 75 healthy controls <span class="src">Logerstedt 2018</span>. Picking the best of those four over the worst buys 24 points. Handing the same McMurray to two blinded orthopaedic surgeons buys 33 <span class="src">Rinonapoli 2025</span>. <b>But the two columns differ in who examined and in who was examined, at the same time, and nothing here separates them.</b> A trauma cohort with 188 confirmed tears in 255 carries a pretest probability a mixed primary-care population does not, and that alone inflates sensitivity. Read the gap as the size of what you are not controlling for when you quote a number - not as a league table of examiners.</figcaption>
     </figure>
   </section>
 
