@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { ADMIN_AREA_LABELS } from "@/lib/admin-areas";
 import { freshEmail, setUserColumn, signUpAndEnterApp } from "./helpers";
 
 /**
@@ -35,4 +36,26 @@ test("a foundingFunders co-admin claim says Lifetime Access was not granted", as
 
   await expect(page.locator(".ff-admin-message--ok")).toContainText("Lifetime Access was not granted");
   await expect(page.locator(".ff-admin-message--ok")).toContainText("/admin/accounts");
+});
+
+/**
+ * #498 — foundingFunders is a real Admin nav item (the public page), not a grant that
+ * opens an empty accordion. The gold standalone Founding Funders entry stays for
+ * everyone; this asserts the Admin path a co-admin would look for.
+ */
+test("a foundingFunders-only co-admin gets an Admin link to their tools", async ({ page }) => {
+  const email = freshEmail("ff-coadmin-nav");
+  await signUpAndEnterApp(page, email);
+  await setUserColumn(email, "adminAreas", JSON.stringify(["foundingFunders"]));
+
+  await page.goto("/home");
+  const sidebar = page.locator(".app-sidebar");
+  await sidebar.getByRole("button", { name: "Admin", exact: true }).click();
+  await expect(sidebar.getByRole("link", { name: ADMIN_AREA_LABELS.foundingFunders })).toHaveCount(2);
+  await expect(sidebar.getByRole("link", { name: ADMIN_AREA_LABELS.licenses })).toHaveCount(0);
+  await expect(sidebar.getByRole("link", { name: "Accounts" })).toHaveCount(0);
+
+  await sidebar.getByRole("link", { name: ADMIN_AREA_LABELS.foundingFunders }).first().click();
+  await expect(page).toHaveURL(/\/founding-funders$/);
+  await expect(page.getByText("Admin, claim a founding spot")).toBeVisible();
 });

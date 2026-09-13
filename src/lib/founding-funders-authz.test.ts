@@ -125,6 +125,18 @@ describe("founding-funders page roster source-gates (#497)", () => {
   });
 });
 
+describe("Admin nav foundingFunders link (#498)", () => {
+  const nav = readFileSync(path.join(process.cwd(), "src/components/shell/NavContent.tsx"), "utf8");
+
+  it("lists foundingFunders under Admin so a grant-only co-admin is not an empty accordion", () => {
+    assert.match(nav, /has\("foundingFunders"\)/);
+    assert.match(nav, /href="\/founding-funders"/);
+    const grant = nav.indexOf('has("foundingFunders")');
+    const href = nav.indexOf('href="/founding-funders"');
+    assert.ok(grant > -1 && href > grant, "foundingFunders Admin row does not link to /founding-funders");
+  });
+});
+
 describe("FoundingAdminPanel claim copy (#497 UX)", () => {
   const panel = readFileSync(path.join(process.cwd(), "src/components/founding-funders/FoundingAdminPanel.tsx"), "utf8");
 
