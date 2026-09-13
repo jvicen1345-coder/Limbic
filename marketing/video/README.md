@@ -1,21 +1,31 @@
-# TikTok teaser
+# Product tour video
 
-A 55-second, 1080×1920 teaser for limbic.center, rendered from real screenshots of this
-app — no mockups, no invented UI. Everything here is reproducible: the screens are
-captured from a local dev server, the motion is a deterministic HTML page, and the frames
-are piped straight into ffmpeg.
+A 55-second tour of limbic.center, rendered from real screenshots of this app — no
+mockups, no invented UI. Everything here is reproducible: the screens are captured from a
+local dev server, the motion is a deterministic HTML page, and the frames are piped
+straight into ffmpeg.
 
 It's structured as three tiers with a section card in front of each — Limbic Student,
 LimbicPRO, Health & Wellness — bracketed by a research opening and a CTA.
 
-Output: `limbic-teaser.mp4` — 1080x1920, 30 fps, H.264 High at crf 22 (~16MB), with a
-silent AAC track so a trending sound can be laid over it in the TikTok editor.
-Caption/hashtag copy and posting notes: [`captions.md`](captions.md).
+**Two cuts, one source.** `teaser.html` renders either orientation depending on a flag, so
+the copy, the timeline and the motion live in exactly one place and only the geometry
+forks:
 
-**The landing page serves this too.** `/` embeds a 720x1280 cut of the same master (see
+| Master | Aspect | For |
+|---|---|---|
+| `limbic-tour-16x9.mp4` | 1920×1080 | the landing page — copy left, phone right |
+| `limbic-tour-9x16.mp4` | 1080×1920 | TikTok, Reels, Shorts — copy above, phone below |
+
+Both masters are 30 fps, H.264 High at crf 22, with a silent AAC track so a trending
+sound can be laid over the social cut in the TikTok editor. Caption/hashtag copy and
+posting notes: [`captions.md`](captions.md).
+
+**The landing page serves the 16:9 one.** `/` embeds a 1280x720 cut of that master (see
 the `landing-demo` section of `src/components/LandingPage.tsx`), so after any re-render
 run [`derive-web-assets.sh`](derive-web-assets.sh) or the site keeps showing the old
-version while the social file moves on.
+version while the master moves on. The 9:16 cut has no derived files — it's uploaded by
+hand.
 
 ## Re-rendering it
 
@@ -25,11 +35,16 @@ Needs a working local app (`.env` + `npx prisma migrate deploy`), `playwright-co
 ```bash
 npm run dev                                        # in another shell, on :3000
 
-node marketing/tiktok-teaser/capture.mjs           # signs in, screenshots each route
-node marketing/tiktok-teaser/capture-agent.mjs     # re-shoots /agent with a question typed
-node marketing/tiktok-teaser/capture-extra.mjs     # feed / playbook / movement lab / metrics
-node marketing/tiktok-teaser/render.mjs            # 1644 frames -> limbic-teaser.mp4
-./marketing/tiktok-teaser/derive-web-assets.sh    # -> the three files public/ serves
+node marketing/video/capture.mjs                   # signs in, screenshots each route
+node marketing/video/capture-agent.mjs             # re-shoots /agent with a question typed
+node marketing/video/capture-extra.mjs             # feed / playbook / movement lab / metrics
+
+# the landing page cut, then the three files public/ serves
+OUT=marketing/video/limbic-tour-16x9.mp4 ORIENTATION=landscape node marketing/video/render.mjs
+./marketing/video/derive-web-assets.sh
+
+# the social cut
+OUT=marketing/video/limbic-tour-9x16.mp4 node marketing/video/render.mjs
 ```
 
 `capture.mjs` signs in as `demo@limbic.center` (creating the account on first run) and
@@ -42,8 +57,9 @@ Some screens only look right at a particular scroll offset, and the scroller is
 sends real wheel events) rather than calling `window.scrollTo`, which silently does
 nothing here.
 
-Env knobs: `FFMPEG` (path to ffmpeg), `CHROME_PATH` (a specific Chromium — needed
-whenever the installed browser revision doesn't match what `playwright-core` expects),
+Env knobs: `ORIENTATION=landscape` (1920x1080; default is 1080x1920), `FFMPEG` (path to
+ffmpeg), `CHROME_PATH` (a specific Chromium — needed whenever the installed browser
+revision doesn't match what `playwright-core` expects),
 `FPS` (default 30), `OUT` (output path), and `PREVIEW="3.2,7.5"` — render just those
 timestamps as PNGs instead of encoding, which is how you iterate on the design without
 waiting on a full render.
@@ -84,10 +100,19 @@ starts its fade *before* t=0 (the `+0.34` in `introScene`) so frame 0 already re
 TikTok takes the opening frame as the default cover, and the landing page shows it the
 moment playback starts.
 
-One constraint to respect when adding a beat: a 700px-wide phone screenshot is 1522px
-tall inside a 1400px window, so a beat's `pan` can only travel about 122px before it runs
-off the bottom of the image. If you want a longer scroll than that, capture the screen at
-a different scroll offset instead of panning further.
+Two constraints to respect when adding a beat.
+
+A beat's `pan` is a **fraction** of the travel available, not a pixel count, and it has to
+be: a phone screenshot overhangs its window by 122px in portrait and about 143px in
+landscape, so a pixel value that worked in one orientation would either stop short or run
+off the bottom in the other. `[0.03, 0.97]` means "start 3% in, end 3% from the end" in
+both. If you want a longer scroll than the frame allows, capture the screen at a different
+scroll offset rather than panning further.
+
+And nothing in a scene may be positioned off a hardcoded constant — read `offsetTop` and
+`offsetHeight` instead. Headlines run one to three lines and the two orientations put the
+copy block in different places, so a constant that looks right in one case silently
+overlaps the text in another.
 
 `shots/` (the captured screenshots) is gitignored — regenerate it with the capture
 scripts rather than committing it.

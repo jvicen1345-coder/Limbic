@@ -38,14 +38,18 @@ const LOSSLESS = process.env.FRAMES === 'png';
  *  re-encodes everything on upload anyway, and 19 put a 55s cut at 25MB — most of which
  *  would have been bitrate nobody ever sees. Override with CRF=19 for a master copy. */
 const CRF = process.env.CRF || '22';
+/** ORIENTATION=landscape renders the 1920x1080 cut the landing page serves; the default is
+ *  the 1080x1920 social cut. Same teaser.html either way — see the note at the top of it. */
+const LANDSCAPE = process.env.ORIENTATION === 'landscape';
+const [VW, VH] = LANDSCAPE ? [1920, 1080] : [1080, 1920];
 
 const browser = await chromium.launch({
   ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}),
   args: ['--font-render-hinting=none', '--force-color-profile=srgb', '--disable-lcd-text'],
 });
-const ctx = await browser.newContext({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
+const ctx = await browser.newContext({ viewport: { width: VW, height: VH }, deviceScaleFactor: 1 });
 const page = await ctx.newPage();
-await page.goto('file://' + path.join(SC, 'teaser.html'), { waitUntil: 'load' });
+await page.goto('file://' + path.join(SC, 'teaser.html') + (LANDSCAPE ? '?o=l' : ''), { waitUntil: 'load' });
 const font = jakartaDataUrl();
 if (font) await page.addStyleTag({ content:
   `@font-face{font-family:'Jakarta';src:url('${font}') format('woff2');font-weight:200 800;font-display:block}` });
@@ -58,7 +62,7 @@ if (PREVIEW) {
   for (const t of PREVIEW) {
     await page.evaluate(x => window.__render(x), t);
     await page.waitForTimeout(90);
-    await page.screenshot({ path: `${SC}/prev_${String(t).replace('.', '_')}.png` });
+    await page.screenshot({ path: `${SC}/prev_${LANDSCAPE ? 'l_' : ''}${String(t).replace('.', '_')}.png` });
   }
   console.log('preview frames done');
   await browser.close();

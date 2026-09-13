@@ -1,29 +1,31 @@
 #!/usr/bin/env bash
-# Derives the three assets the landing page serves from the 1080x1920 master that
-# render.mjs produces. Run this after every re-render, or the site keeps showing the old
-# cut while the social file has moved on.
+# Derives the three assets the landing page serves from the 1920x1080 master that
+# `ORIENTATION=landscape node render.mjs` produces. Run this after every re-render, or the
+# site keeps showing the old cut while the master moves on.
 #
 #   public/limbic-tour.webm         VP9, what Chrome/Firefox/Android actually play
 #   public/limbic-tour.mp4          H.264, the Safari fallback
 #   public/limbic-tour-poster.jpg   the frame shown before anyone presses play
 #
-# Usage:  ./marketing/tiktok-teaser/derive-web-assets.sh [path-to-ffmpeg]
+# The social cut (limbic-tour-9x16.mp4) is uploaded by hand and has no derived files.
+#
+# Usage:  ./marketing/video/derive-web-assets.sh [path-to-ffmpeg]
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(cd "$HERE/../.." && pwd)"
 FF="${1:-${FFMPEG:-ffmpeg}}"
-MASTER="$HERE/limbic-teaser.mp4"
+MASTER="$HERE/limbic-tour-16x9.mp4"
 PUB="$REPO/public"
 
-[ -f "$MASTER" ] || { echo "no master at $MASTER — run render.mjs first" >&2; exit 1; }
+[ -f "$MASTER" ] || { echo "no master at $MASTER — run ORIENTATION=landscape node render.mjs first" >&2; exit 1; }
 
-# 720 wide, not 1080: the page frames the player at 380px, so 720 is already 2x for a
-# retina display and anything more is bitrate nobody sees.
-SCALE="scale=720:1280:flags=lanczos"
+# 1280 wide, not 1920: the section caps the player at 752px, so 1280 is already comfortably
+# past 1x on a retina display and anything more is bitrate nobody sees.
+SCALE="scale=1280:720:flags=lanczos"
 
-# VP9 lands ~32% under H.264 here at visually identical quality, which is why it goes
-# first in the <source> list.
+# VP9 lands well under H.264 here at visually identical quality, which is why it goes first
+# in the <source> list.
 echo "webm..."
 "$FF" -hide_banner -loglevel error -i "$MASTER" -vf "$SCALE" \
   -c:v libvpx-vp9 -crf 40 -b:v 0 -row-mt 1 -cpu-used 4 -deadline good \
