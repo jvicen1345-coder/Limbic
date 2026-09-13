@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { freshEmail, signUpAndEnterApp } from "./helpers";
 import { planHomeImages, type ArticleImageCacheRow } from "@/lib/home-image-plan";
 import type { Article } from "@/lib/types";
 
@@ -83,5 +84,26 @@ test.describe("Home image planning", () => {
     expect(images.every(Boolean)).toBe(true);
     expect(new Set(images).size).toBe(12);
     expect(planned.toRefresh).toHaveLength(12);
+  });
+});
+
+test.describe("Home article image delivery", () => {
+  test("hero uses the optimizer with LCP preload; below-fold cards stay lazy", async ({ page }) => {
+    await signUpAndEnterApp(page, freshEmail("home-images"));
+    await page.goto("/home");
+
+    const hero = page.locator(".hero-card-media img").first();
+    await expect(hero).toBeVisible();
+    const heroSrc = await hero.getAttribute("src");
+    expect(heroSrc, "hero should go through /_next/image").toMatch(/\/_next\/image/);
+    await expect(hero).toHaveAttribute("srcset", /\/_next\/image/);
+    const heroLoading = await hero.getAttribute("loading");
+    expect(heroLoading === null || heroLoading === "eager", `hero loading=${heroLoading}`).toBe(true);
+
+    const card = page.locator(".home-cards-grid .article-card img").first();
+    await expect(card).toBeVisible();
+    const cardSrc = await card.getAttribute("src");
+    expect(cardSrc, "allowlisted card rasters should also use /_next/image").toMatch(/\/_next\/image/);
+    await expect(card).toHaveAttribute("loading", "lazy");
   });
 });

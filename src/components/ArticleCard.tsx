@@ -55,7 +55,14 @@ export function ArticleCard({ article }: { article: ArticleCardModel }) {
   const href = `/article/${article.id}`;
   return (
     <div className="card elev-sm card-hoverable article-card">
-      {article.image && <ArticleImage key={article.id} src={article.image} height={120} />}
+      {article.image && (
+        <ArticleImage
+          key={article.id}
+          src={article.image}
+          height={120}
+          sizes="(max-width: 799px) 100vw, 440px"
+        />
+      )}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {article.isNew && <NewBadge />}
@@ -127,7 +134,13 @@ export function HeroArticleCard({ article }: { article: ArticleCardModel }) {
   return (
     <div className="card elev-md card-hoverable article-card" style={{ padding: 0, overflow: "hidden" }}>
       <div className="hero-card-media">
-        <ArticleImage key={article.id} src={article.image} fill />
+        <ArticleImage
+          key={article.id}
+          src={article.image}
+          fill
+          priority
+          sizes="(max-width: 799px) 100vw, 900px"
+        />
         <div className="hero-card-topleft">
           <span className={article.typeTagClass}>{article.specialtyLabel}</span>
           {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}

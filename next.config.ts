@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { IMAGE_REMOTE_PATTERNS } from "./src/lib/image-remote-hosts";
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -14,13 +15,12 @@ const nextConfig: NextConfig = {
     "/student/guides/[guide]": ["content/playbooks/*.html"],
   },
   images: {
-    // Only YouTube's own thumbnail CDN — a single fixed, known hostname (see
-    // lib/meta.ts youtubeThumbnailUrl), safe to optimize via next/image. Article/exercise
-    // images (ArticleImage.tsx, app/(app)/hep/page.tsx) come from arbitrary publisher/
-    // clinician-pasted URLs with no fixed set of hostnames, so they deliberately stay plain
-    // <img> tags rather than widening this to a wildcard pattern that would reopen next/image's
-    // optimizer as an SSRF vector for any URL a caller feeds it.
-    remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com" }],
+    // Closed allowlist of known CDNs (YouTube thumbs, Wikimedia Commons topic photos,
+    // Pexels). Exact hostnames only — never `*` / `**` on hostname, which would reopen
+    // the optimizer as an SSRF vector. ArticleImage still falls back to a raw <img> for
+    // publisher og:images on hosts that are not in this list. HEP clinician-pasted
+    // exercise URLs stay on raw <img> (see app/(app)/hep/page.tsx).
+    remotePatterns: [...IMAGE_REMOTE_PATTERNS],
   },
 };
 
