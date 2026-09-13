@@ -2,8 +2,19 @@
 
 import { USER_ROLES, type UserRole } from "@/lib/user-role";
 
-function openRoleSection() {
+function openRoleSection(event: React.MouseEvent<HTMLAnchorElement>) {
+  // Own scroll + focus so the fragment navigation does not land on (or steal
+  // focus back to) the section wrapper after UserRoleSection focuses a control.
+  event.preventDefault();
+  document.getElementById("profile-role")?.scrollIntoView({ block: "start" });
   window.dispatchEvent(new Event("limbic:edit-role"));
+  if (window.location.hash !== "#profile-role") {
+    window.history.pushState(
+      null,
+      "",
+      `${window.location.pathname}${window.location.search}#profile-role`,
+    );
+  }
 }
 
 /** Profile header Role shortcut — same pattern as ProfileThemeCard: the click both

@@ -31,8 +31,14 @@ export function UserRoleSection({ role }: { role: UserRole | null }) {
   useEffect(() => {
     if (!editing || !shouldFocus.current) return;
     shouldFocus.current = false;
-    const firstCard = sectionRef.current?.querySelector<HTMLElement>(".role-card");
-    (firstCard ?? sectionRef.current)?.focus();
+    const moveFocus = () => {
+      const firstCard = sectionRef.current?.querySelector<HTMLElement>(".role-card");
+      (firstCard ?? sectionRef.current)?.focus();
+    };
+    moveFocus();
+    // Second frame: RoleCards is in the same commit, but a leftover fragment
+    // focus can still fire after the click. Reclaim onto the first control.
+    requestAnimationFrame(moveFocus);
   }, [editing]);
 
   return (
