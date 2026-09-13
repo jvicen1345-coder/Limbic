@@ -40,12 +40,14 @@ export function UserRoleSection({ role }: { role: UserRole | null }) {
     if (!editing || !shouldFocus.current) return;
     shouldFocus.current = false;
     const moveFocus = () => {
-      const firstCard = sectionRef.current?.querySelector<HTMLElement>(".role-card");
-      (firstCard ?? sectionRef.current)?.focus();
+      const root = sectionRef.current;
+      const selectedCard = root?.querySelector<HTMLElement>(".role-card[aria-pressed=true]");
+      const firstCard = root?.querySelector<HTMLElement>(".role-card");
+      (selectedCard ?? firstCard ?? root)?.focus();
     };
     moveFocus();
     // Second frame: RoleCards is in the same commit, but a leftover fragment
-    // focus can still fire after the click. Reclaim onto the first control.
+    // focus can still fire after the click. Reclaim onto the selected control.
     requestAnimationFrame(moveFocus);
   }, [editing]);
 

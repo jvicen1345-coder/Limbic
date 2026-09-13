@@ -57,7 +57,7 @@ test.describe("Profile status cards", () => {
     const roleSection = page.locator("#profile-role");
     await expect(roleSection).toBeInViewport();
     await expect(roleSection.locator(".role-cards")).toBeVisible();
-    await expect(roleSection.locator(".role-card").first()).toBeFocused();
+    await expect(roleSection.locator(".role-card[aria-pressed=true]")).toBeFocused();
 
     await roleSection.getByRole("button", { name: "Cancel" }).click();
     await expect(roleSection.locator(".role-cards")).toHaveCount(0);
@@ -74,6 +74,18 @@ test.describe("Profile status cards", () => {
 
     await page.locator(".profile-status-card").filter({ hasText: "Subscription" }).click();
     await expect(page).toHaveURL(/\/profile\/membership/);
+  });
+
+  test("Role jump focuses the selected role, not the first card", async ({ page }) => {
+    const email = freshEmail("profile-status-role-focus");
+    await signUpAndEnterApp(page, email);
+    await setUserColumn(email, "userRole", "pts");
+    await page.goto("/profile");
+
+    await page.locator(".profile-status-card").filter({ hasText: "Role" }).click();
+    const pressed = page.locator("#profile-role").locator(".role-card[aria-pressed=true]");
+    await expect(pressed).toContainText("PT Student");
+    await expect(pressed).toBeFocused();
   });
 
   test("Theme card updates after changing the theme", async ({ page }) => {
