@@ -4,6 +4,7 @@ export type SubscriptionCardModel = {
   planKey: SubscriptionPlanKey;
   planName: string;
   status: string;
+  statusParts: string[];
   daysRemaining: number | null;
 };
 
@@ -67,7 +68,7 @@ export function subscriptionCardModel(user: SubscriptionFlags, now = new Date())
   const daysRemaining = daysRemainingFromPeriodEnd(user.stripeCurrentPeriodEnd, now);
 
   if (planKey === "free") {
-    return { planKey, planName, status: "No paid plan", daysRemaining: null };
+    return { planKey, planName, status: "No paid plan", statusParts: ["No paid plan"], daysRemaining: null };
   }
 
   const parts = ["Active"];
@@ -77,5 +78,5 @@ export function subscriptionCardModel(user: SubscriptionFlags, now = new Date())
     parts.push(`${daysRemaining} day${daysRemaining === 1 ? "" : "s"} left`);
   }
 
-  return { planKey, planName, status: parts.join(" · "), daysRemaining };
+  return { planKey, planName, status: parts.join(" · "), statusParts: parts, daysRemaining };
 }

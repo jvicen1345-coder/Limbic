@@ -392,7 +392,8 @@ html[data-theme="dark"] .date-field-native { color-scheme: dark; }
   color: inherit;
   margin-bottom: 0;
 }
-a.profile-status-card:hover {
+a.profile-status-card:hover,
+a.profile-status-card:focus-visible {
   text-decoration: none;
   color: inherit;
 }
@@ -405,10 +406,29 @@ a.profile-status-card:hover {
   margin-top: 4px;
 }
 .profile-status-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 0;
   margin: 4px 0 0;
   font-size: var(--fs-11-5);
   color: var(--color-neutral-700);
   line-height: 1.4;
+}
+.profile-status-meta-part + .profile-status-meta-part::before {
+  content: "·";
+  margin: 0 0.4em;
+}
+/* Sidebar + 3-up at ~1024–1200px leaves ~200px per card — a middot-joined status
+   wraps mid-phrase. Stack each part on its own line in that band. */
+@media (min-width: 1024px) and (max-width: 1200px) {
+  .profile-status-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .profile-status-meta-part + .profile-status-meta-part::before {
+    content: none;
+    margin: 0;
+  }
 }
 .profile-status-action {
   margin-top: 10px;

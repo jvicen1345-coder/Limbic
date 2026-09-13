@@ -20,7 +20,13 @@ function ProfileSubscriptionCard({ model }: { model: SubscriptionCardModel }) {
     <Link href="/profile/membership" className="card elev-sm profile-status-card">
       <div className="card-kicker">Subscription</div>
       <div className="profile-status-value">{model.planName}</div>
-      <p className="profile-status-meta">{model.status}</p>
+      <p className="profile-status-meta">
+        {model.statusParts.map((part) => (
+          <span key={part} className="profile-status-meta-part">
+            {part}
+          </span>
+        ))}
+      </p>
       <div className="profile-status-action">Manage</div>
     </Link>
   );

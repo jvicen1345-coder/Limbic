@@ -77,6 +77,7 @@ describe("subscriptionCardModel", () => {
     const model = subscriptionCardModel(flags(), NOW);
     assert.equal(model.planName, "Free");
     assert.equal(model.status, "No paid plan");
+    assert.deepEqual(model.statusParts, ["No paid plan"]);
     assert.equal(model.daysRemaining, null);
     assert.doesNotMatch(model.status, /day/);
   });
@@ -96,6 +97,7 @@ describe("subscriptionCardModel", () => {
     assert.equal(stacked.planName, "LimbicPRO");
     assert.match(stacked.status, /also Wellness\+/);
     assert.match(stacked.status, /also Clinic PRO/);
+    assert.deepEqual(stacked.statusParts, ["Active", "also Wellness+", "also Clinic PRO"]);
   });
 
   it("omits the countdown when period-end is null — never 0 days left", () => {
