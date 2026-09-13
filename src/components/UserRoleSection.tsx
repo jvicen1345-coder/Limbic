@@ -17,7 +17,7 @@ export function UserRoleSection({ role }: { role: UserRole | null }) {
   const currentLabel = USER_ROLES.find((r) => r.value === role)?.label ?? "Not set";
 
   return (
-    <div className="card elev-sm" style={{ marginBottom: 18 }}>
+    <div id="profile-role" className="card elev-sm" style={{ marginBottom: 18, scrollMarginTop: 24 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div className="card-kicker">Role</div>
         {!editing && (

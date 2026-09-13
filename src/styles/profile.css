@@ -252,6 +252,7 @@ html[data-theme="dark"] .date-field-native { color-scheme: dark; }
   margin: 0;
 }
 
+<<<<<<< HEAD
 /* /profile/credentials card stack (#495) — one column rhythm so Professional Dates,
    Professional Credentials, Force Lab, and License & CE share padding (from .card),
    kicker-to-content gap (from .card), and inter-card spacing. The 560px cap on
@@ -369,4 +370,44 @@ html[data-theme="dark"] .date-field-native { color-scheme: dark; }
   height: 100%;
   border-radius: 999px;
   background: var(--color-accent-2);
+}
+
+/* Profile header Role / Theme / Subscription cards (#493). Desktop three-up lives on
+   .profile-header-grid in onboarding.css (auto-fit from 1024px); this sheet owns the
+   stacked mobile row and the card-as-link chrome so a third skeleton/card does not sit
+   on a half-width leftover. */
+.profile-header-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.profile-status-card {
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 0;
+}
+a.profile-status-card:hover {
+  text-decoration: none;
+  color: inherit;
+}
+.profile-status-value {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--color-text);
+  margin-top: 4px;
+}
+.profile-status-meta {
+  margin: 4px 0 0;
+  font-size: var(--fs-11-5);
+  color: var(--color-neutral-700);
+  line-height: 1.4;
+}
+.profile-status-action {
+  margin-top: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-accent-700);
 }
