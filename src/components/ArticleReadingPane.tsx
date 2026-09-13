@@ -231,7 +231,11 @@ export function ArticleReadingPane({
               >
                 {rel.image && (
                   <div className="article-related-thumb">
-                    <ArticleImage src={rel.image} fill />
+                    <ArticleImage
+                      src={rel.image}
+                      fill
+                      sizes="(max-width: 560px) 100vw, (max-width: 800px) 50vw, 240px"
+                    />
                   </div>
                 )}
                 <div className="article-related-body">

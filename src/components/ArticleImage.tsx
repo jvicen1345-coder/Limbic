@@ -1,31 +1,91 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
+import Image from "next/image";
+import { isOptimizableImageSrc } from "@/lib/image-remote-hosts";
 
-/** A real og:image can still fail to load client-side (hotlink protection, a since-
- *  removed asset, …). Keyed by the caller off article id so switching articles remounts
- *  this and naturally resets `failed`, instead of tracking that reset with an effect.
+const COVER: CSSProperties = {
+  objectFit: "cover",
+  objectPosition: "center",
+  display: "block",
+};
+
+/**
+ * Feed / reading-pane photo. Allowlisted CDN hosts and same-origin rasters use next/image
+ * (srcset + the optimizer). Publisher og:images on unknown hosts stay on a raw <img> so a
+ * closed remotePatterns list cannot 400 the card empty. `priority` maps to Next 16 `preload`
+ * and is reserved for the Home hero LCP image.
  *
- *  `fill`: absolutely fills a `position: relative` ancestor instead of the default fixed-
- *  height block — for HeroArticleCard's photo-background treatment (see
- *  .hero-card-media in src/styles), which needs the image to sit *behind* an overlay
- *  gradient and text rather than stack above them. Presentational only — the onError
- *  fallback behavior above is identical either way. */
-export function ArticleImage({ src, height = 90, fill = false }: { src: string; height?: number; fill?: boolean }) {
+ * `fill`: absolutely fills a `position: relative` ancestor — HeroArticleCard's
+ * `.hero-card-media` photo-background and related-article thumbs. Presentational only;
+ * onError fallback is identical either way.
+ */
+export function ArticleImage({
+  src,
+  height = 90,
+  fill = false,
+  priority = false,
+  sizes,
+}: {
+  src: string;
+  height?: number;
+  fill?: boolean;
+  priority?: boolean;
+  sizes?: string;
+}) {
   const [failed, setFailed] = useState(false);
   if (failed) return null;
+
+  const resolvedSizes =
+    sizes ?? (fill ? "(max-width: 799px) 100vw, 900px" : "(max-width: 799px) 100vw, 440px");
+  const onError = () => setFailed(true);
+
+  if (isOptimizableImageSrc(src)) {
+    if (fill) {
+      return (
+        <Image
+          src={src}
+          alt=""
+          fill
+          sizes={resolvedSizes}
+          preload={priority}
+          style={COVER}
+          onError={onError}
+        />
+      );
+    }
+    return (
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height,
+          borderRadius: "var(--radius-md)",
+          overflow: "hidden",
+        }}
+      >
+        <Image
+          src={src}
+          alt=""
+          fill
+          sizes={resolvedSizes}
+          preload={priority}
+          style={COVER}
+          onError={onError}
+        />
+      </div>
+    );
+  }
+
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- external, unconfigured domains
+    // eslint-disable-next-line @next/next/no-img-element -- unconfigured publisher hosts; optimizer would 400
     <img
       src={src}
       alt=""
-      // Hero cards render above the fold, so they load eager (the default) — everything
-      // else is a list-card thumbnail further down the feed, worth deferring since these
-      // come from arbitrary publisher domains next/image can't optimize (see the
-      // eslint-disable above) and a feed can have dozens on one page.
-      loading={fill ? undefined : "lazy"}
+      loading={priority || fill ? undefined : "lazy"}
+      fetchPriority={priority ? "high" : undefined}
       decoding="async"
-      onError={() => setFailed(true)}
+      onError={onError}
       style={
         fill
           ? {
@@ -33,17 +93,13 @@ export function ArticleImage({ src, height = 90, fill = false }: { src: string; 
               inset: 0,
               width: "100%",
               height: "100%",
-              objectFit: "cover",
-              objectPosition: "center",
-              display: "block",
+              ...COVER,
             }
           : {
               width: "100%",
               height,
-              objectFit: "cover",
-              objectPosition: "center",
               borderRadius: "var(--radius-md)",
-              display: "block",
+              ...COVER,
             }
       }
     />
