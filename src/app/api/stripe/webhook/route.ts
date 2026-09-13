@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { getStripe, stripeEnabled, planForPriceId, paymentIntentIdFromSession, type BillablePlan } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
 import { nextFoundingFunderNumber } from "@/lib/founding-funders";
+import { periodEndFromStripeSubscription } from "@/lib/subscription-status";
 
 /**
  * The single source of truth for isPro/studentTier/isWellnessPlus — app/actions/pro.ts
@@ -134,6 +135,7 @@ async function syncSubscription(subscription: Stripe.Subscription) {
         wellnessPlusSubscriptionId: subscription.id,
         isWellnessPlus: active,
         wellnessPlusInterval: active ? (plan === "wellnessPlusMonthly" ? "month" : "year") : null,
+        stripeCurrentPeriodEnd: active ? periodEndFromStripeSubscription(subscription) : null,
       },
     });
     return;
@@ -145,7 +147,11 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     if (!shouldTrackSubscription(subscription, active, user.clinicProSubscriptionId)) return;
     await prisma.user.update({
       where: { id: userId },
-      data: { clinicProSubscriptionId: subscription.id, isClinicPro: active },
+      data: {
+        clinicProSubscriptionId: subscription.id,
+        isClinicPro: active,
+        stripeCurrentPeriodEnd: active ? periodEndFromStripeSubscription(subscription) : null,
+      },
     });
     return;
   }
@@ -163,6 +169,7 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     where: { id: userId },
     data: {
       stripeSubscriptionId: subscription.id,
+      stripeCurrentPeriodEnd: active ? periodEndFromStripeSubscription(subscription) : null,
       ...(plan === "pro"
         ? { isPro: active, ...(active ? { studentTier: "none" } : {}) }
         : { studentTier: active ? plan : "none", ...(active ? { isPro: false } : {}) }),
@@ -187,7 +194,12 @@ async function clearSubscription(subscription: Stripe.Subscription) {
     if (user?.wellnessPlusSubscriptionId !== subscription.id) return;
     await prisma.user.update({
       where: { id: userId },
-      data: { wellnessPlusSubscriptionId: null, isWellnessPlus: false, wellnessPlusInterval: null },
+      data: {
+        wellnessPlusSubscriptionId: null,
+        isWellnessPlus: false,
+        wellnessPlusInterval: null,
+        stripeCurrentPeriodEnd: null,
+      },
     });
     return;
   }
@@ -197,7 +209,7 @@ async function clearSubscription(subscription: Stripe.Subscription) {
     if (user?.clinicProSubscriptionId !== subscription.id) return;
     await prisma.user.update({
       where: { id: userId },
-      data: { clinicProSubscriptionId: null, isClinicPro: false },
+      data: { clinicProSubscriptionId: null, isClinicPro: false, stripeCurrentPeriodEnd: null },
     });
     return;
   }
@@ -209,6 +221,7 @@ async function clearSubscription(subscription: Stripe.Subscription) {
     where: { id: userId },
     data: {
       stripeSubscriptionId: null,
+      stripeCurrentPeriodEnd: null,
       ...(plan === "pro" ? { isPro: false } : { studentTier: "none" }),
     },
   });
