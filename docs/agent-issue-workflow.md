@@ -18,6 +18,13 @@ effect on the website in terms a reviewer or product owner can understand.
 - **Limbic Issue Bot** owns this document and ad-hoc desk / merge digest work. It does
   not run standing intake or triage.
 
+**Observed:** collaborator JV (`jvicen1345-coder`) does not have the Grok Bot fleet
+and merges their own PRs on GitHub without pre-merge fleet review. After those
+merges, **Limbic Issue Bot** reviews the landed change (PR Review; UX if the
+change is UI; Security if auth/XSS), files follow-up issues via `gh`, and
+**Limbic Intake** / **Limbic Triage** claim and fix them. Do not block or revert
+those merges. Fleet-authored PRs still get pre-merge clearance when asked.
+
 ## 1. Establish the issue as the current source of work
 
 - Identify the exact issue, repository, and current branch/base branch.
