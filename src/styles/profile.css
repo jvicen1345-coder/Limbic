@@ -183,7 +183,11 @@
   position: absolute; inset: 0; width: 100%; height: 100%;
   margin: 0; padding: 0; border: 0; background: transparent;
   opacity: 0; cursor: pointer; z-index: 1;
+  /* Native calendar popover follows the app theme toggle, same as
+     input[type="date"].input in base.css — not `light dark` (OS). */
+  color-scheme: light;
 }
+html[data-theme="dark"] .date-field-native { color-scheme: dark; }
 .date-field-display {
   display: flex; align-items: center; min-height: 36px;
   padding-inline: 14px; border-radius: 999px;

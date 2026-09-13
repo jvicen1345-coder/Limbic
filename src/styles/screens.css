@@ -243,7 +243,16 @@
 .pagination-nav { gap: 6px; }
 .pagination-link { min-width: 44px; height: 44px; font-size: 14px; }
 }
-/* Moved from home.css — shared save-confirmation check (profile dates, vitals, metrics, CE tracker) */
+/* Moved from home.css — shared save-confirmation check (profile dates, vitals, metrics, CE tracker)
+   Keyframes lived next to the class in home.css; Profile (and vitals/metrics/CE) never load
+   that sheet, so the check was a static flash. Plays once per save, then unmounts via a
+   matching-length setTimeout (SAVED_CHECK_MS) rather than looping or lingering at opacity 0. */
+@keyframes fade-in-out {
+  0% { opacity: 0; transform: scale(0.8); }
+  20% { opacity: 1; transform: scale(1); }
+  75% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.8); }
+}
 .profile-date-saved-check {
   animation: fade-in-out 1.6s ease;
   color: var(--color-accent-2-700);
