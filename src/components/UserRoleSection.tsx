@@ -18,10 +18,18 @@ export function UserRoleSection({ role }: { role: UserRole | null }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const shouldFocus = useRef(false);
 
+  function clearRoleHash() {
+    if (window.location.hash !== "#profile-role") return;
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+  }
+
   useEffect(() => {
     const enter = () => {
       shouldFocus.current = true;
       setEditing(true);
+      // One-shot jump target — leave the hash up and a remount (Save's
+      // revalidate, Cancel + navigation) re-enters edit on mount.
+      clearRoleHash();
     };
     if (window.location.hash === "#profile-role") enter();
     window.addEventListener("limbic:edit-role", enter);
@@ -75,6 +83,7 @@ export function UserRoleSection({ role }: { role: UserRole | null }) {
                 if (!selected) return;
                 startTransition(async () => {
                   await updateUserRoleAction(selected);
+                  clearRoleHash();
                   setEditing(false);
                 });
               }}
@@ -86,6 +95,7 @@ export function UserRoleSection({ role }: { role: UserRole | null }) {
               className="btn btn-ghost"
               onClick={() => {
                 setSelected(role);
+                clearRoleHash();
                 setEditing(false);
               }}
             >

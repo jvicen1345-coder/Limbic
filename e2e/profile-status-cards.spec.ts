@@ -21,7 +21,7 @@ test.describe("Profile status cards", () => {
     await expect(role.getByText("Physical Therapist", { exact: true })).toBeVisible();
     await expect(theme.getByText("System", { exact: true })).toBeVisible();
     await expect(subscription.getByText("Free", { exact: true })).toBeVisible();
-    await expect(subscription.getByText("Free plan")).toBeVisible();
+    await expect(subscription.getByText("Free plan")).toHaveCount(0);
     await expect(subscription.getByText("View plans")).toBeVisible();
     await expect(subscription.getByText("Manage")).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Edit role: Physical Therapist" })).toBeVisible();
@@ -59,10 +59,18 @@ test.describe("Profile status cards", () => {
     await expect(roleSection.locator(".role-cards")).toBeVisible();
     await expect(roleSection.locator(".role-card").first()).toBeFocused();
 
+    await roleSection.getByRole("button", { name: "Cancel" }).click();
+    await expect(roleSection.locator(".role-cards")).toHaveCount(0);
+    await expect(page).not.toHaveURL(/#profile-role/);
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "Profile", exact: true })).toBeVisible();
+    await expect(page.locator("#profile-role").locator(".role-cards")).toHaveCount(0);
+
     await page.locator(".profile-status-card").filter({ hasText: "Theme" }).click();
     const themeCard = page.locator("#profile-theme");
     await expect(themeCard).toBeInViewport();
     await expect(themeCard).toHaveAttribute("open", "");
+    await expect(themeCard.locator(".theme-card").first()).toBeFocused();
 
     await page.locator(".profile-status-card").filter({ hasText: "Subscription" }).click();
     await expect(page).toHaveURL(/\/profile\/membership/);

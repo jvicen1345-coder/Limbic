@@ -8,9 +8,19 @@ import {
 } from "@/lib/theme-client";
 import { themePreferenceLabel } from "@/lib/subscription-status";
 
-function openThemeSection() {
+function openThemeSection(event: React.MouseEvent<HTMLAnchorElement>) {
+  event.preventDefault();
   const el = document.getElementById("profile-theme");
-  if (el instanceof HTMLDetailsElement) el.open = true;
+  if (!(el instanceof HTMLDetailsElement)) return;
+  el.open = true;
+  el.scrollIntoView({ block: "start" });
+  const moveFocus = () => {
+    const firstCard = el.querySelector<HTMLElement>(".theme-card");
+    const summary = el.querySelector<HTMLElement>("summary");
+    (firstCard ?? summary)?.focus();
+  };
+  moveFocus();
+  requestAnimationFrame(moveFocus);
 }
 
 /** Profile header Theme shortcut — follows the same local preference store as ThemeToggle

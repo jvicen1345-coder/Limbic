@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   daysRemainingFromPeriodEnd,
   periodEndFromStripeSubscription,
+  periodEndPatch,
   subscriptionCardModel,
   themePreferenceLabel,
 } from "./subscription-status";
@@ -73,11 +74,11 @@ describe("periodEndFromStripeSubscription", () => {
 });
 
 describe("subscriptionCardModel", () => {
-  it("shows Free + status and never a countdown", () => {
+  it("shows Free with no redundant status line and never a countdown", () => {
     const model = subscriptionCardModel(flags(), NOW);
     assert.equal(model.planName, "Free");
-    assert.equal(model.status, "Free plan");
-    assert.deepEqual(model.statusParts, ["Free plan"]);
+    assert.equal(model.status, "");
+    assert.deepEqual(model.statusParts, []);
     assert.equal(model.daysRemaining, null);
     assert.doesNotMatch(model.status, /day/);
   });
@@ -130,5 +131,34 @@ describe("subscriptionCardModel", () => {
     assert.equal(expired.planName, "Limbic Wellness+");
     assert.equal(expired.status, "Active");
     assert.equal(expired.daysRemaining, null);
+  });
+});
+
+describe("periodEndPatch", () => {
+  const incoming = new Date("2026-09-20T12:00:00.000Z");
+
+  it("writes the date when the event plan is the headline after sync", () => {
+    assert.deepEqual(periodEndPatch(flags(), "wellnessPlus", true, incoming), {
+      stripeCurrentPeriodEnd: incoming,
+    });
+    assert.deepEqual(periodEndPatch(flags({ isPro: true }), "pro", true, incoming), {
+      stripeCurrentPeriodEnd: incoming,
+    });
+  });
+
+  it("leaves the column alone when an add-on is not the headline", () => {
+    const stacked = flags({ isPro: true, isWellnessPlus: true });
+    assert.deepEqual(periodEndPatch(stacked, "wellnessPlus", true, incoming), {});
+    assert.deepEqual(periodEndPatch(stacked, "wellnessPlus", false, null), {});
+    assert.deepEqual(periodEndPatch(stacked, "clinic", true, incoming), {});
+  });
+
+  it("clears the date only when the headline plan is the one going away", () => {
+    assert.deepEqual(periodEndPatch(flags({ isPro: true, isWellnessPlus: true }), "pro", false, null), {
+      stripeCurrentPeriodEnd: null,
+    });
+    assert.deepEqual(periodEndPatch(flags({ isWellnessPlus: true }), "wellnessPlus", false, null), {
+      stripeCurrentPeriodEnd: null,
+    });
   });
 });

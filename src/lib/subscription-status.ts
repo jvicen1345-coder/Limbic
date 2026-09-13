@@ -1,4 +1,5 @@
 export type SubscriptionPlanKey = "free" | "pro" | "student" | "wellnessPlus" | "clinic";
+export type PaidPlanKey = Exclude<SubscriptionPlanKey, "free">;
 
 export type SubscriptionCardModel = {
   planKey: SubscriptionPlanKey;
@@ -52,12 +53,52 @@ export function periodEndFromStripeSubscription(subscription: {
   return new Date(unix * 1000);
 }
 
-function headlinePlan(user: SubscriptionFlags): { planKey: SubscriptionPlanKey; planName: string } {
+export function headlinePlan(user: SubscriptionFlags): { planKey: SubscriptionPlanKey; planName: string } {
   if (user.isPro) return { planKey: "pro", planName: "LimbicPRO" };
   if (user.studentTier !== "none") return { planKey: "student", planName: "Limbic Student" };
   if (user.isWellnessPlus) return { planKey: "wellnessPlus", planName: "Limbic Wellness+" };
   if (user.isClinicPro) return { planKey: "clinic", planName: "Clinic PRO" };
   return { planKey: "free", planName: "Free" };
+}
+
+/** Flags after applying one plan's active/cleared bit — same exclusivity as the webhook
+ *  (Pro and Student knock each other off when the incoming event is genuinely active). */
+export function nextSubscriptionFlags(
+  current: SubscriptionFlags,
+  eventPlan: PaidPlanKey,
+  active: boolean,
+): SubscriptionFlags {
+  if (eventPlan === "pro") {
+    return { ...current, isPro: active, studentTier: active ? "none" : current.studentTier };
+  }
+  if (eventPlan === "student") {
+    return {
+      ...current,
+      studentTier: active ? (current.studentTier !== "none" ? current.studentTier : "limbicStudent") : "none",
+      isPro: active ? false : current.isPro,
+    };
+  }
+  if (eventPlan === "wellnessPlus") return { ...current, isWellnessPlus: active };
+  return { ...current, isClinicPro: active };
+}
+
+/** `stripeCurrentPeriodEnd` is one column shared by wellness, clinic, pro, and student.
+ *  Only the headline plan may write or clear it — otherwise an add-on renewal would show
+ *  as the clinician plan's days left (last-write-wins). Empty object = leave the column. */
+export function periodEndPatch(
+  current: SubscriptionFlags,
+  eventPlan: PaidPlanKey,
+  active: boolean,
+  incoming: Date | null,
+): { stripeCurrentPeriodEnd: Date | null } | Record<string, never> {
+  const next = nextSubscriptionFlags(current, eventPlan, active);
+  if (active && headlinePlan(next).planKey === eventPlan) {
+    return { stripeCurrentPeriodEnd: incoming };
+  }
+  if (!active && headlinePlan(current).planKey === eventPlan) {
+    return { stripeCurrentPeriodEnd: null };
+  }
+  return {};
 }
 
 /** One-card summary for a reader who can stack Wellness+ or Clinic PRO on top of
@@ -68,7 +109,7 @@ export function subscriptionCardModel(user: SubscriptionFlags, now = new Date())
   const daysRemaining = daysRemainingFromPeriodEnd(user.stripeCurrentPeriodEnd, now);
 
   if (planKey === "free") {
-    return { planKey, planName, status: "Free plan", statusParts: ["Free plan"], daysRemaining: null };
+    return { planKey, planName, status: "", statusParts: [], daysRemaining: null };
   }
 
   const parts = ["Active"];

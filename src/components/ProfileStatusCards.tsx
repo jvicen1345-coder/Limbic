@@ -16,13 +16,15 @@ function ProfileSubscriptionCard({ model }: { model: SubscriptionCardModel }) {
     >
       <div className="card-kicker">Subscription</div>
       <div className="profile-status-value">{model.planName}</div>
-      <p className="profile-status-meta">
-        {model.statusParts.map((part) => (
-          <span key={part} className="profile-status-meta-part">
-            {part}
-          </span>
-        ))}
-      </p>
+      {model.statusParts.length > 0 ? (
+        <p className="profile-status-meta">
+          {model.statusParts.map((part) => (
+            <span key={part} className="profile-status-meta-part">
+              {part}
+            </span>
+          ))}
+        </p>
+      ) : null}
       <div className="profile-status-action">{action}</div>
     </Link>
   );
