@@ -358,6 +358,14 @@ should not be the same grant.
   every email, sign-in method and billing state — plus account deletion, paid-tier comps, and
   the co-admin controls themselves. A co-admin never sees it, whatever else they hold, and
   there is no grant that would open it. Don't add one back to `ADMIN_AREAS`.
+- **`foundingFunders` is the payment job, not a near-owner grant.** A co-admin with that
+  area sees the Founding Funder payment roster and the manual claim form on
+  `/founding-funders`. They do **not** see the all-users registered roster (name, email,
+  license, `isPro`) and `claimFoundingSpotAction` does **not** write `User.isPro` for them.
+  Owners still see the roster, and an owner claiming a spot for someone else still flips
+  `isPro` so Lifetime Access is immediate. Nobody can use the claim action to grant
+  themselves Pro. Comp a reader from `/admin/accounts` (`grantAccessAction`) if a co-admin
+  recorded a spot that still needs the paid tier.
 
 Three properties are worth knowing when changing this:
 
@@ -405,9 +413,11 @@ and its own webhook event.
   (`cleanupCanceledFoundingFunderCheckout`), so it doesn't sit around counting against the
   cap forever.
 - **Admin override**: `components/founding-funders/FoundingFundersRoster.tsx` (visible to
-  `FOUNDING_FUNDERS_ADMIN_EMAILS` accounts at the bottom of the page) lists every pending/
+  anyone with the `foundingFunders` area, at the bottom of the page) lists every pending/
   confirmed claim with a manual "Confirm Payment" button for when a webhook never fires, and
-  "Remove" to delete a stale claim and reopen the spot.
+  "Remove" to delete a stale claim and reopen the spot. The all-users registered roster
+  (`RegisteredUsersPanel`) and the `isPro` write on `claimFoundingSpotAction` stay
+  owner-only — see the Admin access section above.
 
 **Setup, in the Stripe Dashboard, before flipping `FOUNDING_FUNDERS_OPEN` to `true`:**
 

@@ -25,6 +25,11 @@
  * accounts on FOUNDING_FUNDERS_ADMIN_EMAILS (see isSiteAdmin in lib/admin.ts), so there is no
  * area to grant and nothing for a co-admin to see there. Adding it back here would make the
  * whole reader list one click away for anyone holding any area, so don't.
+ *
+ * foundingFunders is the leftover exception to watch on `/founding-funders`: a co-admin may
+ * work the payment roster and the manual claim form. The all-users registered roster and
+ * writing User.isPro stay owner-only (see isSiteAdmin on that page and
+ * shouldWriteIsProOnFoundingClaim). Do not fold those back into hasAdminArea("foundingFunders").
  */
 export const ADMIN_AREAS = [
   "licenses",
@@ -67,7 +72,8 @@ export const ADMIN_AREA_DESCRIPTIONS: Record<AdminArea, string> = {
   programs: "Maintain the DPT program directory and institutional outreach tracking.",
   movementLab: "Work the Movement Lab request queue.",
   connexion: "Triage Connexion home-visit requests and administer Safety Score assessments.",
-  foundingFunders: "See the registered-user roster and manually confirm Founding Funder payments.",
+  foundingFunders:
+    "See the Founding Funder payment roster and manually confirm payments. The registered-user list and Pro grants stay with the owner.",
 };
 
 /** Parses User.adminAreas (a JSON column, so untyped at the DB layer) back into a clean
