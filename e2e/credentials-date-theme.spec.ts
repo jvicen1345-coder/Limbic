@@ -66,8 +66,10 @@ test.describe("Credentials date field theme", () => {
     await expect(display).toHaveText("Not set");
   });
 
-  test("clear works on a phone viewport", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
+  test.describe("phone viewport", () => {
+    test.use({ hasTouch: true, viewport: { width: 390, height: 844 } });
+
+    test("clear works on a phone viewport", async ({ page }) => {
     const email = freshEmail("cred-date-touch");
     await signUpAndEnterApp(page, email);
     // Seed a saved date so this test is about the x control (including tap), not the picker.
@@ -85,5 +87,6 @@ test.describe("Credentials date field theme", () => {
     await setAppTheme(page, "dark");
     expect(await nativeColorScheme(page)).toBe("dark");
     expect(await displayBackground(page)).not.toBe("rgb(255, 255, 255)");
+    });
   });
 });
