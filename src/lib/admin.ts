@@ -1,14 +1,15 @@
 import "server-only";
 import { getCurrentUser, isAdminEmail, adminAreasForUser } from "@/lib/session";
+import { hasAdminAreaForUser } from "@/lib/admin-authz";
 import type { AdminArea } from "@/lib/admin-areas";
 
 /** Whether the signed-in reader is an OWNER admin — on the FOUNDING_FUNDERS_ADMIN_EMAILS
- *  allowlist (see lib/session.ts isAdminEmail for the actual list/matching logic — kept
- *  there, not here, so getCurrentUser() can check it without an import cycle back into this
- *  file). Owners hold every admin area, always, and are the only accounts that can hand an
- *  area to someone else (see grantAdminAreaAction in app/actions/admin.ts): co-admin access
- *  is data, and the ability to edit that data has to stay with an identity the app's own
- *  data can't grant, or a delegated admin could quietly promote themselves.
+ *  allowlist (see lib/admin-authz.ts isAdminEmail, re-exported from lib/session.ts so
+ *  getCurrentUser() can check it without an import cycle back into this file). Owners hold
+ *  every admin area, always, and are the only accounts that can hand an area to someone else
+ *  (see grantAdminAreaAction in app/actions/admin.ts): co-admin access is data, and the
+ *  ability to edit that data has to stay with an identity the app's own data can't grant, or
+ *  a delegated admin could quietly promote themselves.
  *
  *  Every other paid/gated feature in the app (isPro/studentTier/isWellnessPlus/student-only
  *  areas) also opens up for these accounts — see the overlay in lib/session.ts
@@ -44,7 +45,7 @@ export async function currentAdminAreas(): Promise<AdminArea[]> {
  *  makes it matter more, since now a real admin can be signed in and still be the wrong
  *  admin for this particular action. */
 export async function hasAdminArea(area: AdminArea): Promise<boolean> {
-  return (await currentAdminAreas()).includes(area);
+  return hasAdminAreaForUser(await getCurrentUser(), area);
 }
 
 /** Whether the reader holds any admin area at all — for the places that ask "is there an

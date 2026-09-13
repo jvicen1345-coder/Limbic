@@ -6,8 +6,12 @@ import { prisma } from "@/lib/db";
 import { nameFromEmail } from "@/lib/meta";
 import { hashPassword, verifyPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";
 import { TERMS_VERSION } from "@/lib/legal-terms";
-import { ADMIN_AREAS, parseAdminAreas, type AdminArea } from "@/lib/admin-areas";
+import { isAdminEmail, adminAreasForUser } from "@/lib/admin-authz";
 import type { User } from "@/generated/prisma/client";
+
+/** Re-exported from lib/admin-authz.ts so existing callers keep importing from here.
+ *  The implementations live there so node:test can load them without `server-only`. */
+export { isAdminEmail, adminAreasForUser };
 
 const COOKIE_NAME = "pt_news_session";
 const ONE_YEAR = 60 * 60 * 24 * 365;
@@ -53,44 +57,6 @@ async function readUserIdFromCookie(): Promise<string | null> {
   } catch {
     return null;
   }
-}
-
-/** Comma-separated sign-in emails allowed into every admin-only surface and, with the
- *  overlay below, every gated feature in the app — see lib/admin.ts isSiteAdmin, which
- *  delegates to isAdminEmail here rather than re-parsing this env var itself. Kept in this
- *  file (not lib/admin.ts) so getCurrentUser() can check it without importing lib/admin.ts,
- *  which itself imports getCurrentUser — that would be a circular import. */
-function adminAllowlist(): string[] {
-  return (process.env.FOUNDING_FUNDERS_ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-}
-
-/** Whether `email` is on the site-admin allowlist. Matched case-insensitively against
- *  either a General sign-in email or a PT license sign-in's email (see isSiteAdmin/
- *  hasStudentAccess below, and lib/admin.ts, which call this once per candidate email). */
-export function isAdminEmail(email: string | null | undefined): boolean {
-  if (!email) return false;
-  const allowed = adminAllowlist();
-  return allowed.length > 0 && allowed.includes(email.trim().toLowerCase());
-}
-
-/** Every admin area `user` can open — the whole list for an account on the allowlist above,
- *  whatever an owner has delegated to it otherwise (see User.adminAreas in schema.prisma and
- *  the Co-Admin controls on /admin/accounts), and an empty list for everyone else.
- *
- *  Pure and synchronous, taking the already-loaded row rather than reading the session
- *  itself, because app/(app)/layout.tsx needs this on the hot path for an account it has
- *  already fetched. lib/admin.ts wraps it for the far more common "I only have a request"
- *  case — call hasAdminArea() there rather than this unless you already hold the user.
- *
- *  Note what is deliberately absent: unlike the allowlist, a co-admin grant does NOT feed
- *  getCurrentUser()'s paid-tier overlay below. Delegating the license queue to someone is
- *  not a decision to hand them LimbicPro, and the two should stay separately grantable. */
-export function adminAreasForUser(user: { email: string | null; licenseEmail: string | null; adminAreas: unknown }): AdminArea[] {
-  if (isAdminEmail(user.email) || isAdminEmail(user.licenseEmail)) return [...ADMIN_AREAS];
-  return parseAdminAreas(user.adminAreas);
 }
 
 /** The three paid tiers a site admin can comp for a specific account without that account
