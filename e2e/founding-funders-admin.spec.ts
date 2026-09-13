@@ -17,5 +17,8 @@ test("a foundingFunders co-admin does not see the registered-user roster", async
   await page.goto("/founding-funders");
   await expect(page.getByText("Founding Funders, payment roster")).toBeVisible();
   await expect(page.getByText("Admin, claim a founding spot")).toBeVisible();
+  await expect(
+    page.getByText("This records the payment roster spot. An owner comps Pro / Lifetime Access from /admin/accounts."),
+  ).toBeVisible();
   await expect(page.getByText(/Admin, registered users/)).toHaveCount(0);
 });

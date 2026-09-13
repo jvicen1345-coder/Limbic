@@ -277,7 +277,7 @@ export default async function FoundingFundersPage({
       {isAdmin && (
         <>
           <FoundingFundersRoster entries={rosterEntries} confirmedCount={data.confirmedCount} pendingCount={data.pendingCount} />
-          <FoundingAdminPanel />
+          <FoundingAdminPanel isOwner={isOwner} />
           {isOwner && <RegisteredUsersPanel users={registeredUsers} />}
         </>
       )}

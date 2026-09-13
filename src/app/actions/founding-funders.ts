@@ -76,6 +76,8 @@ export interface ClaimSpotResult {
   ok: boolean;
   error?: string;
   claimedCount: number;
+  /** True only when this claim also wrote User.isPro (owner claiming someone else). */
+  grantedPro?: boolean;
 }
 
 /** Admin-only, triggered manually once an out-of-band (e.g. Zelle) payment is confirmed —
@@ -150,7 +152,7 @@ export async function claimFoundingSpotAction(input: {
   }
 
   revalidatePath("/founding-funders");
-  return { ok: true, claimedCount: currentCount + 1 };
+  return { ok: true, claimedCount: currentCount + 1, grantedPro: writeIsPro };
 }
 
 export interface CreateFoundingFunderCheckoutResult {

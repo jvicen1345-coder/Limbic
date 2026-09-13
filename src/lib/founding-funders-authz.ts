@@ -21,3 +21,22 @@ export function shouldWriteIsProOnFoundingClaim(input: {
 }): boolean {
   return input.callerIsOwner && !input.targetIsCaller;
 }
+
+/** Success line after claimFoundingSpotAction. Spot count alone hid that a co-admin
+ *  (or an owner self-claim) did not grant Lifetime Access. */
+export function foundingClaimSuccessCopy(input: {
+  claimedCount: number;
+  totalSlots: number;
+  grantedPro: boolean;
+}): string {
+  const filled = `Claimed, ${input.claimedCount} of ${input.totalSlots} spots filled.`;
+  if (input.grantedPro) {
+    return `${filled} Lifetime Access granted.`;
+  }
+  return `${filled} Lifetime Access was not granted. An owner can comp Pro from /admin/accounts.`;
+}
+
+/** Shown on the claim form for a foundingFunders co-admin. Owners already grant Pro
+ *  when claiming someone else, so they do not need this. */
+export const FOUNDING_CLAIM_COADMIN_NOTE =
+  "This records the payment roster spot. An owner comps Pro / Lifetime Access from /admin/accounts.";

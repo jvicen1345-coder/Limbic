@@ -3,7 +3,11 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, it } from "node:test";
 import { ADMIN_AREA_DESCRIPTIONS } from "./admin-areas";
-import { shouldWriteIsProOnFoundingClaim } from "./founding-funders-authz";
+import {
+  FOUNDING_CLAIM_COADMIN_NOTE,
+  foundingClaimSuccessCopy,
+  shouldWriteIsProOnFoundingClaim,
+} from "./founding-funders-authz";
 
 /**
  * Founding Funders co-admin blast radius (#497).
@@ -26,6 +30,23 @@ describe("shouldWriteIsProOnFoundingClaim (#497)", () => {
   it("never writes Pro for a co-admin, including claiming another reader", () => {
     assert.equal(shouldWriteIsProOnFoundingClaim({ callerIsOwner: false, targetIsCaller: false }), false);
     assert.equal(shouldWriteIsProOnFoundingClaim({ callerIsOwner: false, targetIsCaller: true }), false);
+  });
+});
+
+describe("foundingClaimSuccessCopy (#497 UX)", () => {
+  it("says Lifetime Access was granted when the claim wrote isPro", () => {
+    assert.equal(
+      foundingClaimSuccessCopy({ claimedCount: 3, totalSlots: 25, grantedPro: true }),
+      "Claimed, 3 of 25 spots filled. Lifetime Access granted.",
+    );
+  });
+
+  it("says Lifetime Access was not granted and points at /admin/accounts", () => {
+    const copy = foundingClaimSuccessCopy({ claimedCount: 3, totalSlots: 25, grantedPro: false });
+    assert.match(copy, /Claimed, 3 of 25 spots filled\./);
+    assert.match(copy, /Lifetime Access was not granted/);
+    assert.match(copy, /\/admin\/accounts/);
+    assert.doesNotMatch(copy, /Lifetime Access granted\./);
   });
 });
 
@@ -76,6 +97,10 @@ describe("claimFoundingSpotAction source-gates (#497)", () => {
     const write = body.indexOf("isPro: true");
     assert.ok(guard > -1 && write > guard, "isPro write is not behind writeIsPro");
   });
+
+  it("returns grantedPro so the success line can say whether Lifetime Access flipped", () => {
+    assert.match(body, /grantedPro:\s*writeIsPro/);
+  });
 });
 
 describe("founding-funders page roster source-gates (#497)", () => {
@@ -93,5 +118,26 @@ describe("founding-funders page roster source-gates (#497)", () => {
 
   it("renders RegisteredUsersPanel only for an owner", () => {
     assert.match(page, /isOwner && <RegisteredUsersPanel/);
+  });
+
+  it("passes isOwner into the claim form so the co-admin note is role-aware", () => {
+    assert.match(page, /<FoundingAdminPanel isOwner=\{isOwner\}/);
+  });
+});
+
+describe("FoundingAdminPanel claim copy (#497 UX)", () => {
+  const panel = readFileSync(path.join(process.cwd(), "src/components/founding-funders/FoundingAdminPanel.tsx"), "utf8");
+
+  it("builds success copy from grantedPro instead of the spot-count line alone", () => {
+    assert.match(panel, /foundingClaimSuccessCopy/);
+    assert.match(panel, /grantedPro:\s*result\.grantedPro === true/);
+    assert.doesNotMatch(panel, /Claimed, \$\{result\.claimedCount\} of 25 spots filled\./);
+  });
+
+  it("shows the co-admin note that Pro comps go through /admin/accounts", () => {
+    assert.match(panel, /FOUNDING_CLAIM_COADMIN_NOTE/);
+    assert.match(panel, /!isOwner && <p className="ff-admin-note">/);
+    assert.match(FOUNDING_CLAIM_COADMIN_NOTE, /\/admin\/accounts/);
+    assert.match(FOUNDING_CLAIM_COADMIN_NOTE, /Pro/);
   });
 });
