@@ -39,9 +39,21 @@ describe("foundingFunders chip copy (#497)", () => {
 });
 
 function actionBody(source: string, name: string): string {
-  const match = source.match(new RegExp(`export async function ${name}\\([\\s\\S]*?\\n\\}`));
-  assert.ok(match, `${name} not found — did the action move?`);
-  return match[0];
+  const start = source.indexOf(`export async function ${name}`);
+  assert.ok(start > -1, `${name} not found — did the action move?`);
+  // Signature may include an inline object type (`input: { ... }`), so the first `{`
+  // is not the body. The body's `{` is the one after the return-type `):`.
+  const bodyOpen = source.indexOf("{", source.indexOf("):", start));
+  assert.ok(bodyOpen > start, `${name} has no function body`);
+  let depth = 0;
+  for (let i = bodyOpen; i < source.length; i++) {
+    if (source[i] === "{") depth++;
+    else if (source[i] === "}") {
+      depth--;
+      if (depth === 0) return source.slice(start, i + 1);
+    }
+  }
+  assert.fail(`${name} body never closed`);
 }
 
 describe("claimFoundingSpotAction source-gates (#497)", () => {
