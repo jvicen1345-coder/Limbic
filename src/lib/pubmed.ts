@@ -63,10 +63,13 @@ const DEFAULT_QUERY =
   '("Physical Therapy Modalities"[MeSH] OR "Rehabilitation"[MeSH] OR "Physical Therapy Specialty"[MeSH]) ' +
   'AND (randomized controlled trial[Publication Type] OR "systematic review"[Publication Type] OR ' +
   '"meta analysis"[Publication Type] OR "clinical trial"[Publication Type] OR "cohort studies"[MeSH])';
-// Was 12 — the query above comfortably supports far more without reaching for older or
-// less-relevant results (see its own comment), and Home's Research tab / hero pool were
-// visibly thin on a query this narrow.
-const DEFAULT_LIMIT = 30;
+// Was 12, then 30 — the query above comfortably supports far more without reaching for
+// older or less-relevant results (see its own comment): 126,974 total matches as of this
+// change, so even 60 is a small slice of current, on-topic supply, not a stretch into
+// stale backfill. A deeper pool gives Refresh more genuinely new articles to rotate in
+// before it has to repeat anything (see lib/home-grid-rotation.ts), which is the main
+// lever for "more research on screen" — the query itself was never the bottleneck.
+const DEFAULT_LIMIT = 60;
 
 const xmlParser = new XMLParser({ ignoreAttributes: false });
 
