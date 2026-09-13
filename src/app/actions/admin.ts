@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { isSiteAdmin } from "@/lib/admin";
-import { getCurrentUser, compedAreas, isAdminEmail, type GrantArea } from "@/lib/session";
-import { ADMIN_AREAS, parseAdminAreas, type AdminArea } from "@/lib/admin-areas";
+import { getCurrentUser, compedAreas, type GrantArea } from "@/lib/session";
+import { evaluateOwnerAdminAreaTarget, unknownAdminAreaError } from "@/lib/admin-authz";
+import type { AdminArea } from "@/lib/admin-areas";
 
 export interface DeleteUserResult {
   ok: boolean;
@@ -111,25 +112,16 @@ export interface AdminAreaResult {
  * only, see lib/session.ts) rather than from anything baked into their session cookie.
  */
 async function requireOwnerForTarget(userId: string): Promise<{ error?: string; current?: AdminArea[] }> {
-  if (!(await isSiteAdmin())) return { error: "Only a full admin can change co-admin access." };
+  // Decision table lives in evaluateOwnerAdminAreaTarget (lib/admin-authz.ts) so node:test
+  // can cover it without mocking Prisma or the session — see admin-authz.test.ts / #500.
+  const callerIsOwner = await isSiteAdmin();
+  if (!callerIsOwner) return evaluateOwnerAdminAreaTarget({ callerIsOwner: false, target: null });
 
   const target = await prisma.user.findUnique({
     where: { id: userId },
     select: { adminAreas: true, isGuest: true, email: true, licenseEmail: true },
   });
-  if (!target) return { error: "That account no longer exists." };
-  // A guest is an unauthenticated throwaway session (see User.isGuest in schema.prisma), not
-  // a person who can be held responsible for an admin area — and the row is liable to be
-  // cleaned up out from under the grant besides.
-  if (target.isGuest) return { error: "Guest accounts can't be given admin access." };
-  // Nothing to store for an owner: they hold every area through the env allowlist already,
-  // and a row of half-checked chips next to that would read like the allowlist had been
-  // narrowed when it hadn't. Refusing says so out loud instead.
-  if (isAdminEmail(target.email) || isAdminEmail(target.licenseEmail)) {
-    return { error: "That account is already a full admin through the environment allowlist." };
-  }
-
-  return { current: parseAdminAreas(target.adminAreas) };
+  return evaluateOwnerAdminAreaTarget({ callerIsOwner: true, target });
 }
 
 /** Owner-only — gives one account one admin area (see requireOwnerForTarget above for why
@@ -137,8 +129,9 @@ async function requireOwnerForTarget(userId: string): Promise<{ error?: string; 
  *  account already holds is a no-op that still reports the current set. */
 export async function grantAdminAreaAction(userId: string, area: AdminArea): Promise<AdminAreaResult> {
   // `area` arrives from a client component, so it is only AdminArea by declaration until
-  // this line checks it (see lib/admin-areas.ts).
-  if (!ADMIN_AREAS.includes(area)) return { ok: false, error: "Unknown admin area." };
+  // this line checks it (see lib/admin-authz.ts unknownAdminAreaError).
+  const unknown = unknownAdminAreaError(area);
+  if (unknown) return { ok: false, error: unknown };
 
   const { error, current } = await requireOwnerForTarget(userId);
   if (error || !current) return { ok: false, error };
@@ -158,8 +151,9 @@ export async function grantAdminAreaAction(userId: string, area: AdminArea): Pro
  *  someone; there is no separate "delete co-admin" concept to get out of sync. */
 export async function revokeAdminAreaAction(userId: string, area: AdminArea): Promise<AdminAreaResult> {
   // `area` arrives from a client component, so it is only AdminArea by declaration until
-  // this line checks it (see lib/admin-areas.ts).
-  if (!ADMIN_AREAS.includes(area)) return { ok: false, error: "Unknown admin area." };
+  // this line checks it (see lib/admin-authz.ts unknownAdminAreaError).
+  const unknown = unknownAdminAreaError(area);
+  if (unknown) return { ok: false, error: unknown };
 
   const { error, current } = await requireOwnerForTarget(userId);
   if (error || !current) return { ok: false, error };

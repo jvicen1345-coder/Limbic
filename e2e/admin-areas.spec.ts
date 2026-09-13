@@ -17,7 +17,9 @@ import { freshEmail, setUserColumn, signUpAndEnterApp } from "./helpers";
  * var CI deliberately leaves unset, so that every admin surface stays closed in the test
  * environment. Co-admin access is pure database state, so a co-admin can be tested without
  * one, and the owner-only appointment path keeps its own server-side check (see
- * requireOwnerForTarget in app/actions/admin.ts).
+ * requireOwnerForTarget in app/actions/admin.ts). Grant/revoke and the owner-gate
+ * decision table are covered in src/lib/admin-authz.test.ts (#500). The copyright
+ * co-admin / owner-suspend case is #496, not this file.
  *
  * One test, one account, one database write, for the reason spelled out at the top of
  * appraisals.spec.ts: extra sign-ups in a `fullyParallel` suite contend for a single SQLite
@@ -54,4 +56,17 @@ test("a co-admin gets exactly the admin areas they were granted", async ({ page 
   await expect(page.getByRole("link", { name: "Accounts" })).toHaveCount(0);
   await page.goto("/admin/accounts");
   await expect(page).toHaveURL(/\/home$/);
+
+  // #500: holding every delegable area is still not owner. Nexus is allowlist-only
+  // (lib/nexus-visibility.ts), so this account must see the same absence as an ordinary
+  // reader — same assertions as e2e/nexus-hidden.spec.ts. The copyright-co-admin /
+  // owner-suspend regression lives on #496, not here.
+  for (const path of ["/home", "/profile"]) {
+    await page.goto(path);
+    await expect(page.locator("body")).toBeVisible();
+    await expect(page.getByText(/nexus/i), `"${path}" mentions Nexus for a full-area co-admin`).toHaveCount(0);
+    await expect(page.locator('a[href^="/nexus"]'), `"${path}" links to Nexus for a full-area co-admin`).toHaveCount(0);
+  }
+  const nexus = await page.request.get("/nexus");
+  expect(nexus.status(), "/nexus was reachable for a full-area co-admin").not.toBe(200);
 });
