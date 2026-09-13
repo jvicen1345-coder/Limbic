@@ -107,6 +107,7 @@ export function HomeFeed({
       const panel: HomeFeedPanel = {
         heroPool: selection.heroPool,
         gridArticles: selection.gridArticles,
+        gridBackfill: selection.gridBackfill,
         gridFingerprints: selection.gridArticles.map((a) => titleFingerprint(a.title)),
         emptyMessage,
       };
