@@ -7,7 +7,7 @@ import type { Article } from "@/lib/types";
 const TOPIC_KEYWORDS = [
   "acl", "rotator cuff", "plantar fasciitis", "knee", "shoulder", "hip", "spine",
   "low back", "back pain", "neck", "ankle", "elbow", "wrist", "vestibular", "stroke",
-  "balance", "gait", "concussion", "sports injury", "post-surgical",
+  "balance", "gait", "concussion", "sports injury", "post-surgical", "running",
 ];
 
 export function topicPhotoHints(article: Article): string[] {

@@ -318,5 +318,51 @@ export const BUNDLED_TOPIC_PHOTOS: BundledTopicPhoto[] = [
     ],
     "credit": "U.S. Navy photo by Mass Communication Specialist Seaman Joseph A. Boomhower — Public domain, via Wikimedia Commons",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:US_Navy_110613-N-YM336-079_Lynn_Boulanger,_an_occupational_therapy_assistant_and_certified_hand_therapist,_uses_mirror_therapy_to_help_address_phan.jpg"
+  },
+  {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/Home_Stretch_jog.jpg/1280px-Home_Stretch_jog.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "width": 1280,
+    "height": 853,
+    "tags": [
+      "running",
+      "sports",
+      "general"
+    ],
+    "credit": "Jeff Drongowski from Los Angeles, CA, USA — CC BY 2.0, via Wikimedia Commons",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Home_Stretch_jog.jpg"
+  },
+  {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/North_Shore_Scenic_Drive_-_Jogging_the_Duluth_Lakewalk_in_April_-_NARA_-_7720672.jpg/1280px-North_Shore_Scenic_Drive_-_Jogging_the_Duluth_Lakewalk_in_April_-_NARA_-_7720672.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "width": 1280,
+    "height": 851,
+    "tags": [
+      "running",
+      "gait",
+      "general"
+    ],
+    "credit": "A. E. Crane, U.S. Department of Transportation — Public domain, via Wikimedia Commons",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:North_Shore_Scenic_Drive_-_Jogging_the_Duluth_Lakewalk_in_April_-_NARA_-_7720672.jpg"
+  },
+  {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Silhouette_of_a_jogger_under_a_pink_sunrise.jpg/1280px-Silhouette_of_a_jogger_under_a_pink_sunrise.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "width": 1280,
+    "height": 853,
+    "tags": [
+      "running",
+      "general"
+    ],
+    "credit": "bigwavephoto — CC BY-SA 4.0, via Wikimedia Commons",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Silhouette_of_a_jogger_under_a_pink_sunrise.jpg"
+  },
+  {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/Silhouette_of_a_woman_jogging_past_a_life_guard_tower_at_sunrise.jpg/1280px-Silhouette_of_a_woman_jogging_past_a_life_guard_tower_at_sunrise.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "width": 1280,
+    "height": 853,
+    "tags": [
+      "running",
+      "general"
+    ],
+    "credit": "bigwavephoto — CC BY-SA 4.0, via Wikimedia Commons",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Silhouette_of_a_woman_jogging_past_a_life_guard_tower_at_sunrise.jpg"
   }
 ];
