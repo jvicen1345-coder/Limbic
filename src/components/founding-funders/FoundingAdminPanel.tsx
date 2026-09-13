@@ -3,10 +3,10 @@
 import { useState, useTransition, type FormEvent } from "react";
 import { claimFoundingSpotAction } from "@/app/actions/founding-funders";
 
-/** Only rendered for accounts on the FOUNDING_FUNDERS_ADMIN_EMAILS allowlist (see
- *  app/founding-funders/page.tsx, lib/admin.ts isSiteAdmin) — the manual "mark this Zelle
- *  payment as confirmed" tool until a real payment flow exists. Deliberately styled plain
- *  (see .ff-admin in src/styles), not part of the letter's visual language. */
+/** Rendered for anyone with foundingFunders (see app/founding-funders/page.tsx). The form
+ *  records a founding spot; writing isPro is owner-only and never self (#497,
+ *  claimFoundingSpotAction). Deliberately styled plain (see .ff-admin in src/styles), not
+ *  part of the letter's visual language. */
 export function FoundingAdminPanel() {
   const [identifier, setIdentifier] = useState("");
   const [displayName, setDisplayName] = useState("");
