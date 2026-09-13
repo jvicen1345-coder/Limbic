@@ -252,7 +252,6 @@ html[data-theme="dark"] .date-field-native { color-scheme: dark; }
   margin: 0;
 }
 
-<<<<<<< HEAD
 /* /profile/credentials card stack (#495) — one column rhythm so Professional Dates,
    Professional Credentials, Force Lab, and License & CE share padding (from .card),
    kicker-to-content gap (from .card), and inter-card spacing. The 560px cap on
@@ -372,15 +371,21 @@ html[data-theme="dark"] .date-field-native { color-scheme: dark; }
   background: var(--color-accent-2);
 }
 
-/* Profile header Role / Theme / Subscription cards (#493). Desktop three-up lives on
-   .profile-header-grid in onboarding.css (auto-fit from 1024px); this sheet owns the
-   stacked mobile row and the card-as-link chrome so a third skeleton/card does not sit
-   on a half-width leftover. */
+/* Profile header Role / Theme / Subscription cards (#493). Mobile stays one column;
+   desktop is an explicit 3-up in this same sheet so the stacked rule cannot outrank
+   onboarding.css's auto-fit (sheet order is not guaranteed). minmax(0, 1fr) rather
+   than auto-fit/240px so a sidebar-narrowed main column still keeps all three across. */
 .profile-header-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 14px;
   margin-bottom: 18px;
+}
+@media (min-width: 1024px) {
+  .profile-header-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
 }
 .profile-status-card {
   text-decoration: none;

@@ -27,6 +27,20 @@ test.describe("Profile status cards", () => {
     await expect(page.getByText("Reading activity")).toHaveCount(0);
     await expect(page.getByText("Limbic Games activity")).toHaveCount(0);
     await expect(page.getByText("Health and Wellness activity")).toHaveCount(0);
+
+    const cards = page.locator(".profile-status-card");
+    await expect(cards).toHaveCount(3);
+    const boxes = await Promise.all(
+      [0, 1, 2].map(async (i) => {
+        const box = await cards.nth(i).boundingBox();
+        if (!box) throw new Error(`header card ${i} has no box`);
+        return box;
+      }),
+    );
+    expect(boxes[1].y, "Theme should sit on the same desktop row as Role").toBeCloseTo(boxes[0].y, 1);
+    expect(boxes[2].y, "Subscription should sit on the same desktop row as Role").toBeCloseTo(boxes[0].y, 1);
+    expect(boxes[1].x).toBeGreaterThan(boxes[0].x);
+    expect(boxes[2].x).toBeGreaterThan(boxes[1].x);
   });
 
   test("Role Edit reaches the Role section; Theme Change opens Theme; Subscription goes to membership", async ({
