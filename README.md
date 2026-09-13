@@ -349,7 +349,7 @@ should not be the same grant.
   surface stays closed and nobody can be appointed.
 - **Co-admins** are ordinary accounts an owner grants specific *areas* to from the Co-Admin
   column on `/admin/accounts`. The areas are one per admin screen — License Queue,
-  Suggestions, Copyright Notices, Appraisals, Boards Tagging, Programs, Movement Lab
+  Suggestions, Copyright Notices, Appraisals, Boards Question Tagging, Programs, Movement Lab
   Requests, Connexion, Founding Funders — listed in
   [`src/lib/admin-areas.ts`](src/lib/admin-areas.ts) with a description of what each one
   opens up. A co-admin's sidebar lists exactly the screens they hold, and any other

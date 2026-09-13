@@ -37,7 +37,7 @@ import {
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { StudentVerifiedBadge } from "@/components/StudentVerifiedBadge";
 import { NavLink, NavToggle, FoundingFundersNavLink } from "./nav-items";
-import type { AdminArea } from "@/lib/admin-areas";
+import { ADMIN_AREA_LABELS, type AdminArea } from "@/lib/admin-areas";
 
 /** The eight expandable sidebar sections — see the accordion state in NavContent below. */
 type SidebarSection = "nexus" | "pro" | "connexion" | "student" | "wellness" | "saved" | "articles" | "admin";
@@ -409,7 +409,7 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
                 <NavLink
                   href="/admin/boards-tagging"
                   icon={<GraduationCapIcon />}
-                  label="Boards Question Tagging"
+                  label={ADMIN_AREA_LABELS.boardsTagging}
                   bold={false}
                   onNavigate={onNavigate}
                 />
