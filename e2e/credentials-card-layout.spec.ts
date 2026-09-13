@@ -85,7 +85,7 @@ test.describe("Credentials card layout", () => {
     await grantLimbicStudent(email);
     await openCredentials(page);
 
-    await expect(page.getByText("DPT Student")).toBeVisible();
+    await expect(page.locator(".license-badge--student")).toHaveText("DPT Student");
     await expect(page.getByRole("button", { name: "Add License" })).toHaveCount(0);
     await expect(page.getByText(/Once your license is verified/)).toBeVisible();
     await expect(page.locator(".license-ce-header")).toHaveCount(0);
@@ -131,8 +131,8 @@ test.describe("Credentials card layout", () => {
     await openCredentials(page);
 
     await expect(page.locator(".license-row")).toHaveCount(2);
-    await expect(page.getByText("On file")).toBeVisible();
-    await expect(page.getByText("Pending")).toBeVisible();
+    await expect(page.locator(".license-badge--verified")).toHaveText("On file");
+    await expect(page.locator(".license-badge--pending")).toHaveText("Pending");
     await expect(page.locator(".license-ce-number")).toHaveText(number);
     await expect(page.locator(".license-ce-bar-fill")).toBeVisible();
     await expect(page.locator(".license-ce-cat-bar-fill")).toHaveCount(2);
