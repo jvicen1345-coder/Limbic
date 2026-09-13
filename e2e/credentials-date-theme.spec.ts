@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { freshEmail, signUpAndEnterApp } from "./helpers";
+import { freshEmail, setUserColumn, signUpAndEnterApp } from "./helpers";
 
 async function setAppTheme(page: Page, theme: "light" | "dark") {
   await page.evaluate((next) => {
@@ -68,14 +68,18 @@ test.describe("Credentials date field theme", () => {
 
   test("clear works on a phone viewport", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await signUpAndEnterApp(page, freshEmail("cred-date-touch"));
+    const email = freshEmail("cred-date-touch");
+    await signUpAndEnterApp(page, email);
+    // Seed a saved date so this test is about the x control (including tap), not the picker.
+    await setUserColumn(email, "ceuDeadline", "2026-11-01T12:00:00.000Z");
     await page.goto("/profile/credentials");
     await expect(page.getByText("Professional dates")).toBeVisible();
 
-    const display = page.locator(".date-field-display").first();
-    await setNativeDate(page, "2026-11-01");
+    const display = page.locator(".date-field-wrap").first().locator(".date-field-display");
     await expect(display).toHaveText("Nov 1, 2026");
-    await page.getByRole("button", { name: "Clear CEU deadline" }).tap();
+    const clear = page.getByRole("button", { name: "Clear CEU deadline" });
+    await clear.scrollIntoViewIfNeeded();
+    await clear.tap();
     await expect(display).toHaveText("Not set");
 
     await setAppTheme(page, "dark");
