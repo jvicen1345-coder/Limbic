@@ -64,6 +64,10 @@ describe("search filter params", () => {
     });
   });
 
+  it("accepts the cardiopulm specialty added on main", () => {
+    assert.equal(parseSearchQuery({ specialty: "cardiopulm" }).specialty, "cardiopulm");
+  });
+
   it("omits default filters from the href so existing deep links stay short", () => {
     assert.equal(searchArticlesHref({ type: "all", specialty: "all", q: "  ", page: 1 }), "/search");
     assert.equal(
