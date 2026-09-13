@@ -22,10 +22,17 @@ effect on the website in terms a reviewer or product owner can understand.
   When the fleet has cleared a PR for merge — required reviewers, mergeable, and
   Typecheck/lint, Playwright, and Vercel green — Limbic Core posts one GitHub PR
   comment via authenticated `gh` starting with the exact text `Fleet CLEAR`,
-  listing UX / PR Review / Security as CLEAR or N/A. Do not comment from green
-  CI alone. Review bots stay chat-only (no GitHub review comments). JV
-  self-merges are not expected to have this stamp before merge; a merged
-  fleet-authored PR without `Fleet CLEAR` was not fleet-cleared.
+  listing UX / PR Review / Security as CLEAR or N/A. That comment also includes
+  a Nits section: each open nit is one line with source (PR Review / UX /
+  Security) and the finding, or `Nits: none`. HOLD still blocks the stamp; nits
+  do not. Do not comment from green CI alone. Review bots stay chat-only (no
+  GitHub review comments). JV self-merges are not expected to have this stamp
+  before merge; a merged fleet-authored PR without `Fleet CLEAR` was not
+  fleet-cleared. After a later push, Core posts a follow-up comment starting
+  with `Nits resolved` when every listed nit is fixed, or `Nits remaining`
+  listing what was not fixed (and any new nits). Unfixed nits stay on the PR as
+  future-risk notes. Do not file a GitHub issue for a leftover nit unless it is
+  now a real bug.
 
 **Observed:** collaborator JV (`jvicen1345-coder`) does not have the Grok Bot fleet
 and merges their own PRs on GitHub without pre-merge fleet review. After those
