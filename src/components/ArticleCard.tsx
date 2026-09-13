@@ -6,7 +6,33 @@ import { ArticleImage } from "@/components/ArticleImage";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { OpenAccessPill } from "@/components/OpenAccessPill";
 import { CheckIcon } from "@/components/icons";
-import type { DecoratedArticle } from "@/lib/feed";
+import type { Article, ArticleType, Specialty } from "@/lib/types";
+
+/** Display + Save-snapshot fields a feed card actually reads. DecoratedArticle satisfies
+ *  this; Search ships a trimmed copy so the Home/Search client bundle does not need the
+ *  unused body/abstract/review blobs. */
+export type ArticleCardModel = {
+  id: string;
+  type: ArticleType;
+  specialty: Specialty;
+  title: string;
+  source: string;
+  sourceUrl?: string;
+  date: string;
+  readMins: number;
+  summary: string;
+  tags: string[];
+  image?: string;
+  evidenceLevel?: Article["evidenceLevel"];
+  doi?: string;
+  typeLabel: string;
+  typeTagClass: string;
+  specialtyLabel: string;
+  dateLabel: string;
+  saved: boolean;
+  isNew?: boolean;
+  isRead?: boolean;
+};
 
 /** Every source already tags an article with its specialty and type label as the first two
  *  entries (see lib/pubmed.ts, lib/news-live.ts) — both already shown elsewhere on the card
@@ -14,7 +40,7 @@ import type { DecoratedArticle } from "@/lib/feed";
  *  noise. What's left after excluding those is the genuinely new context: the specific
  *  matched keywords (e.g. "ACL", "Medicare", "FDA Clearance") that classify() found. Capped
  *  at 2 so a keyword-heavy article doesn't overrun the card. */
-function extraContextTags(article: DecoratedArticle): string[] {
+function extraContextTags(article: ArticleCardModel): string[] {
   const shown = new Set([article.specialtyLabel, article.typeLabel]);
   return article.tags.filter((t) => !shown.has(t)).slice(0, 2);
 }
@@ -24,7 +50,7 @@ function extraContextTags(article: DecoratedArticle): string[] {
  * Home can SSR card HTML without useRouter; SaveButton / OpenAccessPill sit above the
  * stretch. Remains a Client Component because SearchScreen imports it directly.
  */
-export function ArticleCard({ article }: { article: DecoratedArticle }) {
+export function ArticleCard({ article }: { article: ArticleCardModel }) {
   const extraTags = extraContextTags(article);
   const href = `/article/${article.id}`;
   return (
@@ -68,7 +94,7 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
 /** The Home hero: HeroFeed only ever hands this an image-having article (see
  *  HomeFeed's heroPool). When there's an image, title/source/evidence sit on the photo
  *  itself; the space below stays to the summary. */
-export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
+export function HeroArticleCard({ article }: { article: ArticleCardModel }) {
   const href = `/article/${article.id}`;
   if (!article.image) {
     return (

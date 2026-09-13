@@ -1,0 +1,11 @@
+/* Search-only pending treatment. Chips and the query box update local / URL
+   state before the server page of cards arrives — dim the previous set so it
+   is not read as the new filter, especially on a slow mobile fetch. */
+.search-results--pending {
+  opacity: 0.45;
+  pointer-events: none;
+  transition: opacity 0.16s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .search-results--pending { transition: none; }
+}
