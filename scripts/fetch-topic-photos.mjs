@@ -71,6 +71,16 @@ const TITLES = [
   { title: "File:Spangdahlem physical therapy rehabilitates Airmen after injury (7270864).jpg", tags: ["shoulder", "neck", "general"] },
   { title: "File:Pacific Partnership 2024-1- Physical Therapy Clinic (8103289).jpg", tags: ["geriatric", "general"] },
   { title: "File:US Navy 110613-N-YM336-079 Lynn Boulanger, an occupational therapy assistant and certified hand therapist, uses mirror therapy to help address phan.jpg", tags: ["post-surgical", "gait"] },
+  // Added to broaden general health/wellness/exercise coverage (running, working out) beyond
+  // clinical PT settings — see the pool-variety discussion that added the "running" keyword to
+  // src/lib/topic-photos.ts's TOPIC_KEYWORDS. A real, clinical cardiac/pulmonary rehab photo
+  // under a free license wasn't findable on Commons at curation time (only candidate found was
+  // a portrait phone photo, rejected by MAX_ASPECT below) — these are general wellness/running
+  // photos instead, not a substitute for that specific gap.
+  { title: "File:Home Stretch jog.jpg", tags: ["running", "sports", "general"] },
+  { title: "File:North Shore Scenic Drive - Jogging the Duluth Lakewalk in April - NARA - 7720672.jpg", tags: ["running", "gait", "general"] },
+  { title: "File:Silhouette of a jogger under a pink sunrise.jpg", tags: ["running", "general"] },
+  { title: "File:Silhouette of a woman jogging past a life guard tower at sunrise.jpg", tags: ["running", "general"] },
 ];
 
 function stripHtml(s) {
