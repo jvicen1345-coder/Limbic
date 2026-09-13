@@ -7,6 +7,7 @@ type CollapsibleCardProps = {
     style?: React.CSSProperties;
     /** Native exclusive `<details>` group. Omit for standalone cards. */
     name?: string;
+    id?: string;
 };
 
 export function CollapsibleCard({
@@ -15,9 +16,10 @@ export function CollapsibleCard({
     className = "",
     style,
     name,
+    id,
 }: CollapsibleCardProps) {
     return (
-    <details className={`collapsible-card card elev-sm ${className}`} style={style} name={name}>
+    <details id={id} className={`collapsible-card card elev-sm ${className}`} style={style} name={name}>
         <summary className="collapsible-card-summary">
             <span className="collapsible-card-title">{title}</span>
             <ChevronDownIcon size={18} className="collapsible-card-chevron" aria-hidden="true" />

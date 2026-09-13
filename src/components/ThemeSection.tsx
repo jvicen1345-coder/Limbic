@@ -51,7 +51,7 @@ function ThemePreview({ theme }: { theme: "light" | "dark" }) {
   );
 }
 
-/** Profile's Appearance section — three Light/Dark/System cards plus a live preview that
+/** Profile's Theme section — three Light/Dark/System cards plus a live preview that
  *  updates instantly on click (no save needed to see it — see ThemePreview above), and a
  *  Save button that commits the selection to both the database and this device's
  *  localStorage together (see lib/theme-client.ts applyThemePreferenceLocally). */
@@ -67,7 +67,7 @@ export function ThemeSection({ initialTheme }: { initialTheme: ThemePreference }
 
   return (
     <div className="card elev-sm" style={{ marginBottom: 18 }}>
-      <div className="card-kicker">Appearance</div>
+      <div className="card-kicker">Theme</div>
 
       <div className="theme-cards">
         {THEME_OPTIONS.map((opt) => (
