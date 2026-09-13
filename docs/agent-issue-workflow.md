@@ -6,15 +6,17 @@ effect on the website in terms a reviewer or product owner can understand.
 
 ## Standing roles
 
-- **Limbic Triage (Grok Bot)** runs step 1 for unclaimed issues: compare the issue title,
-  body, and acceptance criteria to `origin/main` via authenticated `gh`; refresh title,
-  body, scope, links, labels, and acceptance criteria; then comment that the issue is
-  ready for Intake. Issue writes use `gh` as Evicencio-05 (push + triage). Cloud agents
-  and the GitHub connector PAT receive 403 on issue writes. Do not tell implementers to
-  edit issues themselves.
-- **Limbic Intake** claims up to two ready issues and implements them via Cursor
-  CloudAgent on environment `limbic-env`, following the rest of this workflow and
-  `COORDINATION.md`.
+- **Limbic Intake** claims first (up to two issues). It must not launch CloudAgent
+  until **Limbic Triage** says the claimed issue is current. After that, it
+  implements via Cursor CloudAgent on environment `limbic-env`, following the
+  rest of this workflow and `COORDINATION.md`.
+- **Limbic Triage (Grok Bot)** is claim-gated: it does not run a scheduled
+  unclaimed sweep and has no weekday triage cron. It wakes on issue-assigned
+  (or a ping) and refreshes that claimed issue against `origin/main` via
+  authenticated `gh` (title, body, acceptance criteria, and labels); then
+  comments that the issue is current. Issue writes use `gh` as Evicencio-05
+  (push + triage). Cloud agents and the GitHub connector PAT receive 403 on
+  issue writes. Do not tell implementers to edit issues themselves.
 - **Limbic Issue Bot** owns this document and ad-hoc desk / merge digest work. It does
   not run standing intake or triage.
 
@@ -31,9 +33,10 @@ those merges. Fleet-authored PRs still get pre-merge clearance when asked.
 - Read the issue title, body, labels, comments, linked pull requests, and related issues.
 - Compare the issue with the current repository and `origin/main`; do not assume the issue's
   original description still matches the product.
-- When the issue is unclaimed, refreshing the title, description, scope, links, labels,
+- After Intake claims the issue, refreshing the title, description, scope, links, labels,
   and acceptance criteria is Limbic Triage's job. Implementers do not edit the issue.
-- Implementers record **Observed** when the issue was already refreshed, or when an
+- Intake must not launch CloudAgent until Triage comments that the claimed issue is current.
+- Implementers record **Observed** when Triage has already marked the issue current, or when an
   issue write returned 403.
 - Separate facts observed in the issue or repository from inferences and requested behavior.
 
