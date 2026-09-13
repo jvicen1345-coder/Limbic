@@ -40,6 +40,9 @@ test("a co-admin gets exactly the admin areas they were granted", async ({ page 
   await page.getByRole("button", { name: "Admin", exact: true }).click();
   await expect(page.getByRole("link", { name: ADMIN_AREA_LABELS.licenses })).toBeVisible();
   await expect(page.getByRole("link", { name: ADMIN_AREA_LABELS.copyright })).toHaveCount(0);
+  // Gold standalone Founding Funders is always in the sidebar; licenses-only must not
+  // grow a second Admin row for an area they were not granted (#498).
+  await expect(page.locator(".app-sidebar").getByRole("link", { name: ADMIN_AREA_LABELS.foundingFunders })).toHaveCount(1);
 
   await page.goto("/admin/licenses");
   await expect(page).toHaveURL(/\/admin\/licenses$/);
@@ -54,6 +57,7 @@ test("a co-admin gets exactly the admin areas they were granted", async ({ page 
   await page.goto("/admin/licenses");
   await expect(page.getByRole("link", { name: ADMIN_AREA_LABELS.copyright })).toBeVisible();
   await expect(page.getByRole("link", { name: "Accounts" })).toHaveCount(0);
+  await expect(page.locator(".app-sidebar").getByRole("link", { name: ADMIN_AREA_LABELS.foundingFunders })).toHaveCount(2);
   await page.goto("/admin/accounts");
   await expect(page).toHaveURL(/\/home$/);
 

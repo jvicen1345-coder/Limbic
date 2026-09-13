@@ -32,6 +32,7 @@ import {
   LayoutDashboardIcon,
   BodyIcon,
   LockIcon,
+  DiamondIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { StudentVerifiedBadge } from "@/components/StudentVerifiedBadge";
@@ -424,6 +425,20 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
                   href="/admin/movement-lab-requests"
                   icon={<DumbbellIcon />}
                   label="Movement Lab Requests"
+                  bold={false}
+                  onNavigate={onNavigate}
+                />
+              )}
+              {/* foundingFunders has no /admin/* page — the payment roster and claim form
+                  live on the public /founding-funders page (see FoundingAdminPanel). Without
+                  this row, granting only that area opened an empty Admin accordion (#498).
+                  The gold standalone entry below stays for everyone; this is the granted
+                  co-admin path from the section that already lists their other areas. */}
+              {has("foundingFunders") && (
+                <NavLink
+                  href="/founding-funders"
+                  icon={<DiamondIcon />}
+                  label="Founding Funders"
                   bold={false}
                   onNavigate={onNavigate}
                 />

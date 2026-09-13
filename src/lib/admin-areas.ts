@@ -27,8 +27,10 @@
  * whole reader list one click away for anyone holding any area, so don't.
  *
  * foundingFunders is the leftover exception to watch on `/founding-funders`: a co-admin may
- * work the payment roster and the manual claim form. The all-users registered roster and
- * writing User.isPro stay owner-only (see isSiteAdmin on that page and
+ * work the payment roster and the manual claim form. There is no `/admin/founding-funders`
+ * route; NavContent still lists the area under Admin and points at that public page so a
+ * foundingFunders-only grant is not an empty accordion (#498). The all-users registered
+ * roster and writing User.isPro stay owner-only (see isSiteAdmin on that page and
  * shouldWriteIsProOnFoundingClaim). Do not fold those back into hasAdminArea("foundingFunders").
  */
 export const ADMIN_AREAS = [
