@@ -9,7 +9,12 @@ effect on the website in terms a reviewer or product owner can understand.
 - **Limbic Intake** claims first (up to two issues). It must not launch CloudAgent
   until **Limbic Triage** says the claimed issue is current. After that, it
   implements via Cursor CloudAgent on environment `limbic-env`, following the
-  rest of this workflow and `COORDINATION.md`.
+  rest of this workflow and `COORDINATION.md`. Fleet PRs (not JV) move without
+  a user ask: claim → triage vs main → CloudAgent `limbic-env` → review →
+  HOLD/nit fix on the same branch → `Fleet CLEAR` → merge and delete the head
+  branch. On HOLD, Core pings Intake to fix on the same PR branch; Intake does
+  not open a second PR. Fixable nits (in-scope on this PR) block merge until
+  Intake applies them on the same branch.
 - **Limbic Triage (Grok Bot)** is claim-gated: it does not run a scheduled
   unclaimed sweep and has no weekday triage cron. It wakes on issue-assigned
   (or a ping) and refreshes that claimed issue against `origin/main` via
@@ -19,34 +24,41 @@ effect on the website in terms a reviewer or product owner can understand.
   issue writes. Do not tell implementers to edit issues themselves.
 - **Limbic Core** (the fleet desk; formerly Limbic Issue Bot) owns this document
   and ad-hoc desk / merge digest work. It does not run standing intake or triage.
-  When the fleet has cleared a PR for merge — required reviewers, mergeable, and
-  Typecheck/lint, Playwright, and Vercel green — Limbic Core posts one GitHub PR
-  comment via authenticated `gh` starting with the exact text `Fleet CLEAR`,
-  listing UX / PR Review / Security as CLEAR or N/A. That comment also includes
-  a Nits section: each open nit is one line with source (PR Review / UX /
-  Security) and the finding, or `Nits: none`. HOLD still blocks the stamp; nits
-  do not. Do not comment from green CI alone. Review bots stay chat-only (no
-  GitHub review comments). JV self-merges are not expected to have this stamp
-  before merge; a merged fleet-authored PR without `Fleet CLEAR` was not
-  fleet-cleared. After a later push, Core posts a follow-up comment starting
-  with `Nits resolved` when every listed nit is fixed, or `Nits remaining`
-  listing what was not fixed (and any new nits). Unfixed nits stay on the PR as
-  future-risk notes. Do not file a GitHub issue for a leftover nit unless it is
-  now a real bug. When `Fleet CLEAR` is on the current tip and the Nits
-  section is `Nits: none`, Core merges the PR via authenticated `gh` and
-  deletes the head branch. When Core later posts `Nits resolved` (all listed
-  nits fixed, still mergeable, CI green, not draft), Core merges and deletes
-  the head branch. Do not merge on HOLD, `Nits remaining`, draft, or
-  red/pending CI. JV (`jvicen1345-coder`) self-merges are not this path; do
-  not block or revert those merges. The user can still ask Core to merge a
-  specific PR that turn.
+  Fleet PRs (not JV) move without a user ask through that same path. Core marks
+  a green Evicencio-05/Cursor draft ready (`gh pr ready`) instead of leaving it
+  in draft. When the fleet has cleared a PR for merge — required reviewers,
+  mergeable, and Typecheck/lint, Playwright, and Vercel green — Limbic Core
+  posts one GitHub PR comment via authenticated `gh` starting with the exact
+  text `Fleet CLEAR`, listing UX / PR Review / Security as CLEAR or N/A. That
+  comment also includes a Nits section: each open nit is one line with source
+  (PR Review / UX / Security) and the finding, or `Nits: none`. HOLD still
+  blocks the stamp; nits do not. Do not comment from green CI alone. Review
+  bots stay chat-only (no GitHub review comments) but must report CLEAR/HOLD +
+  nits to Limbic Core. Core writes the GitHub notes. On HOLD, Core pings Intake
+  to fix on the same PR branch; Intake does not open a second PR. JV
+  self-merges are not expected to have this stamp before merge; a merged
+  fleet-authored PR without `Fleet CLEAR` was not fleet-cleared. After a later
+  push, Core posts a follow-up comment starting with `Nits resolved` when every
+  listed nit is fixed, or `Nits remaining` listing what was not fixed (and any
+  new nits). Unfixed nits stay on the PR as future-risk notes. Do not file a
+  GitHub issue for a leftover nit unless it is now a real bug. Fixable nits
+  (in-scope on this PR) block merge until Intake applies them on the same
+  branch. Pre-existing or by-design nits are written on the PR and do not block
+  merge. When `Fleet CLEAR` is on the current tip and the Nits section is
+  `Nits: none`, Core merges the PR via authenticated `gh` and deletes the head
+  branch. When Core later posts `Nits resolved` (all listed nits fixed, still
+  mergeable, CI green, not draft), Core merges and deletes the head branch. Do
+  not merge on HOLD, `Nits remaining`, draft, or red/pending CI. JV
+  (`jvicen1345-coder`) self-merges are not this path; do not block or revert
+  those merges. The user can still ask Core to merge a specific PR that turn.
 
 **Observed:** collaborator JV (`jvicen1345-coder`) does not have the Grok Bot fleet
 and merges their own PRs on GitHub without pre-merge fleet review. After those
 merges, **Limbic Core** reviews the landed change (PR Review; UX if the
 change is UI; Security if auth/XSS), files follow-up issues via `gh`, and
 **Limbic Intake** / **Limbic Triage** claim and fix them. Do not block or revert
-those merges. Fleet-authored PRs still get pre-merge clearance when asked.
+those merges. JV (`jvicen1345-coder`) still self-merges; do not block or revert.
+Fleet-authored PRs move through the standing pipeline without a user ask.
 
 ## 1. Establish the issue as the current source of work
 
