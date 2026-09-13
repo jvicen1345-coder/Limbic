@@ -60,15 +60,15 @@ export function ProfessionalCredentialsCard({
   const rejectedCount = licenses.filter((l) => l.status === "rejected").length;
 
   return (
-    <div className="card elev-sm license-verification-card" style={{ marginBottom: 18 }}>
+    <div className="card elev-sm license-verification-card">
       <div className="card-kicker">Professional Credentials</div>
 
       {isStudent ? (
         <>
-          <div style={{ marginTop: 8 }}>
+          <div>
             <span className="license-badge license-badge--student">DPT Student</span>
           </div>
-          <p className="card-body" style={{ marginTop: 8 }}>
+          <p className="card-body">
             No license required while you&rsquo;re a student, you&rsquo;ll be able to verify your license once you&rsquo;re
             practicing.
           </p>
@@ -76,11 +76,11 @@ export function ProfessionalCredentialsCard({
       ) : (
         <>
           {licenses.length === 0 ? (
-            <div className="card-title" style={{ marginTop: 6 }}>
+            <div className="card-title">
               License Verification
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
+            <div className="credentials-license-list">
               {licenses
                 .filter((l) => l.status !== "rejected")
                 .map((l) => (
@@ -88,14 +88,14 @@ export function ProfessionalCredentialsCard({
                 ))}
             </div>
           )}
-          <p className="card-body" style={{ marginTop: licenses.length === 0 ? 6 : 10 }}>
+          <p className={licenses.length === 0 ? "card-body credentials-card-copy--empty" : "card-body credentials-card-copy"}>
             {licenses.length === 0
               ? "Add your PT license to record your credentials and unlock PRO features."
               : "A PT licensed in more than one state can add each one, one active license per state. A license on file is one you attested to and we accepted; Limbic doesn't check it against the issuing state board."}
             {rejectedCount > 0 &&
               ` ${rejectedCount === 1 ? "A previous submission" : `${rejectedCount} previous submissions`} weren't approved — resubmit that state below with corrected details.`}
           </p>
-          <button type="button" className="btn btn-secondary" style={{ marginTop: 4 }} onClick={() => setModalOpen(true)}>
+          <button type="button" className="btn btn-secondary credentials-add-license" onClick={() => setModalOpen(true)}>
             Add License
           </button>
         </>
