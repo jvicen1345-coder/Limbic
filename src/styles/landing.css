@@ -185,9 +185,10 @@
 .landing-feature-card-name { font-family: var(--font-heading); font-weight: 800; font-size: 16.5px; margin: 0 0 8px; }
 .landing-feature-card-body { font-size: 14px; line-height: 1.6; color: var(--color-neutral-700); margin: 0; }
 
-/* — Demo video — sits between features and founding funders. The tour is vertical 9:16,
-   not 16:9 like the placeholder this replaced, so the player gets a phone-width frame
-   centred in the section rather than a full-width box. */
+/* — Demo video — sits between features and founding funders. 16:9, filling the section's
+   width the way the original placeholder did. There is a 9:16 cut of the same tour for
+   social (see marketing/video), but a portrait player on a desktop page leaves most of the
+   row empty, so the landing page takes the landscape master. */
 .landing-demo { max-width: 800px; margin: 0 auto; padding: 60px 24px; text-align: center; }
 .landing-demo-eyebrow {
   font-size: 12px;
@@ -198,12 +199,12 @@
   margin: 0 0 12px;
 }
 .landing-demo-body { font-size: 16px; line-height: 1.6; color: var(--color-neutral-700); margin: 0 0 32px; }
-/* Capped in px, not as a percentage: the file is 720px wide, so letting the frame grow
-   past ~380px on a desktop viewport would only upscale it. line-height: 0 keeps the
-   inline video from leaving a descender gap under itself inside the rounded frame. */
+/* The section is 800px wide including 24px of padding either side, so the frame fills it
+   and stops: the file is 1280 wide, and past ~752px on a desktop viewport the browser would
+   only be upscaling. line-height: 0 keeps the inline video from leaving a descender gap
+   under itself inside the rounded frame. */
 .landing-demo-video {
   width: 100%;
-  max-width: 380px;
   margin: 0 auto;
   border: 1px solid var(--color-divider);
   border-radius: var(--landing-radius);
@@ -217,7 +218,7 @@
 .landing-demo-video-player {
   display: block;
   width: 100%;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 16 / 9;
   background: #0d1220;
 }
 .landing-demo-note { font-size: 13px; color: var(--color-neutral-700); margin: 16px 0 0; }

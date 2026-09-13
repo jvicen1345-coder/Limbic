@@ -119,14 +119,15 @@ export function LandingPage() {
         <p className="landing-demo-body">
           See how Limbic works for students, clinicians, and the public — all in one platform.
         </p>
-        {/* The tour is vertical 9:16 (it doubles as the social cut — see
-            marketing/tiktok-teaser), so this is a phone-width frame rather than the 16:9 box
-            the old placeholder filled. Native controls and no autoplay keep this section a
-            Server Component with no client JS. preload="none", not "metadata": Chrome pulls
-            a small WebM in full on a metadata preload (measured: the whole 3.4MB on page
-            load), so this way the 29KB poster is all the page pays for until someone
-            actually presses play. The trade is that the controls read 0:00 until playback
-            starts, which is why the heading carries the runtime instead. */}
+        {/* 16:9, rendered as its own landscape cut rather than a letterboxed portrait one —
+            the same timeline and copy laid out two-up, phone beside the text (see
+            marketing/video, which also produces the 9:16 social cut). Native controls and no
+            autoplay keep this section a Server Component with no client JS. preload="none",
+            not "metadata": Chrome pulls a small WebM in full on a metadata preload
+            (measured: the whole file on page load), so this way the 26KB poster is all the
+            page pays for until someone actually presses play. The trade is that the controls
+            read 0:00 until playback starts, which is why the heading carries the runtime
+            instead. */}
         <div className="landing-demo-video">
           {/* WebM first so Chrome, Firefox and Android take the VP9 file, which is a third
               smaller than the H.264 one at the same visible quality; Safari and anything
