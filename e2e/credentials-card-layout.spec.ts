@@ -109,6 +109,23 @@ test.describe("Credentials card layout", () => {
       expect(Math.abs(pairTops[i] - pairTops[i + 1])).toBeLessThan(2);
     }
 
+    const gaps = await fields.evaluateAll((els) => {
+      const first = els[0];
+      const nextRow = els[2];
+      const label = first.querySelector("label");
+      const wrap = first.querySelector(".date-field-wrap");
+      if (!label || !wrap || !nextRow) return null;
+      return {
+        intra: wrap.getBoundingClientRect().top - label.getBoundingClientRect().bottom,
+        pair: nextRow.getBoundingClientRect().top - first.getBoundingClientRect().bottom,
+      };
+    });
+    expect(gaps).toBeTruthy();
+    if (gaps) {
+      expect(gaps.intra).toBeLessThan(8);
+      expect(gaps.pair).toBeGreaterThan(10);
+    }
+
     const lastField = fields.last();
     const grid = page.locator(".professional-dates-fields");
     const [lastBox, gridBox] = await Promise.all([lastField.boundingBox(), grid.boundingBox()]);

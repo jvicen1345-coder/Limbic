@@ -286,7 +286,9 @@ html[data-theme="dark"] .date-field-native { color-scheme: dark; }
 /* Two-column date grid: equal tracks, shared row baselines via subgrid so a wrapping
    label (e.g. Specialty Certification) does not drop its input below the neighbor.
    An odd last field stays in column 1 at one-track width — no stretch into the empty
-   cell. Higher specificity than onboarding.css's .professional-dates-fields rule. */
+   cell. Parent row-gap is pair spacing only; each .field zeros its own row-gap so
+   subgrid does not repeat that 14px between label, input, and hint.
+   Higher specificity than onboarding.css's .professional-dates-fields rule. */
 @media (min-width: 1024px) {
   .credentials-stack .professional-dates-fields {
     display: grid;
@@ -299,6 +301,7 @@ html[data-theme="dark"] .date-field-native { color-scheme: dark; }
     display: grid;
     grid-template-rows: subgrid;
     grid-row: span 3;
+    row-gap: 0;
     align-items: start;
   }
   .credentials-stack .professional-dates-fields .field:last-child:nth-child(odd) {
