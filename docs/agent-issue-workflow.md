@@ -32,7 +32,14 @@ effect on the website in terms a reviewer or product owner can understand.
   with `Nits resolved` when every listed nit is fixed, or `Nits remaining`
   listing what was not fixed (and any new nits). Unfixed nits stay on the PR as
   future-risk notes. Do not file a GitHub issue for a leftover nit unless it is
-  now a real bug.
+  now a real bug. When `Fleet CLEAR` is on the current tip and the Nits
+  section is `Nits: none`, Core merges the PR via authenticated `gh` and
+  deletes the head branch. When Core later posts `Nits resolved` (all listed
+  nits fixed, still mergeable, CI green, not draft), Core merges and deletes
+  the head branch. Do not merge on HOLD, `Nits remaining`, draft, or
+  red/pending CI. JV (`jvicen1345-coder`) self-merges are not this path; do
+  not block or revert those merges. The user can still ask Core to merge a
+  specific PR that turn.
 
 **Observed:** collaborator JV (`jvicen1345-coder`) does not have the Grok Bot fleet
 and merges their own PRs on GitHub without pre-merge fleet review. After those
