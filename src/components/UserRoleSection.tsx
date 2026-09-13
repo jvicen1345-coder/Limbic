@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { RoleCards } from "@/components/RoleCards";
 import { updateUserRoleAction } from "@/app/actions/user-role";
 import { USER_ROLES, type UserRole } from "@/lib/user-role";
@@ -15,16 +15,34 @@ export function UserRoleSection({ role }: { role: UserRole | null }) {
   const [pending, startTransition] = useTransition();
 
   const currentLabel = USER_ROLES.find((r) => r.value === role)?.label ?? "Not set";
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const shouldFocus = useRef(false);
 
   useEffect(() => {
-    const enter = () => setEditing(true);
+    const enter = () => {
+      shouldFocus.current = true;
+      setEditing(true);
+    };
     if (window.location.hash === "#profile-role") enter();
     window.addEventListener("limbic:edit-role", enter);
     return () => window.removeEventListener("limbic:edit-role", enter);
   }, []);
 
+  useEffect(() => {
+    if (!editing || !shouldFocus.current) return;
+    shouldFocus.current = false;
+    const firstCard = sectionRef.current?.querySelector<HTMLElement>(".role-card");
+    (firstCard ?? sectionRef.current)?.focus();
+  }, [editing]);
+
   return (
-    <div id="profile-role" className="card elev-sm" style={{ marginBottom: 18, scrollMarginTop: 24 }}>
+    <div
+      id="profile-role"
+      ref={sectionRef}
+      tabIndex={-1}
+      className="card elev-sm"
+      style={{ marginBottom: 18, scrollMarginTop: 24 }}
+    >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div className="card-kicker">Role</div>
         {!editing && (

@@ -6,8 +6,14 @@ import { ProfileThemeCard } from "@/components/ProfileThemeCard";
 import type { ThemePreference } from "@/lib/theme-client";
 
 function ProfileSubscriptionCard({ model }: { model: SubscriptionCardModel }) {
+  const free = model.planKey === "free";
+  const action = free ? "View plans" : "Manage";
   return (
-    <Link href="/profile/membership" className="card elev-sm profile-status-card">
+    <Link
+      href="/profile/membership"
+      className="card elev-sm profile-status-card"
+      aria-label={free ? `View plans: ${model.planName}` : `Manage subscription: ${model.planName}`}
+    >
       <div className="card-kicker">Subscription</div>
       <div className="profile-status-value">{model.planName}</div>
       <p className="profile-status-meta">
@@ -17,7 +23,7 @@ function ProfileSubscriptionCard({ model }: { model: SubscriptionCardModel }) {
           </span>
         ))}
       </p>
-      <div className="profile-status-action">Manage</div>
+      <div className="profile-status-action">{action}</div>
     </Link>
   );
 }

@@ -22,6 +22,10 @@ test.describe("Profile status cards", () => {
     await expect(theme.getByText("System", { exact: true })).toBeVisible();
     await expect(subscription.getByText("Free", { exact: true })).toBeVisible();
     await expect(subscription.getByText("Free plan")).toBeVisible();
+    await expect(subscription.getByText("View plans")).toBeVisible();
+    await expect(subscription.getByText("Manage")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Edit role: Physical Therapist" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "View plans: Free" })).toBeVisible();
     await expect(subscription.getByText(/days? left/)).toHaveCount(0);
 
     await expect(page.getByText("Reading activity")).toHaveCount(0);
@@ -53,6 +57,7 @@ test.describe("Profile status cards", () => {
     const roleSection = page.locator("#profile-role");
     await expect(roleSection).toBeInViewport();
     await expect(roleSection.locator(".role-cards")).toBeVisible();
+    await expect(roleSection.locator(".role-card").first()).toBeFocused();
 
     await page.locator(".profile-status-card").filter({ hasText: "Theme" }).click();
     const themeCard = page.locator("#profile-theme");
@@ -86,6 +91,8 @@ test.describe("Profile status cards", () => {
     const subscription = page.locator(".profile-status-card").filter({ hasText: "Subscription" });
     await expect(subscription.getByText("LimbicPRO", { exact: true })).toBeVisible();
     await expect(subscription.getByText("Active", { exact: true })).toBeVisible();
+    await expect(subscription.getByText("Manage")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Manage subscription: LimbicPRO" })).toBeVisible();
     await expect(subscription.getByText(/0 days? left/)).toHaveCount(0);
     await expect(subscription.getByText(/days? left/)).toHaveCount(0);
 

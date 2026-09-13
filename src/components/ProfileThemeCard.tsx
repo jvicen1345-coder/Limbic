@@ -27,6 +27,7 @@ export function ProfileThemeCard({ initialTheme }: { initialTheme: ThemePreferen
     <a
       href="#profile-theme"
       className="card elev-sm profile-status-card"
+      aria-label={`Change theme: ${themePreferenceLabel(theme)}`}
       onClick={openThemeSection}
     >
       <div className="card-kicker">Theme</div>
