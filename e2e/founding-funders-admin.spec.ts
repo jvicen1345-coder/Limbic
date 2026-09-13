@@ -22,3 +22,17 @@ test("a foundingFunders co-admin does not see the registered-user roster", async
   ).toBeVisible();
   await expect(page.getByText(/Admin, registered users/)).toHaveCount(0);
 });
+
+test("a foundingFunders co-admin claim says Lifetime Access was not granted", async ({ page }) => {
+  const email = freshEmail("ff-coadmin-claim");
+  await signUpAndEnterApp(page, email);
+  await setUserColumn(email, "adminAreas", JSON.stringify(["foundingFunders"]));
+
+  await page.goto("/founding-funders");
+  await page.getByPlaceholder("Reader's sign-in email or license #").fill(email);
+  await page.getByPlaceholder("Display name (e.g. Jordan)").fill("Coadmin");
+  await page.getByRole("button", { name: "Claim spot" }).click();
+
+  await expect(page.locator(".ff-admin-message--ok")).toContainText("Lifetime Access was not granted");
+  await expect(page.locator(".ff-admin-message--ok")).toContainText("/admin/accounts");
+});
