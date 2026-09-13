@@ -20,6 +20,19 @@ async function displayBackground(page: Page) {
   return page.locator(".date-field-display").first().evaluate((el) => getComputedStyle(el).backgroundColor);
 }
 
+/** Hidden overlay date inputs do not always emit React onChange from Playwright's fill()
+ *  (especially on a phone viewport). Set the native value and fire the same events a
+ *  picker commit would. */
+async function setNativeDate(page: Page, iso: string) {
+  await page.locator(".date-field-native").first().evaluate((el, value) => {
+    const input = el as HTMLInputElement;
+    const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+    descriptor?.set?.call(input, value);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }, iso);
+}
+
 test.describe("Credentials date field theme", () => {
   test("native picker color-scheme follows the app theme; clear still works", async ({ page }) => {
     await signUpAndEnterApp(page, freshEmail("cred-date-theme"));
@@ -46,8 +59,8 @@ test.describe("Credentials date field theme", () => {
     expect(darkBg).not.toBe("rgb(255, 255, 255)");
     expect(darkBg).not.toBe(lightBg);
 
-    // Fill via the native control (hidden overlay) then clear with the explicit x.
-    await native.fill("2026-09-13");
+    // Commit via the native control (hidden overlay) then clear with the explicit x.
+    await setNativeDate(page, "2026-09-13");
     await expect(display).toHaveText("Sep 13, 2026");
     await page.getByRole("button", { name: "Clear CEU deadline" }).click();
     await expect(display).toHaveText("Not set");
@@ -59,9 +72,8 @@ test.describe("Credentials date field theme", () => {
     await page.goto("/profile/credentials");
     await expect(page.getByText("Professional dates")).toBeVisible();
 
-    const native = page.locator(".date-field-native").first();
     const display = page.locator(".date-field-display").first();
-    await native.fill("2026-11-01");
+    await setNativeDate(page, "2026-11-01");
     await expect(display).toHaveText("Nov 1, 2026");
     await page.getByRole("button", { name: "Clear CEU deadline" }).tap();
     await expect(display).toHaveText("Not set");
