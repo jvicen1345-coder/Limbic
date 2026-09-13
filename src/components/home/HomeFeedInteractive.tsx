@@ -11,11 +11,13 @@ import { RefreshHomeFeedButton } from "@/components/RefreshHomeFeedButton";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { refreshHomeFeedAction } from "@/app/actions/home";
 import { TYPE_TABS, type HomeFeedFilter } from "@/lib/home-feed-selection";
+import { resolveGridArticles } from "@/lib/home-grid-backfill";
 import type { DecoratedArticle } from "@/lib/feed";
 
 export type HomeFeedPanel = {
   heroPool: DecoratedArticle[];
   gridArticles: DecoratedArticle[];
+  gridBackfill: DecoratedArticle[];
   gridFingerprints: string[];
   emptyMessage: string | null;
 };
@@ -153,7 +155,7 @@ export function HomeFeedInteractive({
                   effectiveHeroPool.map((a) => a.image).filter((img): img is string => !!img)
                 );
                 const gridArticles = isActive
-                  ? tabPanel.gridArticles.filter((a) => !a.image || !heroImages.has(a.image))
+                  ? resolveGridArticles(tabPanel.gridArticles, tabPanel.gridBackfill, heroImages)
                   : tabPanel.gridArticles;
                 const showEmptyMessage =
                   tabPanel.emptyMessage && effectiveHeroPool.length === 0 && gridArticles.length === 0;

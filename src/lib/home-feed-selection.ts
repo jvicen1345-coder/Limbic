@@ -77,10 +77,24 @@ export function filterHomeArticles(
   );
 }
 
+/** Extra grid candidates fetched beyond gridTarget, purely as a reserve — see gridBackfill
+ *  below. Generous on purpose: a hero-image collision is the rare case this exists to cover,
+ *  not the common one, and orderArticlesForGrid/take() already stop early on a thin tab
+ *  (e.g. CE & Events) rather than padding with anything ineligible. */
+const BACKFILL_POOL_SIZE = 6;
+
 export interface HomeFeedSelection {
   filtered: DecoratedArticle[];
   heroPool: DecoratedArticle[];
   gridArticles: DecoratedArticle[];
+  /** Extra articles, same type constraints and hero/image exclusions as gridArticles, not
+   *  already included in it. Home always shows hero + MIN_HOME_CARDS-1 (or gridTarget on
+   *  Research) grid cards — a fixed count the product relies on — so when a caller has to
+   *  drop a gridArticles entry (see HomeFeedInteractive's pinned-hero-across-Refresh case,
+   *  where the hero actually on screen differs from the one this selection deduped its own
+   *  grid against), it backfills from here instead of just shrinking the grid below that
+   *  count. */
+  gridBackfill: DecoratedArticle[];
 }
 
 /**
@@ -130,8 +144,15 @@ export function selectHomeFeed({
     return picked;
   };
 
+  // take() shares seenImages/orderedForGrid across calls, so a later call picking up "more"
+  // naturally continues where the previous one left off (already-picked images are skipped)
+  // rather than re-picking the same articles.
   const gridArticles =
     filter !== "all" ? take(gridTarget, null) : [...take(gridTarget - NEWS_ROW_SIZE, MEDICAL_TYPES), ...take(NEWS_ROW_SIZE, NEWS_ROW_TYPES)];
+  const gridBackfill =
+    filter !== "all"
+      ? take(BACKFILL_POOL_SIZE, null)
+      : [...take(BACKFILL_POOL_SIZE, MEDICAL_TYPES), ...take(BACKFILL_POOL_SIZE, NEWS_ROW_TYPES)];
 
-  return { filtered, heroPool, gridArticles };
+  return { filtered, heroPool, gridArticles, gridBackfill };
 }
