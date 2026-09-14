@@ -40,6 +40,58 @@ function nextId() {
   return `m${messageCounter}`;
 }
 
+/** Renders the agent's plain-markdown reply (blank-line-separated paragraphs, "-" bullet
+ *  lists, and **bold**) so it reads as short, scannable blocks instead of one dense
+ *  run-on paragraph with literal asterisks and dashes. */
+function renderInline(text: string) {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    part.startsWith("**") && part.endsWith("**") ? <strong key={i}>{part.slice(2, -2)}</strong> : <span key={i}>{part}</span>
+  );
+}
+
+function formatWellnessReply(content: string) {
+  const blocks: React.ReactNode[] = [];
+  let paragraph: string[] = [];
+  let list: string[] = [];
+
+  const flushParagraph = () => {
+    const text = paragraph.join(" ").trim();
+    if (text) blocks.push(<p key={blocks.length}>{renderInline(text)}</p>);
+    paragraph = [];
+  };
+  const flushList = () => {
+    if (list.length === 0) return;
+    blocks.push(
+      <ul key={blocks.length}>
+        {list.map((item, i) => (
+          <li key={i}>{renderInline(item)}</li>
+        ))}
+      </ul>
+    );
+    list = [];
+  };
+
+  for (const rawLine of content.split("\n")) {
+    const line = rawLine.trim();
+    if (line === "") {
+      flushParagraph();
+      flushList();
+      continue;
+    }
+    const bullet = line.match(/^[-*•]\s+(.*)$/);
+    if (bullet) {
+      flushParagraph();
+      list.push(bullet[1]);
+    } else {
+      flushList();
+      paragraph.push(line);
+    }
+  }
+  flushParagraph();
+  flushList();
+  return blocks.length > 0 ? blocks : [<p key="0">{content}</p>];
+}
+
 export function WellnessAgentChat({ initialGoal }: { initialGoal: string | null }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -146,7 +198,7 @@ export function WellnessAgentChat({ initialGoal }: { initialGoal: string | null 
             </div>
           ) : (
             <div key={m.id} className="wellness-agent-msg wellness-agent-msg--agent">
-              <p style={{ margin: 0 }}>{m.content}</p>
+              <div className="wellness-agent-msg-body">{formatWellnessReply(m.content)}</div>
               {m.sources && m.sources.length > 0 && <div className="wellness-agent-msg-sources">Sources: {m.sources.join(", ")}</div>}
               <div className="wellness-agent-msg-actions">
                 <button
