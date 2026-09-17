@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { RoleCards } from "@/components/RoleCards";
 import { updateUserRoleAction } from "@/app/actions/user-role";
 import { USER_ROLES, type UserRole } from "@/lib/user-role";
@@ -15,9 +15,50 @@ export function UserRoleSection({ role }: { role: UserRole | null }) {
   const [pending, startTransition] = useTransition();
 
   const currentLabel = USER_ROLES.find((r) => r.value === role)?.label ?? "Not set";
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const shouldFocus = useRef(false);
+
+  function clearRoleHash() {
+    if (window.location.hash !== "#profile-role") return;
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+  }
+
+  useEffect(() => {
+    const enter = () => {
+      shouldFocus.current = true;
+      setEditing(true);
+      // One-shot jump target — leave the hash up and a remount (Save's
+      // revalidate, Cancel + navigation) re-enters edit on mount.
+      clearRoleHash();
+    };
+    if (window.location.hash === "#profile-role") enter();
+    window.addEventListener("limbic:edit-role", enter);
+    return () => window.removeEventListener("limbic:edit-role", enter);
+  }, []);
+
+  useEffect(() => {
+    if (!editing || !shouldFocus.current) return;
+    shouldFocus.current = false;
+    const moveFocus = () => {
+      const root = sectionRef.current;
+      const selectedCard = root?.querySelector<HTMLElement>(".role-card[aria-pressed=true]");
+      const firstCard = root?.querySelector<HTMLElement>(".role-card");
+      (selectedCard ?? firstCard ?? root)?.focus();
+    };
+    moveFocus();
+    // Second frame: RoleCards is in the same commit, but a leftover fragment
+    // focus can still fire after the click. Reclaim onto the selected control.
+    requestAnimationFrame(moveFocus);
+  }, [editing]);
 
   return (
-    <div className="card elev-sm" style={{ marginBottom: 18 }}>
+    <div
+      id="profile-role"
+      ref={sectionRef}
+      tabIndex={-1}
+      className="card elev-sm"
+      style={{ marginBottom: 18, scrollMarginTop: 24 }}
+    >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div className="card-kicker">Role</div>
         {!editing && (
@@ -44,6 +85,7 @@ export function UserRoleSection({ role }: { role: UserRole | null }) {
                 if (!selected) return;
                 startTransition(async () => {
                   await updateUserRoleAction(selected);
+                  clearRoleHash();
                   setEditing(false);
                 });
               }}
@@ -55,6 +97,7 @@ export function UserRoleSection({ role }: { role: UserRole | null }) {
               className="btn btn-ghost"
               onClick={() => {
                 setSelected(role);
+                clearRoleHash();
                 setEditing(false);
               }}
             >

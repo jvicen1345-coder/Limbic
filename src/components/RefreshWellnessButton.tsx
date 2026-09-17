@@ -13,6 +13,7 @@ export function RefreshWellnessButton() {
     <button
       type="button"
       className="btn btn-secondary"
+      aria-label="Refresh"
       disabled={pending}
       onClick={() => {
         startTransition(async () => {

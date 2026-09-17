@@ -2,7 +2,12 @@
 
 import { useSyncExternalStore, useTransition } from "react";
 import { MoonIcon, SunIcon, MonitorIcon } from "@/components/icons";
-import { applyThemePreferenceLocally, readStoredThemePreference, type ThemePreference } from "@/lib/theme-client";
+import {
+  applyThemePreferenceLocally,
+  readStoredThemePreference,
+  subscribeThemePreference,
+  type ThemePreference,
+} from "@/lib/theme-client";
 import { setThemePreferenceAction } from "@/app/actions/profile";
 
 const CYCLE: ThemePreference[] = ["light", "dark", "system"];
@@ -12,17 +17,6 @@ const ICON: Record<ThemePreference, React.ReactNode> = {
   dark: <MoonIcon size={15} />,
   system: <MonitorIcon size={15} />,
 };
-
-const listeners = new Set<() => void>();
-
-/** No actual external event source ever mutates the stored preference except setPreference
- *  below (called from this component's own click handler, or from Profile's ThemeSection
- *  Save button) — this subscription just lets useSyncExternalStore know to re-render when
- *  that happens, via listeners.forEach in setPreference. */
-function subscribe(callback: () => void): () => void {
-  listeners.add(callback);
-  return () => listeners.delete(callback);
-}
 
 /** Reads localStorage rather than html[data-theme] — that attribute only ever holds the
  *  *resolved* light/dark value (see app/layout.tsx's init script), so it can't tell "system
@@ -39,10 +33,6 @@ function getServerSnapshot(): ThemePreference {
   return "system";
 }
 
-function notifyListeners() {
-  listeners.forEach((l) => l());
-}
-
 /** Sidebar/drawer footer button (see components/AppShell.tsx) that cycles light → dark →
  *  system → light, persisting to both localStorage (this device, for the next reload's
  *  flash-free paint — see lib/theme-client.ts) and the database (every other device) on
@@ -52,12 +42,11 @@ function notifyListeners() {
  *  8px/4px margin below is specifically that default treatment's own spacing, so it's
  *  skipped whenever a caller supplies its own class instead. */
 export function ThemeToggle({ className }: { className?: string } = {}) {
-  const preference = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const preference = useSyncExternalStore(subscribeThemePreference, getSnapshot, getServerSnapshot);
   const [, startTransition] = useTransition();
 
   const setPreference = (next: ThemePreference) => {
     applyThemePreferenceLocally(next);
-    notifyListeners();
     startTransition(() => {
       setThemePreferenceAction(next);
     });

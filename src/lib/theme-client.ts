@@ -1,5 +1,19 @@
 export type ThemePreference = "light" | "dark" | "system";
 
+const listeners = new Set<() => void>();
+
+/** Lets ThemeToggle and Profile's Theme status card re-render when any caller writes the
+ *  preference through applyThemePreferenceLocally — including ThemeSection, which applies
+ *  on card click rather than waiting for Save. */
+export function subscribeThemePreference(callback: () => void): () => void {
+  listeners.add(callback);
+  return () => listeners.delete(callback);
+}
+
+function notifyThemePreferenceListeners() {
+  listeners.forEach((listener) => listener());
+}
+
 /** Resolves "system" against the OS/browser's prefers-color-scheme; "light"/"dark" pass
  *  through unchanged. Only ever call this client-side (window.matchMedia). */
 export function resolveTheme(pref: ThemePreference): "light" | "dark" {
@@ -27,18 +41,19 @@ export function applyThemePreferenceLocally(pref: ThemePreference) {
     // Private browsing / storage disabled — the attribute above still applies for this
     // session, it just won't persist across a reload.
   }
+  notifyThemePreferenceListeners();
 }
 
 /** Reads back whatever applyThemePreferenceLocally last wrote — "system" (the default) if
  *  nothing's been stored yet on this device. Used by ThemeToggle to know which preference
  *  (not just which resolved light/dark) is currently active, since "system" always
  *  resolves into one of the other two on the html[data-theme] attribute itself. */
-export function readStoredThemePreference(): ThemePreference {
+export function readStoredThemePreference(fallback: ThemePreference = "system"): ThemePreference {
   try {
     const stored = localStorage.getItem("theme");
-    if (stored === "light" || stored === "dark") return stored;
+    if (stored === "light" || stored === "dark" || stored === "system") return stored;
   } catch {
     // Private browsing / storage disabled.
   }
-  return "system";
+  return fallback;
 }

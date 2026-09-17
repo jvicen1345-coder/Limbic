@@ -3,6 +3,12 @@ import type Stripe from "stripe";
 import { getStripe, stripeEnabled, planForPriceId, paymentIntentIdFromSession, type BillablePlan } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
 import { nextFoundingFunderNumber } from "@/lib/founding-funders";
+import {
+  periodEndFromStripeSubscription,
+  periodEndPatch,
+  type PaidPlanKey,
+  type SubscriptionFlags,
+} from "@/lib/subscription-status";
 
 /**
  * The single source of truth for isPro/studentTier/isWellnessPlus — app/actions/pro.ts
@@ -87,6 +93,38 @@ function resolvePlan(subscription: Stripe.Subscription): BillablePlan | null {
 const WELLNESS_PLUS_PLANS = new Set<BillablePlan>(["wellnessPlusMonthly", "wellnessPlusYearly"]);
 const CLINIC_PLANS = new Set<BillablePlan>(["clinic"]);
 
+const SUBSCRIPTION_USER_SELECT = {
+  stripeSubscriptionId: true,
+  wellnessPlusSubscriptionId: true,
+  clinicProSubscriptionId: true,
+  isPro: true,
+  studentTier: true,
+  isWellnessPlus: true,
+  isClinicPro: true,
+} as const;
+
+function flagsFromUser(user: {
+  isPro: boolean;
+  studentTier: string;
+  isWellnessPlus: boolean;
+  isClinicPro: boolean;
+}): SubscriptionFlags {
+  return {
+    isPro: user.isPro,
+    studentTier: user.studentTier,
+    isWellnessPlus: user.isWellnessPlus,
+    isClinicPro: user.isClinicPro,
+    stripeCurrentPeriodEnd: null,
+  };
+}
+
+function paidPlanKey(plan: BillablePlan): PaidPlanKey {
+  if (plan === "pro") return "pro";
+  if (plan === "limbicStudent") return "student";
+  if (CLINIC_PLANS.has(plan)) return "clinic";
+  return "wellnessPlus";
+}
+
 /** Whether it's safe to write `subscription` over whichever *SubscriptionId column this
  *  plan owns, given the id currently on file. A subscription this app doesn't already
  *  track (most commonly a fresh Checkout Session whose Subscription started life
@@ -118,9 +156,12 @@ async function syncSubscription(subscription: Stripe.Subscription) {
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { stripeSubscriptionId: true, wellnessPlusSubscriptionId: true, clinicProSubscriptionId: true },
+    select: SUBSCRIPTION_USER_SELECT,
   });
   if (!user) return;
+
+  const incomingEnd = active ? periodEndFromStripeSubscription(subscription) : null;
+  const periodEnd = periodEndPatch(flagsFromUser(user), paidPlanKey(plan), active, incomingEnd);
 
   // LimbicWellness+ is additive (a reader can also be LimbicPro/LimbicStudent at the same
   // time), so it gets its own subscription-id column rather than sharing
@@ -134,6 +175,7 @@ async function syncSubscription(subscription: Stripe.Subscription) {
         wellnessPlusSubscriptionId: subscription.id,
         isWellnessPlus: active,
         wellnessPlusInterval: active ? (plan === "wellnessPlusMonthly" ? "month" : "year") : null,
+        ...periodEnd,
       },
     });
     return;
@@ -145,7 +187,11 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     if (!shouldTrackSubscription(subscription, active, user.clinicProSubscriptionId)) return;
     await prisma.user.update({
       where: { id: userId },
-      data: { clinicProSubscriptionId: subscription.id, isClinicPro: active },
+      data: {
+        clinicProSubscriptionId: subscription.id,
+        isClinicPro: active,
+        ...periodEnd,
+      },
     });
     return;
   }
@@ -163,6 +209,7 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     where: { id: userId },
     data: {
       stripeSubscriptionId: subscription.id,
+      ...periodEnd,
       ...(plan === "pro"
         ? { isPro: active, ...(active ? { studentTier: "none" } : {}) }
         : { studentTier: active ? plan : "none", ...(active ? { isPro: false } : {}) }),
@@ -180,35 +227,46 @@ async function clearSubscription(subscription: Stripe.Subscription) {
     return;
   }
 
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: SUBSCRIPTION_USER_SELECT,
+  });
+  if (!user) return;
+
+  const periodEnd = periodEndPatch(flagsFromUser(user), paidPlanKey(plan), false, null);
+
   if (WELLNESS_PLUS_PLANS.has(plan)) {
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { wellnessPlusSubscriptionId: true } });
     // Only clear if this is still the subscription on file — an older, already-superseded
     // subscription's belated "deleted" event shouldn't cancel a newer, still-active one.
-    if (user?.wellnessPlusSubscriptionId !== subscription.id) return;
+    if (user.wellnessPlusSubscriptionId !== subscription.id) return;
     await prisma.user.update({
       where: { id: userId },
-      data: { wellnessPlusSubscriptionId: null, isWellnessPlus: false, wellnessPlusInterval: null },
+      data: {
+        wellnessPlusSubscriptionId: null,
+        isWellnessPlus: false,
+        wellnessPlusInterval: null,
+        ...periodEnd,
+      },
     });
     return;
   }
 
   if (CLINIC_PLANS.has(plan)) {
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { clinicProSubscriptionId: true } });
-    if (user?.clinicProSubscriptionId !== subscription.id) return;
+    if (user.clinicProSubscriptionId !== subscription.id) return;
     await prisma.user.update({
       where: { id: userId },
-      data: { clinicProSubscriptionId: null, isClinicPro: false },
+      data: { clinicProSubscriptionId: null, isClinicPro: false, ...periodEnd },
     });
     return;
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { stripeSubscriptionId: true } });
-  if (user?.stripeSubscriptionId !== subscription.id) return;
+  if (user.stripeSubscriptionId !== subscription.id) return;
 
   await prisma.user.update({
     where: { id: userId },
     data: {
       stripeSubscriptionId: null,
+      ...periodEnd,
       ...(plan === "pro" ? { isPro: false } : { studentTier: "none" }),
     },
   });

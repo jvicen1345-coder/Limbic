@@ -179,6 +179,13 @@ model User {
   // it and isPro/studentTier in sync.
   stripeCustomerId     String? @unique
   stripeSubscriptionId String? @unique
+  // Current billing-period end for whichever subscription last synced through the Stripe
+  // webhook (see syncSubscription/clearSubscription in app/api/stripe/webhook/route.ts).
+  // Stripe's Unix seconds → Date. Null until the next created/updated event after this
+  // column shipped, and after a tracked subscription is deleted. Billing-only — never
+  // written by a user-initiated action, same as isPro above. Readers must treat null as
+  // "no countdown", never as zero days remaining.
+  stripeCurrentPeriodEnd DateTime?
 
   // LimbicWellness+ — a separate, additive subscription (not a competing clinician tier
   // like Pro/Student, which share stripeSubscriptionId above since a reader can only be on

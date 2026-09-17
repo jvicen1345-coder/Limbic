@@ -7,10 +7,9 @@ import { ProfileForm } from "@/components/ProfileForm";
 import { GetTheAppCard } from "@/components/GetTheAppCard";
 import { TopicChip } from "@/components/TopicChip";
 import { TopicBrowser } from "@/components/TopicBrowser";
-import { ReadingStreakCard } from "@/components/ReadingStreakCard";
-import { GamesStreakCard } from "@/components/GamesStreakCard";
-import { WellnessStreakCard } from "@/components/wellness/WellnessStreakCard";
 import { nexusVisibleTo } from "@/lib/nexus-visibility";
+import { ProfileStatusCards } from "@/components/ProfileStatusCards";
+import { subscriptionCardModel } from "@/lib/subscription-status";
 import { HomeWidgetToggle } from "@/components/HomeWidgetToggle";
 import { DeleteAccountSection } from "@/components/DeleteAccountSection";
 import { AccountSecuritySection } from "@/components/AccountSecuritySection";
@@ -80,11 +79,19 @@ export default async function ProfilePage() {
         <SubTabs tabs={PROFILE_TABS} />
       </div>
 
-      <div className="profile-header-grid">
-        <ReadingStreakCard streakDays={user.streakDays} />
-        <GamesStreakCard streakDays={user.gamesStreakDays} />
-        <WellnessStreakCard streakDays={user.wellnessStreakDays} />
-      </div>
+      <ProfileStatusCards
+        role={isUserRole(user.userRole ?? "") ? (user.userRole as UserRole) : null}
+        themePreference={
+          user.themePreference === "light" || user.themePreference === "dark" ? user.themePreference : "system"
+        }
+        subscription={subscriptionCardModel({
+          isPro: user.isPro,
+          studentTier: user.studentTier,
+          isWellnessPlus: user.isWellnessPlus,
+          isClinicPro: user.isClinicPro,
+          stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd,
+        })}
+      />
 
       {foundingFunderStatus.isFunder && (
         <FoundingFunderBadgeCard hidden={user.foundingFunderBadgeHidden} number={foundingFunderStatus.number} />
@@ -125,7 +132,7 @@ export default async function ProfilePage() {
         />
       )}
 
-      <CollapsibleCard title="Theme" name={PROFILE_CARD_GROUP} style={{ marginBottom: 18 }}>
+      <CollapsibleCard title="Theme" name={PROFILE_CARD_GROUP} id="profile-theme" style={{ marginBottom: 18, scrollMarginTop: 24 }}>
       <ThemeSection
         initialTheme={
           user.themePreference === "light" || user.themePreference === "dark" ? user.themePreference : "system"
