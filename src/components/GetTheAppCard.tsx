@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { SmartphoneIcon, MonitorIcon } from "@/components/icons";
 import { CollapsibleCard } from "@/components/CollapsibleCard";
 import { GetTheAppToggle } from "@/components/GetTheAppToggle";
-import { isStandaloneDisplay } from "@/lib/standalone-display";
+import { isStandaloneDisplay, subscribeStandaloneDisplay } from "@/lib/standalone-display";
+
+function getStandaloneSnapshot() {
+  return isStandaloneDisplay();
+}
+
+function getStandaloneServerSnapshot() {
+  return false;
+}
 
 /** Profile > About you — a how-to for installing Limbic as a home-screen/desktop app,
  *  with a dismiss switch so someone who already installed (or never will) can collapse it.
@@ -16,9 +24,11 @@ import { isStandaloneDisplay } from "@/lib/standalone-display";
  *  links to /profile#get-the-app) — the id/scrollMarginTop below are what make that land
  *  here instead of just the top of Profile.
  *
- *  Installed-app auto-hide is presentation-only: after mount we detect display-mode /
- *  navigator.standalone and hide the card, without writing User.getTheAppDismissed. The
- *  first paint matches the server (the dismissed prop) so hydration cannot disagree. */
+ *  Installed-app auto-hide is presentation-only: display-mode / navigator.standalone is
+ *  read through useSyncExternalStore with a false server snapshot (same shape as
+ *  PlaybookChecklist) so the server and the first client render agree, then the installed
+ *  value settles after hydration — no mismatch, no setState in an effect, and no write to
+ *  User.getTheAppDismissed. */
 export function GetTheAppCard({
   name,
   dismissed = false,
@@ -27,11 +37,11 @@ export function GetTheAppCard({
   dismissed?: boolean;
 } = {}) {
   const [optimisticDismissed, setOptimisticDismissed] = useState(dismissed);
-  const [installed, setInstalled] = useState(false);
-
-  useEffect(() => {
-    setInstalled(isStandaloneDisplay());
-  }, []);
+  const installed = useSyncExternalStore(
+    subscribeStandaloneDisplay,
+    getStandaloneSnapshot,
+    getStandaloneServerSnapshot,
+  );
 
   const className = installed ? "get-the-app-card get-the-app-card--installed" : "get-the-app-card";
 

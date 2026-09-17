@@ -14,3 +14,12 @@ export function isStandaloneDisplay(
   }
   return Boolean((win.navigator as Navigator & { standalone?: boolean }).standalone);
 }
+
+/** Subscribe to display-mode changes for `useSyncExternalStore`. iOS `navigator.standalone`
+ *  is a launch-time bit and does not emit events; it is still read in `isStandaloneDisplay`
+ *  on each snapshot. */
+export function subscribeStandaloneDisplay(onStoreChange: () => void): () => void {
+  const mq = window.matchMedia("(display-mode: standalone)");
+  mq.addEventListener("change", onStoreChange);
+  return () => mq.removeEventListener("change", onStoreChange);
+}

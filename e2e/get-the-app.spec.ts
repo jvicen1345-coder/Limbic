@@ -23,8 +23,8 @@ async function openGetTheAppCard(page: Page) {
 
 /** Runs in the page before any app script. The argument is passed through
  *  `addInitScript` because Playwright serializes the function and cannot close over
- *  Node-side locals. */
-function mockStandaloneDisplay(source: "display-mode" | "ios-standalone") {
+ *  Node-side locals. Typed as `string` so it matches Playwright's PageFunction arg. */
+function mockStandaloneDisplay(source: string) {
   if (source === "display-mode") {
     const original = window.matchMedia.bind(window);
     window.matchMedia = (query: string) => {
@@ -64,8 +64,7 @@ async function readGetTheAppDismissed(email: string): Promise<number> {
         args: [email],
       });
       const value = result.rows[0]?.getTheAppDismissed;
-      if (value === true || value === 1) return 1;
-      if (value === false || value === 0) return 0;
+      if (value === 1 || value === 0) return Number(value);
       if (typeof value === "bigint") return Number(value);
       lastError = new Error(`no getTheAppDismissed for ${email} (got ${String(value)})`);
     } catch (error) {
