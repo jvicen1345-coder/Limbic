@@ -246,6 +246,7 @@ html[data-theme="dark"] .date-field-native { color-scheme: dark; }
   transition: background 150ms ease;
 }
 .switch[aria-checked="true"] { background: var(--color-accent); }
+.switch:disabled { opacity: 0.45; cursor: not-allowed; }
 .switch-thumb {
   position: absolute;
   top: 2px;

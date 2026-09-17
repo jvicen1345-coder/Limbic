@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useRef, useTransition } from "react";
 import { setGetTheAppDismissedAction } from "@/app/actions/profile";
 import { Switch } from "@/components/Switch";
 
@@ -9,7 +9,8 @@ import { Switch } from "@/components/Switch";
  *  instantly instead of waiting on the round trip.
  *
  *  Controlled: the card owns dismissed state so a failed/no-op action can roll the compact
- *  UI back instead of leaving two useState copies out of sync. */
+ *  UI back instead of leaving two useState copies out of sync. Disabled while the action
+ *  is in flight so a second click cannot race the first. */
 export function GetTheAppToggle({
   dismissed,
   onDismissedChange,
@@ -17,7 +18,8 @@ export function GetTheAppToggle({
   dismissed: boolean;
   onDismissedChange: (dismissed: boolean) => void;
 }) {
-  const [, startTransition] = useTransition();
+  const [pending, startTransition] = useTransition();
+  const inflight = useRef(false);
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -26,8 +28,11 @@ export function GetTheAppToggle({
       </span>
       <Switch
         checked={dismissed}
+        disabled={pending}
         label={dismissed ? "Show the Get the App instructions" : "Hide the Get the App instructions"}
         onChange={() => {
+          if (pending || inflight.current) return;
+          inflight.current = true;
           const previous = dismissed;
           const next = !dismissed;
           onDismissedChange(next);
@@ -37,6 +42,8 @@ export function GetTheAppToggle({
               if (!ok) onDismissedChange(previous);
             } catch {
               onDismissedChange(previous);
+            } finally {
+              inflight.current = false;
             }
           });
         }}

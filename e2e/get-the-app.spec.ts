@@ -95,6 +95,7 @@ test.describe("Get the App dismiss", () => {
     await expect(card.getByText("Install instructions are hidden")).toBeVisible();
     await expect(card.getByText("iPhone & iPad (Safari)")).toHaveCount(0);
     await expect(page.locator("#get-the-app")).toHaveCount(1);
+    await expect(showSwitch).toBeEnabled();
 
     await page.reload();
     await expect(page.getByRole("heading", { name: "Profile", exact: true })).toBeVisible();
@@ -116,6 +117,7 @@ test.describe("Get the App dismiss", () => {
       "aria-checked",
       "false",
     );
+    await expect(again.getByRole("switch", { name: "Hide the Get the App instructions" })).toBeEnabled();
     await expect(again.getByText("iPhone & iPad (Safari)")).toBeVisible();
     await expect(again.getByText("Add Limbic to your home screen")).toBeVisible();
 
