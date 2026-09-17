@@ -169,7 +169,7 @@ export default async function ProfilePage() {
         />
       </CollapsibleCard>
 
-      <GetTheAppCard name={PROFILE_CARD_GROUP} />
+      <GetTheAppCard name={PROFILE_CARD_GROUP} dismissed={user.getTheAppDismissed} />
 
       <CollapsibleCard title="Account security" name={PROFILE_CARD_GROUP} style={{ marginBottom: 18 }}>
         <AccountSecuritySection

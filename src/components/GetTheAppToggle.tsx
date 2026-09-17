@@ -7,7 +7,15 @@ import { Switch } from "@/components/Switch";
 /** The Get the App card's own dismiss control (see GetTheAppCard.tsx) — optimistic like
  *  HomeWidgetToggle.tsx's pattern, so the switch (and the card content it drives) flips
  *  instantly instead of waiting on the round trip. */
-export function GetTheAppToggle({ dismissed }: { dismissed: boolean }) {
+export function GetTheAppToggle({
+  dismissed,
+  onOptimisticChange,
+}: {
+  dismissed: boolean;
+  /** Lets GetTheAppCard collapse/expand its instructions on the same click, without
+   *  waiting for the server action. Auto-hide in installed app mode must not use this. */
+  onOptimisticChange?: (dismissed: boolean) => void;
+}) {
   const [optimistic, setOptimistic] = useState(dismissed);
   const [, startTransition] = useTransition();
 
@@ -22,6 +30,7 @@ export function GetTheAppToggle({ dismissed }: { dismissed: boolean }) {
         onChange={() => {
           const next = !optimistic;
           setOptimistic(next);
+          onOptimisticChange?.(next);
           startTransition(() => {
             setGetTheAppDismissedAction(next);
           });
