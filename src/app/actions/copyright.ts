@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { isSiteAdmin } from "@/lib/admin";
-import { getCurrentUser } from "@/lib/session";
+import { hasAdminArea } from "@/lib/admin";
+import { copyrightOwnerTargetError } from "@/lib/copyright-owner-guard";
+import { getCurrentUser, isAdminEmail } from "@/lib/session";
 import {
   NOTICE_TARGET_TYPES,
   type NoticeTargetType,
@@ -14,7 +15,7 @@ import {
  * app/dmca/page.tsx. Recording a notice, taking material down, rejecting or reinstating it,
  * and suspending a repeat infringer.
  *
- * Two rules hold across all of them. Every action re-checks isSiteAdmin() itself rather
+ * Two rules hold across all of them. Every action re-checks hasAdminArea("copyright") itself rather
  * than trusting the page that rendered the button, since each is a callable endpoint in its
  * own right (same reasoning as app/actions/admin.ts). And nothing here ever hard-deletes:
  * a takedown sets removedAt, a suspension sets suspendedAt, and a resolved notice keeps its
@@ -54,7 +55,7 @@ export async function recordCopyrightNoticeAction(input: {
   targetId: string;
   notes?: string;
 }): Promise<CopyrightActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
 
   const complainantName = input.complainantName.trim();
   const complainantEmail = input.complainantEmail.trim();
@@ -101,7 +102,7 @@ export async function recordCopyrightNoticeAction(input: {
  * to resolve rather than getting stuck.
  */
 export async function removeReportedContentAction(noticeId: string): Promise<CopyrightActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
 
   const notice = await prisma.copyrightNotice.findUnique({ where: { id: noticeId } });
   if (!notice) return { ok: false, error: "That notice no longer exists." };
@@ -134,7 +135,7 @@ export async function rejectCopyrightNoticeAction(
   noticeId: string,
   reason: string
 ): Promise<CopyrightActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
   const trimmed = reason.trim();
   if (!trimmed) return { ok: false, error: "Give a reason for rejecting this notice." };
 
@@ -166,7 +167,7 @@ export async function reinstateContentAction(
   noticeId: string,
   reason: string
 ): Promise<CopyrightActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
   const trimmed = reason.trim();
   if (!trimmed) return { ok: false, error: "Give a reason for reinstating this content." };
 
@@ -201,11 +202,14 @@ export async function reinstateContentAction(
  * these circumstances, for this reason" is precisely the showing §512(i) wants.
  *
  * The account keeps its content and its notice history; only access is withdrawn. Refuses
- * to suspend the admin's own account, same guard as deleteUserAction.
+ * to suspend the admin's own account, same guard as deleteUserAction. Also refuses when
+ * the target is an allowlist owner (isAdminEmail on email / licenseEmail): a copyright
+ * co-admin who can suspend the owner who appointed them locks that owner out of
+ * /admin/accounts, which is the only place the grant can be revoked (issue #496).
  */
 export async function suspendUserAction(userId: string, reason: string): Promise<CopyrightActionResult> {
   const admin = await getCurrentUser();
-  if (!admin || !(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!admin || !(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
   if (userId === admin.id) return { ok: false, error: "You can't suspend your own account." };
 
   const trimmed = reason.trim();
@@ -213,6 +217,13 @@ export async function suspendUserAction(userId: string, reason: string): Promise
 
   const target = await prisma.user.findUnique({ where: { id: userId } });
   if (!target) return { ok: false, error: "That account no longer exists." };
+
+  const ownerBlocked = copyrightOwnerTargetError({
+    action: "suspend",
+    targetIsOwner: isAdminEmail(target.email) || isAdminEmail(target.licenseEmail),
+    actorIsOwner: isAdminEmail(admin.email) || isAdminEmail(admin.licenseEmail),
+  });
+  if (ownerBlocked) return { ok: false, error: ownerBlocked };
 
   await prisma.user.update({
     where: { id: userId },
@@ -224,12 +235,27 @@ export async function suspendUserAction(userId: string, reason: string): Promise
   return { ok: true };
 }
 
-/** Lifts a suspension — a counter-notice held up, or the suspension was a mistake. */
+/**
+ * Lifts a suspension — a counter-notice held up, or the suspension was a mistake.
+ *
+ * An owner cannot be suspended through this surface, but a row can still be flagged in
+ * the database. Only another allowlist owner may lift that; a copyright co-admin cannot
+ * (same owner-target rule as suspend, issue #496). Ordinary readers stay liftable by
+ * anyone who holds the copyright area.
+ */
 export async function unsuspendUserAction(userId: string): Promise<CopyrightActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  const admin = await getCurrentUser();
+  if (!admin || !(await hasAdminArea("copyright"))) return { ok: false, error: "Not authorized." };
 
   const target = await prisma.user.findUnique({ where: { id: userId } });
   if (!target) return { ok: false, error: "That account no longer exists." };
+
+  const ownerBlocked = copyrightOwnerTargetError({
+    action: "unsuspend",
+    targetIsOwner: isAdminEmail(target.email) || isAdminEmail(target.licenseEmail),
+    actorIsOwner: isAdminEmail(admin.email) || isAdminEmail(admin.licenseEmail),
+  });
+  if (ownerBlocked) return { ok: false, error: ownerBlocked };
 
   await prisma.user.update({
     where: { id: userId },

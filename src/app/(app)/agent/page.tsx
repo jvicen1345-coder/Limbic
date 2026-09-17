@@ -19,7 +19,7 @@ export default async function AgentPage({ searchParams }: { searchParams: Promis
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Limbic Agent</h1>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
           Clinical decision support powered by AI. Evidence-based answers at the point of care. Available with
-          LimbicPRO — $15/month.
+          LimbicPRO — $10/month.
         </p>
         <ProGate toolName="Limbic Agent" />
       </div>

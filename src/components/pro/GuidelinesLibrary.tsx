@@ -564,7 +564,7 @@ const GUIDELINES: Guideline[] = [
   {
     condition: "International Framework for Examination of the Cervical Region for Potential Vascular Pathologies",
     org: "IFOMPT",
-    year: 2022,
+    year: 2023,
     region: "Spine",
     url: "https://www.jospt.org/doi/10.2519/jospt.2022.11147",
     docType: "Framework",

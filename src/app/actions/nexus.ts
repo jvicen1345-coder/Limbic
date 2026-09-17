@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import { youtubeVideoId } from "@/lib/meta";
 
 const MAX_POST_IMAGES = 4;
@@ -12,9 +13,30 @@ const MAX_POST_IMAGES = 4;
 // normal ceiling.
 const MAX_IMAGE_DATA_URL_LENGTH = 2_000_000;
 
+/**
+ * The signed-in reader, but only when Nexus exists for them (lib/nexus-visibility.ts) *and*
+ * they have joined it. Null means "do nothing" — every write below returns silently rather
+ * than throwing, same as the `!user` case always has.
+ *
+ * Checking `nexusOptIn` alone is not enough. A Server Action is an endpoint, not a screen:
+ * hiding the button that calls it does not stop a request built by hand, and the action ids
+ * ship in the client bundle wherever a component importing them is bundled — components/
+ * ShareCompletionButton.tsx travels with Boards and Daily Term even though it renders null
+ * for these readers. Without this gate, an account that opted in before Nexus was hidden
+ * could still post, like, comment and message into a feed only admins can see.
+ */
+async function nexusMember() {
+  const user = await getCurrentUser();
+  if (!user || !nexusVisibleTo(user) || !user.nexusOptIn) return null;
+  return user;
+}
+
 export async function optInToNexusAction() {
   const user = await getCurrentUser();
-  if (!user) return;
+  // Visibility only — nexusMember() would reject the very state this action creates. The
+  // check still matters: without it any signed-in reader could join a feature that does not
+  // exist for them, and every membership-gated action below would then let them in.
+  if (!user || !nexusVisibleTo(user)) return;
 
   await prisma.user.update({ where: { id: user.id }, data: { nexusOptIn: true } });
   revalidatePath("/", "layout");
@@ -27,6 +49,11 @@ export async function optInToNexusAction() {
  * messages (either direction) — then clears the opt-in flag and the Nexus-specific
  * headline/bio. A user who rejoins later starts fresh rather than reappearing with old
  * connections intact.
+ *
+ * Deliberately gated on sign-in alone, not nexusMember() — it only ever deletes the
+ * caller's own rows, so it is the one action that must stay reachable for someone Nexus is
+ * hidden from. Refusing it would strand whatever they wrote before the feature went
+ * admin-only, with no surface left to clear it from.
  */
 export async function leaveNexusAction() {
   const user = await getCurrentUser();
@@ -48,8 +75,8 @@ export async function leaveNexusAction() {
 }
 
 export async function sendConnectionRequestAction(recipientId: string) {
-  const user = await getCurrentUser();
-  if (!user || user.id === recipientId || !user.nexusOptIn) return;
+  const user = await nexusMember();
+  if (!user || user.id === recipientId) return;
 
   // The Directory only ever lists opted-in people, but that's a UI-level filter — without
   // this check, a request built outside the app's own UI could still target (or come from)
@@ -87,8 +114,8 @@ export async function sendConnectionRequestAction(recipientId: string) {
 }
 
 export async function respondConnectionAction(connectionId: string, accept: boolean) {
-  const user = await getCurrentUser();
-  if (!user || !user.nexusOptIn) return;
+  const user = await nexusMember();
+  if (!user) return;
 
   const connection = await prisma.connection.findUnique({ where: { id: connectionId } });
   if (!connection || connection.recipientId !== user.id) return;
@@ -101,8 +128,8 @@ export async function respondConnectionAction(connectionId: string, accept: bool
 }
 
 export async function createNexusPostAction(formData: FormData) {
-  const user = await getCurrentUser();
-  if (!user || !user.nexusOptIn) return;
+  const user = await nexusMember();
+  if (!user) return;
 
   const type = String(formData.get("type") ?? "text");
   const body = String(formData.get("body") ?? "").trim();
@@ -141,8 +168,8 @@ export async function createNexusPostAction(formData: FormData) {
 }
 
 export async function toggleNexusLikeAction(postId: string) {
-  const user = await getCurrentUser();
-  if (!user || !user.nexusOptIn) return;
+  const user = await nexusMember();
+  if (!user) return;
 
   const existing = await prisma.nexusPostLike.findUnique({
     where: { postId_userId: { postId, userId: user.id } },
@@ -156,8 +183,8 @@ export async function toggleNexusLikeAction(postId: string) {
 }
 
 export async function addNexusCommentAction(postId: string, formData: FormData) {
-  const user = await getCurrentUser();
-  if (!user || !user.nexusOptIn) return;
+  const user = await nexusMember();
+  if (!user) return;
 
   const body = String(formData.get("body") ?? "").trim();
   if (!body) return;
@@ -167,8 +194,8 @@ export async function addNexusCommentAction(postId: string, formData: FormData) 
 }
 
 export async function sendNexusMessageAction(recipientId: string, formData: FormData) {
-  const user = await getCurrentUser();
-  if (!user || !user.nexusOptIn) return;
+  const user = await nexusMember();
+  if (!user) return;
 
   const body = String(formData.get("body") ?? "").trim();
   if (!body) return;

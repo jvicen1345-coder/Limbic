@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { listSafetyAssessments } from "@/app/actions/connexion-safety-score";
 
 /** Admin-only — every Connexion Safety Score assessment administered so far (see
@@ -8,7 +8,7 @@ import { listSafetyAssessments } from "@/app/actions/connexion-safety-score";
  *  app/actions/connexion-safety-score.ts). Same "must be admin" redirect idiom as
  *  /admin/connexion-visits and /admin/licenses. */
 export default async function AdminConnexionSafetyScorePage() {
-  if (!(await isSiteAdmin())) redirect("/home");
+  if (!(await hasAdminArea("connexion"))) redirect("/home");
 
   const assessments = await listSafetyAssessments();
 

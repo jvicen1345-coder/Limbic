@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 
 const MAX_LENGTH = 2000;
 
@@ -35,7 +35,7 @@ export async function submitSuggestionAction(body: string): Promise<SubmitSugges
  *  manageable, same "re-check server-side even though the UI is admin-only" reasoning as
  *  every other admin action (see app/actions/admin.ts). */
 export async function deleteSuggestionAction(id: string) {
-  if (!(await isSiteAdmin())) return;
+  if (!(await hasAdminArea("suggestions"))) return;
   await prisma.suggestion.delete({ where: { id } });
   revalidatePath("/admin/suggestions");
 }

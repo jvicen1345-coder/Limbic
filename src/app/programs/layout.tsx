@@ -1,3 +1,4 @@
+import "@/styles/student.css";
 import type { ReactNode } from "react";
 import "@/styles/programs.css";
 

@@ -15,6 +15,7 @@ export function ProfileForm({
   isPro,
   headline,
   bio,
+  showNexusFields,
 }: {
   name: string;
   specialty: string;
@@ -36,6 +37,9 @@ export function ProfileForm({
   isPro: boolean;
   headline: string;
   bio: string;
+  /** These two fields exist only to feed a Nexus profile, so they follow Nexus's own
+   *  visibility — false for every non-admin (see lib/nexus-visibility.ts). */
+  showNexusFields: boolean;
 }) {
   const [, startTransition] = useTransition();
 
@@ -117,27 +121,31 @@ export function ProfileForm({
           <p className="profile-field-hint">Your school&apos;s Canvas address — powers the &quot;Open Canvas&quot; button in Atrium. Just a link, not a sign-in.</p>
         </div>
       )}
-      <div className="field">
-        <label htmlFor="pf-headline">Nexus headline</label>
-        <input
-          className="input"
-          id="pf-headline"
-          placeholder="e.g. Outpatient Ortho PT · Austin, TX"
-          defaultValue={headline}
-          onChange={(e) => startTransition(() => updateProfileFieldAction("headline", e.target.value))}
-        />
-      </div>
-      <div className="field">
-        <label htmlFor="pf-bio">Nexus bio</label>
-        <textarea
-          className="input"
-          id="pf-bio"
-          rows={3}
-          placeholder="A couple sentences for your Nexus profile…"
-          defaultValue={bio}
-          onChange={(e) => startTransition(() => updateProfileFieldAction("bio", e.target.value))}
-        />
-      </div>
+      {showNexusFields && (
+        <>
+        <div className="field">
+          <label htmlFor="pf-headline">Nexus headline</label>
+          <input
+            className="input"
+            id="pf-headline"
+            placeholder="e.g. Outpatient Ortho PT · Austin, TX"
+            defaultValue={headline}
+            onChange={(e) => startTransition(() => updateProfileFieldAction("headline", e.target.value))}
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="pf-bio">Nexus bio</label>
+          <textarea
+            className="input"
+            id="pf-bio"
+            rows={3}
+            placeholder="A couple sentences for your Nexus profile…"
+            defaultValue={bio}
+            onChange={(e) => startTransition(() => updateProfileFieldAction("bio", e.target.value))}
+          />
+        </div>
+        </>
+      )}
     </div>
   );
 }

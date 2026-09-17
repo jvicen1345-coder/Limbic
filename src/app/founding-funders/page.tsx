@@ -3,7 +3,7 @@ import "@/styles/founding-funders.css";
 import "@/styles/onboarding.css";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea, isSiteAdmin } from "@/lib/admin";
 import {
   getFoundingFundersData,
   confirmFoundingFunderPaymentIfNeeded,
@@ -79,8 +79,8 @@ const TIMELINE = [
 // Public — a signed-out visitor can read the pitch and join the waitlist without an
 // account (see robots.ts, which allow-lists this path specifically for that reason).
 // getFoundingFundersData()/joinWaitlistAction() below don't touch any per-user data, and
-// the admin-only panels stay gated behind isSiteAdmin(), which already safely returns
-// false for a signed-out visitor.
+// the payment-admin panels stay gated behind hasAdminArea("foundingFunders"), which already
+// safely returns false for a signed-out visitor. The all-users roster is owner-only (#497).
 export default async function FoundingFundersPage({
   searchParams,
 }: {
@@ -96,22 +96,28 @@ export default async function FoundingFundersPage({
   if (success === "true" && sessionId) await confirmFoundingFunderPaymentIfNeeded(sessionId);
   if (canceled === "true" && sessionId) await cleanupCanceledFoundingFunderCheckout(sessionId);
 
-  const [data, isAdmin] = await Promise.all([getFoundingFundersData(), isSiteAdmin()]);
+  const [data, isAdmin, isOwner] = await Promise.all([
+    getFoundingFundersData(),
+    hasAdminArea("foundingFunders"),
+    isSiteAdmin(),
+  ]);
   const slots = Array.from({ length: data.totalSlots }, (_, i) => data.funders[i] ?? null);
-  // Only fetched for an admin — no reason to run these for every visitor.
-  const [registeredUsers, rosterEntries] = isAdmin
-    ? await Promise.all([
-        prisma.user.findMany({
+  // Payment roster: anyone with foundingFunders. Registered-user PII: owners only (#497).
+  const [registeredUsers, rosterEntries] = await Promise.all([
+    isOwner
+      ? prisma.user.findMany({
           orderBy: { createdAt: "desc" },
           select: { name: true, email: true, licenseNumber: true, licenseEmail: true, isPro: true, createdAt: true },
-        }),
-        prisma.foundingFunder.findMany({
+        })
+      : Promise.resolve([]),
+    isAdmin
+      ? prisma.foundingFunder.findMany({
           where: { paymentStatus: { in: ["confirmed", "pending"] } },
           orderBy: { claimedAt: "asc" },
           select: { id: true, displayName: true, credential: true, paymentStatus: true },
-        }),
-      ])
-    : [[], []];
+        })
+      : Promise.resolve([]),
+  ]);
 
   return (
     <div className="ff-page">
@@ -271,8 +277,8 @@ export default async function FoundingFundersPage({
       {isAdmin && (
         <>
           <FoundingFundersRoster entries={rosterEntries} confirmedCount={data.confirmedCount} pendingCount={data.pendingCount} />
-          <FoundingAdminPanel />
-          <RegisteredUsersPanel users={registeredUsers} />
+          <FoundingAdminPanel isOwner={isOwner} />
+          {isOwner && <RegisteredUsersPanel users={registeredUsers} />}
         </>
       )}
     </div>

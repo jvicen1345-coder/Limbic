@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { getSafetyAssessment } from "@/app/actions/connexion-safety-score";
 import { SafetyAssessmentForm } from "@/components/connexion/SafetyAssessmentForm";
 import { SAFETY_SCORE_DOMAINS, domainMaxScore } from "@/lib/connexion-safety-score";
@@ -8,7 +8,7 @@ import { SAFETY_SCORE_DOMAINS, domainMaxScore } from "@/lib/connexion-safety-sco
 /** View/edit one Connexion Safety Score assessment — same form as .../new, pre-filled and
  *  wired to updateSafetyAssessment instead of createSafetyAssessment. */
 export default async function ConnexionSafetyScoreDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  if (!(await isSiteAdmin())) redirect("/home");
+  if (!(await hasAdminArea("connexion"))) redirect("/home");
 
   const { id } = await params;
   const assessment = await getSafetyAssessment(id);

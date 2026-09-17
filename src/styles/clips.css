@@ -87,3 +87,14 @@
   text-decoration: none;
 }
 
+/* Moved from pro.css — only /saved/clips uses this */
+/* Ghost variant of the clip save button — see components/ClipSaveButton.tsx, which used to
+   carry these as inline styles that no media query could reach. */
+.clip-save-btn-ghost { width: 30px; height: 30px; }
+/* Final touch-target pass. These sit at the very end because each one has to beat an earlier
+   declaration of the same specificity: the checkbox/radio sizing above is undone by the base
+   `input[type="checkbox"] { width: 16px }` rule further down the file, and .clip-save-btn-ghost
+   is declared just above. */
+@media (pointer: coarse) {
+.clip-save-btn-ghost { width: 44px; height: 44px; }
+}

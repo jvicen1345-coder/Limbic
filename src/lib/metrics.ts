@@ -254,8 +254,7 @@ export function parseMileTime(value: string): number | null {
 }
 
 // ————————————————————————————————————————————————————————————————————————
-// Metrics Over Time — pure-SVG sparkline path, same approach as StockCard's
-// sparklinePath (see lib/stock.ts buildStockView) — no charting library.
+// Metrics Over Time — pure-SVG sparkline path, no charting library.
 // ————————————————————————————————————————————————————————————————————————
 
 export function buildSparklinePath(values: number[], width = 220, height = 60): string {

@@ -119,7 +119,7 @@ export default async function HepPage({
         {!user.isPro && (
           <div className="free-tool-banner" style={{ marginBottom: 22 }}>
             Build and assign home exercise programs to your patients. Exercise images and videos are available with
-            LimbicPRO — <a href="/profile/membership">$15/month</a>.
+            LimbicPRO — <a href="/profile/membership">$10/month</a>.
           </div>
         )}
 

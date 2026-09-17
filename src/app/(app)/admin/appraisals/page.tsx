@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { SOURCE_ACCESS, SOURCE_ACCESS_LABELS, type AppraisalInput } from "@/lib/appraisal";
@@ -15,7 +15,7 @@ import { AppraisalWorkbench, type AppraisalRow } from "@/components/admin/Apprai
  *  The server actions apply the same scope, so this is a matching view rather than the
  *  enforcement (see app/actions/appraisal.ts). */
 export default async function AdminAppraisalsPage() {
-  if (!(await isSiteAdmin())) redirect("/home");
+  if (!(await hasAdminArea("appraisals"))) redirect("/home");
   const user = await getCurrentUser();
   if (!user) redirect("/home");
 

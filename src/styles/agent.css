@@ -310,19 +310,3 @@
   padding: 2px 8px;
   border-radius: 999px;
 }
-/* — Feed-card Threads teaser (see components/ArticleCard.tsx) — a direct, always-visible
-   link into the article's real Threads web, not a hover-revealed preview. */
-.card-threads-teaser {
-  margin-top: 4px;
-  font-size: var(--fs-11-5);
-  color: var(--color-accent-700);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: inherit;
-  cursor: pointer;
-}
-

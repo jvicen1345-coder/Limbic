@@ -9,8 +9,10 @@ import {
   type PlaybookBlock,
 } from "@/lib/playbook-content";
 import { parsePlaybookInline } from "@/lib/playbook-inline";
-import { GUIDES, guideHref } from "@/lib/guides";
+import { GUIDES, canReadGuide, guideHref, isKnownGuide } from "@/lib/guides";
 import { grantLimbicStudent, signUpAndEnterApp } from "./helpers";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 
 /**
  * Limbic Playbooks — the content bank (lib/playbooks/*) and the page that renders it
@@ -310,6 +312,49 @@ test.describe("Playbook access", () => {
   });
 });
 
+/** Every guide's document, checked against the card that describes it — including the ones
+ *  still marked coming soon, which the served-guides suite below cannot reach because the
+ *  route deliberately 404s them.
+ *
+ *  This exists because publication state and correctness are independent. A guide is marked
+ *  coming soon when its writing is not ready, not when its markup is broken, and the counts
+ *  on its card are claimed as real the whole time it sits there. Without this, the moment a
+ *  finished guide is flagged coming soon it silently loses every structural assertion it had
+ *  — which is exactly backwards, since an unpublished guide is the one still being edited.
+ *
+ *  The document is loaded into the page directly rather than fetched, so no entitlement,
+ *  route or admin allowlist is involved: this asks only whether the bytes are right. */
+test.describe("Every guide document, published or not", () => {
+  for (const guide of GUIDES) {
+    test(`${guide.slug} matches the counts its card claims`, async ({ page }) => {
+      const html = await readFile(
+        path.join(process.cwd(), "content", "playbooks", `${guide.slug}.html`),
+        "utf8",
+      );
+      await page.setContent(html, { waitUntil: "load" });
+
+      await expect(page.locator("main section[id]"), `${guide.slug} sections`).toHaveCount(guide.sections);
+      await expect(page.locator("input[data-ck]"), `${guide.slug} exam items`).toHaveCount(guide.items);
+      await expect(page.locator("#refs li"), `${guide.slug} references`).toHaveCount(guide.references);
+
+      // The citation linker runs on load and records what it could not resolve. This is the
+      // assertion the four withheld guides were rebuilt to satisfy, so it is checked on
+      // every guide rather than only on the ones currently readable.
+      const cites = await page.evaluate(
+        () => (window as unknown as { playbookCites?: { linked: number; unlinked: string[] } }).playbookCites,
+      );
+      expect(cites?.unlinked, `${guide.slug} has citations resolving to nothing`).toEqual([]);
+
+      // Storage keys are per-guide: served from one origin, two guides sharing a key would
+      // share check-off state, recall state and the reader's own taught lines.
+      const keys = html.match(/'[a-z0-9-]+-(?:comp|recall|missed|add)-v\d'/g) ?? [];
+      const prefixes = new Set(keys.map((k) => k.replace(/^'/, "").split("-")[0]));
+      expect(prefixes.size, `${guide.slug} mixes storage-key prefixes: ${[...prefixes]}`).toBe(1);
+      expect([...prefixes][0], `${guide.slug} still carries the template's JOINT- keys`).not.toBe("JOINT");
+    });
+  }
+});
+
 /** The shoulder guide is served as a fixed asset (content/playbooks/shoulder-examination.html,
  *  see app/(app)/student/guides/shoulder-examination/route.ts). Two regressions are worth
  *  catching: the file falling out of the serverless bundle, which would 500 in production and
@@ -439,6 +484,29 @@ test("the served guide links back into Limbic", async ({ page }) => {
  *  shoulder is in that registry too and is served by its own handler next door — a static
  *  segment wins over the dynamic one — so this exercises both routes. */
 test.describe("Served guides", () => {
+  test("coming soon is a publication state, not a secret — admins read through it", () => {
+    const soon = GUIDES.filter((g) => g.comingSoon);
+    const published = GUIDES.filter((g) => !g.comingSoon);
+    expect(soon.length, "no guide is marked coming soon, so this rule is untested").toBeGreaterThan(0);
+
+    for (const guide of published) {
+      expect(canReadGuide(guide.slug, { admin: false }), `${guide.slug} is published`).toBe(true);
+      expect(canReadGuide(guide.slug, { admin: true })).toBe(true);
+    }
+    for (const guide of soon) {
+      expect(canReadGuide(guide.slug, { admin: false }), `${guide.slug} leaks before release`).toBe(false);
+      expect(canReadGuide(guide.slug, { admin: true }), `${guide.slug} is closed to an admin`).toBe(true);
+    }
+
+    // An unknown slug is a 404 for everyone, admin included: that check guards the
+    // filesystem read in the route handler, and it is not a publication state to override.
+    for (const slug of ["elbow-examination", "../../package.json", ""]) {
+      expect(isKnownGuide(slug)).toBe(false);
+      expect(canReadGuide(slug, { admin: true }), `${slug} reaches the filesystem`).toBe(false);
+      expect(canReadGuide(slug, { admin: false })).toBe(false);
+    }
+  });
+
   test("the unsourced originals are gone from the data", () => {
     expect(UNVERIFIED_PLAYBOOKS, "withheld playbooks were deleted, not re-published").toEqual([]);
     expect(PLAYBOOKS, "no data playbook is published; the guides are served from content/").toEqual([]);

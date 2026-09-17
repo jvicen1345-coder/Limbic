@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "test:unit": "node --experimental-strip-types --import ./scripts/register-unit-test-loader.mjs --test \"src/**/*.test.ts\"",
     "test": "playwright test",
     "analyze": "next experimental-analyze --output",
     "postinstall": "prisma generate",

@@ -38,7 +38,7 @@ function todayIso(): string {
 
 /** The Connexion Safety Score's fillable form — every item from SAFETY_SCORE_DOMAINS scored
  *  0-4, plus the equipment/caregiver/priority-action/summary sections from the paper form.
- *  isSiteAdmin-gated pages (/admin/connexion-safety-score/new and .../[id]) are this
+ *  hasAdminArea("connexion")-gated pages (/admin/connexion-safety-score/new and .../[id]) are this
  *  component's only callers; it does no authorization itself, matching EditPatientForm and
  *  every other form-plus-server-action pair in this app. */
 export function SafetyAssessmentForm({ mode, id, initial, visitRequestId, initialClientName }: Props) {

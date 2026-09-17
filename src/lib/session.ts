@@ -6,7 +6,12 @@ import { prisma } from "@/lib/db";
 import { nameFromEmail } from "@/lib/meta";
 import { hashPassword, verifyPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";
 import { TERMS_VERSION } from "@/lib/legal-terms";
+import { isAdminEmail, adminAreasForUser } from "@/lib/admin-authz";
 import type { User } from "@/generated/prisma/client";
+
+/** Re-exported from lib/admin-authz.ts so existing callers keep importing from here.
+ *  The implementations live there so node:test can load them without `server-only`. */
+export { isAdminEmail, adminAreasForUser };
 
 const COOKIE_NAME = "pt_news_session";
 const ONE_YEAR = 60 * 60 * 24 * 365;
@@ -52,27 +57,6 @@ async function readUserIdFromCookie(): Promise<string | null> {
   } catch {
     return null;
   }
-}
-
-/** Comma-separated sign-in emails allowed into every admin-only surface and, with the
- *  overlay below, every gated feature in the app — see lib/admin.ts isSiteAdmin, which
- *  delegates to isAdminEmail here rather than re-parsing this env var itself. Kept in this
- *  file (not lib/admin.ts) so getCurrentUser() can check it without importing lib/admin.ts,
- *  which itself imports getCurrentUser — that would be a circular import. */
-function adminAllowlist(): string[] {
-  return (process.env.FOUNDING_FUNDERS_ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-}
-
-/** Whether `email` is on the site-admin allowlist. Matched case-insensitively against
- *  either a General sign-in email or a PT license sign-in's email (see isSiteAdmin/
- *  hasStudentAccess below, and lib/admin.ts, which call this once per candidate email). */
-export function isAdminEmail(email: string | null | undefined): boolean {
-  if (!email) return false;
-  const allowed = adminAllowlist();
-  return allowed.length > 0 && allowed.includes(email.trim().toLowerCase());
 }
 
 /** The three paid tiers a site admin can comp for a specific account without that account
@@ -165,8 +149,22 @@ export function isStudentEmail(email: string | null | undefined): boolean {
  *  above, just handled explicitly here since email-suffix identity isn't a field
  *  getCurrentUser() can quietly override without corrupting the account's real sign-in
  *  email. */
-export function hasStudentAccess(user: { email: string | null; licenseEmail: string | null; compedAccess: unknown }): boolean {
+export function hasStudentAccess(user: {
+  email: string | null;
+  licenseEmail: string | null;
+  compedAccess: unknown;
+  studentTier: string;
+}): boolean {
   return (
+    // A paid Limbic Student subscription counts on its own, without a .edu email still
+    // being the sign-in address. Graduation is the case this exists for: the app asks
+    // students to add a personal backup email, and makePrimaryEmail (see
+    // app/actions/account-migration.ts) then swaps that address into `email` and the .edu
+    // one out. Nothing about that swap touches studentTier — Stripe keeps billing the $3/mo
+    // — so without this clause a subscriber who followed the app's own graduation flow lost
+    // every surface gated here (the whole Student Atrium, Boards, the assignments API,
+    // Atlas via hasClinicalReferenceAccess below) while still paying for them.
+    user.studentTier === "limbicStudent" ||
     isStudentEmail(user.email) ||
     isAdminEmail(user.email) ||
     isAdminEmail(user.licenseEmail) ||
@@ -195,7 +193,13 @@ export function hasLicenseAccess(user: {
  *  content still worth opening up to a .edu Limbic Student account, not just a paying PRO
  *  clinician. Real LimbicPRO members are unaffected either way — this only widens who else
  *  gets through, never narrows the existing isPro check. */
-export function hasClinicalReferenceAccess(user: { isPro: boolean; email: string | null; licenseEmail: string | null; compedAccess: unknown }): boolean {
+export function hasClinicalReferenceAccess(user: {
+  isPro: boolean;
+  email: string | null;
+  licenseEmail: string | null;
+  compedAccess: unknown;
+  studentTier: string;
+}): boolean {
   return user.isPro || hasStudentAccess(user);
 }
 
@@ -409,7 +413,9 @@ export async function clearBackupSigninFlag() {
 
 /** Stamps "now" as the user's latest home-feed visit and returns the *previous* value —
  *  the cutoff the feed uses to badge articles published "since you were last here",
- *  captured before it's overwritten. */
+ *  captured before it's overwritten. Home calls this from `after()` so the write is not on
+ *  the HTML critical path; callers that still need the previous cutoff should read
+ *  `user.lastVisitedAt` before scheduling the stamp. */
 export async function recordHomeVisit(user: User): Promise<Date | null> {
   const previous = user.lastVisitedAt;
   await prisma.user.update({ where: { id: user.id }, data: { lastVisitedAt: new Date() } });

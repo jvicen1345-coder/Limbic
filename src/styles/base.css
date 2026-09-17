@@ -217,11 +217,47 @@ html[data-theme="dark"] .card.card-hoverable:hover {
   font-family: var(--font-heading); font-weight: var(--font-heading-weight);
   font-size: 17px; line-height: 1.2;
 }
+/* ArticleCard / HeroArticleCard: the title is the real <a>; ::after stretches it to the
+   card so a click anywhere navigates while SaveButton / OpenAccessPill stay above it.
+   Lives here with .card-hoverable — Home does not load article.css (#465). */
+.article-card {
+  position: relative;
+}
+.article-card__title {
+  display: block;
+  color: inherit;
+}
+.article-card__title:hover {
+  color: inherit;
+  text-decoration: none;
+}
+.article-card__title::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.article-card__interactive {
+  position: relative;
+  z-index: 2;
+}
 .card-body { margin: 0; font-size: 13px; opacity: 0.8; flex: 1; max-width: 680px; line-height: 1.6; }
 .card-meta {
   display: flex; align-items: center; gap: 6px; font-size: var(--fs-11);
   color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  /* The journal name sharing this row can run very long ("Zhonghua lao dong wei sheng zhi
+     ye bing za zhi = Chinese journal of industrial hygiene and occupational diseases"), so
+     it needs somewhere to go other than out of the card. */
+  flex-wrap: wrap;
 }
+/* Pills in this row carry short fixed labels (the specialty, a 2-3 letter evidence
+   abbreviation) — they should never be what gives when the journal name beside them is
+   long. As ordinary flex items they shrank right along with it, and .tag's
+   `overflow-wrap: anywhere` (see below — it exists for the long tags on /pro/guidelines)
+   then let them collapse to a couple of characters per line: "Orthopedic" rendering as
+   "Orthop / edic", "RCT" as a vertical R / C / T. Pinning them to their content width
+   leaves the journal name as the only thing that wraps, which is what should happen. */
+.card-meta > .tag { flex: none; overflow-wrap: normal; }
 .elev-sm { box-shadow: var(--shadow-sm); }
 .elev-md { box-shadow: var(--shadow-md); }
 .elev-lg { box-shadow: var(--shadow-lg); }
@@ -480,8 +516,49 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
    library are both 0). .sub-tabs and .boards-tabs have no such measurement and so get the
    chaining fix only; give them the same treatment if a swipe on them ever reads as jumpy.
    ============================================================================ */
-.sliding-tabs,
-.sub-tabs,
-.boards-tabs { overscroll-behavior-x: contain; }
+.sliding-tabs, .sub-tabs { overscroll-behavior-x: contain; }
 .sliding-tabs[data-scrollable="true"] { touch-action: pan-x; }
 
+/* Moved from nexus.css — shared filter chips/rows — Nexus, Profile, Search, onboarding (see docs/css.md) */
+.filter-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.filter-chip {
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+/* Chip.tsx's inactive state combines .tag-outline (border + colored text, no background)
+   with .filter-chip above — since .filter-chip's `border: none` comes later in the
+   cascade at equal specificity, it was silently canceling .tag-outline's border, and with
+   no background of its own either, the element fell through to the browser's default
+   <button> chrome: a light grey/white pill that read fine-ish in light mode but was hard
+   to read against dark mode's navy background (see the specialty filters on the Nexus
+   Directory page). This restores the intended outline look at higher specificity, with an
+   explicit transparent background so no default button styling can show through in either
+   theme. */
+.tag-outline.filter-chip {
+  border: 1px solid var(--color-accent);
+  background: none;
+}
+
+/* Moved from intake.css — shared intake error text — intake form and LimbicPRO dashboard */
+.intake-error { font-size: 13px; color: var(--color-danger); margin: 0; }
+
+/* Moved from tour.css — rendered from the root layout, so it must be styled on every route */
+/* — perceived-performance: nav loading bar, skeletons, page-enter fade, tap feedback —
+   see components/TopLoadingBar.tsx, components/SkeletonCard.tsx, and each route's
+   loading.tsx under app/(app)/*. */
+.top-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--color-accent);
+  transition: width 300ms ease, opacity 200ms ease;
+  z-index: 9999;
+  pointer-events: none;
+}

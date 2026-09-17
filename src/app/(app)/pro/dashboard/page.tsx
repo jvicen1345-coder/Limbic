@@ -37,7 +37,7 @@ export default async function ClinicianDashboardPage() {
         <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Clinician Dashboard</h1>
         <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 16px" }}>
           Your complete clinician dashboard. Patient caseload, outcome tracking, and clinical intelligence in one
-          place. Available with LimbicPRO — $15/month.
+          place. Available with LimbicPRO — $10/month.
         </p>
         <ProGate toolName="The Clinician Dashboard" />
       </div>

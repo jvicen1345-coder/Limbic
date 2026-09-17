@@ -35,6 +35,10 @@ jobs:
 
       - run: npm run lint
 
+      # Node's own test runner (no vitest in this project). Covers the CSS guards in
+      # src/styles/*.test.ts — the payload scope check and route sheet reachability.
+      - run: npm run test:unit
+
   e2e:
     name: End-to-end (Playwright)
     runs-on: ubuntu-latest

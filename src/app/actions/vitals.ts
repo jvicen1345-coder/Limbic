@@ -3,6 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { todayKeyInZone } from "@/lib/day";
+import { getTimeZone } from "@/lib/user-time-zone";
+import { recordWellnessActivity } from "@/lib/wellness-activity";
 import { VITALS_CATEGORIES, type VitalsCategory } from "@/lib/vitals";
 
 function isVitalsCategory(value: string): value is VitalsCategory {
@@ -64,6 +67,9 @@ export async function logVitalsActivity(input: {
       notes: input.notes.trim() || null,
     },
   });
+  // Any one wellness action a day keeps the streak alive (see lib/wellness-activity.ts).
+  const timeZone = await getTimeZone(user);
+  await recordWellnessActivity(user.id, todayKeyInZone(timeZone), timeZone);
   revalidatePath("/wellness/metrics");
   revalidatePath("/wellness");
 }

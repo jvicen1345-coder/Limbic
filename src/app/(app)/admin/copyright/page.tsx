@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { countsAsStrike, STRIKE_THRESHOLD } from "@/lib/copyright";
 import { CopyrightNoticeQueue, type NoticeRow, type InfringerRow } from "@/components/CopyrightNoticeQueue";
@@ -14,7 +14,7 @@ import { CopyrightNoticeQueue, type NoticeRow, type InfringerRow } from "@/compo
  *  purpose and uniquely: an admin has to be able to see material that has already been
  *  taken down in order to review a counter-notice and decide whether to reinstate it. */
 export default async function AdminCopyrightPage() {
-  if (!(await isSiteAdmin())) redirect("/home");
+  if (!(await hasAdminArea("copyright"))) redirect("/home");
 
   const notices = await prisma.copyrightNotice.findMany({
     orderBy: { receivedAt: "desc" },

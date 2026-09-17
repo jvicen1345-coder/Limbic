@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import type { MovementLabRequestStatus } from "@/lib/movement-lab-requests";
 
 interface ActionResult {
@@ -31,15 +31,15 @@ export async function requestMovementLabExercise(name: string, region: string | 
   return { ok: true };
 }
 
-/** Shared by markMovementLabRequestAdded/declineMovementLabRequest below — same
- *  isSiteAdmin() gate as every other admin surface (Suggestions, License Queue). Leaves the
- *  row in place with its new status rather than deleting it, same "keep a record" reasoning
- *  as rejectLicenseAction in app/actions/license.ts. Movement Lab itself is a hand-curated
- *  static TS catalog (lib/movement-lab), not a database table — marking a request "added"
- *  doesn't insert anything automatically, it just records that an admin has since written it
- *  into the appropriate region file by hand. */
+/** Shared by markMovementLabRequestAdded/declineMovementLabRequest below — gated on the
+ *  movementLab area, same as every other admin surface is on its own (Suggestions, License
+ *  Queue). Leaves the row in place with its new status rather than deleting it, same "keep a
+ *  record" reasoning as rejectLicenseAction in app/actions/license.ts. Movement Lab itself is
+ *  a hand-curated static TS catalog (lib/movement-lab), not a database table — marking a
+ *  request "added" doesn't insert anything automatically, it just records that an admin has
+ *  since written it into the appropriate region file by hand. */
 async function setRequestStatus(id: string, status: MovementLabRequestStatus): Promise<ActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("movementLab"))) return { ok: false, error: "Not authorized." };
   await prisma.movementLabExerciseRequest.update({ where: { id }, data: { status, reviewedAt: new Date() } });
   revalidatePath("/admin/movement-lab-requests");
   return { ok: true };
@@ -65,7 +65,7 @@ export async function declineMovementLabRequest(id: string): Promise<ActionResul
  * can tell the difference.
  */
 export async function markMovementLabRequestsAdded(ids: string[]): Promise<ActionResult & { updated: number }> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized.", updated: 0 };
+  if (!(await hasAdminArea("movementLab"))) return { ok: false, error: "Not authorized.", updated: 0 };
   if (ids.length === 0) return { ok: true, updated: 0 };
 
   const { count } = await prisma.movementLabExerciseRequest.updateMany({

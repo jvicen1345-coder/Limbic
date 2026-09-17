@@ -26,6 +26,7 @@ content.
 
 ```bash
 npm install
+cp .env.example .env        # local SQLite; see that file for optional API keys
 npx prisma migrate deploy   # or `npx prisma migrate dev` in development
 npm run dev
 ```
@@ -35,17 +36,59 @@ continue as a guest. Guests can read/search/save articles and personalize their 
 but Home Exercise Programs, APTA News, and Under Review are gated behind having a
 license on file (matching the source design).
 
-## Testing
+Before opening a pull request, run the [Development checks](#development-checks) below.
+
+## Development checks
+
+Local quality gates and what GitHub Actions runs on every PR and every push to `main`.
+Shipping the site is still [Vercel](#deploying-vercel--turso) — CI does not deploy.
+
+### Local commands
 
 ```bash
-npm test   # runs the Playwright suite in e2e/ (playwright.config.ts)
+npm run lint         # ESLint
+npm run typecheck    # tsc --noEmit
+npm run test:unit    # Node's test runner on src/**/*.test.ts
+npm test             # Playwright e2e in e2e/
 ```
 
-These are real end-to-end tests, not mocks — they drive a headless browser against your
-local dev server (started automatically if one isn't already running on :3000) and the
-local SQLite `dev.db`, so `.env` needs to be set up first (see "Getting started" above).
-Currently covers the landing page and the sign-in/sign-up/onboarding flow, including a
-regression test for the sign-in rate limiter (see "Password auth & reset emails" below).
+Unit tests use Node's built-in runner (not Vitest). They currently cover CSS payload and
+route-sheet reachability guards plus a few library helpers.
+
+`npm test` is Playwright against a real app and the local SQLite `dev.db` — there is no
+mocked backend. Locally it starts `next dev` if nothing is already on `:3000`, or reuses
+that server. Copy [`.env.example`](.env.example) to `.env` and apply migrations first
+(see [Getting started](#getting-started)). The first time you run e2e locally:
+
+```bash
+npx playwright install chromium
+```
+
+Auth/onboarding coverage includes a regression for the sign-in rate limiter (see
+[Password auth & reset emails](#password-auth--reset-emails) below). The suite also walks
+other critical journeys in `e2e/`; it is not a full product tour.
+
+### CI
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every **pull request** and
+every **push to `main`** (Node 22). Two jobs:
+
+1. **Typecheck and lint** — `npm ci`, then `npm run typecheck`, `npm run lint`, and
+   `npm run test:unit`.
+2. **End-to-end (Playwright)** — `npm ci`, copy `.env.example` to `.env` with a generated
+   `SESSION_SECRET`, apply migrations, install Chromium, then `npm test`. Under `CI=true`,
+   Playwright builds the app (`npm run build`) and serves that build instead of `next dev`.
+
+CI uses file SQLite (`DATABASE_URL=file:./dev.db` from `.env.example`) and stub/empty
+secrets except the generated session key. It does not exercise live Stripe, Resend, or
+other paid APIs.
+
+### CD
+
+Every push to the GitHub branch connected in Vercel
+[redeploys](#deploying-vercel--turso). The build command is
+`node scripts/apply-migrations.mjs && next build` (`npm run build`): migrations against
+the configured database, then `next build`. CI is the quality gate; Vercel is what ships.
 
 ## Deploying (Vercel + Turso)
 
@@ -239,7 +282,7 @@ whether that address has an account (`lib/password-reset-rate-limit.ts`).
 
 ## Stripe subscriptions
 
-LimbicPro ($25/mo) and LimbicStudent ($5/mo — see
+LimbicPro ($10/mo) and LimbicStudent ($3/mo — see
 `src/app/(app)/pro/membership/page.tsx`) are real, recurring Stripe subscriptions, not the
 instant demo flip they used to be. LimbicStudent is a single plan (an earlier, separate
 higher "Student PRO+ Boards" tier was retired in favor of one plan covering everything,
@@ -264,8 +307,8 @@ including Limbic Agent eligibility — see `src/app/(app)/student/page.tsx`). Th
 
 **Setup, in the Stripe Dashboard:**
 
-1. Create two Products, each with one recurring monthly Price: LimbicPro ($25) and
-   LimbicStudent ($5). Copy each Price's id (starts `price_...`, **not** the Product id)
+1. Create two Products, each with one recurring monthly Price: LimbicPro ($10) and
+   LimbicStudent ($3). Copy each Price's id (starts `price_...`, **not** the Product id)
    into `STRIPE_PRICE_PRO`/`STRIPE_PRICE_LIMBIC_STUDENT`.
 2. Settings → Billing → Customer portal: click "Activate test link" (test mode) or
    otherwise save a portal configuration at least once — `stripe.billingPortal.sessions
@@ -292,6 +335,54 @@ handling were reasoned through against Stripe's documented behavior rather than 
 live. Worth a real end-to-end test (a real test-mode checkout, confirming `isPro` flips,
 canceling via the portal, confirming it un-flips at period end) the first time this runs
 somewhere with real egress.
+
+## Admin access: owners and co-admins
+
+Admin is split in two, because "can work the license queue" and "can delete any account"
+should not be the same grant.
+
+- **Owners** are the emails in `FOUNDING_FUNDERS_ADMIN_EMAILS` (matched against either a
+  General sign-in email or a PT license sign-in's email, case-insensitively). An owner holds
+  every admin area, gets every paid tier and student-only area overlaid onto their account
+  (see `lib/session.ts` `getCurrentUser()`), and is the only kind of account that can appoint
+  or remove a co-admin. Leave the variable unset and there are no owners at all — every admin
+  surface stays closed and nobody can be appointed.
+- **Co-admins** are ordinary accounts an owner grants specific *areas* to from the Co-Admin
+  column on `/admin/accounts`. The areas are one per admin screen — License Queue,
+  Suggestions, Copyright Notices, Appraisals, Boards Question Tagging, Programs, Movement Lab
+  Requests, Connexion, Founding Funders — listed in
+  [`src/lib/admin-areas.ts`](src/lib/admin-areas.ts) with a description of what each one
+  opens up. A co-admin's sidebar lists exactly the screens they hold, and any other
+  `/admin/*` URL redirects them home.
+- **`/admin/accounts` is owner-only and has no area.** It carries the whole reader list —
+  every email, sign-in method and billing state — plus account deletion, paid-tier comps, and
+  the co-admin controls themselves. A co-admin never sees it, whatever else they hold, and
+  there is no grant that would open it. Don't add one back to `ADMIN_AREAS`.
+- **`foundingFunders` is the payment job, not a near-owner grant.** A co-admin with that
+  area sees the Founding Funder payment roster and the manual claim form on
+  `/founding-funders`. They do **not** see the all-users registered roster (name, email,
+  license, `isPro`) and `claimFoundingSpotAction` does **not** write `User.isPro` for them.
+  Owners still see the roster, and an owner claiming a spot for someone else still flips
+  `isPro` so Lifetime Access is immediate. Nobody can use the claim action to grant
+  themselves Pro. Comp a reader from `/admin/accounts` (`grantAccessAction`) if a co-admin
+  recorded a spot that still needs the paid tier.
+
+Three properties are worth knowing when changing this:
+
+1. **Every page and every server action re-checks its own area** through `hasAdminArea()`
+   ([`src/lib/admin.ts`](src/lib/admin.ts)). A Server Action is a callable endpoint, so the
+   page's redirect is never the enforcement — adding an admin action means adding its check.
+2. **Only an owner can change who is an admin.** `grantAdminAreaAction`/
+   `revokeAdminAreaAction` gate on the env allowlist, which is also why the page they live on
+   is owner-only: admin areas are data an admin could otherwise grant themselves, so the right
+   to edit that data stays with an identity the database can't forge.
+3. **Co-admin access is not a subscription.** Unlike the owner allowlist, `User.adminAreas`
+   is deliberately absent from the paid-tier overlay: delegating the license queue does not
+   hand anyone LimbicPro. Comp a tier explicitly with the Granted Access chips if that is
+   what you meant.
+
+Revoking takes effect on the co-admin's next request — nothing about their access is baked
+into their session cookie.
 
 ## Founding Funders payments
 
@@ -322,9 +413,11 @@ and its own webhook event.
   (`cleanupCanceledFoundingFunderCheckout`), so it doesn't sit around counting against the
   cap forever.
 - **Admin override**: `components/founding-funders/FoundingFundersRoster.tsx` (visible to
-  `FOUNDING_FUNDERS_ADMIN_EMAILS` accounts at the bottom of the page) lists every pending/
+  anyone with the `foundingFunders` area, at the bottom of the page) lists every pending/
   confirmed claim with a manual "Confirm Payment" button for when a webhook never fires, and
-  "Remove" to delete a stale claim and reopen the spot.
+  "Remove" to delete a stale claim and reopen the spot. The all-users registered roster
+  (`RegisteredUsersPanel`) and the `isPro` write on `claimFoundingSpotAction` stay
+  owner-only — see the Admin access section above.
 
 **Setup, in the Stripe Dashboard, before flipping `FOUNDING_FUNDERS_OPEN` to `true`:**
 

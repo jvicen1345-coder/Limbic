@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { VisitRequestsAdminList } from "@/components/connexion/VisitRequestsAdminList";
 
@@ -7,7 +7,7 @@ import { VisitRequestsAdminList } from "@/components/connexion/VisitRequestsAdmi
  *  ConnexionVisitRequest in schema.prisma, submitVisitRequest in app/actions/connexion.ts).
  *  Same "must be admin" redirect idiom as /admin/suggestions and /admin/licenses. */
 export default async function AdminConnexionVisitsPage() {
-  if (!(await isSiteAdmin())) redirect("/home");
+  if (!(await hasAdminArea("connexion"))) redirect("/home");
 
   const requests = await prisma.connexionVisitRequest.findMany({ orderBy: { createdAt: "desc" } });
   const newCount = requests.filter((r) => r.status === "new").length;

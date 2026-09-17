@@ -1,7 +1,11 @@
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
+import { mcidValues } from "@/lib/outcome-benchmarks";
+import { parseIntakeAnswers } from "@/lib/intake";
+import { buildPatientProgress } from "@/lib/patient-progress";
 import { PatientBriefTopbar } from "@/components/pro/dashboard/PatientBriefTopbar";
+import { PatientBriefProgress } from "@/components/pro/dashboard/PatientBriefProgress";
 
 interface HEPExercise {
   name: string;
@@ -41,21 +45,24 @@ export default async function PatientBriefPage({
     where: { id: patientId },
     include: {
       hepAssignments: { orderBy: { assignedAt: "desc" }, take: 1 },
-      preBriefs: { where: { patientFacing: true }, orderBy: { generatedAt: "desc" }, take: 1 },
-      forceLabSessions: { orderBy: { sessionDate: "desc" } },
+      preBriefs: {
+        where: { patientFacing: true, confirmedAt: { not: null } },
+        orderBy: { generatedAt: "desc" },
+        take: 1,
+      },
+      // Relation is patientId-linked; the extra `not: null` filter is the same rule in
+      // query form so a ForceLabSession / ThreeRepMaxTest with a null patientId can never
+      // appear here, even if someone later queries this include differently.
+      forceLabSessions: { where: { patientId: { not: null } }, orderBy: { sessionDate: "asc" } },
+      threeRepMaxTests: { where: { patientId: { not: null } }, orderBy: { testedAt: "asc" } },
+      outcomes: { orderBy: { recordedAt: "asc" } },
+      sessionExerciseLogs: { orderBy: [{ loggedAt: "asc" }, { visitNumber: "asc" }] },
+      goals: { orderBy: { createdAt: "asc" } },
+      visitLogs: { orderBy: { loggedAt: "asc" } },
+      intakeSubmissions: { where: { status: "accepted" }, orderBy: { submittedAt: "desc" }, take: 1 },
     },
   });
   if (!patient || patient.userId !== user.id) notFound();
-
-  // Most recent session per muscle group — same "one current reading per muscle group"
-  // shape as StrengthProfilePanel's own grouping — plus the single most recent date across
-  // all of them for the section's "Date of measurement" line, per the spec.
-  const forceLabByMuscle = new Map<string, (typeof patient.forceLabSessions)[number]>();
-  for (const s of patient.forceLabSessions) {
-    if (!forceLabByMuscle.has(s.muscleGroup)) forceLabByMuscle.set(s.muscleGroup, s);
-  }
-  const forceLabRows = Array.from(forceLabByMuscle.values());
-  const forceLabDate = patient.forceLabSessions[0]?.sessionDate ?? null;
 
   const clinicianName = query.name || user.name;
   const clinicianCredential = query.credential ?? "";
@@ -68,6 +75,25 @@ export default async function PatientBriefPage({
   const exercises = hep && isExerciseArray(hep.exercises) ? hep.exercises : null;
 
   const generatedOn = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+  const progress = buildPatientProgress(
+    {
+      condition: patient.condition,
+      visitCount: patient.visitCount,
+      totalVisits: patient.totalVisits,
+      startDate: patient.startDate,
+      lastSeen: patient.lastSeen,
+      nextVisit: patient.nextVisit,
+      outcomes: patient.outcomes,
+      forceLabSessions: patient.forceLabSessions,
+      threeRepMaxTests: patient.threeRepMaxTests,
+      sessionExerciseLogs: patient.sessionExerciseLogs,
+      goals: patient.goals,
+      visitLogs: patient.visitLogs,
+      intakeAnswers: patient.intakeSubmissions[0] ? parseIntakeAnswers(patient.intakeSubmissions[0].answers) : null,
+    },
+    mcidValues,
+  );
 
   return (
     <div className="patient-brief-page">
@@ -118,6 +144,8 @@ export default async function PatientBriefPage({
           )}
         </div>
 
+        <PatientBriefProgress progress={progress} />
+
         <div className="patient-brief-section">
           <div className="patient-brief-section-title">Progress Summary</div>
           {summary ? (
@@ -155,27 +183,6 @@ export default async function PatientBriefPage({
             ) : (
               <p className="patient-brief-summary-text">See your printed or digital handout for full exercise details.</p>
             )}
-          </div>
-        )}
-
-        {forceLabRows.length > 0 && (
-          <div className="patient-brief-section">
-            <div className="pbrief-forcelab-title">Strength Measurements</div>
-            {forceLabDate && (
-              <p className="patient-brief-summary-text" style={{ margin: "0 0 6px" }}>
-                Date of measurement: {new Date(forceLabDate).toLocaleDateString()}
-              </p>
-            )}
-            {forceLabRows.map((s) => (
-              <div className="pbrief-forcelab-row" key={s.muscleGroup}>
-                <span>{s.muscleGroup}</span>
-                <span>
-                  R: {s.rightPeak != null ? `${s.rightPeak} ${s.unit}` : "—"} &nbsp; L: {s.leftPeak != null ? `${s.leftPeak} ${s.unit}` : "—"}
-                  {s.lsi != null ? ` · LSI ${s.lsi}%` : ""}
-                </span>
-              </div>
-            ))}
-            <p className="pbrief-forcelab-note">Measured using handheld dynamometer — ActiveForce.</p>
           </div>
         )}
 

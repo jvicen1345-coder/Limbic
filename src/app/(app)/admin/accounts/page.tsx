@@ -1,12 +1,19 @@
 import { redirect } from "next/navigation";
 import { isSiteAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/db";
-import { compedAreas } from "@/lib/session";
+import { compedAreas, isAdminEmail } from "@/lib/session";
+import { parseAdminAreas } from "@/lib/admin-areas";
 import { AccountsAdminTable } from "@/components/AccountsAdminTable";
 
-/** Admin-only — every account, with a delete button per row (see AccountsAdminTable.tsx,
- *  deleteUserAction in app/actions/admin.ts). Same "must be admin" redirect idiom as
- *  /admin/suggestions, /admin/licenses, /admin/connexion-visits. */
+/** Owner-only — every account, with a delete button per row (see AccountsAdminTable.tsx,
+ *  deleteUserAction in app/actions/admin.ts), and the Co-Admin column that appoints and
+ *  un-appoints co-admins.
+ *
+ *  The one admin page with no delegable area behind it (see lib/admin-areas.ts): it carries
+ *  the whole reader list — every email, sign-in method and billing state — along with account
+ *  deletion and the controls that hand out admin access. So unlike /admin/suggestions or
+ *  /admin/licenses, which gate on holding their area, this gates on being an allowlist owner,
+ *  and a co-admin is redirected home like anyone else. */
 export default async function AdminAccountsPage() {
   if (!(await isSiteAdmin())) redirect("/home");
 
@@ -19,6 +26,7 @@ export default async function AdminAccountsPage() {
       licenseEmail: true,
       licenseNumber: true,
       isGuest: true,
+      adminAreas: true,
       passwordHash: true,
       googleId: true,
       isPro: true,
@@ -40,6 +48,10 @@ export default async function AdminAccountsPage() {
     hasGoogle: u.googleId != null,
     isPro: u.isPro,
     grantedAccess: compedAreas(u),
+    adminAreas: parseAdminAreas(u.adminAreas),
+    // An owner holds every area through the env allowlist, not through this column, so the
+    // row says so instead of showing ten empty chips that can't be filled in.
+    isOwnerAdmin: isAdminEmail(u.email) || isAdminEmail(u.licenseEmail),
     isFoundingFunder: u.foundingFunder?.paymentStatus === "confirmed",
     createdAt: u.createdAt.toISOString(),
     // Stamped on every Home visit (see lib/session.ts recordHomeVisit) — the closest thing
@@ -50,10 +62,14 @@ export default async function AdminAccountsPage() {
   }));
 
   return (
-    <div className="screen-pad" style={{ maxWidth: 960, margin: "0 auto" }}>
+    /* Wider than the 960 the other admin pages use: this table carries eleven columns since
+       Co-Admin joined it, and at 960 the per-row Delete button sat outside the visible width
+       of its own scroll container. */
+    <div className="screen-pad" style={{ maxWidth: 1180, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, margin: "0 0 4px" }}>Accounts</h1>
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "0 0 20px" }}>
-        Every registered account, {rows.length} total. Visible only to site admins.
+        Every registered account, {rows.length} total. Use Co-Admin to give someone access to
+        specific behind-the-scenes areas, or to take it back.
       </p>
 
       <div className="card elev-sm">

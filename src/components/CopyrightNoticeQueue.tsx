@@ -57,8 +57,8 @@ function formatDate(iso: string): string {
 
 /**
  * Admin-only DMCA queue (see app/(app)/admin/copyright/page.tsx, which gates on
- * isSiteAdmin() before this ever renders). Three panels: record an incoming notice, work
- * the notices already on file, and review accounts with upheld takedowns against them.
+ * hasAdminArea("copyright") before this ever renders). Three panels: record an incoming notice,
+ * work the notices already on file, and review accounts with upheld takedowns against them.
  *
  * Recording and acting are deliberately separate — logging a notice takes nothing down,
  * because whether a notice is valid is a judgment rather than a form submission, and a

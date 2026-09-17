@@ -129,6 +129,13 @@ function firstUrl(raw) {
   return match ? match[0].replace(/[;,]$/, "") : null;
 }
 
+// The CSV spells a missing DOI "Unavailable", but not always in that case — a lowercase
+// "unavailable" slipping past this check is what produced a dead https://doi.org/unavailable
+// link in an earlier snapshot, so compare case-insensitively.
+function hasDoi(doi) {
+  return doi && !/^unavailable$/i.test(doi);
+}
+
 async function main() {
   console.log(`Fetching ${CSV_URL} ...`);
   const res = await fetch(CSV_URL);
@@ -154,8 +161,8 @@ async function main() {
     const originalDoi = (fields[col["OriginalPaperDOI"]] || "").trim();
     const url =
       firstUrl(fields[col["URLS"]]) ||
-      (retractionDoi && retractionDoi !== "Unavailable" ? `https://doi.org/${retractionDoi}` : null) ||
-      (originalDoi && originalDoi !== "Unavailable" ? `https://doi.org/${originalDoi}` : null);
+      (hasDoi(retractionDoi) ? `https://doi.org/${retractionDoi}` : null) ||
+      (hasDoi(originalDoi) ? `https://doi.org/${originalDoi}` : null);
 
     records.push({
       id: `rw-${recordId}`,

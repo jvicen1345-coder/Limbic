@@ -144,7 +144,7 @@ export function MacroCalculatorCard({ profile }: { profile: WellnessProfile }) {
         personalized nutrition planning.
       </p>
       <div className="wellness-calc-source">
-        Sources: Mifflin MD, St Jeor ST, et al. Journal of the American Dietetic Association, 1990 (calories) · ISSN Position Stand on
+        Sources: Mifflin MD, St Jeor ST, et al. American Journal of Clinical Nutrition, 1990;51:241-247 (calories) · ISSN Position Stand on
         Protein and Exercise (protein target) · the widely-used ~3,500 kcal/lb rule of thumb (weight timeline, a simplification, not an
         exact prediction)
       </div>

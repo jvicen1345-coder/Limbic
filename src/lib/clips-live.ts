@@ -1,5 +1,5 @@
 import "server-only";
-import { classify } from "@/lib/news-live";
+import { classify } from "@/lib/classify";
 import type { Clip } from "@/lib/types";
 
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;

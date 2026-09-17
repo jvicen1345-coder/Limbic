@@ -9,9 +9,9 @@ import { CollapsibleCard } from "@/components/CollapsibleCard";
  *  Also the target of the shortcut icon next to Refresh on Home (see HomeFeed.tsx, which
  *  links to /profile#get-the-app) — the id/scrollMarginTop below are what make that land
  *  here instead of just the top of Profile. */
-export function GetTheAppCard() {
+export function GetTheAppCard({ name }: { name?: string } = {}) {
   return (
-    <CollapsibleCard title="Get the app" style={{ marginBottom: 18, scrollMarginTop: 24 }}>
+    <CollapsibleCard title="Get the app" name={name} style={{ marginBottom: 18, scrollMarginTop: 24 }}>
       <div id="get-the-app">
         <p className="card-body" style={{ marginTop: 2 }}>
           Add Limbic to your home screen or dock for a faster, full-screen experience — no app

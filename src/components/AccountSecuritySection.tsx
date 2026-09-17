@@ -97,9 +97,8 @@ export function AccountSecuritySection({
         </div>
         <p style={{ fontSize: 13, lineHeight: 1.6, color: "var(--color-accent-800)", margin: "6px 0 0" }}>
           Your .edu email may stop working after graduation. Adding a personal email now
-          means your reading history, boards progress, streaks, saved articles, and Nexus
-          profile will all carry over automatically when you transition to your next
-          chapter. Your data is yours. We make sure you keep it.
+          means your reading history, boards progress, streaks, and saved articles will all
+          carry over automatically when you transition to your next chapter. Your data is yours. We make sure you keep it.
         </p>
       </div>
 

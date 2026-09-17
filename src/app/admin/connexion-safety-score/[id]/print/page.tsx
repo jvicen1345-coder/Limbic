@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { getSafetyAssessment } from "@/app/actions/connexion-safety-score";
 import { SAFETY_SCORE_DOMAINS, RISK_SCALE, CAREGIVER_SKILLS, FOLLOW_UP_OPTIONS, computeSafetyScoreTotals, domainMaxScore } from "@/lib/connexion-safety-score";
 import { ConnexionSafetyScorePrintTopbar } from "@/components/connexion/ConnexionSafetyScorePrintTopbar";
@@ -7,12 +7,13 @@ import { ConnexionSafetyScorePrintTopbar } from "@/components/connexion/Connexio
 /** Standalone print document for one Connexion Safety Score assessment — same pattern as
  *  patient-brief/[patientId] and the Force Lab assessment print page: outside the (app)
  *  route group (no sidebar to hide for print), forced light mode via the reused
- *  .patient-brief-* classes (literal colors, never the app's --color-* tokens), isSiteAdmin
- *  ownership check, fixed topbar hidden on print. Unlike the clinician-dashboard patient
- *  brief, this DOES show the client's name/address — Connexion clients are named parties on
- *  a real paper safety report, not anonymized ClinicalPatient records. */
+ *  .patient-brief-* classes (literal colors, never the app's --color-* tokens), a
+ *  hasAdminArea("connexion") ownership check, fixed topbar hidden on print. Unlike the
+ *  clinician-dashboard patient brief, this DOES show the client's name/address — Connexion
+ *  clients are named parties on a real paper safety report, not anonymized ClinicalPatient
+ *  records. */
 export default async function ConnexionSafetyScorePrintPage({ params }: { params: Promise<{ id: string }> }) {
-  if (!(await isSiteAdmin())) notFound();
+  if (!(await hasAdminArea("connexion"))) notFound();
 
   const { id } = await params;
   const assessment = await getSafetyAssessment(id);

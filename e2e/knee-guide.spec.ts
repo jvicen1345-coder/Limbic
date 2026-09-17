@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { isServableGuide } from "@/lib/guides";
+import { canReadGuide } from "@/lib/guides";
 import { grantLimbicStudent, signUpAndEnterApp } from "./helpers";
 
 const SLUG = "knee-examination";
@@ -11,9 +11,13 @@ const URL = `/student/guides/${SLUG}`;
  *  orientation key must survive recall, because a plateau seen from above is unreadable without
  *  it and blurring the key would hand the reader back the blob the key exists to explain.
  *
- *  Skipped while the guide is still marked coming soon; it starts running the day it ships. */
+ *  Skipped while the guide is still marked coming soon; it starts running the day it ships.
+ *  A site admin can now read through that flag (canReadGuide in lib/guides.ts), but CI leaves
+ *  FOUNDING_FUNDERS_ADMIN_EMAILS unset on purpose so every admin surface stays closed here -
+ *  so this asks the published-reader question, which is the one that governs when the figures
+ *  below reach a student. */
 test.describe("Knee guide asset", () => {
-  test.skip(!isServableGuide(SLUG), "knee guide is still marked coming soon");
+  test.skip(!canReadGuide(SLUG, { admin: false }), "knee guide is still marked coming soon");
 
   test("recall hides every figure legend, keeps the key, and lifts one entry at a time", async ({ page }) => {
     const email = `pw-knee-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;

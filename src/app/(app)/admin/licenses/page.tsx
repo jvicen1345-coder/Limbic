@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { LicenseVerificationQueue } from "@/components/LicenseVerificationQueue";
 
@@ -8,7 +8,7 @@ import { LicenseVerificationQueue } from "@/components/LicenseVerificationQueue"
  *  not per reader — a reader with licenses in two states pending at once shows up twice,
  *  each independently reviewable. Same "must be admin" redirect idiom as /admin/suggestions. */
 export default async function AdminLicensesPage() {
-  if (!(await isSiteAdmin())) redirect("/home");
+  if (!(await hasAdminArea("licenses"))) redirect("/home");
 
   const pending = await prisma.license.findMany({
     where: { status: "pending" },

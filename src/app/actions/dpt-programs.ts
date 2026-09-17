@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { seedDPTPrograms } from "../../../prisma/seed-dpt-programs";
 import type { DPTProgram, InstitutionalOutreach } from "@/generated/prisma/client";
 
@@ -130,7 +130,7 @@ export interface OutreachRow {
 }
 
 export async function getOutreachRecords(): Promise<OutreachRow[]> {
-  if (!(await isSiteAdmin())) return [];
+  if (!(await hasAdminArea("programs"))) return [];
   await seedDPTPrograms();
 
   const programs = await prisma.dPTProgram.findMany({
@@ -153,7 +153,7 @@ export interface OutreachInput {
 }
 
 export async function upsertOutreachRecord(programId: number, data: OutreachInput): Promise<ActionError | { success: true }> {
-  if (!(await isSiteAdmin())) return { error: "Unauthorized" };
+  if (!(await hasAdminArea("programs"))) return { error: "Unauthorized" };
 
   const program = await prisma.dPTProgram.findUnique({ where: { id: programId } });
   if (!program) return { error: "Program not found." };

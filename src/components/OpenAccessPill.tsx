@@ -39,6 +39,11 @@ export function OpenAccessPill({ doi }: { doi?: string }) {
         fontSize: "11px",
         fontWeight: 600,
         color: "#16a34a",
+        // Same reasoning as .card-meta > .tag in base.css: this pill sits in a flex row
+        // next to a journal name that can be far longer than the row is wide, and a
+        // two-word label broken across lines inside a rounded pill reads as a glitch.
+        flexShrink: 0,
+        whiteSpace: "nowrap",
       }}
     >
       Open Access

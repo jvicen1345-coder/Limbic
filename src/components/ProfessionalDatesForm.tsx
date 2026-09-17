@@ -71,8 +71,8 @@ function DateField({
           </button>
         )}
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 3, minHeight: 14 }}>
-        <span style={{ fontSize: "var(--fs-10-5)", color: "var(--color-neutral-700)" }}>{hint}</span>
+      <div className="professional-dates-hint">
+        <span className="professional-dates-hint-text">{hint}</span>
         {showSaved && <CheckIcon size={11} className="profile-date-saved-check" />}
       </div>
     </div>

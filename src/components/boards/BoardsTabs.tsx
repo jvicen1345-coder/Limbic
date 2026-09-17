@@ -176,6 +176,7 @@ export function BoardsTabs({
   examDays,
   hasExamDate,
   playbooks,
+  guidePreview,
   dailyGamesSection,
 }: {
   dateKey: string;
@@ -198,6 +199,10 @@ export function BoardsTabs({
    *  the playbooks themselves, so several thousand lines of content bank stay on the
    *  server. */
   playbooks: PlaybookSummary[];
+  /** Whether this reader may open a guide still marked coming soon — true for site admins
+   *  only (lib/guides.ts canReadGuide). Passed down rather than resolved here because this
+   *  is a client component and the admin allowlist is server-side. */
+  guidePreview: boolean;
   /** DailyGamesSection, already rendered by the server-component page above this one — a
    *  Client Component can't import and render a Server Component itself, so it arrives here
    *  as a plain ReactNode slot instead. Shown at the bottom of the Daily Sharpening panel
@@ -371,9 +376,13 @@ export function BoardsTabs({
                 carries its own link back into Limbic. Listed from lib/guides.ts so this and
                 the hub cannot drift apart. */}
             {/* A guide still marked coming soon renders as a card rather than a link — same
-                information, nothing to click, and its route 404s regardless. */}
+                information, nothing to click, and its route 404s regardless.
+
+                For a site admin it is a link, because the route lets them through (see
+                lib/guides.ts canReadGuide), and it keeps the "Coming soon" pill so the
+                guide's real state stays visible to the person deciding whether it ships. */}
             {GUIDES.map((guide) =>
-              guide.comingSoon ? (
+              guide.comingSoon && !guidePreview ? (
                 <div className="boards-guide-card boards-guide-card--soon" key={guide.slug}>
                   <span className="boards-guide-card-name">
                     {guide.name}
@@ -386,7 +395,10 @@ export function BoardsTabs({
                 </div>
               ) : (
                 <Link className="boards-guide-card" key={guide.slug} href={guideHref(guide)}>
-                  <span className="boards-guide-card-name">{guide.name}</span>
+                  <span className="boards-guide-card-name">
+                    {guide.name}
+                    {guide.comingSoon && <span className="boards-guide-soon">Coming soon</span>}
+                  </span>
                   <span className="boards-guide-card-desc">{guide.short}</span>
                   <span className="boards-guide-card-meta">
                     {guide.sections} sections · {guide.items} exam items · {guide.references} references

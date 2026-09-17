@@ -1,5 +1,6 @@
 "use client";
 
+import "@/styles/onboarding.css";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { RoleCards } from "@/components/RoleCards";

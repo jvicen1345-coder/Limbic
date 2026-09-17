@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
 import { getCurrentUser, hasStudentAccess, hasLicenseAccess } from "@/lib/session";
+import { isSiteAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { GraduationCapIcon, ZapIcon } from "@/components/icons";
 
@@ -136,7 +138,7 @@ export default async function BoardsHubPage() {
           question={question}
           initialSelectedIndex={questionCompletion?.selectedIndex ?? null}
           initialElapsedSeconds={questionCompletion?.elapsedSeconds ?? null}
-          nexusOptIn={user.nexusOptIn}
+          nexusOptIn={nexusVisibleTo(user) && user.nexusOptIn}
         />
       </BoardsFrame>
     );
@@ -224,7 +226,7 @@ export default async function BoardsHubPage() {
             alreadyComplete={saved.question != null && saved.term != null && saved.dayCase != null}
             saved={saved}
             targetSeconds={user.boardsSharpeningTargetSeconds ?? NPTE_THREE_QUESTION_BENCHMARK_SECONDS}
-            nexusOptIn={user.nexusOptIn}
+            nexusOptIn={nexusVisibleTo(user) && user.nexusOptIn}
             currentStreak={user.boardsStreakDays}
             longestStreak={longestStreak}
             weekDays={weekDays}
@@ -232,6 +234,7 @@ export default async function BoardsHubPage() {
             examDays={examDays}
             hasExamDate={user.npteExamDate != null}
             playbooks={playbookSummaries()}
+            guidePreview={await isSiteAdmin()}
             dailyGamesSection={
               <div className="boards-daily-games">
                 <DailyGamesSection />

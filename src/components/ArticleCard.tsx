@@ -1,33 +1,38 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { SaveButton } from "@/components/SaveButton";
 import { ArticleImage } from "@/components/ArticleImage";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { OpenAccessPill } from "@/components/OpenAccessPill";
-import { CheckIcon, NetworkIcon, ChevronRightIcon } from "@/components/icons";
-import type { DecoratedArticle } from "@/lib/feed";
+import { CheckIcon } from "@/components/icons";
+import type { Article, ArticleType, Specialty } from "@/lib/types";
 
-/** A direct link into the article's real Threads web (see components/ThreadsWeb.tsx) —
- *  no preview of what it contains, since computing the full web for every card in a feed
- *  grid would mean a Nexus query and article-pool scan per card. */
-function ThreadsTeaser({ articleId }: { articleId: string }) {
-  const router = useRouter();
-  return (
-    <button
-      type="button"
-      className="card-threads-teaser"
-      onClick={(e) => {
-        e.stopPropagation();
-        router.push(`/article/${articleId}?threads=1`);
-      }}
-    >
-      <NetworkIcon size={12} />
-      Explore Connections
-      <ChevronRightIcon size={11} />
-    </button>
-  );
-}
+/** Display + Save-snapshot fields a feed card actually reads. DecoratedArticle satisfies
+ *  this; Search ships a trimmed copy so the Home/Search client bundle does not need the
+ *  unused body/abstract/review blobs. */
+export type ArticleCardModel = {
+  id: string;
+  type: ArticleType;
+  specialty: Specialty;
+  title: string;
+  source: string;
+  sourceUrl?: string;
+  date: string;
+  readMins: number;
+  summary: string;
+  tags: string[];
+  image?: string;
+  evidenceLevel?: Article["evidenceLevel"];
+  doi?: string;
+  typeLabel: string;
+  typeTagClass: string;
+  specialtyLabel: string;
+  dateLabel: string;
+  saved: boolean;
+  isNew?: boolean;
+  isRead?: boolean;
+};
 
 /** Every source already tags an article with its specialty and type label as the first two
  *  entries (see lib/pubmed.ts, lib/news-live.ts) — both already shown elsewhere on the card
@@ -35,37 +40,49 @@ function ThreadsTeaser({ articleId }: { articleId: string }) {
  *  noise. What's left after excluding those is the genuinely new context: the specific
  *  matched keywords (e.g. "ACL", "Medicare", "FDA Clearance") that classify() found. Capped
  *  at 2 so a keyword-heavy article doesn't overrun the card. */
-function extraContextTags(article: DecoratedArticle): string[] {
+function extraContextTags(article: ArticleCardModel): string[] {
   const shown = new Set([article.specialtyLabel, article.typeLabel]);
   return article.tags.filter((t) => !shown.has(t)).slice(0, 2);
 }
 
-export function ArticleCard({ article }: { article: DecoratedArticle }) {
-  const router = useRouter();
+/**
+ * Feed card. The title is a real <Link> (keyboard-reachable) stretched across the card so
+ * Home can SSR card HTML without useRouter; SaveButton / OpenAccessPill sit above the
+ * stretch. Remains a Client Component because SearchScreen imports it directly.
+ */
+export function ArticleCard({ article }: { article: ArticleCardModel }) {
   const extraTags = extraContextTags(article);
+  const href = `/article/${article.id}`;
   return (
-    <div
-      className="card elev-sm card-hoverable"
-      style={{ cursor: "pointer" }}
-      onClick={() => router.push(`/article/${article.id}`)}
-    >
-      {article.image && <ArticleImage key={article.id} src={article.image} height={120} />}
+    <div className="card elev-sm card-hoverable article-card">
+      {article.image && (
+        <ArticleImage
+          key={article.id}
+          src={article.image}
+          height={120}
+          sizes="(max-width: 799px) 100vw, 440px"
+        />
+      )}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {article.isNew && <NewBadge />}
           {article.isRead && <ReadBadge />}
           {article.typeLabel} · {article.dateLabel}
         </div>
-        <SaveButton articleId={article.id} saved={article.saved} size="sm" article={article} />
+        <span className="article-card__interactive">
+          <SaveButton articleId={article.id} saved={article.saved} size="sm" article={article} />
+        </span>
       </div>
-      <div className="card-title" style={{ marginTop: 6 }}>
+      <Link href={href} className="card-title article-card__title" style={{ marginTop: 6 }}>
         {article.title}
-      </div>
+      </Link>
       <p className="card-body">{article.summary}</p>
       <div className="card-meta">
         <span className={article.typeTagClass}>{article.specialtyLabel}</span>
         {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
-        <OpenAccessPill doi={article.doi} />
+        <span className="article-card__interactive">
+          <OpenAccessPill doi={article.doi} />
+        </span>
         <span>{article.source}</span>
       </div>
       {extraTags.length > 0 && (
@@ -77,39 +94,31 @@ export function ArticleCard({ article }: { article: DecoratedArticle }) {
           ))}
         </div>
       )}
-      <ThreadsTeaser articleId={article.id} />
     </div>
   );
 }
 
 /** The Home hero: HeroFeed only ever hands this an image-having article (see
- *  HomeFeed.tsx's heroPool, filtered off withImage) — the plain-layout fallback below is
- *  defensive for any future/other caller, not something a reader can hit today. When
- *  there's an image, title/source/evidence/read-time/date all sit on the photo itself
- *  (above a bottom gradient — see .hero-card-* in src/styles) and the space below the
- *  photo is kept to just the summary, so the card reads as one clean photo-led moment
- *  rather than a second copy of the same meta row ArticleCard already shows in the grid. */
-export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
-  const router = useRouter();
-
+ *  HomeFeed's heroPool). When there's an image, title/source/evidence sit on the photo
+ *  itself; the space below stays to the summary. */
+export function HeroArticleCard({ article }: { article: ArticleCardModel }) {
+  const href = `/article/${article.id}`;
   if (!article.image) {
     return (
-      <div
-        className="card elev-md card-hoverable"
-        style={{ cursor: "pointer", padding: 26 }}
-        onClick={() => router.push(`/article/${article.id}`)}
-      >
+      <div className="card elev-md card-hoverable article-card" style={{ padding: 26 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
           <div className="card-kicker" style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {article.isNew && <NewBadge />}
             {article.isRead && <ReadBadge />}
             {article.typeLabel} · {article.dateLabel}
           </div>
-          <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
+          <span className="article-card__interactive">
+            <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
+          </span>
         </div>
-        <div className="card-title" style={{ marginTop: 8, fontSize: 22 }}>
+        <Link href={href} className="card-title article-card__title" style={{ marginTop: 8, fontSize: 22 }}>
           {article.title}
-        </div>
+        </Link>
         <p className="card-body" style={{ fontSize: 15 }}>
           {article.summary}
         </p>
@@ -118,33 +127,38 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
           {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
           <span>{article.source}</span>
         </div>
-        <ThreadsTeaser articleId={article.id} />
       </div>
     );
   }
 
   return (
-    <div
-      className="card elev-md card-hoverable"
-      style={{ cursor: "pointer", padding: 0, overflow: "hidden" }}
-      onClick={() => router.push(`/article/${article.id}`)}
-    >
+    <div className="card elev-md card-hoverable article-card" style={{ padding: 0, overflow: "hidden" }}>
       <div className="hero-card-media">
-        <ArticleImage key={article.id} src={article.image} fill />
+        <ArticleImage
+          key={article.id}
+          src={article.image}
+          fill
+          priority
+          sizes="(max-width: 799px) 100vw, 900px"
+        />
         <div className="hero-card-topleft">
           <span className={article.typeTagClass}>{article.specialtyLabel}</span>
           {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
-          <OpenAccessPill doi={article.doi} />
+          <span className="article-card__interactive">
+            <OpenAccessPill doi={article.doi} />
+          </span>
         </div>
         <div className="hero-card-topright">
           <span className="hero-card-meta-pill">{article.dateLabel}</span>
-          <span className="hero-card-save-wrap" onClick={(e) => e.stopPropagation()}>
+          <span className="hero-card-save-wrap article-card__interactive">
             <SaveButton articleId={article.id} saved={article.saved} size="md" article={article} />
           </span>
         </div>
       </div>
       <div style={{ padding: "16px 20px 0", textAlign: "center" }}>
-        <div className="hero-card-title">{article.title}</div>
+        <Link href={href} className="hero-card-title article-card__title">
+          {article.title}
+        </Link>
         <div className="hero-card-source" style={{ justifyContent: "center" }}>
           {article.source}
           {(article.isNew || article.isRead) && <span className="hero-card-source-sep">·</span>}
@@ -156,9 +170,6 @@ export function HeroArticleCard({ article }: { article: DecoratedArticle }) {
         <p className="card-body" style={{ fontSize: 15, margin: "0 auto" }}>
           {article.summary}
         </p>
-        <div style={{ marginTop: 8, display: "flex", justifyContent: "center" }}>
-          <ThreadsTeaser articleId={article.id} />
-        </div>
       </div>
     </div>
   );

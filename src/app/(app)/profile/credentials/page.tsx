@@ -49,93 +49,93 @@ export default async function ProfileCredentialsPage() {
       </p>
       <SubTabs tabs={PROFILE_TABS} />
 
-      <div id="professional-dates" className="card elev-sm" style={{ marginBottom: 18, marginTop: 18, scrollMarginTop: 24 }}>
-        <div className="card-kicker">Professional dates</div>
-        <p className="card-body" style={{ marginTop: 2 }}>
-          Powers the orange dots on your Limbic Calendar and your renewal reminders.
-        </p>
-        <ProfessionalDatesForm
-          npteExamDate={user.npteExamDate}
-          ceuDeadline={user.ceuDeadline}
-          licenseExpiration={user.licenseExpiration}
-          certificationExpiry={user.certificationExpiry}
-          rotationStartDate={user.rotationStartDate}
-          rotationEndDate={user.rotationEndDate}
-          graduationDate={user.graduationDate}
-          practiceStartDate={user.practiceStartDate}
-          isStudent={isStudent}
-          showPracticeStartDate={showPracticeStartDate}
-        />
-      </div>
-
-      <ProfessionalCredentialsCard
-        licenses={licenseRows.map((l) => ({
-          id: l.id,
-          state: l.state,
-          licenseNumber: l.licenseNumber,
-          status: l.status,
-          verifiedAt: l.verifiedAt?.toISOString() ?? null,
-        }))}
-        isStudent={isStudentForCredentials}
-        accountName={user.name}
-      />
-
-      <div className="card elev-sm" style={{ marginBottom: 18 }}>
-        <div className="card-kicker">Force Lab</div>
-        <ForceUnitPreferenceForm forceUnit={user.forceUnit} />
-      </div>
-
-      <div className="card elev-sm">
-        <div className="card-kicker">License & CE</div>
-        {license ? (
-          <>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginTop: 8 }}>
-              <div>
-                <div style={{ fontFamily: "var(--font-heading)", fontSize: 17 }}>{license.licenseNumber}</div>
-                <div style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
-                  {license.licenseState} · Expires {license.expirationLabel}
-                </div>
-              </div>
-              <span className={license.statusClass}>{license.status}</span>
-            </div>
-            <div style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)", marginTop: 10 }}>{license.daysLeftLabel}</div>
-
-            <div style={{ marginTop: 16 }}>
-              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
-                <span style={{ fontSize: "var(--fs-11)", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-700)" }}>
-                  CE credits
-                </span>
-                <span style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
-                  {license.ceCompletedTotal} / {license.ceRequiredTotal} hrs
-                </span>
-              </div>
-              <div style={{ height: 8, borderRadius: 999, background: "var(--color-neutral-200)", overflow: "hidden" }}>
-                <div style={{ height: "100%", borderRadius: 999, background: "var(--color-accent)", width: `${license.cePercent}%` }} />
-              </div>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 14 }}>
-              {license.ceCats.map((c) => (
-                <div key={c.name}>
-                  <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ fontSize: 12.5 }}>{c.name}</span>
-                    <span style={{ fontSize: "var(--fs-11)", color: "var(--color-neutral-700)" }}>
-                      {c.completed} / {c.required} hrs
-                    </span>
-                  </div>
-                  <div style={{ height: 5, borderRadius: 999, background: "var(--color-neutral-200)", overflow: "hidden" }}>
-                    <div style={{ height: "100%", borderRadius: 999, background: "var(--color-accent-2)", width: `${c.pct}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          <p className="card-body" style={{ marginTop: 8 }}>
-            Once your license is verified under Professional Credentials above, renewal dates and CE requirements will show up
-            here.
+      <div className="credentials-stack">
+        <div id="professional-dates" className="card elev-sm">
+          <div className="card-kicker">Professional dates</div>
+          <p className="card-body">
+            Powers the orange dots on your Limbic Calendar and your renewal reminders.
           </p>
-        )}
+          <ProfessionalDatesForm
+            npteExamDate={user.npteExamDate}
+            ceuDeadline={user.ceuDeadline}
+            licenseExpiration={user.licenseExpiration}
+            certificationExpiry={user.certificationExpiry}
+            rotationStartDate={user.rotationStartDate}
+            rotationEndDate={user.rotationEndDate}
+            graduationDate={user.graduationDate}
+            practiceStartDate={user.practiceStartDate}
+            isStudent={isStudent}
+            showPracticeStartDate={showPracticeStartDate}
+          />
+        </div>
+
+        <ProfessionalCredentialsCard
+          licenses={licenseRows.map((l) => ({
+            id: l.id,
+            state: l.state,
+            licenseNumber: l.licenseNumber,
+            status: l.status,
+            verifiedAt: l.verifiedAt?.toISOString() ?? null,
+          }))}
+          isStudent={isStudentForCredentials}
+          accountName={user.name}
+        />
+
+        <div className="card elev-sm">
+          <div className="card-kicker">Force Lab</div>
+          <ForceUnitPreferenceForm forceUnit={user.forceUnit} />
+        </div>
+
+        <div className="card elev-sm">
+          <div className="card-kicker">License & CE</div>
+          {license ? (
+            <>
+              <div className="license-ce-header">
+                <div className="license-ce-identity">
+                  <div className="license-ce-number">{license.licenseNumber}</div>
+                  <div className="license-ce-meta">
+                    {license.licenseState} · Expires {license.expirationLabel}
+                  </div>
+                </div>
+                <span className={license.statusClass}>{license.status}</span>
+              </div>
+              <div className="license-ce-days">{license.daysLeftLabel}</div>
+
+              <div className="license-ce-credits">
+                <div className="license-ce-credits-row">
+                  <span className="license-ce-credits-label">CE credits</span>
+                  <span className="license-ce-credits-value">
+                    {license.ceCompletedTotal} / {license.ceRequiredTotal} hrs
+                  </span>
+                </div>
+                <div className="license-ce-bar">
+                  <div className="license-ce-bar-fill" style={{ width: `${license.cePercent}%` }} />
+                </div>
+              </div>
+
+              <div className="license-ce-cats">
+                {license.ceCats.map((c) => (
+                  <div key={c.name}>
+                    <div className="license-ce-cat-row">
+                      <span className="license-ce-cat-name">{c.name}</span>
+                      <span className="license-ce-cat-value">
+                        {c.completed} / {c.required} hrs
+                      </span>
+                    </div>
+                    <div className="license-ce-cat-bar">
+                      <div className="license-ce-cat-bar-fill" style={{ width: `${c.pct}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="card-body">
+              Once your license is verified under Professional Credentials above, renewal dates and CE requirements will show up
+              here.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

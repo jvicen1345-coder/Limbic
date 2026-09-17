@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea } from "@/lib/admin";
 import { US_STATES } from "@/lib/us-states";
 import { maskLicenseNumber } from "@/lib/license-verification";
 import { emailEnabled, sendLicenseVerifiedEmail } from "@/lib/email";
@@ -103,11 +103,11 @@ interface AdminActionResult {
 }
 
 /** Approves a pending submission (see components/LicenseVerificationQueue.tsx) — admin-only,
- *  same isSiteAdmin() gate as every other admin surface (Suggestions, Founding Funders'
+ *  same hasAdminArea("licenses") gate as every other admin surface (Suggestions, Founding Funders'
  *  claim panel). Takes a License id now, not a userId, since one reader can have more than
  *  one pending row to review individually. */
 export async function verifyLicenseAction(licenseId: string): Promise<AdminActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("licenses"))) return { ok: false, error: "Not authorized." };
 
   const license = await prisma.license.update({
     where: { id: licenseId },
@@ -139,7 +139,7 @@ export async function verifyLicenseAction(licenseId: string): Promise<AdminActio
  *  behavior of wiping the fields back to blank. Takes a License id, same reasoning as
  *  verifyLicenseAction above. */
 export async function rejectLicenseAction(licenseId: string): Promise<AdminActionResult> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("licenses"))) return { ok: false, error: "Not authorized." };
 
   const license = await prisma.license.update({
     where: { id: licenseId },

@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { isSiteAdmin } from "@/lib/admin";
+import { hasAdminArea, isSiteAdmin } from "@/lib/admin";
+import { getCurrentUser } from "@/lib/session";
+import { shouldWriteIsProOnFoundingClaim } from "@/lib/founding-funders-authz";
 import { getStripe, stripeEnabled, paymentIntentIdFromSession } from "@/lib/stripe";
 import { FOUNDING_FUNDERS_TOTAL_SLOTS } from "@/lib/founding-funders-config";
 import { nextFoundingFunderNumber } from "@/lib/founding-funders";
@@ -74,13 +76,19 @@ export interface ClaimSpotResult {
   ok: boolean;
   error?: string;
   claimedCount: number;
+  /** True only when this claim also wrote User.isPro (owner claiming someone else). */
+  grantedPro?: boolean;
 }
 
 /** Admin-only, triggered manually once an out-of-band (e.g. Zelle) payment is confirmed —
  *  the manual counterpart to the self-serve Stripe flow below. Looks the target reader up by
  *  their sign-in email or PT license number, since that's what an admin actually has on hand
- *  from a payment memo, not a raw user id. Also flips isPro so "Lifetime Access" (the first
- *  founding benefit) is real immediately, not just a listing in the grid. */
+ *  from a payment memo, not a raw user id.
+ *
+ *  Anyone with foundingFunders can record the spot. Writing isPro is owner-only and never
+ *  applies to the caller — leftover blast radius after /admin/accounts left ADMIN_AREAS
+ *  (#497). A co-admin's claim is the listing; the owner comps Pro from grantAccessAction
+ *  if Lifetime Access still needs to be flipped. */
 export async function claimFoundingSpotAction(input: {
   identifier: string;
   displayName: string;
@@ -88,7 +96,8 @@ export async function claimFoundingSpotAction(input: {
 }): Promise<ClaimSpotResult> {
   const currentCount = await prisma.foundingFunder.count({ where: { paymentStatus: { in: ["confirmed", "pending"] } } });
 
-  if (!(await isSiteAdmin())) {
+  const caller = await getCurrentUser();
+  if (!caller || !(await hasAdminArea("foundingFunders"))) {
     return { ok: false, error: "Not authorized.", claimedCount: currentCount };
   }
 
@@ -119,23 +128,31 @@ export async function claimFoundingSpotAction(input: {
     return { ok: false, error: "That reader already has a founding spot.", claimedCount: currentCount };
   }
 
-  await prisma.$transaction([
-    prisma.foundingFunder.create({
-      data: {
-        userId: target.id,
-        displayName,
-        credential: input.credential?.trim() || null,
-        confirmed: true,
-        paymentStatus: "confirmed",
-        confirmedAt: new Date(),
-        foundingFunderNumber: await nextFoundingFunderNumber(),
-      },
-    }),
-    prisma.user.update({ where: { id: target.id }, data: { isPro: true } }),
-  ]);
+  const writeIsPro = shouldWriteIsProOnFoundingClaim({
+    callerIsOwner: await isSiteAdmin(),
+    targetIsCaller: target.id === caller.id,
+  });
+
+  const createSpot = prisma.foundingFunder.create({
+    data: {
+      userId: target.id,
+      displayName,
+      credential: input.credential?.trim() || null,
+      confirmed: true,
+      paymentStatus: "confirmed",
+      confirmedAt: new Date(),
+      foundingFunderNumber: await nextFoundingFunderNumber(),
+    },
+  });
+
+  if (writeIsPro) {
+    await prisma.$transaction([createSpot, prisma.user.update({ where: { id: target.id }, data: { isPro: true } })]);
+  } else {
+    await createSpot;
+  }
 
   revalidatePath("/founding-funders");
-  return { ok: true, claimedCount: currentCount + 1 };
+  return { ok: true, claimedCount: currentCount + 1, grantedPro: writeIsPro };
 }
 
 export interface CreateFoundingFunderCheckoutResult {
@@ -273,7 +290,7 @@ export async function cleanupCanceledFoundingFunderCheckout(sessionId: string): 
  *  before STRIPE_WEBHOOK_SECRET was configured, etc). Same effect as the webhook/backup-check
  *  paths, just admin-triggered instead of Stripe-triggered. */
 export async function confirmFoundingFunderPaymentAction(id: string): Promise<{ ok: boolean; error?: string }> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("foundingFunders"))) return { ok: false, error: "Not authorized." };
 
   const record = await prisma.foundingFunder.findUnique({ where: { id } });
   if (!record) return { ok: false, error: "That claim no longer exists." };
@@ -297,7 +314,7 @@ export async function confirmFoundingFunderPaymentAction(id: string): Promise<{ 
 /** Admin-only — deletes a FoundingFunder row outright (typically a stale pending claim that
  *  never completed payment), reopening that spot for someone else. */
 export async function removeFoundingFunderAction(id: string): Promise<{ ok: boolean; error?: string }> {
-  if (!(await isSiteAdmin())) return { ok: false, error: "Not authorized." };
+  if (!(await hasAdminArea("foundingFunders"))) return { ok: false, error: "Not authorized." };
 
   await prisma.foundingFunder.delete({ where: { id } });
   revalidatePath("/founding-funders");

@@ -36,3 +36,12 @@
 .wordle-key-present { background: var(--color-accent-2); color: #fff; }
 .wordle-key-absent { background: var(--color-danger-soft); color: #fff; }
 
+/* Moved from crossword.css — back link — /daily-term */
+.game-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-accent-700);
+  margin-bottom: 18px;
+}

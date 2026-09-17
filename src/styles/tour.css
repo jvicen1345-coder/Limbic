@@ -1,16 +1,4 @@
-/* — perceived-performance: nav loading bar, skeletons, page-enter fade, tap feedback —
-   see components/TopLoadingBar.tsx, components/SkeletonCard.tsx, and each route's
-   loading.tsx under app/(app)/*. */
-.top-loading-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 2px;
-  background: var(--color-accent);
-  transition: width 300ms ease, opacity 200ms ease;
-  z-index: 9999;
-  pointer-events: none;
-}
+
 
 /* .skeleton-card reuses .card's own background/radius/padding so the swap into real
    content doesn't itself cause a jump — only the shimmering lines inside are placeholder.
@@ -219,4 +207,3 @@
   .tour-menu-row { flex-direction: column; align-items: flex-start; gap: 10px; }
   .tour-menu-start { width: 100%; }
 }
-
