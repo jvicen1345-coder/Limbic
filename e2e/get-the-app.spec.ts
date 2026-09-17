@@ -194,9 +194,12 @@ test.describe("Get the App dismiss", () => {
     const email = freshEmail("get-the-app-standalone");
     await signUpAndEnterApp(page, email);
 
-    let nextActionPosts = 0;
+    // Only Profile posts `setGetTheAppDismissedAction`. Home fires unrelated Next-Action
+    // POSTs (OpenAccessPill, TimeZoneSync) that must not count as a dismiss write.
+    const profileActionPosts: string[] = [];
     page.on("request", (request) => {
-      if (request.method() === "POST" && request.headers()["next-action"]) nextActionPosts += 1;
+      if (request.method() !== "POST" || !request.headers()["next-action"]) return;
+      if (new URL(request.url()).pathname === "/profile") profileActionPosts.push(request.url());
     });
 
     const hydration: string[] = [];
@@ -208,9 +211,9 @@ test.describe("Get the App dismiss", () => {
     await page.addInitScript(mockMatchMediaStandalone);
     await page.goto("/profile");
     await expect(page.getByRole("heading", { name: "Profile", exact: true })).toBeVisible();
-    expect(await page.evaluate(() => window.matchMedia("(display-mode: standalone)").matches)).toBe(
-      true,
-    );
+    await expect
+      .poll(async () => page.evaluate(() => window.matchMedia("(display-mode: standalone)").matches))
+      .toBe(true);
     expect(
       await page.evaluate(() => Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone)),
     ).toBe(false);
@@ -218,19 +221,19 @@ test.describe("Get the App dismiss", () => {
     await expect(getTheAppCard(page)).toBeHidden();
     await expect(getTheAppCard(page)).toHaveCSS("display", "none");
     await expect(page.locator("#get-the-app")).toHaveCount(1);
-    expect(nextActionPosts).toBe(0);
+    expect(profileActionPosts).toEqual([]);
     expect(hydration).toEqual([]);
     expect(await readGetTheAppDismissed(email)).toBe(0);
 
     await page.goto("/home");
-    expect(await page.evaluate(() => window.matchMedia("(display-mode: standalone)").matches)).toBe(
-      true,
-    );
+    await expect
+      .poll(async () => page.evaluate(() => window.matchMedia("(display-mode: standalone)").matches))
+      .toBe(true);
     await expect(page.locator(".get-the-app-home-shortcut")).toHaveClass(
       /get-the-app-home-shortcut--installed/,
     );
     await expect(page.getByRole("link", { name: "Get the app" })).toHaveCount(0);
-    expect(nextActionPosts).toBe(0);
+    expect(profileActionPosts).toEqual([]);
     expect(await readGetTheAppDismissed(email)).toBe(0);
 
     const tab = await page.context().newPage();
