@@ -8,6 +8,39 @@ test.describe("landing + auth", () => {
     await expect(page.getByRole("navigation").getByRole("link", { name: "Sign In" })).toBeVisible();
   });
 
+  test("desktop landing tour serves the 16:9 cut with native controls and no autoplay", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+    const landscape = page.locator(".landing-demo-video--landscape video");
+    const portrait = page.locator(".landing-demo-video--portrait video");
+    await expect(landscape).toBeVisible();
+    await expect(portrait).toBeHidden();
+    await expect(landscape).toHaveAttribute("controls", "");
+    await expect(landscape).toHaveAttribute("preload", "none");
+    await expect(landscape).not.toHaveAttribute("autoplay");
+    await expect(landscape.locator("source").nth(0)).toHaveAttribute("src", "/limbic-tour.webm");
+    await expect(landscape.locator("source").nth(1)).toHaveAttribute("src", "/limbic-tour.mp4");
+    await expect(landscape).toHaveCSS("aspect-ratio", "16 / 9");
+  });
+
+  test("narrow landing tour serves the 9:16 cut in a phone-width player", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const landscape = page.locator(".landing-demo-video--landscape video");
+    const portrait = page.locator(".landing-demo-video--portrait video");
+    await expect(portrait).toBeVisible();
+    await expect(landscape).toBeHidden();
+    await expect(portrait).toHaveAttribute("controls", "");
+    await expect(portrait).toHaveAttribute("preload", "none");
+    await expect(portrait).not.toHaveAttribute("autoplay");
+    await expect(portrait.locator("source").nth(0)).toHaveAttribute("src", "/limbic-tour-9x16.webm");
+    await expect(portrait.locator("source").nth(1)).toHaveAttribute("src", "/limbic-tour-9x16.mp4");
+    await expect(portrait).toHaveCSS("aspect-ratio", "9 / 16");
+    const frame = page.locator(".landing-demo-video--portrait");
+    const width = await frame.evaluate((el) => (el as HTMLElement).getBoundingClientRect().width);
+    expect(width).toBeLessThanOrEqual(380);
+  });
+
   test("a protected route redirects a signed-out visitor to sign-in", async ({ page }) => {
     await page.goto("/home");
     await expect(page).toHaveURL(/\/sign-in/);

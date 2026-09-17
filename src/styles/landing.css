@@ -185,10 +185,10 @@
 .landing-feature-card-name { font-family: var(--font-heading); font-weight: 800; font-size: 16.5px; margin: 0 0 8px; }
 .landing-feature-card-body { font-size: 14px; line-height: 1.6; color: var(--color-neutral-700); margin: 0; }
 
-/* — Demo video — sits between features and founding funders. 16:9, filling the section's
-   width the way the original placeholder did. There is a 9:16 cut of the same tour for
-   social (see marketing/video), but a portrait player on a desktop page leaves most of the
-   row empty, so the landing page takes the landscape master. */
+/* — Demo video — sits between features and founding funders. Desktop: 16:9, filling the
+   section's width the way the original placeholder did. Narrow viewports: the 9:16 stacked
+   cut in a phone-width frame (the same file social uses — see marketing/video). Two <video>
+   elements, visibility swapped here, because <source media> is not honored inside <video>. */
 .landing-demo { max-width: 800px; margin: 0 auto; padding: 60px 24px; text-align: center; }
 .landing-demo-eyebrow {
   font-size: 12px;
@@ -199,10 +199,10 @@
   margin: 0 0 12px;
 }
 .landing-demo-body { font-size: 16px; line-height: 1.6; color: var(--color-neutral-700); margin: 0 0 32px; }
-/* The section is 800px wide including 24px of padding either side, so the frame fills it
-   and stops: the file is 1280 wide, and past ~752px on a desktop viewport the browser would
-   only be upscaling. line-height: 0 keeps the inline video from leaving a descender gap
-   under itself inside the rounded frame. */
+/* The section is 800px wide including 24px of padding either side, so the landscape frame
+   fills it and stops: the file is 1280 wide, and past ~752px on a desktop viewport the
+   browser would only be upscaling. line-height: 0 keeps the inline video from leaving a
+   descender gap under itself inside the rounded frame. */
 .landing-demo-video {
   width: 100%;
   margin: 0 auto;
@@ -221,7 +221,20 @@
   aspect-ratio: 16 / 9;
   background: #0d1220;
 }
+.landing-demo-video--landscape { display: block; }
+.landing-demo-video--portrait { display: none; }
 .landing-demo-note { font-size: 13px; color: var(--color-neutral-700); margin: 16px 0 0; }
+@media (max-width: 640px) {
+  .landing-demo-video--landscape { display: none; }
+  /* Capped in px, not as a percentage: the 9:16 file is 720px wide, so letting the frame
+     grow past ~380px would only upscale it — and a full-bleed 9:16 player at 640px is more
+     than a thousand pixels tall. */
+  .landing-demo-video--portrait {
+    display: block;
+    max-width: 380px;
+  }
+  .landing-demo-video--portrait .landing-demo-video-player { aspect-ratio: 9 / 16; }
+}
 
 /* — Section 5: founding funders — a real section, not a thin banner, hence the generous
    vertical padding and the same gold-tint treatment already established on the Wellness
