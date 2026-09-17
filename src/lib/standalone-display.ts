@@ -3,7 +3,9 @@
  *  iOS Safari does not report that media query and needs `navigator.standalone` instead.
  *
  *  Presentation-only — callers must not persist this as `User.getTheAppDismissed`. Someone
- *  who later opens the site in a normal tab should still see the Get the App card. */
+ *  who later opens the site in a normal tab should still see the Get the App card and the
+ *  Home shortcut. iOS may briefly paint that UI before `navigator.standalone` is read;
+ *  that flash is the hydration-safe tradeoff (do not delay first paint to hide it). */
 export function isStandaloneDisplay(
   win: Pick<Window, "matchMedia" | "navigator"> = window,
 ): boolean {

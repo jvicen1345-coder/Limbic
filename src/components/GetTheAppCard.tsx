@@ -1,18 +1,10 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { SmartphoneIcon, MonitorIcon } from "@/components/icons";
 import { CollapsibleCard } from "@/components/CollapsibleCard";
 import { GetTheAppToggle } from "@/components/GetTheAppToggle";
-import { isStandaloneDisplay, subscribeStandaloneDisplay } from "@/lib/standalone-display";
-
-function getStandaloneSnapshot() {
-  return isStandaloneDisplay();
-}
-
-function getStandaloneServerSnapshot() {
-  return false;
-}
+import { useStandaloneDisplay } from "@/lib/use-standalone-display";
 
 /** Profile > About you — a how-to for installing Limbic as a home-screen/desktop app,
  *  with a dismiss switch so someone who already installed (or never will) can collapse it.
@@ -22,13 +14,14 @@ function getStandaloneServerSnapshot() {
  *
  *  Also the target of the shortcut icon next to Refresh on Home (see HomeFeed.tsx, which
  *  links to /profile#get-the-app) — the id/scrollMarginTop below are what make that land
- *  here instead of just the top of Profile.
+ *  here instead of just the top of Profile. That shortcut uses the same presentation-only
+ *  standalone hide, so an installed-app launch does not deep-link at a card this hides.
  *
  *  Installed-app auto-hide is presentation-only: display-mode / navigator.standalone is
- *  read through useSyncExternalStore with a false server snapshot (same shape as
- *  PlaybookChecklist) so the server and the first client render agree, then the installed
- *  value settles after hydration — no mismatch, no setState in an effect, and no write to
- *  User.getTheAppDismissed. */
+ *  read through useSyncExternalStore with a false server snapshot so the server and the
+ *  first client render agree, then the installed value settles after hydration — no
+ *  mismatch, no DB write. iOS may briefly paint this card before navigator.standalone is
+ *  read; that flash is the hydration-safe tradeoff, not something to paper over. */
 export function GetTheAppCard({
   name,
   dismissed = false,
@@ -37,11 +30,7 @@ export function GetTheAppCard({
   dismissed?: boolean;
 } = {}) {
   const [optimisticDismissed, setOptimisticDismissed] = useState(dismissed);
-  const installed = useSyncExternalStore(
-    subscribeStandaloneDisplay,
-    getStandaloneSnapshot,
-    getStandaloneServerSnapshot,
-  );
+  const installed = useStandaloneDisplay();
 
   const className = installed ? "get-the-app-card get-the-app-card--installed" : "get-the-app-card";
 
@@ -56,7 +45,7 @@ export function GetTheAppCard({
         <div className="get-the-app-card-toolbar">
           <p className="card-body get-the-app-card-copy">
             {optimisticDismissed
-              ? "You've added Limbic. Turn this back on if you still want install instructions."
+              ? "Install instructions are hidden. Turn this back on if you still want them."
               : "Add Limbic to your home screen or dock for a faster, full-screen experience — no app store needed."}
           </p>
           <GetTheAppToggle dismissed={dismissed} onOptimisticChange={setOptimisticDismissed} />

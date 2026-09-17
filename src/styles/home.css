@@ -318,3 +318,10 @@
 .daily-insight-topic {
   overflow-wrap: anywhere;
 }
+
+/* Get the App Home shortcut — hidden in installed-app display mode to match Profile's
+   GetTheAppCard. Presentation-only; iOS navigator.standalone still needs the JS class. */
+.get-the-app-home-shortcut--installed { display: none; }
+@media (display-mode: standalone) {
+  .get-the-app-home-shortcut { display: none; }
+}

@@ -22,7 +22,7 @@ export function GetTheAppToggle({
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
       <span style={{ fontSize: 12, color: "var(--color-neutral-700)" }}>
-        {optimistic ? "Hidden" : "Already added?"}
+        {optimistic ? "Hidden" : "Shown"}
       </span>
       <Switch
         checked={optimistic}

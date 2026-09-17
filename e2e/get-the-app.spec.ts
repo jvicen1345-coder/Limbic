@@ -5,7 +5,8 @@ import { freshEmail, setUserColumn, signUpAndEnterApp } from "./helpers";
  * Profile's Get the App card (#494): the dismiss switch was already built
  * (GetTheAppToggle + setGetTheAppDismissedAction + User.getTheAppDismissed) but never
  * rendered. This covers the wiring — optimistic compact done state, persistence, the Home
- * shortcut icon, and installed-app auto-hide that must not write the database.
+ * shortcut icon, and installed-app auto-hide (Profile card and Home shortcut) that must
+ * not write the database.
  */
 
 function getTheAppCard(page: Page) {
@@ -94,10 +95,13 @@ test.describe("Get the App dismiss", () => {
     await expect(card.getByText("iPhone & iPad (Safari)")).toBeVisible();
     const dismiss = card.getByRole("switch", { name: "Hide the Get the App instructions" });
     await expect(dismiss).toHaveAttribute("aria-checked", "false");
+    await expect(card.getByText("Shown")).toBeVisible();
+    await expect(card.getByText("Already added?")).toHaveCount(0);
 
     await dismiss.click();
     await expect(dismiss).toHaveAttribute("aria-checked", "true");
-    await expect(card.getByText("You've added Limbic")).toBeVisible();
+    await expect(card.getByText("Hidden", { exact: true })).toBeVisible();
+    await expect(card.getByText("Install instructions are hidden")).toBeVisible();
     await expect(card.getByText("iPhone & iPad (Safari)")).toHaveCount(0);
     await expect(page.locator("#get-the-app")).toHaveCount(1);
 
@@ -108,7 +112,7 @@ test.describe("Get the App dismiss", () => {
       "aria-checked",
       "true",
     );
-    await expect(reloaded.getByText("You've added Limbic")).toBeVisible();
+    await expect(reloaded.getByText("Install instructions are hidden")).toBeVisible();
     await expect(reloaded.getByText("iPhone & iPad (Safari)")).toHaveCount(0);
 
     await page.goto("/home");
@@ -131,7 +135,7 @@ test.describe("Get the App dismiss", () => {
 
     await page.goto("/profile");
     const card = await openGetTheAppCard(page);
-    await expect(card.getByText("You've added Limbic")).toBeVisible();
+    await expect(card.getByText("Install instructions are hidden")).toBeVisible();
     await expect(card.getByText("iPhone & iPad (Safari)")).toHaveCount(0);
     await expect(card.getByRole("switch", { name: "Hide the Get the App instructions" })).toHaveAttribute(
       "aria-checked",
@@ -166,11 +170,18 @@ test.describe("Get the App dismiss", () => {
     expect(hydration).toEqual([]);
     expect(await readGetTheAppDismissed(email)).toBe(0);
 
+    await page.goto("/home");
+    await expect(page.getByRole("link", { name: "Get the app" })).toHaveCount(0);
+    expect(nextActionPosts).toBe(0);
+    expect(await readGetTheAppDismissed(email)).toBe(0);
+
     const tab = await page.context().newPage();
     await tab.goto("/profile");
     await expect(tab.getByRole("heading", { name: "Profile", exact: true })).toBeVisible();
     const card = await openGetTheAppCard(tab);
     await expect(card.getByText("iPhone & iPad (Safari)")).toBeVisible();
+    await tab.goto("/home");
+    await expect(tab.getByRole("link", { name: "Get the app" })).toBeVisible();
     await tab.close();
   });
 
@@ -184,10 +195,16 @@ test.describe("Get the App dismiss", () => {
     await expect(getTheAppCard(page)).toBeHidden();
     expect(await readGetTheAppDismissed(email)).toBe(0);
 
+    await page.goto("/home");
+    await expect(page.getByRole("link", { name: "Get the app" })).toHaveCount(0);
+    expect(await readGetTheAppDismissed(email)).toBe(0);
+
     const tab = await page.context().newPage();
     await tab.goto("/profile");
     const card = await openGetTheAppCard(tab);
     await expect(card.getByText("Add Limbic to your home screen")).toBeVisible();
+    await tab.goto("/home");
+    await expect(tab.getByRole("link", { name: "Get the app" })).toBeVisible();
     await tab.close();
   });
 });
