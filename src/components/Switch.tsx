@@ -10,15 +10,25 @@ export function Switch({
   checked,
   onChange,
   label,
+  disabled = false,
 }: {
   checked: boolean;
   onChange: () => void;
   /** Accessible name — this control has no visible text of its own, so callers must supply
    *  one (e.g. "Hide these instructions") rather than relying on nearby prose. */
   label: string;
+  disabled?: boolean;
 }) {
   return (
-    <button type="button" role="switch" aria-checked={checked} aria-label={label} className="switch" onClick={onChange}>
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      className="switch"
+      disabled={disabled}
+      onClick={onChange}
+    >
       <span className="switch-thumb" />
     </button>
   );

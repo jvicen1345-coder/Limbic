@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition, type ReactNode } from "reac
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { SearchIcon, XIcon, DownloadIcon, RefreshIcon } from "@/components/icons";
+import { useStandaloneDisplay } from "@/lib/use-standalone-display";
 import { SlidingTabs } from "@/components/SlidingTabs";
 import { HeroFeed } from "@/components/HeroFeed";
 import { ArticleCard } from "@/components/ArticleCard";
@@ -93,16 +94,7 @@ export function HomeFeedInteractive({
               <div>{header}</div>
               <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
                 <RefreshHomeFeedButton gridArticleFingerprints={panel.gridFingerprints} />
-                {!getTheAppDismissed && (
-                  <Link
-                    href="/profile#get-the-app"
-                    className="btn btn-secondary btn-icon"
-                    aria-label="Get the app"
-                    title="Add Limbic to your home screen"
-                  >
-                    <DownloadIcon size={16} />
-                  </Link>
-                )}
+                {!getTheAppDismissed && <GetTheAppHomeShortcut />}
                 <Link href="/search" className="btn btn-secondary btn-icon" aria-label="Search">
                   <SearchIcon size={17} />
                 </Link>
@@ -186,5 +178,29 @@ export function HomeFeedInteractive({
         </div>
       </div>
     </PullToRefresh>
+  );
+}
+
+/** Home shortcut next to Refresh. Parent already skips this when `getTheAppDismissed`
+ *  is true. Standalone/PWA hide is presentation-only (same detection as GetTheAppCard)
+ *  so an installed launch does not deep-link at a card Profile has hidden — no DB write.
+ *
+ *  iOS Safari may briefly paint this before `navigator.standalone` is read; that flash is
+ *  the hydration-safe tradeoff, not something to paper over. */
+function GetTheAppHomeShortcut() {
+  const installed = useStandaloneDisplay();
+  const className = installed
+    ? "btn btn-secondary btn-icon get-the-app-home-shortcut get-the-app-home-shortcut--installed"
+    : "btn btn-secondary btn-icon get-the-app-home-shortcut";
+
+  return (
+    <Link
+      href="/profile#get-the-app"
+      className={className}
+      aria-label="Get the app"
+      title="Add Limbic to your home screen"
+    >
+      <DownloadIcon size={16} />
+    </Link>
   );
 }
