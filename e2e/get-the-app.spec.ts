@@ -96,6 +96,7 @@ test.describe("Get the App dismiss", () => {
     await expect(card.getByText("iPhone & iPad (Safari)")).toHaveCount(0);
     await expect(page.locator("#get-the-app")).toHaveCount(1);
     await expect(showSwitch).toBeEnabled();
+    expect(await readGetTheAppDismissed(email)).toBe(1);
 
     await page.reload();
     await expect(page.getByRole("heading", { name: "Profile", exact: true })).toBeVisible();
@@ -141,6 +142,37 @@ test.describe("Get the App dismiss", () => {
 
     await page.goto("/home");
     await expect(page.getByRole("link", { name: "Get the app" })).toHaveCount(0);
+  });
+
+  test("failed dismiss action rolls the compact UI back and does not persist", async ({ page }) => {
+    const email = freshEmail("get-the-app-rollback");
+    await signUpAndEnterApp(page, email);
+
+    await page.goto("/profile");
+    await expect(page.getByRole("heading", { name: "Profile", exact: true })).toBeVisible();
+    const card = await openGetTheAppCard(page);
+    const hideSwitch = card.getByRole("switch", { name: "Hide the Get the App instructions" });
+    const showSwitch = card.getByRole("switch", { name: "Show the Get the App instructions" });
+
+    await page.route("**/*", async (route) => {
+      const request = route.request();
+      if (request.method() === "POST" && request.headers()["next-action"]) {
+        // Delay so the optimistic compact state is observable, then fail the round trip.
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        await route.fulfill({ status: 500, body: "dismiss failed" });
+        return;
+      }
+      await route.continue();
+    });
+
+    await hideSwitch.click();
+    await expect(showSwitch).toHaveAttribute("aria-checked", "true");
+    await expect(card.getByText("Install instructions are hidden")).toBeVisible();
+    await expect(hideSwitch).toHaveAttribute("aria-checked", "false");
+    await expect(card.getByText("iPhone & iPad (Safari)")).toBeVisible();
+    await expect(card.getByText("Shown")).toBeVisible();
+    await expect(hideSwitch).toBeEnabled();
+    expect(await readGetTheAppDismissed(email)).toBe(0);
   });
 
   test("display-mode standalone hides the card without writing the database", async ({ page }) => {
