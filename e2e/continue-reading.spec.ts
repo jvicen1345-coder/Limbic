@@ -133,16 +133,24 @@ test.describe("Continue Reading", () => {
     const email = freshEmail("continue-dwell");
     await signUpAndEnterApp(page, email);
 
-    // Apply before the tracker mounts so the no-scroll-room path is the one under test,
-    // not a post-paint layout tweak. 12000px makes .app-main taller than the article.
+    // 100dvh is .app-main's height (see src/styles/shell.css). A tall viewport plus
+    // hiding Threads is what actually produces scrollHeight <= clientHeight — setting
+    // .app-main { height: Npx } is ignored because the flex parent is still 100dvh.
+    await page.setViewportSize({ width: 1400, height: 4000 });
     await page.addInitScript(() => {
       const style = document.createElement("style");
-      style.textContent = ".app-main { height: 12000px !important; }";
+      style.textContent = ".article-split-threads { display: none !important; }";
       document.documentElement.appendChild(style);
     });
 
     await page.goto(`/article/${NECK.id}`);
     await expect(page.getByRole("heading", { name: NECK.title })).toBeVisible();
+    await expect
+      .poll(() =>
+        page.locator(".app-main").evaluate((el) => el.scrollHeight - el.clientHeight)
+      )
+      .toBeLessThanOrEqual(0);
+
     await page.goto("/home");
     // Give a buggy unmount flush time to land before asserting it did not.
     await new Promise((r) => setTimeout(r, 1500));
@@ -152,6 +160,11 @@ test.describe("Continue Reading", () => {
 
     await page.goto(`/article/${NECK.id}`);
     await expect(page.getByRole("heading", { name: NECK.title })).toBeVisible();
+    await expect
+      .poll(() =>
+        page.locator(".app-main").evaluate((el) => el.scrollHeight - el.clientHeight)
+      )
+      .toBeLessThanOrEqual(0);
     await expect
       .poll(() => scrollProgressFor(email, NECK.id), {
         timeout: SHORT_ARTICLE_DWELL_MS + 5_000,
