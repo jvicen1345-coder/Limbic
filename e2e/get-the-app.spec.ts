@@ -33,14 +33,29 @@ function mockIosStandalone() {
   });
 }
 
-/** Android/desktop path: emulate the actual `display-mode` media feature so both
- *  `window.matchMedia` and CSS `@media (display-mode: standalone)` agree. A JS-only
- *  matchMedia mock would hide via the `--installed` class and leave the CSS rule untested. */
-async function emulateDisplayModeStandalone(page: Page) {
-  const session = await page.context().newCDPSession(page);
-  await session.send("Emulation.setEmulatedMedia", {
-    features: [{ name: "display-mode", value: "standalone" }],
-  });
+/** Android/desktop JS path. `addInitScript` re-applies on every navigation of this page
+ *  (unlike CDP `Emulation.setEmulatedMedia`, which does not stick across `goto`). This
+ *  mocks `matchMedia` so `useStandaloneDisplay` adds `--installed`; it does not make the
+ *  CSS `@media (display-mode: standalone)` rule match — hide is asserted via that class. */
+function mockMatchMediaStandalone() {
+  const original = window.matchMedia.bind(window);
+  window.matchMedia = (query: string) => {
+    if (query.includes("display-mode: standalone")) {
+      return {
+        matches: true,
+        media: query,
+        onchange: null,
+        addListener() {},
+        removeListener() {},
+        addEventListener() {},
+        removeEventListener() {},
+        dispatchEvent() {
+          return false;
+        },
+      } as MediaQueryList;
+    }
+    return original(query);
+  };
 }
 
 async function readGetTheAppDismissed(email: string): Promise<number> {
@@ -190,7 +205,7 @@ test.describe("Get the App dismiss", () => {
       if (/hydrat/i.test(text)) hydration.push(text);
     });
 
-    await emulateDisplayModeStandalone(page);
+    await page.addInitScript(mockMatchMediaStandalone);
     await page.goto("/profile");
     await expect(page.getByRole("heading", { name: "Profile", exact: true })).toBeVisible();
     expect(await page.evaluate(() => window.matchMedia("(display-mode: standalone)").matches)).toBe(
@@ -199,6 +214,7 @@ test.describe("Get the App dismiss", () => {
     expect(
       await page.evaluate(() => Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone)),
     ).toBe(false);
+    await expect(getTheAppCard(page)).toHaveClass(/get-the-app-card--installed/);
     await expect(getTheAppCard(page)).toBeHidden();
     await expect(getTheAppCard(page)).toHaveCSS("display", "none");
     await expect(page.locator("#get-the-app")).toHaveCount(1);
@@ -207,6 +223,12 @@ test.describe("Get the App dismiss", () => {
     expect(await readGetTheAppDismissed(email)).toBe(0);
 
     await page.goto("/home");
+    expect(await page.evaluate(() => window.matchMedia("(display-mode: standalone)").matches)).toBe(
+      true,
+    );
+    await expect(page.locator(".get-the-app-home-shortcut")).toHaveClass(
+      /get-the-app-home-shortcut--installed/,
+    );
     await expect(page.getByRole("link", { name: "Get the app" })).toHaveCount(0);
     expect(nextActionPosts).toBe(0);
     expect(await readGetTheAppDismissed(email)).toBe(0);
