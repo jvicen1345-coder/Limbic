@@ -22,34 +22,24 @@ async function openGetTheAppCard(page: Page) {
   return card;
 }
 
-/** Runs in the page before any app script. The argument is passed through
- *  `addInitScript` because Playwright serializes the function and cannot close over
- *  Node-side locals. Typed as `string` so it matches Playwright's PageFunction arg. */
-function mockStandaloneDisplay(source: string) {
-  if (source === "display-mode") {
-    const original = window.matchMedia.bind(window);
-    window.matchMedia = (query: string) => {
-      if (query.includes("display-mode: standalone")) {
-        return {
-          matches: true,
-          media: query,
-          onchange: null,
-          addListener() {},
-          removeListener() {},
-          addEventListener() {},
-          removeEventListener() {},
-          dispatchEvent() {
-            return false;
-          },
-        } as MediaQueryList;
-      }
-      return original(query);
-    };
-    return;
-  }
+/** iOS path only: `navigator.standalone`. Deliberately does not mock `matchMedia` —
+ *  CSS `@media (display-mode: standalone)` is a real media query and is not flipped by
+ *  patching `window.matchMedia`. The iOS test must hide via the JS `--installed` class
+ *  while `matchMedia("(display-mode: standalone)").matches` stays false. */
+function mockIosStandalone() {
   Object.defineProperty(window.navigator, "standalone", {
     configurable: true,
     get: () => true,
+  });
+}
+
+/** Android/desktop path: emulate the actual `display-mode` media feature so both
+ *  `window.matchMedia` and CSS `@media (display-mode: standalone)` agree. A JS-only
+ *  matchMedia mock would hide via the `--installed` class and leave the CSS rule untested. */
+async function emulateDisplayModeStandalone(page: Page) {
+  const session = await page.context().newCDPSession(page);
+  await session.send("Emulation.setEmulatedMedia", {
+    features: [{ name: "display-mode", value: "standalone" }],
   });
 }
 
@@ -93,13 +83,14 @@ test.describe("Get the App dismiss", () => {
 
     const card = await openGetTheAppCard(page);
     await expect(card.getByText("iPhone & iPad (Safari)")).toBeVisible();
-    const dismiss = card.getByRole("switch", { name: "Hide the Get the App instructions" });
-    await expect(dismiss).toHaveAttribute("aria-checked", "false");
+    const hideSwitch = card.getByRole("switch", { name: "Hide the Get the App instructions" });
+    const showSwitch = card.getByRole("switch", { name: "Show the Get the App instructions" });
+    await expect(hideSwitch).toHaveAttribute("aria-checked", "false");
     await expect(card.getByText("Shown")).toBeVisible();
     await expect(card.getByText("Already added?")).toHaveCount(0);
 
-    await dismiss.click();
-    await expect(dismiss).toHaveAttribute("aria-checked", "true");
+    await hideSwitch.click();
+    await expect(showSwitch).toHaveAttribute("aria-checked", "true");
     await expect(card.getByText("Hidden", { exact: true })).toBeVisible();
     await expect(card.getByText("Install instructions are hidden")).toBeVisible();
     await expect(card.getByText("iPhone & iPad (Safari)")).toHaveCount(0);
@@ -108,7 +99,7 @@ test.describe("Get the App dismiss", () => {
     await page.reload();
     await expect(page.getByRole("heading", { name: "Profile", exact: true })).toBeVisible();
     const reloaded = await openGetTheAppCard(page);
-    await expect(reloaded.getByRole("switch", { name: "Hide the Get the App instructions" })).toHaveAttribute(
+    await expect(reloaded.getByRole("switch", { name: "Show the Get the App instructions" })).toHaveAttribute(
       "aria-checked",
       "true",
     );
@@ -120,7 +111,11 @@ test.describe("Get the App dismiss", () => {
 
     await page.goto("/profile");
     const again = await openGetTheAppCard(page);
-    await again.getByRole("switch", { name: "Hide the Get the App instructions" }).click();
+    await again.getByRole("switch", { name: "Show the Get the App instructions" }).click();
+    await expect(again.getByRole("switch", { name: "Hide the Get the App instructions" })).toHaveAttribute(
+      "aria-checked",
+      "false",
+    );
     await expect(again.getByText("iPhone & iPad (Safari)")).toBeVisible();
     await expect(again.getByText("Add Limbic to your home screen")).toBeVisible();
 
@@ -137,7 +132,7 @@ test.describe("Get the App dismiss", () => {
     const card = await openGetTheAppCard(page);
     await expect(card.getByText("Install instructions are hidden")).toBeVisible();
     await expect(card.getByText("iPhone & iPad (Safari)")).toHaveCount(0);
-    await expect(card.getByRole("switch", { name: "Hide the Get the App instructions" })).toHaveAttribute(
+    await expect(card.getByRole("switch", { name: "Show the Get the App instructions" })).toHaveAttribute(
       "aria-checked",
       "true",
     );
@@ -161,10 +156,17 @@ test.describe("Get the App dismiss", () => {
       if (/hydrat/i.test(text)) hydration.push(text);
     });
 
-    await page.addInitScript(mockStandaloneDisplay, "display-mode");
+    await emulateDisplayModeStandalone(page);
     await page.goto("/profile");
     await expect(page.getByRole("heading", { name: "Profile", exact: true })).toBeVisible();
+    expect(await page.evaluate(() => window.matchMedia("(display-mode: standalone)").matches)).toBe(
+      true,
+    );
+    expect(
+      await page.evaluate(() => Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone)),
+    ).toBe(false);
     await expect(getTheAppCard(page)).toBeHidden();
+    await expect(getTheAppCard(page)).toHaveCSS("display", "none");
     await expect(page.locator("#get-the-app")).toHaveCount(1);
     expect(nextActionPosts).toBe(0);
     expect(hydration).toEqual([]);
@@ -189,13 +191,23 @@ test.describe("Get the App dismiss", () => {
     const email = freshEmail("get-the-app-ios");
     await signUpAndEnterApp(page, email);
 
-    await page.addInitScript(mockStandaloneDisplay, "ios-standalone");
+    await page.addInitScript(mockIosStandalone);
     await page.goto("/profile");
     await expect(page.getByRole("heading", { name: "Profile", exact: true })).toBeVisible();
+    expect(await page.evaluate(() => window.matchMedia("(display-mode: standalone)").matches)).toBe(
+      false,
+    );
+    expect(
+      await page.evaluate(() => Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone)),
+    ).toBe(true);
+    await expect(getTheAppCard(page)).toHaveClass(/get-the-app-card--installed/);
     await expect(getTheAppCard(page)).toBeHidden();
     expect(await readGetTheAppDismissed(email)).toBe(0);
 
     await page.goto("/home");
+    await expect(page.locator(".get-the-app-home-shortcut")).toHaveClass(
+      /get-the-app-home-shortcut--installed/,
+    );
     await expect(page.getByRole("link", { name: "Get the app" })).toHaveCount(0);
     expect(await readGetTheAppDismissed(email)).toBe(0);
 

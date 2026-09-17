@@ -320,8 +320,9 @@
 }
 
 /* Get the App Home shortcut — hidden in installed-app display mode to match Profile's
-   GetTheAppCard. Presentation-only; iOS navigator.standalone still needs the JS class. */
-.get-the-app-home-shortcut--installed { display: none; }
+   GetTheAppCard. Two-class hide so this beats `.btn { display: inline-flex }` regardless
+   of sheet load order. Presentation-only; iOS navigator.standalone still needs the JS class. */
+.btn.get-the-app-home-shortcut--installed { display: none; }
 @media (display-mode: standalone) {
-  .get-the-app-home-shortcut { display: none; }
+  .btn.get-the-app-home-shortcut { display: none; }
 }

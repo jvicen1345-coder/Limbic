@@ -48,7 +48,7 @@ export function GetTheAppCard({
               ? "Install instructions are hidden. Turn this back on if you still want them."
               : "Add Limbic to your home screen or dock for a faster, full-screen experience — no app store needed."}
           </p>
-          <GetTheAppToggle dismissed={dismissed} onOptimisticChange={setOptimisticDismissed} />
+          <GetTheAppToggle dismissed={optimisticDismissed} onDismissedChange={setOptimisticDismissed} />
         </div>
 
         {!optimisticDismissed && <GetTheAppInstructions />}

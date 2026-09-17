@@ -44,11 +44,12 @@ export async function toggleHomeWidgetAction(widgetId: string) {
 /** The Get the App card's own dismiss switch (see components/GetTheAppCard.tsx) — collapses
  *  it to a compact done state and hides the shortcut icon next to Refresh on Home (see
  *  components/HomeFeed.tsx). */
-export async function setGetTheAppDismissedAction(dismissed: boolean) {
+export async function setGetTheAppDismissedAction(dismissed: boolean): Promise<boolean> {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user) return false;
   await prisma.user.update({ where: { id: user.id }, data: { getTheAppDismissed: dismissed } });
   revalidatePath("/", "layout");
+  return true;
 }
 
 /** The Founding Funder badge toggle (see components/FoundingFunderBadgeToggle.tsx) — hides

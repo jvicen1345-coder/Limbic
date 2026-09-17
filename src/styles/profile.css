@@ -225,9 +225,11 @@ html[data-theme="dark"] .date-field-native { color-scheme: dark; }
 }
 .get-the-app-card-copy { margin-top: 2px; flex: 1 1 12rem; min-width: 0; }
 .get-the-app-howto { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
-.get-the-app-card--installed { display: none; }
+/* Two-class hide so this beats `.card { display: flex }` in base.css regardless of sheet
+   load order (profile.css is not guaranteed to win on specificity 0,1,0). */
+.card.get-the-app-card--installed { display: none; }
 @media (display-mode: standalone) {
-  .get-the-app-card { display: none; }
+  .card.get-the-app-card { display: none; }
 }
 /* Generic on/off pill switch (see components/Switch.tsx) — a real <button role="switch">,
    not a styled checkbox. */

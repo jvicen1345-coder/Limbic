@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { isStandaloneDisplay } from "./standalone-display";
+import { isStandaloneDisplay, subscribeStandaloneDisplay } from "./standalone-display";
 
 function fakeWindow({
   displayMode = "browser",
@@ -43,5 +43,56 @@ describe("isStandaloneDisplay", () => {
   it("does not treat fullscreen or minimal-ui as installed", () => {
     assert.equal(isStandaloneDisplay(fakeWindow({ displayMode: "fullscreen" })), false);
     assert.equal(isStandaloneDisplay(fakeWindow({ displayMode: "minimal-ui" })), false);
+  });
+
+  it("falls through when matchMedia throws", () => {
+    const win = {
+      matchMedia: () => {
+        throw new Error("no matchMedia");
+      },
+      navigator: { standalone: true } as Navigator & { standalone?: boolean },
+    };
+    assert.equal(isStandaloneDisplay(win), true);
+  });
+});
+
+describe("subscribeStandaloneDisplay", () => {
+  it("subscribes to display-mode changes and unsubscribes", () => {
+    const listeners = new Set<() => void>();
+    const win = {
+      matchMedia: () =>
+        ({
+          matches: false,
+          media: "(display-mode: standalone)",
+          addEventListener(_type: string, listener: EventListener) {
+            listeners.add(listener as () => void);
+          },
+          removeEventListener(_type: string, listener: EventListener) {
+            listeners.delete(listener as () => void);
+          },
+        }) as MediaQueryList,
+    };
+
+    let calls = 0;
+    const unsubscribe = subscribeStandaloneDisplay(() => {
+      calls += 1;
+    }, win);
+    assert.equal(listeners.size, 1);
+    for (const listener of listeners) listener();
+    assert.equal(calls, 1);
+    unsubscribe();
+    assert.equal(listeners.size, 0);
+  });
+
+  it("returns a no-op unsubscribe when matchMedia throws", () => {
+    const win = {
+      matchMedia: () => {
+        throw new Error("no matchMedia");
+      },
+    };
+    const unsubscribe = subscribeStandaloneDisplay(() => {
+      throw new Error("should not subscribe");
+    }, win);
+    unsubscribe();
   });
 });
