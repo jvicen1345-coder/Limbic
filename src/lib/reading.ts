@@ -37,6 +37,8 @@ export async function recordArticleRead(userId: string, articleId: string, reque
  *  shouldn't erase how far they'd previously gotten before they scroll past that point
  *  again. No-ops silently if the ReadArticle row doesn't exist yet — the tracker can't
  *  run before recordArticleRead's upsert has created it (article page awaits that first).
+ *  Finished-vs-unfinished for the card is decided at read time (see
+ *  lib/reading-progress.ts); this write path stays forward-only.
  */
 export async function updateReadingProgress(userId: string, articleId: string, progress: number) {
   const clamped = Math.max(0, Math.min(1, progress));

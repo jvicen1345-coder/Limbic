@@ -2,9 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { updateReadingProgressAction } from "@/app/actions/reading";
-
-const SEND_DEBOUNCE_MS = 600;
-const MIN_PROGRESS_DELTA = 0.02;
+import {
+  MIN_PROGRESS_DELTA,
+  reportedScrollProgress,
+  SEND_DEBOUNCE_MS,
+  SHORT_ARTICLE_DWELL_MS,
+} from "@/lib/reading-progress";
 
 /** Invisible — mounted on the article page (see app/(app)/article/[id]/page.tsx) purely to
  *  report how far the reader has scrolled, for the Home page "Continue Reading" card (see
@@ -19,12 +22,16 @@ export function ReadingProgressTracker({ articleId }: { articleId: string }) {
 
     lastSentRef.current = 0;
     let debounceHandle: ReturnType<typeof setTimeout> | null = null;
+    let dwellHandle: ReturnType<typeof setTimeout> | null = null;
+    let engaged = false;
 
     function computeProgress() {
-      const scrollable = scrollEl!.scrollHeight - scrollEl!.clientHeight;
-      // No scroll room at all (a short article on a tall screen) counts as fully read —
-      // there's nothing further for the reader to reach.
-      return scrollable <= 0 ? 1 : Math.max(0, Math.min(1, scrollEl!.scrollTop / scrollable));
+      return reportedScrollProgress({
+        scrollHeight: scrollEl!.scrollHeight,
+        clientHeight: scrollEl!.clientHeight,
+        scrollTop: scrollEl!.scrollTop,
+        engaged,
+      });
     }
 
     function send(progress: number) {
@@ -32,7 +39,15 @@ export function ReadingProgressTracker({ articleId }: { articleId: string }) {
       updateReadingProgressAction(articleId, progress);
     }
 
+    function markEngaged() {
+      if (engaged) return;
+      engaged = true;
+      const progress = computeProgress();
+      if (progress > lastSentRef.current) send(progress);
+    }
+
     function handleScroll() {
+      markEngaged();
       if (debounceHandle) clearTimeout(debounceHandle);
       debounceHandle = setTimeout(() => {
         const progress = computeProgress();
@@ -40,13 +55,16 @@ export function ReadingProgressTracker({ articleId }: { articleId: string }) {
       }, SEND_DEBOUNCE_MS);
     }
 
+    dwellHandle = setTimeout(markEngaged, SHORT_ARTICLE_DWELL_MS);
     scrollEl.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       scrollEl.removeEventListener("scroll", handleScroll);
       if (debounceHandle) clearTimeout(debounceHandle);
+      if (dwellHandle) clearTimeout(dwellHandle);
       // Flush unconditionally (no MIN_PROGRESS_DELTA gate) on navigating away, so a small
       // final move right before leaving isn't lost just because it didn't clear the
-      // in-session throttling threshold.
+      // in-session throttling threshold. No-scroll-room articles still need engagement
+      // (computeProgress stays 0 until then), so an open-and-leave does not write 1.0.
       const progress = computeProgress();
       if (progress > lastSentRef.current) send(progress);
     };
