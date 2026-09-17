@@ -78,11 +78,40 @@ describe("pickContinueReading", () => {
     );
   });
 
-  it("returns null when the chosen unfinished article has churned out of the pool", () => {
+  it("returns null when every unfinished article has churned out of the pool", () => {
     assert.equal(
       pickContinueReading([{ articleId: "live-gone", scrollProgress: 0.4 }], articles),
       null
     );
+    assert.equal(
+      pickContinueReading(
+        [
+          { articleId: "live-gone", scrollProgress: 0.6 },
+          { articleId: "also-gone", scrollProgress: 0.2 },
+          { articleId: "cpg-neck-pain-2017", scrollProgress: 1 },
+        ],
+        articles
+      ),
+      null
+    );
+  });
+
+  it("skips a churned newest unfinished row and surfaces an older in-pool unfinished read", () => {
+    const pick = pickContinueReading(
+      [
+        { articleId: "live-gone", scrollProgress: 0.6 },
+        { articleId: "cpg-neck-pain-2017", scrollProgress: 1 },
+        { articleId: "cpg-low-back-pain-2021", scrollProgress: 0.4 },
+        { articleId: "cpg-hip-oa-2025", scrollProgress: 0.2 },
+      ],
+      articles
+    );
+    assert.deepEqual(pick, {
+      articleId: "cpg-low-back-pain-2021",
+      title: "Low Back Pain: Revision 2021",
+      progress: 0.4,
+      progressLabel: "40% read",
+    });
   });
 });
 

@@ -25,8 +25,8 @@ type ContinueReadingArticle = {
 
 /** Most recently touched unfinished read that is still in the current article pool.
  *  `readRows` must already be ordered most-recently-touched first (Home's findMany).
- *  If the chosen row's article has churned out, returns null — same as the previous
- *  `articles.find(...)` miss on `readRows[0]`. */
+ *  Walks until a row is both unfinished and present in `articles`. Returns null only
+ *  when none match (no unfinished reads, or every unfinished article has churned out). */
 export function pickContinueReading(
   readRows: ContinueReadingRow[],
   articles: ContinueReadingArticle[]
@@ -36,17 +36,19 @@ export function pickContinueReading(
   progress: number;
   progressLabel: string;
 } | null {
-  const row = readRows.find((r) => r.scrollProgress < CONTINUE_READING_FINISHED_THRESHOLD);
-  if (!row) return null;
-  const article = articles.find((a) => a.id === row.articleId);
-  if (!article) return null;
-  const pct = Math.round(row.scrollProgress * 100);
-  return {
-    articleId: article.id,
-    title: article.title,
-    progress: row.scrollProgress,
-    progressLabel: pct < 1 ? "Just started" : `${pct}% read`,
-  };
+  for (const row of readRows) {
+    if (row.scrollProgress >= CONTINUE_READING_FINISHED_THRESHOLD) continue;
+    const article = articles.find((a) => a.id === row.articleId);
+    if (!article) continue;
+    const pct = Math.round(row.scrollProgress * 100);
+    return {
+      articleId: article.id,
+      title: article.title,
+      progress: row.scrollProgress,
+      progressLabel: pct < 1 ? "Just started" : `${pct}% read`,
+    };
+  }
+  return null;
 }
 
 /** 0–1 fraction the tracker should persist for the current scroll position.
