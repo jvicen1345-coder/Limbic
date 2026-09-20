@@ -152,6 +152,7 @@ export function HomeFeed({
             {showMigrationReminderBanner && <MigrationReminderBanner />}
           </>
         }
+        calendar={showWidget("calendar") ? calendarWidget : null}
         dashboard={<DailyDashboard data={dashboard} />}
         agent={<LimbicAgentCard insights={limbicAgentInsights} isPro={isPro} />}
         aside={
@@ -160,7 +161,6 @@ export function HomeFeed({
             continueReading={continueReading}
             homeQuestion={homeQuestion}
             savedUnread={savedUnread}
-            calendarWidget={calendarWidget}
             nexusSuggestions={nexusSuggestions}
             showNexus={showNexus}
             dailyInsight={dailyInsight}

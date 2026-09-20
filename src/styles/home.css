@@ -233,6 +233,23 @@
 .home-refresh-pill:hover { background: var(--color-neutral-100); }
 .home-refresh-pill:disabled { cursor: default; opacity: 0.7; }
 
+/* Calendar widget (see components/LimbicCalendarWidget.tsx), relocated from the aside to
+   the top of .home-main-col — its 7-column day grid has no width of its own, so left
+   unconstrained here it would stretch to the full (much wider) main column instead of
+   staying a compact widget. */
+.home-calendar-top-wrap { max-width: 340px; }
+@media (max-width: 799px) {
+  .home-calendar-top-wrap { max-width: 100%; }
+}
+
+/* Limbic Agent card (see components/LimbicAgentCard.tsx) — half the main column's width on
+   desktop; full width once .home-row stacks to a single column (see .home-row's own
+   799px breakpoint in screens.css) so it doesn't collapse to an unreadably narrow strip. */
+.home-agent-card-wrap { max-width: 50%; }
+@media (max-width: 799px) {
+  .home-agent-card-wrap { max-width: 100%; }
+}
+
 /* Moved from agent.css — threads teaser card — Home and Search */
 /* — Feed-card Threads teaser (see components/ArticleCard.tsx) — a direct, always-visible
    link into the article's real Threads web, not a hover-revealed preview. */
