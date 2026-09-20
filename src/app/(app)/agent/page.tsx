@@ -10,9 +10,10 @@ export default async function AgentPage({ searchParams }: { searchParams: Promis
   // Dashboard/Force Lab (see their own page.tsx files), so a non-Pro visitor actually sees
   // Limbic Agent's specific upsell copy instead of bouncing to the generic overview. The
   // real enforcement layer stays app/actions/agent.ts's own isPro check, since a page gate
-  // alone doesn't stop someone from calling the Server Action directly. Limbic Threads' own
-  // "Prompt Agent" node (see components/ThreadsWeb.tsx) never gets a viewer here in the
-  // first place when they're not Pro — it gates and shows its own upsell in place.
+  // alone doesn't stop someone from calling the Server Action directly. Limbic Threads'
+  // own free-text "Ask Limbic Agent" handoff (see components/ThreadsChat.tsx) never gets a
+  // viewer here in the first place when they're not Pro — it gates and shows its own
+  // upsell in place.
   if (!user.isPro) {
     return (
       <div className="screen-pad">

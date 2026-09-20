@@ -146,9 +146,9 @@
 .agent-link { stroke-width: 1.4; }
 .agent-link-tree { stroke: rgba(140, 170, 255, 0.28); }
 .agent-link-cross { stroke: rgba(66, 214, 200, 0.35); stroke-dasharray: 3 4; stroke-width: 1.1; }
-/* The line running to Limbic Threads' "Prompt Agent" node (see AgentNode.variant) —
-   same tree line style as .agent-link-tree, just amber to match that one node's warm
-   glow instead of the usual blue. */
+/* The line running to an "action"-variant node (see AgentNode.variant) — same tree line
+   style as .agent-link-tree, just amber to match that node's warm glow instead of the
+   usual blue. Not currently reached by anything (see AgentNode.variant's own comment). */
 .agent-link-action { stroke: rgba(216, 156, 65, 0.4); }
 
 /* Grows a newly-added line out from its source rather than snapping in at full length —
@@ -209,9 +209,10 @@
   animation: agent-node-loading-pulse 0.9s ease-in-out infinite;
 }
 
-/* Limbic Threads' "Prompt Agent" node (see AgentNode.variant, components/AgentGraph.tsx)
-   — a slower, subtler pulse than .agent-node-breathing's (5s vs. 3.4s, a gentler scale),
-   reading as a calm, warm invitation rather than something actively "thinking." */
+/* An "action"-variant node (see AgentNode.variant, components/agent/AgentGraph.tsx) — a
+   slower, subtler pulse than .agent-node-breathing's (5s vs. 3.4s, a gentler scale),
+   reading as a calm, warm invitation rather than something actively "thinking." Not
+   currently reached by anything. */
 @keyframes agent-node-action-pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
@@ -232,12 +233,14 @@
   .agent-input-bar { padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px)); }
 }
 
-/* — Limbic Threads (see components/ThreadsWeb.tsx) — reuses the .agent-node/.agent-link
-   rules and the .agent-detail-kicker/-title/-body/-hint/-close typography above verbatim.
-   Its own detail panel is NOT .agent-detail-card's floating overlay though — Agent's own
-   card can afford to float over its fixed-height chat canvas, but Threads' canvas sits in
-   a normal scrolling page where a force-simulated node can end up anywhere, including
-   right where a docked overlay would sit, silently blocking clicks on whatever's under it. */
+/* — Limbic Threads nav web (see components/ThreadsNav.tsx) — reuses the .agent-node/
+   .agent-link rules and the .agent-detail-kicker/-title/-body/-hint/-close typography
+   above verbatim. Its own detail panel is NOT .agent-detail-card's floating overlay though
+   — Agent's own card can afford to float over its fixed-height chat canvas, but Threads'
+   canvas sits in a normal scrolling page where a force-simulated node can end up anywhere,
+   including right where a docked overlay would sit, silently blocking clicks on whatever's
+   under it. See the "Limbic Threads chat panel" rules below for the AI-insight half,
+   components/ThreadsChat.tsx. */
 /* box-shadow added so the panel sits at the same visual weight as the rest of the app's
    card system (--shadow-md) instead of reading as a flat bordered rectangle next to it. */
 .threads-wrap {
@@ -309,4 +312,121 @@
   text-transform: uppercase;
   padding: 2px 8px;
   border-radius: 999px;
+}
+
+/* — Limbic Threads chat panel (see components/ThreadsChat.tsx) — the AI-insight half of
+   Threads, stacked below ThreadsNav's web (see .article-split-threads in
+   src/styles/article.css). Same dark card language/tokens as .threads-wrap above (own
+   border/radius/shadow rather than reusing that class directly, since this is a sibling
+   card, not the same box). */
+.threads-chat-wrap {
+  margin-top: 20px;
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: #0d1428;
+}
+.threads-chat-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 16px 16px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+.threads-chat-turn { display: flex; flex-direction: column; gap: 8px; }
+.threads-chat-bubble {
+  font-size: 12.5px;
+  line-height: 1.5;
+  padding: 10px 13px;
+  border-radius: 14px;
+  max-width: 88%;
+}
+.threads-chat-bubble p { margin: 0; }
+.threads-chat-bubble-assistant {
+  align-self: flex-start;
+  background: rgba(140, 170, 255, 0.1);
+  border: 1px solid rgba(140, 170, 255, 0.18);
+  color: #c4cee6;
+  border-top-left-radius: 4px;
+}
+.threads-chat-bubble-user {
+  align-self: flex-end;
+  background: rgba(216, 156, 65, 0.16);
+  border: 1px solid rgba(216, 156, 65, 0.3);
+  color: #f1e2c9;
+  font-weight: 600;
+  border-top-right-radius: 4px;
+}
+/* Threads' own upgrade CTA (see .threads-detail-panel .btn-secondary above) is sized for
+   the fuller detail panel; a chat bubble is tighter, so this one gets its own top margin
+   rather than reusing .threads-detail-cta's. */
+.threads-chat-bubble .threads-detail-cta { margin-top: 4px; }
+
+.threads-chat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 16px 14px;
+}
+.threads-chat-chip {
+  background: rgba(140, 170, 255, 0.08);
+  border: 1px solid rgba(140, 170, 255, 0.28);
+  color: #b9c6e8;
+  font-size: 12px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.threads-chat-chip:hover:not(:disabled) {
+  background: rgba(140, 170, 255, 0.18);
+  border-color: rgba(140, 170, 255, 0.5);
+}
+.threads-chat-chip:disabled { opacity: 0.4; cursor: default; }
+
+.threads-chat-input-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(140, 170, 255, 0.15);
+}
+.threads-chat-input-bar input {
+  flex: 1;
+  min-width: 0;
+  background: rgba(20, 28, 48, 0.8);
+  border: 1px solid rgba(140, 170, 255, 0.25);
+  color: #e8ecf7;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  outline: none;
+}
+.threads-chat-input-bar input::placeholder { color: #5c6a8f; }
+.threads-chat-input-bar input:focus { border-color: rgba(140, 170, 255, 0.6); }
+@media (max-width: 799px) {
+  /* Same iOS-Safari-auto-zoom-on-focus fix as .agent-input-bar's own mobile override. */
+  .threads-chat-input-bar input { font-size: 16px; }
+}
+.threads-chat-input-bar button {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #5b8def, #3b6fe0);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.threads-chat-upgrade-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 14px 16px 16px;
+  font-size: 12.5px;
 }

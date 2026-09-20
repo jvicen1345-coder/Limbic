@@ -52,9 +52,10 @@ const RING_FONT_SIZE: Record<number, number> = { 0: 14, 1: 12, 2: 11, 3: 10 };
 // (see labelHalfWidth), so a longer allowance here costs nothing layout-wise.
 const LABEL_MAX_CHARS: Record<number, number> = { 0: 40, 1: 34, 2: 34, 3: 34 };
 
-// Limbic Threads' "Prompt Agent" node (see AgentNode.variant) — deliberately larger and a
-// warmer color than any ring's, so it reads as an action to take rather than another piece
-// of connected content. The glow itself needs no separate CSS — .agent-node-circle's
+// An "action" node (see AgentNode.variant, currently unset by both graphs this component
+// renders) — deliberately larger and a warmer color than any ring's, so it would read as
+// an action to take rather than another piece of connected content. The glow itself needs
+// no separate CSS — .agent-node-circle's
 // existing drop-shadow filter already keys off currentColor, so setting this fill/color
 // automatically glows amber the same way every other node glows its own ring color.
 const ACTION_NODE_RADIUS = 36;
@@ -225,7 +226,7 @@ export function AgentGraph({
       // Only the gentle centering force (see the width/height effect below) pulls nodes
       // toward the middle — nothing stops repulsion/collision from pushing an outer-ring
       // node beyond the canvas's own bounds otherwise. That's harmless when nothing sits
-      // past the canvas, but Limbic Threads (see components/ThreadsWeb.tsx) renders real
+      // past the canvas, but Limbic Threads (see components/ThreadsNav.tsx) renders real
       // content right below it, and an escaped node would render on top of — and be
       // unclickable behind — that content instead of the graph. Clamped here, on the
       // simulation's own x/y (not just the rendered transform), so it also stops

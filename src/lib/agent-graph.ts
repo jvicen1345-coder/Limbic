@@ -15,11 +15,13 @@ export interface AgentNode {
   /** Ring 1/2 nodes the student/clinician can click to grow the web further; false for
    *  ring 3 (evidence/red-flag) nodes and the center node, which are always terminal. */
   expandable: boolean;
-  /** Marks Limbic Threads' single "Prompt Agent" action node (see lib/threads.ts) —
-   *  AgentGraph.tsx pins it to the bottom-center of the canvas and renders it larger, with
-   *  a warm amber glow/pulse and a brain icon, instead of the uniform ring-based styling
-   *  every other node gets. Limbic Agent's own spiderweb (AgentClient.tsx) never sets
-   *  this, so it has no effect there. */
+  /** Pins a node to the bottom-center of the canvas and renders it larger, with a warm
+   *  amber glow/pulse, instead of the uniform ring-based styling every other node gets
+   *  (see AgentGraph.tsx). Not currently set by either Limbic Agent's own spiderweb
+   *  (AgentClient.tsx) or Limbic Threads' nav web (lib/threads.ts, components/ThreadsNav.tsx)
+   *  — Threads' AI-generated "Prompt Agent" handoff moved to components/ThreadsChat.tsx's
+   *  free-text bar instead of being a graph node. Kept as a generic, reusable variant rather
+   *  than removed, since AgentGraph.tsx's rendering for it is otherwise unchanged. */
   variant?: "action";
 }
 

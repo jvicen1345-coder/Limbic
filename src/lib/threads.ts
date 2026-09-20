@@ -61,11 +61,12 @@ async function findNexusMatch(article: Article): Promise<{ authorName: string; s
   return null;
 }
 
-/** One of Limbic Threads' per-article-type nodes (see NODE_SPECS_BY_TYPE below) — most are
- *  a plain "go look at a filtered view" link, so this mainly needs to describe how to
- *  filter and what to say about it, not any real content. The one exception is the
- *  Clinical Implications node (see CLINICAL_IMPLICATIONS_ID) — its filterType/topicQuery
- *  are unused since it's rendered as an "insight" action instead (see buildThreadsWeb). */
+/** One of Limbic Threads' per-article-type nav nodes (see NODE_SPECS_BY_TYPE below) — each
+ *  one is a plain "go look at a filtered view" link, so this only needs to describe how to
+ *  filter and what to say about it, not any real content. AI-generated insight nodes and
+ *  the "Prompt Agent" handoff live in the separate ThreadsChat panel instead (see
+ *  components/ThreadsChat.tsx) — never in this web, so every node built here is a real
+ *  navigate/external destination. */
 interface FeedNodeSpec {
   id: string;
   label: string;
@@ -83,24 +84,13 @@ interface FeedNodeSpec {
 }
 
 const NEXUS_DISCUSSION_ID = "nexus-discussion";
-/** Every article type's web carries exactly one of these — Limbic Agent's AI-generated
- *  take on what the article means for day-to-day practice. Visible to every viewer (PRO
- *  or not); clicking it is PRO-gated once real generation is live, same as any other
- *  "insight" node (see components/ThreadsWeb.tsx). Currently shows "Coming Soon" for
- *  everyone regardless of PRO status, since generation itself is still unfunded
- *  (THREADS_INSIGHTS_ENABLED = false in ThreadsWeb.tsx) — nothing here needs to change
- *  when that flips on, the gating logic already handles it. */
-const CLINICAL_IMPLICATIONS_ID = "clinical-implications";
-/** The universal action node appended after every type's contextual nodes (see
- *  buildThreadsWeb) — not part of NODE_SPECS_BY_TYPE since it never varies by type. */
-const PROMPT_AGENT_ID = "prompt-agent";
 
-/** Contextually relevant node set per article type (see lib/types.ts ArticleType) — the
- *  "Explore Connections" web research gets 4 nodes, every other type gets 5: its own 4
- *  contextual nodes plus the universal Clinical Implications insight node. A "Nexus
- *  Discussion" entry (spec.id === NEXUS_DISCUSSION_ID) and the Clinical Implications entry
- *  (spec.id === CLINICAL_IMPLICATIONS_ID) are both handled specially in buildThreadsWeb
- *  below rather than through the generic Search-link path. */
+/** Contextually relevant nav node set per article type (see lib/types.ts ArticleType) — 3
+ *  nodes for research, 4 for every other type. All AI-generated insight questions (see
+ *  lib/threads-graph.ts THREADS_INSIGHT_META) live in ThreadsChat instead of here, so this
+ *  web stays small and purely navigational. A "Nexus Discussion" entry
+ *  (spec.id === NEXUS_DISCUSSION_ID) is handled specially in buildThreadsWeb below rather
+ *  than through the generic Search-link path. */
 const NODE_SPECS_BY_TYPE: Record<ArticleType, FeedNodeSpec[]> = {
   research: [
     {
@@ -108,11 +98,6 @@ const NODE_SPECS_BY_TYPE: Record<ArticleType, FeedNodeSpec[]> = {
       label: "Connected Research",
       filterType: "research",
       blurb: "Other research studies related to this article's specialty.",
-    },
-    {
-      id: CLINICAL_IMPLICATIONS_ID,
-      label: "Clinical Implications",
-      blurb: "What this kind of finding tends to mean for day-to-day clinical practice.",
     },
     {
       id: "related-guidelines",
@@ -146,11 +131,6 @@ const NODE_SPECS_BY_TYPE: Record<ArticleType, FeedNodeSpec[]> = {
       blurb: "Material for explaining this guideline's recommendations to patients.",
     },
     { id: NEXUS_DISCUSSION_ID, label: "Nexus Discussion", blurb: "" },
-    {
-      id: CLINICAL_IMPLICATIONS_ID,
-      label: "Clinical Implications",
-      blurb: "What this guideline tends to mean for day-to-day clinical practice.",
-    },
   ],
   industry: [
     {
@@ -171,11 +151,6 @@ const NODE_SPECS_BY_TYPE: Record<ArticleType, FeedNodeSpec[]> = {
       id: "further-reading",
       label: "Further Reading",
       blurb: "More coverage related to this article's specialty.",
-    },
-    {
-      id: CLINICAL_IMPLICATIONS_ID,
-      label: "Clinical Implications",
-      blurb: "What this news tends to mean for day-to-day clinical practice.",
     },
   ],
   product: [
@@ -198,11 +173,6 @@ const NODE_SPECS_BY_TYPE: Record<ArticleType, FeedNodeSpec[]> = {
       blurb: "Regulatory coverage related to this product.",
     },
     { id: NEXUS_DISCUSSION_ID, label: "Nexus Discussion", blurb: "" },
-    {
-      id: CLINICAL_IMPLICATIONS_ID,
-      label: "Clinical Implications",
-      blurb: "What this product tends to mean for day-to-day clinical practice.",
-    },
   ],
   ce: [
     {
@@ -223,11 +193,6 @@ const NODE_SPECS_BY_TYPE: Record<ArticleType, FeedNodeSpec[]> = {
       blurb: "Clinical practice guidelines related to this course's specialty.",
     },
     { id: NEXUS_DISCUSSION_ID, label: "Nexus Discussion", blurb: "" },
-    {
-      id: CLINICAL_IMPLICATIONS_ID,
-      label: "Clinical Implications",
-      blurb: "What this course tends to mean for day-to-day clinical practice.",
-    },
   ],
 };
 
@@ -272,15 +237,15 @@ function nexusHref(article: Article): string {
 
 /** Assembles Limbic Threads' "Explore Connections" web for one article: a center node for
  *  the article itself, plus the nodes contextually relevant to its ArticleType (see
- *  NODE_SPECS_BY_TYPE). Every node is a plain link to a filtered view (Search, or the
- *  Nexus feed) except Clinical Implications, which is an "insight" node — Limbic Agent
- *  generates its answer on click, PRO-gated, currently showing "Coming Soon" for everyone
- *  since generation is unfunded (see components/ThreadsWeb.tsx). Nothing here fabricates
- *  clinical content ahead of time either way. `articlePool` is the caller's already-fetched
- *  article-context pool, passed in rather than fetched again here. `isAdmin` gates the
- *  Nexus Discussion node's real post preview — Nexus itself is coming-soon for everyone
- *  else (see app/(app)/nexus/layout.tsx), so a non-admin must never see a real author name
- *  or post snippet here, only the generic "be the first to start one" fallback. */
+ *  NODE_SPECS_BY_TYPE) — every node here is a plain link to a filtered view (Search, or the
+ *  Nexus feed). AI-generated clinical reasoning about this article lives in the separate
+ *  ThreadsChat panel instead (see components/ThreadsChat.tsx and lib/threads-graph.ts's
+ *  THREADS_INSIGHT_META), not as a node in this web. `articlePool` is the caller's
+ *  already-fetched article-context pool, passed in rather than fetched again here.
+ *  `isAdmin` gates the Nexus Discussion node's real post preview — Nexus itself is
+ *  coming-soon for everyone else (see app/(app)/nexus/layout.tsx), so a non-admin must
+ *  never see a real author name or post snippet here, only the generic "be the first to
+ *  start one" fallback. */
 export async function buildThreadsWeb(article: Article, articlePool: Article[], isAdmin: boolean): Promise<ThreadsNodeData[]> {
   const specs = NODE_SPECS_BY_TYPE[article.type].map((spec) =>
     spec.id === "relevant-techniques" ? { ...spec, topicQuery: techniqueTags(article)[0] } : spec
@@ -314,18 +279,6 @@ export async function buildThreadsWeb(article: Article, articlePool: Article[], 
           },
         };
       }
-      if (spec.id === CLINICAL_IMPLICATIONS_ID) {
-        return {
-          id: spec.id,
-          parentId: "center",
-          ring: 1,
-          label: spec.label,
-          // Filled in lazily on click for a PRO viewer once generation is enabled (see
-          // generateThreadsInsightAction) — empty here, same as every other insight node.
-          detail: "",
-          action: { kind: "insight", insightKind: "implications" },
-        };
-      }
       return {
         id: spec.id,
         parentId: "center",
@@ -335,19 +288,6 @@ export async function buildThreadsWeb(article: Article, articlePool: Article[], 
         action: { kind: "navigate", label: "View in Search", href: searchHref(article, spec) },
       };
     }),
-    // Every article gets exactly one of these, regardless of type — a visually distinct
-    // "take this to Limbic Agent" action rather than another piece of connected content
-    // (see components/ThreadsWeb.tsx's variant="action" styling and
-    // components/AgentGraph.tsx's bottom-center/amber/pulse rendering for it). PRO-gated
-    // on click, same mechanism as the Clinical Implications insight node above.
-    {
-      id: PROMPT_AGENT_ID,
-      parentId: "center",
-      ring: 1,
-      label: "Prompt Agent",
-      detail: "Go deeper with open-ended clinical reasoning tailored to this article.",
-      action: { kind: "agent-handoff", topic: article.title },
-    },
   ];
 
   return nodes;
