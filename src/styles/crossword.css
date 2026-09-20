@@ -178,12 +178,17 @@
 }
 .crossword-clue-item:hover { background: var(--color-neutral-100); }
 .crossword-clue-item-active { background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card-surface)); border-left-color: var(--color-accent); }
-/* "Every square has a letter", not "this entry is correct" — see isClueFilled in
-   components/CrosswordGame.tsx for why the distinction matters. Dimmed so the eye skips to
-   unfinished clues, but no strike-through: a line through a wrong answer would read as the
-   confirmation this state deliberately withholds. */
-.crossword-clue-item-filled { opacity: 0.55; }
+/* A clue only crosses off once every letter in it is actually right — see isClueCorrect in
+   components/crossword/CrosswordGame.tsx. The strike-through lives on .crossword-clue-text
+   alone, never .crossword-clue-num, so the line crosses out the answer, not its number. */
+.crossword-clue-item-solved { opacity: 0.55; }
+.crossword-clue-item-solved .crossword-clue-text { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--color-vitals-mobility) 70%, var(--color-neutral-700)); }
+/* Every square filled but the word doesn't match — a "not quite" hint, not the solved
+   strike-through. Stays in this state (border/tint, no line) for as many guesses as it
+   takes, disappearing the moment the entry is corrected. */
+.crossword-clue-item-wrong { border-left-color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 8%, var(--color-card-surface)); }
 .crossword-clue-num { font-weight: 700; min-width: 20px; flex-shrink: 0; text-align: right; color: var(--color-neutral-700); }
+.crossword-clue-text { display: inline; }
 
 /* — Mini Crossword completion overlay — a centered card over a dimmed backdrop, not a
    full-screen takeover, so the finished grid stays visible (and dismissible back to) behind
