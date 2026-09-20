@@ -7,10 +7,12 @@ export const metadata: Metadata = {
   title: "HEP Templates",
 };
 import { StudentGate } from "@/components/student/StudentGate";
-import { LimbicStudentGate } from "@/components/student/LimbicStudentGate";
 
 const SUBTITLE = "Example home exercise programs, organized by body region, for studying how a program is built.";
 
+/** Free to any .edu sign-in (see hasStudentAccess) — only Playbooks and Limbic Boards stay
+ *  behind the paid LimbicStudent tier; everything else in the student experience, this
+ *  included, opened up when that line was redrawn. */
 export default async function CourseworkHepTemplatesPage() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -19,14 +21,6 @@ export default async function CourseworkHepTemplatesPage() {
     return (
       <StudentPlaceholderPage title="HEP Templates" subtitle={SUBTITLE}>
         <StudentGate toolName="HEP Templates" />
-      </StudentPlaceholderPage>
-    );
-  }
-
-  if (user.studentTier !== "limbicStudent") {
-    return (
-      <StudentPlaceholderPage title="HEP Templates" subtitle={SUBTITLE}>
-        <LimbicStudentGate toolName="HEP Templates" />
       </StudentPlaceholderPage>
     );
   }

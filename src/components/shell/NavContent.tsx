@@ -202,18 +202,12 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
             {isStudent && (
               <NavLink href="/student/study-guide" icon={<FileTextIcon />} label="Study Guide" bold={false} onNavigate={onNavigate} />
             )}
-            {/* The playbooks are Boards' study guide and sit behind the same paid line the
-                rest of its prep tools do, so the link carries the badge Boards does. */}
+            {/* Unlike Boards, the hub itself is free to open for any .edu sign-in — it hands
+                over one playbook of the reader's choosing for free and paywalls the rest
+                per card (see app/(app)/student/playbooks/page.tsx), so the link carries no
+                lock badge once isStudent is already true. */}
             {isStudent && (
-              <NavLink
-                href="/student/playbooks"
-                icon={<BandageIcon />}
-                label="Playbooks"
-                locked={!isVerifiedStudent}
-                lockLabel="STUDENT+"
-                bold={false}
-                onNavigate={onNavigate}
-              />
+              <NavLink href="/student/playbooks" icon={<BandageIcon />} label="Playbooks" bold={false} onNavigate={onNavigate} />
             )}
             <NavLink href="/student/resources" icon={<ListIcon />} label="NPTE Resources" bold={false} onNavigate={onNavigate} />
           </>

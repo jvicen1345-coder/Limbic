@@ -171,6 +171,14 @@ model User {
   // Same real-billing pattern as isPro above.
   studentTier String @default("none")
 
+  // The one playbook/guide slug (see lib/guides.ts GUIDES, lib/playbook-content.ts
+  // PLAYBOOKS) a student without the paid tier above picked to read for free — see
+  // hasPlaybookAccess in lib/session.ts and chooseFreePlaybookAction in
+  // app/actions/playbooks.ts. Null for every account until they pick one, including a
+  // paid subscriber, who never needs to. Permanent once set: there is no action that
+  // changes it, so a reader can't work through the whole paid library one pick at a time.
+  freePlaybookSlug String?
+
   // Stripe billing identity — set the first time this account starts a Checkout session
   // (see app/actions/pro.ts), reused on every later checkout/portal session rather than
   // minting a new Stripe Customer each time. stripeSubscriptionId is whichever LimbicPro/

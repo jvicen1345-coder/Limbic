@@ -3,7 +3,7 @@ import path from "node:path";
 import { NextResponse } from "next/server";
 import { canReadGuide } from "@/lib/guides";
 import { isSiteAdmin } from "@/lib/admin";
-import { getCurrentUser, hasStudentAccess } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess, hasPlaybookAccess } from "@/lib/session";
 
 /**
  * The examination guides, served exactly as authored.
@@ -19,9 +19,11 @@ import { getCurrentUser, hasStudentAccess } from "@/lib/session";
  * segment wins over this dynamic one, so /student/guides/shoulder-examination never reaches
  * here even though the registry lists it.
  *
- * Gated on the paid LimbicStudent tier, like every other playbook (see
- * app/(app)/student/playbooks/page.tsx), which is also why the files live in content/ rather
- * than public/: anything under public/ is served by the CDN before any of this runs.
+ * Gated on the paid LimbicStudent tier, like every other playbook — except the one slug a
+ * student without that tier picked to read for free (see hasPlaybookAccess in
+ * lib/session.ts, chooseFreePlaybookAction in app/actions/playbooks.ts, and the hub at
+ * app/(app)/student/playbooks/page.tsx). Files live in content/ rather than public/ for the
+ * same reason: anything under public/ is served by the CDN before any of this runs.
  */
 
 const DIR = path.join(process.cwd(), "content", "playbooks");
@@ -55,7 +57,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ gui
   // checks stay in force for everyone, and an admin already passes them through the access
   // overlay in lib/session.ts getCurrentUser().
   const admin = await isSiteAdmin();
-  if (!canReadGuide(slug, { admin }) || !user || !hasStudentAccess(user) || user.studentTier !== "limbicStudent") {
+  if (!canReadGuide(slug, { admin }) || !user || !hasStudentAccess(user) || !hasPlaybookAccess(user, slug)) {
     return new NextResponse("Not found", { status: 404 });
   }
 

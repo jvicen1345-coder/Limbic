@@ -11,10 +11,12 @@ import { currentWeekKey, pickWeeklyRoundup } from "@/lib/student-roundup";
 import { NewsRow } from "@/components/RowCards";
 import { StudentPlaceholderPage } from "@/components/StudentPlaceholderPage";
 import { StudentGate } from "@/components/student/StudentGate";
-import { LimbicStudentGate } from "@/components/student/LimbicStudentGate";
 
 const SUBTITLE = "Five real research, guideline, and CE items pulled from the same feed as News, refreshed every week.";
 
+/** Free to any .edu sign-in (see hasStudentAccess) — only Playbooks and Limbic Boards stay
+ *  behind the paid LimbicStudent tier; everything else in the student experience, this
+ *  included, opened up when that line was redrawn. */
 export default async function StudentRoundupPage() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -23,14 +25,6 @@ export default async function StudentRoundupPage() {
     return (
       <StudentPlaceholderPage title="Weekly Roundup" subtitle={SUBTITLE}>
         <StudentGate toolName="Weekly Roundup" />
-      </StudentPlaceholderPage>
-    );
-  }
-
-  if (user.studentTier !== "limbicStudent") {
-    return (
-      <StudentPlaceholderPage title="Weekly Roundup" subtitle={SUBTITLE}>
-        <LimbicStudentGate toolName="Weekly Roundup" />
       </StudentPlaceholderPage>
     );
   }
