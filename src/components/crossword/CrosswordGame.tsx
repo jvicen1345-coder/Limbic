@@ -107,16 +107,32 @@ export function CrosswordGame({
     [isBlack]
   );
 
-  /** Whether every square of a clue has *a* letter in it — deliberately not whether those
-   *  letters are right. The clue list used to strike an entry through the moment it matched
-   *  the answer, which handed the solver a free correctness oracle: you could confirm any
-   *  guess without committing to it, and worse, pin down a single unknown square by cycling
-   *  A-Z and watching for the strike-through. Marking "filled" instead keeps the progress
-   *  signal (what's left to do) and takes away the answer key; the only correctness feedback
-   *  left is the whole-grid check on the last square, same as a real mini. */
+  /** Whether every square of a clue has *a* letter in it, right or wrong. */
   const isClueFilled = useCallback(
     (clue: CrosswordClue, dir: Direction) => cellsForClue(clue, dir).every(([r, c]) => cells[r][c] !== ""),
     [cells]
+  );
+
+  /** Whether a fully-filled clue's letters match the solution. Only meaningful once
+   *  isClueFilled is true — a clue with blanks is never "correct", just unfinished. The
+   *  clue list uses this (not isClueFilled alone) to decide when to cross an entry off:
+   *  a wrong-but-full guess gets a "not quite" hint instead of the solved strike-through,
+   *  and stays that way — uncrossed — until every letter in it is actually right. */
+  const isClueCorrect = useCallback(
+    (clue: CrosswordClue, dir: Direction) => cellsForClue(clue, dir).every(([r, c]) => cells[r][c].toUpperCase() === puzzle.grid[r][c]),
+    [cells, puzzle]
+  );
+
+  /** The clue-list class for a clue's fill state: unfilled clues get none, a fully-filled
+   *  wrong guess gets the "not quite" hint, and only a fully-filled correct one gets crossed
+   *  off. Never touches .crossword-clue-num, so the strike-through in -solved lands on the
+   *  clue text only — the number stays legible either way. */
+  const clueStatusClass = useCallback(
+    (clue: CrosswordClue, dir: Direction) => {
+      if (!isClueFilled(clue, dir)) return "";
+      return isClueCorrect(clue, dir) ? " crossword-clue-item-solved" : " crossword-clue-item-wrong";
+    },
+    [isClueFilled, isClueCorrect]
   );
 
   const persist = useCallback(
@@ -412,7 +428,7 @@ export function CrosswordGame({
                   key={`a-${clue.number}`}
                   className={`crossword-clue-item${
                     activeClue?.number === clue.number && direction === "across" ? " crossword-clue-item-active" : ""
-                  }${isClueFilled(clue, "across") ? " crossword-clue-item-filled" : ""}`}
+                  }${clueStatusClass(clue, "across")}`}
                   onClick={() => {
                     inputRef.current?.focus();
                     setTouched(true);
@@ -421,7 +437,7 @@ export function CrosswordGame({
                   }}
                 >
                   <span className="crossword-clue-num">{clue.number}</span>
-                  <span>{clue.clue}</span>
+                  <span className="crossword-clue-text">{clue.clue}</span>
                 </div>
               ))}
             </div>
@@ -432,7 +448,7 @@ export function CrosswordGame({
                   key={`d-${clue.number}`}
                   className={`crossword-clue-item${
                     activeClue?.number === clue.number && direction === "down" ? " crossword-clue-item-active" : ""
-                  }${isClueFilled(clue, "down") ? " crossword-clue-item-filled" : ""}`}
+                  }${clueStatusClass(clue, "down")}`}
                   onClick={() => {
                     inputRef.current?.focus();
                     setTouched(true);
@@ -441,7 +457,7 @@ export function CrosswordGame({
                   }}
                 >
                   <span className="crossword-clue-num">{clue.number}</span>
-                  <span>{clue.clue}</span>
+                  <span className="crossword-clue-text">{clue.clue}</span>
                 </div>
               ))}
             </div>
