@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
-import { getCurrentUser, hasStudentAccess } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess, hasPlaybookAccess } from "@/lib/session";
 
 /**
  * The Shoulder Examination Playbook, served exactly as authored.
@@ -46,9 +46,11 @@ import { getCurrentUser, hasStudentAccess } from "@/lib/session";
  * which is why it is a route handler rather than a page — there is no Limbic shell to render
  * it inside without altering it.
  *
- * Gated on the paid LimbicStudent tier, like every other playbook (see
- * app/(app)/student/playbooks/page.tsx), which is also why the file lives in content/ rather
- * than public/: anything under public/ is served by the CDN before any of this runs.
+ * Gated on the paid LimbicStudent tier, like every other playbook — except for a student who
+ * picked this slug as their one free playbook (see hasPlaybookAccess in lib/session.ts,
+ * chooseFreePlaybookAction in app/actions/playbooks.ts, and the hub at
+ * app/(app)/student/playbooks/page.tsx). The file lives in content/ rather than public/ for
+ * the same reason: anything under public/ is served by the CDN before any of this runs.
  */
 
 const FILE = path.join(process.cwd(), "content", "playbooks", "shoulder-examination.html");
@@ -64,7 +66,7 @@ async function guide(): Promise<string> {
 
 export async function GET() {
   const user = await getCurrentUser();
-  if (!user || !hasStudentAccess(user) || user.studentTier !== "limbicStudent") {
+  if (!user || !hasStudentAccess(user) || !hasPlaybookAccess(user, "shoulder-examination")) {
     return new NextResponse("Not found", { status: 404 });
   }
 

@@ -939,3 +939,61 @@ button.playbook-maskwrap:focus-visible {
   font-size: 12.5px;
   font-weight: 600;
 }
+
+/* The hub's own paywall banner, for a reader with student access but no paid subscription
+   (see app/(app)/student/playbooks/page.tsx) — a single line above the grid rather than a
+   full-page gate, since the grid itself is now readable: the reader still gets one free
+   card. */
+.playbook-hub-tier-note {
+  margin: 14px 0 0;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--pb-accent-soft, color-mix(in srgb, var(--color-accent) 12%, var(--color-surface)));
+  border-left: 3px solid var(--color-accent);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-neutral-700);
+  max-width: 72ch;
+}
+.playbook-hub-tier-note a { color: var(--color-accent-700); font-weight: 600; }
+
+/* The button that spends a reader's one free playbook pick (see
+   ChooseFreePlaybookButton.tsx) — same shape as .specialty-explore-btn next to it so the
+   two read as the same weight of action, tinted gold rather than the accent blue so it
+   reads as the free-tier's own affordance rather than a second "Open". */
+.playbook-hub-pick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-migration-gold);
+  background: color-mix(in srgb, var(--color-migration-gold) 14%, transparent);
+  color: var(--color-migration-gold);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.playbook-hub-pick-btn:hover { background: color-mix(in srgb, var(--color-migration-gold) 24%, transparent); }
+.playbook-hub-pick-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* A card the reader can't open because their one free pick already went elsewhere — a plain
+   lock rather than a dead "Open" link, linking straight to checkout. */
+.playbook-hub-locked {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-divider);
+  background: transparent;
+  color: var(--color-neutral-700);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.playbook-hub-locked:hover { color: var(--color-accent-700); border-color: var(--color-accent); text-decoration: none; }

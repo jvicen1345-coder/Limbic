@@ -291,24 +291,44 @@ test.describe("Playbook taught lane", () => {
   });
 });
 
-/** The paywall. The playbooks are what Limbic Boards is sold on, so "a .edu sign-in is
- *  enough" is exactly the regression worth a test: it gives the product away without
- *  anything failing. */
+/** The paywall. The hub is free to browse for any .edu sign-in and hands over exactly one
+ *  card of the reader's choosing for free (see hasPlaybookAccess in lib/session.ts,
+ *  chooseFreePlaybookAction in app/actions/playbooks.ts) — the regression worth a test is
+ *  the hub opening for nothing, the free pick unlocking more than one card, or a second
+ *  pick being offered once the first is spent. */
 test.describe("Playbook access", () => {
-  test("a .edu sign-in alone gets the upgrade, not the guide", async ({ page }) => {
+  test("a .edu sign-in gets exactly one free pick, not the library", async ({ page }) => {
     const email = `pw-gate-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
     await signUpAndEnterApp(page, email);
+    const readableCount = GUIDES.filter((g) => !g.comingSoon).length;
 
-    // The hub names what is behind the lock but hands over none of it.
-    await page.goto("/student/playbooks");
-    await expect(page.getByText("LimbicStudent Required")).toBeVisible();
-    await expect(page.locator(".playbook-hub-card")).toHaveCount(0);
-
-    // And the moment they subscribe, the hub opens.
-    await grantLimbicStudent(email);
+    // The hub is browsable, and every readable card is locked behind a free pick until one
+    // is spent — nothing opens for a bare .edu sign-in.
     await page.goto("/student/playbooks");
     await expect(page.getByRole("heading", { name: "Playbooks" })).toBeVisible();
-    await expect(page.getByText("LimbicStudent Required")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Open" })).toHaveCount(0);
+    await expect(page.locator(".playbook-hub-locked")).toHaveCount(0);
+    const pickButtons = page.getByRole("button", { name: "Get this one free" });
+    await expect(pickButtons).toHaveCount(readableCount);
+
+    // Spending the pick on one card unlocks it, and only it — every other readable card
+    // switches from an offer to a plain lock, never a second offer.
+    page.once("dialog", (dialog) => dialog.accept());
+    await pickButtons.first().click();
+    await expect(page.getByRole("link", { name: "Open" })).toHaveCount(1);
+    await expect(pickButtons).toHaveCount(0);
+    await expect(page.locator(".playbook-hub-locked")).toHaveCount(readableCount - 1);
+
+    // The pick is permanent: reloading offers no second free card.
+    await page.reload();
+    await expect(page.getByRole("link", { name: "Open" })).toHaveCount(1);
+    await expect(page.getByRole("button", { name: "Get this one free" })).toHaveCount(0);
+
+    // And the moment they subscribe, every readable card opens.
+    await grantLimbicStudent(email);
+    await page.goto("/student/playbooks");
+    await expect(page.getByRole("link", { name: "Open" })).toHaveCount(readableCount);
+    await expect(page.locator(".playbook-hub-locked")).toHaveCount(0);
   });
 });
 

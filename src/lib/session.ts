@@ -172,6 +172,18 @@ export function hasStudentAccess(user: {
   );
 }
 
+/** Whether `user` may read this specific playbook/guide slug (see lib/guides.ts GUIDES,
+ *  lib/playbook-content.ts PLAYBOOKS) without the paid LimbicStudent tier — either because
+ *  they're already paid (which reads every slug), or because it's the one free pick they
+ *  spent User.freePlaybookSlug on (see chooseFreePlaybookAction in
+ *  app/actions/playbooks.ts). Callers still gate on hasStudentAccess separately — this only
+ *  decides which slug(s) a student who already has student access may open, not whether
+ *  they may reach the Playbooks hub at all. An admin's free ride through every slug already
+ *  comes from the studentTier overlay in getCurrentUser() above, so it needs no clause here. */
+export function hasPlaybookAccess(user: { studentTier: string; freePlaybookSlug: string | null }, slug: string): boolean {
+  return user.studentTier === "limbicStudent" || user.freePlaybookSlug === slug;
+}
+
 /** Everywhere clinician-only surfaces (HEP Builder, Retracted Articles, the sidebar's
  *  "Clinician tools" section) gate on "does this account have a real PT license on file"
  *  (see user.licenseNumber), an admin account should get through too — same reasoning as
