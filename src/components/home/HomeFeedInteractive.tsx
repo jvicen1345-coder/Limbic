@@ -93,12 +93,6 @@ export function HomeFeedInteractive({
       <div className="home-pad page-enter">
         <div className="home-row">
           <div className="home-main-col">
-            {calendar && (
-              <div className="home-calendar-top-wrap" style={{ marginBottom: 20 }}>
-                {calendar}
-              </div>
-            )}
-
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
               <div>{header}</div>
               <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
@@ -116,8 +110,11 @@ export function HomeFeedInteractive({
               {dashboard}
             </div>
 
-            <div className="home-agent-card-wrap" style={{ marginBottom: 20 }} data-tour="limbic-agent">
-              {agent}
+            <div className="home-calendar-agent-row" style={{ marginBottom: 20 }}>
+              {calendar && <div className="home-calendar-top-wrap">{calendar}</div>}
+              <div className="home-agent-card-wrap" data-tour="limbic-agent">
+                {agent}
+              </div>
             </div>
 
             <div ref={feedSectionRef} style={{ marginBottom: 20, scrollMarginTop: 90 }}>
