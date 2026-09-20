@@ -42,7 +42,7 @@
    card surface, same background every other card in the app uses, so a full-width redesign
    still reads as part of the same product rather than a bare, unbounded page of text.
    Fades in on load — the right column's Threads web gets its own organic build via the
-   staggered node reveal (see components/ThreadsWeb.tsx) instead of a fade. */
+   staggered node reveal (see components/ThreadsNav.tsx) instead of a fade. */
 .article-reading-card {
   background: var(--color-card-surface);
   border-radius: var(--radius-lg);
@@ -104,7 +104,7 @@
 .article-actions-secondary .btn { flex: 1; }
 
 /* — shared small-caps section label (components/ArticleReadingPane.tsx: Topics, Related —
-   and components/ThreadsWeb.tsx: Article Connections, so all three read as one family). */
+   and components/ThreadsNav.tsx: Article Connections, so all three read as one family). */
 .article-section-label {
   font-size: var(--fs-11);
   letter-spacing: 0.08em;

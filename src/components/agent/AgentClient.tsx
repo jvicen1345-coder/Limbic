@@ -90,8 +90,8 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
   }, [treeLinks, crossLinks, nodes]);
   const selectedNode = nodes.find((n) => n.id === selectedId) ?? null;
 
-  // Fires once, only when a topic arrived via ?q= (see the Limbic Threads "Ask Limbic
-  // Agent" handoff node in components/ThreadsWeb.tsx) — a plain visit to /agent has no
+  // Fires once, only when a topic arrived via ?topic= (see the Limbic Threads chat panel's
+  // free-text handoff in components/ThreadsChat.tsx) — a plain visit to /agent has no
   // initialQuestion and starts from the normal idle state instead.
   useEffect(() => {
     if (initialQuestion?.trim()) handleAsk(initialQuestion);
