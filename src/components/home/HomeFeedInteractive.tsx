@@ -40,6 +40,7 @@ export function HomeFeedInteractive({
   getTheAppDismissed,
   header,
   banners,
+  calendar,
   dashboard,
   agent,
   aside,
@@ -50,6 +51,8 @@ export function HomeFeedInteractive({
   getTheAppDismissed: boolean;
   header: ReactNode;
   banners: ReactNode;
+  /** null when the reader has hidden the calendar widget — see lib/home-widgets.ts. */
+  calendar: ReactNode;
   dashboard: ReactNode;
   agent: ReactNode;
   aside: ReactNode;
@@ -90,6 +93,12 @@ export function HomeFeedInteractive({
       <div className="home-pad page-enter">
         <div className="home-row">
           <div className="home-main-col">
+            {calendar && (
+              <div className="home-calendar-top-wrap" style={{ marginBottom: 20 }}>
+                {calendar}
+              </div>
+            )}
+
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
               <div>{header}</div>
               <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
@@ -107,7 +116,7 @@ export function HomeFeedInteractive({
               {dashboard}
             </div>
 
-            <div style={{ marginBottom: 20 }} data-tour="limbic-agent">
+            <div className="home-agent-card-wrap" style={{ marginBottom: 20 }} data-tour="limbic-agent">
               {agent}
             </div>
 

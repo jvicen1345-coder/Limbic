@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { ContinueReadingCard, type ContinueReadingData } from "@/components/ContinueReadingCard";
 import { HomeQuestionCard, type HomeQuestionData } from "@/components/HomeQuestionCard";
 import { SavedUnreadCard } from "@/components/SavedUnreadCard";
@@ -13,7 +12,6 @@ export function HomeFeedAside({
   continueReading,
   homeQuestion,
   savedUnread,
-  calendarWidget,
   nexusSuggestions,
   showNexus,
   dailyInsight,
@@ -22,7 +20,6 @@ export function HomeFeedAside({
   continueReading: ContinueReadingData | null;
   homeQuestion: HomeQuestionData;
   savedUnread: DecoratedArticle[];
-  calendarWidget: ReactNode;
   nexusSuggestions: NexusSuggestion[] | null;
   /** Whether Nexus exists for this reader at all — see lib/nexus-visibility.ts. */
   showNexus: boolean;
@@ -36,7 +33,6 @@ export function HomeFeedAside({
         {showWidget("homeQuestion") && <HomeQuestionCard data={homeQuestion} />}
         {showWidget("dailyInsight") && dailyInsight && <DailyInsightCard insight={dailyInsight} />}
         {showWidget("savedUnread") && <SavedUnreadCard articles={savedUnread} />}
-        {showWidget("calendar") && calendarWidget}
         {showNexus &&
           showWidget("nexus") &&
           (nexusSuggestions ? (
