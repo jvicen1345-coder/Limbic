@@ -14,18 +14,19 @@ forks:
 
 | Master | Aspect | For |
 |---|---|---|
-| `limbic-tour-16x9.mp4` | 1920×1080 | the landing page — copy left, phone right |
-| `limbic-tour-9x16.mp4` | 1080×1920 | TikTok, Reels, Shorts — copy above, phone below |
+| `limbic-tour-16x9.mp4` | 1920×1080 | landing page on wide viewports — copy left, phone right |
+| `limbic-tour-9x16.mp4` | 1080×1920 | landing page on phones, and TikTok / Reels / Shorts — copy above, phone below |
 
 Both masters are 30 fps, H.264 High at crf 22, with a silent AAC track so a trending
 sound can be laid over the social cut in the TikTok editor. Caption/hashtag copy and
 posting notes: [`captions.md`](captions.md).
 
-**The landing page serves the 16:9 one.** `/` embeds a 1280x720 cut of that master (see
-the `landing-demo` section of `src/components/LandingPage.tsx`), so after any re-render
-run [`derive-web-assets.sh`](derive-web-assets.sh) or the site keeps showing the old
-version while the master moves on. The 9:16 cut has no derived files — it's uploaded by
-hand.
+**The landing page serves both, by viewport.** `/` embeds a 1280×720 cut of the landscape
+master on wide screens and a 720×1280 cut of the 9:16 master below 640px (see the
+`landing-demo` section of `src/components/LandingPage.tsx`). After any re-render run
+[`derive-web-assets.sh`](derive-web-assets.sh) or the site keeps showing the old files
+while the masters move on. The 1080×1920 social file is still uploaded by hand; the
+720-wide public 9:16 files are only for the phone player.
 
 ## Re-rendering it
 
@@ -39,12 +40,10 @@ node marketing/video/capture.mjs                   # signs in, screenshots each 
 node marketing/video/capture-agent.mjs             # re-shoots /agent with a question typed
 node marketing/video/capture-extra.mjs             # feed / playbook / movement lab / metrics
 
-# the landing page cut, then the three files public/ serves
+# both masters, then the six files public/ serves (16:9 desktop + 9:16 phone)
 OUT=marketing/video/limbic-tour-16x9.mp4 ORIENTATION=landscape node marketing/video/render.mjs
-./marketing/video/derive-web-assets.sh
-
-# the social cut
 OUT=marketing/video/limbic-tour-9x16.mp4 node marketing/video/render.mjs
+./marketing/video/derive-web-assets.sh
 ```
 
 `capture.mjs` signs in as `demo@limbic.center` (creating the account on first run) and

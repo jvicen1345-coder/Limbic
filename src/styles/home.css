@@ -233,6 +233,23 @@
 .home-refresh-pill:hover { background: var(--color-neutral-100); }
 .home-refresh-pill:disabled { cursor: default; opacity: 0.7; }
 
+/* Calendar widget (see components/LimbicCalendarWidget.tsx) sits beside the Limbic Agent
+   card (see components/LimbicAgentCard.tsx), relocated from the aside — this row replaces
+   what used to be the agent card's own standalone block. Calendar keeps a fixed width (its
+   7-column day grid has no width of its own, so left flexible it would stretch to fill
+   whatever the agent card doesn't take); the agent card takes the rest of the row, capped so
+   it still reads as a compact card rather than a full-width banner. Both go full width,
+   stacked, once .home-row itself stacks to a single column (see .home-row's own 799px
+   breakpoint in screens.css) so neither collapses to an unreadably narrow strip. */
+.home-calendar-agent-row { display: flex; align-items: flex-start; gap: 20px; }
+.home-calendar-top-wrap { flex: 0 0 340px; max-width: 340px; }
+.home-agent-card-wrap { flex: 1 1 auto; max-width: 50%; min-width: 0; }
+@media (max-width: 799px) {
+  .home-calendar-agent-row { flex-direction: column; }
+  .home-calendar-top-wrap { flex-basis: auto; max-width: 100%; }
+  .home-agent-card-wrap { max-width: 100%; }
+}
+
 /* Moved from agent.css — threads teaser card — Home and Search */
 /* — Feed-card Threads teaser (see components/ArticleCard.tsx) — a direct, always-visible
    link into the article's real Threads web, not a hover-revealed preview. */
@@ -317,4 +334,12 @@
 .daily-insight-source-title,
 .daily-insight-topic {
   overflow-wrap: anywhere;
+}
+
+/* Get the App Home shortcut — hidden in installed-app display mode to match Profile's
+   GetTheAppCard. Two-class hide so this beats `.btn { display: inline-flex }` regardless
+   of sheet load order. Presentation-only; iOS navigator.standalone still needs the JS class. */
+.btn.get-the-app-home-shortcut--installed { display: none; }
+@media (display-mode: standalone) {
+  .btn.get-the-app-home-shortcut { display: none; }
 }

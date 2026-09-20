@@ -50,6 +50,40 @@ const FOOTER_LINKS = [
   { href: "/programs", label: "DPT Programs" },
 ];
 
+/** Native tour player shared by the landscape and portrait cuts. A function, not a client
+ *  component: the markup is static, and putting `"use client"` here would pull JS onto `/`
+ *  for something the browser already knows how to do. */
+function TourPlayer({
+  frameClass,
+  poster,
+  webm,
+  mp4,
+}: {
+  frameClass: string;
+  poster: string;
+  webm: string;
+  mp4: string;
+}) {
+  return (
+    <div className={frameClass}>
+      {/* WebM first so Chrome, Firefox and Android take the VP9 file, which is a third
+          smaller than the H.264 one at the same visible quality; Safari and anything
+          without a VP9 decoder falls through to the MP4. */}
+      <video
+        className="landing-demo-video-player"
+        poster={poster}
+        controls
+        playsInline
+        preload="none"
+        aria-label="A 55-second tour of Limbic"
+      >
+        <source src={webm} type="video/webm" />
+        <source src={mp4} type="video/mp4" />
+      </video>
+    </div>
+  );
+}
+
 /** The public marketing page at "/" — see app/page.tsx, which only renders this for a
  *  signed-out visitor. Deliberately outside the (app) route group: no AppShell, no
  *  sidebar, no session-dependent data, every color routes through the same tokens the
@@ -119,31 +153,28 @@ export function LandingPage() {
         <p className="landing-demo-body">
           See how Limbic works for students, clinicians, and the public — all in one platform.
         </p>
-        {/* 16:9, rendered as its own landscape cut rather than a letterboxed portrait one —
-            the same timeline and copy laid out two-up, phone beside the text (see
-            marketing/video, which also produces the 9:16 social cut). Native controls and no
-            autoplay keep this section a Server Component with no client JS. preload="none",
-            not "metadata": Chrome pulls a small WebM in full on a metadata preload
-            (measured: the whole file on page load), so this way the 26KB poster is all the
-            page pays for until someone actually presses play. The trade is that the controls
-            read 0:00 until playback starts, which is why the heading carries the runtime
-            instead. */}
-        <div className="landing-demo-video">
-          {/* WebM first so Chrome, Firefox and Android take the VP9 file, which is a third
-              smaller than the H.264 one at the same visible quality; Safari and anything
-              without a VP9 decoder falls through to the MP4. */}
-          <video
-            className="landing-demo-video-player"
-            poster="/limbic-tour-poster.jpg"
-            controls
-            playsInline
-            preload="none"
-            aria-label="A 55-second tour of Limbic"
-          >
-            <source src="/limbic-tour.webm" type="video/webm" />
-            <source src="/limbic-tour.mp4" type="video/mp4" />
-          </video>
-        </div>
+        {/* Two native <video> elements, swapped with CSS (not <source media>, which browsers
+            dropped for video). Desktop keeps the 16:9 two-up cut filling the section; below
+            640px the page serves the existing 9:16 stacked cut in a phone-width frame so the
+            on-screen type stays readable. Native controls, no autoplay, and no client JS —
+            this section stays a Server Component. preload="none", not "metadata": Chrome
+            pulls a small WebM in full on a metadata preload (measured: the whole file on
+            page load), so the visible poster is all the page pays for until someone presses
+            play. The trade is that the controls read 0:00 until playback starts, which is
+            why the heading carries the runtime instead. display:none on the off-viewport
+            player keeps it out of the a11y tree. */}
+        <TourPlayer
+          frameClass="landing-demo-video landing-demo-video--landscape"
+          poster="/limbic-tour-poster.jpg"
+          webm="/limbic-tour.webm"
+          mp4="/limbic-tour.mp4"
+        />
+        <TourPlayer
+          frameClass="landing-demo-video landing-demo-video--portrait"
+          poster="/limbic-tour-9x16-poster.jpg"
+          webm="/limbic-tour-9x16.webm"
+          mp4="/limbic-tour-9x16.mp4"
+        />
         <p className="landing-demo-note">
           No sound needed. Everything is on screen.
         </p>

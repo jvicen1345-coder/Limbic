@@ -112,7 +112,7 @@ export async function signUpAndEnterApp(page: Page, email: string) {
  * `column` is interpolated into the SQL because a column name can't be bound as a parameter.
  * Every caller passes a literal from this repo, and the assertion below keeps it that way.
  */
-export async function setUserColumn(email: string, column: string, value: string) {
+export async function setUserColumn(email: string, column: string, value: string | number | null) {
   if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(column)) throw new Error(`unsafe column name: ${column}`);
   const { createClient } = await import("@libsql/client");
   let lastError: unknown;
@@ -143,4 +143,10 @@ export async function setUserColumn(email: string, column: string, value: string
  *  gated on (studentTier in lib/session.ts). */
 export async function grantLimbicStudent(email: string) {
   await setUserColumn(email, "studentTier", "limbicStudent");
+}
+
+/** Puts an account on paid LimbicPRO — Profile's subscription card and /profile/membership
+ *  read isPro directly (via getCurrentUser's overlay). */
+export async function grantLimbicPro(email: string) {
+  await setUserColumn(email, "isPro", 1);
 }

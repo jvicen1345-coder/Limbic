@@ -25,6 +25,7 @@ import { visitorHourOfDay } from "@/lib/timezone";
 import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import type { CeCategory, Specialty } from "@/lib/types";
 import { getTimeZone } from "@/lib/user-time-zone";
+import { pickContinueReading } from "@/lib/reading-progress";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -93,8 +94,8 @@ export default async function HomePage({
     select: { articleId: true, createdAt: true },
   });
   // Ordered most-recently-touched first — also feeds buildLimbicAgentInsights and
-  // Continue Reading below (readRows[0] is the most recent), which need that ordering
-  // to find each topic's most recent read / the resume card in one pass.
+  // Continue Reading below, which need that ordering to find each topic's most
+  // recent read / the first unfinished resume candidate in one pass.
   const readRowsPromise = prisma.readArticle.findMany({
     where: { userId: user.id },
     orderBy: { updatedAt: "desc" },
@@ -230,22 +231,11 @@ export default async function HomePage({
   const homeQuestion = homeQuestionForDate(homeQuestionDateKey);
   const homeQuestionCompletion = homeQuestionState.completion;
 
-  // Falls back to null (renders nothing — see ContinueReadingCard) if there's no reading
-  // history yet, or if the most recently read article has since dropped out of the current
-  // pool (a live-sourced article can churn out from under an old ReadArticle row).
-  const lastReadArticle = readRows[0] ?? null;
-  const lastReadArticleMeta = lastReadArticle ? articles.find((a) => a.id === lastReadArticle.articleId) : null;
-  const continueReading = lastReadArticleMeta
-    ? (() => {
-        const pct = Math.round(lastReadArticle.scrollProgress * 100);
-        return {
-          articleId: lastReadArticleMeta.id,
-          title: lastReadArticleMeta.title,
-          progress: lastReadArticle.scrollProgress,
-          progressLabel: pct < 1 ? "Just started" : `${pct}% read`,
-        };
-      })()
-    : null;
+  // Null hides the card (see ContinueReadingCard) when there is no unfinished read,
+  // every remaining read is finished, or the chosen row's article has churned out of
+  // the current pool. Filtering happens here rather than in the findMany above so
+  // rankFeed / insights still see completed rows.
+  const continueReading = pickContinueReading(readRows, articles);
 
   const ceEvents = articles
     .filter((a) => a.type === "ce")

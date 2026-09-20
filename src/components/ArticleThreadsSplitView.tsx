@@ -5,28 +5,28 @@ import dynamic from "next/dynamic";
 import { swapArticleAction } from "@/app/actions/article";
 import { ArticleReadingPane } from "@/components/ArticleReadingPane";
 import { ReadingProgressTracker } from "@/components/ReadingProgressTracker";
+import { ThreadsChat } from "@/components/ThreadsChat";
 import type { ArticleViewData } from "@/lib/article-view";
 
-const ThreadsWeb = dynamic(() => import("@/components/ThreadsWeb").then((module) => module.ThreadsWeb), {
+const ThreadsNav = dynamic(() => import("@/components/ThreadsNav").then((module) => module.ThreadsNav), {
   loading: () => (
-    <div role="status" aria-label="Loading article connections" aria-busy="true" style={{ minHeight: 500 }} />
+    <div role="status" aria-label="Loading article connections" aria-busy="true" style={{ minHeight: 320 }} />
   ),
 });
 
 /**
- * Owns the article reading pane + Limbic Threads panel as a persistent pair. Clicking a
- * connected-article node in Threads (see the onNavigateToArticle prop on ThreadsWeb) swaps
- * the reading pane's content in place instead of doing a full page navigation — no reload,
- * no losing the Threads panel, so a reader can follow a chain of connected articles
- * ("blood-flow restriction -> connected study -> its related guideline -> ...") without
- * losing their place each time.
+ * Owns the article reading pane + Limbic Threads panel as a persistent pair. Threads itself
+ * is two stacked panels: ThreadsNav (a small web of real navigation — related articles,
+ * guidelines, Nexus) and ThreadsChat (AI-generated clinical reasoning, as chat rather than
+ * more graph nodes). Clicking a connected-article node in ThreadsNav (see its
+ * onNavigateToArticle prop) swaps the reading pane's content in place instead of doing a
+ * full page navigation — no reload, no losing either Threads panel, so a reader can follow
+ * a chain of connected articles ("blood-flow restriction -> connected study -> its related
+ * guideline -> ...") without losing their place each time.
  *
- * The Threads panel itself always rebuilds fresh around whichever article is current (see
- * the `key={view.article.id}` below) — a web is FOR one article, so that's the correct
- * behavior, not something to preserve. Threads is always visible and building itself
- * automatically the moment either the initial page load or a swap lands (see
- * components/ThreadsWeb.tsx), so unlike before, nothing here needs to remember whether the
- * reader has swapped at least once.
+ * Both panels rebuild fresh around whichever article is current (see the `key={view.article.id}`
+ * below) — Threads is FOR one article, so that's the correct behavior, not something to
+ * preserve across a swap.
  */
 export function ArticleThreadsSplitView({
   initialView,
@@ -88,12 +88,16 @@ export function ArticleThreadsSplitView({
           )}
         </div>
         <div className="article-split-threads">
-          <ThreadsWeb
-            key={view.article.id}
-            articleId={view.article.id}
+          <ThreadsNav
+            key={`nav-${view.article.id}`}
             webNodes={view.threadsNodes}
-            isPro={isPro}
             onNavigateToArticle={(id) => swapTo(id, { pushUrl: true })}
+          />
+          <ThreadsChat
+            key={`chat-${view.article.id}`}
+            articleId={view.article.id}
+            articleTitle={view.article.title}
+            isPro={isPro}
           />
         </div>
       </div>

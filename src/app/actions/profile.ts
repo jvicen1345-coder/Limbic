@@ -44,11 +44,12 @@ export async function toggleHomeWidgetAction(widgetId: string) {
 /** The Get the App card's own dismiss switch (see components/GetTheAppCard.tsx) — collapses
  *  it to a compact done state and hides the shortcut icon next to Refresh on Home (see
  *  components/HomeFeed.tsx). */
-export async function setGetTheAppDismissedAction(dismissed: boolean) {
+export async function setGetTheAppDismissedAction(dismissed: boolean): Promise<boolean> {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user) return false;
   await prisma.user.update({ where: { id: user.id }, data: { getTheAppDismissed: dismissed } });
   revalidatePath("/", "layout");
+  return true;
 }
 
 /** The Founding Funder badge toggle (see components/FoundingFunderBadgeToggle.tsx) — hides
@@ -63,7 +64,7 @@ export async function setFoundingFunderBadgeHiddenAction(hidden: boolean) {
 
 const THEME_PREFERENCES = ["light", "dark", "system"] as const;
 
-/** The sidebar's ThemeToggle and Profile's Appearance section (see components/
+/** The sidebar's ThemeToggle and Profile's Theme section (see components/
  *  ThemeToggle.tsx, ThemeSection.tsx) both call this — the database half of a theme
  *  change; the caller is responsible for the localStorage/data-theme half via
  *  lib/theme-client.ts applyThemePreferenceLocally, which is what makes the current tab

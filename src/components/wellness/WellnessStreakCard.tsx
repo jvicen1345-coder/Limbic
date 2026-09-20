@@ -3,8 +3,8 @@ import { HeartIcon } from "@/components/icons";
 /** Same shape as ReadingStreakCard/GamesStreakCard, wellness-specific copy — its own
  *  component for the same reason those two are separate: the three streaks are unrelated
  *  concepts that happen to share a rendering pattern (see lib/wellness-activity.ts).
- *  Rendered on Profile beside the other two; the hub itself uses the compact
- *  .wellness-hub-streak badge instead, since it already carries a lot above the fold. */
+ *  The hub itself uses the compact .wellness-hub-streak badge instead, since it already
+ *  carries a lot above the fold. Profile's header row is Role / Theme / Subscription. */
 export function WellnessStreakCard({ streakDays }: { streakDays: number }) {
   return (
     <div className="card elev-sm streak-card" style={{ marginBottom: 18 }}>
