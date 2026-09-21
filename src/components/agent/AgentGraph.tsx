@@ -14,6 +14,7 @@ import {
 } from "d3-force";
 import { select, type Selection } from "d3-selection";
 import type { AgentNode, AgentLink } from "@/lib/agent-graph";
+import { isLinkDrawn } from "@/lib/agent-focus";
 
 // labelHalfWidth is filled in after each label's text is rendered (see the data-update
 // effect) by measuring its actual SVG bounding box — collision then reserves that much
@@ -21,6 +22,10 @@ import type { AgentNode, AgentLink } from "@/lib/agent-graph";
 // either string is.
 type SimNode = AgentNode & SimulationNodeDatum & { labelHalfWidth?: number };
 type SimLink = { source: string | SimNode; target: string | SimNode; kind: "tree" | "cross" };
+
+function linkEndpointId(endpoint: string | SimNode): string {
+  return typeof endpoint === "string" ? endpoint : endpoint.id;
+}
 
 // Minimum gap kept between the edges of two neighboring labels — wider than a node's own
 // radius padding alone would give, so two long clinical phrases never read as touching.
@@ -155,6 +160,12 @@ export interface AgentGraphProps {
   height: number;
   onNodeClick: (node: AgentNode) => void;
   onBackgroundClick?: () => void;
+  /** Agent-only. Threads leaves this off and passes every node through unchanged.
+   *  When on, parents listed in `collapsedChildCounts` draw a dashed ring and a count
+   *  of hidden children. The caller still decides which descendants to omit. */
+  focusMode?: boolean;
+  /** Direct hidden-child counts for collapsed parents. Ignored unless `focusMode` is set. */
+  collapsedChildCounts?: Readonly<Record<string, number>>;
 }
 
 export function AgentGraph({
@@ -166,6 +177,8 @@ export function AgentGraph({
   height,
   onNodeClick,
   onBackgroundClick,
+  focusMode = false,
+  collapsedChildCounts,
 }: AgentGraphProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const simRef = useRef<Simulation<SimNode, SimLink> | null>(null);
@@ -177,6 +190,8 @@ export function AgentGraph({
   const sizeRef = useRef({ width, height });
   const onNodeClickRef = useRef(onNodeClick);
   const onBackgroundClickRef = useRef(onBackgroundClick);
+  const hoveredIdRef = useRef<string | null>(null);
+  const syncDrawnLinksRef = useRef<() => void>(() => {});
   useEffect(() => {
     onNodeClickRef.current = onNodeClick;
     onBackgroundClickRef.current = onBackgroundClick;
@@ -315,35 +330,6 @@ export function AgentGraph({
 
     const nextSimLinks: SimLink[] = links.map((l) => ({ source: l.source, target: l.target, kind: l.kind }));
 
-    // Links.
-    const nodeById = new Map(nodes.map((n) => [n.id, n]));
-    const linkClass = (d: SimLink) => {
-      const targetId = typeof d.target === "string" ? d.target : d.target.id;
-      const toAction = nodeById.get(targetId)?.variant === "action";
-      return `agent-link agent-link-${d.kind}${toAction ? " agent-link-action" : ""}`;
-    };
-    svg
-      .select(".agent-links")
-      .selectAll<SVGLineElement, SimLink>("line")
-      .data(
-        nextSimLinks,
-        (d) => `${typeof d.source === "string" ? d.source : d.source.id}->${typeof d.target === "string" ? d.target : d.target.id}`
-      )
-      .join(
-        // pathLength normalizes the line's dash coordinate space to a fixed 0-100 range
-        // regardless of its actual on-screen length — which keeps changing every tick as
-        // the simulation settles — so the draw-in animation always reads as "0% to 100%
-        // grown" instead of resetting or glitching as the endpoints move.
-        (enter) =>
-          enter
-            .append("line")
-            .attr("pathLength", 100)
-            .attr("stroke-dasharray", 100)
-            .attr("class", (d) => `${linkClass(d)} agent-link-draw-in`),
-        (update) => update.attr("class", linkClass),
-        (exit) => exit.remove()
-      );
-
     // Nodes.
     const nodeSel = svg
       .select(".agent-nodes")
@@ -355,6 +341,15 @@ export function AgentGraph({
       .append("g")
       .attr("class", "agent-node")
       .style("cursor", (d) => (d.expandable ? "pointer" : "default"))
+      .on("pointerenter", (_event, d) => {
+        hoveredIdRef.current = d.id;
+        syncDrawnLinksRef.current();
+      })
+      .on("pointerleave", (_event, d) => {
+        if (hoveredIdRef.current !== d.id) return;
+        hoveredIdRef.current = null;
+        syncDrawnLinksRef.current();
+      })
       .on("click", (event, d) => {
         event.stopPropagation();
         onNodeClickRef.current(d);
@@ -382,6 +377,15 @@ export function AgentGraph({
           .attr("font-size", isAction ? 12 : (RING_FONT_SIZE[d.ring] ?? 10))
           .attr("font-weight", isAction ? 700 : 400)
           .text(truncateForRing(d.label, d.ring));
+        g.append("circle").attr("class", "agent-node-collapsed-ring").attr("fill", "none").style("display", "none");
+        const badge = g.append("g").attr("class", "agent-node-collapsed-badge").style("display", "none");
+        badge.append("circle").attr("class", "agent-node-collapsed-badge-dot").attr("r", compact ? 7 : 8);
+        badge
+          .append("text")
+          .attr("class", "agent-node-collapsed-count")
+          .attr("text-anchor", "middle")
+          .attr("dominant-baseline", "central");
+        g.append("title");
       });
 
     const merged = entered.merge(nodeSel);
@@ -404,6 +408,51 @@ export function AgentGraph({
       .style("color", (d) => (d.variant === "action" ? ACTION_NODE_COLOR : (RING_COLOR[d.ring] ?? "#8a97c4")));
     merged.select(".agent-node-label").attr("dy", (d) => nodeRadius(d, radii, compact) + 14);
 
+    const hiddenCount = (d: SimNode) => (focusMode ? (collapsedChildCounts?.[d.id] ?? 0) : 0);
+    merged
+      .classed("agent-node-collapsed", (d) => hiddenCount(d) > 0)
+      .attr("data-hidden-children", (d) => {
+        const count = hiddenCount(d);
+        return count > 0 ? String(count) : null;
+      });
+    merged.select<SVGTitleElement>("title").text((d) => {
+      const count = hiddenCount(d);
+      return count > 0 ? `${d.label}. ${count} hidden ${count === 1 ? "branch" : "branches"}.` : d.label;
+    });
+    merged.select<SVGCircleElement>(".agent-node-collapsed-ring").each(function (d) {
+      const count = hiddenCount(d);
+      const ring = select(this);
+      if (count <= 0) {
+        ring.style("display", "none");
+        return;
+      }
+      const color = d.variant === "action" ? ACTION_NODE_COLOR : (RING_COLOR[d.ring] ?? "#8a97c4");
+      ring
+        .style("display", null)
+        .attr("r", nodeRadius(d, radii, compact) + 5)
+        .attr("stroke", color)
+        .style("color", color);
+    });
+    merged.select<SVGGElement>(".agent-node-collapsed-badge").each(function (d) {
+      const count = hiddenCount(d);
+      const badge = select(this);
+      if (count <= 0) {
+        badge.style("display", "none");
+        return;
+      }
+      const r = nodeRadius(d, radii, compact);
+      const color = d.variant === "action" ? ACTION_NODE_COLOR : (RING_COLOR[d.ring] ?? "#8a97c4");
+      badge
+        .style("display", null)
+        .attr("transform", `translate(${r * 0.72}, ${-r * 0.72})`)
+        .style("color", color);
+      badge.select(".agent-node-collapsed-badge-dot").attr("r", compact ? 7 : 8).attr("stroke", color);
+      badge
+        .select(".agent-node-collapsed-count")
+        .attr("font-size", compact ? 8 : 9)
+        .text(String(count));
+    });
+
     // Measure each label's actual rendered width now that its final text/font-size are set,
     // so the collide force below (initialized by simulation.nodes()) can reserve enough
     // horizontal room to keep every label clear of its neighbors — a fixed circle-only
@@ -414,6 +463,57 @@ export function AgentGraph({
 
     simulation.nodes(nextSimNodes);
     (simulation.force("link") as ForceLink<SimNode, SimLink>).links(nextSimLinks);
+
+    // Cross-links stay in the simulation (so hovering one does not yank the layout) but
+    // are omitted from the SVG until an endpoint is hovered or selected. Tree lines are
+    // unaffected. Hover updates this join without restarting the simulation.
+    const nodeById = new Map(nodes.map((n) => [n.id, n]));
+    const linkClass = (d: SimLink) => {
+      const toAction = nodeById.get(linkEndpointId(d.target))?.variant === "action";
+      const focused = d.kind === "cross" ? " agent-link-cross-focus" : "";
+      return `agent-link agent-link-${d.kind}${toAction ? " agent-link-action" : ""}${focused}`;
+    };
+    const drawLinks = () => {
+      const hoverId = hoveredIdRef.current;
+      const activeHover = hoverId && nextSimNodes.some((n) => n.id === hoverId) ? hoverId : null;
+      const drawn = nextSimLinks.filter((link) =>
+        isLinkDrawn(
+          { source: linkEndpointId(link.source), target: linkEndpointId(link.target), kind: link.kind },
+          activeHover,
+          selectedId,
+        ),
+      );
+      svg
+        .select(".agent-links")
+        .selectAll<SVGLineElement, SimLink>("line")
+        .data(drawn, (d) => `${linkEndpointId(d.source)}->${linkEndpointId(d.target)}:${d.kind}`)
+        .join(
+          // pathLength normalizes a tree line's dash coordinate space to 0-100 so the
+          // draw-in animation stays consistent while the simulation is still moving.
+          // Cross-links skip that animation and keep the dashed CSS stroke.
+          (enter) => {
+            const line = enter.append("line").attr("class", linkClass);
+            line
+              .filter((d) => d.kind === "tree")
+              .attr("pathLength", 100)
+              .attr("stroke-dasharray", 100)
+              .classed("agent-link-draw-in", true);
+            return line;
+          },
+          (update) => update.attr("class", linkClass),
+          (exit) => exit.remove(),
+        );
+      svg
+        .select(".agent-links")
+        .selectAll<SVGLineElement, SimLink>("line")
+        .attr("x1", (d) => (typeof d.source === "string" ? 0 : (d.source.x ?? 0)))
+        .attr("y1", (d) => (typeof d.source === "string" ? 0 : (d.source.y ?? 0)))
+        .attr("x2", (d) => (typeof d.target === "string" ? 0 : (d.target.x ?? 0)))
+        .attr("y2", (d) => (typeof d.target === "string" ? 0 : (d.target.y ?? 0)));
+    };
+    syncDrawnLinksRef.current = drawLinks;
+    drawLinks();
+
     simulation.alpha(0.7).restart();
 
     // The center node's label changes once (idle "Limbic Agent" -> the question, then
@@ -434,7 +534,7 @@ export function AgentGraph({
     });
 
     nodeSel.exit().remove();
-  }, [nodes, links, selectedId, loadingId, width, height]);
+  }, [nodes, links, selectedId, loadingId, width, height, focusMode, collapsedChildCounts]);
 
   return (
     <svg

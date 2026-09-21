@@ -28,8 +28,9 @@ export interface AgentNode {
 export interface AgentLink {
   source: string;
   target: string;
-  /** "tree" is a normal parent/child growth edge; "cross" is a subtle, dashed line the
-   *  model drew between two related nodes in different branches (see expandAgentNode in
-   *  lib/agent.ts) — visually distinct and never something a node's expansion depends on. */
+  /** "tree" is a normal parent/child growth edge; "cross" is a dashed relation the
+   *  model drew between two nodes in different branches (see expandAgentNode in
+   *  lib/agent.ts). Cross-links stay in state, but AgentGraph draws one only while an
+   *  endpoint is hovered or selected. */
   kind: "tree" | "cross";
 }
