@@ -107,32 +107,17 @@ export function CrosswordGame({
     [isBlack]
   );
 
-  /** Whether every square of a clue has *a* letter in it, right or wrong. */
+  /** Whether every square of a clue has *a* letter in it — deliberately not whether those
+   *  letters are right. Comparing a clue to puzzle.grid while the puzzle is still in
+   *  progress is a correctness oracle: any guess can be confirmed without finishing the
+   *  grid, and a single unknown square can be pinned down by cycling letters until the
+   *  clue flips. "Filled" keeps the progress signal (what's left to do) and withholds the
+   *  answer key. The only correctness check is the whole-grid one once every square has a
+   *  letter. The strike in .crossword-clue-item-filled is that same fill signal, scoped to
+   *  .crossword-clue-text so the number stays readable — it does not mean the entry matches. */
   const isClueFilled = useCallback(
     (clue: CrosswordClue, dir: Direction) => cellsForClue(clue, dir).every(([r, c]) => cells[r][c] !== ""),
     [cells]
-  );
-
-  /** Whether a fully-filled clue's letters match the solution. Only meaningful once
-   *  isClueFilled is true — a clue with blanks is never "correct", just unfinished. The
-   *  clue list uses this (not isClueFilled alone) to decide when to cross an entry off:
-   *  a wrong-but-full guess gets a "not quite" hint instead of the solved strike-through,
-   *  and stays that way — uncrossed — until every letter in it is actually right. */
-  const isClueCorrect = useCallback(
-    (clue: CrosswordClue, dir: Direction) => cellsForClue(clue, dir).every(([r, c]) => cells[r][c].toUpperCase() === puzzle.grid[r][c]),
-    [cells, puzzle]
-  );
-
-  /** The clue-list class for a clue's fill state: unfilled clues get none, a fully-filled
-   *  wrong guess gets the "not quite" hint, and only a fully-filled correct one gets crossed
-   *  off. Never touches .crossword-clue-num, so the strike-through in -solved lands on the
-   *  clue text only — the number stays legible either way. */
-  const clueStatusClass = useCallback(
-    (clue: CrosswordClue, dir: Direction) => {
-      if (!isClueFilled(clue, dir)) return "";
-      return isClueCorrect(clue, dir) ? " crossword-clue-item-solved" : " crossword-clue-item-wrong";
-    },
-    [isClueFilled, isClueCorrect]
   );
 
   const persist = useCallback(
@@ -339,6 +324,27 @@ export function CrosswordGame({
   const displaySeconds = status === "won" ? (elapsedSeconds ?? 0) : liveElapsed;
   const shareText = `Limbic Mini Crossword, ${shareDateLabel}\nCompleted in ${formatElapsed(elapsedSeconds ?? 0)}\nlimbic.center/crossword`;
 
+  const renderClue = (clue: CrosswordClue, dir: Direction) => {
+    const filled = isClueFilled(clue, dir);
+    const active = activeClue?.number === clue.number && direction === dir;
+    return (
+      <div
+        key={`${dir}-${clue.number}`}
+        className={`crossword-clue-item${active ? " crossword-clue-item-active" : ""}${filled ? " crossword-clue-item-filled" : ""}`}
+        onClick={() => {
+          inputRef.current?.focus();
+          setTouched(true);
+          setSelected({ row: clue.row, col: clue.col });
+          setDirection(dir);
+        }}
+      >
+        <span className="crossword-clue-num">{clue.number}</span>
+        <span className="crossword-clue-text">{clue.clue}</span>
+        {filled ? <span className="crossword-sr-only">, filled</span> : null}
+      </div>
+    );
+  };
+
   return (
     <div className="crossword-page-pad">
       <Link href="/games" className="crossword-back-link">
@@ -423,43 +429,11 @@ export function CrosswordGame({
           <div className="crossword-clues-panel">
             <div>
               <div className="crossword-clue-section-title">Across</div>
-              {puzzle.across.map((clue) => (
-                <div
-                  key={`a-${clue.number}`}
-                  className={`crossword-clue-item${
-                    activeClue?.number === clue.number && direction === "across" ? " crossword-clue-item-active" : ""
-                  }${clueStatusClass(clue, "across")}`}
-                  onClick={() => {
-                    inputRef.current?.focus();
-                    setTouched(true);
-                    setSelected({ row: clue.row, col: clue.col });
-                    setDirection("across");
-                  }}
-                >
-                  <span className="crossword-clue-num">{clue.number}</span>
-                  <span className="crossword-clue-text">{clue.clue}</span>
-                </div>
-              ))}
+              {puzzle.across.map((clue) => renderClue(clue, "across"))}
             </div>
             <div>
               <div className="crossword-clue-section-title">Down</div>
-              {puzzle.down.map((clue) => (
-                <div
-                  key={`d-${clue.number}`}
-                  className={`crossword-clue-item${
-                    activeClue?.number === clue.number && direction === "down" ? " crossword-clue-item-active" : ""
-                  }${clueStatusClass(clue, "down")}`}
-                  onClick={() => {
-                    inputRef.current?.focus();
-                    setTouched(true);
-                    setSelected({ row: clue.row, col: clue.col });
-                    setDirection("down");
-                  }}
-                >
-                  <span className="crossword-clue-num">{clue.number}</span>
-                  <span className="crossword-clue-text">{clue.clue}</span>
-                </div>
-              ))}
+              {puzzle.down.map((clue) => renderClue(clue, "down"))}
             </div>
           </div>
         </div>
