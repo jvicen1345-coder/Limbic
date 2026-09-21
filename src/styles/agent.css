@@ -1,6 +1,8 @@
-/* — Limbic Agent: full-screen dark canvas + spiderweb (components/AgentClient.tsx,
-   components/AgentGraph.tsx). A deliberately separate visual language from the rest of
-   the (light-themed) app — this page owns its own colors rather than reusing --color-*. */
+/* — Limbic Agent: full-screen dark canvas + spiderweb (components/agent/AgentClient.tsx,
+   components/agent/AgentWeb.tsx, components/agent/AgentGraph.tsx) beside a reasoning
+   transcript (components/agent/AgentReasoning.tsx). A deliberately separate visual
+   language from the rest of the (light-themed) app — this page owns its own colors
+   rather than reusing --color-*. */
 .agent-page {
   /* Fills exactly what's left of .app-main after .app-mobile-topbar (mobile only) —
      see the .app-main comment above for why this is flex:1 and not a height percentage. */
@@ -101,19 +103,6 @@
   white-space: nowrap;
 }
 
-.agent-detail-card {
-  position: absolute;
-  left: 50%;
-  bottom: 16px;
-  transform: translateX(-50%);
-  width: min(420px, calc(100% - 32px));
-  background: rgba(15, 21, 38, 0.92);
-  border: 1px solid rgba(140, 170, 255, 0.25);
-  border-radius: 16px;
-  padding: 14px 16px;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-}
 .agent-detail-kicker {
   font-size: var(--fs-10-5);
   letter-spacing: 0.08em;
@@ -235,12 +224,13 @@
 
 /* — Limbic Threads nav web (see components/ThreadsNav.tsx) — reuses the .agent-node/
    .agent-link rules and the .agent-detail-kicker/-title/-body/-hint/-close typography
-   above verbatim. Its own detail panel is NOT .agent-detail-card's floating overlay though
-   — Agent's own card can afford to float over its fixed-height chat canvas, but Threads'
-   canvas sits in a normal scrolling page where a force-simulated node can end up anywhere,
-   including right where a docked overlay would sit, silently blocking clicks on whatever's
-   under it. See the "Limbic Threads chat panel" rules below for the AI-insight half,
-   components/ThreadsChat.tsx. */
+   above verbatim. Its detail panel is a normal block under the canvas (.threads-detail-panel),
+   not a floating overlay — Threads' canvas sits in a normal scrolling page where a
+   force-simulated node can end up anywhere, including right where a docked overlay would
+   sit, silently blocking clicks on whatever's under it. See the "Limbic Threads chat panel"
+   rules below for the AI-insight half, components/ThreadsChat.tsx. Agent's own prose lives
+   in the reasoning transcript (.agent-reasoning), which reuses .threads-chat-* rather than
+   a second bubble style. */
 /* box-shadow added so the panel sits at the same visual weight as the rest of the app's
    card system (--shadow-md) instead of reading as a flat bordered rectangle next to it. */
 .threads-wrap {
@@ -455,4 +445,64 @@
 .agent-link-cross.agent-link-cross-focus {
   stroke: rgba(66, 214, 200, 0.92);
   stroke-width: 1.6;
+}
+
+/* Web beside the reasoning transcript on desktop; stacked once the viewport is too
+   narrow for a sidebar plus two panes (same 1023px break as .article-split). The
+   transcript reuses .threads-chat-* and only overrides the card chrome those rules
+   use inside an article column — Threads' own .threads-chat-wrap is untouched. */
+.agent-split {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  overflow: hidden;
+}
+.agent-web-pane {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.agent-reasoning.threads-chat-wrap {
+  flex: 0 1 400px;
+  width: 400px;
+  max-width: 40%;
+  min-width: 260px;
+  min-height: 0;
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  border: none;
+  border-left: 1px solid rgba(140, 170, 255, 0.18);
+  border-radius: 0;
+  box-shadow: none;
+  background: #0d1428;
+}
+.agent-reasoning .threads-header,
+.agent-reasoning .threads-caption {
+  flex-shrink: 0;
+}
+.agent-reasoning .threads-chat-scroll {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+@media (max-width: 1023px) {
+  .agent-split { flex-direction: column; }
+  .agent-web-pane {
+    flex: 1 1 46%;
+    min-height: 200px;
+  }
+  .agent-reasoning.threads-chat-wrap {
+    flex: 1 1 54%;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    min-height: 180px;
+    border-left: none;
+    border-top: 1px solid rgba(140, 170, 255, 0.18);
+  }
 }
