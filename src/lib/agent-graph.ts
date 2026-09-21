@@ -9,8 +9,9 @@ export interface AgentNode {
   parentId: string | null;
   ring: AgentRing;
   label: string;
-  /** Longer explanation shown in the detail overlay when the node is selected — absent on
-   *  the idle center node, which only ever carries "Limbic Agent" until a question is asked. */
+  /** Longer explanation appended to the reasoning transcript when the node is selected —
+   *  absent on the idle center node, which only ever carries "Limbic Agent" until a question
+   *  is asked. Not rendered inside the web. */
   detail?: string;
   /** Ring 1/2 nodes the student/clinician can click to grow the web further; false for
    *  ring 3 (evidence/red-flag) nodes and the center node, which are always terminal. */

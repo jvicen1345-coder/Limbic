@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { askAgentAction, expandAgentNodeAction } from "@/app/actions/agent";
-import { DeferredAgentGraph } from "@/components/DeferredAgentGraph";
+import { AgentReasoning } from "@/components/agent/AgentReasoning";
+import { AgentWeb } from "@/components/agent/AgentWeb";
 import { AGENT_DEMO_NODES, AGENT_DEMO_CROSS_LINKS } from "@/lib/agent-demo";
 import type { AgentNode, AgentLink, AgentRing } from "@/lib/agent-graph";
 import { collapseSiblingsOnOpen, collapsedChildCounts, visibleAgentNodes } from "@/lib/agent-focus";
+import { appendNodeTurn, questionEchoTurn, type AgentTranscriptTurn } from "@/lib/agent-transcript";
 
 /**
  * Live — every question goes to the real askAgentAction/expandAgentNodeAction path
@@ -32,22 +34,6 @@ function truncate(label: string, max: number): string {
   return label.length > max ? `${label.slice(0, max - 1)}…` : label;
 }
 
-function useContainerSize() {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [size, setSize] = useState({ width: 640, height: 480 });
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new ResizeObserver((entries) => {
-      const rect = entries[0]?.contentRect;
-      if (rect) setSize({ width: rect.width, height: rect.height });
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-  return [ref, size] as const;
-}
-
 /** Walks parentId up to the root, returning ancestor labels root-first (excluding the
  *  clicked node itself) — gives the model the reasoning path so far when expanding. */
 function ancestorLabelsOf(nodeId: string, nodes: AgentNode[]): string[] {
@@ -63,6 +49,13 @@ function ancestorLabelsOf(nodeId: string, nodes: AgentNode[]): string[] {
   return labels;
 }
 
+/**
+ * State owner for the two panels, same composition as ArticleThreadsSplitView
+ * (ThreadsNav + ThreadsChat): AgentWeb is structure and navigation only, and
+ * AgentReasoning is the accumulating transcript. Selecting a node appends the
+ * detail already on it — it does not call the model. askAgentAction and
+ * expandAgentNodeAction stay the only model calls, and only on ask / first expand.
+ */
 export function AgentClient({ initialQuestion }: { initialQuestion?: string } = {}) {
   const [question, setQuestion] = useState(initialQuestion ?? "");
   const [askedQuestion, setAskedQuestion] = useState<string | null>(null);
@@ -73,7 +66,7 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(() => new Set());
-  const [containerRef, size] = useContainerSize();
+  const [turns, setTurns] = useState<readonly AgentTranscriptTurn[]>([]);
 
   const shownNodes = useMemo(() => visibleAgentNodes(nodes, collapsedIds), [nodes, collapsedIds]);
   const hiddenChildCounts = useMemo(() => collapsedChildCounts(nodes, collapsedIds), [nodes, collapsedIds]);
@@ -94,6 +87,12 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
     return [...treeLinks, ...crossLinks.filter((l) => ids.has(l.source) && ids.has(l.target))];
   }, [treeLinks, crossLinks, shownNodes]);
   const selectedNode = nodes.find((n) => n.id === selectedId) ?? null;
+  const expandHintId =
+    selectedNode?.expandable &&
+    !nodes.some((n) => n.parentId === selectedNode.id) &&
+    loadingId !== selectedNode.id
+      ? selectedNode.id
+      : null;
 
   // Fires once, only when a topic arrived via ?topic= (see the Limbic Threads chat panel's
   // free-text handoff in components/ThreadsChat.tsx) — a plain visit to /agent has no
@@ -123,6 +122,7 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
     setCrossLinks([]);
     setCollapsedIds(new Set());
     setAskedQuestion(trimmed);
+    setTurns([questionEchoTurn(trimmed)]);
 
     if (AGENT_DEMO_MODE) {
       // The idle node keeps breathing a beat longer (reads as "thinking"), then settles
@@ -163,6 +163,7 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
 
   async function handleNodeClick(node: AgentNode) {
     setSelectedId(node.id);
+    setTurns((prev) => appendNodeTurn(prev, node));
     if (loadingId) return;
     const alreadyExpanded = nodes.some((n) => n.parentId === node.id);
     if (alreadyExpanded) {
@@ -209,7 +210,7 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
   return (
     <div className="agent-page">
       <div className="agent-topbar">
-        {AGENT_DEMO_MODE && <span className="agent-demo-badge">Demo</span>}
+        {AGENT_DEMO_MODE ? <span className="agent-demo-badge">Demo</span> : null}
         <span>
           <strong>Clinical decision support, not diagnosis.</strong>{" "}
           {AGENT_DEMO_MODE
@@ -219,44 +220,18 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
         </span>
       </div>
 
-      <div className="agent-canvas-wrap" ref={containerRef}>
-        <DeferredAgentGraph
+      <div className="agent-split">
+        <AgentWeb
           nodes={shownNodes}
           links={links}
           selectedId={selectedId}
           loadingId={loadingId}
-          width={size.width}
-          height={size.height}
-          focusMode
           collapsedChildCounts={hiddenChildCounts}
+          error={error}
           onNodeClick={handleNodeClick}
           onBackgroundClick={() => setSelectedId(null)}
         />
-
-        {selectedNode?.detail && (
-          <div className="agent-detail-card">
-            <button
-              type="button"
-              className="agent-detail-close"
-              aria-label="Close"
-              onClick={() => setSelectedId(null)}
-            >
-              ×
-            </button>
-            <div className="agent-detail-kicker">
-              {selectedNode.ring === 0 ? "Your question" : `Ring ${selectedNode.ring}`}
-            </div>
-            <div className="agent-detail-title">{selectedNode.label}</div>
-            <p className="agent-detail-body">{selectedNode.detail}</p>
-            {selectedNode.expandable && !nodes.some((n) => n.parentId === selectedNode.id) && (
-              <p className="agent-detail-hint">
-                {loadingId === selectedNode.id ? "Growing the web…" : "Click this node again to expand it."}
-              </p>
-            )}
-          </div>
-        )}
-
-        {error && <div className="agent-error">{error}</div>}
+        <AgentReasoning turns={turns} loadingId={loadingId} expandHintId={expandHintId} thinking={starting} />
       </div>
 
       <div className="agent-input-bar">
