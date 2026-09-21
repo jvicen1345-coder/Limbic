@@ -156,9 +156,11 @@ export const AGENT_DEMO_NODES: AgentNode[] = [
   },
 ];
 
-/** One deliberate cross-branch connection to demonstrate the feature: ruling out a
- *  meniscal cause (McMurray, under Objective Tests) is directly relevant to the
- *  intra-articular red flag it would help rule out. */
+/** Cross-branch connections for the demo web. McMurray (under Objective Tests) is
+ *  relevant both to the Red Flags branch as a whole — still on the canvas when focus
+ *  mode collapses that branch's children — and to the intra-articular effusion node
+ *  inside it. */
 export const AGENT_DEMO_CROSS_LINKS: AgentLink[] = [
+  { source: "demo-r2-mcmurray", target: "demo-r1-redflags", kind: "cross" },
   { source: "demo-r2-mcmurray", target: "demo-r2-effusion", kind: "cross" },
 ];
