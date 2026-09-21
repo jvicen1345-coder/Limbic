@@ -241,9 +241,12 @@
    cap left a dead gutter beside a compact calendar once the row was wide, and did not
    stop the card collapsing when the row was narrow. Side-by-side only when the slot is
    at least 340 + 20px gap + 340. Below that (sidebar + aside leave main-col ~212px at an
-   800px window and ~436px at 1024px) both go full width of the column. The 799px rule
-   still matches .home-row's stack in screens.css, including a wide phone where the slot
-   itself could fit two cards. */
+   800px window and ~436px at 1024px) both go full width of the column — that mid-width
+   stack stays full-bleed of the column (#542). The 799px rule still stacks to match
+   .home-row in screens.css, including a wide phone where the slot itself could fit two
+   cards, but the calendar wrap stays at 340px there (#531) so square day cells keep the
+   desktop widget's density instead of growing with the column. The agent card still
+   spans the phone column. */
 .home-calendar-agent-slot {
   container-type: inline-size;
   container-name: home-cal-agent;
@@ -263,11 +266,17 @@
 }
 @media (max-width: 799px) {
   .home-calendar-agent-row { flex-direction: column; }
-  .home-calendar-top-wrap,
   .home-agent-card-wrap {
     flex: 0 1 auto;
     width: 100%;
     max-width: 100%;
+  }
+  /* Column flex: flex-basis is height, so the 340px cap is max-width, not flex-basis.
+     width:100% still fills a column narrower than 340px. */
+  .home-calendar-top-wrap {
+    flex: 0 1 auto;
+    width: 100%;
+    max-width: 340px;
   }
 }
 
