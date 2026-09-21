@@ -110,10 +110,12 @@ export function HomeFeedInteractive({
               {dashboard}
             </div>
 
-            <div className="home-calendar-agent-row" style={{ marginBottom: 20 }}>
-              {calendar && <div className="home-calendar-top-wrap">{calendar}</div>}
-              <div className="home-agent-card-wrap" data-tour="limbic-agent">
-                {agent}
+            <div className="home-calendar-agent-slot">
+              <div className="home-calendar-agent-row">
+                {calendar && <div className="home-calendar-top-wrap">{calendar}</div>}
+                <div className="home-agent-card-wrap" data-tour="limbic-agent">
+                  {agent}
+                </div>
               </div>
             </div>
 
