@@ -129,11 +129,19 @@ test("calendar and agent stay readable from phone through mid-width desktop", as
   expectSideBySide(wide!);
 
   await page.setViewportSize({ width: 390, height: 900 });
+  const skipTour = page.getByRole("button", { name: "Skip tour" });
+  if (await skipTour.isVisible()) await skipTour.click();
+  await expect(page.locator(".tour-tooltip")).toHaveCount(0);
+
   const cal = page.locator(".home-calendar-top-wrap");
   await expect(cal.getByText(monthLabel(0))).toBeVisible();
-  await cal.getByRole("button", { name: "Next month" }).click();
+  const nextMonth = cal.getByRole("button", { name: "Next month" });
+  const prevMonth = cal.getByRole("button", { name: "Previous month" });
+  await nextMonth.evaluate((el) => el.scrollIntoView({ block: "center", inline: "nearest" }));
+  await nextMonth.click();
   await expect(cal.getByText(monthLabel(1))).toBeVisible();
-  await cal.getByRole("button", { name: "Previous month" }).click();
+  await prevMonth.evaluate((el) => el.scrollIntoView({ block: "center", inline: "nearest" }));
+  await prevMonth.click();
   await expect(cal.getByText(monthLabel(0))).toBeVisible();
 
   const now = new Date();
@@ -141,6 +149,8 @@ test("calendar and agent stay readable from phone through mid-width desktop", as
   await setUserColumn(email, "ceuDeadline", iso);
   await page.goto("/home");
   await expect(cal).toBeVisible();
-  await cal.getByRole("button", { name: "15", exact: true }).click();
-  await expect(cal.getByText("CEU Deadline")).toBeVisible();
+  const day = cal.getByRole("button", { name: "15", exact: true });
+  await day.evaluate((el) => el.scrollIntoView({ block: "center", inline: "nearest" }));
+  await day.click();
+  await expect(cal.getByText("CEU Deadline", { exact: true })).toBeVisible();
 });
