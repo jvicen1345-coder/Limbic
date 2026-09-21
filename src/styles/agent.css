@@ -430,3 +430,29 @@
   margin: 14px 16px 16px;
   font-size: 12.5px;
 }
+
+/* Collapsed Agent branch: a dashed ring plus a count, so a parent that still has hidden
+   children does not look like a node that was never expanded. Focus mode only. */
+.agent-node-collapsed-ring {
+  stroke-width: 1.25;
+  stroke-dasharray: 2 2.5;
+  fill: none;
+  pointer-events: none;
+}
+.agent-node-collapsed-badge {
+  pointer-events: none;
+}
+.agent-node-collapsed-badge-dot {
+  fill: #10182c;
+  stroke-width: 1.25;
+}
+.agent-node-collapsed-count {
+  font-family: var(--font-body);
+  font-weight: 700;
+  fill: #e7eefc;
+  pointer-events: none;
+}
+.agent-link-cross.agent-link-cross-focus {
+  stroke: rgba(66, 214, 200, 0.92);
+  stroke-width: 1.6;
+}

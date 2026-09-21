@@ -5,6 +5,7 @@ import { askAgentAction, expandAgentNodeAction } from "@/app/actions/agent";
 import { DeferredAgentGraph } from "@/components/DeferredAgentGraph";
 import { AGENT_DEMO_NODES, AGENT_DEMO_CROSS_LINKS } from "@/lib/agent-demo";
 import type { AgentNode, AgentLink, AgentRing } from "@/lib/agent-graph";
+import { collapseSiblingsOnOpen, collapsedChildCounts, visibleAgentNodes } from "@/lib/agent-focus";
 
 /**
  * Live — every question goes to the real askAgentAction/expandAgentNodeAction path
@@ -71,23 +72,27 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(() => new Set());
   const [containerRef, size] = useContainerSize();
+
+  const shownNodes = useMemo(() => visibleAgentNodes(nodes, collapsedIds), [nodes, collapsedIds]);
+  const hiddenChildCounts = useMemo(() => collapsedChildCounts(nodes, collapsedIds), [nodes, collapsedIds]);
 
   const treeLinks: AgentLink[] = useMemo(
     () =>
-      nodes
+      shownNodes
         .filter((n): n is AgentNode & { parentId: string } => n.parentId != null)
         .map((n) => ({ source: n.parentId, target: n.id, kind: "tree" as const })),
-    [nodes]
+    [shownNodes]
   );
   // Cross-links can be set (demo mode) or arrive from the server (live mode) referencing
   // a node whose sibling branch hasn't been revealed yet — d3's force simulation throws if
   // handed a link whose source/target isn't in its node set, so this is a hard requirement,
   // not just tidiness. Anything not yet resolvable simply doesn't render until it is.
   const links = useMemo(() => {
-    const ids = new Set(nodes.map((n) => n.id));
+    const ids = new Set(shownNodes.map((n) => n.id));
     return [...treeLinks, ...crossLinks.filter((l) => ids.has(l.source) && ids.has(l.target))];
-  }, [treeLinks, crossLinks, nodes]);
+  }, [treeLinks, crossLinks, shownNodes]);
   const selectedNode = nodes.find((n) => n.id === selectedId) ?? null;
 
   // Fires once, only when a topic arrived via ?topic= (see the Limbic Threads chat panel's
@@ -116,6 +121,7 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
     setError(null);
     setSelectedId(null);
     setCrossLinks([]);
+    setCollapsedIds(new Set());
     setAskedQuestion(trimmed);
 
     if (AGENT_DEMO_MODE) {
@@ -157,15 +163,20 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
 
   async function handleNodeClick(node: AgentNode) {
     setSelectedId(node.id);
-    if (!node.expandable) return;
+    if (loadingId) return;
     const alreadyExpanded = nodes.some((n) => n.parentId === node.id);
-    if (alreadyExpanded || loadingId) return;
+    if (alreadyExpanded) {
+      if (collapsedIds.has(node.id)) setCollapsedIds((prev) => collapseSiblingsOnOpen(prev, node.id, nodes));
+      return;
+    }
+    if (!node.expandable) return;
 
     if (AGENT_DEMO_MODE) {
       setLoadingId(node.id);
       await sleep(450);
       setLoadingId(null);
       const children = AGENT_DEMO_NODES.filter((n) => n.parentId === node.id);
+      setCollapsedIds((prev) => collapseSiblingsOnOpen(prev, node.id, nodes));
       await revealStaggered(children);
       const newCrossLinks = AGENT_DEMO_CROSS_LINKS.filter((l) => children.some((c) => c.id === l.source));
       if (newCrossLinks.length) setCrossLinks((prev) => [...prev, ...newCrossLinks]);
@@ -190,6 +201,7 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
       setError(result.message);
       return;
     }
+    setCollapsedIds((prev) => collapseSiblingsOnOpen(prev, node.id, nodes));
     await revealStaggered(result.nodes);
     if (result.crossLinks.length) setCrossLinks((prev) => [...prev, ...result.crossLinks]);
   }
@@ -209,12 +221,14 @@ export function AgentClient({ initialQuestion }: { initialQuestion?: string } = 
 
       <div className="agent-canvas-wrap" ref={containerRef}>
         <DeferredAgentGraph
-          nodes={nodes}
+          nodes={shownNodes}
           links={links}
           selectedId={selectedId}
           loadingId={loadingId}
           width={size.width}
           height={size.height}
+          focusMode
+          collapsedChildCounts={hiddenChildCounts}
           onNodeClick={handleNodeClick}
           onBackgroundClick={() => setSelectedId(null)}
         />
