@@ -166,6 +166,7 @@
   border-bottom: 1px solid var(--color-divider);
 }
 .crossword-clue-item {
+  position: relative;
   display: flex;
   gap: 10px;
   align-items: baseline;
@@ -178,17 +179,28 @@
 }
 .crossword-clue-item:hover { background: var(--color-neutral-100); }
 .crossword-clue-item-active { background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card-surface)); border-left-color: var(--color-accent); }
-/* A clue only crosses off once every letter in it is actually right — see isClueCorrect in
-   components/crossword/CrosswordGame.tsx. The strike-through lives on .crossword-clue-text
-   alone, never .crossword-clue-num, so the line crosses out the answer, not its number. */
-.crossword-clue-item-solved { opacity: 0.55; }
-.crossword-clue-item-solved .crossword-clue-text { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--color-vitals-mobility) 70%, var(--color-neutral-700)); }
-/* Every square filled but the word doesn't match — a "not quite" hint, not the solved
-   strike-through. Stays in this state (border/tint, no line) for as many guesses as it
-   takes, disappearing the moment the entry is corrected. */
-.crossword-clue-item-wrong { border-left-color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 8%, var(--color-card-surface)); }
+/* "Every square has a letter", not "this entry is correct" — see isClueFilled in
+   components/crossword/CrosswordGame.tsx. Dimmed so unfinished clues stay easier to find.
+   The strike-through is that same fill signal: it lives on .crossword-clue-text alone
+   (the number stays readable) and uses a neutral line, because it appears for any full
+   fill, right or wrong. A green or danger treatment here would read as an answer key. */
+.crossword-clue-item-filled { opacity: 0.55; }
+.crossword-clue-item-filled .crossword-clue-text { text-decoration: line-through; text-decoration-color: var(--color-neutral-700); }
 .crossword-clue-num { font-weight: 700; min-width: 20px; flex-shrink: 0; text-align: right; color: var(--color-neutral-700); }
 .crossword-clue-text { display: inline; }
+/* The filled state is also written out — a dimmed row and a line are easy to miss without
+   sight. Scoped here rather than a global visually-hidden utility. */
+.crossword-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 /* — Mini Crossword completion overlay — a centered card over a dimmed backdrop, not a
    full-screen takeover, so the finished grid stays visible (and dismissible back to) behind
