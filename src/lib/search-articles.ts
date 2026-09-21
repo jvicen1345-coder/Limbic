@@ -109,25 +109,83 @@ export function searchScreenRemountKey(input: {
   });
 }
 
+/** A DOI reduced to the bare identifier: a doi.org URL and a "doi:" prefix both strip, and
+ *  case folds. PubMed hands us a bare `10.1234/x`, but a reader pastes whatever the
+ *  publisher's page gave them, which is almost always the doi.org link. */
+export function normalizeDoi(raw: string): string {
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\/(?:dx\.)?doi\.org\//, "")
+    .replace(/^doi:\s*/, "");
+}
+
+/** Shaped like a DOI: the `10.` registrant prefix and a slash. Used to decide whether a
+ *  partial query may match a DOI by its leading characters — without it, typing "10" would
+ *  match every PubMed article in the pool. */
+const DOI_LIKE = /^10\.\d{4,9}\//;
+
+function matchesDoi(doi: string | undefined, rawQuery: string): boolean {
+  if (!doi) return false;
+  const target = normalizeDoi(doi);
+  const typed = normalizeDoi(rawQuery);
+  if (!typed) return false;
+  return target === typed || (DOI_LIKE.test(typed) && target.startsWith(typed));
+}
+
+/** Lowercased, with runs of whitespace collapsed — so a title pasted out of a PDF, where
+ *  a line break has become a double space, still equals the one we hold. */
+function fold(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+type SearchableArticle = Pick<Article, "type" | "specialty" | "date" | "title" | "summary" | "tags" | "source"> &
+  Partial<Pick<Article, "doi">>;
+
+/**
+ * How well an article answers the query, lower first. Sorting search purely by date meant
+ * an article the reader had named outright — by pasting its DOI, or typing its title —
+ * ranked below anything newer that happened to mention those words in its summary. The
+ * reader who knows what they are looking for is the one the old order served worst.
+ *
+ * Every article scores NO_QUERY on an empty query, so a bare `/search` stays newest-first.
+ */
+export const SEARCH_RANK = {
+  DOI: 0,
+  EXACT_TITLE: 1,
+  TITLE_PREFIX: 2,
+  TITLE_CONTAINS: 3,
+  SOURCE_OR_TAG: 4,
+  SUMMARY: 5,
+  NO_QUERY: 6,
+} as const;
+
+export function searchRelevance(article: SearchableArticle, rawQuery: string): number {
+  const q = fold(rawQuery);
+  if (!q) return SEARCH_RANK.NO_QUERY;
+  if (matchesDoi(article.doi, rawQuery)) return SEARCH_RANK.DOI;
+  const title = fold(article.title);
+  if (title === q) return SEARCH_RANK.EXACT_TITLE;
+  if (title.startsWith(q)) return SEARCH_RANK.TITLE_PREFIX;
+  if (title.includes(q)) return SEARCH_RANK.TITLE_CONTAINS;
+  if (article.source.toLowerCase().includes(q)) return SEARCH_RANK.SOURCE_OR_TAG;
+  if (article.tags.some((t) => t.toLowerCase().includes(q))) return SEARCH_RANK.SOURCE_OR_TAG;
+  if (article.summary.toLowerCase().includes(q)) return SEARCH_RANK.SUMMARY;
+  return Number.POSITIVE_INFINITY;
+}
+
 export function articleMatchesSearch(
-  article: Pick<Article, "type" | "specialty" | "date" | "title" | "summary" | "tags" | "source">,
+  article: SearchableArticle,
   query: Pick<SearchQuery, "type" | "specialty" | "q" | "newOnly">,
   todayStr: string
 ): boolean {
   if (query.type !== "all" && article.type !== query.type) return false;
   if (query.specialty !== "all" && article.specialty !== query.specialty) return false;
   if (query.newOnly && article.date !== todayStr) return false;
-  const q = query.q.trim().toLowerCase();
-  if (!q) return true;
-  return (
-    article.title.toLowerCase().includes(q) ||
-    article.summary.toLowerCase().includes(q) ||
-    article.tags.some((t) => t.toLowerCase().includes(q)) ||
-    article.source.toLowerCase().includes(q)
-  );
+  return Number.isFinite(searchRelevance(article, query.q));
 }
 
-export function filterSearchArticles<T extends Pick<Article, "type" | "specialty" | "date" | "title" | "summary" | "tags" | "source">>(
+export function filterSearchArticles<T extends SearchableArticle>(
   articles: T[],
   query: Pick<SearchQuery, "type" | "specialty" | "q" | "newOnly">,
   todayStr: string
@@ -135,7 +193,11 @@ export function filterSearchArticles<T extends Pick<Article, "type" | "specialty
   return articles
     .filter((article) => articleMatchesSearch(article, query, todayStr))
     .slice()
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => {
+      const byRelevance = searchRelevance(a, query.q) - searchRelevance(b, query.q);
+      if (byRelevance !== 0) return byRelevance;
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
 }
 
 export function toSearchArticle(article: DecoratedArticle): SearchArticle {

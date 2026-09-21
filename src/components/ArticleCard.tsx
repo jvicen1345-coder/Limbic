@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { SaveButton } from "@/components/SaveButton";
 import { ArticleImage } from "@/components/ArticleImage";
@@ -46,11 +47,80 @@ function extraContextTags(article: ArticleCardModel): string[] {
 }
 
 /**
+ * The identifier a reader needs to go and find the article somewhere other than here —
+ * shown on Search only (`showIdentifier`), because a reader who searched a title by name
+ * is usually trying to cite it or open it in a library, and the DOI is the one string that
+ * survives leaving this site. The feed does not show it: there the reader is browsing, and
+ * a row of identifiers under every card is noise.
+ *
+ * A DOI is preferred over the source link because it resolves for good; publisher URLs
+ * rot. Falls back to the source link when there is no DOI, which is every non-PubMed
+ * source (see lib/types.ts on `doi`), and renders nothing when there is neither.
+ */
+function ArticleIdentifier({ article }: { article: ArticleCardModel }) {
+  const [copied, setCopied] = useState(false);
+
+  if (!article.doi) {
+    if (!article.sourceUrl) return null;
+    return (
+      <div className="article-card__interactive" style={{ fontSize: "var(--fs-10-5)", color: "var(--color-neutral-700)" }}>
+        <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline" }}>
+          Open at {article.source}
+        </a>
+      </div>
+    );
+  }
+
+  const doi = article.doi;
+  return (
+    <div
+      className="article-card__interactive"
+      style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", fontSize: "var(--fs-10-5)" }}
+    >
+      <span style={{ color: "var(--color-neutral-700)", fontWeight: 600, letterSpacing: ".04em" }}>DOI</span>
+      <a
+        href={`https://doi.org/${doi}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ fontFamily: "var(--font-mono, monospace)", wordBreak: "break-all", textDecoration: "underline" }}
+      >
+        {doi}
+      </a>
+      <button
+        type="button"
+        onClick={() => {
+          navigator.clipboard?.writeText(doi).then(
+            () => {
+              setCopied(true);
+              window.setTimeout(() => setCopied(false), 1600);
+            },
+            () => setCopied(false)
+          );
+        }}
+        aria-label={copied ? "DOI copied" : "Copy DOI"}
+        style={{
+          border: "1px solid var(--color-neutral-300)",
+          background: "transparent",
+          borderRadius: 999,
+          padding: "1px 8px",
+          fontSize: "var(--fs-10-5)",
+          color: "var(--color-neutral-700)",
+          cursor: "pointer",
+          flexShrink: 0,
+        }}
+      >
+        {copied ? "Copied" : "Copy"}
+      </button>
+    </div>
+  );
+}
+
+/**
  * Feed card. The title is a real <Link> (keyboard-reachable) stretched across the card so
  * Home can SSR card HTML without useRouter; SaveButton / OpenAccessPill sit above the
  * stretch. Remains a Client Component because SearchScreen imports it directly.
  */
-export function ArticleCard({ article }: { article: ArticleCardModel }) {
+export function ArticleCard({ article, showIdentifier = false }: { article: ArticleCardModel; showIdentifier?: boolean }) {
   const extraTags = extraContextTags(article);
   const href = `/article/${article.id}`;
   return (
@@ -94,6 +164,7 @@ export function ArticleCard({ article }: { article: ArticleCardModel }) {
           ))}
         </div>
       )}
+      {showIdentifier && <ArticleIdentifier article={article} />}
     </div>
   );
 }

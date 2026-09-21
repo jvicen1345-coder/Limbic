@@ -5,9 +5,12 @@ import type { DecoratedArticle } from "./feed";
 import {
   articleMatchesSearch,
   filterSearchArticles,
+  normalizeDoi,
   parseSearchQuery,
   searchArticlesHref,
+  searchRelevance,
   searchScreenRemountKey,
+  SEARCH_RANK,
   toSearchArticle,
 } from "./search-articles";
 
@@ -121,6 +124,79 @@ describe("search matching", () => {
       filtered.map((a) => a.id),
       ["a2", "a1"]
     );
+  });
+});
+
+describe("finding one known article", () => {
+  const today = "2026-09-11";
+  // The article the reader is looking for, and a newer one that only mentions its words.
+  const target = article({
+    id: "target",
+    title: "Neck Pain: Revision 2017",
+    date: "2017-01-01",
+    doi: "10.2519/jospt.2017.0302",
+  });
+  const newerMention = article({
+    id: "newer",
+    title: "Weekly roundup",
+    date: today,
+    summary: "Includes Neck Pain: Revision 2017 among this week's reading.",
+  });
+
+  it("puts the article you named above a newer one that merely mentions it", () => {
+    const hits = filterSearchArticles(
+      [newerMention, target],
+      { type: "all", specialty: "all", q: "Neck Pain: Revision 2017", newOnly: false },
+      today
+    );
+    assert.deepEqual(hits.map((a) => a.id), ["target", "newer"]);
+  });
+
+  it("finds an article by its DOI, however the reader pasted it", () => {
+    for (const typed of [
+      "10.2519/jospt.2017.0302",
+      "https://doi.org/10.2519/jospt.2017.0302",
+      "https://dx.doi.org/10.2519/JOSPT.2017.0302",
+      "doi:10.2519/jospt.2017.0302",
+    ]) {
+      const hits = filterSearchArticles([newerMention, target], { type: "all", specialty: "all", q: typed, newOnly: false }, today);
+      assert.deepEqual(hits.map((a) => a.id), ["target"], `pasted as ${typed}`);
+    }
+  });
+
+  it("does not let a bare registrant prefix match every DOI", () => {
+    assert.equal(articleMatchesSearch(target, { type: "all", specialty: "all", q: "10", newOnly: false }, today), false);
+    assert.equal(articleMatchesSearch(target, { type: "all", specialty: "all", q: "10.2519/", newOnly: false }, today), true);
+  });
+
+  it("ranks an exact title over a prefix, a prefix over a mention", () => {
+    const q = "neck pain";
+    assert.equal(searchRelevance(article({ title: "Neck Pain" }), q), SEARCH_RANK.EXACT_TITLE);
+    assert.equal(searchRelevance(article({ title: "Neck Pain: Revision 2017" }), q), SEARCH_RANK.TITLE_PREFIX);
+    assert.equal(searchRelevance(article({ title: "Chronic neck pain in cyclists" }), q), SEARCH_RANK.TITLE_CONTAINS);
+    // tags and source overridden: the default fixture is tagged "Neck pain", which would
+    // otherwise score this SOURCE_OR_TAG before the summary is ever reached.
+    assert.equal(
+      searchRelevance(article({ title: "Roundup", summary: "on neck pain", tags: ["Weekly"], source: "Limbic" }), q),
+      SEARCH_RANK.SUMMARY
+    );
+    assert.equal(
+      searchRelevance(article({ title: "Roundup", summary: "nothing relevant", tags: ["Neck pain"], source: "Limbic" }), q),
+      SEARCH_RANK.SOURCE_OR_TAG
+    );
+  });
+
+  it("matches a title pasted with a line break in it", () => {
+    assert.equal(
+      searchRelevance(target, "Neck Pain:\n  Revision 2017"),
+      SEARCH_RANK.EXACT_TITLE
+    );
+  });
+
+  it("strips the doi.org wrapper a reader copies from a publisher page", () => {
+    assert.equal(normalizeDoi("https://doi.org/10.1/X"), "10.1/x");
+    assert.equal(normalizeDoi("  doi: 10.1/x "), "10.1/x");
+    assert.equal(normalizeDoi("10.1/x"), "10.1/x");
   });
 });
 

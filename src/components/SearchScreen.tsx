@@ -180,7 +180,7 @@ export function SearchScreen({
           {aiResult.articles.length > 0 ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {aiResult.articles.map((a) => (
-                <ArticleCard key={a.id} article={a} />
+                <ArticleCard key={a.id} article={a} showIdentifier />
               ))}
             </div>
           ) : (
@@ -310,7 +310,7 @@ export function SearchScreen({
               <>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {articles.map((a) => (
-                    <ArticleCard key={a.id} article={a} />
+                    <ArticleCard key={a.id} article={a} showIdentifier />
                   ))}
                 </div>
                 <Pagination page={page} totalPages={totalPages} onPageChange={(next) => navigate({ page: next })} />
