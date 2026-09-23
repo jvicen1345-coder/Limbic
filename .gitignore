@@ -58,3 +58,7 @@ next-env.d.ts
 /prisma/dev.db-journal
 /prisma/dev.db-wal
 /prisma/dev.db-shm
+
+# python bytecode from the guide build scripts under docs/
+__pycache__/
+*.pyc
