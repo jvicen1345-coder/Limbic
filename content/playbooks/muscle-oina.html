@@ -778,6 +778,12 @@ a{color:var(--accent)}
   .stamp{text-align:left}
   body{font-size:14.5px}
 }
+
+/* sticky table headers under the nav, desktop only (see docs/oina-guide-build/build.py) */
+@media screen and (min-width:861px){
+  .tablewrap{overflow-x:clip}
+  thead th{top:var(--navh, 0px)}
+}
 </style>
 </head>
 <body>
@@ -5821,6 +5827,16 @@ a{color:var(--accent)}
   }
 })();
 
+</script>
+<script>
+(function(){
+  var nav = document.querySelector('nav');
+  if(!nav) return;
+  function set(){ document.documentElement.style.setProperty('--navh', nav.offsetHeight + 'px'); }
+  set();
+  if(window.ResizeObserver) new ResizeObserver(set).observe(nav);
+  else window.addEventListener('resize', set);
+})();
 </script>
 </body>
 </html>

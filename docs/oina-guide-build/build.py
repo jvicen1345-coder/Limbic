@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Fill docs/joint-playbook-template.html with the OINA content — step 5 of the template doc.
 
-Both <script> blocks are never touched. Changed: the title, the masthead, the provenance key,
-the nav (including a link back into Limbic), <main>, the footer, the six localStorage keys, and
-one CSS rule (figure label colours) that the hip and shoulder guides also correct.
+Both template <script> blocks are never touched. Changed: the title, the masthead, the
+provenance key, the nav (including a link back into Limbic), <main>, the footer, the six
+localStorage keys, one CSS rule (figure label colours) that the hip and shoulder guides also
+correct, and an added rule plus a small script for sticky table headers.
 
 Run resolve.py first (it needs the network); this script does not.
 """
@@ -454,6 +455,36 @@ def main():
         raise SystemExit("figure text rule not found in template")
     out = out.replace(css, "figure text:not([fill]){font-family:var(--font-body); font-size:12px; fill:currentColor}\n"
                       "figure text[fill]{font-family:var(--font-body); font-size:12px}", 1)
+
+    # Sticky table headers. The template makes thead th sticky, but every table sits in a
+    # .tablewrap with overflow-x:auto, which is the box they stick to, so they never stick.
+    # Above the 860px card breakpoint none of this guide's tables needs to scroll sideways, so
+    # the wrapper clips instead of scrolling (clip creates no scroll container) and each header
+    # pins under the sticky nav — whose height changes as its links wrap, so it is measured.
+    css_end = "</style>\n</head>"
+    if css_end not in out:
+        raise SystemExit("end of template style block not found")
+    out = out.replace(css_end, """
+/* sticky table headers under the nav, desktop only (see docs/oina-guide-build/build.py) */
+@media screen and (min-width:861px){
+  .tablewrap{overflow-x:clip}
+  thead th{top:var(--navh, 0px)}
+}
+""" + css_end, 1)
+    js_end = "</body>"
+    if out.count(js_end) != 1:
+        raise SystemExit("end of body not found")
+    out = out.replace(js_end, """<script>
+(function(){
+  var nav = document.querySelector('nav');
+  if(!nav) return;
+  function set(){ document.documentElement.style.setProperty('--navh', nav.offsetHeight + 'px'); }
+  set();
+  if(window.ResizeObserver) new ResizeObserver(set).observe(nav);
+  else window.addEventListener('resize', set);
+})();
+</script>
+""" + js_end, 1)
 
     navlinks = "".join('    <a href="#%s">%s</a>\n' % (sid, label) for sid, label in nav)
     out = re.sub(r'(<div class="navlinks">\n).*?(    </div>\n)',
