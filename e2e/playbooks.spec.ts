@@ -507,7 +507,11 @@ test.describe("Served guides", () => {
   test("coming soon is a publication state, not a secret — admins read through it", () => {
     const soon = GUIDES.filter((g) => g.comingSoon);
     const published = GUIDES.filter((g) => !g.comingSoon);
-    expect(soon.length, "no guide is marked coming soon, so this rule is untested").toBeGreaterThan(0);
+    // No lower bound on `soon`: every guide is published today, and requiring one to be
+    // unfinished so this rule stayed covered made shipping the last one fail the build. The
+    // rule itself is unit-tested against a synthetic guide in lib/guides.test.ts, so it stays
+    // covered whether or not the registry currently holds an unpublished entry.
+    expect(published.length, "the registry serves no guide at all").toBeGreaterThan(0);
 
     for (const guide of published) {
       expect(canReadGuide(guide.slug, { admin: false }), `${guide.slug} is published`).toBe(true);

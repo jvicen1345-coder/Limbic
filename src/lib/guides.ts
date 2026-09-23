@@ -37,11 +37,10 @@ export type Guide = {
    *  person who has to be able to read it on the real site rather than from the file. The
    *  card keeps its "Coming soon" pill for them too, so its state is never ambiguous.
    *
-   *  The three joint guides here were built to the same skeleton as the hip and shoulder and
-   *  are not yet at the same standard — hip and shoulder are the two a reader should be
-   *  spending time in. They stay listed rather than hidden because the counts on their cards
-   *  are real and the work is real; what is not ready is the writing. Delete the flag to
-   *  publish one. */
+   *  No guide carries this flag today — every one in the registry is published. It stays
+   *  because the next guide will be written before it is ready to read, and because the
+   *  admin read-through above is what makes an unfinished guide reviewable on the real site
+   *  rather than out of the file. Set it on a new entry; delete it to publish. */
   comingSoon?: true;
 };
 
@@ -60,7 +59,6 @@ export const GUIDES: Guide[] = [
   {
     slug: "neuro-examination",
     name: "Neurologic Examination",
-    comingSoon: true,
     description:
       "The adult neurologic screen in the order it is performed \u2014 an order set by dependency, since each phase decides whether the next one can be believed. Carries the sensory and motor scoring the international standards actually define, the reflex scale and the Babinski\u2019s real accuracy, and 18 values flagged as untraceable rather than filled in, because much of this examination is taught everywhere and measured nowhere.",
     short:
@@ -83,7 +81,6 @@ export const GUIDES: Guide[] = [
   {
     slug: "knee-examination",
     name: "Knee Examination",
-    comingSoon: true,
     description:
       "The knee screen, built on the openly published guideline rather than around it. Covers why a test’s headline accuracy depends on who performed it and on whom, and why the Ottawa knee rule’s “high diagnostic performance” sits beside an AUC of 0.54.",
     short:
@@ -95,7 +92,6 @@ export const GUIDES: Guide[] = [
   {
     slug: "ankle-examination",
     name: "Ankle Examination",
-    comingSoon: true,
     description:
       "The best-evidenced joint in the series — two graded guidelines carry 34 current recommendations between them — and the one with the worst honest prognosis: two in five people who seek care for a first sprain develop chronic instability. The special tests are recommended without any published accuracy, which the guide says rather than filling in.",
     short:
@@ -107,7 +103,6 @@ export const GUIDES: Guide[] = [
   {
     slug: "joint-mobilization",
     name: "Joint Mobilization",
-    comingSoon: true,
     description:
       "Not a region but a decision: whether to mobilise, where, how hard, and how you’d know it worked. Three of the conventions that decide how a mobilization is performed — the grading systems, packed positions, and the concave-convex rule — could not be traced to any reachable source. The one dose vocabulary that is defined has different outcomes at each level.",
     short:
@@ -123,7 +118,6 @@ export const GUIDES: Guide[] = [
     // against the chapters they cite (see that folder's README).
     slug: "muscle-oina",
     name: "Muscle OINA & Manual Muscle Testing",
-    comingSoon: true,
     description:
       "Origin, insertion, nerve and action for 177 muscles and muscle groups, head to foot, each with the manual muscle test that grades it and the substitution that fakes it. Then the same muscles the way they are actually discussed: named groups and force couples, every joint movement with its prime movers and antagonists, and every motor nerve with the picture its loss produces. Recall mode turns every table into an OINA quiz.",
     short:
@@ -159,5 +153,14 @@ export function isKnownGuide(slug: string): boolean {
 export function canReadGuide(slug: string, { admin }: { admin: boolean }): boolean {
   const guide = GUIDES.find((entry) => entry.slug === slug);
   if (!guide) return false;
+  return guideIsReadable(guide, admin);
+}
+
+/** The publication rule on its own, lifted clear of the registry lookup so it stays covered
+ *  when — as now — every guide in the registry is published. The e2e suite used to assert
+ *  that some guide was still unpublished, on the reasoning that the rule would otherwise go
+ *  untested; that made finishing the last guide fail the build, which is the wrong way round.
+ *  Shipping everything should not break a test. See guides.test.ts. */
+export function guideIsReadable(guide: Pick<Guide, "comingSoon">, admin: boolean): boolean {
   return !guide.comingSoon || admin;
 }
