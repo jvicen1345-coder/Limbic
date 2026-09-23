@@ -1,4 +1,12 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light dark}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light dark}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style><!-- sticky-table-headers -->
+<style>
+@media screen and (min-width:861px){
+  .tablewrap[data-stick]{overflow-x:clip}
+  .tablewrap[data-stick] thead th{top:var(--navh, 0px)}
+}
+</style>
+<!-- /sticky-table-headers -->
+</head><body>
 <title>Shoulder Examination Playbook</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3827,4 +3835,25 @@ a{color:var(--accent)}
 
 </script>
 
+<!-- sticky-table-headers -->
+<script>
+(function(){
+  var nav = document.querySelector('nav');
+  var wraps = document.querySelectorAll('.tablewrap');
+  var queued = false;
+  function fit(){
+    queued = false;
+    if(nav) document.documentElement.style.setProperty('--navh', nav.offsetHeight + 'px');
+    wraps.forEach(function(w){ w.removeAttribute('data-stick'); });
+    // measure every wrapper while it can still scroll, then let only those that fit stick
+    var fits = Array.prototype.map.call(wraps, function(w){ return w.scrollWidth <= w.clientWidth + 1; });
+    wraps.forEach(function(w, i){ if(fits[i]) w.setAttribute('data-stick', ''); });
+  }
+  function queue(){ if(!queued){ queued = true; requestAnimationFrame(fit); } }
+  fit();
+  window.addEventListener('resize', queue);
+  if(nav && window.ResizeObserver) new ResizeObserver(queue).observe(nav);
+})();
+</script>
+<!-- /sticky-table-headers -->
 </body></html>

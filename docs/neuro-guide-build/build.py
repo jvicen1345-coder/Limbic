@@ -3,10 +3,14 @@
 
 The template's <style> and both <script> blocks are never touched; only the title, the
 masthead, the nav (including a link back into Limbic), <main>, the footer and the six
-localStorage keys change.
+localStorage keys change, plus the sticky-table-header style and script from
+docs/playbook_sticky_headers.py.
 """
 import html, pathlib, re
 import content as K
+import sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
+import playbook_sticky_headers as sticky
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 TPL = ROOT / "docs/joint-playbook-template.html"
@@ -238,6 +242,7 @@ def main():
     # ---- storage keys: shared origin, so these must not collide with another guide
     out = out.replace("JOINT-", "neuro-")
 
+    out = sticky.apply(out)   # sticky table headers, shared by every guide
     OUT.write_text(out, encoding="utf-8")
     print("wrote %s  (%d bytes, %d checklist items)" % (OUT, len(out), items))
 
