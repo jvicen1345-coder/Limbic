@@ -778,13 +778,15 @@ a{color:var(--accent)}
   .stamp{text-align:left}
   body{font-size:14.5px}
 }
-
-/* sticky table headers under the nav, desktop only (see docs/oina-guide-build/build.py) */
+</style>
+<!-- sticky-table-headers -->
+<style>
 @media screen and (min-width:861px){
-  .tablewrap{overflow-x:clip}
-  thead th{top:var(--navh, 0px)}
+  .tablewrap[data-stick]{overflow-x:clip}
+  .tablewrap[data-stick] thead th{top:var(--navh, 0px)}
 }
 </style>
+<!-- /sticky-table-headers -->
 </head>
 <body>
 
@@ -5828,15 +5830,26 @@ a{color:var(--accent)}
 })();
 
 </script>
+<!-- sticky-table-headers -->
 <script>
 (function(){
   var nav = document.querySelector('nav');
-  if(!nav) return;
-  function set(){ document.documentElement.style.setProperty('--navh', nav.offsetHeight + 'px'); }
-  set();
-  if(window.ResizeObserver) new ResizeObserver(set).observe(nav);
-  else window.addEventListener('resize', set);
+  var wraps = document.querySelectorAll('.tablewrap');
+  var queued = false;
+  function fit(){
+    queued = false;
+    if(nav) document.documentElement.style.setProperty('--navh', nav.offsetHeight + 'px');
+    wraps.forEach(function(w){ w.removeAttribute('data-stick'); });
+    // measure every wrapper while it can still scroll, then let only those that fit stick
+    var fits = Array.prototype.map.call(wraps, function(w){ return w.scrollWidth <= w.clientWidth + 1; });
+    wraps.forEach(function(w, i){ if(fits[i]) w.setAttribute('data-stick', ''); });
+  }
+  function queue(){ if(!queued){ queued = true; requestAnimationFrame(fit); } }
+  fit();
+  window.addEventListener('resize', queue);
+  if(nav && window.ResizeObserver) new ResizeObserver(queue).observe(nav);
 })();
 </script>
+<!-- /sticky-table-headers -->
 </body>
 </html>
