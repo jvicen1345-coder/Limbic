@@ -1,0 +1,1130 @@
+{
+ "grading": {
+  "pmid": "28613779",
+  "nbk": "NBK436008",
+  "title": "Muscle Strength Grading",
+  "authors": [
+   "Naqvi U",
+   "Margetis K",
+   "Sherman AL"
+  ],
+  "year": "2025"
+ },
+ "trapezius": {
+  "pmid": "30085536",
+  "nbk": "NBK518994",
+  "title": "Anatomy, Back, Trapezius",
+  "authors": [
+   "Ourieff J",
+   "Scheckel B",
+   "Agarwal A"
+  ],
+  "year": "2023"
+ },
+ "levscap": {
+  "pmid": "31971759",
+  "nbk": "NBK553120",
+  "title": "Anatomy, Head and Neck, Levator Scapulae Muscles",
+  "authors": [
+   "Henry JP",
+   "Munakomi S"
+  ],
+  "year": "2023"
+ },
+ "rhomboid": {
+  "pmid": "30521277",
+  "nbk": "NBK534856",
+  "title": "Anatomy, Back, Rhomboid Muscles",
+  "authors": [
+   "Farrell C",
+   "Kiel J"
+  ],
+  "year": "2023"
+ },
+ "serratus": {
+  "pmid": "30285352",
+  "nbk": "NBK531457",
+  "title": "Anatomy, Thorax, Serratus Anterior Muscles",
+  "authors": [
+   "Lung K",
+   "St Lucia K",
+   "Lui F"
+  ],
+  "year": "2024"
+ },
+ "pectoral": {
+  "pmid": "31424825",
+  "nbk": "NBK545241",
+  "title": "Anatomy, Shoulder and Upper Limb, Pectoral Muscles",
+  "authors": [
+   "Baig MA",
+   "Bordoni B"
+  ],
+  "year": "2023"
+ },
+ "thoraxm": {
+  "pmid": "30855905",
+  "nbk": "NBK538321",
+  "title": "Anatomy, Thorax, Muscles",
+  "authors": [
+   "Tang A",
+   "Bordoni B"
+  ],
+  "year": "2023"
+ },
+ "deltoid": {
+  "pmid": "30725741",
+  "nbk": "NBK537056",
+  "title": "Anatomy, Shoulder and Upper Limb, Deltoid Muscle",
+  "authors": [
+   "Elzanie A",
+   "Varacallo MA"
+  ],
+  "year": "2024"
+ },
+ "cuff": {
+  "pmid": "28722874",
+  "nbk": "NBK441844",
+  "title": "Anatomy, Rotator Cuff",
+  "authors": [
+   "La Rose J",
+   "Madrazo-Ibarra A",
+   "Varacallo MA"
+  ],
+  "year": "2026"
+ },
+ "supra": {
+  "pmid": "30725887",
+  "nbk": "NBK537202",
+  "title": "Anatomy, Shoulder and Upper Limb, Arm Supraspinatus Muscle",
+  "authors": [
+   "Jeno SH",
+   "Munjal A",
+   "Schindler GS"
+  ],
+  "year": "2023"
+ },
+ "infra": {
+  "pmid": "30020627",
+  "nbk": "NBK513255",
+  "title": "Anatomy, Shoulder and Upper Limb, Infraspinatus Muscle",
+  "authors": [
+   "Williams JM",
+   "Sinkler MA",
+   "Obremskey W"
+  ],
+  "year": "2023"
+ },
+ "tminor": {
+  "pmid": "30020696",
+  "nbk": "NBK513324",
+  "title": "Anatomy, Shoulder and Upper Limb, Teres Minor Muscle",
+  "authors": [
+   "Juneja P",
+   "Hubbard JB"
+  ],
+  "year": "2023"
+ },
+ "subscap": {
+  "pmid": "30020716",
+  "nbk": "NBK513344",
+  "title": "Anatomy, Shoulder and Upper Limb, Subscapularis Muscle",
+  "authors": [
+   "Aguirre K",
+   "Mudreac A",
+   "Kiel J"
+  ],
+  "year": "2023"
+ },
+ "tmajor": {
+  "pmid": "35593812",
+  "nbk": "NBK580487",
+  "title": "Anatomy, Shoulder and Upper Limb, Teres Major Muscle",
+  "authors": [
+   "Syros A",
+   "Rizzo MG"
+  ],
+  "year": "2023"
+ },
+ "lat": {
+  "pmid": "28846224",
+  "nbk": "NBK448120",
+  "title": "Anatomy, Back, Latissimus Dorsi",
+  "authors": [
+   "Jeno SH",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "pecmajor": {
+  "pmid": "30252247",
+  "nbk": "NBK525991",
+  "title": "Anatomy, Thorax, Pectoralis Major Major",
+  "authors": [
+   "Solari F",
+   "Burns B"
+  ],
+  "year": "2023"
+ },
+ "armm": {
+  "pmid": "32119307",
+  "nbk": "NBK554420",
+  "title": "Anatomy, Shoulder and Upper Limb, Arm Muscles",
+  "authors": [
+   "Alshammari SM",
+   "Bordoni B"
+  ],
+  "year": "2023"
+ },
+ "biceps": {
+  "pmid": "30137823",
+  "nbk": "NBK519538",
+  "title": "Anatomy, Shoulder and Upper Limb, Biceps Muscle",
+  "authors": [
+   "Tiwana MS",
+   "Charlick M",
+   "Varacallo MA"
+  ],
+  "year": "2024"
+ },
+ "brachialis": {
+  "pmid": "31869094",
+  "nbk": "NBK551630",
+  "title": "Anatomy, Shoulder and Upper Limb, Brachialis Muscle",
+  "authors": [
+   "Plantz MA",
+   "Bordoni B"
+  ],
+  "year": "2023"
+ },
+ "triceps": {
+  "pmid": "30725681",
+  "nbk": "NBK536996",
+  "title": "Anatomy, Shoulder and Upper Limb, Triceps Muscle",
+  "authors": [
+   "Tiwana MS",
+   "Sinkler MA",
+   "Bordoni B"
+  ],
+  "year": "2023"
+ },
+ "forearm": {
+  "pmid": "30725660",
+  "nbk": "NBK536975",
+  "title": "Anatomy, Shoulder and Upper Limb, Forearm Muscles",
+  "authors": [
+   "Mitchell B",
+   "Whited L"
+  ],
+  "year": "2023"
+ },
+ "brachiorad": {
+  "pmid": "30252366",
+  "nbk": "NBK526110",
+  "title": "Anatomy, Shoulder and Upper Limb, Forearm Brachioradialis Muscle",
+  "authors": [
+   "Lung BE",
+   "Ekblad J",
+   "Bisogno M"
+  ],
+  "year": "2024"
+ },
+ "ptreres": {
+  "pmid": "35593871",
+  "nbk": "NBK580564",
+  "title": "Anatomy, Shoulder and Upper Limb, Pronator Teres",
+  "authors": [
+   "Luxenburg D",
+   "Rizzo MG"
+  ],
+  "year": "2023"
+ },
+ "fcu": {
+  "pmid": "30252307",
+  "nbk": "NBK526051",
+  "title": "Anatomy, Shoulder and Upper Limb, Forearm Flexor Carpi Ulnaris Muscle",
+  "authors": [
+   "Lung BE",
+   "Siwiec RM"
+  ],
+  "year": "2024"
+ },
+ "fds": {
+  "pmid": "30969545",
+  "nbk": "NBK539723",
+  "title": "Anatomy, Shoulder and Upper Limb, Hand Flexor Digitorum Superficialis Muscle",
+  "authors": [
+   "Okafor L",
+   "Varacallo MA"
+  ],
+  "year": "2022"
+ },
+ "fdp": {
+  "pmid": "30252302",
+  "nbk": "NBK526046",
+  "title": "Anatomy, Shoulder and Upper Limb, Hand Flexor Digitorum Profundus Muscle",
+  "authors": [
+   "Lung BE",
+   "Burns B"
+  ],
+  "year": "2023"
+ },
+ "fpl": {
+  "pmid": "30860725",
+  "nbk": "NBK538490",
+  "title": "Anatomy, Shoulder and Upper Limb, Hand Flexor Pollicis Longus Muscle",
+  "authors": [
+   "Benson DC",
+   "Miao KH",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "wristext": {
+  "pmid": "30521226",
+  "nbk": "NBK534805",
+  "title": "Anatomy, Shoulder and Upper Limb, Wrist Extensor Muscles",
+  "authors": [
+   "Reeves N",
+   "Crow T",
+   "Varacallo MA"
+  ],
+  "year": "2026"
+ },
+ "ecrb": {
+  "pmid": "30969541",
+  "nbk": "NBK539719",
+  "title": "Anatomy, Shoulder and Upper Limb, Forearm Extensor Carpi Radialis Brevis Muscle",
+  "authors": [
+   "Walkowski AD",
+   "Goldman EM"
+  ],
+  "year": "2023"
+ },
+ "ecu": {
+  "pmid": "30969582",
+  "nbk": "NBK539760",
+  "title": "Anatomy, Shoulder and Upper Limb, Forearm Extensor Carpi Ulnaris Muscle",
+  "authors": [
+   "Sawyer E",
+   "Sajjad H",
+   "Tadi P"
+  ],
+  "year": "2023"
+ },
+ "epl": {
+  "pmid": "31335014",
+  "nbk": "NBK544294",
+  "title": "Anatomy, Shoulder and Upper Limb, Hand Extensor Pollicis Longus Muscle",
+  "authors": [
+   "Khan IA",
+   "Launico MV"
+  ],
+  "year": "2026"
+ },
+ "snuffbox": {
+  "pmid": "29489241",
+  "nbk": "NBK482228",
+  "title": "Anatomy, Shoulder and Upper Limb: Hand Anatomical Snuff Box",
+  "authors": [
+   "Hallett Reid S",
+   "Jozsa F",
+   "Ashurst JV"
+  ],
+  "year": "2025"
+ },
+ "handm": {
+  "pmid": "30725914",
+  "nbk": "NBK537229",
+  "title": "Anatomy, Shoulder and Upper Limb, Hand Muscles",
+  "authors": [
+   "Okwumabua E",
+   "Sinkler MA",
+   "Bordoni B"
+  ],
+  "year": "2023"
+ },
+ "intrinsic": {
+  "pmid": "30969632",
+  "nbk": "NBK539810",
+  "title": "Anatomy, Shoulder and Upper Limb, Hand Intrinsic Muscles",
+  "authors": [
+   "Launico MV",
+   "Varacallo MA"
+  ],
+  "year": "2025"
+ },
+ "thenar": {
+  "pmid": "35593840",
+  "nbk": "NBK580533",
+  "title": "Anatomy, Shoulder and Upper Limb, Hand Thenar Eminence",
+  "authors": [
+   "Luxenburg D",
+   "Rizzo MG"
+  ],
+  "year": "2023"
+ },
+ "opponens": {
+  "pmid": "31536210",
+  "nbk": "NBK546603",
+  "title": "Anatomy, Shoulder and Upper Limb, Hand Opponens Pollicis Muscle",
+  "authors": [
+   "Nguyen JD",
+   "Duong H"
+  ],
+  "year": "2023"
+ },
+ "addpol": {
+  "pmid": "30252315",
+  "nbk": "NBK526059",
+  "title": "Anatomy, Shoulder and Upper Limb, Hand Adductor Pollicis",
+  "authors": [
+   "Acosta JR",
+   "Graefe SB",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "hypothenar": {
+  "pmid": "31536229",
+  "nbk": "NBK546622",
+  "title": "Anatomy, Shoulder and Upper Limb, Hand Hypothenar Eminence",
+  "authors": [
+   "Nguyen JD",
+   "Black AC",
+   "Duong H"
+  ],
+  "year": "2023"
+ },
+ "lumbrical": {
+  "pmid": "30521297",
+  "nbk": "NBK534876",
+  "title": "Anatomy, Shoulder and Upper Limb, Hand Lumbrical Muscles",
+  "authors": [
+   "Valenzuela M",
+   "Launico MV",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "interossei": {
+  "pmid": "30521193",
+  "nbk": "NBK534772",
+  "title": "Anatomy, Shoulder and Upper Limb, Hand Interossei Muscles",
+  "authors": [
+   "Valenzuela M",
+   "Varacallo MA"
+  ],
+  "year": "2025"
+ },
+ "iliopsoas": {
+  "pmid": "30285403",
+  "nbk": "NBK531508",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Iliopsoas Muscle",
+  "authors": [
+   "Bordoni B",
+   "Varacallo MA"
+  ],
+  "year": "2026"
+ },
+ "psoas": {
+  "pmid": "30571039",
+  "nbk": "NBK535418",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Psoas Major",
+  "authors": [
+   "Siccardi MA",
+   "Tariq MA",
+   "Valle C"
+  ],
+  "year": "2023"
+ },
+ "gmax": {
+  "pmid": "30855781",
+  "nbk": "NBK538193",
+  "title": "Anatomy, Bony Pelvis and Lower Limb, Gluteus Maximus Muscle",
+  "authors": [
+   "Elzanie A",
+   "Borger J"
+  ],
+  "year": "2023"
+ },
+ "gmed": {
+  "pmid": "32491441",
+  "nbk": "NBK557509",
+  "title": "Anatomy, Bony Pelvis and Lower Limb, Gluteus Medius Muscle",
+  "authors": [
+   "Shah A",
+   "Bordoni B"
+  ],
+  "year": "2023"
+ },
+ "gmin": {
+  "pmid": "32310604",
+  "nbk": "NBK556144",
+  "title": "Anatomy, Bony Pelvis and Lower Limb, Gluteus Minimus Muscle",
+  "authors": [
+   "Greco AJ",
+   "Vilella RC"
+  ],
+  "year": "2023"
+ },
+ "tfl": {
+  "pmid": "29763045",
+  "nbk": "NBK499870",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Tensor Fasciae Latae Muscle",
+  "authors": [
+   "Trammell AP",
+   "Nahian A",
+   "Pilson H"
+  ],
+  "year": "2023"
+ },
+ "piriformis": {
+  "pmid": "30137781",
+  "nbk": "NBK519497",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Piriformis Muscle",
+  "authors": [
+   "Chang C",
+   "Jeno SH",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "gemelli": {
+  "pmid": "32491352",
+  "nbk": "NBK557420",
+  "title": "Anatomy, Bony Pelvis and Lower Limb, Gemelli Muscles",
+  "authors": [
+   "Lezak B",
+   "Massel DH"
+  ],
+  "year": "2026"
+ },
+ "obturator": {
+  "pmid": "36943954",
+  "nbk": "NBK589636",
+  "title": "Anatomy, Abdomen and Pelvis, Obturator Muscles",
+  "authors": [
+   "Larson MR",
+   "Ryan W"
+  ],
+  "year": "2023"
+ },
+ "sartorius": {
+  "pmid": "30422484",
+  "nbk": "NBK532889",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Thigh Sartorius Muscle",
+  "authors": [
+   "Walters BB",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "thigh": {
+  "pmid": "29494052",
+  "nbk": "NBK482445",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Thigh Muscles",
+  "authors": [
+   "Attum B",
+   "Varacallo MA"
+  ],
+  "year": "2022"
+ },
+ "antthigh": {
+  "pmid": "30860696",
+  "nbk": "NBK538425",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Anterior Thigh Muscles",
+  "authors": [
+   "Khan A",
+   "Arain A"
+  ],
+  "year": "2023"
+ },
+ "quads": {
+  "pmid": "30020706",
+  "nbk": "NBK513334",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Thigh Quadriceps Muscle",
+  "authors": [
+   "Bordoni B",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "rf": {
+  "pmid": "30969719",
+  "nbk": "NBK539897",
+  "title": "Anatomy, Abdomen and Pelvis, Rectus Femoris Muscle",
+  "authors": [
+   "Murdock CJ",
+   "Mudreac A",
+   "Agyeman K"
+  ],
+  "year": "2023"
+ },
+ "vl": {
+  "pmid": "30335342",
+  "nbk": "NBK532309",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Vastus Lateralis Muscle",
+  "authors": [
+   "Biondi NL",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "medthigh": {
+  "pmid": "30521196",
+  "nbk": "NBK534775",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Medial Thigh Muscles",
+  "authors": [
+   "Ramage JL",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "addmag": {
+  "pmid": "30521263",
+  "nbk": "NBK534842",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Thigh Adductor Magnus Muscle",
+  "authors": [
+   "Jeno SH",
+   "Launico MV",
+   "Schindler GS"
+  ],
+  "year": "2023"
+ },
+ "gracilis": {
+  "pmid": "30855817",
+  "nbk": "NBK538229",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Thigh Gracilis Muscle",
+  "authors": [
+   "Khan IA",
+   "Bordoni B",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "postthigh": {
+  "pmid": "31194372",
+  "nbk": "NBK542215",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Posterior Thigh Muscles",
+  "authors": [
+   "Vaughn JE",
+   "Cohen-Levy WB"
+  ],
+  "year": "2023"
+ },
+ "hamstring": {
+  "pmid": "31536294",
+  "nbk": "NBK546688",
+  "title": "Anatomy, Bony Pelvis and Lower Limb, Hamstring Muscle",
+  "authors": [
+   "Hu Y",
+   "Raja A"
+  ],
+  "year": "2026"
+ },
+ "semiten": {
+  "pmid": "30969684",
+  "nbk": "NBK539862",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Thigh Semitendinosus Muscle",
+  "authors": [
+   "Mathew K",
+   "Pillarisetty LS"
+  ],
+  "year": "2023"
+ },
+ "antcomp": {
+  "pmid": "30969547",
+  "nbk": "NBK539725",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Leg Anterior Compartment",
+  "authors": [
+   "Lezak B",
+   "Launico MV"
+  ],
+  "year": "2026"
+ },
+ "ta": {
+  "pmid": "30020676",
+  "nbk": "NBK513304",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Tibialis Anterior Muscles",
+  "authors": [
+   "Juneja P",
+   "Hubbard JB"
+  ],
+  "year": "2023"
+ },
+ "ehl": {
+  "pmid": "30969697",
+  "nbk": "NBK539875",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Extensor Hallucis Longus Muscle",
+  "authors": [
+   "Lezak B",
+   "Launico MV"
+  ],
+  "year": "2026"
+ },
+ "latcomp": {
+  "pmid": "30137811",
+  "nbk": "NBK519526",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Leg Lateral Compartment",
+  "authors": [
+   "Khan IA",
+   "Mahabadi N",
+   "D'Abarno A",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "fl": {
+  "pmid": "31536256",
+  "nbk": "NBK546650",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Calf Peroneus Longus Muscle",
+  "authors": [
+   "Lezak B",
+   "Varacallo MA"
+  ],
+  "year": "2026"
+ },
+ "fb": {
+  "pmid": "30571048",
+  "nbk": "NBK535427",
+  "title": "Anatomy, Bony Pelvis and Lower Limb, Foot Peroneus Brevis Muscle",
+  "authors": [
+   "Basit H",
+   "Shah J",
+   "Siccardi MA"
+  ],
+  "year": "2023"
+ },
+ "postcomp": {
+  "pmid": "30726025",
+  "nbk": "NBK537340",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Leg Posterior Compartment",
+  "authors": [
+   "Abuqubo R",
+   "Graefe SB",
+   "La Rose J"
+  ],
+  "year": "2026"
+ },
+ "calf": {
+  "pmid": "29083629",
+  "nbk": "NBK459362",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Calf",
+  "authors": [
+   "Binstead JT",
+   "Varacallo MA"
+  ],
+  "year": "2026"
+ },
+ "gastroc": {
+  "pmid": "30422541",
+  "nbk": "NBK532946",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Gastrocnemius Muscle",
+  "authors": [
+   "Bordoni B",
+   "Varacallo MA"
+  ],
+  "year": "2026"
+ },
+ "popliteus": {
+  "pmid": "30252340",
+  "nbk": "NBK526084",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Popliteus Muscle",
+  "authors": [
+   "Hyland S",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "tp": {
+  "pmid": "30969735",
+  "nbk": "NBK539913",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Tibialis Posterior Muscle",
+  "authors": [
+   "Corcoran NM",
+   "Varacallo MA"
+  ],
+  "year": "2023"
+ },
+ "fhl": {
+  "pmid": "30969598",
+  "nbk": "NBK539776",
+  "title": "Anatomy, Bony Pelvis and Lower Limb: Calf Flexor Hallucis Longus Muscle",
+  "authors": [
+   "Murdock CJ",
+   "Munjal A",
+   "Agyeman K"
+  ],
+  "year": "2023"
+ },
+ "footm": {
+  "pmid": "30969527",
+  "nbk": "NBK539705",
+  "title": "Anatomy, Bony Pelvis and Lower Limb, Foot Muscles",
+  "authors": [
+   "Card RK",
+   "Bordoni B"
+  ],
+  "year": "2025"
+ },
+ "abwall": {
+  "pmid": "29262084",
+  "nbk": "NBK470334",
+  "title": "Anatomy, Anterolateral Abdominal Wall Muscles",
+  "authors": [
+   "Varacallo MA",
+   "Scharbach S",
+   "Al-Dhahir MA"
+  ],
+  "year": "2023"
+ },
+ "ql": {
+  "pmid": "30571028",
+  "nbk": "NBK535407",
+  "title": "Anatomy, Abdomen and Pelvis, Quadratus Lumborum",
+  "authors": [
+   "Bordoni B",
+   "Sina RE",
+   "Varacallo MA"
+  ],
+  "year": "2024"
+ },
+ "back": {
+  "pmid": "30725759",
+  "nbk": "NBK537074",
+  "title": "Anatomy, Back, Muscles",
+  "authors": [
+   "Henson B",
+   "Kadiyala B",
+   "Edens MA"
+  ],
+  "year": "2023"
+ },
+ "diaphragm": {
+  "pmid": "30137842",
+  "nbk": "NBK519558",
+  "title": "Anatomy, Thorax: Diaphragm",
+  "authors": [
+   "Bains KNS",
+   "Kashyap S",
+   "Lappin SL"
+  ],
+  "year": "2023"
+ },
+ "intercostal": {
+  "pmid": "30855826",
+  "nbk": "NBK538238",
+  "title": "Anatomy, Thorax, Intercostal Nerves",
+  "authors": [
+   "Glenesk NL",
+   "Rahman S",
+   "Lopez PP"
+  ],
+  "year": "2023"
+ },
+ "pelvicfloor": {
+  "pmid": "29489277",
+  "nbk": "NBK482200",
+  "title": "Anatomy, Abdomen and Pelvis: Pelvic Floor",
+  "authors": [
+   "Bordoni B",
+   "Sugumar K",
+   "Leslie SW"
+  ],
+  "year": "2026"
+ },
+ "levani": {
+  "pmid": "32310538",
+  "nbk": "NBK556078",
+  "title": "Anatomy, Abdomen and Pelvis: Levator Ani Muscle",
+  "authors": [
+   "Gowda SN",
+   "Bordoni B"
+  ],
+  "year": "2022"
+ },
+ "analtri": {
+  "pmid": "32491517",
+  "nbk": "NBK557585",
+  "title": "Anatomy, Abdomen and Pelvis: Anal Triangle",
+  "authors": [
+   "Nauman K",
+   "Samra NS"
+  ],
+  "year": "2026"
+ },
+ "deepperineal": {
+  "pmid": "30855860",
+  "nbk": "NBK538272",
+  "title": "Anatomy, Abdomen and Pelvis: Deep Perineal Space",
+  "authors": [
+   "Boyce L",
+   "Omole AE",
+   "Varacallo MA"
+  ],
+  "year": "2025"
+ },
+ "scm": {
+  "pmid": "30422476",
+  "nbk": "NBK532881",
+  "title": "Anatomy, Head and Neck: Sternocleidomastoid Muscle",
+  "authors": [
+   "Bordoni B",
+   "Jozsa F",
+   "Varacallo MA"
+  ],
+  "year": "2026"
+ },
+ "scalene": {
+  "pmid": "30085600",
+  "nbk": "NBK519058",
+  "title": "Anatomy, Head and Neck, Scalenus Muscle",
+  "authors": [
+   "Bordoni B",
+   "Jozsa F",
+   "Varacallo MA"
+  ],
+  "year": "2025"
+ },
+ "postcerv": {
+  "pmid": "31855365",
+  "nbk": "NBK551521",
+  "title": "Anatomy, Head and Neck, Posterior Cervical Region",
+  "authors": [
+   "Stathakios J",
+   "Salem W",
+   "Jozsa F"
+  ],
+  "year": "2026"
+ },
+ "subocc": {
+  "pmid": "33620839",
+  "nbk": "NBK567762",
+  "title": "Anatomy, Head and Neck, Suboccipital Muscles",
+  "authors": [
+   "George T",
+   "Tadi P"
+  ],
+  "year": "2023"
+ },
+ "platysma": {
+  "pmid": "31424878",
+  "nbk": "NBK545294",
+  "title": "Anatomy, Head and Neck, Platysma",
+  "authors": [
+   "Hoerter JE",
+   "Patel BC"
+  ],
+  "year": "2023"
+ },
+ "digastric": {
+  "pmid": "31335072",
+  "nbk": "NBK544352",
+  "title": "Anatomy, Head and Neck, Digastric Muscle",
+  "authors": [
+   "Tranchito EN",
+   "Bordoni B"
+  ],
+  "year": "2024"
+ },
+ "suprahyoid": {
+  "pmid": "31536316",
+  "nbk": "NBK546710",
+  "title": "Anatomy, Head and Neck: Suprahyoid Muscle",
+  "authors": [
+   "Khan YS",
+   "Fakoya AO",
+   "Bordoni B"
+  ],
+  "year": "2025"
+ },
+ "masseter": {
+  "pmid": "30969691",
+  "nbk": "NBK539869",
+  "title": "Anatomy, Head and Neck, Masseter Muscle",
+  "authors": [
+   "Corcoran NM",
+   "Goldman EM"
+  ],
+  "year": "2023"
+ },
+ "temporal": {
+  "pmid": "29494103",
+  "nbk": "NBK482497",
+  "title": "Anatomy, Head and Neck, Temporal Region",
+  "authors": [
+   "Dublin AB",
+   "Al-Dhahir MA"
+  ],
+  "year": "2023"
+ },
+ "medpt": {
+  "pmid": "31536196",
+  "nbk": "NBK546588",
+  "title": "Anatomy, Head and Neck, Medial Pterygoid Muscle",
+  "authors": [
+   "Jain P",
+   "Rathee M"
+  ],
+  "year": "2023"
+ },
+ "latpt": {
+  "pmid": "31747206",
+  "nbk": "NBK549799",
+  "title": "Anatomy, Head and Neck, Lateral Pterygoid Muscle",
+  "authors": [
+   "Rathee M",
+   "Jain P"
+  ],
+  "year": "2024"
+ },
+ "facial": {
+  "pmid": "29630261",
+  "nbk": "NBK493209",
+  "title": "Anatomy, Head and Neck: Facial Muscles",
+  "authors": [
+   "Fakoya AO",
+   "Hohman MH",
+   "Westbrook KE",
+   "Varacallo MA"
+  ],
+  "year": "2024"
+ },
+ "eom": {
+  "pmid": "30137849",
+  "nbk": "NBK519565",
+  "title": "Anatomy, Head and Neck, Eye Extraocular Muscles",
+  "authors": [
+   "Shumway CL",
+   "Motlagh M",
+   "Wade M"
+  ],
+  "year": "2022"
+ },
+ "lps": {
+  "pmid": "30725606",
+  "nbk": "NBK536921",
+  "title": "Anatomy, Head and Neck: Levator Palpebrae Superioris Muscle",
+  "authors": [
+   "Knight B",
+   "Fakoya AO",
+   "Lopez MJ",
+   "Patel BC"
+  ],
+  "year": "2024"
+ },
+ "tongue": {
+  "pmid": "29939559",
+  "nbk": "NBK507782",
+  "title": "Anatomy, Head and Neck, Tongue",
+  "authors": [
+   "Dotiwala AK",
+   "Samra NS"
+  ],
+  "year": "2023"
+ },
+ "genioglossus": {
+  "pmid": "31424725",
+  "nbk": "NBK545141",
+  "title": "Anatomy, Head and Neck: Genioglossus Muscle",
+  "authors": [
+   "McCausland T",
+   "Bordoni B"
+  ],
+  "year": "2023"
+ },
+ "pharynx": {
+  "pmid": "31869118",
+  "nbk": "NBK551654",
+  "title": "Anatomy, Head and Neck: Pharyngeal Muscles",
+  "authors": [
+   "Bui T",
+   "Fakoya AO",
+   "Das JM"
+  ],
+  "year": "2024"
+ },
+ "larynx": {
+  "pmid": "31424815",
+  "nbk": "NBK545231",
+  "title": "Anatomy, Head and Neck: Larynx Muscles",
+  "authors": [
+   "Junco K",
+   "Chandran SK"
+  ],
+  "year": "2023"
+ },
+ "middleear": {
+  "pmid": "29493963",
+  "nbk": "NBK482338",
+  "title": "Anatomy, Head and Neck: Middle Ear",
+  "authors": [
+   "Peterson DC",
+   "Sutton AE"
+  ],
+  "year": "2026"
+ },
+ "prevert": {
+  "pmid": "32809404",
+  "nbk": "NBK560569",
+  "title": "Anatomy, Head and Neck, Prevertebral Muscles",
+  "authors": [
+   "McDavid LJ",
+   "Khan YS"
+  ],
+  "year": "2023"
+ },
+ "sternohyoid": {
+  "pmid": "31613473",
+  "nbk": "NBK547693",
+  "title": "Anatomy, Head and Neck, Sternohyoid Muscle",
+  "authors": [
+   "Nguyen JD",
+   "Duong H"
+  ],
+  "year": "2023"
+ },
+ "oculi": {
+  "pmid": "28722936",
+  "nbk": "NBK441907",
+  "title": "Anatomy, Head and Neck: Orbicularis Oculi Muscle",
+  "authors": [
+   "Tong J",
+   "Lopez MJ",
+   "Fakoya AO",
+   "Patel BC"
+  ],
+  "year": "2024"
+ },
+ "oris": {
+  "pmid": "31424753",
+  "nbk": "NBK545169",
+  "title": "Anatomy, Head and Neck, Orbicularis Oris Muscle",
+  "authors": [
+   "Jain P",
+   "Rathee M"
+  ],
+  "year": "2023"
+ },
+ "buccinator": {
+  "pmid": "31536284",
+  "nbk": "NBK546678",
+  "title": "Anatomy, Head and Neck: Buccinator Muscle",
+  "authors": [
+   "Rathee M",
+   "Jain P"
+  ],
+  "year": "2024"
+ },
+ "tvp": {
+  "pmid": "31335022",
+  "nbk": "NBK544302",
+  "title": "Anatomy, Head and Neck, Tensor Veli Palatini Muscle",
+  "authors": [
+   "Georgakopoulos B",
+   "Borger J"
+  ],
+  "year": "2023"
+ }
+}

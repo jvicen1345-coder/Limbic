@@ -116,6 +116,22 @@ export const GUIDES: Guide[] = [
     items: 10,
     references: 18,
   },
+  {
+    // Not a region or a technique but the whole muscular system, so its "exam items" are the
+    // groups to know cold rather than steps of an examination. Built by
+    // docs/oina-guide-build/build.py; coming soon until its rows are checked line by line
+    // against the chapters they cite (see that folder's README).
+    slug: "muscle-oina",
+    name: "Muscle OINA & Manual Muscle Testing",
+    comingSoon: true,
+    description:
+      "Origin, insertion, nerve and action for 177 muscles and muscle groups, head to foot, each with the manual muscle test that grades it and the substitution that fakes it. Then the same muscles the way they are actually discussed: named groups and force couples, every joint movement with its prime movers and antagonists, and every motor nerve with the picture its loss produces. Recall mode turns every table into an OINA quiz.",
+    short:
+      "Origin, insertion, nerve, action and the manual muscle test for 177 muscles, plus the groups, force couples and movements they work in.",
+    sections: 21,
+    items: 34,
+    references: 101,
+  },
 ];
 
 export function guideHref(guide: Guide): string {
