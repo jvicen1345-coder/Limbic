@@ -2,7 +2,8 @@
 """Fill docs/joint-playbook-template.html with content.py — step 5 of the template doc.
 
 The template's <style> and both <script> blocks are never touched; only the title, the
-masthead, the nav, <main>, the footer and the six localStorage keys change.
+masthead, the nav (including a link back into Limbic), <main>, the footer and the six
+localStorage keys change.
 """
 import html, pathlib, re
 import content as K
@@ -199,6 +200,16 @@ def main():
     navlinks.append('    <a href="#drill">Drill</a>\n    <a href="#refs">Refs</a>\n')
     out = re.sub(r'(<div class="navlinks">\n).*?(    </div>\n)',
                  lambda m: m.group(1) + "".join(navlinks) + m.group(2), out, count=1, flags=re.S)
+
+    # ---- a way back into Limbic: the guide is a standalone document with none of the app's
+    # chrome (the other guides carry the same link; the template does not)
+    back = '<div class="navrow">\n    <button class="recall-toggle"'
+    if back not in out:
+        raise SystemExit("nav row not found in template")
+    out = out.replace(back, '<div class="navrow">\n'
+                      '    <a href="/student/playbooks" title="Back to Limbic Playbooks">&larr; Limbic</a>\n'
+                      '    <span class="navdiv" aria-hidden="true"></span>\n'
+                      '    <button class="recall-toggle"', 1)
 
     # ---- footer
     out = re.sub(
