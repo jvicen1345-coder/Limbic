@@ -282,7 +282,8 @@ figure svg{display:block; width:100%; max-width:660px; height:auto; margin:0 aut
   figure{overflow-x:hidden}
   figure svg{min-width:0}
 }
-figure text{font-family:var(--font-body); font-size:12px; fill:currentColor}
+figure text:not([fill]){font-family:var(--font-body); font-size:12px; fill:currentColor}
+figure text[fill]{font-family:var(--font-body); font-size:12px}
 figure text.mono{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em}
 figure text.big{font-family:var(--font-mono); font-size:13px; font-weight:600}
 @media (max-width:700px){
@@ -784,6 +785,8 @@ a{color:var(--accent)}
 <a class="skip" href="#main">Skip to the guide</a>
 <nav>
   <div class="navrow">
+    <a href="/student/playbooks" title="Back to Limbic Playbooks">&larr; Limbic</a>
+    <span class="navdiv" aria-hidden="true"></span>
     <button class="recall-toggle" id="recallBtn" aria-pressed="false" title="Blur every blurrable area on the page - press again to clear it">Recall all</button>
     <span class="navdiv" aria-hidden="true"></span>
     <select id="navpick" aria-label="Jump to a section"></select>

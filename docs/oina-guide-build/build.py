@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Fill docs/joint-playbook-template.html with the OINA content — step 5 of the template doc.
 
-The template's <style> and both <script> blocks are never touched; only the title, the
-masthead, the provenance key, the nav, <main>, the footer and the six localStorage keys change.
+Both <script> blocks are never touched. Changed: the title, the masthead, the provenance key,
+the nav (including a link back into Limbic), <main>, the footer, the six localStorage keys, and
+one CSS rule (figure label colours) that the hip and shoulder guides also correct.
 
 Run resolve.py first (it needs the network); this script does not.
 """
@@ -435,6 +436,24 @@ def main():
         if old not in out:
             raise SystemExit("template text not found: " + old[:60])
         out = out.replace(old, new)
+
+    # a way back into Limbic: the guide is a standalone document with none of the app's chrome
+    # (the other guides carry the same link; the template does not)
+    back = '<div class="navrow">\n    <button class="recall-toggle"'
+    if back not in out:
+        raise SystemExit("nav row not found in template")
+    out = out.replace(back, '<div class="navrow">\n'
+                      '    <a href="/student/playbooks" title="Back to Limbic Playbooks">&larr; Limbic</a>\n'
+                      '    <span class="navdiv" aria-hidden="true"></span>\n'
+                      '    <button class="recall-toggle"', 1)
+
+    # a presentation fill= loses to a CSS rule, so the template's figure text rule repaints
+    # every coloured label; the hip and shoulder guides carry this same correction
+    css = "figure text{font-family:var(--font-body); font-size:12px; fill:currentColor}"
+    if css not in out:
+        raise SystemExit("figure text rule not found in template")
+    out = out.replace(css, "figure text:not([fill]){font-family:var(--font-body); font-size:12px; fill:currentColor}\n"
+                      "figure text[fill]{font-family:var(--font-body); font-size:12px}", 1)
 
     navlinks = "".join('    <a href="#%s">%s</a>\n' % (sid, label) for sid, label in nav)
     out = re.sub(r'(<div class="navlinks">\n).*?(    </div>\n)',
