@@ -114,8 +114,8 @@ export const GUIDES: Guide[] = [
   {
     // Not a region or a technique but the whole muscular system, so its "exam items" are the
     // groups to know cold rather than steps of an examination. Built by
-    // docs/oina-guide-build/build.py; coming soon until its rows are checked line by line
-    // against the chapters they cite (see that folder's README).
+    // docs/oina-guide-build/build.py and published. The adversarial row check is
+    // docs/oina-guide-build/verification.md.
     slug: "muscle-oina",
     name: "Muscle OINA & Manual Muscle Testing",
     description:
