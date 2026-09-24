@@ -116,7 +116,7 @@ test.describe("Muscle OINA recall", () => {
     }
 
     // The wrapped link row is much taller than the template's old 60px offset.
-    const navHeight = await nav.evaluate((el) => el.offsetHeight);
+    const navHeight = await nav.evaluate((el) => (el as HTMLElement).offsetHeight);
     expect(navHeight, "nav should wrap at 1280").toBeGreaterThan(100);
     const sectionMargin = await page
       .locator("#shoulder")
