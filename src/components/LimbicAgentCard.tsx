@@ -94,7 +94,7 @@ export function LimbicAgentCard({ insights, isPro }: { insights: LimbicAgentInsi
             </div>
           )}
 
-          <div style={{ marginTop: 4 }}>
+          <div style={{ marginTop: "auto", paddingTop: 4 }}>
             <Link href={isPro ? "/agent" : "/pro"} className="btn btn-primary" style={{ fontSize: 12.5 }}>
               Ask Limbic Agent
               <ChevronRightIcon size={14} />
