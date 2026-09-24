@@ -115,6 +115,22 @@
 .pro-calc-toggle-btn:hover { background: var(--color-accent-100); }
 .pro-calc-body { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-divider); }
 
+/* Card grids stretch items so every card in a row shares one height. Applied only
+   where content cards render (Clinical Reference → Outcome Measures). .pro-grid-2
+   itself stays align-items: start — the other consumers are form and field layout,
+   where stretching a short control to a taller sibling would be wrong. Column counts
+   still come from .pro-grid-2 and .clinref-page .pro-grid-2, so 1-up through 4-up
+   are unchanged. */
+.pro-grid-cards { align-items: stretch; }
+/* Calculate on CalcCardShell. align-self keeps the button at its content width
+   (the card is a column flex, whose default cross-axis alignment would stretch it).
+   margin-top: auto pins it to the card's bottom once the card is stretched to the
+   row; on a content-sized card the auto margin resolves to zero. */
+.pro-calc-calculate {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
 /* Scoring item row — Berg/LEFS/DASH/Oswestry/FGA item lists, one row per
    scale item: description on the left, a 0-4/0-5/etc select on the right. */
 .pro-item-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-divider); }

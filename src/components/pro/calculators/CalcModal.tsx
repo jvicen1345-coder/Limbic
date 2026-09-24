@@ -249,7 +249,7 @@ export function CalcCardShell({
       <p className="pro-calc-meta">
         {population} &middot; {itemCount}
       </p>
-      <button type="button" className="btn btn-primary" style={{ alignSelf: "flex-start" }} onClick={onOpen}>
+      <button type="button" className="btn btn-primary pro-calc-calculate" onClick={onOpen}>
         Calculate
       </button>
     </div>

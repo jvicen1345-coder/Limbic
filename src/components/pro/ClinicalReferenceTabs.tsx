@@ -152,7 +152,7 @@ export function ClinicalReferenceTabs({ initialProfiles }: { initialProfiles: Ca
       <div style={{ marginTop: 16 }}>
         {tab === "outcomeMeasures" && (
           <CalculatorWorkspace initialProfiles={initialProfiles}>
-            <div className="pro-grid-2">
+            <div className="pro-grid-2 pro-grid-cards">
               {measures.map((m) => (
                 <m.Card key={m.meta.name} />
               ))}
