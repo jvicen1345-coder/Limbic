@@ -6,8 +6,8 @@ muscles as they are discussed together — named groups and force couples, every
 with its prime movers and antagonists, and every motor nerve with the picture its loss produces.
 
 Served at `/student/guides/muscle-oina` from `content/playbooks/muscle-oina.html`, registered
-in `src/lib/guides.ts`. **Marked `comingSoon`** until step 4 below is done: an admin can read
-it on the site, a student sees the card without a way in.
+in `src/lib/guides.ts`. Published for students and admins. The adversarial check is
+`verification.md`.
 
 ## Steps
 
@@ -18,7 +18,7 @@ Follows `docs/joint-playbook-template.md`.
 | 1 · Scope | the section list below | done — 177 rows in 13 regional tables, plus grading, groups, movements and nerves |
 | 2 · Source bank | `refs.py`, `refs.json` | 99 StatPearls chapters plus the ISNCSCI standard; each chapter's title, authors, year, PMID and NBK accession confirmed in PubMed by `resolve.py` |
 | 3 · Draft | `ul.py`, `ll.py`, `axial.py`, `head.py`, `relations.py`, `content.py` | done |
-| 4 · Adversarial verification | — | **not done** — see below |
+| 4 · Adversarial verification | `verification.md` | done |
 | 5 · Build the page | `build.py` → `content/playbooks/muscle-oina.html` | done |
 
 ```
@@ -30,20 +30,21 @@ python3 docs/oina-guide-build/build.py     # no network
 
 - **The references exist and are free.** Every chapter was found in PubMed by exact title, and
   links to its NCBI Bookshelf page.
-- **The rows have not been checked against the chapter text.** Bookshelf and Europe PMC both
-  serve a bot wall to a fetcher, so the chapters could not be read from the build environment.
-  The OINA values are standard descriptive anatomy, but "standard" is exactly the claim step 4
-  exists to test: go through each section's rows against the chapter cited in each name cell,
-  looking for errors rather than confirmation, and record what is found here before removing
-  `comingSoon`.
+- **The rows have been checked against the chapter text.** Step 4 is recorded in
+  `verification.md`. The text used was the NLM LitArch open-access snapshot of StatPearls
+  (`statpearls_NBK430685`, 18 May 2026). Bookshelf HTML and Europe PMC still serve a bot wall,
+  so a later revision of a chapter was not re-read.
 - **The manual muscle test positions are marked Convention everywhere.** They follow the widely
   taught positions of the standard muscle-testing texts, none of which is free to read, so none
-  is cited.
+  is cited. Step 4 did not treat those positions as claims of the StatPearls chapter.
 - **Where standard texts disagree, the row says so** and carries a Contested marker: supinator
   roots, flexor digitorum and hallucis longus roots, plantar intrinsic roots, the nerve to
-  pectineus, flexor pollicis brevis's split supply, and a few test norms.
+  pectineus, flexor pollicis brevis's split supply, psoas major's caudal attachment, and a few
+  test norms.
 - **The only quoted values** are the 0–5 motor grades and the ten ISNCSCI key muscles, from
   Rupp 2021, the same source the neurologic guide traced (`docs/neuro-guide-build/sources.md`).
+  The publisher blocks a full-text XML download of that paper; the wording was checked against
+  the neurologic guide's already-traced sentences, not against a fresh download.
 
 ## Citations and the template's linker
 

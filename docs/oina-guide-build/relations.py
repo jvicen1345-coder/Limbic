@@ -311,7 +311,7 @@ NERVES = dict(
      ("Long thoracic", "C5, C6, C7.", "Serratus anterior.", "<b>Medial winging</b> — the medial border and inferior angle lift off the ribs on a wall push."),
      ("Suprascapular", "C5, C6.", "Supraspinatus, infraspinatus.", "<b>Wasting above and below the spine of the scapula</b> with weak abduction and lateral rotation; a lesion at the spinoglenoid notch wastes infraspinatus alone."),
      ("Nerve to subclavius", "C5, C6.", "Subclavius.", "No clinical picture."),
-     ("Lateral pectoral", "C5, C6, C7.", "Pectoralis major (clavicular head, part of sternocostal).", "<b>Flattening of the upper chest</b> and weak adduction from flexion."),
+     ("Lateral pectoral", "C5, C6, C7.", "Pectoralis major (clavicular head), pectoralis minor (with the medial pectoral n.).", "<b>Flattening of the upper chest</b> and weak adduction from flexion."),
      ("Medial pectoral", "C8, T1.", "Pectoralis minor, pectoralis major (sternocostal).", "<b>Weak adduction from above</b>; lower pectoral bulk lost."),
      ("Upper and lower subscapular", "C5, C6, C7.", "Subscapularis (both); teres major (lower).", "<b>Weak medial rotation</b>; rarely isolated."),
      ("Thoracodorsal", "C6, C7, C8.", "Latissimus dorsi.", "<b>Weak extension–adduction</b> and loss of the posterior axillary fold; cannot depress the shoulder to push up."),
