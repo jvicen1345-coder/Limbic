@@ -1,0 +1,3 @@
+# Bytecode from running the guide build scripts in this folder.
+__pycache__/
+*.pyc
