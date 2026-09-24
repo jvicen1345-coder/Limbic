@@ -330,9 +330,9 @@ def method_section(num):
 def drill_section(num, planner_html):
     o = ['  <section id="drill">\n']
     o.append(sechead(num, "Rapid drill"))
-    o.append(lede("""Twenty questions across the whole body. Answer before you open one. For
-      the full OINA workout, press <b>Recall all</b> in the bar at the top: every column except
-      the muscle's name blanks, and the tables become the quiz."""))
+    o.append(lede("""Twenty questions across the whole body. The answer column starts hidden —
+      answer before you reveal one. For the full OINA workout, press <b>Recall all</b> in the
+      bar at the top: every column except the muscle's name blanks, and the tables become the quiz."""))
     o.append(planner_html)
     o.append('    <div class="tablewrap">\n      <table>\n')
     o.append('        <thead><tr><th scope="col">Question</th><th scope="col">Answer</th>'
@@ -458,6 +458,23 @@ def main():
         raise SystemExit("figure text rule not found in template")
     out = out.replace(css, "figure text:not([fill]){font-family:var(--font-body); font-size:12px; fill:currentColor}\n"
                       "figure text[fill]{font-family:var(--font-body); font-size:12px}", 1)
+
+    # The shared template's checklist box is 15×15. This guide's checklist is what a reader
+    # ticks, including on a phone once the table has stacked into cards, so the box meets the
+    # 24px minimum and grows to a finger target on a coarse pointer at that width.
+    tap = (
+        "/* checklist tap target: the template's box is 15px; this guide's is the control a reader ticks */\n"
+        ".check-table input[type=checkbox]{width:24px; height:24px}\n"
+        "@media (max-width:860px) and (pointer: coarse){\n"
+        "  .check-table input[type=checkbox]{width:44px; height:44px}\n"
+        "}\n"
+    )
+    # The first </style> closes a tiny reset block. The checkbox rule has to follow the
+    # template's own input[type=checkbox] rule, which lives in the main sheet.
+    closes = [m.start() for m in re.finditer(r"</style>", out)]
+    if len(closes) < 2:
+        raise SystemExit("main style block not found")
+    out = out[:closes[1]] + tap + out[closes[1]:]
 
     navlinks = "".join('    <a href="#%s">%s</a>\n' % (sid, label) for sid, label in nav)
     out = re.sub(r'(<div class="navlinks">\n).*?(    </div>\n)',

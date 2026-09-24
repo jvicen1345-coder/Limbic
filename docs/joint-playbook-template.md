@@ -179,7 +179,8 @@ sequence is the content and a student's instinct is to move the wrong thing.
 - **Legends go in `.figgrid` below the SVG, not inside it.** In-SVG legend text cannot reflow,
   and on a phone it collides with the drawing. This cost a full round of rework on the shoulder
   ligament figure — the legend went into the SVG, then out to HTML, then back in for desktop
-  with the HTML version kept for narrow screens.
+  with the HTML version kept for narrow screens. Recall blurs `.t1` and `.t2` with the drawing's
+  labels and leaves `.lbl` readable. A reader lifts one legend entry by click, tap, or keyboard.
 - **Swap the `viewBox` at narrow widths** rather than letting a wide drawing shrink into
   illegibility. A three-line `matchMedia` listener; the shoulder ligament figure does this.
 - **Measure, don't eyeball.** After drawing, check every `<text>` for overlap with
