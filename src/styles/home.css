@@ -252,9 +252,14 @@
   container-name: home-cal-agent;
   margin-bottom: 20px;
 }
-.home-calendar-agent-row { display: flex; align-items: flex-start; gap: 20px; }
-.home-calendar-top-wrap { flex: 0 0 340px; max-width: 340px; min-width: 0; }
-.home-agent-card-wrap { flex: 1 1 280px; max-width: 340px; min-width: 0; }
+/* Side by side, the two cards are a matched pair: same 340px width, stretched to the
+   taller one's height, with each card's footer (calendar link / Ask button) pinned to
+   the bottom via margin-top: auto in the components. */
+.home-calendar-agent-row { display: flex; align-items: stretch; gap: 20px; }
+.home-calendar-top-wrap { flex: 0 1 340px; max-width: 340px; min-width: 0; }
+.home-agent-card-wrap { flex: 0 1 340px; max-width: 340px; min-width: 0; }
+.home-calendar-top-wrap > .card,
+.home-agent-card-wrap > .card { height: 100%; }
 @container home-cal-agent (max-width: 699px) {
   .home-calendar-agent-row { flex-direction: column; }
   .home-calendar-top-wrap,

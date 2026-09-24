@@ -66,7 +66,10 @@ export function LimbicCalendarWidgetClient({
     : "";
 
   return (
-    <div className="card elev-sm" style={{ padding: 14 }}>
+    <div
+      className="card elev-sm"
+      style={{ background: "var(--color-accent-100)", border: "1px solid var(--color-accent-300)" }}
+    >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
         <button
           type="button"
@@ -207,7 +210,7 @@ export function LimbicCalendarWidgetClient({
         </div>
       )}
 
-      <div style={{ borderTop: "1px solid var(--color-neutral-200)", marginTop: 12, paddingTop: 10, textAlign: "right" }}>
+      <div style={{ borderTop: "1px solid var(--color-neutral-200)", marginTop: "auto", paddingTop: 10, textAlign: "right" }}>
         <Link href="/calendar" style={{ fontSize: "var(--fs-10-5)", color: "var(--color-accent-700)" }}>
           → View full calendar
         </Link>
