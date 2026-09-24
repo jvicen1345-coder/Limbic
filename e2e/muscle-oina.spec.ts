@@ -98,4 +98,61 @@ test.describe("Muscle OINA recall", () => {
       "blur(5.5px)",
     );
   });
+
+  test("section and reference jumps clear the wrapped sticky nav", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    const email = `pw-oina-nav-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@school.edu`;
+    await signUpAndEnterApp(page, email);
+    await grantLimbicStudent(email);
+    await page.goto(URL);
+
+    const nav = page.locator("nav");
+    async function clearance(selector: string) {
+      const navBox = await nav.boundingBox();
+      const target = await page.locator(selector).boundingBox();
+      expect(navBox, "sticky nav").toBeTruthy();
+      expect(target, selector).toBeTruthy();
+      return { navBottom: navBox!.y + navBox!.height, top: target!.y };
+    }
+
+    // The wrapped link row is much taller than the template's old 60px offset.
+    const navHeight = await nav.evaluate((el) => (el as HTMLElement).offsetHeight);
+    expect(navHeight, "nav should wrap at 1280").toBeGreaterThan(100);
+    const sectionMargin = await page
+      .locator("#shoulder")
+      .evaluate((el) => parseFloat(getComputedStyle(el).scrollMarginTop));
+    expect(Math.abs(sectionMargin - navHeight), "section offset tracks --navh").toBeLessThan(1);
+    const liMargin = await page
+      .locator("#refs li")
+      .first()
+      .evaluate((el) => parseFloat(getComputedStyle(el).scrollMarginTop));
+    // #refs padding-top is 26px, so a cited entry keeps that clearance over the bar.
+    expect(Math.abs(liMargin - (navHeight + 26)), "reference offset stays 26px over the nav").toBeLessThan(1);
+
+    for (const href of ["#checklist", "#shoulder", "#breathing"]) {
+      await page.locator(`nav .navlinks a[href="${href}"]`).click();
+      const { navBottom, top } = await clearance(`${href} h2`);
+      expect(top, `${href} heading buried under the nav`).toBeGreaterThanOrEqual(navBottom - 1);
+      expect(top - navBottom, `${href} heading left a large gap`).toBeLessThan(16);
+    }
+
+    await page.goto(`${URL}#elbow`);
+    const elbow = await clearance("#elbow h2");
+    expect(elbow.top, "hash jump buried the heading").toBeGreaterThanOrEqual(elbow.navBottom - 1);
+    expect(elbow.top - elbow.navBottom, "hash jump left a large gap").toBeLessThan(16);
+
+    await page.locator('nav .navlinks a[href="#refs"]').click();
+    const refs = await clearance("#refs h2");
+    expect(refs.top, "refs heading buried under the nav").toBeGreaterThanOrEqual(refs.navBottom - 1);
+    expect(refs.top - refs.navBottom, "refs heading left a large gap").toBeLessThan(48);
+
+    const cite = page.locator("a.cite").first();
+    const citeHref = await cite.getAttribute("href");
+    expect(citeHref).toMatch(/^#ref-/);
+    // A pointer click can land on the sticky bar once the link has been scrolled under it.
+    await cite.evaluate((el: HTMLAnchorElement) => el.click());
+    const cited = await clearance(citeHref!);
+    expect(cited.top, "cited reference buried under the nav").toBeGreaterThanOrEqual(cited.navBottom - 1);
+    expect(cited.top - cited.navBottom, "cited reference left a large gap").toBeLessThan(48);
+  });
 });

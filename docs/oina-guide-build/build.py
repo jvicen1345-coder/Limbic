@@ -4,7 +4,9 @@
 Both template <script> blocks are never touched. Changed: the title, the masthead, the
 provenance key, the nav (including a link back into Limbic), <main>, the footer, the six
 localStorage keys, one CSS rule (figure label colours) that the hip and shoulder guides also
-correct, and the sticky-table-header style and script from docs/playbook_sticky_headers.py.
+correct, the section and reference scroll margins (this guide's nav wraps, so they follow
+the measured --navh from playbook_sticky_headers), and the sticky-table-header style and
+script from docs/playbook_sticky_headers.py.
 
 Run resolve.py first (it needs the network); this script does not.
 """
@@ -502,6 +504,21 @@ def main():
     out = out.replace("JOINT-", "oina-")
     if "JOINT" in out:
         raise SystemExit("template placeholder left in the page")
+
+    # The template's 60px section offset matches a single-row joint-guide nav. This guide's
+    # .navlinks wrap (about 150px at 1280), and the sticky-header script already measures
+    # that height into --navh for thead. Point the section offset at the same variable or
+    # a hash/nav jump parks the heading under the bar. #refs has 26px of padding-top, which
+    # is why a cited <li> was 86px (60+26); keep that same 26px on top of the measured bar
+    # so a citation clears the nav without opening a large gap.
+    section_offset = "section{margin:0 0 54px; scroll-margin-top:60px}"
+    section_offset_new = "section{margin:0 0 54px; scroll-margin-top:var(--navh, 60px)}"
+    ref_offset = "#refs li{scroll-margin-top:86px}"
+    ref_offset_new = "#refs li{scroll-margin-top:calc(var(--navh, 60px) + 26px)}"
+    for old, new in ((section_offset, section_offset_new), (ref_offset, ref_offset_new)):
+        if out.count(old) != 1:
+            raise SystemExit("scroll-margin rule not found once: " + old)
+        out = out.replace(old, new, 1)
 
     out = sticky.apply(out)   # sticky table headers, shared by every guide
     OUT.write_text(out, encoding="utf-8")
