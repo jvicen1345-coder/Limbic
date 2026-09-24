@@ -557,6 +557,20 @@ figure.labels-hidden.labels-shown svg text{filter:none; opacity:1}
 figure.labels-hidden figcaption{filter:blur(5px); user-select:none; cursor:pointer}
 figure.labels-hidden.labels-shown figcaption,
 figure.labels-hidden.caption-shown figcaption{filter:none; user-select:auto; cursor:default}
+/* the legend beside a figure answers the same question its labels do - hide it with them.
+   .lbl is the prompt ("Upper trapezius"), so it stays readable like a table's first column.
+   One entry lifts on click, tap, or keyboard; the rest stay hidden. */
+figure.labels-hidden svg .figkey text{filter:none !important; opacity:1; cursor:default}
+figure.labels-hidden .figgrid .t1,
+figure.labels-hidden .figgrid .t2{filter:blur(5px); user-select:none; cursor:pointer}
+figure.labels-hidden .figgrid > div{cursor:pointer}
+figure.labels-hidden .figgrid > div:focus-visible{
+  outline:2px solid var(--accent); outline-offset:2px; border-radius:3px;
+}
+figure.labels-hidden .figgrid > div.shown .t1,
+figure.labels-hidden .figgrid > div.shown .t2,
+figure.labels-hidden.labels-shown .figgrid .t1,
+figure.labels-hidden.labels-shown .figgrid .t2{filter:none; user-select:auto}
 @media (prefers-reduced-motion: reduce){ figure.labels-hidden svg text{transition:none} }
 .missbtn{
   display:none; margin-top:7px;
@@ -588,6 +602,7 @@ figure.labels-hidden.caption-shown figcaption{filter:none; user-select:auto; cur
   nav, .recallbar, .colmask, .recall-toggle, .sec-recall, .progressbar, .missbtn{display:none !important}
   figure.labels-hidden svg text{filter:none !important; opacity:1 !important}
   figure.labels-hidden figcaption{filter:none !important}
+  figure.labels-hidden .figgrid .t1, figure.labels-hidden .figgrid .t2{filter:none !important}
   .mask-on .maskwrap{filter:none !important; user-select:auto !important}
   .mask-on{background:transparent !important}
   /* a closed dropdown prints as a heading with nothing under it - open them all */
@@ -844,7 +859,7 @@ a{color:var(--accent)}
     <details class="howto">
       <summary>Recall mode - how the quizzing works</summary>
       <div class="howbody">
-        <p><b>Recall all</b> in the nav blanks the page - every table column, callout, card and diagram label. The first column of each table stays readable, since it names what you are being asked about, as do headings and callouts. A section heading or a single table's own <b>Recall</b> hides just that answer column, and the <b>Hide</b> chips let you pick from there. On a diagram, click a label to lift that entry. Click a hidden cell to check it, mark the ones you miss, and <b>Hide missed</b> then blanks only those. Case answers in the drill re-hide every time a case is opened, so nothing is spoiled by looking.</p>
+        <p><b>Recall all</b> in the nav blanks the page - every table column, callout, card and diagram label. The first column of each table stays readable, since it names what you are being asked about, as do headings and callouts. A section heading or a single table's own <b>Recall</b> hides just that answer column, and the <b>Hide</b> chips let you pick from there. On a diagram, click, tap, or press a label or a legend line to lift that entry. Click a hidden cell to check it, mark the ones you miss, and <b>Hide missed</b> then blanks only those. Case answers in the drill re-hide every time a case is opened, so nothing is spoiled by looking.</p>
         <p class="howctl">
           <button type="button" id="revealAll">Reveal all</button>
           <button type="button" id="drillMissed" title="Blur only the cells you marked missed, everywhere on the page">Hide missed</button>
@@ -929,7 +944,8 @@ a{color:var(--accent)}
          · currentColor for structure, so it themes in light and dark automatically
          · var(--accent) for the thing being measured, var(--hi) for the fault
          · role="img" + aria-label carrying the same claim the picture makes
-         · <text> labels are hidden by Recall; click one to lift it. Keep them short -
+         · <text> labels and the .figgrid legend are hidden by Recall; click, tap, or
+           press one entry to lift it. .lbl stays readable. Keep labels short -
            whole sentences belong in the figcaption, not the drawing
          · .figgrid below the svg holds the legend as reflowing HTML, so it stacks on a
            phone instead of overlapping the drawing
@@ -1602,7 +1618,9 @@ a{color:var(--accent)}
   var SVGNS = 'http://www.w3.org/2000/svg';
   document.querySelectorAll('figure').forEach(function(fig, fi){
     var svg = fig.querySelector('svg');
-    if(!svg || svg.querySelectorAll('text').length < 3) return;
+    var legend = fig.querySelectorAll('.figgrid > div');
+    // a legend can hold the whole answer when the drawing itself has few <text> labels
+    if(!svg || svg.querySelectorAll('text').length + legend.length < 3) return;
     var sec = fig.closest('section');
     if(!sec) return;
 
@@ -1670,6 +1688,46 @@ a{color:var(--accent)}
       });
     }
 
+    function syncLegend(on){
+      legend.forEach(function(entry){
+        entry.classList.remove('shown');
+        if(on){
+          entry.setAttribute('tabindex','0');
+          entry.setAttribute('role','button');
+          entry.setAttribute('aria-pressed','false');
+          var prompt = entry.querySelector('.lbl');
+          var name = prompt ? prompt.textContent.replace(/\s+/g,' ').trim() : 'this entry';
+          entry.setAttribute('aria-label', 'Hidden for recall - activate to reveal ' + name);
+        } else {
+          entry.removeAttribute('tabindex');
+          entry.removeAttribute('role');
+          entry.removeAttribute('aria-pressed');
+          entry.removeAttribute('aria-label');
+        }
+      });
+    }
+    function revealEntry(entry){
+      if(!fig.classList.contains('labels-hidden')) return;
+      var shown = !entry.classList.contains('shown');
+      entry.classList.toggle('shown', shown);
+      if(entry.getAttribute('role') === 'button') entry.setAttribute('aria-pressed', shown ? 'true' : 'false');
+    }
+    // click covers mouse and tap. Keyboard activation also synthesizes a click (detail 0);
+    // preventDefault on keydown suppresses that, and the detail guard covers a browser that
+    // still emits it, so Enter or Space toggles once instead of twice.
+    legend.forEach(function(entry){
+      entry.addEventListener('click', function(e){
+        if(e.detail === 0) return;
+        revealEntry(entry);
+      });
+      entry.addEventListener('keydown', function(e){
+        if(e.key !== 'Enter' && e.key !== ' ') return;
+        if(!fig.classList.contains('labels-hidden')) return;
+        e.preventDefault();
+        revealEntry(entry);
+      });
+    });
+
     svg.addEventListener('click', function(e){
       if(!fig.classList.contains('labels-hidden')) return;
       var t = e.target.closest ? e.target.closest('text') : null;
@@ -1689,6 +1747,7 @@ a{color:var(--accent)}
         fig.classList.remove('labels-shown');
         fig.classList.remove('caption-shown');
         svg.querySelectorAll('text.shown').forEach(function(t){ t.classList.remove('shown'); });
+        syncLegend(on);
         paintLabels();
       }
     }]);
@@ -1797,6 +1856,10 @@ a{color:var(--accent)}
     document.querySelectorAll('.mask-on').forEach(function(el){ el.classList.add('shown'); });
     document.querySelectorAll('figure.labels-hidden').forEach(function(f){
       f.querySelectorAll('svg text').forEach(function(t){ t.classList.add('shown'); });
+      f.querySelectorAll('.figgrid > div').forEach(function(entry){
+        entry.classList.add('shown');
+        if(entry.getAttribute('role') === 'button') entry.setAttribute('aria-pressed','true');
+      });
       f.classList.add('labels-shown');
       if(f._paintLabels) f._paintLabels();
     });
@@ -1838,13 +1901,17 @@ a{color:var(--accent)}
       });
     }
   }
+  // First visit only: the rapid-drill table is a quiz, so its answer column starts hidden.
+  // A saved recall session still wins after that. Notes groups keep the old "first one" rule.
   if(!saved){
-    for(var gi = 0; gi < groups.length; gi++){
-      if(groups[gi].key === 'drill:n10' || /drill:n\d+$/.test(groups[gi].key)){
-        setGroupOpen(groups[gi], true);
-        break;
+    var openedNotes = false;
+    groups.forEach(function(g){
+      if(/drill:t\d+$/.test(g.key)){ setGroupOpen(g, true); return; }
+      if(!openedNotes && (g.key === 'drill:n10' || /drill:n\d+$/.test(g.key))){
+        setGroupOpen(g, true);
+        openedNotes = true;
       }
-    }
+    });
   }
 
   sync();

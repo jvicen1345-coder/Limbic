@@ -32,6 +32,8 @@ GROUPS = [
         ("subscap", "Anatomy, Shoulder and Upper Limb, Subscapularis Muscle"),
         ("tmajor", "Anatomy, Shoulder and Upper Limb, Teres Major Muscle"),
         ("lat", "Anatomy, Back, Latissimus Dorsi"),
+        # Published StatPearls title (NBK525991 / PMID 30252247). The doubled "Major" is the
+        # source's wording, confirmed in PubMed, so the reference keeps it.
         ("pecmajor", "Anatomy, Thorax, Pectoralis Major Major"),
         ("armm", "Anatomy, Shoulder and Upper Limb, Arm Muscles"),
         ("biceps", "Anatomy, Shoulder and Upper Limb, Biceps Muscle"),

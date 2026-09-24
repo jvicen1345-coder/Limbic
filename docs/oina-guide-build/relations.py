@@ -21,7 +21,7 @@ GROUPS = dict(
     ("Shoulder girdle and shoulder", [
      ("Scapular upward rotation force couple",
       "Upper trapezius, lower trapezius, serratus anterior.",
-      "Three lines of pull on the scapula — upper trapezius up and in at the acromion, lower trapezius down and in at the root of the spine, serratus anterior forward and out at the inferior angle — add up to one rotation that turns the glenoid upward as the arm rises. See the figure below.",
+      "Three lines of pull on the scapula — upper trapezius up and in at the acromion, lower trapezius down and in at the root of the spine, serratus anterior forward and out at the inferior angle — add up to one rotation that turns the glenoid upward as the arm rises. See the figure above.",
       "<b>Arm elevation stops short or the scapula wings.</b> Serratus loss: the medial border and inferior angle lift off the ribs (medial winging), worst pushing against a wall. Trapezius loss: the shoulder droops and the scapula slides laterally with the inferior angle rotated out (lateral winging), worst in abduction."),
      ("Scapular downward rotators",
       "Levator scapulae, rhomboid major and minor, pectoralis minor.",
