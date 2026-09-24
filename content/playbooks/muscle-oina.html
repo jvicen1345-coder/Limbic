@@ -184,7 +184,7 @@ nav a:hover{color:var(--accent); background:var(--accent-soft)}
 nav a:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
 
 /* ---------- sections ---------- */
-section{margin:0 0 54px; scroll-margin-top:60px}
+section{margin:0 0 54px; scroll-margin-top:var(--navh, 60px)}
 .sechead{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:18px}
 @media (max-width:620px){
   .sechead{gap:8px 10px}
@@ -683,7 +683,7 @@ a.cite{color:inherit; text-decoration:none; border-bottom:1px dotted var(--line)
   border-radius:2px; padding-bottom:1px}
 a.cite:hover{color:var(--accent); border-bottom-color:var(--accent); background:var(--accent-soft)}
 a.cite:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
-#refs li{scroll-margin-top:86px}
+#refs li{scroll-margin-top:calc(var(--navh, 60px) + 26px)}
 #refs li:target{background:var(--accent-soft); border-radius:5px;
   box-shadow:0 0 0 6px var(--accent-soft), inset 3px 0 0 var(--accent)}
 .backrefs{margin-left:7px; white-space:nowrap}
