@@ -129,7 +129,7 @@ const WELCOME_TOUR: Tour = {
     {
       id: "founding-funders",
       title: "Founding Funders",
-      description: "Limbic is new. The people who back it early get lifetime access at a founding price. 50 spots total.",
+      description: "Limbic is new. The people who back it early get lifetime access at a founding price. 25 spots total.",
       target: '[data-tour="founding-funders"]',
       position: "right",
     },
