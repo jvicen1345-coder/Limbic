@@ -510,6 +510,12 @@
   font-size: 26px;
   color: var(--ff-gold-cta);
   text-align: center;
+  margin: 0 0 6px;
+}
+.ff-modal-compare {
+  font-size: 13.5px;
+  color: var(--ff-text-muted);
+  text-align: center;
   margin: 0 0 20px;
 }
 
@@ -704,4 +710,116 @@
 @media (min-width: 1024px) {
   .ff-container { max-width: 800px; }
   .ff-benefits-grid { gap: 20px; }
+}
+
+/* — Section 3b: the math (founding price vs. the regular subscription) — */
+.ff-math { margin-bottom: 48px; }
+.ff-math-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 24px;
+  color: var(--ff-gold);
+  text-align: center;
+  margin: 0 0 10px;
+}
+.ff-math-lede {
+  font-size: 16px;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--ff-text-muted);
+  margin: 0 auto 24px;
+  max-width: 520px;
+}
+.ff-math-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.ff-math-stat {
+  background: var(--ff-gold-cta-tint);
+  border: 1px solid color-mix(in srgb, var(--ff-gold-cta) 35%, transparent);
+  border-radius: var(--radius-md);
+  padding: 16px 12px;
+  text-align: center;
+}
+.ff-math-stat-value {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 24px;
+  color: var(--ff-gold);
+  line-height: 1.2;
+}
+.ff-math-stat-label {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--ff-text-muted);
+  margin-top: 4px;
+}
+.ff-math-rows {
+  background: var(--ff-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--ff-shadow);
+  padding: 8px 22px;
+}
+.ff-math-row { padding: 16px 0; }
+.ff-math-row + .ff-math-row { border-top: 1px solid var(--ff-divider); }
+.ff-math-row-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.ff-math-row-years {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 16px;
+}
+.ff-math-row-saved {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ff-gold-cta);
+}
+.ff-math-bar-line {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) 56px;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.ff-math-bar-label {
+  font-size: 13px;
+  color: var(--ff-text-muted);
+}
+.ff-math-bar-track {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--ff-neutral-tint);
+  overflow: hidden;
+}
+.ff-math-bar { height: 100%; border-radius: 999px; }
+.ff-math-bar--sub { background: var(--ff-slot-empty-border); }
+.ff-math-bar--founding { background: var(--ff-gold-cta); }
+.ff-math-bar-amount {
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.ff-math-footnote {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ff-text-muted);
+  text-align: center;
+  margin: 14px auto 0;
+  max-width: 560px;
+}
+@media (max-width: 640px) {
+  .ff-math-stats { gap: 8px; }
+  .ff-math-stat { padding: 12px 6px; }
+  .ff-math-stat-value { font-size: 19px; }
+  .ff-math-stat-label { font-size: 11.5px; }
+  .ff-math-rows { padding: 4px 16px; }
+  .ff-math-bar-line { grid-template-columns: minmax(0, 1fr) 48px; gap: 4px 10px; }
+  .ff-math-bar-label { grid-column: 1 / -1; }
 }

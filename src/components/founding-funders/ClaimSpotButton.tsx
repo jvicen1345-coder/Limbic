@@ -4,6 +4,10 @@ import { useState } from "react";
 import { createFoundingFunderCheckout } from "@/app/actions/founding-funders";
 import { useExitAnimation } from "@/lib/use-exit-animation";
 import { XIcon } from "@/components/icons";
+import { FOUNDING_FUNDERS_PRICE_USD } from "@/lib/founding-funders-config";
+import { FOUNDING_FUNDERS_COMPARED_PLAN, computeFoundingSavings } from "@/lib/founding-funders-savings";
+
+const SAVINGS = computeFoundingSavings(FOUNDING_FUNDERS_PRICE_USD, FOUNDING_FUNDERS_COMPARED_PLAN);
 
 /** The "Claim a Spot" trigger + its two-step modal — self-contained (owns its own open/step/
  *  form state) so the rest of Section 5 of /founding-funders just renders this one component.
@@ -105,6 +109,10 @@ export function ClaimSpotButton() {
                 </div>
 
                 <div className="ff-modal-amount">$40, Lifetime Access</div>
+                <p className="ff-modal-compare">
+                  vs. ${SAVINGS.perYearUsd} every year on {SAVINGS.plan.name}. Pays for itself in{" "}
+                  {SAVINGS.breakEvenMonths} months.
+                </p>
 
                 <ul className="ff-modal-bullets">
                   <li>Lifetime access to Limbic, all current and future features</li>

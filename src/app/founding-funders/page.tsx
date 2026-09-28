@@ -10,6 +10,7 @@ import {
   cleanupCanceledFoundingFunderCheckout,
 } from "@/app/actions/founding-funders";
 import { FOUNDING_FUNDERS_OPEN, FOUNDING_FUNDERS_PRICE_USD } from "@/lib/founding-funders-config";
+import { FOUNDING_FUNDERS_COMPARED_PLAN, computeFoundingSavings } from "@/lib/founding-funders-savings";
 import { ArrowLeftIcon, LogoIcon } from "@/components/icons";
 import { WaitlistForm } from "@/components/founding-funders/WaitlistForm";
 import { ClaimSpotButton } from "@/components/founding-funders/ClaimSpotButton";
@@ -101,6 +102,9 @@ export default async function FoundingFundersPage({
     hasAdminArea("foundingFunders"),
     isSiteAdmin(),
   ]);
+  const savings = computeFoundingSavings(FOUNDING_FUNDERS_PRICE_USD, FOUNDING_FUNDERS_COMPARED_PLAN);
+  const barMaxUsd = Math.max(...savings.rows.map((r) => r.subscriptionUsd), savings.foundingUsd);
+  const barPct = (usd: number) => `${Math.max(2, (usd / barMaxUsd) * 100)}%`;
   const slots = Array.from({ length: data.totalSlots }, (_, i) => data.funders[i] ?? null);
   // Payment roster: anyone with foundingFunders. Registered-user PII: owners only (#497).
   const [registeredUsers, rosterEntries] = await Promise.all([
@@ -179,6 +183,68 @@ export default async function FoundingFundersPage({
             </div>
           ))}
         </div>
+
+        {/* Section 3b — The Math: one-time founding price vs. the regular subscription */}
+        <section className="ff-math" aria-labelledby="ff-math-title">
+          <h2 className="ff-math-title" id="ff-math-title">
+            The Math
+          </h2>
+          <p className="ff-math-lede">
+            {savings.plan.name} is ${savings.plan.monthlyUsd} every month
+            {savings.cadence === "year" ? ` or $${savings.plan.yearlyUsd} every year` : ""}. Founding Funders pay $
+            {savings.foundingUsd} once, and never again.
+          </p>
+
+          <div className="ff-math-stats">
+            <div className="ff-math-stat">
+              <div className="ff-math-stat-value">{savings.breakEvenMonths} months</div>
+              <div className="ff-math-stat-label">until it has paid for itself</div>
+            </div>
+            <div className="ff-math-stat">
+              <div className="ff-math-stat-value">${savings.rows[0].savedUsd}</div>
+              <div className="ff-math-stat-label">saved in the first year alone</div>
+            </div>
+            <div className="ff-math-stat">
+              <div className="ff-math-stat-value">$0</div>
+              <div className="ff-math-stat-label">in renewals, ever</div>
+            </div>
+          </div>
+
+          <div className="ff-math-rows">
+            {savings.rows.map((row) => (
+              <div className="ff-math-row" key={row.years}>
+                <div className="ff-math-row-head">
+                  <span className="ff-math-row-years">
+                    {row.years} {row.years === 1 ? "year" : "years"}
+                  </span>
+                  {row.savedUsd > 0 && <span className="ff-math-row-saved">You save ${row.savedUsd}</span>}
+                </div>
+                <div className="ff-math-bar-line">
+                  <span className="ff-math-bar-label">
+                    {savings.plan.name} {savings.cadence === "year" ? "yearly" : "monthly"}
+                  </span>
+                  <div className="ff-math-bar-track">
+                    <div className="ff-math-bar ff-math-bar--sub" style={{ width: barPct(row.subscriptionUsd) }} />
+                  </div>
+                  <span className="ff-math-bar-amount">${row.subscriptionUsd}</span>
+                </div>
+                <div className="ff-math-bar-line">
+                  <span className="ff-math-bar-label">Founding Funder</span>
+                  <div className="ff-math-bar-track">
+                    <div className="ff-math-bar ff-math-bar--founding" style={{ width: barPct(savings.foundingUsd) }} />
+                  </div>
+                  <span className="ff-math-bar-amount">${savings.foundingUsd}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="ff-math-footnote">
+            Based on today&rsquo;s {savings.plan.name} price of ${savings.plan.monthlyUsd}/month
+            {savings.cadence === "year" ? ` ($${savings.plan.yearlyUsd}/year)` : ` ($${savings.perYearUsd}/year)`}. If
+            that price ever goes up, the gap only gets wider. The founding price is only offered to these 25 spots.
+          </p>
+        </section>
 
         {/* Section 4 — The 25 Slots */}
         <div className="ff-slots-section">
