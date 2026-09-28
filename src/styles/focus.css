@@ -34,7 +34,15 @@
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  min-height: calc(100dvh - 32px);
+  /* .app-main is a flex column, where margin-inline: auto alone would shrink this page to
+     its content (a phone-width strip on desktop). width: 100% keeps it filling the column up
+     to max-width, and flex: 1 0 auto fills whatever height is left after the mobile topbar,
+     so the timer matches the device's shape instead of a fixed card. */
+  box-sizing: border-box;
+  width: 100%;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
   margin: 0 auto;
   max-width: 1100px;
   border-radius: 24px;
@@ -152,14 +160,18 @@ html .ft-page.ft-resting {
 .ft-wrap {
   position: relative;
   z-index: 1;
-  max-width: 480px;
-  min-height: calc(100dvh - 32px);
+  box-sizing: border-box;
+  flex: 1;
+  width: 100%;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 24px 16px 28px;
+  padding: clamp(16px, 3dvh, 32px) 16px clamp(18px, 3dvh, 32px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 22px;
+  /* Spacing follows the screen's height so short landscape screens stay compact and tall
+     ones don't leave one big empty band above the tray tabs. */
+  gap: clamp(12px, 2.6dvh, 28px);
 }
 
 .ft-header {
@@ -307,10 +319,16 @@ html .ft-page.ft-resting {
 /* Dial */
 .ft-dial {
   position: relative;
-  width: min(320px, 80vw);
+  /* Sized from the viewport height minus the rest of the page (header, modes, course,
+     controls, tray tabs), capped by the column width, so the dial grows on a large desktop
+     but the Start button stays in view on a phone or a short laptop screen. The readout
+     inside scales with it via container units. */
+  width: clamp(200px, calc(100dvh - 400px), 520px);
   max-width: 100%;
   aspect-ratio: 1;
-  margin-block: 6px;
+  /* The top auto margin pairs with .ft-tray-tabs' to center the timer in any spare height. */
+  margin-block: auto 6px;
+  container-type: inline-size;
 }
 
 .ft-dial svg {
@@ -400,6 +418,7 @@ html .ft-page.ft-resting {
   font-family: var(--ft-display);
   font-weight: 300;
   font-size: clamp(54px, 17vw, 76px);
+  font-size: 23.5cqi;
   letter-spacing: -0.025em;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -609,7 +628,7 @@ html .ft-page.ft-resting {
 }
 
 .ft-minimal .ft-dial {
-  width: min(400px, 84vw);
+  width: clamp(220px, calc(100dvh - 220px), 680px);
 }
 
 /* Tray */
@@ -1152,6 +1171,17 @@ html .ft-page.ft-resting {
 @media (min-width: 640px) {
   .ft-scrim {
     align-items: center;
+  }
+}
+
+/* Below the shell's 800px breakpoint the mobile topbar and bottom nav take ~140px more. */
+@media (max-width: 799px) {
+  .ft-dial {
+    width: clamp(180px, calc(100dvh - 520px), 520px);
+  }
+
+  .ft-minimal .ft-dial {
+    width: clamp(220px, calc(100dvh - 340px), 680px);
   }
 }
 
