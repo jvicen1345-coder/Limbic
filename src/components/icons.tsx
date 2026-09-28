@@ -142,6 +142,17 @@ export function ZapIcon(props: IconProps) {
   );
 }
 
+/** Focus timer (see app/(app)/student/focus/page.tsx): a stopwatch outline. */
+export function TimerIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="14" r="8" />
+      <path d="M12 10v4l2.5 2" />
+      <path d="M10 2h4" />
+    </Svg>
+  );
+}
+
 export function AlertCircleIcon(props: IconProps) {
   return (
     <Svg {...props}>

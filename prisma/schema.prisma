@@ -453,6 +453,11 @@ model User {
   assignments Assignment[]
   studyCards  StudyCard[]
 
+  // Focus timer history and the recall notes written after each block (see
+  // app/actions/focus.ts and app/(app)/student/focus/page.tsx).
+  focusSessions FocusSession[]
+  recallEntries RecallEntry[]
+
   // Which of the 235 seeded DPTProgram rows this student picked (see app/actions/
   // dpt-programs.ts setUserProgram) — set during onboarding's Step 2 or from Profile's "Your
   // Program" section, never for the app's own Chapman-hardcoded account (see
@@ -2281,9 +2286,11 @@ model Syllabus {
   // landed content, deliberately not muddied by "I fixed a typo on one card" edits.
   studyContentUpdatedAt DateTime?
 
-  user        User         @relation(fields: [userId], references: [id])
-  assignments Assignment[]
-  studyCards  StudyCard[]
+  user          User           @relation(fields: [userId], references: [id])
+  assignments   Assignment[]
+  studyCards    StudyCard[]
+  focusSessions FocusSession[]
+  recallEntries RecallEntry[]
 }
 
 // One flashcard/notecard for a course, powering both the Flashcards and Self-Quiz tabs on
@@ -2514,4 +2521,66 @@ model StudyAppraisal {
 
   @@index([authorId])
   @@index([status, publishedAt])
+}
+
+// One finished focus block from the Focus timer (see app/(app)/student/focus/page.tsx and
+// app/actions/focus.ts). Only completed blocks are stored: a block the student reset or
+// skipped before it ran out never happened as far as their history is concerned.
+// subjectLabel is a snapshot of the course name at the time ("PT 612 — Neuro II", or
+// "General" when no course was picked), so the weekly breakdown still reads correctly after
+// the course itself is deleted and syllabusId drops to null. dateKey is the student's own
+// local calendar date (YYYY-MM-DD, sent by the browser), the same "no timezone, just a
+// calendar date" reasoning as DailyCompletion.dateKey, so "today" in the daily goal matches
+// the student's clock rather than the server's.
+model FocusSession {
+  id           String   @id @default(cuid())
+  userId       String
+  syllabusId   String?
+  subjectLabel String
+  task         String?
+  minutes      Int
+  dateKey      String
+  endedAt      DateTime
+  createdAt    DateTime @default(now())
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  syllabus Syllabus?     @relation(fields: [syllabusId], references: [id], onDelete: SetNull)
+  recalls  RecallEntry[]
+
+  @@index([userId, endedAt])
+}
+
+// One topic a student recalled from memory after a focus block (1 to 3 per block), and the
+// spaced-review schedule that brings it back. feedback is Claude's check of the free recall
+// (see lib/focus-recall.ts, RecallFeedback): what was right, what was missed, anything
+// stated incorrectly, and a short set of key points. score is Claude's 0-100 estimate of
+// how complete and accurate the recall was; it drives reviewStage (an index into
+// REVIEW_INTERVAL_DAYS in lib/focus-review.ts) and nextReviewAt. Each review overwrites
+// note/feedback/score with the latest attempt rather than keeping every attempt.
+// studyCardId points at the Self-Quiz card created from this topic when the recall was tied
+// to a course; it is a plain id rather than a relation so deleting the card from the Study
+// Guide never touches this row.
+model RecallEntry {
+  id             String    @id @default(cuid())
+  userId         String
+  sessionId      String?
+  syllabusId     String?
+  subjectLabel   String
+  topic          String
+  note           String
+  feedback       Json?
+  score          Int?
+  reviewStage    Int       @default(0)
+  reviewCount    Int       @default(0)
+  nextReviewAt   DateTime?
+  lastReviewedAt DateTime?
+  studyCardId    String?
+  createdAt      DateTime  @default(now())
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session  FocusSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  syllabus Syllabus?     @relation(fields: [syllabusId], references: [id], onDelete: SetNull)
+
+  @@index([userId, nextReviewAt])
+  @@index([userId, createdAt])
 }
