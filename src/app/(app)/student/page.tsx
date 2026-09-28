@@ -28,6 +28,7 @@ import {
   ShieldIcon,
   ListIcon,
   BandageIcon,
+  TimerIcon,
 } from "@/components/icons";
 import { getCurrentProgramPhase, getGenericProgramPhase, getProgramPhaseLabel, type ProgramPhase } from "@/lib/dpt-program";
 import { getThisWeekAssignments, getMonthAssignments } from "@/app/actions/syllabus";
@@ -93,6 +94,13 @@ const PATHS = [
     href: "/student/wellness",
     icon: HeartIcon,
     accent: "rose",
+  },
+  {
+    title: "Focus Timer",
+    description: "Study in calm blocks, then recall what stuck and get feedback.",
+    href: "/student/focus",
+    icon: TimerIcon,
+    accent: "green",
   },
   {
     title: "Clinical Sharpening",
@@ -547,6 +555,11 @@ export default async function StudentAtriumPage() {
                every reader who reaches this grid (see AppShell.tsx), so repeating them here was
                pure duplication. The 4 tools left are ones the sidebar doesn't surface at all. */
             <div className="atrium-resource-grid">
+              <Link href="/student/focus" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><TimerIcon size={18} /></span>
+                <p className="atrium-resource-title">Focus Timer</p>
+                <p className="atrium-resource-desc">Study in calm blocks, recall what stuck, and let Claude check it. Topics come back for spaced review.</p>
+              </Link>
               <Link href="/student/specialties" className="atrium-resource-card">
                 <span className="atrium-resource-icon"><GraduationCapIcon size={18} /></span>
                 <p className="atrium-resource-title">Specialty Tracks</p>
@@ -626,6 +639,11 @@ export default async function StudentAtriumPage() {
                 <span className="atrium-resource-icon"><ZapIcon size={18} /></span>
                 <p className="atrium-resource-title">Force Lab</p>
                 <p className="atrium-resource-desc">Record and track dynamometer strength measurements from your rotation patients.</p>
+              </Link>
+              <Link href="/student/focus" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><TimerIcon size={18} /></span>
+                <p className="atrium-resource-title">Focus Timer</p>
+                <p className="atrium-resource-desc">Study in calm blocks, recall what stuck, and let Claude check it. Topics come back for spaced review.</p>
               </Link>
             </div>
           )}
