@@ -495,6 +495,7 @@ model User {
   hepPrograms         HepProgram[]
   hepTemplates        HEPTemplate[]
   readArticles        ReadArticle[]
+  studyFeedback       StudyFeedback[]
   boardActivity       BoardActivity[]
   gameActivity        GameActivity[]
   wellnessActivity    WellnessActivity[]
@@ -2478,6 +2479,25 @@ model ArticleBreakdownCache {
   articleId     String   @unique
   breakdownData Json
   generatedAt   DateTime @default(now())
+}
+
+// One reader's verdict on one study breakdown (see components/StudyFeedback.tsx,
+// app/actions/study-feedback.ts). Two independent flags rather than a rating: "was this
+// useful" and "would this change how I treat" are different questions, and the second is
+// the one that says whether the site is making research applicable. The useful count also
+// nudges the Home feed ranking (lib/feed.ts) and orders studies on condition pages.
+model StudyFeedback {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  articleId       String
+  useful          Boolean  @default(false)
+  changesPractice Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
+
+  @@unique([userId, articleId])
+  @@index([articleId])
 }
 
 // One research appraisal written by an admin (see lib/appraisal.ts, app/(app)/admin/appraisals).

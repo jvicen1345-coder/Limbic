@@ -1,4 +1,6 @@
 import type { MetadataRoute } from "next";
+import { prisma } from "@/lib/db";
+import { EVIDENCE_TOPICS } from "@/lib/evidence-topics";
 
 const baseUrl = "https://limbic.center";
 
@@ -7,9 +9,52 @@ const baseUrl = "https://limbic.center";
  *  the pages a signed-out visitor (and therefore a crawler) can actually reach and see real
  *  content on: the public marketing page at "/" (see components/LandingPage.tsx), sign-in,
  *  Founding Funders, and the three static legal pages. Listing anything under (app) would
- *  just point crawlers at login redirects. */
-export default function sitemap(): MetadataRoute.Sitemap {
+ *  just point crawlers at login redirects.
+ *
+ *  The public evidence library (app/evidence) is the exception to "mostly authenticated":
+ *  its hub, every condition page, and every study page that has a written summary are
+ *  listed. Studies without a summary are left out — their pages are noindex until one
+ *  exists (see app/evidence/[id]/page.tsx). */
+export const revalidate = 86400;
+
+const MAX_STUDY_URLS = 5000;
+
+async function evidenceStudyUrls(): Promise<MetadataRoute.Sitemap> {
+  try {
+    const rows = await prisma.articleBreakdownCache.findMany({
+      where: { articleId: { startsWith: "pubmed-" } },
+      select: { articleId: true, generatedAt: true },
+      orderBy: { generatedAt: "desc" },
+      take: MAX_STUDY_URLS,
+    });
+    return rows.map((r) => ({
+      url: `${baseUrl}/evidence/${r.articleId}`,
+      lastModified: r.generatedAt,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    }));
+  } catch {
+    // No database reachable (e.g. a build without one): list the static pages only.
+    return [];
+  }
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const studies = await evidenceStudyUrls();
   return [
+    {
+      url: `${baseUrl}/evidence`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    ...EVIDENCE_TOPICS.map((t) => ({
+      url: `${baseUrl}/evidence/topics/${t.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    })),
+    ...studies,
     {
       url: baseUrl,
       lastModified: new Date(),

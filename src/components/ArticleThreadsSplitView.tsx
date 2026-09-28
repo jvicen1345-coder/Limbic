@@ -7,6 +7,7 @@ import { ArticleReadingPane } from "@/components/ArticleReadingPane";
 import { ReadingProgressTracker } from "@/components/ReadingProgressTracker";
 import { ThreadsChat } from "@/components/ThreadsChat";
 import type { ArticleViewData } from "@/lib/article-view";
+import type { BreakdownAudience } from "@/lib/article-breakdown-shared";
 
 const ThreadsNav = dynamic(() => import("@/components/ThreadsNav").then((module) => module.ThreadsNav), {
   loading: () => (
@@ -32,10 +33,14 @@ export function ArticleThreadsSplitView({
   initialView,
   isPro,
   hasResearchAccess,
+  defaultAudience = "clinician",
 }: {
   initialView: ArticleViewData;
   isPro: boolean;
   hasResearchAccess: boolean;
+  /** Which "What it means" version the breakdown opens on, from the reader's role (see
+   *  app/(app)/article/[id]/page.tsx); a reader's own pick on the toggle overrides it. */
+  defaultAudience?: BreakdownAudience;
 }) {
   const [view, setView] = useState(initialView);
   const [swapError, setSwapError] = useState<string | null>(null);
@@ -82,6 +87,10 @@ export function ArticleThreadsSplitView({
             breakdown={view.breakdown}
             hasBreakdown={view.hasBreakdown}
             hasResearchAccess={hasResearchAccess}
+            retraction={view.retraction}
+            practiceLinks={view.practiceLinks}
+            feedback={view.feedback}
+            defaultAudience={defaultAudience}
           />
           {swapError && (
             <p style={{ fontSize: 13, color: "var(--color-neutral-700)", marginTop: 12 }}>{swapError}</p>

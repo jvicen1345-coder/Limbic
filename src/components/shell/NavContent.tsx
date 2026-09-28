@@ -352,9 +352,13 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
     <>
       <NavLink href="/home" icon={<HomeIcon />} label="Home" onNavigate={onNavigate} />
       <NavLink href="/search" icon={<SearchIcon />} label="Search" onNavigate={onNavigate} />
+      {/* The condition-organized research library — the site's core job, so it sits with
+          Home and Search rather than inside a section. It lives outside the app shell
+          (app/evidence) because it is public: the same page a patient reaches from Google. */}
+      <NavLink href="/evidence" icon={<FileTextIcon />} label="Evidence Library" onNavigate={onNavigate} />
+      <NavLink href="/atlas" icon={<BodyIcon />} label="Limbic Atlas" onNavigate={onNavigate} dataTour="atlas" />
       <NavLink href="/clips" icon={<FilmIcon />} label="Clips" onNavigate={onNavigate} />
       <NavLink href="/games" icon={<GridIcon />} label="Limbic Games" onNavigate={onNavigate} />
-      <NavLink href="/atlas" icon={<BodyIcon />} label="Limbic Atlas" onNavigate={onNavigate} dataTour="atlas" />
 
       {zoneTwoOrder.map((key) => (
         <Fragment key={key}>{zoneTwoSections[key]}</Fragment>

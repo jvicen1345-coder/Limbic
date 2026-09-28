@@ -11,6 +11,9 @@ import { getCachedUnpaywall } from "@/lib/unpaywall-cache";
 import { getTimeZone } from "@/lib/user-time-zone";
 import { breakdownSourceText, type ArticleBreakdown } from "@/lib/article-breakdown-shared";
 import type { Article } from "@/lib/types";
+import { findRetraction, type RetractionFlag } from "@/lib/retraction-check";
+import { practiceLinksFor, type PracticeLinks } from "@/lib/practice-links";
+import { getStudyFeedbackSummary, type StudyFeedbackSummary } from "@/lib/study-feedback";
 
 export interface ArticleViewData {
   article: DecoratedArticle;
@@ -31,6 +34,12 @@ export interface ArticleViewData {
    *  client-side breakdownSourceText() call would be answering the question from evidence
    *  this view deliberately removed. */
   hasBreakdown: boolean;
+  /** Set when the study appears in the Retraction Watch snapshot (lib/retraction-check.ts). */
+  retraction: RetractionFlag | null;
+  /** Guideline / tool / condition links for this study (lib/practice-links.ts). */
+  practiceLinks: PracticeLinks | null;
+  /** Reader feedback totals, only for articles that carry a breakdown. */
+  feedback: StudyFeedbackSummary | null;
 }
 
 function mergeContextPool(base: Article[], extra: Article[]): Article[] {
@@ -110,5 +119,19 @@ export async function buildArticleView(articleId: string, userId: string, isAdmi
   // panel below still reads it.
   const clientArticle = hasBreakdown ? { ...article, fullAbstract: undefined } : article;
 
-  return { article: clientArticle, related, threadsNodes, unpaywallResult, breakdown, hasBreakdown };
+  const retraction = raw.id.startsWith("rw-") ? null : findRetraction(raw);
+  const practiceLinks = raw.type === "research" || raw.type === "guideline" ? practiceLinksFor(raw) : null;
+  const feedback = hasBreakdown ? await getStudyFeedbackSummary(raw.id, userId) : null;
+
+  return {
+    article: clientArticle,
+    related,
+    threadsNodes,
+    unpaywallResult,
+    breakdown,
+    hasBreakdown,
+    retraction,
+    practiceLinks,
+    feedback,
+  };
 }

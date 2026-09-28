@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { PLAIN_TERM_LOOKUP, type PlainTerm } from "@/lib/plain-language";
+import { PLAIN_TERM_LOOKUP, RESEARCH_TERM_LOOKUP, type PlainTerm } from "@/lib/plain-language";
 
 /** Renders a string of clinical prose with its jargon made tappable — see
  *  lib/plain-language.ts for the glossary and why it exists.
@@ -15,8 +15,8 @@ import { PLAIN_TERM_LOOKUP, type PlainTerm } from "@/lib/plain-language";
  *  Only the **first** occurrence of a term in a given string is marked. Underlining all 85
  *  instances of "flexion" would turn the Atlas into a field of dotted lines and teach the
  *  reader to ignore them, which is the opposite of the point. */
-export function PlainText({ children }: { children: string }) {
-  const parts = useMemo(() => annotate(children), [children]);
+export function PlainText({ children, glossary = "anatomy" }: { children: string; glossary?: Glossary }) {
+  const parts = useMemo(() => annotate(children, glossary), [children, glossary]);
   if (parts.length === 1 && typeof parts[0] === "string") return <>{parts[0]}</>;
   return (
     <>
@@ -37,24 +37,33 @@ type Piece = string | { entry: PlainTerm; label: string };
  *  it. Word boundaries alone nearly handle that — the `i` before "flexion" in "dorsiflexion"
  *  is a word character, so \b fails there — but alternation is leftmost-first, and ordering
  *  makes the intent explicit instead of relying on that. */
-const MATCH_PATTERN = new RegExp(
-  `\\b(${[...PLAIN_TERM_LOOKUP.keys()]
+function patternFor(lookup: ReadonlyMap<string, PlainTerm>): string {
+  return `\\b(${[...lookup.keys()]
     .sort((a, b) => b.length - a.length)
     .map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-    .join("|")})\\b`,
-  "gi"
-);
+    .join("|")})\\b`;
+}
 
-function annotate(text: string): Piece[] {
+/** "anatomy" is the Atlas glossary; "research" is the study-write-up glossary used on
+ *  breakdowns and the public evidence pages (see lib/plain-language.ts RESEARCH_TERMS). */
+export type Glossary = "anatomy" | "research";
+
+const GLOSSARIES: Record<Glossary, { lookup: ReadonlyMap<string, PlainTerm>; source: string }> = {
+  anatomy: { lookup: PLAIN_TERM_LOOKUP, source: patternFor(PLAIN_TERM_LOOKUP) },
+  research: { lookup: RESEARCH_TERM_LOOKUP, source: patternFor(RESEARCH_TERM_LOOKUP) },
+};
+
+function annotate(text: string, glossary: Glossary): Piece[] {
   if (!text) return [text];
+  const { lookup, source } = GLOSSARIES[glossary];
   const pieces: Piece[] = [];
   const seen = new Set<PlainTerm>();
   let last = 0;
-  // A fresh regex per call: the shared one is /g and carries lastIndex between uses, which
-  // would make the result depend on whatever string was annotated before this one.
-  const re = new RegExp(MATCH_PATTERN.source, "gi");
+  // A fresh regex per call: a shared /g regex carries lastIndex between uses, which would
+  // make the result depend on whatever string was annotated before this one.
+  const re = new RegExp(source, "gi");
   for (let m = re.exec(text); m !== null; m = re.exec(text)) {
-    const entry = PLAIN_TERM_LOOKUP.get(m[0].toLowerCase());
+    const entry = lookup.get(m[0].toLowerCase());
     if (!entry || seen.has(entry)) continue;
     seen.add(entry);
     if (m.index > last) pieces.push(text.slice(last, m.index));

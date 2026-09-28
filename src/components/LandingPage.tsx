@@ -120,6 +120,11 @@ export function LandingPage() {
           <Link href="/founding-funders" className="landing-btn landing-btn-gold landing-btn-lg">
             Founding Funders
           </Link>
+          {/* The one thing on this page a visitor can use without an account — the public,
+              condition-organized evidence library (app/evidence). */}
+          <Link href="/evidence" className="landing-btn landing-btn-outline landing-btn-lg">
+            Browse the research free
+          </Link>
         </div>
       </section>
 
