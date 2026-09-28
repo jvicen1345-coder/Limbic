@@ -14,6 +14,55 @@ export interface ArticleBreakdown {
   design: string;
   findings: string[];
   takeaway: string;
+  /* Everything below arrived with version 2. Rows cached before it lack all of these, so
+     every reader treats them as optional; components/ArticleBreakdown.tsx upgrades an old
+     row in the background the first time a signed-in reader opens it (see
+     upgradeArticleBreakdownAction). */
+  version?: typeof BREAKDOWN_VERSION;
+  /** "What it means" rewritten for the two other readers the site serves. The clinician
+   *  version is `takeaway` itself. */
+  audiences?: { student: string; patient: string };
+  /** Total participants as the abstract states it; null when it doesn't. */
+  sampleSize?: number | null;
+  /** Longest follow-up as a short phrase ("12 weeks", "1 year"); null when not stated. */
+  followUp?: string | null;
+  /** Between- or within-group effects exactly as the abstract reports them — extraction
+   *  only. Whether one matters clinically is decided by lib/clinical-meaning.ts, never by
+   *  the model. */
+  effects?: ExtractedEffect[];
+}
+
+export const BREAKDOWN_VERSION = 2 as const;
+
+export interface ExtractedEffect {
+  /** The outcome measure's name as the abstract gives it ("NPRS", "Oswestry Disability Index"). */
+  outcome: string;
+  comparison: "between-group" | "within-group";
+  estimate: number;
+  ciLower: number | null;
+  ciUpper: number | null;
+  /** Units as reported ("points", "%", "seconds"); empty string when not stated. */
+  unit: string;
+}
+
+export type BreakdownAudience = "clinician" | "student" | "patient";
+
+export const BREAKDOWN_AUDIENCES: { key: BreakdownAudience; label: string }[] = [
+  { key: "clinician", label: "Clinician" },
+  { key: "student", label: "Student" },
+  { key: "patient", label: "Patient" },
+];
+
+/** The "What it means" line for one audience — falls back to the clinician takeaway for a
+ *  version-1 row that has no audience lines yet. */
+export function takeawayFor(breakdown: ArticleBreakdown, audience: BreakdownAudience): string {
+  if (audience === "student") return breakdown.audiences?.student || breakdown.takeaway;
+  if (audience === "patient") return breakdown.audiences?.patient || breakdown.takeaway;
+  return breakdown.takeaway;
+}
+
+export function isCurrentBreakdown(breakdown: ArticleBreakdown): boolean {
+  return breakdown.version === BREAKDOWN_VERSION;
 }
 
 /** The five fields in render order, with the label each gets on the page. Exported so

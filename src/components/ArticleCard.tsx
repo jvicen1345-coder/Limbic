@@ -32,7 +32,25 @@ export type ArticleCardModel = {
   saved: boolean;
   isNew?: boolean;
   isRead?: boolean;
+  trust?: Article["trust"];
 };
+
+/** Sample size / follow-up / retraction line (see lib/trust-signals.ts). Renders nothing
+ *  when none are known. */
+function TrustLine({ trust }: { trust: ArticleCardModel["trust"] }) {
+  if (!trust) return null;
+  const facts = [
+    trust.sampleSize ? `n=${trust.sampleSize.toLocaleString("en-US")}` : null,
+    trust.followUp ? `${trust.followUp} follow-up` : null,
+  ].filter(Boolean);
+  if (facts.length === 0 && !trust.retraction) return null;
+  return (
+    <div className="article-card-trust">
+      {trust.retraction && <span className="article-card-retraction">{trust.retraction}</span>}
+      {facts.length > 0 && <span>{facts.join(" · ")}</span>}
+    </div>
+  );
+}
 
 /** Every source already tags an article with its specialty and type label as the first two
  *  entries (see lib/pubmed.ts, lib/news-live.ts) — both already shown elsewhere on the card
@@ -85,6 +103,7 @@ export function ArticleCard({ article }: { article: ArticleCardModel }) {
         </span>
         <span>{article.source}</span>
       </div>
+      <TrustLine trust={article.trust} />
       {extraTags.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
           {extraTags.map((t) => (
@@ -127,6 +146,7 @@ export function HeroArticleCard({ article }: { article: ArticleCardModel }) {
           {article.evidenceLevel && <EvidenceBadge level={article.evidenceLevel} size="sm" />}
           <span>{article.source}</span>
         </div>
+        <TrustLine trust={article.trust} />
       </div>
     );
   }
@@ -165,6 +185,7 @@ export function HeroArticleCard({ article }: { article: ArticleCardModel }) {
           {article.isNew && <NewBadge />}
           {article.isRead && <ReadBadge />}
         </div>
+        <TrustLine trust={article.trust} />
       </div>
       <div style={{ padding: "10px 20px 18px", textAlign: "center" }}>
         <p className="card-body" style={{ fontSize: 15, margin: "0 auto" }}>

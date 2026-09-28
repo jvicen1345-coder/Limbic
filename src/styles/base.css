@@ -562,3 +562,24 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   z-index: 9999;
   pointer-events: none;
 }
+/* Feed-card trust line (components/ArticleCard.tsx TrustLine, lib/trust-signals.ts):
+   sample size, follow-up and a retraction flag. Here rather than in a feature sheet
+   because ArticleCard renders on Home, Search and Wellness, and the public evidence
+   pages reuse the retraction pill. */
+.article-card-trust {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-11);
+  color: var(--color-neutral-700);
+}
+.article-card-retraction {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: var(--fs-10-5);
+  font-weight: 700;
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+}

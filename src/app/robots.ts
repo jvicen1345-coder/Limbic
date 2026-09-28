@@ -18,6 +18,7 @@ export default function robots(): MetadataRoute.Robots {
         "/dmca",
         "/founding-funders",
         "/programs",
+        "/evidence",
         "/sitemap.xml",
         "/robots.txt",
       ],

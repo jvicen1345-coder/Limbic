@@ -2,7 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
-import type { ArticleBreakdown } from "@/lib/article-breakdown-shared";
+import { BREAKDOWN_VERSION, type ArticleBreakdown } from "@/lib/article-breakdown-shared";
 
 // Re-exported so server-side callers have one import site for the whole feature; the
 // definitions live in the shared module because client components need them too.
@@ -35,7 +35,7 @@ const MODEL = "claude-opus-5";
  */
 
 const SYSTEM_PROMPT = [
-  "You write short, scannable breakdowns of research studies for physical therapy clinicians. You are given a study's title and abstract, and you return five fields that let a clinician understand the study in about ten seconds.",
+  "You write short, scannable breakdowns of research studies for physical therapy clinicians. You are given a study's title and abstract, and you return five core fields that let a clinician understand the study in about ten seconds, plus versions of its meaning for students and patients and a few numbers copied from the abstract.",
   "",
   "Write everything in your own words. Do not copy phrases or sentences from the abstract — this breakdown replaces the abstract rather than reprinting it, so wording carried over verbatim defeats its purpose. Reuse only unavoidable technical terms: the names of conditions, interventions, and outcome measures.",
   "",
@@ -45,6 +45,13 @@ const SYSTEM_PROMPT = [
   "3. design — the study design and what was done or compared, as a short phrase (e.g. \"Randomized controlled trial, 12 weeks of supervised exercise vs. home program\"). Include the follow-up period when stated.",
   "4. findings — the study's results, one per bullet, with the actual numbers the abstract reports (effect sizes, confidence intervals, percentages, between-group differences, p-values). A finding stated without its number is close to useless for appraisal. Two to four bullets is typical, but the count follows the study: return only as many bullets as there are real results. A bullet describing how the study was run — what was measured, on what scale, at what timepoint, how groups were split, what the primary outcome was — is not a finding, it belongs to the design field, and it must not appear here. If a study reports only one or two results, give one or two bullets; never pad this section out to a target length with method detail.",
   "5. takeaway — one sentence on what this study suggests for physical therapy practice.",
+  "",
+  "Then the same meaning for two other readers, plus three extraction-only fields:",
+  "6. studentTakeaway — one or two sentences for a physical therapy student: what this study teaches about the condition or the intervention, and one thing about how it was designed that is worth noticing (a strength or a limitation).",
+  "7. patientTakeaway — one or two sentences for a member of the public with no medical training, at about an 8th-grade reading level. No jargon and no abbreviations; if a term is unavoidable, say it in everyday words. Describe what the researchers found in people like the ones studied. Do not give advice or tell the reader what to do, other than that a physical therapist can help them decide what fits them.",
+  "8. sampleSize — the total number of participants as a whole number, only if the abstract states it; otherwise null.",
+  "9. followUp — the longest follow-up as a short phrase (e.g. \"12 weeks\", \"1 year\"), only if stated; otherwise null.",
+  "10. effects — every numeric effect the abstract reports for a named outcome measure, copied exactly: the outcome measure's name as written, whether it is a between-group difference or a within-group change, the point estimate, the 95% confidence interval bounds if reported (otherwise null), and the units as written (empty string if none). Copy numbers only; never compute, convert, or infer one. Return an empty list if the abstract reports no such numbers.",
   "",
   "Be accurate before being brief. Never invent a sample size, a setting, a follow-up period, or a number that the abstract does not state — if something isn't there, say it isn't reported. Do not overstate a finding: if the study found no significant difference, the findings and the takeaway must both say so plainly.",
   "",
@@ -71,6 +78,22 @@ const BreakdownResponseSchema = z.object({
       "The study's results, one per bullet, with the numbers the abstract reports. As many bullets as there are real results — usually two to four, fewer when the study reports fewer. Never method detail; that belongs in design."
     ),
   takeaway: z.string().describe("One sentence on what this study suggests for physical therapy practice."),
+  studentTakeaway: z.string().describe("For a physical therapy student: what the study teaches, plus one design strength or limitation."),
+  patientTakeaway: z.string().describe("For the public, plain words, about an 8th-grade reading level, no advice."),
+  sampleSize: z.number().int().nullable().describe("Total participants if stated, else null."),
+  followUp: z.string().nullable().describe("Longest follow-up as a short phrase if stated, else null."),
+  effects: z
+    .array(
+      z.object({
+        outcome: z.string(),
+        comparison: z.enum(["between-group", "within-group"]),
+        estimate: z.number(),
+        ciLower: z.number().nullable(),
+        ciUpper: z.number().nullable(),
+        unit: z.string(),
+      })
+    )
+    .describe("Numeric effects copied exactly from the abstract; empty when none are reported."),
 });
 
 /** Builds the breakdown for one article from what the app already knows about it — its
@@ -105,12 +128,18 @@ export async function generateArticleBreakdown(input: { title: string; abstract:
     // let the caller fall back to the link out to the source.
     if (findings.length === 0) return null;
 
+    const sampleSize = parsed.sampleSize !== null && parsed.sampleSize > 0 ? parsed.sampleSize : null;
     return {
       question: parsed.question.trim(),
       population: parsed.population.trim(),
       design: parsed.design.trim(),
       findings,
       takeaway: parsed.takeaway.trim(),
+      version: BREAKDOWN_VERSION,
+      audiences: { student: parsed.studentTakeaway.trim(), patient: parsed.patientTakeaway.trim() },
+      sampleSize,
+      followUp: parsed.followUp?.trim() || null,
+      effects: parsed.effects.filter((e) => e.outcome.trim() && Number.isFinite(e.estimate)),
     };
   } catch (err) {
     console.error("Article breakdown failed:", err);

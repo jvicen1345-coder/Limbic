@@ -26,6 +26,9 @@ import type { NexusSuggestion } from "@/components/NexusSuggestionsCard";
 import type { CeCategory, Specialty } from "@/lib/types";
 import { getTimeZone } from "@/lib/user-time-zone";
 import { pickContinueReading } from "@/lib/reading-progress";
+import { getUsefulCounts } from "@/lib/study-feedback";
+import { withTrustSignals } from "@/lib/trust-signals";
+import { EvidenceTopicStrip } from "@/components/evidence/EvidenceTopicStrip";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -121,8 +124,13 @@ export default async function HomePage({
   // Start that chain as soon as those three resolve — do not wait for timezone / Nexus /
   // founding-funder. Image preparation is a single cache read plus synchronous bundled
   // fallbacks; third-party image requests run only after the response below.
-  const homeImagesPromise = Promise.all([articlesPromise, savedRowsPromise, readRowsPromise]).then(
-    ([articles, savedRows, readRows]) => {
+  // Crowd "useful" votes on study breakdowns (see lib/study-feedback.ts) — research only,
+  // since only research articles carry a breakdown to vote on.
+  const usefulCountsPromise = articlesPromise.then((articles) =>
+    getUsefulCounts(articles.filter((a) => a.type === "research").map((a) => a.id))
+  );
+  const homeImagesPromise = Promise.all([articlesPromise, savedRowsPromise, readRowsPromise, usefulCountsPromise]).then(
+    ([articles, savedRows, readRows, usefulCounts]) => {
       const rankedAll = rankFeed({
         articles,
         specialty: user.specialty as Specialty,
@@ -130,6 +138,7 @@ export default async function HomePage({
         readRows,
         savedRows,
         llmProfile: parseInterestProfile(user.llmInterestProfile),
+        usefulCounts,
       });
       // Already-read articles don't resurface as fresh recommendations on Home — Continue
       // Reading (below) is the dedicated path back to something already opened, and every
@@ -253,7 +262,9 @@ export default async function HomePage({
   if (imageRefreshCandidates.length > 0) {
     after(() => refreshHomeImageCache(imageRefreshCandidates));
   }
-  const rankedForDisplay = homeImages.articles;
+  // Sample size, follow-up and retraction flags for the cards (see lib/trust-signals.ts) —
+  // one cache query for the whole feed.
+  const rankedForDisplay = await withTrustSignals(homeImages.articles);
   const decorated = rankedForDisplay.map((a) => decorateArticle(a, savedIds, previousVisit, readIds));
 
   const decoratedById = new Map(decorated.map((a) => [a.id, a]));
@@ -286,6 +297,7 @@ export default async function HomePage({
 
   return (
     <>
+    <EvidenceTopicStrip />
     <HomeFeed
       articles={decorated}
       calendarWidget={

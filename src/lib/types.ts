@@ -46,10 +46,21 @@ export interface Article {
   /** The article's DOI — populated for PubMed articles only. Used for Unpaywall lookup
    *  (see lib/unpaywall.ts, lib/article-view.ts). */
   doi?: string;
+  /** At-a-glance "how much should I trust this" facts for feed cards, filled in by
+   *  lib/trust-signals.ts from the cached study breakdown and the Retraction Watch snapshot.
+   *  Absent until a breakdown exists, and on every non-research article. */
+  trust?: TrustSignals;
   /** Full untruncated abstract — populated for PubMed articles only. Shown on the article
    *  detail page in place of the 320-char summary. Feed cards always use summary — unchanged
    *  (see components/ArticleReadingPane.tsx). */
   fullAbstract?: string;
+}
+
+export interface TrustSignals {
+  sampleSize?: number | null;
+  followUp?: string | null;
+  /** Retraction Watch status ("Retraction", "Correction", …) when the study is flagged. */
+  retraction?: string | null;
 }
 
 export interface WellnessArticle {

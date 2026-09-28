@@ -14,6 +14,13 @@ import { getOaStatusLabel, type UnpaywallResult } from "@/lib/unpaywall-shared";
 import type { ArticleBreakdown as ArticleBreakdownData } from "@/lib/article-breakdown-shared";
 import type { DecoratedArticle } from "@/lib/feed";
 import type { EvidenceLevel } from "@/lib/types";
+import type { BreakdownAudience } from "@/lib/article-breakdown-shared";
+import type { RetractionFlag } from "@/lib/retraction-check";
+import type { PracticeLinks } from "@/lib/practice-links";
+import type { StudyFeedbackSummary } from "@/lib/study-feedback";
+import { RetractionBanner } from "@/components/evidence/RetractionBanner";
+import { PracticeLinksPanel } from "@/components/evidence/PracticeLinksPanel";
+import { StudyFeedback } from "@/components/StudyFeedback";
 
 /** Which of the Related grid's 6 left-border colors a card gets (see
  *  .article-related-border-* in src/styles) — keyed off the card's own evidence badge
@@ -49,6 +56,10 @@ export function ArticleReadingPane({
   hasResearchAccess,
   breakdown,
   hasBreakdown,
+  retraction,
+  practiceLinks,
+  feedback,
+  defaultAudience,
 }: {
   article: DecoratedArticle;
   related: DecoratedArticle[];
@@ -56,6 +67,10 @@ export function ArticleReadingPane({
   hasResearchAccess: boolean;
   breakdown: ArticleBreakdownData | null;
   hasBreakdown: boolean;
+  retraction: RetractionFlag | null;
+  practiceLinks: PracticeLinks | null;
+  feedback: StudyFeedbackSummary | null;
+  defaultAudience: BreakdownAudience;
 }) {
   const evidenceMeta = article.evidenceLevel ? EVIDENCE_LEVEL_META[article.evidenceLevel] : null;
 
@@ -111,12 +126,14 @@ export function ArticleReadingPane({
 
       <hr className="article-hero-divider" />
 
+      {retraction && <RetractionBanner flag={retraction} />}
+
       {/* A research article's body is its breakdown — the abstract itself is deliberately
           not rendered here or anywhere else on the page (see lib/article-breakdown.ts).
           Authored seed articles still render their own paragraphs below, unchanged. */}
       <div className="article-prose">
         {hasBreakdown ? (
-          <ArticleBreakdown articleId={article.id} initial={breakdown} />
+          <ArticleBreakdown articleId={article.id} initial={breakdown} defaultAudience={defaultAudience} />
         ) : article.body && article.body.length > 0 ? (
           article.body.map((para, i) => (
             <p key={i} className={i === 0 ? "article-lede" : undefined}>
@@ -194,6 +211,17 @@ export function ArticleReadingPane({
             <ShareButton />
           </div>
         </div>
+      )}
+
+      {feedback && <StudyFeedback articleId={article.id} initial={feedback} />}
+
+      {practiceLinks && <PracticeLinksPanel links={practiceLinks} />}
+
+      {hasBreakdown && article.id.startsWith("pubmed-") && (
+        <p className="evidence-share-public">
+          Sharing with a patient or classmate? <Link href={`/evidence/${article.id}`}>Open the free public version</Link> —
+          no account needed.
+        </p>
       )}
 
       {hasResearchAccess && (article.doi || article.sourceUrl) && (
