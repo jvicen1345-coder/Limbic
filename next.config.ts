@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/student/guides/shoulder-examination": ["content/playbooks/*.html"],
     "/student/guides/[guide]": ["content/playbooks/*.html"],
+    "/student/exam-prep/[guide]": ["content/exam-prep/*.html"],
+    "/student/exam-prep/[guide]/[part]": ["content/exam-prep/*.html"],
   },
   images: {
     // Closed allowlist of known CDNs (YouTube thumbs, Wikimedia Commons topic photos,

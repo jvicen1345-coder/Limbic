@@ -5,13 +5,16 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser, hasStudentAccess } from "@/lib/session";
 import { isKnownGuide, canReadGuide } from "@/lib/guides";
 import { getPlaybook } from "@/lib/playbook-content";
+import { isKnownExamPrep } from "@/lib/exam-prep";
 
 /** Whether `slug` is a real, currently-open (not "Coming soon") playbook or guide — the
  *  only things worth spending a free pick on. Guides and data playbooks share one hub (see
  *  app/(app)/student/playbooks/page.tsx) and one free-pick pool, so this checks both
- *  registries rather than just lib/guides.ts. */
+ *  registries rather than just lib/guides.ts. The Exam Prep guides (lib/exam-prep.ts) spend
+ *  from the same pool, so their slugs are accepted here as well. */
 function isChoosableSlug(slug: string): boolean {
   if (isKnownGuide(slug)) return canReadGuide(slug, { admin: false });
+  if (isKnownExamPrep(slug)) return true;
   return getPlaybook(slug) != null;
 }
 
@@ -32,4 +35,5 @@ export async function chooseFreePlaybookAction(slug: string) {
   revalidatePath("/student/playbooks");
   revalidatePath(`/student/playbooks/${slug}`);
   revalidatePath(`/student/guides/${slug}`);
+  revalidatePath("/student/exam-prep");
 }

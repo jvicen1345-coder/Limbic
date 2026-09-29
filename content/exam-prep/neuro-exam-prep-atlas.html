@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html,body{margin:0}[hidden]{display:none!important}img{max-width:100%}a.home{font-family:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;font-size:13px;text-decoration:none;border-radius:999px;padding:6px 14px;display:inline-block}</style>
+<title>Neuro Exam Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f3f5f9; --surface:#ffffff; --surface-2:#e9edf5; --ink:#18203a; --ink-2:#4d5670; --line:#d3d9e6; --line-strong:#8f9ab3;
+  --accent:#2d48b0; --accent-soft:#e2e7f8; --pos:#16806a; --pos-soft:#dcf1ea; --neg:#b3322a; --neg-soft:#f9e1de; --warm:#b86a12; --warm-soft:#fbead3;
+  --display:"Literata",Georgia,serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131b; --surface:#181c28; --surface-2:#222839; --ink:#e7eaf3; --ink-2:#a4acc2; --line:#2f3649; --line-strong:#6a7591;
+    --accent:#8fa3f2; --accent-soft:#232c4f; --pos:#5fd0b2; --pos-soft:#15352e; --neg:#f08a80; --neg-soft:#3d1c1a; --warm:#f0b465; --warm-soft:#3a2a14;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131b; --surface:#181c28; --surface-2:#222839; --ink:#e7eaf3; --ink-2:#a4acc2; --line:#2f3649; --line-strong:#6a7591;
+  --accent:#8fa3f2; --accent-soft:#232c4f; --pos:#5fd0b2; --pos-soft:#15352e; --neg:#f08a80; --neg-soft:#3d1c1a; --warm:#f0b465; --warm-soft:#3a2a14;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 60px}
+.wrap{max-width:1180px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:650;margin:0;text-wrap:balance;line-height:1.2}
+header{padding-block:34px 18px;border-bottom:2px solid var(--ink);display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+header h1{font-size:clamp(30px,5vw,46px);margin-top:6px}
+header p{color:var(--ink-2);max-width:60ch;margin:8px 0 0}
+.back{font-family:var(--mono);font-size:13px;color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:var(--surface);white-space:nowrap}
+.back:hover{border-color:var(--accent)}
+.filters{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;flex-wrap:wrap;padding-block:12px;border-bottom:1px solid var(--line);align-items:center}
+.chip{font-family:var(--body);font-size:13.5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.count{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.week-h{margin-top:34px;display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.week-h .wk{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.week-h h2{font-size:22px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+figure.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px}
+.fig-h{display:flex;gap:10px;align-items:baseline}
+.fig-h .n{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:24px}
+.fig-h h3{font-size:17px}
+.svgbox{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.svgbox svg{display:block;width:100%;height:auto;min-width:460px;color:var(--ink)}
+figcaption{font-size:14px;color:var(--ink-2);line-height:1.5}
+figcaption .src{font-family:var(--mono);font-size:11px;background:var(--surface-2);color:var(--ink-2);border-radius:4px;padding:1px 6px;white-space:nowrap}
+figcaption .ill{font-family:var(--mono);font-size:11px;border:1px dashed var(--line-strong);border-radius:4px;padding:0 5px;white-space:normal;overflow-wrap:anywhere}
+/* svg vocabulary */
+svg text{font-family:var(--body);font-size:13px;fill:currentColor}
+svg .ts{font-size:11.5px;fill:var(--ink-2)}
+svg .tb{font-weight:600}
+svg .th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;fill:var(--ink-2)}
+svg .tacc{fill:var(--accent)} svg .tpos{fill:var(--pos)} svg .tneg{fill:var(--neg)} svg .twarm{fill:var(--warm)}
+svg .bx{fill:var(--surface);stroke:var(--line-strong);stroke-width:1.2}
+svg .bx.acc{fill:var(--accent-soft);stroke:var(--accent)}
+svg .bx.pos{fill:var(--pos-soft);stroke:var(--pos)}
+svg .bx.neg{fill:var(--neg-soft);stroke:var(--neg)}
+svg .bx.warm{fill:var(--warm-soft);stroke:var(--warm)}
+svg .bx.mut{fill:var(--surface-2);stroke:var(--line)}
+svg .ln{stroke:currentColor;stroke-width:1.5;fill:none}
+svg .ln.acc{stroke:var(--accent)} svg .ln.pos{stroke:var(--pos)} svg .ln.neg{stroke:var(--neg)} svg .ln.warm{stroke:var(--warm)}
+svg .ln.dash{stroke-dasharray:5 4} svg .ln.faint{stroke:var(--line-strong)} svg .ln.thick{stroke-width:3}
+svg .ax{stroke:var(--line-strong);stroke-width:1.2;fill:none}
+svg .grid-l{stroke:var(--line);stroke-width:1}
+svg .f-acc{fill:var(--accent)} svg .f-pos{fill:var(--pos)} svg .f-neg{fill:var(--neg)} svg .f-warm{fill:var(--warm)} svg .f-ink{fill:currentColor} svg .f-mut{fill:var(--line-strong)} svg .f-surf{fill:var(--surface)}
+svg .f-accs{fill:var(--accent-soft)} svg .f-poss{fill:var(--pos-soft)} svg .f-negs{fill:var(--neg-soft)} svg .f-warms{fill:var(--warm-soft)} svg .f-s2{fill:var(--surface-2)}
+svg .venn{fill:var(--accent);fill-opacity:.1;stroke:var(--accent);stroke-width:1.4}
+footer{margin-top:40px;border-top:1px solid var(--line);padding-top:14px;font-size:13px;color:var(--ink-2)}
+</style>
+
+<div class="wrap">
+<header>
+  <div>
+    <div class="eyebrow">Neurologic physical therapy · Examination &amp; functional training</div>
+    <h1>Neuro Exam Atlas</h1>
+    <p>Original diagrams of neurologic reasoning, examination, speech and swallowing, exercise, functional training and documentation. Each caption states the one idea the picture shows and names its source.</p>
+  </div>
+  <a class="back" href="/student/exam-prep/neuro-exam-prep">← Study page</a>
+</header>
+<div class="filters" id="filters" role="group" aria-label="Filter by topic"></div>
+<main id="atlas"></main>
+<footer>All diagrams are original schematics, not reproductions of published figures. Captions give short author-year citations; full references are listed on the study page. Figures marked <span class="ill" style="font-family:var(--mono);font-size:11px">shape only</span> or with a note show relationships, not measured data.</footer>
+</div>
+
+<script>
+(function(){
+var ID=0;
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function S(w,h,label,body){
+  var mk=function(n,cls){return '<marker id="'+n+ID+'" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" class="'+cls+'"/></marker>'};
+  return '<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(label)+'"><defs>'+mk('a','f-ink')+mk('b','f-acc')+mk('c','f-neg')+mk('d','f-pos')+mk('e','f-warm')+mk('g','f-mut')+'</defs>'+body+'</svg>';
+}
+function mkr(k){k=k||'';return k.indexOf('acc')>=0?'b':k.indexOf('neg')>=0?'c':k.indexOf('pos')>=0?'d':k.indexOf('warm')>=0?'e':k.indexOf('faint')>=0?'g':'a'}
+function T(x,y,s,k,anchor){return '<text x="'+x+'" y="'+y+'" class="'+(k||'')+'" text-anchor="'+(anchor||'middle')+'">'+esc(s)+'</text>'}
+function TL(x,y,lines,k,anchor,lh){lh=lh||15;return lines.map(function(l,i){return T(x,y+i*lh,l,k,anchor)}).join('')}
+function B(x,y,w,h,lines,k,tk){
+  lines=[].concat(lines);var n=lines.length,lh=15,cy=y+h/2-(n-1)*lh/2+4.5;
+  return '<rect class="bx '+(k||'')+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6"/>'+lines.map(function(l,i){
+    var cls=(tk||'')+(i===0?' tb':' ts');if(n===1)cls=(tk||'')+' tb';return T(x+w/2,cy+i*lh,l,cls)}).join('');
+}
+function A(x1,y1,x2,y2,k,lab,lx,ly,lk,anchor){
+  var s='<line class="ln '+(k||'')+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" marker-end="url(#'+mkr(k)+ID+')"/>';
+  if(lab)s+=T(lx!=null?lx:(x1+x2)/2,ly!=null?ly:(y1+y2)/2-6,lab,lk||'ts',anchor);
+  return s;
+}
+function P(d,k,arrow){return '<path class="ln '+(k||'')+'" d="'+d+'"'+(arrow?' marker-end="url(#'+mkr(k)+ID+')"':'')+'/>'}
+function L(x1,y1,x2,y2,k){return '<line class="ln '+(k||'')+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"/>'}
+function C(x,y,r,k){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" class="'+(k||'')+'"/>'}
+function R(x,y,w,h,k,rx){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(rx==null?4:rx)+'" class="'+(k||'')+'"/>'}
+function axes(x0,y0,w,h,xl,yl){return '<path class="ax" d="M'+x0+' '+(y0-h)+'V'+y0+'H'+(x0+w)+'"/>'+(xl?T(x0+w/2,y0+20,xl,'ts'):'')+(yl?'<text class="ts" text-anchor="middle" transform="translate('+(x0-14)+' '+(y0-h/2)+') rotate(-90)">'+esc(yl)+'</text>':'')}
+function person(x,y,k){return C(x,y,9,'bx '+(k||''))+L(x,y+9,x,y+42,k)+L(x,y+20,x-14,y+32,k)+L(x,y+20,x+14,y+30,k)+L(x,y+42,x-10,y+64,k)+L(x,y+42,x+10,y+64,k)}
+function neuron(x,y,k){return C(x,y,13,'bx '+(k||''))}
+
+var F=[];
+function fig(w,title,cap,src,draw,note){F.push({w:w,t:title,c:cap,src:src,draw:draw,note:note})}
+/* wrapping box helpers */
+function wrapT(t,m){if(!t)return [];var w=String(t).split(' '),l=[''];w.forEach(function(x){var c=l[l.length-1];if(c&&(c+' '+x).length>m)l.push(x);else l[l.length-1]=(c?c+' ':'')+x});return l}
+function BX(x,y,w,h,title,sub,k,tk){var tl=wrapT(title,Math.floor((w-12)/8.2)),sl=[];[].concat(sub||[]).forEach(function(q){sl=sl.concat(wrapT(q,Math.floor((w-10)/6.3)))});var n=tl.length+sl.length,lh=14,cy=y+h/2-(n-1)*lh/2+4.5,o='<rect class="bx '+(k||'')+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6"/>';tl.forEach(function(l,i){o+=T(x+w/2,cy+i*lh,l,(tk||'')+' tb')});sl.forEach(function(l,i){o+=T(x+w/2,cy+(tl.length+i)*lh,l,'ts')});return o}
+function BS(x,y,w,h,text,k){var sl=wrapT(text,Math.floor((w-10)/6.3)),lh=14,cy=y+h/2-(sl.length-1)*lh/2+4.5,o='<rect class="bx '+(k||'')+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6"/>';sl.forEach(function(l,i){o+=T(x+w/2,cy+i*lh,l,'ts')});return o}
+/* ================= TOPIC 1 ================= */
+fig('1','The streamlined reasoning cycle','Each step feeds the next, reflection sits between them, and decisions are shared with the patient at the center.','Rothstein 2003; Schenkman 2006; Deutsch 2022',function(){
+  var b='',cx=280,cy=150,rx=205,ry=108;
+  var st=[['Interview / history','focused Qs, ROS, form Ho'],['Exam','systems review, movement analysis, OMs, impairments'],['Evaluation','Dx, prognosis, PIP/N-PIP/AP, POC'],['POC / interventions',''],['Reassessment','outcome measures'],['Outcome','goals met or modified']];
+  var pts=st.map(function(s,i){var a=-Math.PI/2+i*2*Math.PI/6-Math.PI/6;return [cx+rx*Math.cos(a),cy+ry*Math.sin(a)]});
+  pts.forEach(function(p,i){var q=pts[(i+1)%6];var dx=q[0]-p[0],dy=q[1]-p[1],d=Math.sqrt(dx*dx+dy*dy),ux=dx/d,uy=dy/d;b+=A(p[0]+ux*62,p[1]+uy*34,q[0]-ux*62,q[1]-uy*34,'faint')});
+  pts.forEach(function(p,i){b+=BX(p[0]-70,p[1]-27,140,54,st[i][0],st[i][1]?[st[i][1]]:[],i===2?'acc':'', i===2?'tacc':'')});
+  b+=B(cx-95,cy-20,190,40,['Shared decision-making','patient ↔ therapist'],'warm','twarm');
+  b+=T(cx,296,'Reflection between every step','ts');
+  return S(560,305,'Six-step clinical reasoning cycle with shared decision-making in the center',b);
+});
+fig('1','Problem types and how to manage them','Who raised the problem decides PIP vs N-PIP. When it exists decides remediation vs prevention.','Rothstein 2003',function(){
+  var b='';
+  b+=T(210,22,'EXISTS NOW','th')+T(420,22,'MAY OCCUR LATER','th');
+  b+=BX(20,36,120,58,'PIP','reported by the patient','acc','tacc')+BX(20,104,120,58,'N-PIP','therapist, team or family','pos','tpos');
+  b+=BS(150,36,120,58,'current PIP','')+BS(150,104,120,58,'current N-PIP','');
+  b+=BS(360,36,120,58,'anticipated PIP','')+BS(360,104,120,58,'anticipated N-PIP','');
+  b+=BX(150,176,120,44,'Remediation','','acc','tacc')+BX(360,176,120,44,'Prevention','AP: educate','warm','twarm');
+  b+=A(210,166,210,174,'faint')+A(420,166,420,174,'faint');
+  return S(500,230,'Grid of problem types by who identifies them and when they occur',b);
+});
+fig('1','Choosing outcome measures deductively','Start broad at referral and narrow the list after each piece of information.','Potter 2011',function(){
+  var s=['Referral: initial list','Initial observation','History','Systems review','Final selection'],b='';
+  s.forEach(function(t,i){var w=460-i*70,x=280-w/2,y=16+i*44;b+=BS(x,y,w,34,t,i===4?'acc':'');if(i<4)b+=A(280,y+34,280,y+44,'faint')});
+  return S(560,240,'Funnel narrowing outcome measure choices',b);
+});
+
+/* ================= TOPIC 2 ================= */
+fig('2','The movement continuum','Five phases. What you watch for changes by phase.','Quinn 2021',function(){
+  var ph=[['Initial conditions','alignment, symmetry, stability'],['Preparation','understanding, response timing'],['Initiation','muscle timing, direction'],['Execution','speed, coordination, symptoms'],['Termination','goal met, alignment']],b='';
+  ph.forEach(function(p,i){var x=6+i*111;b+=BX(x,30,100,96,p[0],[p[1]],i===1?'warm':'',i===1?'twarm':'');if(i<4)b+=A(x+100,78,x+111,78,'')});
+  return S(560,140,'Five movement continuum phases left to right',b);
+});
+fig('2','Categorizing by individual and environment','Tasks get harder as the person and the environment start moving.','Schenkman 2006 (after Gentile)',function(){
+  var b='';
+  b+=T(200,20,'STATIONARY ENVIRONMENT','th')+T(390,20,'MOVING ENVIRONMENT','th');
+  b+=T(70,75,'Stationary','tb','middle')+T(70,90,'individual','ts')+T(70,165,'Moving','tb')+T(70,180,'individual','ts');
+  b+=BX(120,34,170,76,'1','sitting quietly on a mat, quiet area','pos','tpos')+BX(305,34,170,76,'3','standing still in a busy clinic','')+BX(120,124,170,76,'2','walking in a quiet area','')+BX(305,124,170,76,'4','walking in a busy clinic','neg','tneg');
+  return S(500,210,'Two by two grid of task conditions',b);
+});
+fig('2','Regressing a task','Add help one layer at a time, and note how, how much and where you assist.','Quinn 2021',function(){
+  var s=[['1 Verbal cue','acc'],['2 Tactile cue','warm'],['3 Physical assistance','neg']],b='';
+  s.forEach(function(x,i){var y=150-i*52,w=180+i*60;b+=B(20,y,w,40,[x[0]],x[1],'t'+x[1])});
+  b+=T(480,60,'Still can\'t change','tb')+T(480,76,'the pattern?','tb')+T(480,100,'→ likely synergistically','ts')+T(480,115,'bound','ts');
+  return S(560,200,'Staircase of cues from verbal to physical',b);
+});
+
+/* ================= TOPIC 3 ================= */
+fig('3','Visual pathway lesions','Before the chiasm, one eye is affected. After it, the same half of both fields is lost, opposite the lesion.','Author\'s notes (figure as labeled)',function(){
+  var b='';
+  b+=C(150,40,20,'bx')+C(250,40,20,'bx')+T(150,44,'L','ts')+T(250,44,'R','ts');
+  b+=P('M150 60 L200 110 L150 160','ln')+P('M250 60 L200 110 L250 160','ln');
+  b+=P('M150 160 Q140 200 170 240','ln')+P('M250 160 Q260 200 230 240','ln');
+  b+=T(200,128,'chiasm','ts')+T(290,200,'radiations','ts','start')+T(290,150,'tract','ts','start');
+  function mk(x,y,n){return C(x,y,8,'bx neg')+T(x,y+4,String(n),'ts')}
+  b+=mk(240,80,1)+mk(200,110,2)+mk(245,160,4)+mk(262,210,'5/6')+mk(228,250,7);
+  function hl(ex,yy){return 'M'+ex+' '+(yy-14)+' A14 14 0 0 0 '+ex+' '+(yy+14)+'Z'}
+  function hr(ex,yy){return 'M'+ex+' '+(yy-14)+' A14 14 0 0 1 '+ex+' '+(yy+14)+'Z'}
+  var rows=[['1 R optic nerve: blind R eye',null,'all'],['2 Chiasm: both temporal fields','hl','hr'],['4 R tract: L homonymous hemianopia','hl','hl'],['5/6 R radiations: L quadrant cut','q','q'],['7 R occipital: L homonymous hemianopia','hl','hl']];
+  rows.forEach(function(r,i){var yy=40+i*50,x=330;
+    function eye(ex,f){var s=C(ex,yy,14,'bx');if(f==='all')s+=C(ex,yy,13,'f-negs');else if(f==='hl')s+='<path class="f-negs" d="'+hl(ex,yy)+'"/>';else if(f==='hr')s+='<path class="f-negs" d="'+hr(ex,yy)+'"/>';else if(f==='q')s+='<path class="f-negs" d="M'+ex+' '+yy+' L'+(ex-14)+' '+yy+' A14 14 0 0 0 '+ex+' '+(yy+14)+'Z"/>';return s}
+    b+=eye(x,r[1])+eye(x+32,r[2])+T(x+52,yy+4,r[0],'ts','start')});
+  b+=T(346,290,'left eye · right eye (shaded = lost; quadrant shown as inferior for 5)','ts');
+  return S(640,300,'Schematic visual pathway with numbered lesion sites and field cuts',b);
+},'Schematic; quadrant side follows the source figure.');
+fig('3','Levels of consciousness','From unarousable to awake and attentive.','Tindall 1990; Fell 2018',function(){
+  var s=[['Coma','GCS < 8','neg'],['Stupor','noxious only','neg'],['Obtunded','repeated stimulation','warm'],['Lethargic','falls back asleep','warm'],['Alert','awake, attentive','pos']],b='';
+  s.forEach(function(x,i){var X=6+i*111;b+=BX(X,40,100,70,x[0],[x[1]],x[2],'t'+x[2])});
+  b+=A(20,140,540,140,'','harder to arouse ← → more awake',280,160,'ts');
+  return S(560,170,'Five levels of consciousness on a scale',b);
+});
+fig('3','Reading the head impulse test','A corrective saccade back to target after a quick turn points to the side of the turn.','Author\'s notes',function(){
+  var b='';
+  function head(ox,good){var s=C(ox,90,40,'bx')+C(ox-14,82,6,'f-surf')+C(ox+14,82,6,'f-surf');
+    s+=A(ox,40,ox+50,34,'acc','quick 5–10° turn R',ox+40,22,'tacc ts');
+    if(good){s+=C(ox-12,82,3,'f-ink')+C(ox+16,82,3,'f-ink')+T(ox,160,'Eyes stay on target','tpos tb')+T(ox,176,'negative HIT','ts')}
+    else{s+=C(ox-4,82,3,'f-ink')+C(ox+24,82,3,'f-ink')+A(ox+30,110,ox-10,110,'neg','saccade L',ox+10,128,'tneg ts')+T(ox,160,'Corrective saccade','tneg tb')+T(ox,176,'+R HIT (R loss)','ts')}
+    return s}
+  b+=head(150,true)+head(410,false);
+  return S(560,190,'Two heads showing a normal and a positive head impulse test',b);
+});
+
+/* ================= TOPIC 4 ================= */
+fig('4','Spasticity vs rigidity','Speed up the stretch: spastic resistance climbs, rigid resistance stays the same.','Author\'s notes',function(){
+  var b=axes(70,190,420,160,'Speed of passive stretch →','Resistance');
+  b+=P('M72 170 C200 165 300 110 480 40','ln thick neg')+T(486,44,'Spasticity','tneg tb','start');
+  b+=P('M72 100 L480 100','ln thick acc')+T(486,104,'Rigidity','tacc tb','start');
+  return S(580,220,'Shape-only chart of resistance vs stretch speed',b);
+},'shape only');
+fig('4','The four synergies at a glance','Highlighted boxes are the strongest components of each pattern.','Sathian 2011; author\'s notes',function(){
+  var cols=[['UE flexion',['Scap elev/retract','Shoulder abd/ER','Elbow flexion','Supination','Wrist/finger flex'],[2]],['UE extension',['Scap protraction','Shoulder adduction','Shoulder IR, elbow ext','Pronation','Wrist/finger flex'],[1,3]],['LE flexion',['Hip flexion','Hip abd/ER','Knee flexion','Ankle DF','Toe DF'],[0]],['LE extension',['Hip adduction','Hip ext/IR','Knee extension','Ankle PF','Toe flexion'],[0,2,3]]],b='';
+  cols.forEach(function(c,i){var x=8+i*138;b+=T(x+63,20,c[0].toUpperCase(),'th');c[1].forEach(function(t,j){var hi=c[2].indexOf(j)>=0;b+=B(x,32+j*38,126,32,[t],hi?'acc':'mut',hi?'tacc':'')})});
+  return S(560,230,'Four columns of synergy components with strongest ones highlighted',b);
+});
+fig('4','UMCT hip and knee flexion grades','Three reps, as high and as fast as possible, within 10 seconds.','Hislop 1995',function(){
+  var b=axes(60,150,460,110,'','');
+  b+=R(62,60,138,60,'f-negs')+R(200,60,138,60,'f-warms')+R(338,60,180,60,'f-poss');
+  b+=T(131,94,'Weak','tneg tb')+T(269,94,'Moderate','twarm tb')+T(428,94,'Strong','tpos tb');
+  [[62,'0°'],[200,'30°'],[338,'60°']].forEach(function(p){b+=T(p[0],168,p[1],'ts')});
+  b+=T(290,40,'Weak also = any range but > 10 s for 3 reps','ts')+T(290,186,'Flexion arc (degrees)','ts');
+  return S(560,195,'Bands showing weak, moderate and strong flexion arcs',b);
+});
+
+/* ================= TOPIC 5 ================= */
+fig('5','Cognition as a building','Attention is the foundation. If it cracks, every floor above is shaky.','After Schwabish 2026',function(){
+  var f=[['Penthouse: higher-level EF','acc'],['Organization, reasoning',''],['Memory',''],['Lobby: processing',''],['Foundation: attention','warm']],b='';
+  f.forEach(function(x,i){b+=B(80,20+i*44,300,36,[x[0]],x[1],x[1]?'t'+x[1]:'')});
+  b+=R(392,20,40,212,'f-s2')+T(412,130,'WM','tb')+T(470,110,'Elevator =','ts','start')+T(470,126,'working','ts','start')+T(470,142,'memory','ts','start');
+  return S(560,245,'Stacked building floors for cognition',b);
+});
+fig('5','Where speech breaks down','Language, planning and execution are separate steps, so each disorder has a different fingerprint.','Author\'s notes',function(){
+  var s=[['Language','Aphasia','acc'],['Motor planning','Apraxia of speech','warm'],['Motor execution','Dysarthria','neg']],b='';
+  s.forEach(function(x,i){var X=20+i*180;b+=BX(X,30,160,60,x[0],'','mut')+A(X+80,90,X+80,110,'faint')+BX(X,112,160,56,x[1],'',x[2],'t'+x[2]);if(i<2)b+=A(X+160,60,X+180,60,'')});
+  b+=T(100,190,'paraphasias, anomia','ts')+T(280,190,'inconsistent, groping','ts')+T(460,190,'consistent, slurred','ts');
+  return S(560,205,'Three stages of speech production mapped to three disorders',b);
+});
+
+/* ================= TOPIC 6 ================= */
+fig('6','PNF techniques by goal','Most techniques build mobility; two build stability.','Author\'s notes',function(){
+  var mob=['Rhythmic initiation','Dynamic reversals','Repeated stretch','Combination of isotonics','Replication'],st=['Rhythmic stabilization','Dynamic reversals + hold'],b='';
+  b+=T(150,20,'MOBILITY','th tacc')+T(420,20,'STABILITY','th tpos');
+  mob.forEach(function(t,i){b+=B(40,32+i*40,220,32,[t],'acc','tacc')});
+  st.forEach(function(t,i){b+=B(310,32+i*40,220,32,[t],'pos','tpos')});
+  return S(560,240,'Two columns sorting PNF techniques',b);
+});
+fig('6','HIIT after stroke: interval shape','Short high bursts alternate with recovery for 25–30 minutes.','Crozier 2018',function(){
+  var b=axes(60,170,470,130,'Time (25–30 min session)','Intensity'),d='M62 150';
+  for(var i=0;i<6;i++){var x=62+i*76;d+=' L'+x+' 150 L'+x+' 60 L'+(x+30)+' 60 L'+(x+30)+' 150 L'+(x+76)+' 150'}
+  b+=P(d,'ln thick acc')+T(80,52,'85–95% HRR','tacc ts','start')+T(140,165,'recovery','ts');
+  return S(560,200,'Shape-only interval chart',b);
+},'shape only');
+
+/* ================= TOPIC 7 ================= */
+fig('7','Sit to stand in four phases','Lift-off separates phase I from II and carries the highest ground reaction force.','Schenkman 1990; Fell 2018',function(){
+  var ph=[['Phase I',['flexion-momentum','iliopsoas, abs, TA; ES eccentric']],['Phase II',['momentum-transfer','hip and knee extensors']],['Phase III',['extension','extensor co-activation']],['Phase IV',['stabilization','co-contraction']]],b='';
+  ph.forEach(function(p,i){var x=6+i*138;b+=BX(x,40,128,90,p[0],p[1],i===1?'acc':'',i===1?'tacc':'');if(i<3)b+=A(x+128,85,x+138,85,'')});
+  b+=L(140,24,140,140,'neg dash')+T(140,18,'lift-off: peak GRF','tneg ts')+L(278,24,278,140,'faint dash')+T(278,152,'max DF','ts');
+  return S(560,165,'Four sit-to-stand phases in sequence',b);
+});
+fig('7','Six kinds of manual cue','Your hands can activate, direct, compress, load, resist or shape.','Author\'s notes',function(){
+  var c=[['Muscle-specific','over the muscle'],['Directional','with the movement'],['Approximation','compress the joint'],['Loading','through the long axis'],['Resistance','opposite the movement'],['Alignment','shape the posture']],b='';
+  c.forEach(function(x,i){var X=10+(i%3)*182,Y=20+Math.floor(i/3)*80;b+=BX(X,Y,170,66,x[0],[x[1]],i===1?'acc':i===4?'neg':'',i===1?'tacc':i===4?'tneg':'')});
+  return S(560,180,'Six boxes naming manual cue types',b);
+});
+
+/* ================= TOPIC 8 ================= */
+fig('8','Opening a tight hand','Work from gravity and the wrist to the thumb, then the fingers, and only then the wrist.','Author\'s notes',function(){
+  var s=['Gravity: trunk flexion, arm forward','Flex the wrist','Thumb first: thenar pressure, abduct','Spread metacarpal heads from thumb side','Fingers open, then wrist extends','Heel of hand on surface; slide out'],b='';
+  s.forEach(function(t,i){var x=6+(i%3)*184,y=20+Math.floor(i/3)*84;b+=BS(x,y,168,66,(i+1)+'. '+t,i===2?'acc':'');});
+  b+=A(174,53,190,53,'')+A(358,53,374,53,'')+A(458,86,100,104,'faint')+A(174,137,190,137,'')+A(358,137,374,137,'');
+  return S(560,200,'Six-step hand opening sequence',b);
+});
+fig('8','Shoulder ROM limits in hemiplegia','Stay under 90° unless you facilitate upward rotation and ER; never past 140°.','Author\'s notes',function(){
+  var b='',cx=150,cy=150,r=120;
+  function seg(f0,f1,k){var x0=cx+r*Math.sin(f0*Math.PI/180),y0=cy+r*Math.cos(f0*Math.PI/180),x1=cx+r*Math.sin(f1*Math.PI/180),y1=cy+r*Math.cos(f1*Math.PI/180);return '<path class="'+k+'" d="M'+cx+' '+cy+' L'+x0+' '+y0+' A'+r+' '+r+' 0 0 0 '+x1+' '+y1+'Z"/>'}
+  function lab(f,t,k){var x=cx+(r+18)*Math.sin(f*Math.PI/180),y=cy+(r+18)*Math.cos(f*Math.PI/180);return T(x,y+4,t,k)}
+  b+=seg(0,90,'f-poss')+seg(90,140,'f-warms')+seg(140,180,'f-negs')+C(cx,cy,5,'f-ink');
+  b+=lab(0,'0°','ts')+lab(90,'90°','ts')+lab(140,'140°','ts')+lab(180,'180°','ts');
+  b+=T(cx+55,cy+50,'OK','tpos tb')+T(cx+75,cy-35,'facilitate','twarm tb')+T(cx+30,cy-95,'stop','tneg tb');
+  b+=T(330,90,'0–90°: OK','tpos tb','start')+T(330,120,'90–140°: only with scapular','twarm tb','start')+T(330,136,'upward rotation + humeral ER','ts','start')+T(330,152,'(thumb up)','ts','start')+T(330,182,'> 140°: stop','tneg tb','start');
+  return S(580,300,'Fan diagram of safe shoulder flexion ranges',b);
+},'Schematic angles.');
+
+/* ================= TOPIC 9 ================= */
+fig('9','What goes where in a SOAP note','O is the session itself; A is your judgment about it.','Author\'s notes',function(){
+  var s=[['S','What the patient says at the start','mut'],['O','Chronological: task, cues, reps, assist, outcome','acc'],['A','Judgment of progress; safety, fall risk, caregiver burden','warm'],['P','What you will do next visit','pos']],b='';
+  s.forEach(function(x,i){b+=B(20,14+i*50,50,40,[x[0]],x[2],'t'+x[2])+BS(80,14+i*50,460,40,x[1],'')});
+  return S(560,220,'Four stacked SOAP sections',b);
+});
+fig('9','The EGRESS test','Each step must be safe before the next. If not, stop and bring the right help or equipment.','UHDB NHS; author\'s notes',function(){
+  var s=['Move to edge of surface','March while sitting','Stand and march in place','Step forward and back'],b='';
+  s.forEach(function(t,i){var x=6+i*138;b+=BS(x,40,126,60,(i+1)+'. '+t,i===3?'pos':'');if(i<3)b+=A(x+126,70,x+138,70,'')});
+  b+=T(280,130,'Unsafe at any step → stop','tneg tb');
+  return S(560,145,'Four EGRESS steps in sequence',b);
+});
+
+
+/* ================= RENDER ================= */
+var WK=[['all','All'],['1','Topic 1 · Reasoning & outcomes'],['2','Topic 2 · Subjective & movement analysis'],['3','Topic 3 · Cognition, perception & CNs'],['4','Topic 4 · Motor control & sensation'],['5','Topic 5 · Speech, cognition & swallow'],['6','Topic 6 · Ther ex & PNF'],['7','Topic 7 · Bed mobility & transfers'],['8','Topic 8 · UE in hemiplegia'],['9','Topic 9 · Documentation']];
+var atlas=document.getElementById('atlas'),html='',n=0;
+WK.slice(1).forEach(function(w){
+  var list=F.filter(function(f){return f.w===w[0]});
+  html+='<section class="wk" data-w="'+w[0]+'"><div class="week-h"><span class="wk">'+list.length+' figures</span><h2>'+w[1]+'</h2></div><div class="grid">';
+  list.forEach(function(f){n++;ID=n;
+    var note=f.note&&f.note.indexOf('Wait')!==0?' <span class="ill">'+esc(f.note)+'</span>':'';
+    html+='<figure class="fig" id="fig'+n+'"><div class="fig-h"><span class="n">'+(n<10?'0':'')+n+'</span><h3>'+esc(f.t)+'</h3></div><div class="svgbox">'+f.draw()+'</div><figcaption>'+esc(f.c)+' <span class="src">'+esc(f.src)+'</span>'+note+'</figcaption></figure>';
+  });
+  html+='</div></section>';
+});
+atlas.innerHTML=html;
+var fl=document.getElementById('filters'),cur='all';
+fl.innerHTML=WK.map(function(w){return '<button type="button" class="chip" data-w="'+w[0]+'" aria-pressed="'+(w[0]==='all')+'">'+(w[0]==='all'?'All':'Topic '+w[0])+'</button>'}).join('')+'<span class="count" id="cnt"></span>';
+function apply(){[].forEach.call(document.querySelectorAll('section.wk'),function(s){s.hidden=!(cur==='all'||s.getAttribute('data-w')===cur)});
+  [].forEach.call(fl.querySelectorAll('.chip'),function(c){c.setAttribute('aria-pressed',String(c.getAttribute('data-w')===cur))});
+  document.getElementById('cnt').textContent=(cur==='all'?n:F.filter(function(f){return f.w===cur}).length)+' figures'}
+[].forEach.call(fl.querySelectorAll('.chip'),function(c){c.onclick=function(){cur=c.getAttribute('data-w');apply();window.scrollTo({top:0})}});
+apply();
+})();
+</script>
