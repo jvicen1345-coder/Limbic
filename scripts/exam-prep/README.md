@@ -3,9 +3,20 @@
 The pages in `content/exam-prep/` are **generated**. Edit the source here and rebuild;
 never hand-edit the HTML (the next build overwrites it).
 
+There are two kinds of guide source:
+
+- **Data guides** (`neuro/`): content in `topics.py` / `rest.py`, built into the shared engine
+  by `build.py`.
+- **HTML guides** (`cervical/`, `motor-control/`): the three finished pages (`index.html`,
+  `arcade.html`, `atlas.html`) kept as standalone study pages with relative links, plus a
+  `guide.py`. `build_html.py` adds the Limbic parts (noindex, the back link, the disclaimer,
+  absolute links between the three pages) and refuses to build while the text still has
+  wording that points at a class (see `BANNED` in the script).
+
 ```
 scripts/exam-prep/
-  build.py            one script for every guide
+  build.py            builds data guides
+  build_html.py       builds HTML guides
   engine/             shared page shell: styles, study engine (quiz, flashcards, spaced
                       review, mock quiz, weak spots, sheets, backup), games and atlas templates
   <guide>/            one folder per guide
@@ -28,6 +39,13 @@ python3 scripts/exam-prep/build.py neuro
 Writes `content/exam-prep/neuro-exam-prep.html`, `-arcade.html` and `-atlas.html`, with
 Limbic paths, `noindex` and the disclaimer. Python 3 standard library only.
 
+```sh
+python3 scripts/exam-prep/build_html.py cervical
+python3 scripts/exam-prep/build_html.py motor-control
+```
+
+Each writes `content/exam-prep/<slug>.html`, `-arcade.html` and `-atlas.html`.
+
 A standalone copy (relative links, no Limbic chrome), for sharing outside the app:
 
 ```sh
@@ -45,6 +63,17 @@ python3 scripts/exam-prep/build.py neuro --personal /some/dir
 
 Saved progress survives rebuilds as long as `pfx_limbic` in `guide.py` doesn't change.
 Answer history is keyed by question text, so rewording a question resets that one item.
+
+### Updating an HTML guide
+
+1. Replace `index.html`, `arcade.html` and/or `atlas.html` in the guide folder with the new
+   version of the page.
+2. Keep the storage prefixes listed in its `guide.py` (`pfx`): a new version made elsewhere
+   may use its own prefix, so search and replace it back, or readers lose saved progress.
+3. Rebuild. If the build lists banned wording, rewrite those spots (cite the source, or
+   drop the reference to the class) and build again. The script cannot know names: read
+   for instructor, classmate and school names yourself.
+4. Update the key point and question counts in `src/lib/exam-prep.ts` if they changed.
 
 ## Content rules (legal)
 

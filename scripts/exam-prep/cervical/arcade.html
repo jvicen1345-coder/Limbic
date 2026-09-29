@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html,body{margin:0}[hidden]{display:none!important}img{max-width:100%}a.home{font-family:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;font-size:13px;text-decoration:none;border-radius:999px;padding:6px 14px;display:inline-block}</style>
+<title>Neck Check Arcade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#141024; --panel:#1e1834; --panel-2:#272043; --line:#382f5a; --ink:#f2eeff; --muted:#a89fc8;
+  --amber:#ffb547; --amber-ink:#1c1300; --teal:#43d1bf; --teal-bg:#123a3a; --coral:#ff7a6b; --coral-bg:#43192a;
+  --display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:0 56px}
+.wrap{max-width:880px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.08}
+p{margin:0}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.mono{font-family:var(--mono)}
+/* header */
+header.top{padding-block:28px 8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.brand{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.brand h1{font-size:clamp(40px,9vw,72px);font-weight:800;letter-spacing:-.02em}
+.brand h1 span{color:var(--amber)}
+.trace{width:100%;height:56px;display:block;margin-top:6px}
+.trace path{fill:none;stroke:var(--amber);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:900;stroke-dashoffset:900;animation:fire 1.6s ease-out .2s forwards}
+.trace .base{stroke:var(--line);stroke-dasharray:none;animation:none;stroke-width:1.5}
+@keyframes fire{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.trace path{animation:none;stroke-dashoffset:0}}
+.sub{color:var(--muted);max-width:58ch;margin-top:4px}
+/* hub */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:22px}
+.tile{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:8px;transition:transform .12s,border-color .12s}
+.tile:hover{transform:translateY(-2px);border-color:var(--amber)}
+.tile .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
+.tile h3{font-size:24px;font-weight:800}
+.tile p{color:var(--muted);font-size:14.5px}
+.tile .best{margin-top:auto;font-family:var(--mono);font-size:12px;color:var(--teal)}
+.tile.wide{grid-column:1/-1}
+@media (max-width:600px){.grid{grid-template-columns:1fr}}
+/* game shell */
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:22px 12px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.back{background:none;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:14px;color:var(--muted)}
+.back:hover{color:var(--ink);border-color:var(--muted)}
+.bar h2{font-size:28px;font-weight:800;margin-right:auto}
+.hud{display:flex;gap:8px;flex-wrap:wrap}
+.pill{font-family:var(--mono);font-size:13px;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-variant-numeric:tabular-nums}
+.pill b{color:var(--amber);font-weight:700}
+.howto{color:var(--muted);font-size:14.5px;margin-bottom:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13.5px;color:var(--muted)}
+.chip.on{background:var(--amber);border-color:var(--amber);color:var(--amber-ink);font-weight:700}
+/* match */
+.cols{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.col{display:flex;flex-direction:column;gap:8px}
+.card{background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;text-align:left;font-size:15px;line-height:1.35;min-height:52px}
+.card.term{font-weight:700}
+.card.sel{border-color:var(--amber);background:var(--panel-2)}
+.card.done{border-color:var(--teal);background:var(--teal-bg);color:var(--teal);cursor:default}
+.card.bad{border-color:var(--coral);background:var(--coral-bg);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){.card.bad,.seqchip.bad{animation:none}}
+@media (max-width:520px){.cols{grid-template-columns:1fr 1.25fr}.card{font-size:14px;padding:10px}}
+/* prompt card */
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 22px;text-align:center;min-height:150px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.stage .lab{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stage .big{font-family:var(--display);font-size:clamp(20px,4vw,27px);font-weight:600;line-height:1.3}
+.buckets{display:grid;gap:10px;margin-top:14px}
+.b2{grid-template-columns:repeat(2,1fr)}
+.b4{grid-template-columns:repeat(2,1fr)}
+.b3{grid-template-columns:repeat(3,1fr)}
+@media (max-width:480px){.b3{grid-template-columns:1fr}}
+.bucket{background:var(--panel-2);border:1.5px solid var(--line);border-radius:12px;padding:16px 10px;font-weight:700;font-size:16px}
+.bucket:hover{border-color:var(--amber)}
+.bucket.right{border-color:var(--teal);background:var(--teal-bg);color:var(--teal)}
+.bucket.wrong{border-color:var(--coral);background:var(--coral-bg);color:var(--coral)}
+.feedback{min-height:48px;margin-top:12px;font-size:15px;text-align:center;color:var(--muted)}
+.feedback .ok{color:var(--teal);font-weight:700}
+.feedback .no{color:var(--coral);font-weight:700}
+.tf{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.tf button{border-radius:12px;padding:18px;font-family:var(--display);font-size:22px;font-weight:800;border:1.5px solid var(--line);background:var(--panel-2)}
+.tf .t:hover{border-color:var(--teal);color:var(--teal)}
+.tf .f:hover{border-color:var(--coral);color:var(--coral)}
+.timer{height:6px;background:var(--panel-2);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.timer i{display:block;height:100%;background:var(--amber);width:100%;transition:width 1s linear}
+/* order */
+.slots{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.slot{border:1.5px dashed var(--line);border-radius:10px;padding:10px 14px;min-height:46px;display:flex;gap:10px;align-items:center;color:var(--muted);font-size:15px}
+.slot.filled{border-style:solid;border-color:var(--teal);background:var(--teal-bg);color:var(--ink)}
+.slot .n{font-family:var(--mono);font-size:12px;color:var(--amber);min-width:18px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.seqchip{background:var(--panel-2);border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;font-size:15px;text-align:left}
+.seqchip:hover{border-color:var(--amber)}
+.seqchip.bad{border-color:var(--coral);background:var(--coral-bg);animation:shake .3s}
+/* blanks */
+.blank-line{font-family:var(--display);font-size:clamp(19px,3.8vw,25px);font-weight:600;line-height:1.4}
+.blank-line .gap{display:inline-block;min-width:5ch;border-bottom:3px solid var(--amber);color:var(--amber);padding-inline:4px}
+/* results */
+.result{text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:34px 20px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.result .score{font-family:var(--display);font-size:64px;font-weight:800;color:var(--amber);line-height:1}
+.result .best{font-family:var(--mono);font-size:13px;color:var(--teal)}
+.result .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.btn{border-radius:999px;padding:11px 20px;font-weight:700;border:1.5px solid var(--line);background:var(--panel-2)}
+.btn.go{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
+.missed{text-align:left;width:100%;max-width:560px;margin-top:10px}
+.missed h4{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.missed li{font-size:14.5px;margin-bottom:6px;color:var(--ink)}
+.missed li span{color:var(--teal)}
+footer{margin-top:40px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <a class="home" href="index.html" style="color:var(--amber);border:1px solid var(--line);margin-bottom:14px">← Study page</a>
+    <div class="eyebrow">Orthopaedic physical therapy · Cervical spine</div>
+    <div class="brand"><h1>Neck Check <span>Arcade</span></h1></div>
+    <svg class="trace" viewBox="0 0 800 56" preserveAspectRatio="none" aria-hidden="true">
+      <path class="base" d="M0 40 H800"/>
+      <path d="M0 40 H300 L318 40 L330 6 L344 50 L356 44 L380 40 H520 L532 40 L540 22 L550 44 L560 40 H800"/>
+    </svg>
+    <p class="sub">Five quick games on cervical spine examination, screening, classification and treatment. Every round draws different questions, and your best scores stay in this browser.</p>
+  </header>
+  <main id="app"></main>
+  <footer>Card text is paraphrased from the sources cited on the study page. Full references are listed there.</footer>
+</div>
+
+<script>
+(function(){
+/* ================= DATA ================= */
+var MATCH={
+ "Tests":[
+  ["Sharp-Purser","Transverse ligament; posterior translation through the forehead"],
+  ["Alar ligament test","Side-bend the head; C2 SP should move right away"],
+  ["Quadrant test","Rotate + SB same side, extend, overpressure"],
+  ["Canadian C-Spine Rule","Imaging decision after acute trauma"],
+  ["Myelopathy cluster","Gait, Hoffman's, inverted supinator, Babinski, age > 45"],
+  ["Radiculopathy cluster","Distraction, rotation < 60°, Spurling's, ULTT A"],
+  ["DNE coordination test","Quadruped head lift with eyes on a spot"],
+  ["Passive support test","Elevate the shoulder girdle during AROM"],
+  ["Beighton score","Consider in EDS hypermobility"]
+ ],
+ "Headaches":[
+  ["Migraine","POUND; light, sound, smells, hormones"],
+  ["Tension-type","Bilateral, pressing; stress and static posture"],
+  ["Cervicogenic","Unilateral, dull; ↓ AROM; rams horn pattern"],
+  ["Thunderclap","Peaks in ≤ 60 s → ED"],
+  ["Trigeminocervical nucleus","Where upper cervical and trigeminal fibers meet"],
+  ["Tension-type trigger points","Don't reproduce the primary headache"],
+  ["Cervicogenic manual therapy response","Often good"],
+  ["Tension-type manual therapy response","Limited"]
+ ],
+ "Syndromes":[
+  ["Extension syndrome","Excessive translation vs sagittal rotation"],
+  ["Extension-rotation","Most common; unilateral pain with rotation + extension"],
+  ["Flexion syndrome","Pain with sitting/reading; flat thoracic spine"],
+  ["Flexion-rotation","Rotation with concurrent flexion; lacks thoracic flexion"],
+  ["Levator scapulae","Overloaded while lengthened → shear at C1–C4"],
+  ["Worked case","R UE elevation → left C-spine rotation"],
+  ["Forward head","Excess lower-cervical, too little upper-cervical flexion"],
+  ["Flexion syndrome intervention","Strengthen long spine extensors; have the patient slump"]
+ ],
+ "Techniques":[
+  ["Flexion-rotation test","Max flexion, rotate; + if symptoms or > 10° loss"],
+  ["C1 unilateral PA","Posterior arch of C1 toward the ipsilateral eye"],
+  ["Suboccipital contract-relax","Look up 7 s · stretch 14 s · relax 21 s"],
+  ["Kaltenborn C1–2 rotation","Fix occiput + C1; move C2 arch ventrally"],
+  ["Upglide","45° toward the opposite eye"],
+  ["Downglide","45° toward the opposite elbow/shoulder"],
+  ["SNAG","Pain-free glide while the patient rotates; 1–2 × 6–10"],
+  ["Unilateral PA","Thumbs on the pillar at a 30° medial angle"],
+  ["Reverse NAG","T1/T2 PA with head retraction"],
+  ["T1–T2 rotation SNAG","Opposite rotational glides on T1 and T2"],
+  ["Obliquus capitis inferior","C2 SP → C1 TP"],
+  ["Obliquus capitis superior","C1 TP → mastoid"],
+  ["Upper T/S central PA","Dummy thumb on the SP; R1 to R2"]
+ ],
+ "Numbers":[
+  ["55%","Rotation at C1–2"],
+  ["75%","Sagittal motion from C2–7"],
+  ["+LR 17.25","Sharp-Purser"],
+  ["+LR 30.9","≥ 3 myelopathy findings"],
+  ["10–30%","Transverse ligament laxity in Down syndrome"],
+  ["NDI ≤ 32%","Predicts full whiplash recovery (if younger)"],
+  ["NDI ≥ 40%","Part of the poor whiplash prognosis"],
+  ["≥ 65 y","Canadian C-Spine high-risk age"],
+  ["4–6 weeks","Radiculopathy chemical phase"]
+ ]
+};
+
+var SORT={
+ "Upglide vs downglide restriction":{b:["Upglide (opening)","Downglide (closing)"],items:[
+  ["Limited contralateral rotation",0],["Limited contralateral side flexion",0],["Deviates into extension with contralateral rotation",0],["Usually C2–4, above the hinge",0],["Deviates toward the restricted side in flexion",0],["End-range pain rotating to the contralateral side",0],
+  ["Limited ipsilateral rotation",1],["Limited ipsilateral side flexion",1],["Deviates into flexion with ipsilateral rotation",1],["Usually C6–7",1],["Deviates away from the restricted side in extension",1],["End-range pain rotating to the ipsilateral side",1]
+ ]},
+ "Which headache?":{b:["Migraine","Tension-type","Cervicogenic"],items:[
+  ["Pulsatile quality",0],["Lasts 4–72 hours",0],["Photophobia and phonophobia",0],["Triggered by hormone cycle and smells",0],
+  ["Bilateral pressing, tightening pain",1],["Trigger points don't reproduce the primary headache",1],["Limited response to upper cervical manual therapy",1],["Myofascial mechanisms + central sensitization",1],
+  ["Reduced, asymmetric extension and rotation",2],["Reproduced by C1–2 provocation",2],["Rams horn pattern",2],["Often good response to manual therapy",2],["Weak deep neck flexors",2]
+ ]},
+ "Which syndrome?":{b:["Extension","Extension-rotation","Flexion","Flexion-rotation"],items:[
+  ["Excessive translation vs sagittal rotation",0],["Pain with prolonged forward head",0],["Younger: excess posterior translation",0],["Passive shoulder elevation eases pain",0],
+  ["Most common cervical syndrome",1],["Unilateral pain linked to vision/hearing deficits",1],["Train rotation about a vertical axis",1],["Asymmetric SCM/scalene dominance",1],
+  ["Pain with sitting and reading",2],["Flat thoracic spine, ↓ lordosis",2],["Have the patient slump to normalize flexion",2],
+  ["Imprecise rotation with concurrent flexion",3],["Restore moving the C-spine on axis",3],["Lack of thoracic flexion with rotation",3]
+ ]},
+ "Neck pain classification":{b:["Mobility deficits","Headache","Radiating pain","Movement coordination"],items:[
+  ["Limited motion consistently reproduces symptoms",0],["Referred pain reproduced by unilateral PA",0],["Subacute: neck/shoulder girdle endurance",0],
+  ["Reproduced with O–C1 provocation",1],["Acute: supervised active mobility exercise",1],["Rams horn pain pattern",1],
+  ["Cloward sign",2],["+ Spurling's and + distraction",2],["Avoid aggressive ULTT in the first 4–6 weeks",2],
+  ["Whiplash onset with concussive signs",3],["NDI ≥ 40% and hyperarousal ≥ 6",3],["Weak deep neck flexors after trauma",3]
+ ]},
+ "Canadian C-Spine step":{b:["High risk → x-ray","Low risk → safe ROM","Rule not applicable"],items:[
+  ["Age ≥ 65",0],["Fall from 5 stairs",0],["Diving axial load",0],["Paresthesias in extremities",0],["Rollover MVC",0],
+  ["Simple rear-end MVC",1],["Sitting in the ED",1],["Ambulatory at any time",1],["Delayed onset of neck pain",1],["No midline tenderness",1],
+  ["GCS < 15",2],["Pregnant",2],["Age < 16",2],["Previous C-spine surgery",2],["Non-trauma case",2]
+ ]},
+ "Radiculopathy phase":{b:["Chemical (first 4–6 wk)","Mechanical (> 12 wk)"],items:[
+  ["Mechanical traction to open the foramen",0],["Avoid extension + ipsilateral SB/rotation",0],["Avoid aggressive ULTT",0],["Minimize tissue irritation",0],["Symptoms from inflammatory response",0],
+  ["Neural sliders/gliders",1],["Progress mobilization to extension and ipsilateral rotation",1],["Strengthen levator scap and upper trap",1],["Postural strengthening",1],["Monitor peripheral symptoms during manual therapy",1]
+ ]}
+};
+
+var TF=[
+ ["C1–2 produces about 55% of cervical rotation.",1,""],
+ ["C0–1 contributes most of cervical rotation.",0,"C0–1 rotation is negligible. C1–2 contributes 55%."],
+ ["Per Neumann, C1–2 has no side flexion.",1,"Other descriptions allow small amounts; Neumann lists no motion."],
+ ["Flexion at C2–7 is an opening (upglide) motion.",1,""],
+ ["Right rotation upglides the right C2–7 facets.",0,"Rotation upglides the contralateral (left) side and downglides the ipsilateral side."],
+ ["C2–7 extension is about 55–60° combined.",1,""],
+ ["Expected cervical rotation AROM on observation is about 80°.",1,""],
+ ["Goniometric norms list cervical rotation as 0–80°.",0,"Goniometric norms list 0–60°."],
+ ["C/S flexion MMT grade 5 holds against moderate 2-finger resistance.",1,""],
+ ["To test the left SCM, turn the head left.",0,"Turn R to test L."],
+ ["Grieve's 3 questions are asked with all cervical patients.",1,""],
+ ["Age ≥ 65 is a high-risk Canadian C-Spine factor.",1,""],
+ ["A simple rear-end MVC is a dangerous mechanism.",0,"It's a low-risk factor."],
+ ["The Canadian C-Spine Rule applies when GCS < 15.",0,"It's not applicable when GCS < 15."],
+ ["Sharp-Purser tests the transverse ligament.",1,""],
+ ["A decrease in symptoms during Sharp-Purser can be a positive test.",1,""],
+ ["The alar ligament test is highly reliable.",0,"It has poor reliability."],
+ ["Ligament stability tests are for high-irritability patients.",0,"Low irritability only."],
+ ["Rotation + side flexion + extension can tear the vertebral artery intima.",1,""],
+ ["Dysarthria is one of the 5 D's.",1,""],
+ ["VBI testing is still recommended before manipulation.",0,"It's no longer recommended per IFOMPT."],
+ ["A thunderclap headache should be referred to the ED.",1,""],
+ ["Ptosis is the most frequent sign of ICA dissection.",1,""],
+ ["Myelopathy cluster: ≥ 3 positive gives a +LR of 30.9.",1,""],
+ ["Myelopathy is usually eased by extension.",0,"It's often exacerbated with extension-based activities."],
+ ["Tension-type headache is usually unilateral.",0,"It's bilateral. Cervicogenic is unilateral."],
+ ["Cervicogenic headache must be reproducible with provocation testing.",1,""],
+ ["Radiculopathy most often involves C5–6.",1,""],
+ ["TOS most often affects C8–T1.",1,""],
+ ["Nerve glides are encouraged in the chemical phase.",0,"Avoid aggressive ULTT and nerve glides early."],
+ ["Strengthening the levator and upper trap helps offload shear in chronic radiculopathy.",1,""],
+ ["NDI ≥ 40% with age ≥ 35 and hyperarousal ≥ 6 predicts poor whiplash recovery.",1,""],
+ ["Extension-rotation is the most common cervical syndrome.",1,""],
+ ["The levator feels tight mainly because it is short.",0,"It's overloaded while lengthened."],
+ ["You should cue shoulders 'down and back' all day for extension syndrome.",0,"That may further depress the scapula."],
+ ["Flexion syndrome shows SCM/scalene dominance.",1,""],
+ ["PAIVMs tell you the direction of joint limitation.",0,"They show pain source and hypo/hypermobility; use upglide/downglide testing for direction."],
+ ["Pain before resistance → Grade III–IV.",0,"Pain before resistance → Grade I–II."],
+ ["Downglide assessment uses no stabilization.",1,""],
+ ["SNAGs should be pain free.",1,""],
+ ["Upglide restrictions are usually found at C6–7.",0,"Usually C2–4, above the hinge."],
+ ["Expect hypermobility at the hinge point.",1,""]
+];
+
+var SEQ=[
+ ["Canadian C-Spine Rule",["Check high-risk factors","Check low-risk factors","Test active rotation 45° each way"]],
+ ["Vertebral artery dissection",["Rotation + SB + extension","Intima tears","Blood pools in the wall","Clot forms","Clot dislodges → stroke"]],
+ ["Flexion-rotation intervention order",["Correct thoracic & scapular alignment","Restore thoracic flexion","Restore moving the C-spine on axis"]],
+ ["Extension syndrome intervention (1–3)",["Restore neutral alignment","Strengthen long extensors & intrinsic flexors","Reduce levator/SCM dominance"]],
+ ["Levator loading chain",["Heavy suitcase","Downward pull on the scapula","Isometric levator activity","Sustained loading at C1–C4"]],
+ ["Radiculopathy phases",["Chemical phase (first 4–6 wk)","Mechanical phase (> 12 wk)"]],
+ ["Mobility deficit exam flow",["AROM with deviations","PAIVM: find the pain source","Upglide/downglide: find the direction","Mobilize","Active ROM 'save button'"]],
+ ["Cervical SNAG",["Thumbs on the painful segment","Apply upglide toward the eye","Patient rotates the opposite way","Hold the glide back to neutral","Release and repeat"]],
+ ["DNE coordination test",["Quadruped: 'lift up your head'","Watch for chin poke/skin crease","Cue eyes on a spot","Cue lift through the upper back","Repeat 5–10 reps"]],
+ ["Whiplash prognosis (poor branch)",["NDI ≥ 40%","Age ≥ 35","Hyperarousal ≥ 6","Predicted ongoing moderate/severe disability"]],
+ ["MCI treatment by phase",["Acute good prognosis: light touch","Subacute: manual therapy + stabilization","Chronic 3–6 mo: desensitize the system"]]
+];
+
+var BL=[
+ ["C1–2 contributes ___% of cervical rotation","55"],
+ ["Flexion at C2–7 = opening or ___","upglide"],
+ ["Extension at C2–7 = closing or ___","downglide"],
+ ["Canadian C-Spine: rotate ___° left and right","45"],
+ ["Sharp-Purser tests the ___ ligament","transverse"],
+ ["Sharp-Purser +LR = ___","17.25"],
+ ["Myelopathy cluster: +LR ___","30.9"],
+ ["A thunderclap headache peaks in ≤ ___ seconds","60"],
+ ["Pain at the medial scapular border = ___ sign","Cloward"],
+ ["Radiculopathy most often affects the ___ roots","C5–6"],
+ ["TOS most often affects the ___ roots","C8–T1"],
+ ["Migraine mnemonic: ___","POUND"],
+ ["The levator is overloaded while ___","lengthened"],
+ ["Most common syndrome: extension-___","rotation"],
+ ["Upglide direction: 45° toward the opposite ___","eye"],
+ ["Unilateral PA: ___° medial angle","30"],
+ ["Pain before resistance → Grade I–___","II"],
+ ["SNAG: 1–2 sets of 6–___ reps","10"],
+ ["Upglide restrictions: usually above the ___ point","hinge"]
+];
+
+var BL_POOL=BL.map(function(x){return x[1]});
+
+/* ================= HELPERS ================= */
+var app=document.getElementById('app'), timers=[];
+function clearTimers(){timers.forEach(function(t){clearTimeout(t);clearInterval(t)});timers=[]}
+function later(fn,ms){var t=setTimeout(fn,ms);timers.push(t);return t}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function h(html){app.innerHTML=html;window.scrollTo(0,0)}
+var BEST={};try{BEST=JSON.parse(localStorage.getItem('limbic-cervical-arcade-best')||'{}')||{}}catch(e){BEST={}}
+function saveBest(k,v){var isNew=!(k in BEST)||v>BEST[k];if(isNew){BEST[k]=v;try{localStorage.setItem('limbic-cervical-arcade-best',JSON.stringify(BEST))}catch(e){}}return isNew}
+function bar(title,hud){return '<div class="bar"><button class="back" id="back" type="button">← Arcade</button><h2>'+title+'</h2><div class="hud">'+hud+'</div></div>'}
+function wireBack(){var b=document.getElementById('back');if(b)b.onclick=hub}
+function results(key,title,score,max,unit,missed,again){
+  try{if(missed&&missed.length){var AK="limbic-cervical-sg"+'-amiss-v1',A=JSON.parse(localStorage.getItem(AK)||'{}')||{};missed.forEach(function(x){var k=String(x[0])+' → '+String(x[1]);var e=A[k]||{n:0};e.n++;e.last=Date.now();e.g=title;A[k]=e});localStorage.setItem(AK,JSON.stringify(A))}localStorage.setItem("limbic-cervical-sg"+'-sync-ts',String(Date.now()))}catch(e){}
+  clearTimers();
+  var isNew=saveBest(key,score);
+  var m='';
+  if(missed&&missed.length){m='<div class="missed"><h4>Review these</h4><ul>'+missed.map(function(x){return '<li>'+esc(x[0])+' → <span>'+esc(x[1])+'</span></li>'}).join('')+'</ul></div>'}
+  h(bar(title,'')+'<div class="result"><div class="eyebrow">Round complete</div><div class="score">'+score+(max?'<span style="font-size:28px;color:var(--muted)"> / '+max+'</span>':'')+'</div><div>'+unit+'</div><div class="best">'+(isNew?'New best!':'Best: '+BEST[key])+'</div>'+m+'<div class="row"><button class="btn go" id="again" type="button">Play again</button><button class="btn" id="home" type="button">Back to arcade</button></div></div>');
+  wireBack();document.getElementById('again').onclick=again;document.getElementById('home').onclick=hub;
+  document.getElementById('again').focus();
+}
+
+/* ================= HUB ================= */
+var GAMES=[
+ {id:'match',k:'Connect',t:'Match It',d:'Link tests, headaches, syndromes, techniques and numbers to what they mean. Tap a left card, then its match.',fn:function(){match()}},
+ {id:'sort',k:'Classify',t:'Sort It',d:'Tap the right bucket: upglide vs downglide, which headache, which syndrome, CPG category, Canadian C-Spine step and more.',fn:function(){sortGame()}},
+ {id:'tf',k:'60 seconds',t:'Lightning Round',d:'True or false, as many as you can before the timer runs out. Streaks count.',fn:function(){lightning()}},
+ {id:'order',k:'Sequence',t:'Order Up',d:'Put steps in order: the Canadian C-Spine Rule, VAD cascade, SNAG, intervention sequences and more.',fn:function(){order()}},
+ {id:'blank',k:'Fill in',t:'Fill the Blank',d:'Key numbers and terms, with four choices each.',fn:function(){blanks()},wide:true}
+];
+function bestFor(id){var keys=Object.keys(BEST).filter(function(k){return k.indexOf(id)===0});if(!keys.length)return 'Not played yet';var v=Math.max.apply(null,keys.map(function(k){return BEST[k]}));return 'Best: '+v}
+function hub(){
+  clearTimers();
+  var html='<div class="grid">'+GAMES.map(function(g){return '<button class="tile'+(g.wide?' wide':'')+'" type="button" data-g="'+g.id+'"><span class="k">'+g.k+'</span><h3>'+g.t+'</h3><p>'+g.d+'</p><span class="best">'+bestFor(g.id)+'</span></button>'}).join('')+'</div>';
+  app.innerHTML=html;
+  [].forEach.call(app.querySelectorAll('.tile'),function(b){b.onclick=function(){GAMES.filter(function(g){return g.id===b.getAttribute('data-g')})[0].fn()}});
+}
+
+/* ================= MATCH ================= */
+var matchDeck='Tests';
+function match(){
+  clearTimers();
+  var pairs=shuffle(MATCH[matchDeck]).slice(0,6).map(function(p,i){return {id:i,t:p[0],c:p[1]}});
+  var left=shuffle(pairs),right=shuffle(pairs),sel=null,done=0,miss=0,missed=[];
+  var chips=Object.keys(MATCH).map(function(k){return '<button class="chip'+(k===matchDeck?' on':'')+'" type="button" data-d="'+k+'">'+k+'</button>'}).join('');
+  h(bar('Match It','<span class="pill">Pairs <b id="m-d">0</b>/6</span><span class="pill">Misses <b id="m-m">0</b></span>')+
+    '<p class="howto">Tap a card on the left, then the description it matches.</p><div class="chips">'+chips+'</div>'+
+    '<div class="cols"><div class="col">'+left.map(function(p){return '<button class="card term" type="button" data-id="'+p.id+'">'+esc(p.t)+'</button>'}).join('')+'</div>'+
+    '<div class="col">'+right.map(function(p){return '<button class="card" type="button" data-id="'+p.id+'">'+esc(p.c)+'</button>'}).join('')+'</div></div>');
+  wireBack();
+  [].forEach.call(app.querySelectorAll('.chip'),function(c){c.onclick=function(){matchDeck=c.getAttribute('data-d');match()}});
+  var terms=app.querySelectorAll('.col:first-child .card'),clues=app.querySelectorAll('.col:last-child .card');
+  [].forEach.call(terms,function(b){b.onclick=function(){if(b.classList.contains('done'))return;[].forEach.call(terms,function(x){x.classList.remove('sel')});b.classList.add('sel');sel=b}});
+  [].forEach.call(clues,function(b){b.onclick=function(){
+    if(!sel||b.classList.contains('done'))return;
+    if(sel.getAttribute('data-id')===b.getAttribute('data-id')){
+      sel.classList.remove('sel');sel.classList.add('done');b.classList.add('done');sel.disabled=true;b.disabled=true;sel=null;done++;
+      document.getElementById('m-d').textContent=done;
+      if(done===6){var score=Math.max(0,60-miss*5);later(function(){results('match-'+matchDeck,'Match It',score,60,'points · '+miss+' miss'+(miss===1?'':'es')+' ('+matchDeck+')',missed,match)},500)}
+    }else{
+      miss++;document.getElementById('m-m').textContent=miss;
+      var p=pairs[+sel.getAttribute('data-id')];if(!missed.some(function(x){return x[0]===p.t}))missed.push([p.t,p.c]);
+      b.classList.add('bad');var s=sel;s.classList.add('bad');later(function(){b.classList.remove('bad');s.classList.remove('bad')},350);
+    }
+  }});
+}
+
+/* ================= SORT ================= */
+var sortSet='Upglide vs downglide restriction';
+function sortGame(){
+  clearTimers();
+  var set=SORT[sortSet],items=shuffle(set.items).slice(0,10),i=0,score=0,missed=[],locked=false;
+  var chips=Object.keys(SORT).map(function(k){return '<button class="chip'+(k===sortSet?' on':'')+'" type="button" data-s="'+k+'">'+k+'</button>'}).join('');
+  h(bar('Sort It','<span class="pill">Card <b id="s-i">1</b>/'+items.length+'</span><span class="pill">Score <b id="s-s">0</b></span>')+
+    '<div class="chips">'+chips+'</div><div class="stage"><span class="lab">'+esc(sortSet)+'</span><div class="big" id="s-item"></div></div>'+
+    '<div class="buckets '+(set.b.length===4?'b4':set.b.length===3?'b3':'b2')+'">'+set.b.map(function(b,j){return '<button class="bucket" type="button" data-j="'+j+'">'+esc(b)+'</button>'}).join('')+'</div><div class="feedback" id="s-fb"></div>');
+  wireBack();
+  [].forEach.call(app.querySelectorAll('.chip'),function(c){c.onclick=function(){sortSet=c.getAttribute('data-s');sortGame()}});
+  var bs=app.querySelectorAll('.bucket');
+  function show(){document.getElementById('s-item').textContent=items[i][0];document.getElementById('s-i').textContent=i+1;document.getElementById('s-fb').innerHTML='';[].forEach.call(bs,function(b){b.classList.remove('right','wrong')});locked=false}
+  [].forEach.call(bs,function(b){b.onclick=function(){
+    if(locked)return;locked=true;
+    var j=+b.getAttribute('data-j'),ans=items[i][1],fb=document.getElementById('s-fb');
+    bs[ans].classList.add('right');
+    if(j===ans){score++;fb.innerHTML='<span class="ok">Correct.</span>'}else{b.classList.add('wrong');missed.push([items[i][0],set.b[ans]]);fb.innerHTML='<span class="no">It’s '+esc(set.b[ans])+'.</span>'}
+    document.getElementById('s-s').textContent=score;
+    later(function(){i++;if(i>=items.length)results('sort-'+sortSet,'Sort It',score,items.length,'correct ('+sortSet+')',missed,sortGame);else show()},j===ans?650:1500);
+  }});
+  show();
+}
+
+/* ================= LIGHTNING ================= */
+function lightning(){
+  clearTimers();
+  var deck=shuffle(TF),i=0,score=0,streak=0,bestStreak=0,left=60,missed=[],locked=false;
+  h(bar('Lightning Round','<span class="pill">Time <b id="l-t">60</b>s</span><span class="pill">Score <b id="l-s">0</b></span><span class="pill">Streak <b id="l-k">0</b></span>')+
+    '<div class="timer"><i id="l-bar"></i></div><div class="stage"><span class="lab">True or false?</span><div class="big" id="l-q"></div></div>'+
+    '<div class="tf"><button class="t" type="button" id="l-true">True</button><button class="f" type="button" id="l-false">False</button></div><div class="feedback" id="l-fb">Keys: T or F</div>');
+  wireBack();
+  function show(){if(i>=deck.length){deck=deck.concat(shuffle(TF))}document.getElementById('l-q').textContent=deck[i][0];if(i>0)document.getElementById('l-fb').innerHTML='';locked=false}
+  function answer(v){
+    if(locked||left<=0)return;locked=true;
+    var q=deck[i],ok=(v===q[1]),fb=document.getElementById('l-fb');
+    if(ok){score++;streak++;bestStreak=Math.max(bestStreak,streak);fb.innerHTML='<span class="ok">Correct'+(streak>=3?' · '+streak+' in a row':'')+'</span>'}
+    else{streak=0;missed.push([q[0],(q[1]?'True':'False')+(q[2]?'. '+q[2]:'')]);fb.innerHTML='<span class="no">'+(q[1]?'True.':'False.')+'</span> '+esc(q[2]||'')}
+    document.getElementById('l-s').textContent=score;document.getElementById('l-k').textContent=streak;
+    later(function(){i++;show()},ok?250:1200);
+  }
+  document.getElementById('l-true').onclick=function(){answer(1)};
+  document.getElementById('l-false').onclick=function(){answer(0)};
+  var key=function(e){if(!document.getElementById('l-true')){document.removeEventListener('keydown',key);return}if(e.key==='t'||e.key==='T')answer(1);if(e.key==='f'||e.key==='F')answer(0)};
+  document.addEventListener('keydown',key);
+  var iv=setInterval(function(){left--;var t=document.getElementById('l-t');if(!t){clearInterval(iv);return}t.textContent=left;document.getElementById('l-bar').style.width=(left/60*100)+'%';if(left<=0){clearInterval(iv);document.removeEventListener('keydown',key);results('tf','Lightning Round',score,0,'correct in 60 s · best streak '+bestStreak,missed.slice(-8),lightning)}},1000);
+  timers.push(iv);
+  show();
+}
+
+/* ================= ORDER ================= */
+function order(){
+  clearTimers();
+  var rounds=shuffle(SEQ).slice(0,5),r=0,total=0,missed=[];
+  function round(){
+    var name=rounds[r][0],steps=rounds[r][1],next=0,miss=0,pool=shuffle(steps);
+    if(pool.join()===steps.join()&&steps.length>1)pool=pool.slice(1).concat(pool[0]);
+    h(bar('Order Up','<span class="pill">Round <b>'+(r+1)+'</b>/5</span><span class="pill">Score <b>'+total+'</b></span>')+
+      '<div class="stage" style="min-height:0;padding:18px"><span class="lab">Put in order</span><div class="big">'+esc(name)+'</div></div>'+
+      '<div class="slots">'+steps.map(function(_,k){return '<div class="slot" data-k="'+k+'"><span class="n">'+(k+1)+'</span><span></span></div>'}).join('')+'</div>'+
+      '<div class="pool">'+pool.map(function(s){return '<button class="seqchip" type="button">'+esc(s)+'</button>'}).join('')+'</div><div class="feedback" id="o-fb">Tap the first step.</div>');
+    wireBack();
+    var slots=app.querySelectorAll('.slot');
+    [].forEach.call(app.querySelectorAll('.seqchip'),function(b){b.onclick=function(){
+      if(b.textContent===steps[next]){
+        slots[next].classList.add('filled');slots[next].lastChild.textContent=steps[next];b.remove();next++;
+        document.getElementById('o-fb').textContent=next<steps.length?'Next step…':'';
+        if(next===steps.length){var pts=Math.max(0,10-miss*2);total+=pts;if(miss)missed.push([name,steps.join(' → ')]);
+          document.getElementById('o-fb').innerHTML='<span class="ok">+'+pts+' points</span>';
+          later(function(){r++;if(r>=rounds.length)results('order','Order Up',total,50,'points across 5 sequences',missed,order);else round()},900)}
+      }else{miss++;b.classList.add('bad');later(function(){b.classList.remove('bad')},350);document.getElementById('o-fb').innerHTML='<span class="no">Not that one yet.</span>'}
+    }});
+  }
+  round();
+}
+
+/* ================= BLANKS ================= */
+function blanks(){
+  clearTimers();
+  var qs=shuffle(BL).slice(0,10),i=0,score=0,missed=[],locked=false;
+  function show(){
+    var q=qs[i],opts=shuffle([q[1]].concat(shuffle(BL_POOL.filter(function(w){return w!==q[1]})).slice(0,3)));
+    h(bar('Fill the Blank','<span class="pill">Line <b>'+(i+1)+'</b>/10</span><span class="pill">Score <b>'+score+'</b></span>')+
+      '<div class="stage"><span class="lab">Fill the blank</span><div class="blank-line" id="b-line">'+esc(q[0]).replace('___','<span class="gap" id="b-gap">?</span>')+'</div></div>'+
+      '<div class="buckets b2">'+opts.map(function(o){return '<button class="bucket" type="button">'+esc(o)+'</button>'}).join('')+'</div><div class="feedback" id="b-fb"></div>');
+    wireBack();locked=false;
+    var bs=app.querySelectorAll('.bucket');
+    [].forEach.call(bs,function(b){b.onclick=function(){
+      if(locked)return;locked=true;var ok=b.textContent===q[1];
+      [].forEach.call(bs,function(x){if(x.textContent===q[1])x.classList.add('right')});
+      document.getElementById('b-gap').textContent=q[1];
+      if(ok){score++;document.getElementById('b-fb').innerHTML='<span class="ok">Correct.</span>'}
+      else{b.classList.add('wrong');missed.push([q[0].replace('___','…'),q[1]]);document.getElementById('b-fb').innerHTML='<span class="no">Answer: '+esc(q[1])+'</span>'}
+      later(function(){i++;if(i>=qs.length)results('blank','Fill the Blank',score,10,'lines correct',missed,blanks);else show()},ok?700:1500);
+    }});
+  }
+  show();
+}
+
+hub();
+})();
+</script>

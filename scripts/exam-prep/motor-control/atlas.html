@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html,body{margin:0}[hidden]{display:none!important}img{max-width:100%}a.home{font-family:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;font-size:13px;text-decoration:none;border-radius:999px;padding:6px 14px;display:inline-block}
+.chip.quizchip{margin-left:auto;border-style:dashed}
+.chip.quizchip[aria-pressed="true"]{border-style:solid}
+body.lblquiz .svgbox svg text{filter:blur(4.5px);cursor:pointer}
+body.lblquiz .svgbox svg text.rv{filter:none}
+body.lblquiz figcaption{filter:blur(5px);cursor:pointer;user-select:none}
+body.lblquiz figcaption.rv{filter:none}
+.quiz-note{font-size:13.5px;color:var(--ink-2);padding:8px 0 0}
+.quiz-note[hidden]{display:none}
+.revall{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:999px;margin-left:auto;background:var(--surface);border:1px solid var(--line);color:var(--ink-2);cursor:pointer}
+body:not(.lblquiz) .revall{display:none}
+
+body.drill figure.fig.dr-off{display:none}
+body.drill .week-h{display:none}
+body.drill section.wk.dr-empty{display:none}
+.drill-bar{position:sticky;top:58px;z-index:4;display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--surface);border:1px solid var(--accent);border-radius:10px;padding:10px 12px;margin:10px 0}
+.drill-bar[hidden]{display:none}
+.drill-bar .dr-pos{font-family:var(--mono);font-size:12.5px;color:var(--accent);font-weight:600}
+.drill-bar .dr-h{font-size:13.5px;color:var(--ink-2);flex:1 1 220px}
+.drill-bar button{font-size:13.5px;padding:7px 12px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.drill-bar .dr-yes{border-color:var(--ok);color:var(--ok)}
+.drill-bar .dr-no{border-color:var(--bad);color:var(--bad)}
+</style>
+<title>Motor Control Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f3f5f9; --surface:#ffffff; --surface-2:#e9edf5; --ink:#18203a; --ink-2:#4d5670; --line:#d3d9e6; --line-strong:#8f9ab3;
+  --accent:#2d48b0; --accent-soft:#e2e7f8; --pos:#16806a; --pos-soft:#dcf1ea; --neg:#b3322a; --neg-soft:#f9e1de; --warm:#b86a12; --warm-soft:#fbead3;
+  --display:"Literata",Georgia,serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131b; --surface:#181c28; --surface-2:#222839; --ink:#e7eaf3; --ink-2:#a4acc2; --line:#2f3649; --line-strong:#6a7591;
+    --accent:#8fa3f2; --accent-soft:#232c4f; --pos:#5fd0b2; --pos-soft:#15352e; --neg:#f08a80; --neg-soft:#3d1c1a; --warm:#f0b465; --warm-soft:#3a2a14;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131b; --surface:#181c28; --surface-2:#222839; --ink:#e7eaf3; --ink-2:#a4acc2; --line:#2f3649; --line-strong:#6a7591;
+  --accent:#8fa3f2; --accent-soft:#232c4f; --pos:#5fd0b2; --pos-soft:#15352e; --neg:#f08a80; --neg-soft:#3d1c1a; --warm:#f0b465; --warm-soft:#3a2a14;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 60px}
+.wrap{max-width:1180px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:650;margin:0;text-wrap:balance;line-height:1.2}
+header{padding-block:34px 18px;border-bottom:2px solid var(--ink);display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+header h1{font-size:clamp(30px,5vw,46px);margin-top:6px}
+header p{color:var(--ink-2);max-width:60ch;margin:8px 0 0}
+.back{font-family:var(--mono);font-size:13px;color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:var(--surface);white-space:nowrap}
+.back:hover{border-color:var(--accent)}
+.filters{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;flex-wrap:wrap;padding-block:12px;border-bottom:1px solid var(--line);align-items:center}
+.chip{font-family:var(--body);font-size:13.5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.count{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.week-h{margin-top:34px;display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.week-h .wk{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.week-h h2{font-size:22px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+figure.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px}
+.fig-h{display:flex;gap:10px;align-items:baseline}
+.fig-h .n{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:24px}
+.fig-h h3{font-size:17px}
+.svgbox{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.svgbox svg{display:block;width:100%;height:auto;min-width:460px;color:var(--ink)}
+figcaption{font-size:14px;color:var(--ink-2);line-height:1.5}
+figcaption .src{font-family:var(--mono);font-size:11px;background:var(--surface-2);color:var(--ink-2);border-radius:4px;padding:1px 6px;white-space:nowrap}
+figcaption .ill{font-family:var(--mono);font-size:11px;border:1px dashed var(--line-strong);border-radius:4px;padding:0 5px;white-space:nowrap}
+/* svg vocabulary */
+svg text{font-family:var(--body);font-size:13px;fill:currentColor}
+svg .ts{font-size:11.5px;fill:var(--ink-2)}
+svg .tb{font-weight:600}
+svg .th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;fill:var(--ink-2)}
+svg .tacc{fill:var(--accent)} svg .tpos{fill:var(--pos)} svg .tneg{fill:var(--neg)} svg .twarm{fill:var(--warm)}
+svg .bx{fill:var(--surface);stroke:var(--line-strong);stroke-width:1.2}
+svg .bx.acc{fill:var(--accent-soft);stroke:var(--accent)}
+svg .bx.pos{fill:var(--pos-soft);stroke:var(--pos)}
+svg .bx.neg{fill:var(--neg-soft);stroke:var(--neg)}
+svg .bx.warm{fill:var(--warm-soft);stroke:var(--warm)}
+svg .bx.mut{fill:var(--surface-2);stroke:var(--line)}
+svg .ln{stroke:currentColor;stroke-width:1.5;fill:none}
+svg .ln.acc{stroke:var(--accent)} svg .ln.pos{stroke:var(--pos)} svg .ln.neg{stroke:var(--neg)} svg .ln.warm{stroke:var(--warm)}
+svg .ln.dash{stroke-dasharray:5 4} svg .ln.faint{stroke:var(--line-strong)} svg .ln.thick{stroke-width:3}
+svg .ax{stroke:var(--line-strong);stroke-width:1.2;fill:none}
+svg .grid-l{stroke:var(--line);stroke-width:1}
+svg .f-acc{fill:var(--accent)} svg .f-pos{fill:var(--pos)} svg .f-neg{fill:var(--neg)} svg .f-warm{fill:var(--warm)} svg .f-ink{fill:currentColor} svg .f-mut{fill:var(--line-strong)} svg .f-surf{fill:var(--surface)}
+svg .f-accs{fill:var(--accent-soft)} svg .f-poss{fill:var(--pos-soft)} svg .f-negs{fill:var(--neg-soft)} svg .f-warms{fill:var(--warm-soft)} svg .f-s2{fill:var(--surface-2)}
+svg .venn{fill:var(--accent);fill-opacity:.1;stroke:var(--accent);stroke-width:1.4}
+footer{margin-top:40px;border-top:1px solid var(--line);padding-top:14px;font-size:13px;color:var(--ink-2)}
+</style>
+
+<div class="wrap">
+<header>
+  <div>
+    <div class="eyebrow">Neurorehabilitation · Motor control &amp; learning</div>
+    <h1>Motor Control Atlas</h1>
+    <p>Original diagrams of the core mechanisms in motor control, motor learning and neuroplasticity. Each caption states the one idea the picture shows.</p>
+  </div>
+  <a class="back" href="index.html">← Study page</a>
+</header>
+<div class="filters" id="filters" role="group" aria-label="Filter by topic"></div>
+<main id="atlas"></main>
+<footer>All diagrams are original drawings, not reproductions of published figures. Captions give short author-year citations; full references are listed on the study page. Curves marked <span class="ill" style="font-family:var(--mono);font-size:11px">shape only</span> show direction and shape from published graphs, not real data values.</footer>
+</div>
+
+<script>
+(function(){
+var ID=0;
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function S(w,h,label,body){
+  var mk=function(n,cls){return '<marker id="'+n+ID+'" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" class="'+cls+'"/></marker>'};
+  return '<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(label)+'"><defs>'+mk('a','f-ink')+mk('b','f-acc')+mk('c','f-neg')+mk('d','f-pos')+mk('e','f-warm')+mk('g','f-mut')+'</defs>'+body+'</svg>';
+}
+function mkr(k){k=k||'';return k.indexOf('acc')>=0?'b':k.indexOf('neg')>=0?'c':k.indexOf('pos')>=0?'d':k.indexOf('warm')>=0?'e':k.indexOf('faint')>=0?'g':'a'}
+function T(x,y,s,k,anchor){return '<text x="'+x+'" y="'+y+'" class="'+(k||'')+'" text-anchor="'+(anchor||'middle')+'">'+esc(s)+'</text>'}
+function TL(x,y,lines,k,anchor,lh){lh=lh||15;return lines.map(function(l,i){return T(x,y+i*lh,l,k,anchor)}).join('')}
+function B(x,y,w,h,lines,k,tk){
+  lines=[].concat(lines);var n=lines.length,lh=15,cy=y+h/2-(n-1)*lh/2+4.5;
+  return '<rect class="bx '+(k||'')+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6"/>'+lines.map(function(l,i){
+    var cls=(tk||'')+(i===0?' tb':' ts');if(n===1)cls=(tk||'')+' tb';return T(x+w/2,cy+i*lh,l,cls)}).join('');
+}
+function A(x1,y1,x2,y2,k,lab,lx,ly,lk,anchor){
+  var s='<line class="ln '+(k||'')+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" marker-end="url(#'+mkr(k)+ID+')"/>';
+  if(lab)s+=T(lx!=null?lx:(x1+x2)/2,ly!=null?ly:(y1+y2)/2-6,lab,lk||'ts',anchor);
+  return s;
+}
+function P(d,k,arrow){return '<path class="ln '+(k||'')+'" d="'+d+'"'+(arrow?' marker-end="url(#'+mkr(k)+ID+')"':'')+'/>'}
+function L(x1,y1,x2,y2,k){return '<line class="ln '+(k||'')+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"/>'}
+function C(x,y,r,k){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" class="'+(k||'')+'"/>'}
+function R(x,y,w,h,k,rx){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(rx==null?4:rx)+'" class="'+(k||'')+'"/>'}
+function axes(x0,y0,w,h,xl,yl){return '<path class="ax" d="M'+x0+' '+(y0-h)+'V'+y0+'H'+(x0+w)+'"/>'+(xl?T(x0+w/2,y0+20,xl,'ts'):'')+(yl?'<text class="ts" text-anchor="middle" transform="translate('+(x0-14)+' '+(y0-h/2)+') rotate(-90)">'+esc(yl)+'</text>':'')}
+function person(x,y,k){return C(x,y,9,'bx '+(k||''))+L(x,y+9,x,y+42,k)+L(x,y+20,x-14,y+32,k)+L(x,y+20,x+14,y+30,k)+L(x,y+42,x-10,y+64,k)+L(x,y+42,x+10,y+64,k)}
+function neuron(x,y,k){return C(x,y,13,'bx '+(k||''))}
+
+var F=[];
+function fig(w,title,cap,src,draw,note){F.push({w:w,t:title,c:cap,src:src,draw:draw,note:note})}
+
+/* ================= TOPIC 1 ================= */
+fig('1','Three movement effectors','Movement emerges where the individual, the task and the environment overlap. Change any one circle and the movement changes.','Shumway-Cook et al. 2023',function(){
+  return S(540,330,'Venn diagram: individual, task and environment overlap to produce movement',
+   '<circle class="venn" cx="205" cy="130" r="100"/><circle class="venn" cx="335" cy="130" r="100"/><circle class="venn" cx="270" cy="225" r="100"/>'+
+   T(165,92,'Individual','tb')+TL(165,110,['sensory ·','cognitive · motor'],'ts')+
+   T(375,92,'Task','tb')+TL(375,110,['open/closed ·','discrete/continuous'],'ts')+
+   T(270,262,'Environment','tb')+TL(270,280,['regulatory vs','non-regulatory'],'ts')+
+   T(270,170,'MOVEMENT','tb tacc'));
+});
+fig('1','Task-Oriented Approach: four mirrored levels','Every assessment level has a matching intervention. Read across a row to pair what you measure with what you treat; rows run from life roles down to body systems.','Shumway-Cook et al. 2023',function(){
+  var rows=[['Participation','QoL questionnaire','Groups · community'],['Function','Berg · Jebsen · MAL','Task practice · CIMT'],['Strategy','Observe HOW it’s done','Guidance · modeling'],['Impairment','MMT · PROM · pain','Strength · mobility · tone']];
+  var b=T(100,22,'ASSESS','th')+T(300,22,'LEVEL','th')+T(505,22,'TREAT','th');
+  rows.forEach(function(r,i){var y=34+i*60;b+=B(10,y,180,44,[r[1]],'mut')+B(225,y,150,44,[r[0]],'acc','tacc')+B(410,y,190,44,[r[2]],'pos')+A(190,y+22,223,y+22,'faint')+A(375,y+22,408,y+22,'faint')});
+  return S(610,280,'Four TOA levels with matched assessments and treatments',b);
+});
+fig('1','Theories as paradigm shifts','Historical theories put the CNS in charge; current theories spread control across systems. Levin & Piscitelli split them into direct (central command) and indirect (movement emerges).','Shumway-Cook et al. 2023',function(){
+  var b=T(95,24,'HISTORICAL','th')+T(335,24,'CURRENT','th')+B(20,70,150,46,['Reflex','Sherrington'],'mut')+B(20,150,150,46,['Reflex-Hierarchical','Jackson · Magnus'],'mut')+A(95,116,95,148,'faint');
+  var cur=[['Motor Program','acc'],['Systems',''],['Dynamic Action',''],['Ecological',''],['Neuronal Group Sel.','']];
+  cur.forEach(function(c,i){b+=B(250,36+i*44,170,34,[c[0]],c[1])});
+  b+=A(172,130,246,130,'','paradigm shift',209,122);
+  b+=P('M428 82 h6 v72 h-6','ln faint')+T(440,122,'Dynamic Systems','ts','start');
+  b+=P('M548 126 h6 v73 h-6','ln pos')+T(560,167,'Indirect','tpos tb','start');
+  b+=P('M428 38 h6 v30 h-6','ln acc')+T(440,57,'Direct','tacc tb','start');
+  return S(625,262,'Timeline from historical to current motor control theories with direct vs indirect grouping',b);
+});
+fig('1','Reflex chain vs hierarchical control','Reflex theory builds behavior by chaining stimulus-response units. Hierarchical theory puts higher centers on top, but it can’t explain bottom-up control like withdrawing from a tack.','Shumway-Cook et al. 2023',function(){
+  var b=T(135,22,'REFLEX: CHAINED','th')+T(415,22,'HIERARCHICAL: TOP-DOWN','th');
+  b+=B(20,40,90,34,['Stimulus'],'mut')+A(110,57,138,57)+B(140,40,100,34,['Reflex → R1'],'acc','tacc')+A(190,74,190,98)+T(198,90,'response = next stimulus','ts','start');
+  b+=B(140,100,100,34,['Reflex → R2'],'acc','tacc')+A(190,134,190,158)+B(140,160,100,34,['Complex act'],'');
+  b+=T(135,222,'fails: novel, fast or stimulus-free movement','tneg ts');
+  b+=B(345,40,140,34,['Higher centers'],'acc','tacc')+A(415,74,415,98,'acc')+B(345,100,140,34,['Middle levels'],'')+A(415,134,415,158,'acc')+B(345,160,140,34,['Lower: reflexes'],'mut');
+  b+=P('M492 177 C 530 150, 530 80, 492 58','ln neg dash',true)+T(505,212,'tack → withdrawal','tneg ts')+T(505,227,'(bottom-up)','tneg ts');
+  return S(565,240,'Reflex chaining compared with hierarchical top-down control and its bottom-up exception',b);
+});
+fig('1','Generalized motor program: invariants vs parameters','The same program runs slow or fast: overall duration (a parameter) changes, while the sequence and relative timing (invariants) stay the same.','Shumway-Cook et al. 2023',function(){
+  var seg=[['Wind-up',0.3,'f-accs'],['Swing',0.5,'f-poss'],['Follow',0.2,'f-warms']];
+  function row(x,y,W,lab){var s=T(x-10,y+20,lab,'tb','end'),cx=x;seg.forEach(function(g){var w=W*g[1];s+=R(cx,y,w,30,g[2]+' ',3)+'<rect x="'+cx+'" y="'+y+'" width="'+w+'" height="30" rx="3" class="bx" style="fill:none"/>'+T(cx+w/2,y+19,g[0],'ts');cx+=w});return s}
+  var b=row(130,40,380,'Slow throw')+row(130,110,230,'Fast throw');
+  b+=L(130,30,130,150,'faint dash')+T(130,24,'start','ts')+L(510,32,510,78,'faint dash')+L(360,102,360,148,'faint dash');
+  b+=T(320,178,'Invariant: sequence · relative timing (30 : 50 : 20) · relative force','tacc ts')+T(320,196,'Parameter: overall duration · overall force · direction · muscles','tpos ts');
+  return S(560,210,'Two throws with the same proportions but different total durations',b);
+},'Segment proportions are illustrative.');
+fig('1','Attractor wells','Stable, preferred patterns sit in deep wells and take a big push to change. Unstable patterns sit in shallow wells and change easily.','Shumway-Cook et al. 2023',function(){
+  var b='<path class="ln" d="M20 60 C 80 60, 110 190, 170 190 C 230 190, 250 70, 300 70 C 350 70, 360 120, 400 120 C 440 120, 460 60, 540 60"/>';
+  b+=C(170,176,13,'f-acc')+C(400,106,13,'f-warm');
+  b+=T(170,222,'Deep well','tb')+T(170,238,'stable · preferred · hard to change','ts');
+  b+=T(400,152,'Shallow well','tb')+T(400,168,'unstable · easy to change','ts');
+  b+=P('M190 150 C 230 80, 280 40, 300 50','ln acc dash',true)+T(270,36,'big push needed to leave','tacc ts');
+  return S(560,250,'Energy landscape with a deep stable well and a shallow unstable well',b);
+});
+fig('1','Control parameter vs order parameter','Gradually raising speed (the control parameter) causes a sudden switch in the gait pattern (the order parameter) at a critical point: walk becomes run.','Shumway-Cook et al. 2023',function(){
+  var b=axes(70,200,440,170,'Speed: control parameter','Pattern: order parameter');
+  b+=P('M70 160 H 290','ln acc thick')+P('M290 70 H 510','ln pos thick')+L(290,30,290,200,'faint dash')+T(290,24,'critical point','ts');
+  b+=T(180,150,'Walk','tb tacc')+T(400,60,'Run','tb tpos')+A(290,155,290,78,'warm','pattern "falls out"',300,120,'twarm ts','start');
+  return S(540,230,'Step change from walking to running as speed passes a critical point',b);
+});
+fig('1','Open vs closed tasks','A closed task happens in a stable environment with nothing to predict. An open task has timing constraints: you must predict where and when the moving object will be.','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var b=T(135,22,'CLOSED','th')+T(410,22,'OPEN','th')+R(275,30,1,190,'f-mut',0);
+  b+=person(70,70)+R(165,110,30,30,'bx acc',4)+A(90,100,160,122,'','reach',120,98)+T(135,200,'stable · no prediction','ts');
+  b+=person(350,70)+C(520,52,9,'f-warm')+P('M515 58 Q 470 90 430 110','ln warm dash',true)+C(425,113,5,'f-neg')+T(425,135,'predicted','tneg ts');
+  b+=T(410,200,'timing & location must be predicted','ts');
+  return S(560,225,'Closed task with stationary target vs open task with moving target',b);
+});
+fig('1','Regulatory vs non-regulatory features','Regulatory features are the parts of the environment the movement must conform to. Non-regulatory features are present but don’t shape the movement.','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var b=B(200,90,160,50,['The movement','batting a ball'],'acc','tacc');
+  b+=B(20,20,150,44,['Bat · ball speed'],'pos')+A(170,48,205,90,'pos')+T(95,82,'must conform to','tpos ts');
+  b+=B(20,160,150,44,['Step height'],'pos')+A(170,178,205,138,'pos');
+  b+=B(395,90,150,50,['Crowd watching','non-regulatory'],'mut')+L(362,115,393,115,'faint dash')+T(470,160,'no effect on movement','ts');
+  return S(560,220,'Regulatory features shaping movement vs a non-regulatory feature',b);
+});
+
+fig('1','Classifying movement tasks','The textbook sorts tasks along four dimensions. Any task sits somewhere on each, and each dimension changes how movement has to be organized.','Shumway-Cook et al. 2023, Table 1.1',function(){
+  var rows=[['Discrete','recognizable start & end','kick a ball · sit-to-stand','Continuous','performer picks the end','walking · running'],['Closed','fixed, predictable setting','','Open','changing, unpredictable','soccer · tennis'],['Stability','nonmoving base of support','sitting · standing','Mobility','moving base of support','walking · running'],['Nonmanipulation','no UE manipulation','','Manipulation','uses the upper extremities','']];
+  var b='';rows.forEach(function(r,i){var y=12+i*70;b+=B(20,y,210,60,[r[0],r[1]].concat(r[2]?[r[2]]:[]),'acc','tacc')+B(330,y,210,60,[r[3],r[4]].concat(r[5]?[r[5]]:[]),'pos','tpos')+'<line class="ln faint" x1="234" y1="'+(y+30)+'" x2="326" y2="'+(y+30)+'" marker-end="url(#g'+ID+')" marker-start="url(#g'+ID+')"/>'});
+  return S(560,292,'Four task dimensions: discrete vs continuous, closed vs open, stability vs mobility, manipulation',b);
+});
+/* ================= TOPIC 2 ================= */
+fig('2','Stages of information processing','Between input and output are three stages, each with its own reaction-time factors. Attention resources feed all three.','Wickens & Carswell 2012',function(){
+  var b=B(250,6,180,28,['Attention resources'],'warm','twarm');
+  b+=B(10,70,80,50,['Input','senses'],'mut')+A(90,95,108,95);
+  var st=[['Stimulus ID',['detection: clarity, intensity','pattern recognition']],['Response selection',['Hick’s law','S-R compatibility']],['Response programming',['# moving parts','accuracy · duration']]];
+  st.forEach(function(s,i){var x=110+i*170;b+=B(x,70,158,50,[s[0]],'acc','tacc')+TL(x+79,142,s[1],'ts');if(i<2)b+=A(x+158,95,x+168,95)});
+  b+=A(608,95,622,95)+B(625,70,70,50,['Output','movement'],'mut');
+  b+=A(300,34,189,68,'warm')+A(340,34,359,68,'warm')+A(380,34,529,68,'warm');
+  b+=P('M110 178 V 186 H 608 V 178','ln faint')+T(359,202,'reaction time spans all three stages','ts');
+  return S(700,210,'Input flows through stimulus identification, response selection and programming to output',b);
+});
+fig('2','What slows reaction time at response selection','More stimulus-response choices raise reaction time (Hick’s law). Incompatible stimulus-response pairings are slower than compatible ones.','Wickens & Carswell 2012',function(){
+  var b=axes(50,190,200,150,'# of S-R alternatives','Reaction time')+P('M52 180 C 90 120, 140 90, 245 72','ln acc thick')+T(150,26,'Hick’s law','tb');
+  b+=axes(330,190,200,150,'','Reaction time')+R(365,130,60,60,'f-poss')+R(365,130,60,60,'bx pos')+R(455,70,60,120,'f-negs')+R(455,70,60,120,'bx neg');
+  b+=T(395,208,'Compatible','ts')+T(485,208,'Incompatible','ts')+T(430,26,'S-R compatibility','tb');
+  return S(560,220,'Hick law curve and compatible versus incompatible reaction times',b);
+},'Shape only.');
+fig('2','Selective, focused and divided attention','Selective attention chooses what gets through. Focused attention holds one stream against distraction. Divided attention splits capacity across more than one element.','Wickens & Carswell 2012',function(){
+  var b=T(90,22,'SELECTIVE','th')+T(280,22,'FOCUSED','th')+T(470,22,'DIVIDED','th');
+  [50,75,100,125,150].forEach(function(y,i){b+=L(20,y,80,100,i===2?'acc':'faint')});
+  b+=R(82,40,6,48,'f-ink',1)+R(82,112,6,48,'f-ink',1)+A(88,100,160,100,'acc')+T(90,190,'what to process','ts');
+  b+=A(200,100,350,100,'acc thick');[[235,50,250,85],[290,160,300,115],[320,45,320,85]].forEach(function(c){b+=A(c[0],c[1],c[2],c[3],'neg dash')});
+  b+=T(280,190,'avoid distraction','ts');
+  b+=C(400,100,8,'f-acc')+A(408,96,530,55,'acc')+A(408,104,530,145,'acc')+T(470,190,'> 1 element at once','ts');
+  return S(560,205,'Three attention types drawn as filtering, holding and splitting',b);
+});
+fig('2','Internal vs external focus','Directing attention to the effect of the movement (external) beats attending to your own body (internal) for performance and learning (Wulf 1998).','Wulf et al. 1998',function(){
+  var b=person(150,60)+P('M135 85 C 90 70, 90 120, 133 110','ln neg dash',true)+T(90,160,'Internal:','tneg tb')+T(90,176,'own body movement','ts');
+  b+=C(470,95,26,'bx acc')+C(470,95,14,'bx acc')+C(470,95,4,'f-acc')+A(166,82,440,95,'acc thick')+T(310,72,'External: the outcome','tacc tb')+T(310,120,'superior for performance & learning','ts');
+  return S(560,195,'Internal focus loops back to the body; external focus points to the target',b);
+});
+fig('2','Perception → cognition → action pathway','Seven processing steps, from receptors to muscles, each with its main neural structures.','Shumway-Cook et al. 2023',function(){
+  var st=[['Sensing','peripheral','receptors'],['Perceiving','1° & 2° sensory','cortices'],['Interpreting','higher-level','sensory areas'],['Conceptual.','prefrontal &','association'],['Strategy/plan','SMA · basal','ganglia · cblm'],['Activation','M1 · BG ·','cerebellum'],['Execution','motor neurons','muscles · joints']];
+  var b='',W=106;
+  [[0,3,'PERCEPTION','acc'],[3,2,'COGNITION','warm'],[5,2,'ACTION','pos']].forEach(function(g){var x=10+g[0]*W;b+=R(x,14,g[1]*W-10,22,'bx '+g[3],4)+T(x+(g[1]*W-10)/2,29,g[2],'th')});
+  st.forEach(function(s,i){var x=10+i*W;b+=B(x,50,W-14,40,[s[0]],'');b+=TL(x+(W-14)/2,112,[s[1],s[2]],'ts');if(i<6)b+=A(x+W-14,70,x+W-2,70)});
+  return S(755,150,'Seven-step pathway from sensing to execution with structures',b);
+});
+fig('2','Dual-task walking','Adding a second task slows gait, and the cost grows with task complexity. Controls walk faster than people with PD, and both groups slow as the task gets harder (Yogev 2005).','Yogev et al. 2005',function(){
+  var b=axes(70,190,440,150,'','Gait speed');var xs=[110,230,350,470],lab=['Usual','Simple task','Complex task','Serial 7’s'];
+  lab.forEach(function(l,i){b+=T(xs[i],208,l,'ts')});
+  b+=P('M110 60 L230 66 L350 74 L470 86','ln acc thick')+P('M110 118 L230 126 L350 140 L470 150','ln neg thick');
+  xs.forEach(function(x,i){b+=C(x,[60,66,74,86][i],4,'f-acc')+C(x,[118,126,140,150][i],4,'f-neg')});
+  b+=T(478,82,'Controls','tacc tb','start')+T(478,154,'PD','tneg tb','start');
+  return S(560,220,'Gait speed drops with task complexity, more in PD',b);
+},'Shape only.');
+fig('2','Goal orientation after failure','The same failure pushes a self-referenced learner to try harder and a social-comparison learner to withdraw. How you phrase feedback can steer which orientation a client adopts.','Shumway-Cook et al. 2023',function(){
+  var b=B(20,90,110,50,['Failure'],'neg','tneg');
+  b+=B(200,20,160,56,['Self-referenced','"How did I do before?"'],'pos','tpos')+B(200,154,160,56,['Social comparison','"vs. others?"'],'warm','twarm');
+  b+=A(130,105,198,56,'pos')+A(130,125,198,176,'warm');
+  b+=B(390,20,160,56,['↑ effort, persistence','keeps problem-solving'],'pos')+B(390,154,160,56,['Withdraws effort','anxiety · task aversion'],'neg');
+  b+=A(360,48,388,48,'pos')+A(360,182,388,182,'neg');
+  b+=T(280,110,'"You improved since last time"','ts tpos')+T(280,127,'"Compared to others you’re good"','ts twarm');
+  return S(560,225,'Failure leads to persistence under self-referenced goals and withdrawal under social comparison',b);
+});
+fig('2','Sources of self-efficacy','Four sources build self-efficacy. Personal performance accomplishments are the most powerful, so give clients a series of successes.','Shumway-Cook et al. 2023',function(){
+  var b=B(15,20,250,60,['Performance accomplishments','MOST POWERFUL'],'acc','tacc');
+  b+=B(15,95,250,34,['Vicarious experience'],'')+B(15,140,250,34,['Verbal persuasion'],'')+B(15,185,250,34,['Physiological states'],'');
+  b+=B(345,95,190,50,['Self-efficacy','"I can do the actions"'],'pos','tpos');
+  b+=A(265,50,343,108,'acc thick')+A(265,112,343,116)+A(265,157,343,124)+A(265,202,343,134);
+  b+=T(440,175,'vs outcome expectation:','ts')+T(440,191,'"the actions will work"','ts');
+  return S(550,235,'Four sources feeding self-efficacy with performance accomplishments strongest',b);
+});
+
+fig('2','Five clinical types of attention','The textbook’s clinical subtypes, each with the test used to examine it. Note that the information-processing and clinical frameworks swap which one means resisting distraction.','Shumway-Cook et al. 2023; Wickens & Carswell 2012',function(){
+  var r=[['Focused','respond to specific stimuli',''],['Sustained','vigilance, repetitive activity','Random Letter Test'],['Selective','keep a set despite distractors','Stroop test'],['Alternating','shift between different tasks','Trail-Making A & B'],['Divided','several tasks at once','dual-task walking']];
+  var b=T(150,18,'TYPE','th')+T(430,18,'TEST / EXAMPLE','th');
+  r.forEach(function(x,i){var y=28+i*48;b+=B(20,y,260,42,[x[0],x[1]],i%2?'':'acc',i%2?'':'tacc');if(x[2])b+=A(282,y+21,328,y+21,'faint')+B(330,y+3,200,36,[x[2]],'mut')});
+  b+=T(275,282,'Info processing: focused = sustain processing, avoid distraction; selective = what to process','twarm ts');
+  return S(545,294,'Five attention subtypes with their clinical tests',b);
+});
+fig('3','Constant vs variable practice','Practicing one task across a range of conditions gives smaller errors when the learner meets a new variation (Catalano & Kleiner 1984).','Shumway-Cook et al. 2023',function(){
+  var b=T(70,24,'PRACTICE','th')+T(450,24,'TRANSFER TEST','th');
+  b+=B(20,40,170,44,['Constant','one speed only'],'mut')+B(20,110,170,44,['Variable','5 · 7 · 9 · 11 mph'],'acc','tacc');
+  b+=B(250,75,130,44,['New speed','outside the range'],'warm','twarm')+A(190,62,248,88)+A(190,132,248,106,'acc');
+  b+=B(420,40,120,44,['Larger error'],'neg','tneg')+B(420,110,120,44,['Smaller error'],'pos','tpos')+A(380,90,418,62,'faint')+A(380,104,418,132,'pos');
+  return S(560,170,'Constant and variable practice groups tested at a new speed',b);
+});
+/* ================= TOPIC 3 ================= */
+fig('3','Three models of learning stages, aligned','Fitts & Posner, Gentile and the Systems model describe the same journey. Their early stages share high attention, variability and frozen degrees of freedom.','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var b=A(125,20,560,20,'','',0,0)+T(130,14,'early','ts','start')+T(555,14,'late','ts','end');
+  var rows=[['Fitts & Posner',[['Cognitive',1,'acc'],['Associative',1,''],['Autonomous',1,'pos']]],['Gentile',[['Early: ballpark',1,'acc'],['Later: refine & adapt',2,'pos']]],['Systems',[['Novice: freeze',1,'acc'],['Advanced: release',1,''],['Expert: exploit',1,'pos']]],['Attention',[['High',1,'mut'],['Less',1,'mut'],['Dual-task OK',1,'mut']]],['Feedback',[['Qualitative · demo',1,'mut'],['Periodic cues',1,'mut'],['Little or none',1,'mut']]]];
+  rows.forEach(function(r,i){var y=34+i*44;b+=T(115,y+22,r[0],'tb','end');var x=125;r[1].forEach(function(c){var w=145*c[1];b+=B(x,y,w-6,34,[c[0]],c[2]);x+=w})});
+  return S(570,260,'Aligned stage models from early to late learning',b);
+});
+fig('3','Freezing and releasing degrees of freedom','Novices lock joints with co-contraction to cut the degrees of freedom they must control. With skill, joints are released and the expert exploits momentum.','Shumway-Cook & Woollacott 2017, 2023',function(){
+  function leg(x,states,lab,sub,k){var pts=[[x,50],[x+14,120],[x,190]],s=L(pts[0][0],pts[0][1],pts[1][0],pts[1][1],'thick')+L(pts[1][0],pts[1][1],pts[2][0],pts[2][1],'thick');
+    pts.forEach(function(p,i){s+=C(p[0],p[1],10,states[i]?'f-neg':'bx')});return s+T(x,222,lab,'tb '+k)+T(x,238,sub,'ts')}
+  var b=leg(100,[1,1,1],'Novice','all joints stiff','tneg')+leg(280,[1,0,0],'Advanced','releasing','')+leg(440,[0,0,0],'Expert','all free','tpos');
+  b+=P('M470 70 C 510 110, 510 160, 468 188','ln acc',true)+T(505,40,'uses momentum','tacc ts');
+  b+=C(20,20,6,'f-neg')+T(32,24,'= frozen (co-contraction)','ts','start');
+  return S(570,250,'Three leg diagrams from locked joints to free joints using momentum',b);
+});
+fig('3','Four shapes of performance curves','Change over practice can take different shapes. Averaging data cancels variation and hides temporary changes, and ceiling or floor effects can flatten a curve.','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var sh=[['Quick gains, then plateau','M0 100 C 20 20, 60 10, 120 8'],['Linear: constant rate','M0 100 L120 10'],['Slow start, then rapid','M0 100 C 70 98, 100 60, 120 8'],['Slow, rapid, then plateau','M0 100 C 40 100, 50 10, 120 10']];
+  var b='';sh.forEach(function(s,i){var x=20+i*138;b+='<g transform="translate('+x+' 30)">'+'<path class="ax" d="M0 0V100H120"/>'+'<path class="ln acc thick" d="'+s[1]+'"/>'+'</g>'+TL(x+60,158,s[0].split(', '),'ts')});
+  b+=T(290,20,'performance ↑ · practice time →','th');
+  return S(575,190,'Four performance curve shapes',b);
+},'Shape only.');
+fig('3','Power law of practice','Improvement per unit of practice is largest early and shrinks as skill rises, but it never quite stops and can continue for years.','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var b=axes(70,190,440,160,'Number of practice trials','Improvement per unit of practice')+P('M75 40 C 110 150, 180 170, 505 180','ln acc thick');
+  b+=T(120,60,'rapid early gains','tacc tb','start')+T(420,160,'slower, continues for years','ts','middle');
+  return S(540,220,'Decreasing curve of improvement per practice trial',b);
+},'Shape only.');
+fig('3','Fitts’ law: the speed-accuracy tradeoff','For the same distance, a narrower target takes longer to hit. Target width (W) and amplitude (A) set the index of difficulty.','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var b=C(40,60,6,'f-ink')+R(300,35,60,50,'bx pos')+A(46,60,296,60,'','A (distance)',170,52);
+  b+=T(330,100,'W wide','ts')+R(390,50,90,18,'bx pos',2)+T(435,63,'MT short','ts');
+  b+=C(40,160,6,'f-ink')+R(322,140,16,40,'bx neg')+A(46,160,318,160,'');
+  b+=T(330,200,'W narrow','ts')+R(390,150,160,18,'bx neg',2)+T(470,163,'MT long','ts');
+  b+=T(280,232,'MT = a + b · log₂(2A / W)','tb tacc');
+  return S(560,245,'Wide target gives short movement time; narrow target gives long movement time',b);
+});
+fig('3','Blocked vs random practice','Blocked practice repeats one task before moving on; random practice mixes the order. Blocked looks better during practice, but random wins at retention.','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var bl='RRRRRCCCCCIIIII',rd='RCICRIRCICIRICR',col={R:'f-acc',C:'f-pos',I:'f-warm'},b='';
+  function strip(y,s,lab){var o=T(95,y+15,lab,'tb','end');s.split('').forEach(function(c,i){o+=R(105+i*20,y,17,20,col[c],3)+T(113.5+i*20,y+14,c,'ts')});return o}
+  b+=strip(20,bl,'Blocked')+strip(52,rd,'Random');
+  b+=T(105,92,'R = reach overhead · C = cane in standing · I = isometrics','ts','start');
+  b+=axes(120,225,380,110,'','');
+  b+=R(150,165,40,60,'f-accs')+R(150,165,40,60,'bx acc')+R(195,185,40,40,'f-warms')+R(195,185,40,40,'bx warm');
+  b+=R(340,195,40,30,'f-accs')+R(340,195,40,30,'bx acc')+R(385,155,40,70,'f-warms')+R(385,155,40,70,'bx warm');
+  b+=T(192,244,'During practice','ts')+T(382,244,'Retention (learning)','ts');
+  b+=R(440,120,12,12,'f-acc',2)+T(458,130,'Blocked','ts','start')+R(440,138,12,12,'f-warm',2)+T(458,148,'Random','ts','start');
+  return S(560,255,'Practice order strips and blocked vs random performance and retention',b);
+},'Bar heights are shape only.');
+fig('3','Feedback family tree','Feedback is either intrinsic (your own senses) or extrinsic (augmented by someone or something else). Each can be about the outcome (KR) or the movement (KP).','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var b=B(215,10,130,34,['Feedback'],'acc','tacc');
+  b+=B(60,80,170,40,['Intrinsic','sensory'],'')+B(330,80,170,40,['Extrinsic','augmented'],'warm','twarm');
+  b+=A(250,44,150,78)+A(310,44,410,78);
+  var leaves=[[20,'KP','"knee buckled"'],[140,'KR','"throw went right"'],[290,'KP','"arm not back far"'],[410,'KR','"8 of 10 targets"']];
+  leaves.forEach(function(l,i){b+=B(l[0],160,120,46,[l[1],l[2]],i%2?'mut':'acc');b+=A(i<2?145:415,120,l[0]+60,158,'faint')});
+  b+=T(415,230,'timing: concurrent (during) · terminal (after)','twarm ts');
+  return S(560,245,'Tree of intrinsic and extrinsic feedback with KP and KR leaves',b);
+},'KR "8 of 10" is an example.');
+fig('3','When to give feedback: before, during, after','Structure feedback around the task: model it first, guide during, and give KR or KP after. Timing intervals sit around terminal feedback.','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var b=R(180,70,200,40,'bx acc',6)+T(280,95,'TASK PERFORMANCE','tb tacc');
+  b+=B(10,60,150,60,['Before','demo · mental practice'],'')+A(160,90,178,90);
+  b+=B(200,140,160,60,['During (concurrent)','manual guidance · cues'],'warm')+A(280,112,280,138,'warm');
+  b+=A(380,90,400,90)+B(400,60,150,60,['After (terminal)','KR · KP'],'pos');
+  b+=P('M400 130 h 70','ln faint')+T(435,146,'KR-delay','ts')+P('M475 130 h 75','ln faint')+T(512,146,'post-KR','ts');
+  b+=T(470,170,'next attempt →','ts');
+  return S(560,215,'Before, during and after task feedback with timing intervals',b);
+});
+fig('3','Bandwidth feedback','Set an acceptable error band and give feedback only on trials outside it. Fewer, more meaningful corrections keep the learner using their own feedback.','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var b=axes(60,200,470,170,'Trial','Error')+R(62,95,466,50,'f-poss',0)+T(522,110,'acceptable band','tpos ts','end');
+  var pts=[118,130,72,110,126,168,102,120,138,84,116,124];
+  pts.forEach(function(y,i){var x=90+i*38,out=y<95||y>145;b+=C(x,y,5,out?'f-warm':'f-mut');if(out)b+=C(x,y,11,'ln warm')+T(x,y<95?y-16:y+26,'FB','twarm tb')});
+  return S(560,225,'Error dots per trial with feedback only outside the band',b);
+},'Dot positions are illustrative.');
+fig('3','Feedback frequency schedules','Feedback on every trial builds dependence. Intermittent (<100%) and faded schedules make the learner engage and are better for learning.','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var rows=[['100%',[1,1,1,1,1,1,1,1,1,1,1,1],'neg','dependence risk'],['Intermittent',[1,0,1,1,0,0,1,0,1,0,0,1],'pos','better for learning'],['Faded',[1,1,1,0,1,0,1,0,0,0,1,0],'pos','better for learning']];
+  var b='';rows.forEach(function(r,i){var y=40+i*55;b+=T(110,y+5,r[0],'tb','end');r[1].forEach(function(on,j){b+=C(135+j*26,y,8,on?'f-acc':'bx')});b+=T(455,y+5,r[3],(r[2]==='neg'?'tneg':'tpos')+' ts','start')});
+  b+=T(280,200,'filled = feedback given on that trial','ts');
+  return S(580,210,'Three feedback schedules shown as filled and empty trial dots',b);
+});
+fig('3','Manual guidance: help, then fade','Guidance conveys the goal or restricts degrees of freedom, but it can quickly become a regulatory feature. Remove it as fast as possible.','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var b=axes(70,190,440,150,'Sessions','Amount of guidance')+P('M75 50 L 160 60 L 240 120 L 320 170 L 505 185','ln acc thick');
+  b+=T(90,40,'passive movement 1–2× · physical restriction','ts','start');
+  b+=P('M75 50 L 505 60','ln neg dash')+T(505,52,'kept on: becomes a regulatory feature','tneg ts','end');
+  return S(540,215,'Guidance fading over sessions vs staying on and creating dependence',b);
+},'Shape only.');
+fig('3','Modeling: who should demonstrate?','Expert models show the ideal pattern and strategy. Coping and peer models make learners solve the problem themselves and show error correction.','Shumway-Cook & Woollacott 2017; Duff & Quinn 2002',function(){
+  var b=B(20,30,160,54,['Expert model','coach · therapist'],'acc','tacc')+B(200,30,160,54,['Coping model','imperfect: sibling'],'warm','twarm')+B(380,30,160,54,['Peer model','similar learner'],'pos','tpos');
+  b+=TL(100,110,['shows goal, invariant','features & strategy'],'ts')+TL(280,110,['learner problem-solves,','sees error correction'],'ts')+TL(460,110,['similar traits,','vicarious success'],'ts');
+  b+=T(280,168,'Demonstrate before practice · video or live beats still pictures','ts');
+  return S(560,185,'Expert, coping and peer models compared',b);
+});
+fig('3','Mental + physical practice after stroke','Page 2007: 36 people with chronic stroke. Adding 30 min of mental practice to physical practice beat physical practice plus relaxation on Fugl-Meyer and ARAT.','Page et al. 2007',function(){
+  var b=B(10,30,130,50,['N = 36','chronic stroke'],'mut');
+  b+=B(195,10,180,40,['Physical + mental'],'acc','tacc')+B(195,70,180,40,['Physical + relaxation'],'mut');
+  b+=A(140,48,193,30)+A(140,62,193,90);
+  b+=B(405,10,145,40,['↑ UE-FM & ARAT'],'pos','tpos')+A(375,30,403,30,'pos')+T(478,94,'less gain','ts');
+  b+=T(280,140,'2 × 30-min physical sessions/week × 6 weeks for both','ts');
+  return S(560,155,'Page 2007 design and result',b);
+});
+
+/* ================= TOPIC 4 ================= */
+fig('4','Memory and learning taxonomy','Long-term memory splits into explicit (conscious recall of facts) and implicit (no awareness needed). Implicit memory covers non-associative, associative and procedural learning.','Shumway-Cook & Woollacott 2017',function(){
+  var b=B(215,8,130,32,['Memory'],'acc','tacc');
+  b+=B(40,64,150,40,['Working','1–60 s'],'mut')+B(370,64,150,40,['Long-term','limitless'],'')+A(250,40,130,62,'faint')+A(310,40,440,62,'faint');
+  b+=B(250,128,130,40,['Explicit','declarative'],'warm','twarm')+B(420,128,130,40,['Implicit','procedural'],'pos','tpos')+A(420,104,320,126,'faint')+A(460,104,480,126,'faint');
+  b+=B(250,200,100,50,['Non-assoc.','habit · sensit.'],'')+B(360,200,100,50,['Associative','classical · operant'],'')+B(470,200,85,50,['Procedural','skills'],'');
+  b+=A(470,168,300,198,'faint')+A(485,168,410,198,'faint')+A(500,168,512,198,'faint');
+  return S(560,260,'Tree of memory types from working and long-term to implicit subtypes',b);
+});
+fig('4','Adams’ closed-loop theory','The memory trace starts the movement; sensory feedback is compared with the perceptual trace, and the error drives the next adjustment. It works for slow movements, not fast or novel ones.','Schmidt & Lee 2005',function(){
+  var b=B(30,40,150,52,['Memory trace','selects & initiates'],'acc','tacc')+B(370,40,150,52,['Movement'],'');
+  b+=B(370,160,150,52,['Sensory feedback'],'mut')+B(30,160,150,52,['Perceptual trace','reference: compare'],'warm','twarm');
+  b+=A(180,66,368,66,'','muscle command',274,58)+A(445,92,445,158)+A(370,186,182,186,'','compared with',276,178);
+  b+=A(105,160,105,94,'neg','error → adjust',112,130,'tneg ts','start');
+  return S(550,230,'Closed loop from memory trace to movement to feedback compared with perceptual trace',b);
+});
+fig('4','Schmidt’s schema theory','A generalized motor program plus parameters runs the movement through the recall schema; the recognition schema evaluates the sensory result. Error and variable practice update both schemas.','Schmidt & Lee 2005',function(){
+  var b=B(20,30,140,52,['GMP','+ parameters'],'')+B(200,30,150,52,['Recall schema','sets response'],'acc','tacc')+B(400,30,140,52,['Movement'],'');
+  b+=B(400,150,140,52,['Sensory result'],'mut')+B(200,150,150,52,['Recognition schema','evaluates'],'pos','tpos');
+  b+=A(160,56,198,56)+A(350,56,398,56)+A(470,82,470,148)+A(400,176,352,176);
+  b+=P('M275 150 V 84','ln warm dash',true)+T(282,122,'error updates','twarm ts','start');
+  b+=B(20,150,140,52,['Variable practice'],'warm','twarm')+A(160,170,198,170,'warm');
+  return S(560,215,'GMP and recall schema produce movement; recognition schema evaluates and updates',b);
+});
+fig('4','OPTIMAL theory','Autonomy and enhanced expectancies (motivation) plus an external focus (attention) drive goal-action coupling, which boosts performance and learning. Success feeds back into expectancies.','Wulf & Lewthwaite 2016; Iwatsuki et al. 2019',function(){
+  var b=B(10,36,180,40,['Autonomy'],'acc','tacc')+B(10,88,180,40,['Enhanced expectancies'],'acc','tacc')+B(10,166,180,40,['External focus'],'pos','tpos');
+  b+=T(100,30,'MOTIVATION','th')+T(100,160,'ATTENTION','th');
+  b+='<ellipse cx="310" cy="120" rx="80" ry="40" class="bx warm"/>'+T(310,116,'Goal-action','tb twarm')+T(310,132,'coupling','tb twarm');
+  b+=A(190,56,238,100,'acc')+A(190,108,229,115,'acc')+A(190,186,238,140,'pos')+T(214,82,'dopamine','tacc ts','start');
+  b+=B(425,66,130,40,['Performance ↑'],'pos')+B(425,136,130,40,['Learning ↑'],'pos')+A(390,110,423,88,'')+A(390,128,423,154,'');
+  b+=P('M490 66 C 490 10, 200 8, 190 50','ln faint dash',true)+T(340,20,'success → higher expectancies','ts');
+  return S(565,215,'OPTIMAL factors converge on goal-action coupling, which improves performance and learning',b);
+});
+fig('4','Recovery vs compensation','After injury there are two routes to function. Recovery restores the original tissue and does the task the same way; compensation lets residual tissue take over and does it differently.','Shumway-Cook & Woollacott 2017',function(){
+  var b=B(215,8,130,36,['Injury'],'neg','tneg');
+  b+=T(145,68,'DIRECT RECOVERY','th')+T(415,68,'COMPENSATION','th');
+  var rec=[['Neural tissue','shut-down tissue restored'],['Body function','subsystem recovers'],['Activity','same way as before']];
+  var com=[['Neural tissue','residual tissue takes over'],['Body function','different / modified subsystem'],['Activity','done differently']];
+  rec.forEach(function(r,i){var y=78+i*62;b+=B(35,y,220,46,r,'pos','tpos');if(i)b+=A(145,y-16,145,y-2,'pos')});
+  com.forEach(function(r,i){var y=78+i*62;b+=B(305,y,220,46,r,'warm','twarm');if(i)b+=A(415,y-16,415,y-2,'warm')});
+  b+=A(240,44,175,56,'pos')+A(320,44,385,56,'warm');
+  return S(560,265,'Two routes after injury: recovery and compensation across three levels',b);
+});
+fig('4','Iwatsuki et al. running study: design','Both groups ran 20 minutes at the speed tied to 65% VO₂max. Only the choice group picked the photos; the yoked control saw the same ones without choosing.','Iwatsuki et al. 2019',function(){
+  var b=B(10,70,110,50,['Day 1','VO₂max test'],'mut')+A(120,95,150,95)+T(135,130,'1 week','ts')+B(152,70,110,50,['Day 2','warm-up'],'mut');
+  b+=B(285,70,120,50,['20-min run','65% VO₂max'],'')+A(262,95,283,95);
+  b+=B(430,20,125,54,['Choice','picks 5/10 photos'],'acc','tacc')+B(430,116,125,54,['Yoked control','same photos'],'mut');
+  b+=A(405,88,428,50,'acc')+A(405,102,428,140);
+  b+=T(280,200,'N = 32 college runners · measures: VO₂, HR, RER, RPE','ts');
+  return S(560,215,'Study timeline from VO2max test to choice or yoked run',b);
+});
+fig('4','Iwatsuki et al. running study: results','The choice group ran more efficiently: significantly lower oxygen use and heart rate. RER was lower but not significant, and perceived effort didn’t differ.','Iwatsuki et al. 2019',function(){
+  var r=[['VO₂','lower','sig','pos'],['Heart rate','lower','sig','pos'],['RER','lower','n.s.','mut'],['RPE','no group difference','time only','mut']];
+  var b=T(200,20,'CHOICE vs YOKED CONTROL','th');
+  r.forEach(function(x,i){var y=36+i*44;b+=B(30,y,140,34,[x[0]],'');b+=B(190,y,200,34,[(x[1]==='lower'?'↓ ':'= ')+x[1]],x[3],x[3]==='pos'?'tpos':'');b+=T(410,y+22,x[2],(x[2]==='sig'?'tpos tb':'ts'),'start')});
+  return S(480,220,'Result chips for VO2, HR, RER and RPE',b);
+});
+
+/* ================= TOPIC 5 ================= */
+fig('5','Five stages of neural growth','The nervous system is built in order: make cells, move them, connect them, prune the unused links, then insulate the rest.','Volpe 2008',function(){
+  var st=[['Proliferation','↑ cell number'],['Migration','to final site'],['Synaptogenesis','new connections'],['Pruning','remove unused'],['Myelination','faster conduction']];
+  var b='';st.forEach(function(s,i){var x=8+i*124;b+=B(x,40,112,56,[s[0],s[1]],i===3?'warm':'acc',i===3?'twarm':'tacc');if(i<4)b+=A(x+112,68,x+122,68);b+=T(x+56,30,String(i+1),'th')});
+  b+=TL(310,128,['Errors: infection (proliferation) · cortical dysplasia (migration) · corticospinal injury','(synaptogenesis) · hemiplegia at reaching onset (pruning) · PVL (myelination)'],'ts');
+  return S(625,160,'Five sequential stages of neural growth with example errors',b);
+});
+fig('5','Short-term vs long-term plasticity','Short-term plasticity makes an existing synapse work better (functional change). Long-term plasticity adds connections (structural change).','Shumway-Cook & Woollacott 2017',function(){
+  var b=T(140,22,'SHORT-TERM · FUNCTIONAL','th')+T(420,22,'LONG-TERM · STRUCTURAL','th');
+  b+=neuron(60,90,'acc')+neuron(220,90,'')+A(73,90,205,90,'acc thick','faster, more efficient',140,80,'tacc ts');
+  b+=neuron(340,90,'acc')+neuron(500,90,'')+A(353,86,485,86,'acc')+P('M352 96 C 400 130, 450 130, 488 98','ln acc',true)+P('M350 80 C 400 45, 450 45, 488 82','ln acc',true);
+  b+=T(420,150,'more connections · dendritic branching','tacc ts');
+  b+=A(240,180,320,180,'faint','persisting changes',280,172);
+  return S(560,200,'One strengthened synapse versus several new connections',b);
+});
+fig('5','Long-term potentiation','After LTP, the same-size stimulus produces a much larger EPSP. The early phase is functional and the later phase is structural.','Bliss & Lømo 1973; Shumway-Cook & Woollacott 2017',function(){
+  var b=axes(60,170,300,140,'Time (ms)','EPSP amplitude')+A(90,196,90,174,'','stimulus',90,212);
+  b+=P('M92 168 C 110 150, 130 140, 150 145 C 190 155, 260 166, 355 168','ln thick');
+  b+=P('M92 168 C 100 90, 110 40, 125 38 C 160 60, 240 150, 355 166','ln acc thick');
+  b+=L(245,50,270,50,'acc thick')+T(276,54,'after LTP','tacc ts','start')+L(245,72,270,72,'thick')+T(276,76,'first stimulus','ts','start');
+  b+=B(390,30,165,64,['Early phase 1–3 h','functional: more release,','slow reuptake'],'acc','tacc');
+  b+=B(390,110,165,64,['Later phase ~24 h','structural: new synapses','& release sites'],'pos','tpos');
+  b+=T(472,200,'needs pre + post firing together','ts');
+  return S(565,220,'EPSP before and after LTP with early and late phases',b);
+},'Shape only.');
+fig('5','Habituation vs sensitization at the synapse','Long-term habituation removes connections from the sensory neuron to the motor neuron; long-term sensitization adds them.','Shumway-Cook & Woollacott 2017',function(){
+  function panel(x,n,lab,sub,k){var s=neuron(x+20,70,'')+neuron(x+110,70,'');for(var i=0;i<n;i++){var dy=(i-(n-1)/2)*12;s+=P('M'+(x+33)+' 70 C '+(x+60)+' '+(70+dy*1.6)+', '+(x+80)+' '+(70+dy*1.6)+', '+(x+97)+' '+(70+dy*0.3),'ln '+k)}return s+T(x+65,125,lab,'tb')+T(x+65,141,sub,'ts')}
+  var b=panel(10,2,'Control','baseline','')+panel(150,2,'Short-term habit.','↓ EPSP','warm')+panel(290,1,'Long-term habit.','↓ connections','neg')+panel(430,4,'Long-term sensit.','↑ connections','pos');
+  b+=T(30,30,'sensory','ts')+T(120,30,'motor','ts');
+  return S(570,160,'Connection counts under habituation and sensitization',b);
+});
+fig('5','Hebbian learning','When two neurons fire at the same time, the connection between them strengthens. This is the rule behind associative learning and LTP.','Hebb 1949',function(){
+  var sp='l6 -18 l6 30 l6 -12';
+  var b=T(135,22,'BEFORE','th')+T(420,22,'AFTER: WIRED TOGETHER','th');
+  b+=neuron(60,90,'acc')+neuron(210,90,'acc')+L(73,90,197,90,'faint');
+  b+=P('M45 55 '+sp,'ln acc')+P('M195 55 '+sp,'ln acc')+T(135,140,'A and B fire together','ts');
+  b+=neuron(345,90,'acc')+neuron(495,90,'acc')+L(358,90,482,90,'acc thick')+L(358,86,482,86,'acc')+T(420,140,'stronger synapse','tacc ts');
+  b+=A(250,90,318,90);
+  return S(560,160,'Two neurons firing together become more strongly connected',b);
+});
+fig('5','Four forms of intercellular plasticity','After injury, neurons reconnect by unmasking silent synapses, regenerating axons, sprouting collaterals from intact axons onto synaptic sites left by injured axons in the same system, or becoming supersensitive post-synaptically.','Shumway-Cook & Woollacott 2017',function(){
+  var b='';var W=140;
+  var labs=[['Unmasking','silent → active'],['Regeneration','axon sprouts'],['Collateral sprouting','intact → vacated sites'],['Denervation','supersensitivity']];
+  labs.forEach(function(l,i){var x=i*W;b+=T(x+70,150,l[0],'tb')+T(x+70,166,l[1],'ts')});
+  b+=neuron(30,70,'')+neuron(110,70,'')+L(43,70,70,70,'faint dash')+A(70,70,97,70,'acc');
+  b+=neuron(170,70,'')+L(183,70,210,70,'')+T(214,74,'✕','tneg tb')+P('M222 70 C 235 55, 245 60, 252 66','ln acc',true);
+  b+=neuron(310,45,'')+neuron(310,105,'')+neuron(395,75,'acc')+L(323,105,382,82,'faint dash')+T(350,103,'✕','tneg')+L(323,45,382,70,'')+P('M340 53 C 350 80, 360 85, 383 79','ln acc',true);
+  b+=neuron(460,70,'')+C(530,70,16,'bx warm')+[0,1,2,3,4].map(function(k){var a=(k/4)*Math.PI-Math.PI/2;return C(530-16*Math.cos(a),70+16*Math.sin(a)*1,3,'f-warm')}).join('')+L(473,70,514,70,'faint dash');
+  return S(560,180,'Four small diagrams of intercellular plasticity',b);
+});
+fig('5','Cerebellar input to Purkinje cells','Climbing fibers carry the error signal and mossy fibers carry information about the ongoing movement. Cerebellar lesions impair procedural learning.','Gilbert & Thach 1977; Shumway-Cook & Woollacott 2017',function(){
+  var b=B(200,40,160,60,['Purkinje cell'],'acc','tacc')+A(280,100,280,160)+T(280,178,'output','ts');
+  b+=B(20,130,140,40,['Climbing fiber'],'neg','tneg')+A(160,140,215,100,'neg','error signal',150,110,'tneg ts','end');
+  b+=B(400,130,140,40,['Mossy fiber'],'pos','tpos')+A(400,140,345,100,'pos','ongoing movement',410,110,'tpos ts','start');
+  b+=T(280,214,'Lesion → impaired learning (Molinari 1997)','ts');
+  return S(560,225,'Climbing and mossy fibers converge on the Purkinje cell',b);
+});
+fig('5','Interhemispheric inhibition after stroke','The non-stroke (contralesional) M1 inhibits the stroke (ipsilesional) M1, which impedes recovery. Treatment inhibits the contralesional side with rTMS or tDCS, though it’s not one-size-fits-all.','Murase et al. 2004',function(){
+  var b='<ellipse cx="150" cy="100" rx="110" ry="70" class="bx"/><ellipse cx="410" cy="100" rx="110" ry="70" class="bx neg"/>';
+  b+=T(150,95,'Contralesional M1','tb')+T(150,112,'non-stroke','ts')+T(410,95,'Ipsilesional M1','tb tneg')+T(410,112,'stroke','ts');
+  b+=P('M220 60 C 260 30, 300 30, 340 60','ln neg thick',true)+T(280,26,'inhibits → impedes recovery','tneg ts');
+  b+=B(80,190,140,34,['rTMS / tDCS'],'acc','tacc')+A(150,188,150,172,'acc')+T(240,212,'inhibit the healthy side','tacc ts','start');
+  return S(560,235,'Healthy hemisphere inhibiting the stroke hemisphere, with treatment on the healthy side',b);
+});
+fig('5','Cortical map takeover after a peripheral lesion','After a peripheral hand lesion, the neighboring face area takes over hand territory. That explains a more sensitive face in the carpal tunnel example.','Shumway-Cook & Woollacott 2017',function(){
+  var parts=['Trunk','Arm','Hand','Face','Tongue'];
+  var b=T(20,32,'Before','tb','start');parts.forEach(function(p,i){b+=B(40+i*96,40,92,36,[p],p==='Face'?'acc':'mut',p==='Face'?'tacc':'')});
+  b+=T(20,122,'After hand lesion','tb','start');
+  parts.forEach(function(p,i){var x=40+i*96;if(p==='Hand'){b+=R(x,130,44,36,'bx acc',6)+T(x+22,153,'face','tacc ts')+R(x+48,130,44,36,'bx neg',6)+T(x+70,153,'hand','tneg ts')}else b+=B(x,130,92,36,[p],p==='Face'?'acc':'mut',p==='Face'?'tacc':'')});
+  b+=A(320,195,262,170,'acc')+T(330,205,'face area expands into hand area','tacc ts','start');
+  return S(540,220,'Face representation spreading into hand area after a peripheral hand lesion',b);
+});
+fig('5','Which exercise changes what','Skill training reorganizes cortical maps, strength training acts at the spinal cord, and endurance training grows blood vessels in the cortex. Only skill training changes the motor map.','Shumway-Cook & Woollacott 2017',function(){
+  var b=B(200,20,160,50,['Motor cortex','map · synapses'],'acc','tacc')+B(200,160,160,50,['Spinal cord','motoneurons'],'pos','tpos');
+  b+=B(20,90,130,50,['Skill training'],'')+A(150,105,198,55,'acc')+T(85,80,'map reorganizes','tacc ts');
+  b+=B(410,90,140,50,['Endurance / HIIT'],'')+A(410,105,362,60,'warm')+T(480,80,'angiogenesis · BDNF','twarm ts');
+  b+=B(20,190,130,50,['Strength training'],'')+A(150,212,198,190,'pos')+T(85,258,'↑ motoneuron excitability','tpos ts');
+  b+=T(480,165,'no map change','ts')+T(480,181,'(strength & endurance)','ts');
+  return S(560,268,'Three exercise types targeting cortex maps, spinal cord or cortical blood supply',b);
+});
+fig('5','Early depressed function after injury','Two things depress function early. Diaschisis silences intact remote tissue that lost its input (temporary); edema is swelling, either inside cells or leaking from vessels.','Shumway-Cook & Woollacott 2017',function(){
+  var b=C(140,100,30,'f-neg')+T(140,104,'lesion','tb','middle');
+  b+=C(300,60,24,'bx mut')+T(300,64,'intact','ts')+P('M168 90 L 276 66','ln faint dash')+T(230,64,'✕','tneg tb')+T(300,104,'Diaschisis','tb')+T(300,120,'lost input · temporary','ts');
+  b+=C(140,100,50,'ln warm dash')+C(140,100,62,'ln warm dash')+T(140,185,'Edema','tb twarm');
+  b+=B(360,140,190,40,['Cytotoxic','fluid inside cells'],'warm')+B(360,190,190,40,['Vasogenic','leak from vessels'],'warm');
+  return S(560,240,'Lesion with remote diaschisis and surrounding edema',b);
+});
+fig('5','Kleim & Jones: 10 principles','Ten principles of experience-dependent plasticity, in order. Learn them in two sets of five.','Kleim & Jones 2008',function(){
+  var p=['Use it or lose it','Use it & improve it','Specificity','Repetition','Intensity matters','Time matters','Salience matters','Age matters','Transference','Interference'];
+  var b='';p.forEach(function(t,i){var col=i<5?0:1,row=i%5,x=20+col*270,y=14+row*42;b+=R(x,y,250,34,'bx '+(col?'pos':'acc'),6)+T(x+18,y+22,String(i+1),'tb '+(col?'tpos':'tacc'))+T(x+40,y+22,t,'','start')});
+  return S(560,225,'Grid of the ten Kleim and Jones principles',b);
+});
+fig('5','Maladaptive plasticity (Allred 2005)','Rats that trained the less-affected forelimb early (PriorT) barely improved reaching with the affected limb, while controls kept improving. Competitive processes shape experience-dependent plasticity.','Allred et al. 2005',function(){
+  var b=axes(70,190,420,160,'Training day','Reaching success');
+  b+=P('M80 150 L130 140 L180 128 L230 110 L280 112 L330 100 L380 80 L430 95 L480 76','ln acc thick')+T(484,72,'Control','tacc tb','start');
+  b+=P('M80 158 L130 157 L180 152 L230 160 L280 158 L330 157 L380 150 L430 160 L480 154','ln neg thick')+T(484,158,'PriorT','tneg tb','start');
+  return S(555,220,'Control improving while the prior-training group stays flat',b);
+},'Shape only.');
+fig('5','Why the infant’s left arm struggles at 8 months','At 5 months the intact left M1 still reaches the left arm and masks the right M1 injury. Pruning removes those pathways, and the left-sided hemiplegia appears with reaching.','Volpe 2008',function(){
+  function pan(ox,lab,pruned){var s=T(ox+125,20,lab,'th');
+    s+=B(ox+20,34,100,40,['Left M1','intact'],'acc','tacc')+B(ox+140,34,100,40,['Right M1','injured'],'neg','tneg');
+    s+=B(ox+20,150,100,40,['Right arm'],'')+B(ox+140,150,100,40,['Left arm'],pruned?'neg':'','');
+    s+=A(ox+70,74,ox+70,148,'acc')+A(ox+190,74,ox+190,148,'faint dash');
+    s+=pruned?(L(ox+95,74,ox+165,148,'faint')+T(ox+130,114,'✂ pruned','tneg ts')):A(ox+95,74,ox+165,148,'acc');
+    s+=T(ox+130,212,pruned?'left arm: difficulty reaching':'both arms reach well',pruned?'tneg ts':'tpos ts');return s}
+  return S(540,225,'Five-month and eight-month pathways showing pruning of intact M1 pathways to the left arm',pan(0,'5 MONTHS',false)+pan(280,'8 MONTHS',true));
+});
+
+/* ================= RENDER ================= */
+var WK=[['all','All'],['1','Topic 1 · Motor control theories & TOA'],['2','Topic 2 · Information processing'],['3','Topic 3 · Skill acquisition & feedback'],['4','Topic 4 · Motor learning theories & research'],['5','Topic 5 · Neuroplasticity']];
+var atlas=document.getElementById('atlas'),html='',n=0;
+WK.slice(1).forEach(function(w){
+  var list=F.filter(function(f){return f.w===w[0]});
+  html+='<section class="wk" data-w="'+w[0]+'"><div class="week-h"><span class="wk">'+list.length+' figures</span><h2>'+w[1]+'</h2></div><div class="grid">';
+  list.forEach(function(f){n++;ID=n;
+    var note=f.note&&f.note.indexOf('Wait')!==0?' <span class="ill">'+esc(f.note)+'</span>':'';
+    html+='<figure class="fig" id="fig'+n+'"><div class="fig-h"><span class="n">'+(n<10?'0':'')+n+'</span><h3>'+esc(f.t)+'</h3></div><div class="svgbox">'+f.draw()+'</div><figcaption>'+esc(f.c)+' <span class="src">'+esc(f.src)+'</span>'+note+'</figcaption></figure>';
+  });
+  html+='</div></section>';
+});
+atlas.innerHTML=html;
+var fl=document.getElementById('filters'),cur='all';
+fl.innerHTML=WK.map(function(w){return '<button type="button" class="chip" data-w="'+w[0]+'" aria-pressed="'+(w[0]==='all')+'">'+(w[0]==='all'?'All':'Topic '+w[0])+'</button>'}).join('')+'<span class="count" id="cnt"></span>';
+function apply(){[].forEach.call(document.querySelectorAll('section.wk'),function(s){s.hidden=!(cur==='all'||s.getAttribute('data-w')===cur)});
+  [].forEach.call(fl.querySelectorAll('.chip'),function(c){c.setAttribute('aria-pressed',String(c.getAttribute('data-w')===cur))});
+  document.getElementById('cnt').textContent=(cur==='all'?n:F.filter(function(f){return f.w===cur}).length)+' figures'}
+[].forEach.call(fl.querySelectorAll('.chip'),function(c){c.onclick=function(){cur=c.getAttribute('data-w');apply();window.scrollTo({top:0})}});
+apply();
+})();
+</script>
+<script>
+(function(){
+  var fl=document.getElementById('filters');if(!fl)return;
+  var b=document.createElement('button');b.type='button';b.className='chip quizchip';b.setAttribute('aria-pressed','false');b.textContent='Label quiz';
+  fl.appendChild(b);
+  var note=document.createElement('p');note.className='quiz-note';note.hidden=true;note.textContent='Labels and captions are blurred. Name each one, then tap it to check. Reveal all shows a whole figure.';fl.insertAdjacentElement('afterend',note);
+  [].forEach.call(document.querySelectorAll('figure.fig'),function(f){var h=f.querySelector('.fig-h');if(!h)return;var r=document.createElement('button');r.type='button';r.className='revall';r.textContent='Reveal all';h.appendChild(r);
+    r.onclick=function(){var on=!f.classList.contains('allrv');f.classList.toggle('allrv',on);[].forEach.call(f.querySelectorAll('svg text,figcaption'),function(t){t.classList.toggle('rv',on)});r.textContent=on?'Hide again':'Reveal all'}});
+  b.onclick=function(){var on=!document.body.classList.contains('lblquiz');document.body.classList.toggle('lblquiz',on);b.setAttribute('aria-pressed',String(on));note.hidden=!on;
+    [].forEach.call(document.querySelectorAll('.rv'),function(t){t.classList.remove('rv')});[].forEach.call(document.querySelectorAll('figure.allrv'),function(f){f.classList.remove('allrv');var r=f.querySelector('.revall');if(r)r.textContent='Reveal all'})};
+  document.addEventListener('click',function(e){if(!document.body.classList.contains('lblquiz'))return;var t=e.target.closest('svg text, figcaption');if(t){var tt=t.tagName.toLowerCase()==='tspan'?t.closest('text'):t;(tt||t).classList.toggle('rv')}});
+})();
+</script>
+<script>
+(function(){
+  var PFX="limbic-motor-sg",fl=document.getElementById('filters');if(!fl)return;
+  var b=document.createElement('button');b.type='button';b.className='chip quizchip';b.setAttribute('aria-pressed','false');b.textContent='Diagram drill';b.style.marginLeft='6px';
+  fl.appendChild(b);
+  var bar=document.createElement('div');bar.className='drill-bar';bar.hidden=true;bar.setAttribute('role','region');bar.setAttribute('aria-label','Diagram drill');
+  bar.innerHTML='<span class="dr-pos"></span><span class="dr-h">Name every blurred label, tap each to check, then grade yourself.</span><button type="button" class="dr-yes">Knew it</button><button type="button" class="dr-no">Missed some</button><button type="button" class="dr-stop">Stop</button>';
+  var qn=document.querySelector('.quiz-note');(qn||fl).insertAdjacentElement('afterend',bar);
+  var order=[],k=0,known=0,ownLbl=false;
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+  function show(){
+    var cur=order[k];[].forEach.call(document.querySelectorAll('figure.fig'),function(f){f.classList.toggle('dr-off',f!==cur)});
+    [].forEach.call(document.querySelectorAll('section.wk'),function(s){s.classList.toggle('dr-empty',!s.contains(cur))});
+    [].forEach.call(cur.querySelectorAll('.rv'),function(t){t.classList.remove('rv')});cur.classList.remove('allrv');var r=cur.querySelector('.revall');if(r)r.textContent='Reveal all';
+    bar.querySelector('.dr-pos').textContent='Figure '+(k+1)+' of '+order.length;window.scrollTo({top:0});
+  }
+  function start(){
+    order=shuffle([].slice.call(document.querySelectorAll('section.wk:not([hidden]) figure.fig')));if(!order.length)return;
+    k=0;known=0;document.body.classList.add('drill');
+    if(!document.body.classList.contains('lblquiz')){var q=fl.querySelector('.quizchip:not([data-drill])');if(q&&q!==b){q.click();ownLbl=true}}
+    b.setAttribute('aria-pressed','true');bar.hidden=false;bar.querySelector('.dr-h').textContent='Name every blurred label, tap each to check, then grade yourself.';
+    [].forEach.call(bar.querySelectorAll('.dr-yes,.dr-no'),function(x){x.hidden=false});show();
+  }
+  function stop(){
+    document.body.classList.remove('drill');[].forEach.call(document.querySelectorAll('.dr-off,.dr-empty'),function(x){x.classList.remove('dr-off','dr-empty')});
+    if(ownLbl&&document.body.classList.contains('lblquiz')){var q=fl.querySelector('.quizchip:not([data-drill])');if(q&&q!==b)q.click()}ownLbl=false;
+    b.setAttribute('aria-pressed','false');bar.hidden=true;
+  }
+  function grade(ok){
+    var cur=order[k];if(!cur)return;
+    if(ok)known++;else{try{var AK=PFX+'-amiss-v1',A=JSON.parse(localStorage.getItem(AK)||'{}')||{},t='Diagram: '+(cur.querySelector('h3')||{}).textContent,e=A[t]||{n:0};e.n++;e.last=Date.now();e.g='Diagram drill';A[t]=e;localStorage.setItem(AK,JSON.stringify(A));localStorage.setItem(PFX+'-sync-ts',String(Date.now()))}catch(x){}}
+    k++;
+    if(k>=order.length){bar.querySelector('.dr-pos').textContent='Done';bar.querySelector('.dr-h').textContent='You knew '+known+' of '+order.length+' figures. Missed ones are listed under Weak spots on the study page.';[].forEach.call(bar.querySelectorAll('.dr-yes,.dr-no'),function(x){x.hidden=true});return}
+    show();
+  }
+  b.setAttribute('data-drill','1');
+  b.onclick=function(){if(document.body.classList.contains('drill'))stop();else start()};
+  bar.querySelector('.dr-yes').onclick=function(){grade(true)};
+  bar.querySelector('.dr-no').onclick=function(){grade(false)};
+  bar.querySelector('.dr-stop').onclick=stop;
+})();
+</script>
