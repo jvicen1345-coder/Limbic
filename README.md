@@ -1,23 +1,26 @@
-# Limbic — PT News
+# Limbic Center
 
-A real implementation of the "PT News" design (`project/PT News.dc.html` in the repo root),
-built as a Next.js 16 (App Router) app with a SQLite-backed persistence layer and live
-data sourcing, in place of the design prototype's in-memory-only state and static seed
-content.
+Limbic Center is the physical therapy platform at [limbic.center](https://limbic.center):
+research and news, clinician tools, student study surfaces, and health & wellness. It is a
+Next.js 16 (App Router) app with a SQLite-backed persistence layer and live data sourcing.
 
 ## Stack
 
-- **Next.js 16** (App Router, TypeScript), Server Components + Server Actions for
-  mutations (no hand-rolled `/api` routes — sign-in, save/unsave, profile edits, topic
-  follows, and HEP CRUD are all Server Actions).
+- **Next.js 16** (App Router, TypeScript). Server Components and Server Actions cover
+  sign-in, save/unsave, profile edits, topic follows, and exercise-program CRUD. Route
+  Handlers are reserved for things a form action cannot do: Google, Fitbit, and Strava
+  OAuth callbacks; the Stripe webhook; Vercel Cron jobs under `src/app/api/cron/`; and a
+  few session-authenticated fetches (`/api/assignments`, `/api/navigation-badges`,
+  `/api/health-sync`).
 - **Prisma 7 + SQLite** (via the `@prisma/adapter-libsql` driver adapter) for
   persistence: user profiles, license/CE info, saved articles, and clinician-authored
-  home exercise programs survive restarts and are keyed by license number, so signing
-  back in with the same license number returns to the same account. The libSQL adapter
-  works identically against a local file in development and a hosted
-  [Turso](https://turso.tech) database in production — same schema, same queries, no
-  branching — because a plain local SQLite file (what the app defaults to) doesn't
-  survive on most serverless hosts, whose filesystems reset between requests.
+  home exercise programs survive restarts. Accounts sign in with email and password,
+  Google, or a named guest session; a PT license is stored on the account after Profile
+  verification and is not the sign-in key. The libSQL adapter works identically against
+  a local file in development and a hosted [Turso](https://turso.tech) database in
+  production — same schema, same queries, no branching — because a plain local SQLite
+  file (what the app defaults to) doesn't survive on most serverless hosts, whose
+  filesystems reset between requests.
 - Plain CSS in `src/styles/` (not Tailwind) — design-system tokens and shared primitives
   (`.card`, `.btn`, `.tag`, …) load globally; feature sheets load from the route layouts
   that need them. See [`docs/css.md`](docs/css.md).
@@ -31,10 +34,12 @@ npx prisma migrate deploy   # or `npx prisma migrate dev` in development
 npm run dev
 ```
 
-Visit `http://localhost:3000`. Sign-in is a demo flow — any license number works — or
-continue as a guest. Guests can read/search/save articles and personalize their profile,
-but Home Exercise Programs, APTA News, and Under Review are gated behind having a
-license on file (matching the source design).
+Visit `http://localhost:3000`. Create an account with email and password, continue with
+Google when those OAuth variables are set, or continue as a guest (a name, plus acceptance
+of the terms). A PT license is added later from Profile and reviewed in the admin license
+queue. Signed-in readers and guests can read, search, and save. Retracted Articles
+requires a license on file. Exercise Programs and the rest of LimbicPRO require a paid or
+comped Pro subscription.
 
 Before opening a pull request, run the [Development checks](#development-checks) below.
 
@@ -130,6 +135,17 @@ deploys to work too):
 | `PEXELS_API_KEY` | a free API key from [pexels.com/api](https://www.pexels.com/api/) — powers topic-matched stock-photo fallback images on Home feed cards that don't have their own real `og:image`; without it, those cards just render without an image |
 | `GOOGLE_CLIENT_ID` | an OAuth 2.0 Client ID (Web application) from [console.cloud.google.com](https://console.cloud.google.com) — powers "Continue with Google" on the sign-in screen; see below |
 | `GOOGLE_CLIENT_SECRET` | the matching client secret from the same OAuth client |
+| `GOOGLE_HEALTH_CLIENT_ID` / `GOOGLE_HEALTH_CLIENT_SECRET` | Google Health API OAuth client for "Connect Fitbit" on the Activity Log. Redirect URI `https://limbic.center/auth/fitbit/callback`. Without both, that row shows "Coming soon" |
+| `STRAVA_CLIENT_ID` / `STRAVA_CLIENT_SECRET` | Strava API app (`strava.com/settings/api`, callback domain `limbic.center`) for "Connect Strava". Without both, that row does not render |
+| `UNPAYWALL_EMAIL` | contact email Unpaywall requires on free-full-text lookups. Optional locally; set your own in production |
+| `RESEND_API_KEY` / `EMAIL_FROM` | password-reset (and other) email. See [Password auth & reset emails](#password-auth--reset-emails). Without the key, reset links are logged to the server console |
+| `FOUNDING_FUNDERS_ADMIN_EMAILS` | comma-separated owner emails. See [Admin access](#admin-access-owners-and-co-admins) |
+| `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` | Stripe billing. See [Stripe subscriptions](#stripe-subscriptions) |
+| `STRIPE_PRICE_PRO` / `STRIPE_PRICE_LIMBIC_STUDENT` | monthly Price ids for LimbicPRO ($10) and LimbicStudent ($3) |
+| `STRIPE_PRICE_WELLNESS_PLUS_MONTHLY` / `STRIPE_PRICE_WELLNESS_PLUS_YEARLY` | LimbicWellness+ ($2/mo and $20/yr) |
+| `STRIPE_PRICE_CLINIC` | Clinic PRO ($100/mo) |
+| `STRIPE_FOUNDING_FUNDER_PRICE_ID` | one-time $40 Founding Funder Price id. See [Founding Funders payments](#founding-funders-payments) |
+| `CRON_SECRET` | bearer token Vercel Cron sends to `src/app/api/cron/*`. Without it those routes stay disabled (503). Generate with `openssl rand -base64 32` |
 
 **5. Redeploy** (Vercel → Deployments → ⋯ → Redeploy) so the build picks up the new env
 vars. The build command (`node scripts/apply-migrations.mjs && next build`) applies the
@@ -137,7 +153,26 @@ database schema to your Turso database automatically on every deploy — you don
 run migrations by hand.
 
 That's it — you'll get a `*.vercel.app` URL. Every push to the connected branch redeploys
-automatically after that.
+automatically after that. Production OAuth redirect URIs are hardcoded to
+`https://limbic.center`, so the full Google, Fitbit, and Strava consent flows complete on
+that domain.
+
+### Scheduled jobs
+
+[`vercel.json`](vercel.json) registers seven daily Vercel Cron hits, each a `GET` under
+`src/app/api/cron/` that requires `Authorization: Bearer <CRON_SECRET>`:
+
+| Path | What it warms |
+|---|---|
+| `/api/cron/refresh-daily-insights` | per-reader daily insights |
+| `/api/cron/refresh-live-feeds` | Google News, PubMed, APTA, and wellness aggregations |
+| `/api/cron/migration-reminders` | account-migration reminder email |
+| `/api/cron/refresh-interest-profiles` | LLM interest profiles used in feed ranking |
+| `/api/cron/sync-fitness-trackers` | connected Fitbit and Strava accounts |
+| `/api/cron/refresh-unpaywall-cache` | free-full-text links for live PubMed articles |
+| `/api/cron/warm-evidence-breakdowns` | evidence-library study breakdowns |
+
+Unset `CRON_SECRET` and each route returns 503 rather than running unauthenticated.
 
 ## Live data — and a sandbox caveat
 
@@ -282,11 +317,17 @@ whether that address has an account (`lib/password-reset-rate-limit.ts`).
 
 ## Stripe subscriptions
 
-LimbicPro ($10/mo) and LimbicStudent ($3/mo — see
+LimbicPRO ($10/mo) and LimbicStudent ($3/mo — see
 `src/app/(app)/pro/membership/page.tsx`) are real, recurring Stripe subscriptions, not the
 instant demo flip they used to be. LimbicStudent is a single plan (an earlier, separate
 higher "Student PRO+ Boards" tier was retired in favor of one plan covering everything,
-including Limbic Agent eligibility — see `src/app/(app)/student/page.tsx`). The flow:
+including Limbic Agent eligibility — see `src/app/(app)/student/page.tsx`). The same
+Checkout and webhook path also bills LimbicWellness+ ($2/mo or $20/yr,
+`STRIPE_PRICE_WELLNESS_PLUS_MONTHLY` / `STRIPE_PRICE_WELLNESS_PLUS_YEARLY`,
+`src/app/(app)/wellness/membership/page.tsx`) and Clinic PRO ($100/mo,
+`STRIPE_PRICE_CLINIC`, team membership in `src/lib/clinic-pro.ts`). A plan whose Price id
+is unset disables that plan's purchase button (`planHasPrice` in `src/lib/stripe.ts`).
+The flow:
 
 - **Checkout** (`app/actions/pro.ts` `subscribeToProAction`/`subscribeToStudentTierAction`):
   looks up or creates a Stripe Customer for the reader (`User.stripeCustomerId`, reused on
@@ -307,9 +348,11 @@ including Limbic Agent eligibility — see `src/app/(app)/student/page.tsx`). Th
 
 **Setup, in the Stripe Dashboard:**
 
-1. Create two Products, each with one recurring monthly Price: LimbicPro ($10) and
-   LimbicStudent ($3). Copy each Price's id (starts `price_...`, **not** the Product id)
-   into `STRIPE_PRICE_PRO`/`STRIPE_PRICE_LIMBIC_STUDENT`.
+1. Create Products and recurring Prices, then copy each Price id (starts `price_...`,
+   **not** the Product id): LimbicPRO ($10/mo) → `STRIPE_PRICE_PRO`, LimbicStudent
+   ($3/mo) → `STRIPE_PRICE_LIMBIC_STUDENT`, LimbicWellness+ ($2/mo and $20/yr) →
+   `STRIPE_PRICE_WELLNESS_PLUS_MONTHLY` / `STRIPE_PRICE_WELLNESS_PLUS_YEARLY`, Clinic PRO
+   ($100/mo) → `STRIPE_PRICE_CLINIC`.
 2. Settings → Billing → Customer portal: click "Activate test link" (test mode) or
    otherwise save a portal configuration at least once — `stripe.billingPortal.sessions
    .create` fails until a configuration exists, even a default one.
@@ -433,11 +476,9 @@ and its own webhook event.
 
 Without `STRIPE_FOUNDING_FUNDER_PRICE_ID` set (even with `STRIPE_SECRET_KEY` configured),
 `createFoundingFunderCheckout` returns "Payments aren't set up yet" rather than starting a
-checkout with no real price behind it.
-
-Founding Funders (`/founding-funders`) is deliberately **not** part of this — that's a
-one-time $40 payment handled manually via Zelle plus an admin claim panel, by original
-design (see the page itself), not a subscription.
+checkout with no real price behind it. `claimFoundingSpotAction` is the manual counterpart
+for a payment confirmed outside Checkout: anyone with the `foundingFunders` area can record
+the spot, and only an owner claiming someone else writes `User.isPro`.
 
 ## Home page news ticker
 
@@ -493,7 +534,8 @@ reliable filter here), and writes the result straight into
 `src/lib/retraction-watch-data.ts`. Re-run it (`npm run fetch:retraction-watch`) whenever
 you want a fresher snapshot — the current one is pinned to a specific GitLab commit
 (recorded in the generated file's header) rather than "latest," so re-runs are
-reproducible.
+reproducible. MeSH headings used for search are the same kind of baked snapshot:
+`npm run fetch:mesh-terms` regenerates `src/lib/mesh-terms.ts` from NLM's annual tree file.
 
 Unlike the news/stock sources above, gitlab.com's raw-file endpoint *was* reachable
 directly from the sandbox this was built in — this doesn't imply the other live sources
