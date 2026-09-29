@@ -29,6 +29,7 @@ import {
   ListIcon,
   BandageIcon,
   TimerIcon,
+  CheckCircleIcon,
 } from "@/components/icons";
 import { getCurrentProgramPhase, getGenericProgramPhase, getProgramPhaseLabel, type ProgramPhase } from "@/lib/dpt-program";
 import { getThisWeekAssignments, getMonthAssignments } from "@/app/actions/syllabus";
@@ -569,6 +570,11 @@ export default async function StudentAtriumPage() {
                 <span className="atrium-resource-icon"><BandageIcon size={18} /></span>
                 <p className="atrium-resource-title">Playbooks</p>
                 <p className="atrium-resource-desc">A whole regional examination in the order you perform it, with the number behind every finding.</p>
+              </Link>
+              <Link href="/student/exam-prep" className="atrium-resource-card">
+                <span className="atrium-resource-icon"><CheckCircleIcon size={18} /></span>
+                <p className="atrium-resource-title">Exam Prep</p>
+                <p className="atrium-resource-desc">Study guides for exams and practicals: key points, quizzes, flashcards, a timed mock quiz and games.</p>
               </Link>
               <Link href="/student/slides" className="atrium-resource-card">
                 <span className="atrium-resource-icon"><FileTextIcon size={18} /></span>

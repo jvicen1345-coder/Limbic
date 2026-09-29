@@ -1,0 +1,16 @@
+<!-- 00 YOUR PROGRESS -->
+<section id="mine">
+  <div class="sec-head"><span class="num">00</span><h2>Your progress</h2></div>
+  <p class="sync-line" id="sync-line" role="status"><span class="sync-dot" aria-hidden="true"></span><span class="sync-t">Progress is saved in this browser only</span></p>
+  <div class="weak-act" style="margin-top:6px"><button type="button" id="bk-save">Back up progress</button><label class="bk-load" for="bk-file">Restore from backup<input type="file" id="bk-file" accept=".json,application/json"></label><span class="bk-msg" id="bk-msg" role="status"></span></div>
+  <h3>Weak spots</h3>
+  <p class="intro" style="margin-bottom:6px">Your 10 weakest items, ranked from every quiz, checkpoint, flashcard, mock quiz and game answer plus your Shaky and Missed key-point ratings. Recent misses count more, and an item drops off once you get it right more often than you miss it.</p>
+  <div id="weak-list"></div>
+  <div class="weak-act"><button type="button" class="primary" id="weak-quiz" hidden>Quiz me on these</button><button type="button" class="linkbtn" id="weak-clear" style="margin-left:0">Clear answer history</button></div>
+  <h3>Accuracy by topic</h3>
+  <div class="acc-grid" id="acc-grid"></div>
+  <h3>Printable sheets</h3>
+  <p class="intro" style="margin-bottom:8px">A compact print version of each topic (one to two pages) with its key points, answers unblurred, and the references they cite.</p>
+  <div class="sheet-pick"><label for="sheet-sel" class="sr-only" style="position:absolute;left:-9999px">Sheet</label><select id="sheet-sel"></select><button type="button" class="primary" id="sheet-open">Open sheet</button></div>
+</section>
+

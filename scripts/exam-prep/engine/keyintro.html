@@ -1,0 +1,17 @@
+<!-- 01 KEY POINTS -->
+<section id="key">
+  <div class="sec-head"><span class="num">01</span><h2>Key points by topic</h2><span class="meta" id="kp-count"></span></div>
+  <p class="intro">Work through one topic at a time. <b>Blur this topic</b> (or <b>Self-test</b> for everything) blurs the answers. Answer out loud, tap a blurred bullet to check it, tap it again to re-blur, then rate yourself. Each topic ends with a checkpoint quiz. <b>Weak spots</b> shows only what you rated Shaky or Missed. Your ratings schedule spaced review: <b>Missed</b> comes back tomorrow, <b>Shaky</b> in 3 days and <b>Got it</b> in 7 days, all in the <b>Due today</b> tab. Numbered <span class="src">1</span> chips cite the reference list, <span class="hand">italic notes</span> are clinical notes, and <span class="mine">example</span> chips mark worked examples.</p>
+  <div class="study" id="study-ctl">
+    <div class="tabs" id="wk-tabs" role="tablist" aria-label="Topics"></div>
+    <div class="study-row">
+      <label class="switch" for="st-self"><input type="checkbox" id="st-self"><span class="knob" aria-hidden="true"></span>Self-test (blur all topics)</label>
+      <label class="switch" for="st-weak"><input type="checkbox" id="st-weak"><span class="knob" aria-hidden="true"></span>Weak spots only</label>
+      <label class="switch" for="st-bd"><input type="checkbox" id="st-bd"><span class="knob" aria-hidden="true"></span>Open all breakdowns</label>
+      <button type="button" id="st-reset" class="linkbtn">Reset ratings</button>
+    </div>
+    <div class="tally" id="st-tally"></div>
+    <div class="stack" aria-hidden="true"><i class="s-got" id="bar-got"></i><i class="s-shaky" id="bar-shaky"></i><i class="s-miss" id="bar-miss"></i></div>
+  </div>
+  <p class="empty-note" id="st-empty" hidden>Nothing to show: no items in this view are rated Shaky or Missed. Turn off Weak spots to see everything.</p>
+

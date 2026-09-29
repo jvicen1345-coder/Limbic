@@ -50,6 +50,11 @@ export default async function PlaybooksHubPage() {
     <div className="screen-pad atrium-page" style={{ maxWidth: 960 }}>
       <h1 style={{ fontSize: 26, margin: "0 0 6px" }}>Playbooks</h1>
       <p style={{ fontSize: 14, color: "var(--color-neutral-700)", maxWidth: 640, lineHeight: 1.5, margin: 0 }}>{SUBTITLE}</p>
+      {/* The playbooks are for working through an evaluation; the Exam Prep guides are the
+          study-mode companion. Point across so a reader who came to study finds them. */}
+      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "8px 0 0" }}>
+        Studying for an exam or practical? <Link href="/student/exam-prep">See Exam Prep →</Link>
+      </p>
 
       {!paid && !admin && (
         <p className="playbook-hub-tier-note">

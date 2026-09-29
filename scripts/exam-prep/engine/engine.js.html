@@ -1,0 +1,634 @@
+<script>
+(function(){
+  function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  function load(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}}
+  var kps=[].slice.call(document.querySelectorAll('.kp'));
+  document.getElementById('c-kp').textContent=kps.length;
+
+  /* ---------- stacked-card labels ---------- */
+  [].forEach.call(document.querySelectorAll('table.rt'),function(t){
+    var heads=[].map.call(t.querySelectorAll('thead th'),function(th){return th.textContent});
+    [].forEach.call(t.querySelectorAll('tbody tr'),function(tr){
+      if(tr.classList.contains('grp'))return;
+      var cells=tr.children, off=heads.length-cells.length;
+      for(var i=0;i<cells.length;i++){cells[i].setAttribute('data-label',heads[i+off])}
+    });
+  });
+
+  /* ---------- quiz data ---------- */
+  var Q=[
+  ];
+
+  var F=[
+  ];
+  document.getElementById('c-q').textContent=Q.length;
+  document.getElementById('c-f').textContent=F.length;
+
+  var TNAMES={};
+  function TN(w){return 'Topic '+w+(TNAMES[w]?' · '+TNAMES[w]:'')}
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+  function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+
+  /* interleave: round-robin across weeks so no two neighbours share a week */
+  function interleave(list,key,n){
+    var g={};shuffle(list).forEach(function(x){var k=key(x);(g[k]=g[k]||[]).push(x)});
+    var out=[],last=null,keys=Object.keys(g);
+    while(out.length<(n||list.length)){
+      var avail=shuffle(keys.filter(function(k){return g[k].length&&k!==last}));
+      if(!avail.length)avail=keys.filter(function(k){return g[k].length});
+      if(!avail.length)break;
+      var k=avail[0];out.push(g[k].pop());last=k;
+    }
+    return out;
+  }
+  /* ---------- quiz ---------- */
+  var qs=[],qi=0,correct=0,answered=false,card=document.getElementById('q-card');
+  var okMsgs=["Correct.","Right.","That's it.","Nailed it."], badMsgs=["Not quite.","Close, but no.","Review this one."];
+  function qStart(){
+    var w=document.getElementById('q-week').value;
+    qs=w==='mix'?interleave(Q,function(x){return x.w},15):shuffle(Q.filter(function(x){return w==='all'||String(x.w)===w}));
+    qi=0;correct=0;qRender();
+  }
+  function qRender(){
+    var sc=document.getElementById('q-score');
+    if(qi>=qs.length){
+      var pct=Math.round(100*correct/qs.length);
+      card.innerHTML='<div class="result"><b>'+correct+' / '+qs.length+'</b><p>'+pct+'% correct</p><div class="qnav" style="justify-content:center"><button class="primary" type="button" id="q-again">Try again</button></div></div>';
+      document.getElementById('q-again').onclick=qStart; sc.textContent='';return;
+    }
+    answered=false;
+    var x=qs[qi];
+    sc.textContent='Score '+correct+' / '+qi;
+    var h='<div class="qmeta"><span>Question '+(qi+1)+' of '+qs.length+'</span><span>'+esc(TN(x.w))+'</span></div><div class="qtext">'+esc(x.q)+'</div><div class="opts">';
+    x.o.forEach(function(o,i){h+='<button type="button" class="opt" data-i="'+i+'">'+String.fromCharCode(65+i)+'. '+esc(o)+'</button>'});
+    h+='</div><div id="q-exp"></div><div class="qnav"><span></span><button type="button" class="primary" id="q-next" hidden>Next question →</button></div>';
+    card.innerHTML=h;
+    [].forEach.call(card.querySelectorAll('.opt'),function(b){b.onclick=function(){qAnswer(+b.getAttribute('data-i'))}});
+    document.getElementById('q-next').onclick=function(){qi++;qRender();};
+  }
+  function qAnswer(i){
+    if(answered)return; answered=true;
+    var x=qs[qi],ok=i===x.a; if(ok)correct++;
+    [].forEach.call(card.querySelectorAll('.opt'),function(b,j){b.disabled=true;if(j===x.a)b.classList.add('right');else if(j===i)b.classList.add('wrong')});
+    var m=ok?okMsgs[qi%okMsgs.length]:badMsgs[qi%badMsgs.length];
+    document.getElementById('q-exp').innerHTML='<div class="explain"><b class="'+(ok?'v-ok':'v-bad')+'">'+m+'</b> '+esc(x.e)+'</div>';
+    document.getElementById('q-score').textContent='Score '+correct+' / '+(qi+1);
+    var n=document.getElementById('q-next'); n.hidden=false; n.focus();
+  }
+  document.getElementById('q-restart').onclick=qStart;
+  document.getElementById('q-week').onchange=qStart;
+  qStart();
+
+  /* ---------- flashcards ---------- */
+  var fs=[],fi=0,fc=document.getElementById('fc');
+  function fStart(sh){
+    var w=document.getElementById('f-week').value;
+    if(w==='mix'){fs=interleave(F,function(x){return x[0]});fi=0;fRender();return}
+    fs=F.filter(function(x){return w==='all'||String(x[0])===w});
+    if(sh)fs=shuffle(fs); fi=0; fRender();
+  }
+  function fRender(){
+    fc.classList.remove('flipped');
+    var c=fs[fi];
+    document.getElementById('f-lab').textContent=TN(c[0]);
+    document.getElementById('f-front').textContent=c[1];
+    document.getElementById('f-back').textContent=c[2];
+    document.getElementById('f-pos').textContent='Card '+(fi+1)+' / '+fs.length;
+  }
+  function flip(){fc.classList.toggle('flipped')}
+  fc.onclick=flip;
+  fc.onkeydown=function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();flip()}else if(e.key==='ArrowRight'){fNext()}else if(e.key==='ArrowLeft'){fPrev()}};
+  function fNext(){fi=(fi+1)%fs.length;fRender()}
+  function fPrev(){fi=(fi-1+fs.length)%fs.length;fRender()}
+  document.getElementById('f-next').onclick=fNext;
+  document.getElementById('f-prev').onclick=fPrev;
+  document.getElementById('f-shuffle').onclick=function(){fStart(true)};
+  document.getElementById('f-week').onchange=function(){fStart(false)};
+  fStart(false);
+
+  /* ---------- study mode ---------- */
+  var WEEKS=[
+  ];
+  function isLabQ(x){return false}
+  function weekQs(id){return Q.filter(function(x){return id==='lab'?isLabQ(x):(String(x.w)===id&&!isLabQ(x))})}
+  var weekEls=[].slice.call(document.querySelectorAll('#key .week'));
+  weekEls.forEach(function(el,i){el.setAttribute('data-week',WEEKS[i]?WEEKS[i].id:'lab')});
+
+  /* ratings (migrates old checkbox ticks to "Got it") */
+  var RKEY='@@PFX@@-rate-v1', rates=load(RKEY,null);
+  if(!rates){rates={};var old=load('@@PFX@@-kp-v1',{});Object.keys(old).forEach(function(k){if(old[k])rates[k]='got'});store(RKEY,rates)}
+  var cpBest=load('@@PFX@@-cp-v1',{});
+  var TKEY='@@PFX@@-rtime-v1',rtime=load(TKEY,{}),INT={miss:1,shaky:3,got:7},DAY=864e5;
+  function isDue(k){var t=k.getAttribute('data-tag'),r=rates[t];if(!r)return false;var at=rtime[t];return !at||Date.now()>=at+INT[r]*DAY}
+  function nextText(k){var t=k.getAttribute('data-tag'),r=rates[t];if(!r)return '';if(isDue(k))return 'Due for review now';var d=Math.ceil((rtime[t]+INT[r]*DAY-Date.now())/DAY);return 'Next review '+(d<=1?'tomorrow':'in '+d+' days')}
+  var selfTest=!!load('@@PFX@@-self',false),weekBlur={}, weakOnly=false, curWeek=load('@@PFX@@-tab','1');
+  if(!WEEKS.some(function(w){return w.id===curWeek})&&curWeek!=='all')curWeek='1';
+
+  var RLAB={got:'Got it',shaky:'Shaky',miss:'Missed'};
+  kps.forEach(function(k,i){
+    var tag=(k.querySelector('.tag')||{}).textContent||('k'+i);
+    k.setAttribute('data-tag',tag);
+    var cb=k.querySelector('input[type=checkbox]');if(cb)cb.remove();
+    var body=k.firstElementChild, ans=body.querySelector('.a');
+    var rv=document.createElement('button');rv.type='button';rv.className='reveal';rv.textContent='Tap the answer to reveal';
+    rv.innerHTML='Tap a bullet to reveal · tap again to re-blur · <u>reveal all</u>';
+    rv.onclick=function(){units(ans).forEach(function(u){setBlur(u,false)});applyVis(k)};
+    k._wk=function(){var w=k.closest('.week');return w?w.getAttribute('data-week'):''};
+    ans.parentNode.insertBefore(rv,ans);
+    wireUnits(ans,function(){applyVis(k)},function(){return !!weekBlur[k._wk()]});
+    var rate=document.createElement('div');rate.className='rate';
+    rate.innerHTML='<span class="rl">How did you do?</span>'+['got','shaky','miss'].map(function(r){return '<button type="button" class="b-'+r+'" data-r="'+r+'" aria-pressed="false">'+RLAB[r]+'</button>'}).join('');
+    body.appendChild(rate);
+    [].forEach.call(rate.querySelectorAll('button'),function(b){b.onclick=function(){
+      var r=b.getAttribute('data-r');
+      if(rates[tag]===r){delete rates[tag];delete rtime[tag]}else{rates[tag]=r;rtime[tag]=Date.now()}
+      store(RKEY,rates);store(TKEY,rtime);paintRating(k);refresh();
+    }});
+    paintRating(k);
+  });
+  function paintRating(k){
+    var r=rates[k.getAttribute('data-tag')];
+    k.classList.remove('r-got','r-shaky','r-miss');if(r)k.classList.add('r-'+r);
+    [].forEach.call(k.querySelectorAll('.rate button'),function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-r')===r))});
+    var rt=k.querySelector('.rate'),nr=rt&&rt.querySelector('.nr');if(rt&&!nr){nr=document.createElement('span');nr.className='nr';rt.appendChild(nr)}
+    if(nr){nr.textContent=nextText(k);nr.classList.toggle('due',isDue(k))}
+  }
+  /* ---- per-bullet blur ---- */
+  function units(c){
+    if(c._units)return c._units;
+    var list=[],buf=[];
+    function flush(){
+      if(!buf.length)return;
+      var txt=buf.map(function(n){return n.textContent}).join('').trim();
+      if(txt){var w=document.createElement('span');w.className='bu bu-text';c.insertBefore(w,buf[0]);buf.forEach(function(n){w.appendChild(n)});list.push(w)}
+      buf=[];
+    }
+    [].slice.call(c.childNodes).forEach(function(n){
+      if(n.nodeType===1&&/^(UL|OL)$/.test(n.tagName)){flush();[].forEach.call(n.children,function(li){li.classList.add('bu');list.push(li)})}
+      else if(n.nodeType===1&&n.classList.contains('tbl-wrap')){flush();[].forEach.call(n.querySelectorAll('tbody tr'),function(tr){if(!tr.classList.contains('grp')){tr.classList.add('bu');list.push(tr)}})}
+      else if(n.nodeType===1&&/^(P|DIV)$/.test(n.tagName)){flush();n.classList.add('bu');list.push(n)}
+      else if(n.nodeType===1&&n.tagName==='BR'){flush();n.remove()}
+      else buf.push(n);
+    });
+    flush();
+    c._units=list;return list;
+  }
+  function setBlur(u,on,mode){
+    u.classList.toggle('blurred',on);
+    u.classList.toggle('reblur',!on&&!!mode);
+    if(on){u.setAttribute('tabindex','0');u.setAttribute('aria-label','Hidden answer part, press to reveal')}
+    else if(mode){u.setAttribute('tabindex','0');u.setAttribute('aria-label','Revealed answer part, press to blur again')}
+    else{u.removeAttribute('tabindex');u.removeAttribute('aria-label')}
+  }
+  /* tap a blurred unit to reveal it; while blur mode is on, tap a revealed unit to blur it again */
+  function wireUnits(c,after,modeFn){
+    units(c);
+    function act(e,u){var mode=modeFn?modeFn():false;
+      if(u.classList.contains('blurred')){e.preventDefault();setBlur(u,false,mode);after();return}
+      if(mode){e.preventDefault();setBlur(u,true,mode);after()}}
+    c.addEventListener('click',function(e){if(e.target.closest('a,button,input,select,summary'))return;var u=e.target.closest('.bu');if(u&&c.contains(u))act(e,u)});
+    c.addEventListener('keydown',function(e){if(e.key!=='Enter'&&e.key!==' ')return;var u=e.target.closest('.bu');if(u&&c.contains(u)&&u===e.target)act(e,u)});
+  }
+  function applyVis(k){
+    var mode=!!weekBlur[k._wk()],us=units(k.querySelector('.a')),blurredN=us.filter(function(u){return u.classList.contains('blurred')}).length;
+    k.querySelector('.reveal').hidden=!mode;
+    k.querySelector('.rate').hidden=mode&&blurredN===us.length;
+  }
+
+  /* week checkpoints */
+  weekEls.forEach(function(el){
+    var id=el.getAttribute('data-week'),w=WEEKS.filter(function(x){return x.id===id})[0],pool=weekQs(id);
+    if(!pool.length)return;
+    var idx=WEEKS.indexOf(w),next=WEEKS[idx+1];
+    var cp=document.createElement('div');cp.className='checkpoint';
+    cp.innerHTML='<h4>'+w.label+' checkpoint</h4><p class="cp-sub">'+Math.min(5,pool.length)+' quick questions from this section. <span class="cp-best"></span></p><div class="qcard"></div>'+
+      '<div class="cp-actions"><button type="button" class="cp-new">New set</button><button type="button" class="cp-cards">Flip '+w.label+' flashcards</button>'+(next?'<button type="button" class="primary cp-next">Next: '+next.label+' →</button>':'<button type="button" class="primary cp-next">Review weak spots →</button>')+'</div>';
+    el.appendChild(cp);
+    var box=cp.querySelector('.qcard'),set=[],i=0,ok=0,done=false;
+    function best(){var b=cpBest[id];cp.querySelector('.cp-best').textContent=b!=null?'Best: '+b+'/'+Math.min(5,pool.length)+'.':''}
+    function start(){set=shuffle(pool).slice(0,5);i=0;ok=0;render()}
+    function render(){
+      if(i>=set.length){
+        if(cpBest[id]==null||ok>cpBest[id]){cpBest[id]=ok;store('@@PFX@@-cp-v1',cpBest)}
+        best();refresh();
+        box.innerHTML='<div class="result"><b>'+ok+' / '+set.length+'</b><p>'+(ok===set.length?'Clean sweep. Move on when ready.':'Rate the key points above that tripped you up as Shaky or Missed.')+'</p></div>';return;
+      }
+      done=false;var x=set[i];
+      var h='<div class="qmeta"><span>Question '+(i+1)+' of '+set.length+'</span><span>'+ok+' correct</span></div><div class="qtext">'+esc(x.q)+'</div><div class="opts">';
+      x.o.forEach(function(o,j){h+='<button type="button" class="opt" data-i="'+j+'">'+String.fromCharCode(65+j)+'. '+esc(o)+'</button>'});
+      h+='</div><div class="cp-exp"></div><div class="qnav"><span></span><button type="button" class="primary cp-go" hidden>Next →</button></div>';
+      box.innerHTML=h;
+      [].forEach.call(box.querySelectorAll('.opt'),function(b){b.onclick=function(){
+        if(done)return;done=true;var j=+b.getAttribute('data-i'),good=j===x.a;if(good)ok++;
+        [].forEach.call(box.querySelectorAll('.opt'),function(o,n){o.disabled=true;if(n===x.a)o.classList.add('right');else if(n===j)o.classList.add('wrong')});
+        box.querySelector('.cp-exp').innerHTML='<div class="explain"><b class="'+(good?'v-ok':'v-bad')+'">'+(good?'Correct.':'Not quite.')+'</b> '+esc(x.e)+'</div>';
+        var g=box.querySelector('.cp-go');g.hidden=false;g.textContent=i+1<set.length?'Next →':'See score';g.onclick=function(){i++;render()};
+      }});
+    }
+    cp.querySelector('.cp-new').onclick=start;
+    cp.querySelector('.cp-cards').onclick=function(){var s=document.getElementById('f-week');s.value=(id==='lab'?'4':id);fStart(false);document.getElementById('cards').scrollIntoView({behavior:'smooth'})};
+    cp.querySelector('.cp-next').onclick=function(){
+      if(next)setWeek(next.id);else{weakOnly=true;document.getElementById('st-weak').checked=true;setWeek('all')}
+      document.getElementById('study-ctl').scrollIntoView({behavior:'smooth'});
+    };
+    best();start();
+  });
+
+  /* tabs, filters, tally */
+  var tabsEl=document.getElementById('wk-tabs');
+  function tabHTML(id,label){return '<button type="button" class="tab" role="tab" data-w="'+id+'" aria-selected="false"><span class="tl">'+label+'</span><span class="tp"></span><span class="tm"><i></i></span></button>'}
+  tabsEl.innerHTML=tabHTML('due','Due today')+tabHTML('all','All')+WEEKS.map(function(w){return tabHTML(w.id,w.label)}).join('');
+  [].forEach.call(tabsEl.querySelectorAll('.tab'),function(t){t.onclick=function(){setWeek(t.getAttribute('data-w'))}});
+  function setWeek(id){curWeek=id;store('@@PFX@@-tab',id);refresh()}
+  function kpsOf(id){return kps.filter(function(k){if(id==='due')return isDue(k);var w=k.closest('.week');return id==='all'||(w&&w.getAttribute('data-week')===id)})}
+  function refresh(){
+    [].forEach.call(tabsEl.querySelectorAll('.tab'),function(t){
+      var id=t.getAttribute('data-w'),list=kpsOf(id),got=list.filter(function(k){return rates[k.getAttribute('data-tag')]==='got'}).length;
+      t.setAttribute('aria-selected',String(id===curWeek));
+      if(id==='due'){t.querySelector('.tp').textContent=list.length+' due';t.querySelector('.tm i').style.width=list.length?'100%':'0';t.classList.toggle('has-due',list.length>0);return}
+      t.querySelector('.tp').textContent=got+'/'+list.length+(cpBest[id]!=null?' · quiz '+cpBest[id]:'');
+      t.querySelector('.tm i').style.width=(list.length?100*got/list.length:0)+'%';
+    });
+    var anyShown=false;
+    weekEls.forEach(function(el){
+      var due=curWeek==='due',inWeek=due||curWeek==='all'||el.getAttribute('data-week')===curWeek,vis=0;
+      [].forEach.call(el.querySelectorAll('.kp'),function(k){
+        var r=rates[k.getAttribute('data-tag')],show=inWeek&&(!due||isDue(k))&&(!weakOnly||r==='shaky'||r==='miss');
+        k.hidden=!show;if(show)vis++;applyVis(k);paintRating(k);
+      });
+      el.hidden=!inWeek||((weakOnly||due)&&vis===0);
+      var cp=el.querySelector('.checkpoint');if(cp)cp.hidden=weakOnly||due;
+      if(!el.hidden)anyShown=true;
+    });
+    var em=document.getElementById('st-empty');em.hidden=anyShown;
+    em.textContent=curWeek==='due'?'Nothing is due right now. Rate key points as you study (Missed returns tomorrow, Shaky in 3 days, Got it in 7 days) and they\u2019ll show up here when it\u2019s time to review them.':'Nothing to show: no items in this view are rated Shaky or Missed. Turn off Weak spots to see everything.';
+    var list=kpsOf(curWeek),c={got:0,shaky:0,miss:0};
+    list.forEach(function(k){var r=rates[k.getAttribute('data-tag')];if(r)c[r]++});
+    var un=list.length-c.got-c.shaky-c.miss,scope=curWeek==='due'?'Due for review':curWeek==='all'?'All topics':WEEKS.filter(function(w){return w.id===curWeek})[0].label+' · '+WEEKS.filter(function(w){return w.id===curWeek})[0].name;
+    document.getElementById('st-tally').innerHTML='<span>'+esc(scope)+'</span><span class="t-got">Got it <b>'+c.got+'</b></span><span class="t-shaky">Shaky <b>'+c.shaky+'</b></span><span class="t-miss">Missed <b>'+c.miss+'</b></span><span>Not rated <b>'+un+'</b></span>';
+    ['got','shaky','miss'].forEach(function(r){document.getElementById('bar-'+r).style.width=(list.length?100*c[r]/list.length:0)+'%'});
+    document.getElementById('kp-count').textContent=kps.filter(function(k){return rates[k.getAttribute('data-tag')]==='got'}).length+' / '+kps.length+' got it';
+  }
+  var selfEl=document.getElementById('st-self'),weakEl=document.getElementById('st-weak');
+  selfEl.checked=selfTest;
+  /* per-week (section) blur */
+  function setWeekBlur(w,on){
+    weekBlur[w]=on;
+    kps.forEach(function(k){if(k._wk()===w)units(k.querySelector('.a')).forEach(function(u){setBlur(u,on,on)})});
+    var btn=document.querySelector('.week[data-week="'+w+'"] .sec-blur');if(btn){btn.textContent=on?'Unblur this topic':'Blur this topic';btn.setAttribute('aria-pressed',String(on))}
+  }
+  function syncSelf(){var all=WEEKS.every(function(w){return weekBlur[w.id]});selfEl.checked=all;selfTest=all;store('@@PFX@@-self',all)}
+  weekEls.forEach(function(el){
+    var h=el.querySelector('h3'),w=el.getAttribute('data-week');if(!h)return;
+    var wrap=document.createElement('div');wrap.className='wk-head';h.parentNode.insertBefore(wrap,h);wrap.appendChild(h);
+    var btn=document.createElement('button');btn.type='button';btn.className='sec-blur';wrap.appendChild(btn);
+    btn.onclick=function(){setWeekBlur(w,!weekBlur[w]);syncSelf();refresh()};
+  });
+  WEEKS.forEach(function(w){setWeekBlur(w.id,selfTest)});
+  selfEl.onchange=function(){WEEKS.forEach(function(w){setWeekBlur(w.id,selfEl.checked)});syncSelf();refresh()};
+  weakEl.onchange=function(){weakOnly=weakEl.checked;refresh()};
+  var rs=document.getElementById('st-reset'),armT;
+  rs.onclick=function(){
+    if(!rs.classList.contains('armed')){rs.classList.add('armed');rs.textContent='Tap again to clear all ratings';armT=setTimeout(function(){rs.classList.remove('armed');rs.textContent='Reset ratings'},4000);return}
+    clearTimeout(armT);rates={};rtime={};cpBest={};store(RKEY,rates);store(TKEY,rtime);store('@@PFX@@-cp-v1',cpBest);
+    rs.classList.remove('armed');rs.textContent='Ratings cleared';setTimeout(function(){rs.textContent='Reset ratings'},2000);
+    kps.forEach(paintRating);weekEls.forEach(function(el){var b=el.querySelector('.cp-best');if(b)b.textContent=''});refresh();
+  };
+  var SECS=[['cases','.ca li','Hides the model answers',true],['theories','tbody tr:not(.grp) td:not(.name)','Hides everything except the theory names'],['confused','tbody td:not(.name)','Hides both definitions and the tell'],['connects','.threads li span','Hides each thread, leaving its title'],['numbers','.nums b','Hides the values, leaving the labels']];
+  SECS.forEach(function(cfg){
+    var sec=document.getElementById(cfg[0]);if(!sec)return;var mode=!!cfg[3];
+    var list=[].slice.call(sec.querySelectorAll(cfg[1]));list.forEach(function(u){u.classList.add('bu')});sec._units=list;
+    var btn=document.createElement('button');btn.type='button';btn.className='sec-blur';btn.title=cfg[2];
+    var head=sec.querySelector('.sec-head');head.insertBefore(btn,head.querySelector('.meta'));
+    function sync(){btn.textContent=mode?'Unblur section':'Blur section';btn.setAttribute('aria-pressed',String(mode))}
+    btn.onclick=function(){mode=!mode;list.forEach(function(u){setBlur(u,mode,mode)});sync()};
+    wireUnits(sec,function(){},function(){return mode});if(mode)list.forEach(function(u){setBlur(u,true,true)});sync();
+  });
+  var cw=document.getElementById('case-week');
+  if(cw)cw.onchange=function(){[].forEach.call(document.querySelectorAll('.case'),function(c){c.hidden=!(cw.value==='all'||c.getAttribute('data-weeks').split(' ').indexOf(cw.value)>=0)})};
+  var rqt=document.getElementById('rq-toggle'),rqa=[].slice.call(document.querySelectorAll('.rqa'));
+  function rqUnits(){var all=[];rqa.forEach(function(el){all=all.concat(units(el))});return all}
+  var rqMode=true;
+  function syncRq(){rqt.textContent=rqMode?'Unblur section':'Blur section';rqt.setAttribute('aria-pressed',String(rqMode))}
+  rqa.forEach(function(el){wireUnits(el,function(){},function(){return rqMode});units(el).forEach(function(u){setBlur(u,true,true)})});
+  rqt.onclick=function(){rqMode=!rqMode;rqUnits().forEach(function(u){setBlur(u,rqMode,rqMode)});syncRq()};
+  syncRq();
+
+  /* ---------- write-it-yourself (review questions) ---------- */
+  var KT=[
+  ];
+  function scoreKT(text,kt){var t=' '+String(text||'').toLowerCase()+' ',terms=kt[1],need=kt[2]||terms.length,hits=terms.map(function(x){return x[1].some(function(p){return t.indexOf(p)>=0})}),n=hits.filter(Boolean).length;return {hits:hits,n:n,need:need,pct:Math.min(1,n/need)}}
+  var DKEY='@@PFX@@-drafts-v1',drafts=load(DKEY,{});
+  [].forEach.call(document.querySelectorAll('#review .rq'),function(rq,i){
+    var kt=KT[i];if(!kt)return;
+    var bar=document.createElement('div');bar.className='wr-bar';
+    bar.innerHTML='<button type="button" class="wr-open">✎ Write my answer</button>';
+    var panel=document.createElement('div');panel.className='wr';panel.hidden=true;
+    panel.innerHTML='<label class="wr-l" for="rq-ta-'+i+'">Your answer (saved in this browser). The checklist looks for key terms; it can\u2019t judge whether pairings or reasoning are right, so compare with the model answer.</label><textarea id="rq-ta-'+i+'" rows="4" placeholder="Answer in your own words, then check it against the key terms."></textarea><div class="wr-act"><button type="button" class="primary wr-check">Check my answer</button><span class="wr-score"></span></div><ul class="wr-list" hidden></ul>';
+    var qq=rq.querySelector('.rqq');qq.insertAdjacentElement('afterend',bar);bar.insertAdjacentElement('afterend',panel);
+    var ta=panel.querySelector('textarea');ta.value=drafts[i]||'';
+    ta.addEventListener('input',function(){drafts[i]=ta.value;store(DKEY,drafts)});
+    bar.querySelector('.wr-open').onclick=function(){panel.hidden=!panel.hidden;if(!panel.hidden)ta.focus()};
+    if(drafts[i])panel.hidden=false;
+    panel.querySelector('.wr-check').onclick=function(){
+      var r=scoreKT(ta.value,kt),ul=panel.querySelector('.wr-list');
+      ul.innerHTML=kt[1].map(function(x,j){return '<li class="'+(r.hits[j]?'hit':'miss')+'">'+(r.hits[j]?'✓ ':'✗ ')+esc(x[0])+'</li>'}).join('');ul.hidden=false;
+      panel.querySelector('.wr-score').textContent=(kt[2]?r.n+' key terms found ('+r.need+' needed)':r.n+' of '+r.need+' key terms');
+      units(rq.querySelector('.rqa')).forEach(function(u){setBlur(u,false,rqMode)});
+    };
+  });
+
+  /* ---------- mock exam ---------- */
+  var MTF=[
+  ];
+  var MBL=[
+  ];
+  var MM=[
+  ];
+  var SAPOOL=[];
+  var mockBox=document.getElementById('mock-box'),mockTimer=null,mockItems=[],mockLeft=0;
+  function mockIntro(){
+    clearInterval(mockTimer);
+    mockBox.innerHTML='<div class="mock-intro"><p><b>30 points · 25 minutes.</b> 10 multiple choice, 8 true/false, 1 matching set (4), 5 fill-in-the-blanks and 1 short answer (3 points, scored by key terms). Questions mix all @@NTOP_WORD@@ topics and change every attempt. At the end, your score is broken down by topic and by question type.</p><div class="qnav" style="justify-content:flex-start"><button type="button" class="primary" id="mock-start">Start 25-minute quiz</button><button type="button" id="mock-untimed">Start untimed</button></div>'+(load('@@PFX@@-mock-best',null)!=null?'<p class="mock-best">Best so far: '+load('@@PFX@@-mock-best',0)+'%</p>':'')+'</div>';
+    document.getElementById('mock-start').onclick=function(){mockStart(true)};
+    document.getElementById('mock-untimed').onclick=function(){mockStart(false)};
+  }
+  function pickByWeek(list,wk,n){return interleave(list,wk,n)}
+  function mockStart(timed){
+    var mc=pickByWeek(Q.filter(function(x){return x.o.length>2}),function(x){return x.w},10);
+    var tf=pickByWeek(MTF,function(x){return x[2]},8);
+    var mm=MM[Math.floor(Math.random()*MM.length)];
+    var bl=pickByWeek(MBL,function(x){return x[2]},5);
+    var sa=shuffle(SAPOOL).slice(0,1);
+    var h='<div class="mock-top"><span id="mock-clock" class="mock-clock">'+(timed?'25:00':'untimed')+'</span><button type="button" class="primary" id="mock-submit">Submit quiz</button></div><form id="mock-form" onsubmit="return false">';
+    mockItems=[];var n=0;
+    h+='<h4 class="mock-sec">Multiple choice</h4>';
+    mc.forEach(function(x){n++;var id='m'+n;mockItems.push({t:'mc',w:x.w,id:id,x:x,pts:1});h+='<fieldset class="mq"><legend><span class="mn">'+n+'.</span> '+esc(x.q)+' <span class="wkchip">T'+x.w+'</span></legend>'+x.o.map(function(o,j){return '<label><input type="radio" name="'+id+'" value="'+j+'"> '+esc(o)+'</label>'}).join('')+'<div class="mfb" id="fb-'+id+'"></div></fieldset>'});
+    h+='<h4 class="mock-sec">True or false</h4>';
+    tf.forEach(function(x){n++;var id='m'+n;mockItems.push({t:'tf',w:x[2],id:id,x:x,pts:1});h+='<fieldset class="mq"><legend><span class="mn">'+n+'.</span> '+esc(x[0])+' <span class="wkchip">T'+x[2]+'</span></legend><label><input type="radio" name="'+id+'" value="1"> True</label><label><input type="radio" name="'+id+'" value="0"> False</label><div class="mfb" id="fb-'+id+'"></div></fieldset>'});
+    n++;var mid='m'+n,defs=shuffle(mm[2].map(function(p){return p[1]}));
+    h+='<h4 class="mock-sec">Matching</h4><fieldset class="mq"><legend><span class="mn">'+n+'.</span> '+esc(mm[1])+': match each term to its description. <span class="wkchip">T'+mm[0]+'</span></legend>';
+    mm[2].forEach(function(p,j){h+='<label class="mm"><span>'+esc(p[0])+'</span><select id="'+mid+'-'+j+'"><option value="">choose…</option>'+defs.map(function(d){return '<option>'+esc(d)+'</option>'}).join('')+'</select></label>'});
+    h+='<div class="mfb" id="fb-'+mid+'"></div></fieldset>';mockItems.push({t:'mm',w:mm[0],id:mid,x:mm,pts:4});
+    h+='<h4 class="mock-sec">Fill in the blank</h4>';
+    bl.forEach(function(x){n++;var id='m'+n;mockItems.push({t:'bl',w:x[2],id:id,x:x,pts:1});h+='<fieldset class="mq"><legend><span class="mn">'+n+'.</span> '+esc(x[0])+' <span class="wkchip">T'+x[2]+'</span></legend><input type="text" class="mbl" id="'+id+'" autocomplete="off" aria-label="Your answer"><div class="mfb" id="fb-'+id+'"></div></fieldset>'});
+    h+='<h4 class="mock-sec">Short answer</h4>';
+    sa.forEach(function(qi){n++;var id='m'+n,q=document.querySelectorAll('#review .rqq')[qi],qt=q?q.textContent.replace(/^\d+/,'').trim():'';mockItems.push({t:'sa',w:KT[qi][0],id:id,qi:qi,pts:3});h+='<fieldset class="mq"><legend><span class="mn">'+n+'.</span> '+esc(qt)+' <span class="wkchip">T'+KT[qi][0]+'</span></legend><textarea id="'+id+'" rows="4" aria-label="Your answer"></textarea><div class="mfb" id="fb-'+id+'"></div></fieldset>'});
+    h+='</form><div class="qnav"><span></span><button type="button" class="primary" id="mock-submit2">Submit quiz</button></div>';
+    mockBox.innerHTML=h;
+    document.getElementById('mock-submit').onclick=mockGrade;document.getElementById('mock-submit2').onclick=mockGrade;
+    clearInterval(mockTimer);
+    if(timed){mockLeft=1500;mockTimer=setInterval(function(){mockLeft--;var c=document.getElementById('mock-clock');if(!c){clearInterval(mockTimer);return}c.textContent=Math.floor(mockLeft/60)+':'+('0'+mockLeft%60).slice(-2);c.classList.toggle('low',mockLeft<=300);if(mockLeft<=0){clearInterval(mockTimer);mockGrade()}},1000)}
+    document.getElementById('mock').scrollIntoView({behavior:'smooth'});
+  }
+  function norm(v){return String(v||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
+  function mockGrade(){
+    clearInterval(mockTimer);var form=document.getElementById('mock-form');if(!form)return;
+    var tot=0,max=0,byW={},byT={},TL={mc:'Multiple choice',tf:'True/false',mm:'Matching',bl:'Fill-in',sa:'Short answer'},miss=[];
+    mockItems.forEach(function(it){
+      var got=0,fb=document.getElementById('fb-'+it.id),ans='';
+      if(it.t==='mc'){var v=form.querySelector('input[name="'+it.id+'"]:checked');got=v&&+v.value===it.x.a?1:0;ans=it.x.o[it.x.a];fb.innerHTML=(got?'<b class="v-ok">Correct.</b> ':'<b class="v-bad">Answer: '+esc(ans)+'.</b> ')+esc(it.x.e)}
+      if(it.t==='tf'){var v2=form.querySelector('input[name="'+it.id+'"]:checked');got=v2&&+v2.value===it.x[1]?1:0;ans=it.x[1]?'True':'False';fb.innerHTML=got?'<b class="v-ok">Correct.</b>':'<b class="v-bad">Answer: '+ans+'.</b>'}
+      if(it.t==='mm'){var wrong=[];it.x[2].forEach(function(p,j){var sel=document.getElementById(it.id+'-'+j);if(sel.value===p[1])got++;else wrong.push(p[0]+' → '+p[1])});fb.innerHTML=got===4?'<b class="v-ok">All correct.</b>':'<b class="v-bad">'+got+'/4.</b> '+esc(wrong.join(' · '))}
+      if(it.t==='bl'){var val=norm(document.getElementById(it.id).value);got=it.x[1].some(function(a){return norm(a)===val})?1:0;ans=it.x[1][0];fb.innerHTML=got?'<b class="v-ok">Correct.</b>':'<b class="v-bad">Answer: '+esc(ans)+'.</b>'}
+      if(it.t==='sa'){var r=scoreKT(document.getElementById(it.id).value,KT[it.qi]);got=Math.round(r.pct*3*10)/10;fb.innerHTML='<b class="'+(r.pct>=0.67?'v-ok':'v-bad')+'">'+got+' / 3</b> key terms: '+KT[it.qi][1].map(function(x,j){return (r.hits[j]?'✓ ':'✗ ')+esc(x[0])}).join(' · ')+' <span class="src">model answer: section 09, question '+(it.qi+1)+'</span>'}
+      tot+=got;max+=it.pts;
+      byW[it.w]=byW[it.w]||[0,0];byW[it.w][0]+=got;byW[it.w][1]+=it.pts;
+      byT[it.t]=byT[it.t]||[0,0];byT[it.t][0]+=got;byT[it.t][1]+=it.pts;
+      fb.classList.add('show');
+    });
+    [].forEach.call(form.querySelectorAll('input,select,textarea'),function(el){el.disabled=true});
+    var pct=Math.round(100*tot/max);
+    var best=load('@@PFX@@-mock-best',null);if(best==null||pct>best)store('@@PFX@@-mock-best',pct);
+    function rows(o,lab){return Object.keys(o).sort().map(function(k){var v=o[k],pc=Math.round(100*v[0]/v[1]);return '<div class="mrow"><span>'+lab(k)+'</span><span class="mbar"><i style="width:'+pc+'%" class="'+(pc>=80?'ok':pc>=60?'mid':'low')+'"></i></span><b>'+(Math.round(v[0]*10)/10)+'/'+v[1]+'</b></div>'}).join('')}
+    var res=document.createElement('div');res.className='mock-res';
+    res.innerHTML='<div class="mock-score"><b>'+pct+'%</b><span>'+(Math.round(tot*10)/10)+' of '+max+' points</span></div><div class="mock-grid"><div><h5>By topic</h5>'+rows(byW,function(k){return TN(k)})+'</div><div><h5>By question type</h5>'+rows(byT,function(k){return TL[k]})+'</div></div><p class="mock-tip">Start with your weakest topic in its tab and in <b>Due today</b>. Feedback for each question is shown below.</p><div class="qnav" style="justify-content:flex-start"><button type="button" class="primary" id="mock-again">New quiz</button></div>';
+    mockBox.insertBefore(res,mockBox.firstChild);
+    var top=mockBox.querySelector('.mock-top');if(top)top.remove();var s2=document.getElementById('mock-submit2');if(s2)s2.parentNode.remove();
+    document.getElementById('mock-again').onclick=mockIntro;
+    res.scrollIntoView({behavior:'smooth'});
+  }
+  if(mockBox)mockIntro();
+
+  var bdEl=document.getElementById('st-bd');
+  bdEl.onchange=function(){[].forEach.call(document.querySelectorAll('.bd'),function(d){d.open=bdEl.checked})};
+  refresh();
+
+  /* ================= enhancements ================= */
+  var PFX="@@PFX@@", ARC_BEST="@@PFX@@-arcade-best", GUIDE="@@GUIDE@@", BY="Jonathan Vicencio, SPT";
+  function H(s){var h=5381;s=String(s);for(var i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
+  function toast(msg){var t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.remove()},4200)}
+
+  /* ---- miss log: every graded answer, by item ---- */
+  var MKEY=PFX+'-miss-v1',MISS=load(MKEY,{});
+  function logQ(id,ok,w,label,kind){
+    var e=MISS[id]||{n:0,c:0};
+    if(ok)e.c++;else{e.n++;e.last=Date.now()}
+    e.w=w;e.l=String(label).slice(0,240);e.k=kind;e.t=Date.now();
+    MISS[id]=e;store(MKEY,MISS);schedWeak();
+  }
+  var _qAnswer=qAnswer;
+  qAnswer=function(i){if(answered)return;var x=qs[qi];_qAnswer(i);logQ('q'+H(x.q),i===x.a,x.w,x.q,'Quiz')};
+  [].forEach.call(document.querySelectorAll('.checkpoint'),function(cp){
+    cp.addEventListener('click',function(e){
+      var b=e.target.closest('.opt');if(!b||b.disabled)return;
+      var qt=cp.querySelector('.qtext');if(!qt)return;
+      var x=Q.filter(function(z){return z.q===qt.textContent})[0];if(!x)return;
+      logQ('q'+H(x.q),+b.getAttribute('data-i')===x.a,x.w,x.q,'Checkpoint');
+    },true);
+  });
+  /* mock quiz: log each item after grading */
+  var _mockGrade=mockGrade;
+  mockGrade=function(){
+    var form=document.getElementById('mock-form');if(!form){_mockGrade();return}
+    _mockGrade();
+    mockItems.forEach(function(it){
+      var fb=document.getElementById('fb-'+it.id);if(!fb)return;
+      var ok=!!fb.querySelector('.v-ok'),lbl='';
+      if(it.t==='mc')lbl=it.x.q;else if(it.t==='tf')lbl=it.x[0];else if(it.t==='bl')lbl=it.x[0];
+      else if(it.t==='mm')lbl=it.x[1]+' (matching)';
+      else if(it.t==='sa'){var q=document.querySelectorAll('#review .rqq')[it.qi];lbl=q?q.textContent.replace(/^\d+/,'').trim():'Short answer '+(it.qi+1)}
+      logQ((it.t==='mc'?'q':it.t)+H(lbl),ok,it.w,lbl,'Mock quiz');
+    });
+  };
+  /* flashcards: self-grade */
+  (function(){
+    var nav=document.getElementById('f-next');if(!nav)return;nav=nav.parentNode;
+    var r=document.createElement('div');r.className='fc-rate';
+    r.innerHTML='<span>Did you know it?<\/span><button type="button" class="fr-yes">Knew it<\/button><button type="button" class="fr-no">Didn’t know<\/button>';
+    nav.parentNode.insertBefore(r,nav.nextSibling);
+    function grade(ok){var c=fs[fi];if(!c)return;logQ('f'+H(c[1]),ok,c[0],c[1],'Flashcard');fNext()}
+    r.querySelector('.fr-yes').onclick=function(){grade(true)};
+    r.querySelector('.fr-no').onclick=function(){grade(false)};
+  })();
+
+  /* ---- weak spots ---- */
+  var weakT=null;function schedWeak(){clearTimeout(weakT);weakT=setTimeout(renderWeak,60)}
+  function wkName(w){w=String(w);var x=WEEKS.filter(function(z){return z.id===w})[0];return x?x.label+' · '+x.name:'Topic '+w}
+  function weakItems(){
+    var out=[],now=Date.now(),DAYMS=864e5;
+    kps.forEach(function(k){var t=k.getAttribute('data-tag'),r=rates[t];if(r!=='miss'&&r!=='shaky')return;
+      var q=k.querySelector('.q').cloneNode(true),tg=q.querySelector('.tag');if(tg)tg.remove();
+      out.push({kind:'Key point',cls:r==='miss'?'k-miss':'',score:r==='miss'?3:1.6,txt:q.textContent.trim(),meta:t+' · rated '+(r==='miss'?'Missed':'Shaky'),go:function(){goKp(k)}});
+    });
+    Object.keys(MISS).forEach(function(id){var e=MISS[id];if(!e.n)return;
+      var net=e.n-0.6*e.c;if(net<=0)return;var d=(now-(e.last||e.t||now))/DAYMS;
+      out.push({kind:e.k||'Quiz',cls:e.n>=2?'k-miss':'',score:net*1.4/(1+d/14),txt:e.l,meta:wkName(e.w)+' · missed '+e.n+'×'+(e.c?', right '+e.c+'×':''),w:e.w,qid:id,go:function(){goWeek(String(e.w))}});
+    });
+    var A=load(PFX+'-amiss-v1',{});
+    Object.keys(A).forEach(function(k){var e=A[k];var d=(now-(e.last||now))/DAYMS;
+      out.push({kind:'Game',cls:'',score:e.n*0.9/(1+d/14),txt:k,meta:(e.g||'Arcade')+' · missed '+e.n+'×',href:'arcade.html'});
+    });
+    out.sort(function(a,b){return b.score-a.score});
+    return out;
+  }
+  function goWeek(id){if(!WEEKS.some(function(w){return w.id===id}))id='all';weakOnly=false;var we=document.getElementById('st-weak');if(we)we.checked=false;setWeek(id);var el=document.querySelector('#key .week[data-week="'+id+'"]')||document.getElementById('study-ctl');el.scrollIntoView({behavior:'smooth'})}
+  function goKp(k){var w=k.closest('.week');weakOnly=false;var we=document.getElementById('st-weak');if(we)we.checked=false;setWeek(w?w.getAttribute('data-week'):'all');k.classList.add('flash');k.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(function(){k.classList.remove('flash')},2600)}
+  function renderWeak(){
+    var box=document.getElementById('weak-list');if(!box)return;
+    var all=weakItems(),top=all.slice(0,10);
+    if(!top.length){box.innerHTML='<p class="weak-empty">Nothing here yet. Answer quiz, checkpoint, flashcard or mock quiz questions, or rate key points Shaky or Missed, and the items you get wrong most often will be ranked here.<\/p>'}
+    else{
+      box.innerHTML='<ol class="weak-list">'+top.map(function(x,i){return '<li><span class="wk-rank">'+(i+1)+'<\/span><span class="wk-txt"><span class="wk-kind '+x.cls+'">'+esc(x.kind)+'<\/span>'+esc(x.txt)+'<span class="wk-meta">'+esc(x.meta)+'<\/span><\/span>'+(x.href?'<a class="linkbtn" style="margin:0" href="'+x.href+'">Play<\/a>':'<button type="button" data-i="'+i+'">Review<\/button>')+'<\/li>'}).join('')+'<\/ol>';
+      [].forEach.call(box.querySelectorAll('button[data-i]'),function(b){b.onclick=function(){top[+b.getAttribute('data-i')].go()}});
+    }
+    var wq=all.filter(function(x){return x.qid&&x.qid.charAt(0)==='q'}).map(function(x){return x.qid});
+    var pool=Q.filter(function(x){return wq.indexOf('q'+H(x.q))>=0});
+    var qb=document.getElementById('weak-quiz');if(qb){qb.hidden=pool.length<2;qb.textContent='Quiz me on my '+pool.length+' weakest questions';qb.onclick=function(){qs=shuffle(pool);qi=0;correct=0;qRender();document.getElementById('quiz').scrollIntoView({behavior:'smooth'})}}
+    /* accuracy by topic */
+    var acc={};Object.keys(MISS).forEach(function(id){var e=MISS[id],w=String(e.w);acc[w]=acc[w]||[0,0];acc[w][0]+=e.c;acc[w][1]+=e.c+e.n});
+    var ag=document.getElementById('acc-grid');
+    if(ag){var ks=WEEKS.map(function(w){return w.id}).filter(function(id){return acc[id]&&acc[id][1]});
+      ag.innerHTML=ks.length?ks.map(function(id){var v=acc[id],pc=Math.round(100*v[0]/v[1]);return '<div class="mrow"><span>'+esc(wkName(id))+'<\/span><span class="mbar"><i style="width:'+pc+'%" class="'+(pc>=80?'ok':pc>=60?'mid':'low')+'"><\/i><\/span><b>'+pc+'% of '+v[1]+'<\/b><\/div>'}).join(''):'<p class="weak-empty">No answers logged yet.<\/p>'}
+  }
+  (function(){var c=document.getElementById('weak-clear'),armed=false,t;if(!c)return;c.onclick=function(){
+    if(!armed){armed=true;c.textContent='Tap again to clear answer history';t=setTimeout(function(){armed=false;c.textContent='Clear answer history'},4000);return}
+    clearTimeout(t);armed=false;MISS={};store(MKEY,MISS);store(PFX+'-amiss-v1',{});c.textContent='Cleared';setTimeout(function(){c.textContent='Clear answer history'},1800);renderWeak()}})();
+  var _refresh=refresh;refresh=function(){_refresh();schedWeak()};
+
+  /* ---- one-page sheets ---- */
+  function cleanClone(el){
+    var c=el.cloneNode(true);
+    [].forEach.call(c.querySelectorAll('.reveal,.rate,details,.wr-bar,.wr,button,input'),function(n){n.remove()});
+    [].forEach.call(c.querySelectorAll('table.rt,.tbl-wrap'),function(n){n.classList.remove('rt','tbl-wrap')});
+    [].forEach.call(c.querySelectorAll('td[data-label]'),function(n){n.removeAttribute('data-label')});
+    [].forEach.call(c.querySelectorAll('*'),function(n){n.classList.remove('bu','bu-text','blurred','reblur');n.removeAttribute('tabindex');n.removeAttribute('aria-label');n.removeAttribute('id')});
+    return c;
+  }
+  function refsFor(root){
+    var ns=[];[].forEach.call(root.querySelectorAll('.src.cite a'),function(a){var n=+a.textContent;if(n&&ns.indexOf(n)<0)ns.push(n)});
+    ns.sort(function(a,b){return a-b});
+    if(!ns.length)return '';
+    return '<div class="sh-refs"><b>References<\/b><ol>'+ns.map(function(n){var li=document.getElementById('ref-'+n);return li?'<li>'+n+'. '+li.innerHTML+'<\/li>':''}).join('')+'<\/ol><\/div>';
+  }
+  function sheetHTML(id){
+    var title,body='',root=document.createElement('div');
+    if(id==='numbers'){
+      var sec=document.getElementById('numbers');title=(sec.querySelector('h2')||{}).textContent||'Numbers to know';
+      var g=cleanClone(sec.querySelector('.nums'));g.className='sh-nums';root.appendChild(g);
+    }else{
+      var wk=document.querySelector('#key .week[data-week="'+id+'"]');if(!wk)return null;
+      title=wk.querySelector('h3').textContent;
+      var cols=document.createElement('div');cols.className='sh-cols';
+      [].forEach.call(wk.querySelectorAll('.kp'),function(k){
+        var d=document.createElement('div');d.className='sh-kp';
+        var q=k.querySelector('.q').cloneNode(true),tg=q.querySelector('.tag');
+        d.innerHTML='<div class="sh-q">'+(tg?'<span class="t">'+esc(tg.textContent)+'<\/span>':'')+'<\/div>';
+        if(tg)tg.remove();d.firstChild.appendChild(document.createTextNode(q.textContent.trim()));
+        var a=cleanClone(k.querySelector('.a'));a.removeAttribute('class');d.appendChild(a);cols.appendChild(d);
+      });
+      root.appendChild(cols);
+    }
+    var date=new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+    return {title:title,html:'<h1>'+esc(title)+'<\/h1><div class="sh-by">'+esc(GUIDE)+' · '+esc(BY)+' · printed '+esc(date)+'<\/div>'+root.innerHTML+refsFor(root)};
+  }
+  var sv=document.createElement('div');sv.id='sheet-view';sv.hidden=true;sv.setAttribute('role','dialog');sv.setAttribute('aria-modal','true');sv.setAttribute('aria-label','Printable sheet');
+  sv.innerHTML='<div class="sheet-bar"><span class="sb-t" id="sheet-t"><\/span><button type="button" class="primary" id="sheet-print">Print<\/button><button type="button" id="sheet-dl">Download<\/button><button type="button" id="sheet-close">Close<\/button><\/div><p class="sheet-note">If Print does nothing here, use Download and print the file from your browser.<\/p><div class="sheet" id="sheet-body"><\/div>';
+  document.body.appendChild(sv);
+  var curSheet=null,lastFocus=null;
+  function openSheet(id){var s=sheetHTML(id);if(!s)return;curSheet=s;lastFocus=document.activeElement;
+    document.getElementById('sheet-t').textContent=s.title;document.getElementById('sheet-body').innerHTML=s.html;
+    sv.hidden=false;document.body.classList.add('sheet-open');sv.scrollTop=0;document.getElementById('sheet-close').focus()}
+  function closeSheet(){sv.hidden=true;document.body.classList.remove('sheet-open');if(lastFocus&&lastFocus.focus)lastFocus.focus()}
+  document.getElementById('sheet-close').onclick=closeSheet;
+  sv.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});
+  document.getElementById('sheet-print').onclick=function(){try{window.print()}catch(e){toast('Printing is blocked here. Use Download instead.')}};
+  document.getElementById('sheet-dl').onclick=async function(){
+    if(!curSheet)return;
+    var doc='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(curSheet.title)+'<\/title><style>'+"*{box-sizing:border-box}body{margin:0;background:#fff}\n.sheet-pick{display:flex;gap:10px;flex-wrap:wrap;align-items:center}\n.sheet-pick select{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);max-width:100%}\n.sheet-bar{position:sticky;top:0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line);z-index:1}\n.sheet-bar .sb-t{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin-right:auto;min-width:0}\n.sheet-note{font-size:12.5px;color:var(--ink-2);padding:6px 16px 0;max-width:8.5in;margin:0 auto}\n.sheet{background:#fff;color:#141414;max-width:8.5in;margin:16px auto 40px;padding:.45in .5in;box-shadow:0 2px 14px rgba(0,0,0,.12);font:9.2pt/1.32 \"IBM Plex Sans\",system-ui,sans-serif}\n@media (max-width:640px){.sheet{padding:18px 16px;margin:10px 8px 30px;font-size:10pt}}\n.sheet h1{font:600 14pt/1.2 \"Literata\",Georgia,serif;margin:0}\n.sheet .sh-by{font:8pt \"IBM Plex Mono\",monospace;color:#555;margin:2px 0 8px;border-bottom:1px solid #ccc;padding-bottom:5px}\n.sheet .sh-cols{column-count:2;column-gap:.28in}\n@media (max-width:640px){.sheet .sh-cols{column-count:1}}\n.sheet .sh-kp{margin:0 0 7px}\n.sheet .sh-q{break-after:avoid}\n.sheet li,.sheet tr{break-inside:avoid}\n.sheet .sh-q{font-weight:600;margin-bottom:1px}\n.sheet .sh-q .t{font:500 7.5pt \"IBM Plex Mono\",monospace;color:#2d48b0;margin-right:4px}\n.sheet ul,.sheet ol{margin:1px 0 2px;padding-left:13px}\n.sheet li{margin:0}\n.sheet p{margin:0 0 2px}\n.sheet .src{font:7pt \"IBM Plex Mono\",monospace;color:#555;background:none;padding:0}\n.sheet .src a{color:inherit;text-decoration:none}\n.sheet .mine{font:7pt \"IBM Plex Mono\",monospace;border:1px dashed #999;border-radius:3px;padding:0 3px}\n.sheet .gaptag{font:7pt \"IBM Plex Mono\",monospace;color:#8a5a00}\n.sheet table{border-collapse:collapse;width:100%;font-size:8pt;margin:2px 0 4px}\n.sheet th,.sheet td{border:1px solid #bbb;padding:2px 4px;text-align:left;vertical-align:top}\n.sheet th{background:#eee}\n.sheet td.name{font-weight:600}\n.sheet td.name small{display:block;font-weight:400;font-size:7pt}\n.sheet tr.grp td{background:#eef0f8;font-weight:600;font-size:7.5pt;text-transform:uppercase;letter-spacing:.04em}\n.sheet td ul{padding-left:11px}\n.sheet td[data-label]::before{content:none}\n.sheet .tbl-wrap{overflow:visible}\n.sheet .sh-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 12px}\n.sheet .sh-nums div{break-inside:avoid;border-bottom:1px solid #e3e3e3;padding-bottom:3px}\n.sheet .sh-nums b{display:block;font:600 10pt \"IBM Plex Mono\",monospace;color:#2d48b0}\n.sheet .sh-refs{margin-top:8px;border-top:1px solid #ccc;padding-top:4px;font-size:7pt;line-height:1.3;color:#333}\n.sheet .sh-refs ol{padding-left:0;list-style:none}\n.sheet .sh-refs li{margin-bottom:1px}\n.sheet .sh-refs a{color:inherit}\n@media print{.sheet{box-shadow:none;margin:0;padding:0;max-width:none}@page{margin:.4in}}\n"+'<\/style><\/head><body><div class="sheet">'+curSheet.html+'<\/div><\/body><\/html>';
+    var name=(curSheet.title.replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70)||'sheet')+'.html';
+    var dl=null;try{dl=window.claude&&claude.use?await claude.use('downloads'):null}catch(e){}
+    if(dl){try{await dl.save({filename:name,data:doc});return}catch(e){if(e&&e.code==='declined')return}}
+    try{var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([doc],{type:'text/html'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000)}catch(e){toast('Download isn’t available here.')}
+  };
+  (function(){
+    var sel=document.getElementById('sheet-sel');
+    if(sel){sel.innerHTML=WEEKS.filter(function(w){return document.querySelector('#key .week[data-week="'+w.id+'"] .kp')}).map(function(w){return '<option value="'+w.id+'">'+esc(w.label+' · '+w.name)+'<\/option>'}).join('')+(document.getElementById('numbers')?'<option value="numbers">Numbers to know<\/option>':'');
+      document.getElementById('sheet-open').onclick=function(){openSheet(sel.value)}}
+    weekEls.forEach(function(el){var hd=el.querySelector('.wk-head'),id=el.getAttribute('data-week');if(!hd||!el.querySelector('.kp'))return;
+      var b=document.createElement('button');b.type='button';b.className='sec-blur';b.textContent='Print sheet';b.onclick=function(){openSheet(id)};hd.appendChild(b)});
+    var nh=document.querySelector('#numbers .sec-head');if(nh){var b=document.createElement('button');b.type='button';b.className='sec-blur';b.textContent='Print sheet';b.onclick=function(){openSheet('numbers')};nh.insertBefore(b,nh.querySelector('.meta'))}
+  })();
+
+  /* ---- sync to the viewer's account (db capability) ---- */
+  var SKEY=PFX+'-sync-ts',EXTRA=[ARC_BEST];
+  function syncKeys(){var ks=[];try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k!==SKEY&&(k.indexOf(PFX+'-')===0||EXTRA.indexOf(k)>=0))ks.push(k)}}catch(e){}return ks}
+  var syncState={mode:'local',at:0,msg:''},pushT=null,dbRef=null;
+  function setSync(mode,msg){syncState.mode=mode;syncState.msg=msg||'';var el=document.getElementById('sync-line');if(!el)return;
+    el.className='sync-line'+(mode==='on'?' on':mode==='busy'?' busy':mode==='err'?' err':'');
+    el.querySelector('.sync-t').textContent=mode==='on'?'Synced to your Claude account'+(syncState.at?' · '+new Date(syncState.at).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):''):mode==='busy'?'Syncing…':mode==='err'?'Couldn’t sync; progress is still saved in this browser':(msg||'Progress is saved in this browser only')}
+  var _store=store;
+  store=function(k,v){_store(k,v);if(k!==PFX+'-tab'){try{localStorage.setItem(SKEY,String(Date.now()))}catch(e){}schedPush()}};
+  function schedPush(){if(!dbRef)return;clearTimeout(pushT);pushT=setTimeout(push,2500)}
+  async function push(){
+    if(!dbRef)return;clearTimeout(pushT);pushT=null;
+    var keys={};syncKeys().forEach(function(k){try{keys[k]=localStorage.getItem(k)}catch(e){}});
+    var ts=0;try{ts=+localStorage.getItem(SKEY)||Date.now()}catch(e){ts=Date.now()}
+    setSync('busy');
+    try{await dbRef.set({v:1,ts:ts,keys:keys});syncState.at=Date.now();setSync('on')}
+    catch(e){if(e&&e.code==='invalid_argument'){dbRef=null;setSync('local','Progress is saved in this browser only (your access level can’t sync)')}else setSync('err')}
+  }
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&pushT)push()});
+  (async function(){
+    setSync('local');
+    try{var n=localStorage.getItem(PFX+'-sync-note');if(n){localStorage.removeItem(PFX+'-sync-note');toast(n==='r'?'Progress restored from your backup.':'Loaded your latest progress from your account.')}}catch(e){}
+    if(!window.claude||!claude.use)return;
+    var db=null,user=null;try{db=await claude.use('db');user=await claude.use('user')}catch(e){}
+    if(!db||!user)return;
+    var uid=null;try{uid=await user.id()}catch(e){}
+    if(!uid){setSync('local','Progress is saved in this browser only (sign in to sync)');return}
+    try{dbRef=db.doc('data/users/'+uid+'/progress')}catch(e){return}
+    setSync('busy');
+    var snap;try{snap=await dbRef.get()}catch(e){setSync('err');return}
+    var localTs=0;try{localTs=+localStorage.getItem(SKEY)||0}catch(e){}
+    var r=snap.exists?snap.data():null;
+    if(r&&r.keys&&+r.ts>localTs){
+      try{syncKeys().forEach(function(k){if(!(k in r.keys))localStorage.removeItem(k)});
+        Object.keys(r.keys).forEach(function(k){if(typeof r.keys[k]==='string')localStorage.setItem(k,r.keys[k])});
+        localStorage.setItem(SKEY,String(r.ts));localStorage.setItem(PFX+'-sync-note','1')}catch(e){setSync('err');return}
+      location.reload();return;
+    }
+    if(!r||localTs>+r.ts)push();else{syncState.at=Date.now();setSync('on')}
+  })();
+  /* ---- backup / restore (moves progress between devices) ---- */
+  function bkMsg(t){var m=document.getElementById('bk-msg');if(m)m.textContent=t}
+  document.getElementById('bk-save').onclick=async function(){
+    var keys={};syncKeys().forEach(function(k){try{keys[k]=localStorage.getItem(k)}catch(e){}});
+    var data=JSON.stringify({guide:GUIDE,pfx:PFX,saved:new Date().toISOString(),keys:keys});
+    var name=GUIDE.replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-progress-'+new Date().toISOString().slice(0,10)+'.json';
+    var dl=null;try{dl=window.claude&&claude.use?await claude.use('downloads'):null}catch(e){}
+    if(dl){try{await dl.save({filename:name,data:data});bkMsg('Backup saved.');return}catch(e){if(e&&e.code==='declined'){bkMsg('');return}}}
+    try{var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);bkMsg('Backup saved.')}catch(e){bkMsg('Saving isn\u2019t available here.')}
+  };
+  document.getElementById('bk-file').onchange=function(){
+    var f=this.files&&this.files[0];this.value='';if(!f)return;
+    var rd=new FileReader();rd.onload=function(){
+      var d;try{d=JSON.parse(rd.result)}catch(e){bkMsg('That file isn\u2019t a progress backup.');return}
+      if(!d||d.pfx!==PFX||!d.keys){bkMsg(d&&d.guide?'That backup is for '+d.guide+', not this guide.':'That file isn\u2019t a progress backup for this guide.');return}
+      try{syncKeys().forEach(function(k){if(!(k in d.keys))localStorage.removeItem(k)});Object.keys(d.keys).forEach(function(k){if(typeof d.keys[k]==='string'&&(k.indexOf(PFX+'-')===0||EXTRA.indexOf(k)>=0))localStorage.setItem(k,d.keys[k])});localStorage.setItem(SKEY,String(Date.now()));localStorage.setItem(PFX+'-sync-note','r')}catch(e){bkMsg('Couldn\u2019t restore in this browser.');return}
+      location.reload();
+    };rd.readAsText(f);
+  };
+  renderWeak();
+})();
+</script>

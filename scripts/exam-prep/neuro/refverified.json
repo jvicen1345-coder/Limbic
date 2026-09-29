@@ -1,0 +1,587 @@
+{
+ "quinn21": {
+  "status": "verified",
+  "ama": "Quinn L, Riley N, Tyrell CM, et al. A framework for movement analysis of tasks: recommendations from the Academy of Neurologic Physical Therapy's Movement System Task Force. <i>Phys Ther</i>. 2021;101(9):pzab154. doi:10.1093/ptj/pzab154",
+  "doi": "10.1093/ptj/pzab154",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record (10 authors; vol 101 issue 9, article pzab154)",
+  "refnote": ""
+ },
+ "roth03": {
+  "status": "verified",
+  "ama": "Rothstein JM, Echternach JL, Riddle DL. The Hypothesis-Oriented Algorithm for Clinicians II (HOAC II): a guide for patient management. <i>Phys Ther</i>. 2003;83(5):455-470. doi:10.1093/ptj/83.5.455",
+  "doi": "10.1093/ptj/83.5.455",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record",
+  "refnote": ""
+ },
+ "potter11": {
+  "status": "verified",
+  "ama": "Potter K, Fulk GD, Salem Y, Sullivan J. Outcome measures in neurological physical therapy practice: part I. Making sound decisions. <i>J Neurol Phys Ther</i>. 2011;35(2):57-64. doi:10.1097/NPT.0b013e318219a51a",
+  "doi": "10.1097/NPT.0b013e318219a51a",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record",
+  "refnote": ""
+ },
+ "gilli17": {
+  "status": "verified",
+  "ama": "Gilliland S, Wainwright SF. Patterns of clinical reasoning in physical therapist students. <i>Phys Ther</i>. 2017;97(5):499-511. doi:10.1093/ptj/pzx028",
+  "doi": "10.1093/ptj/pzx028",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref bibliographic query (DOI 10.1093/ptj/pzx028 matched)",
+  "refnote": ""
+ },
+ "schon83": {
+  "status": "verified",
+  "ama": "Schön DA. <i>The Reflective Practitioner: How Professionals Think in Action</i>. Basic Books; 1983.",
+  "doi": "",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Web search: publisher/catalog listings and SAGE review citation confirm Basic Books, New York, 1983",
+  "refnote": ""
+ },
+ "krish17": {
+  "status": "verified",
+  "ama": "Krishnan K, Rossetti H, Hynan LS, et al. Changes in Montreal Cognitive Assessment scores over time. <i>Assessment</i>. 2017;24(6):772-777. doi:10.1177/1073191116654217",
+  "doi": "10.1177/1073191116654217",
+  "pmid": "",
+  "changes": "None (online-first 2016; issue year 2017 retained)",
+  "evidence": "Crossref DOI record (8 authors; vol 24 issue 6 pp 772-777)",
+  "refnote": ""
+ },
+ "sathian11": {
+  "status": "verified",
+  "ama": "Sathian K, Buxbaum LJ, Cohen LG, et al. Neurological principles and rehabilitation of action disorders: common clinical deficits. <i>Neurorehabil Neural Repair</i>. 2011;25(5 suppl):21S-32S. doi:10.1177/1545968311410941",
+  "doi": "10.1177/1545968311410941",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record (7 authors; 25(5_suppl):21S-32S)",
+  "refnote": ""
+ },
+ "tajane22": {
+  "status": "corrected",
+  "ama": "Gadgil R, Akulwar Tajane I. Correlation between functional strength of lower limb, sit to stand and functional ambulation capacity in stroke patients: an ICF perspective. <i>Arch Neurol Neurosci</i>. 2022;12(4):ANN.MS.ID.000791. doi:10.33552/ANN.2022.12.000791",
+  "doi": "10.33552/ANN.2022.12.000791",
+  "pmid": "",
+  "changes": "Added missing first author (Gadgil R); added issue 4, article ID, and DOI",
+  "evidence": "Iris Publishers (Archives in Neurology & Neuroscience) full-text page and its citation line; not PubMed-indexed",
+  "refnote": ""
+ },
+ "ting11": {
+  "status": "verified",
+  "ama": "Ting DSJ, Pollock A, Dutton GN, et al. Visual neglect following stroke: current concepts and future focus. <i>Surv Ophthalmol</i>. 2011;56(2):114-134. doi:10.1016/j.survophthal.2010.08.001",
+  "doi": "10.1016/j.survophthal.2010.08.001",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record (7 authors)",
+  "refnote": ""
+ },
+ "masi08": {
+  "status": "verified",
+  "ama": "Masi AT, Hannon JC. Human resting muscle tone (HRMT): narrative introduction and modern concepts. <i>J Bodyw Mov Ther</i>. 2008;12(4):320-332. doi:10.1016/j.jbmt.2008.05.007",
+  "doi": "10.1016/j.jbmt.2008.05.007",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record",
+  "refnote": ""
+ },
+ "husseini23": {
+  "status": "verified",
+  "ama": "El Husseini N, Katzan IL, Rost NS, et al. Cognitive impairment after ischemic and hemorrhagic stroke: a scientific statement from the American Heart Association/American Stroke Association. <i>Stroke</i>. 2023;54(6):e272-e291. doi:10.1161/STR.0000000000000430",
+  "doi": "10.1161/STR.0000000000000430",
+  "pmid": "37125534",
+  "changes": "None",
+  "evidence": "Crossref DOI record (10 authors, order confirmed); Oxford ORA record for pages e272-e291; PMID from clin-star PubMed mirror",
+  "refnote": ""
+ },
+ "crozier18": {
+  "status": "verified",
+  "ama": "Crozier J, Roig M, Eng JJ, et al. High-intensity interval training after stroke: an opportunity to promote functional recovery, cardiovascular health, and neuroplasticity. <i>Neurorehabil Neural Repair</i>. 2018;32(6-7):543-556. doi:10.1177/1545968318766663",
+  "doi": "10.1177/1545968318766663",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record (12 authors)",
+  "refnote": ""
+ },
+ "reimers26": {
+  "status": "verified",
+  "ama": "Reimers E, Bevington C, Hanania JU, et al. Exercise-induced modulation of molecular-enriched functional connectivity in Parkinson's disease. <i>J Parkinsons Dis</i>. 2026;16(2):362-374. doi:10.1177/1877718X261420080",
+  "doi": "10.1177/1877718X261420080",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record (9 authors; print March 2026, 16(2):362-374)",
+  "refnote": ""
+ },
+ "tallner12": {
+  "status": "verified",
+  "ama": "Tallner A, Waschbisch A, Wenny I, et al. Multiple sclerosis relapses are not associated with exercise. <i>Mult Scler</i>. 2012;18(2):232-235. doi:10.1177/1352458511415143",
+  "doi": "10.1177/1352458511415143",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record (7 authors)",
+  "refnote": ""
+ },
+ "richter89": {
+  "status": "verified",
+  "ama": "Richter RR, VanSant AF, Newton RA. Description of adult rolling movements and hypothesis of developmental sequences. <i>Phys Ther</i>. 1989;69(1):63-71. doi:10.1093/ptj/69.1.63",
+  "doi": "10.1093/ptj/69.1.63",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record",
+  "refnote": ""
+ },
+ "benaim99": {
+  "status": "verified",
+  "ama": "Benaim C, Pérennou DA, Villy J, Rousseaux M, Pelissier JY. Validation of a standardized assessment of postural control in stroke patients: the Postural Assessment Scale for Stroke Patients (PASS). <i>Stroke</i>. 1999;30(9):1862-1868. doi:10.1161/01.STR.30.9.1862",
+  "doi": "10.1161/01.STR.30.9.1862",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref bibliographic query (authors, 30(9):1862-1868, DOI matched)",
+  "refnote": ""
+ },
+ "colonna25": {
+  "status": "corrected",
+  "ama": "Colonna S, D'Alessandro A, Tarozzi R, Casacci F. Supine bridge exercise: a narrative review of the literature (part I). <i>Cureus</i>. 2025;17(3):e80349. doi:10.7759/cureus.80349",
+  "doi": "10.7759/cureus.80349",
+  "pmid": "40206899",
+  "changes": "Only 4 authors, so replaced 'et al.' with full list (added Casacci F)",
+  "evidence": "Crossref DOI record (4 authors, published March 10, 2025, e80349); PubMed PMID 40206899 via web search",
+  "refnote": ""
+ },
+ "ardali19": {
+  "status": "verified",
+  "ama": "Ardali G, Brody LT, States RA, Godwin EM. Reliability and validity of the floor transfer test as a measure of readiness for independent living among older adults. <i>J Geriatr Phys Ther</i>. 2019;42(3):136-147. doi:10.1519/JPT.0000000000000142",
+  "doi": "10.1519/JPT.0000000000000142",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref bibliographic query (DOI matched)",
+  "refnote": ""
+ },
+ "lavi22": {
+  "status": "verified",
+  "ama": "Lavi C, Elboim-Gabyzon M, Naveh Y, Kalichman L. A combination of long-duration electrical stimulation with external shoulder support during routine daily activities in patients with post-hemiplegic shoulder subluxation: a randomized controlled study. <i>Int J Environ Res Public Health</i>. 2022;19(15):9765. doi:10.3390/ijerph19159765",
+  "doi": "10.3390/ijerph19159765",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record",
+  "refnote": ""
+ },
+ "braun06": {
+  "status": "verified",
+  "ama": "Braun SM, Beurskens AJ, Borm PJ, Schack T, Wade DT. The effects of mental practice in stroke rehabilitation: a systematic review. <i>Arch Phys Med Rehabil</i>. 2006;87(6):842-852. doi:10.1016/j.apmr.2006.02.034",
+  "doi": "10.1016/j.apmr.2006.02.034",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record",
+  "refnote": ""
+ },
+ "pak08": {
+  "status": "verified",
+  "ama": "Pak S, Patten C. Strengthening to promote functional recovery poststroke: an evidence-based review. <i>Top Stroke Rehabil</i>. 2008;15(3):177-199. doi:10.1310/tsr1503-177",
+  "doi": "10.1310/tsr1503-177",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record",
+  "refnote": ""
+ },
+ "ross07": {
+  "status": "verified",
+  "ama": "Ross SA, Engsberg JR. Relationships between spasticity, strength, gait, and the GMFM-66 in persons with spastic diplegia cerebral palsy. <i>Arch Phys Med Rehabil</i>. 2007;88(9):1114-1120. doi:10.1016/j.apmr.2007.06.011",
+  "doi": "10.1016/j.apmr.2007.06.011",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref bibliographic query (DOI matched)",
+  "refnote": ""
+ },
+ "schenk06": {
+  "status": "verified",
+  "ama": "Schenkman M, Deutsch JE, Gill-Body KM. An integrated framework for decision making in neurologic physical therapist practice. <i>Phys Ther</i>. 2006;86(12):1681-1702. doi:10.2522/ptj.20050260",
+  "doi": "10.2522/ptj.20050260",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.2522/ptj.20050260 (authors, title, 86(12):1681-1702, 2006)",
+  "refnote": ""
+ },
+ "atk11": {
+  "status": "verified",
+  "ama": "Atkinson HL, Nixon-Cave K. A tool for clinical reasoning and reflection using the International Classification of Functioning, Disability and Health (ICF) framework and patient management model. <i>Phys Ther</i>. 2011;91(3):416-430. doi:10.2522/ptj.20090226",
+  "doi": "10.2522/ptj.20090226",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.2522/ptj.20090226 (authors, title, 91(3):416-430, 2011)",
+  "refnote": ""
+ },
+ "apta4": {
+  "status": "corrected",
+  "ama": "American Physical Therapy Association. <i>APTA Guide to Physical Therapist Practice 4.0</i>. American Physical Therapy Association; 2023. Accessed September 28, 2026. https://guide.apta.org",
+  "doi": "",
+  "pmid": "",
+  "changes": "Title corrected to the official name 'APTA Guide to Physical Therapist Practice 4.0'",
+  "evidence": "guide.apta.org site title; APTA news release 2023-04-12 announcing Guide 4.0 release (web search)",
+  "refnote": ""
+ },
+ "resnik03": {
+  "status": "verified",
+  "ama": "Resnik L, Jensen GM. Using clinical outcomes to explore the theory of expert practice in physical therapy. <i>Phys Ther</i>. 2003;83(12):1090-1106. doi:10.1093/ptj/83.12.1090",
+  "doi": "10.1093/ptj/83.12.1090",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.1093/ptj/83.12.1090",
+  "refnote": ""
+ },
+ "evensen23": {
+  "status": "corrected",
+  "ama": "Evensen J, Søberg HL, Sveen U, Hestad KA, Moore JL, Bronken BA. Measurement properties of the Patient-Specific Functional Scale in rehabilitation for patients with stroke: a prospective observational study. <i>Phys Ther</i>. 2023;103(5):pzad014. doi:10.1093/ptj/pzad014",
+  "doi": "10.1093/ptj/pzad014",
+  "pmid": "37140476",
+  "changes": "Restored diacritic in second author surname (Soberg -> Søberg); added PMID",
+  "evidence": "OpenAlex doi:10.1093/ptj/pzad014 (6 authors, title, 103(5), 2023, PMID 37140476); OUP article URL .../ptj/article/103/5/pzad014 (web search). Crossref was rate-limited.",
+  "refnote": ""
+ },
+ "bohan87": {
+  "status": "verified",
+  "ama": "Bohannon RW, Smith MB. Interrater reliability of a modified Ashworth scale of muscle spasticity. <i>Phys Ther</i>. 1987;67(2):206-207. doi:10.1093/ptj/67.2.206",
+  "doi": "10.1093/ptj/67.2.206",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.1093/ptj/67.2.206",
+  "refnote": ""
+ },
+ "see13": {
+  "status": "verified",
+  "ama": "See J, Dodakian L, Chou C, et al. A standardized approach to the Fugl-Meyer assessment and its implications for clinical trials. <i>Neurorehabil Neural Repair</i>. 2013;27(8):732-741. doi:10.1177/1545968313491000",
+  "doi": "10.1177/1545968313491000",
+  "pmid": "",
+  "changes": "None (7 authors, so first 3 + et al is correct)",
+  "evidence": "Crossref works/10.1177/1545968313491000",
+  "refnote": ""
+ },
+ "lanzino12": {
+  "status": "corrected",
+  "ama": "Lanzino DJ, Rabinstein AA, Kinlaw D, et al. Coordination tests in persons with acute central nervous system pathology: assessment of interrater reliability and known-group validity. <i>J Neurol Phys Ther</i>. 2012;36(3):122-130. doi:10.1097/NPT.0b013e3182641d36",
+  "doi": "10.1097/NPT.0b013e3182641d36",
+  "pmid": "22850331",
+  "changes": "Replaced placeholder/guessed title ('Reliability of the grades in a coordination rating scale...') with the actual title; added PMID",
+  "evidence": "OpenAlex doi:10.1097/npt.0b013e3182641d36 (8 authors, 36(3):122-130, 2012, PMID 22850331); PubMed/LWW/ResearchGate titles via web search",
+  "refnote": ""
+ },
+ "tindall90": {
+  "status": "verified",
+  "ama": "Tindall SC. Level of consciousness. In: Walker HK, Hall WD, Hurst JW, eds. <i>Clinical Methods: The History, Physical, and Laboratory Examinations</i>. 3rd ed. Butterworths; 1990:chap 57.",
+  "doi": "",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "NCBI Bookshelf NBK380 'Level of Consciousness - Clinical Methods' and NBK201 (Clinical Methods, 3rd ed, Butterworths 1990) via web search",
+  "refnote": ""
+ },
+ "math85n": {
+  "status": "verified",
+  "ama": "Mathiowetz V, Weber K, Kashman N, Volland G. Adult norms for the Nine Hole Peg Test of finger dexterity. <i>Occup Ther J Res</i>. 1985;5(1):24-38. doi:10.1177/153944928500500102",
+  "doi": "10.1177/153944928500500102",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.1177/153944928500500102",
+  "refnote": ""
+ },
+ "panebi20": {
+  "status": "verified",
+  "ama": "Panebianco M, Marchese-Ragona R, Masiero S, Restivo DA. Dysphagia in neurological diseases: a literature review. <i>Neurol Sci</i>. 2020;41(11):3067-3073. doi:10.1007/s10072-020-04495-2",
+  "doi": "10.1007/s10072-020-04495-2",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.1007/s10072-020-04495-2",
+  "refnote": ""
+ },
+ "mang13": {
+  "status": "verified",
+  "ama": "Mang CS, Campbell KL, Ross CJD, Boyd LA. Promoting neuroplasticity for motor rehabilitation after stroke: considering the effects of aerobic exercise and genetic variation on brain-derived neurotrophic factor. <i>Phys Ther</i>. 2013;93(12):1707-1716. doi:10.2522/ptj.20130053",
+  "doi": "10.2522/ptj.20130053",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.2522/ptj.20130053",
+  "refnote": ""
+ },
+ "halab17": {
+  "status": "verified",
+  "ama": "Halabchi F, Alizadeh Z, Sahraian MA, Abolhasani M. Exercise prescription for patients with multiple sclerosis; potential benefits and practical recommendations. <i>BMC Neurol</i>. 2017;17(1):185. doi:10.1186/s12883-017-0960-9",
+  "doi": "10.1186/s12883-017-0960-9",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.1186/s12883-017-0960-9",
+  "refnote": ""
+ },
+ "janssen02": {
+  "status": "verified",
+  "ama": "Janssen WGM, Bussmann HBJ, Stam HJ. Determinants of the sit-to-stand movement: a review. <i>Phys Ther</i>. 2002;82(9):866-879. doi:10.1093/ptj/82.9.866",
+  "doi": "10.1093/ptj/82.9.866",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.1093/ptj/82.9.866",
+  "refnote": ""
+ },
+ "zukow25": {
+  "status": "verified",
+  "ama": "Żukowska Z, Krawczyk M, Poniatowski ŁA. Alterations in supine position mobility and dynamics in post-stroke individuals with hemiparesis compared to neurologically intact controls: a video-based observational assessment. <i>J Clin Med</i>. 2025;14(22):7949. doi:10.3390/jcm14227949",
+  "doi": "10.3390/jcm14227949",
+  "pmid": "",
+  "changes": "None (note: the published title contains the typo 'Assessement'; the draft's correct spelling was kept)",
+  "evidence": "Crossref works/10.3390/jcm14227949",
+  "refnote": ""
+ },
+ "collin90": {
+  "status": "verified",
+  "ama": "Collin C, Wade D. Assessing motor impairment after stroke: a pilot reliability study. <i>J Neurol Neurosurg Psychiatry</i>. 1990;53(7):576-579. doi:10.1136/jnnp.53.7.576",
+  "doi": "10.1136/jnnp.53.7.576",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.1136/jnnp.53.7.576",
+  "refnote": ""
+ },
+ "yoon18": {
+  "status": "verified",
+  "ama": "Yoon JO, Kang MH, Kim JS, Oh JS. Effect of modified bridge exercise on trunk muscle activity in healthy adults: a cross sectional study. <i>Braz J Phys Ther</i>. 2018;22(2):161-167. doi:10.1016/j.bjpt.2017.09.005",
+  "doi": "10.1016/j.bjpt.2017.09.005",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.1016/j.bjpt.2017.09.005",
+  "refnote": ""
+ },
+ "ardali20": {
+  "status": "verified",
+  "ama": "Ardali G, States RA, Brody LT, Godwin EM. Characteristics of older adults who are unable to perform a floor transfer: considerations for clinical decision-making. <i>J Geriatr Phys Ther</i>. 2020;43(2):62-70. doi:10.1519/JPT.0000000000000189",
+  "doi": "10.1519/JPT.0000000000000189",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.1519/JPT.0000000000000189",
+  "refnote": ""
+ },
+ "vafadar15": {
+  "status": "verified",
+  "ama": "Vafadar AK, Côté JN, Archambault PS. Effectiveness of functional electrical stimulation in improving clinical outcomes in the upper arm following stroke: a systematic review and meta-analysis. <i>Biomed Res Int</i>. 2015;2015:729768. doi:10.1155/2015/729768",
+  "doi": "10.1155/2015/729768",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.1155/2015/729768",
+  "refnote": ""
+ },
+ "jackson01": {
+  "status": "verified",
+  "ama": "Jackson PL, Lafleur MF, Malouin F, Richards C, Doyon J. Potential role of mental practice using motor imagery in neurologic rehabilitation. <i>Arch Phys Med Rehabil</i>. 2001;82(8):1133-1141. doi:10.1053/apmr.2001.24286",
+  "doi": "10.1053/apmr.2001.24286",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.1053/apmr.2001.24286",
+  "refnote": ""
+ },
+ "chacon24": {
+  "status": "verified",
+  "ama": "Chacon-Barba JC, Moral-Munoz JA, De Miguel-Rubio A, Lucena-Anton D. Effects of resistance training on spasticity in people with stroke: a systematic review. <i>Brain Sci</i>. 2024;14(1):57. doi:10.3390/brainsci14010057",
+  "doi": "10.3390/brainsci14010057",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref works/10.3390/brainsci14010057",
+  "refnote": ""
+ },
+ "francisco23": {
+  "status": "verified",
+  "ama": "Francisco GE, Engineer ND, Dawson J, et al. Vagus nerve stimulation paired with upper-limb rehabilitation after stroke: 2- and 3-year follow-up from the pilot study. <i>Arch Phys Med Rehabil</i>. 2023;104(8):1180-1187. doi:10.1016/j.apmr.2023.02.012",
+  "doi": "10.1016/j.apmr.2023.02.012",
+  "pmid": "37001842",
+  "changes": "None to citation (11 authors, first 3 + et al correct); added PMID",
+  "evidence": "OpenAlex doi:10.1016/j.apmr.2023.02.012 (authors, 104(8):1180-1187, 2023, PMID 37001842); PubMed title via web search. Crossref was rate-limited.",
+  "refnote": ""
+ },
+ "deutsch22": {
+  "status": "verified",
+  "ama": "Deutsch JE, Gill-Body KM, Schenkman M. Updated integrated framework for making clinical decisions across the lifespan and health conditions. <i>Phys Ther</i>. 2022;102(3):pzab281. doi:10.1093/ptj/pzab281",
+  "doi": "10.1093/ptj/pzab281",
+  "pmid": "35079823",
+  "changes": "None.",
+  "evidence": "PubMed PMID 35079823 (authors, title, Phys Ther 2022;102(3):pzab281, DOI).",
+  "refnote": ""
+ },
+ "hedman18": {
+  "status": "verified",
+  "ama": "Hedman LD, Quinn L, Gill-Body K, et al. White paper: movement system diagnoses in neurologic physical therapy. <i>J Neurol Phys Ther</i>. 2018;42(2):110-117. doi:10.1097/NPT.0000000000000215",
+  "doi": "10.1097/NPT.0000000000000215",
+  "pmid": "29547486",
+  "changes": "None (7 authors, so first 3 + et al is correct).",
+  "evidence": "UTMB research profile record: Hedman, Quinn, Gill-Body, Brown, Quiben, Riley, Scheets; 2018;42(2):110-117; DOI; PMID 29547486.",
+  "refnote": ""
+ },
+ "crocker19": {
+  "status": "verified",
+  "ama": "Crocker AF, Smith SN. Person-first language: are we practicing what we preach? <i>J Multidiscip Healthc</i>. 2019;12:125-129. doi:10.2147/JMDH.S140067",
+  "doi": "10.2147/JMDH.S140067",
+  "pmid": "30799931",
+  "changes": "None.",
+  "evidence": "Dove Medical Press article page (Crocker AF, Smith SN; 2019;12:125-129; DOI); PubMed 30799931 / PMC6371927 in search index.",
+  "refnote": ""
+ },
+ "edwards04": {
+  "status": "verified",
+  "ama": "Edwards I, Jones M, Carr J, Braunack-Mayer A, Jensen GM. Clinical reasoning strategies in physical therapy. <i>Phys Ther</i>. 2004;84(4):312-330. doi:10.1093/ptj/84.4.312",
+  "doi": "10.1093/ptj/84.4.312",
+  "pmid": "",
+  "changes": "None.",
+  "evidence": "Oxford Academic (PTJ) article page: 5 authors, 2004;84(4):312-330, DOI.",
+  "refnote": ""
+ },
+ "manago23": {
+  "status": "verified",
+  "ama": "Mañago MM, Cohen ET, Cameron MH, Christiansen CL, Bade M. Reliability, validity, and responsiveness of the Patient-Specific Functional Scale for measuring mobility-related goals in people with multiple sclerosis. <i>J Neurol Phys Ther</i>. 2023;47(3):139-145. doi:10.1097/NPT.0000000000000439",
+  "doi": "10.1097/NPT.0000000000000439",
+  "pmid": "",
+  "changes": "None.",
+  "evidence": "Co-author M. Bade CV (Univ. Colorado, Jan 2026) lists identical authors and J Neurol Phys Ther 2023;47(3):139-145; DOI confirmed by Ovid/PMC10329992 listing.",
+  "refnote": ""
+ },
+ "fell18": {
+  "status": "verified",
+  "ama": "Fell DW, Lunnen KY, Rauk RP. <i>Lifespan Neurorehabilitation: A Patient-Centered Approach From Examination to Interventions and Outcomes</i>. F.A. Davis; 2018.",
+  "doi": "",
+  "pmid": "",
+  "changes": "None.",
+  "evidence": "F.A. Davis PT Collection (McGraw Hill Medical), AbeBooks ISBN 9780803646094, Google Books: Fell, Lunnen, Rauk; F.A. Davis; 2018.",
+  "refnote": ""
+ },
+ "hislop95": {
+  "status": "verified",
+  "ama": "Hislop HJ, Montgomery J. Upright motor control. In: <i>Daniels and Worthingham's Muscle Testing: Techniques of Manual Examination</i>. 6th ed. W.B. Saunders; 1995:320-324.",
+  "doi": "",
+  "pmid": "",
+  "changes": "None; 6th edition kept.",
+  "evidence": "Internet Archive catalog record (danielsworthingh0006hisl): Hislop HJ, Montgomery J (with contributions by B. Connolly), 6th ed, W.B. Saunders, Philadelphia, 1995; Chapter 8 'Upright Motor Control'. Page range 319-324 retained from draft (not visible in the catalog record).",
+  "refnote": ""
+ },
+ "han16": {
+  "status": "verified",
+  "ama": "Han J, Waddington G, Adams R, Anson J, Liu Y. Assessing proprioception: a critical review of methods. <i>J Sport Health Sci</i>. 2016;5(1):80-90. doi:10.1016/j.jshs.2014.10.004",
+  "doi": "10.1016/j.jshs.2014.10.004",
+  "pmid": "30356896",
+  "changes": "None.",
+  "evidence": "ScienceDirect article page (5 authors, 2016;5(1):80-90, DOI); PubMed 30356896 in search index.",
+  "refnote": ""
+ },
+ "heilman03": {
+  "status": "verified",
+  "ama": "Heilman KM, Gonzalez Rothi LJ. Apraxia. In: Heilman KM, Valenstein E, eds. <i>Clinical Neuropsychology</i>. 4th ed. Oxford University Press; 2003:215-235.",
+  "doi": "",
+  "pmid": "",
+  "changes": "None.",
+  "evidence": "Reference list of Curr Neurol Neurosci Rep 'Update on apraxia' (Springer, 2008): Heilman KM, Rothi LJG. Apraxia. In: Clinical Neuropsychology, eds Heilman KM, Valenstein E; Oxford University Press; 2003:215-235. APA PsycNET lists chapter in Clinical neuropsychology, 4th ed.",
+  "refnote": ""
+ },
+ "math85b": {
+  "status": "verified",
+  "ama": "Mathiowetz V, Volland G, Kashman N, Weber K. Adult norms for the Box and Block Test of manual dexterity. <i>Am J Occup Ther</i>. 1985;39(6):386-391. doi:10.5014/ajot.39.6.386",
+  "doi": "10.5014/ajot.39.6.386",
+  "pmid": "3160243",
+  "changes": "None.",
+  "evidence": "DOI landing/AOTA listing (Mathiowetz, Volland, Kashman, Weber, 1985; AJOT 39(6):386); PubMed 3160243 in search index.",
+  "refnote": ""
+ },
+ "asha_slp": {
+  "status": "verified",
+  "ama": "American Speech-Language-Hearing Association. Who are speech-language pathologists, and what do they do? Accessed September 28, 2026. https://www.asha.org/public/who-are-speech-language-pathologists/",
+  "doi": "",
+  "pmid": "",
+  "changes": "None.",
+  "evidence": "Page exists at the given URL with title 'Who are Speech-Language Pathologists, and What Do They Do?' (web search index).",
+  "refnote": ""
+ },
+ "tabak13": {
+  "status": "verified",
+  "ama": "Tabak R, Aquije G, Fisher BE. Aerobic exercise to improve executive function in Parkinson disease: a case series. <i>J Neurol Phys Ther</i>. 2013;37(2):58-64. doi:10.1097/NPT.0b013e31829219bc",
+  "doi": "10.1097/NPT.0b013e31829219bc",
+  "pmid": "23632453",
+  "changes": "None.",
+  "evidence": "PubMed record 23632453 (title/authors) in search index; volume/issue/pages/DOI consistent with draft (PubMed page itself was CAPTCHA-blocked).",
+  "refnote": ""
+ },
+ "grazioli19": {
+  "status": "verified",
+  "ama": "Grazioli E, Tranchita E, Borriello G, Cerulli C, Minganti C, Parisi A. The effects of concurrent resistance and aerobic exercise training on functional status in patients with multiple sclerosis. <i>Curr Sports Med Rep</i>. 2019;18(12):452-457. doi:10.1249/JSR.0000000000000661",
+  "doi": "10.1249/JSR.0000000000000661",
+  "pmid": "",
+  "changes": "None.",
+  "evidence": "Reference list in Front Neurosci 2020 (10.3389/fnins.2020.567302): same 6 authors, Curr Sports Med Rep 18:452-457, DOI; LWW URL confirms 2019 December (issue 12).",
+  "refnote": ""
+ },
+ "schenk90": {
+  "status": "verified",
+  "ama": "Schenkman M, Berger RA, Riley PO, Mann RW, Hodge WA. Whole-body movements during rising to standing from sitting. <i>Phys Ther</i>. 1990;70(10):638-648. doi:10.1093/ptj/70.10.638",
+  "doi": "10.1093/ptj/70.10.638",
+  "pmid": "2217543",
+  "changes": "None.",
+  "evidence": "Oxford Academic (PTJ) article page: 5 authors, 1990;70(10):638-648, DOI; PubMed 2217543 in search index.",
+  "refnote": ""
+ },
+ "hooge09": {
+  "status": "verified",
+  "ama": "Hoogenboom BJ, Voight ML, Cook G, Gill L. Using rolling to develop neuromuscular control and coordination of the core and extremities of athletes. <i>N Am J Sports Phys Ther</i>. 2009;4(2):70-82.",
+  "doi": "",
+  "pmid": "21509112",
+  "changes": "None (no DOI assigned for this NAJSPT article).",
+  "evidence": "PubMed record 21509112 (title/authors) and PMC2953329 in search index; volume/issue/pages match the known NAJSPT record (PubMed/PMC pages were CAPTCHA-blocked).",
+  "refnote": ""
+ },
+ "deck25": {
+  "status": "verified",
+  "ama": "Deck C, Smith J, Veenis A, Lehecka B, Hakansson N. The 30-Second Roll to Quadruped Test: linking muscle strength and endurance with rolling. <i>Int J Sports Phys Ther</i>. 2025;20(12):1714-1722. doi:10.26603/001c.147064",
+  "doi": "10.26603/001c.147064",
+  "pmid": "41346841",
+  "changes": "None.",
+  "evidence": "IJSPT (Scholastica) article page: 5 authors, 2025;20(12):1714-1722, DOI; PubMed 41346841 in search index.",
+  "refnote": ""
+ },
+ "mount99": {
+  "status": "unverified",
+  "ama": "Mount J, Friedman K, Hollandsworth B, et al. Description of movement patterns of non-disabled older adults moving in supine from the foot to the head of the bed [abstract]. <i>Phys Ther</i>. 1999;79(5):S59.",
+  "doi": "",
+  "pmid": "",
+  "changes": "None; kept draft.",
+  "evidence": "None found. Only a related full paper on young adults moving supine from foot to head of bed (Mount J et al) was located.",
+  "refnote": "Conference abstract in Phys Ther 1999 supplement not indexed in Crossref/PubMed; authors beyond Mount, volume/issue and page S59 could not be confirmed. Check the print Phys Ther 1999;79(5) abstract supplement."
+ },
+ "bergland05": {
+  "status": "verified",
+  "ama": "Bergland A, Laake K. Concurrent and predictive validity of \"getting up from lying on the floor\". <i>Aging Clin Exp Res</i>. 2005;17(3):181-185. doi:10.1007/BF03324594",
+  "doi": "10.1007/BF03324594",
+  "pmid": "16110729",
+  "changes": "None.",
+  "evidence": "Springer article page: Bergland A, Laake K; 2005;17(3):181-185; DOI; PubMed 16110729 in search index.",
+  "refnote": ""
+ },
+ "ada05": {
+  "status": "verified",
+  "ama": "Ada L, Foongchomcheay A, Canning C. Supportive devices for preventing and treating subluxation of the shoulder after stroke. <i>Cochrane Database Syst Rev</i>. 2005;(1):CD003863. doi:10.1002/14651858.CD003863.pub2",
+  "doi": "10.1002/14651858.CD003863.pub2",
+  "pmid": "15674917",
+  "changes": "None.",
+  "evidence": "Cochrane Library record CD003863.pub2 (Ada L, 2005) and PubMed 15674917 in search index.",
+  "refnote": ""
+ },
+ "knutson15": {
+  "status": "verified",
+  "ama": "Knutson JS, Fu MJ, Sheffler LR, Chae J. Neuromuscular electrical stimulation for motor restoration in hemiplegia. <i>Phys Med Rehabil Clin N Am</i>. 2015;26(4):729-745. doi:10.1016/j.pmr.2015.06.002",
+  "doi": "10.1016/j.pmr.2015.06.002",
+  "pmid": "26522909",
+  "changes": "None.",
+  "evidence": "PubMed record 26522909 (title) and PMC4630679 in search index; bibliographic details match the known record (PubMed/PMC pages were CAPTCHA-blocked).",
+  "refnote": ""
+ },
+ "gelber99": {
+  "status": "verified",
+  "ama": "Gelber DA, Jozefczyk PB. Therapeutics in the management of spasticity. <i>Neurorehabil Neural Repair</i>. 1999;13(1):5-14. doi:10.1177/154596839901300103",
+  "doi": "10.1177/154596839901300103",
+  "pmid": "",
+  "changes": "None.",
+  "evidence": "SAGE PDF at doi 10.1177/154596839901300103: Gelber DA, Jozefczyk PB; Neurorehabil Neural Repair 1999;13:5-14 (issue 1 encoded in DOI).",
+  "refnote": ""
+ }
+}
