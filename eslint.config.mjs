@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Exam Prep game and atlas data: script fragments spliced into generated pages by
+    // scripts/exam-prep/build.py, not modules, so their top-level names look unused here.
+    "scripts/exam-prep/*/*.js",
   ]),
 ]);
 
