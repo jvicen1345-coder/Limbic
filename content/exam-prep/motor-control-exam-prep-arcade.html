@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html,body{margin:0}[hidden]{display:none!important}img{max-width:100%}a.home{font-family:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;font-size:13px;text-decoration:none;border-radius:999px;padding:6px 14px;display:inline-block}</style>
+<title>Synapse Arcade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#141024; --panel:#1e1834; --panel-2:#272043; --line:#382f5a; --ink:#f2eeff; --muted:#a89fc8;
+  --amber:#ffb547; --amber-ink:#1c1300; --teal:#43d1bf; --teal-bg:#123a3a; --coral:#ff7a6b; --coral-bg:#43192a;
+  --display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:0 56px}
+.wrap{max-width:880px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.08}
+p{margin:0}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.mono{font-family:var(--mono)}
+/* header */
+header.top{padding-block:28px 8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.brand{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.brand h1{font-size:clamp(40px,9vw,72px);font-weight:800;letter-spacing:-.02em}
+.brand h1 span{color:var(--amber)}
+.trace{width:100%;height:56px;display:block;margin-top:6px}
+.trace path{fill:none;stroke:var(--amber);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:900;stroke-dashoffset:900;animation:fire 1.6s ease-out .2s forwards}
+.trace .base{stroke:var(--line);stroke-dasharray:none;animation:none;stroke-width:1.5}
+@keyframes fire{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.trace path{animation:none;stroke-dashoffset:0}}
+.sub{color:var(--muted);max-width:58ch;margin-top:4px}
+/* hub */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:22px}
+.tile{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:8px;transition:transform .12s,border-color .12s}
+.tile:hover{transform:translateY(-2px);border-color:var(--amber)}
+.tile .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
+.tile h3{font-size:24px;font-weight:800}
+.tile p{color:var(--muted);font-size:14.5px}
+.tile .best{margin-top:auto;font-family:var(--mono);font-size:12px;color:var(--teal)}
+.tile.wide{grid-column:1/-1}
+@media (max-width:600px){.grid{grid-template-columns:1fr}}
+/* game shell */
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:22px 12px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.back{background:none;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:14px;color:var(--muted)}
+.back:hover{color:var(--ink);border-color:var(--muted)}
+.bar h2{font-size:28px;font-weight:800;margin-right:auto}
+.hud{display:flex;gap:8px;flex-wrap:wrap}
+.pill{font-family:var(--mono);font-size:13px;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-variant-numeric:tabular-nums}
+.pill b{color:var(--amber);font-weight:700}
+.howto{color:var(--muted);font-size:14.5px;margin-bottom:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13.5px;color:var(--muted)}
+.chip.on{background:var(--amber);border-color:var(--amber);color:var(--amber-ink);font-weight:700}
+/* match */
+.cols{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.col{display:flex;flex-direction:column;gap:8px}
+.card{background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;text-align:left;font-size:15px;line-height:1.35;min-height:52px}
+.card.term{font-weight:700}
+.card.sel{border-color:var(--amber);background:var(--panel-2)}
+.card.done{border-color:var(--teal);background:var(--teal-bg);color:var(--teal);cursor:default}
+.card.bad{border-color:var(--coral);background:var(--coral-bg);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){.card.bad,.seqchip.bad{animation:none}}
+@media (max-width:520px){.cols{grid-template-columns:1fr 1.25fr}.card{font-size:14px;padding:10px}}
+/* prompt card */
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 22px;text-align:center;min-height:150px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.stage .lab{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stage .big{font-family:var(--display);font-size:clamp(20px,4vw,27px);font-weight:600;line-height:1.3}
+.buckets{display:grid;gap:10px;margin-top:14px}
+.b2{grid-template-columns:repeat(2,1fr)}
+.b4{grid-template-columns:repeat(2,1fr)}
+.b3{grid-template-columns:repeat(3,1fr)}
+@media (max-width:480px){.b3{grid-template-columns:1fr}}
+.bucket{background:var(--panel-2);border:1.5px solid var(--line);border-radius:12px;padding:16px 10px;font-weight:700;font-size:16px}
+.bucket:hover{border-color:var(--amber)}
+.bucket.right{border-color:var(--teal);background:var(--teal-bg);color:var(--teal)}
+.bucket.wrong{border-color:var(--coral);background:var(--coral-bg);color:var(--coral)}
+.feedback{min-height:48px;margin-top:12px;font-size:15px;text-align:center;color:var(--muted)}
+.feedback .ok{color:var(--teal);font-weight:700}
+.feedback .no{color:var(--coral);font-weight:700}
+.tf{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.tf button{border-radius:12px;padding:18px;font-family:var(--display);font-size:22px;font-weight:800;border:1.5px solid var(--line);background:var(--panel-2)}
+.tf .t:hover{border-color:var(--teal);color:var(--teal)}
+.tf .f:hover{border-color:var(--coral);color:var(--coral)}
+.timer{height:6px;background:var(--panel-2);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.timer i{display:block;height:100%;background:var(--amber);width:100%;transition:width 1s linear}
+/* order */
+.slots{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.slot{border:1.5px dashed var(--line);border-radius:10px;padding:10px 14px;min-height:46px;display:flex;gap:10px;align-items:center;color:var(--muted);font-size:15px}
+.slot.filled{border-style:solid;border-color:var(--teal);background:var(--teal-bg);color:var(--ink)}
+.slot .n{font-family:var(--mono);font-size:12px;color:var(--amber);min-width:18px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.seqchip{background:var(--panel-2);border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;font-size:15px;text-align:left}
+.seqchip:hover{border-color:var(--amber)}
+.seqchip.bad{border-color:var(--coral);background:var(--coral-bg);animation:shake .3s}
+/* blanks */
+.blank-line{font-family:var(--display);font-size:clamp(19px,3.8vw,25px);font-weight:600;line-height:1.4}
+.blank-line .gap{display:inline-block;min-width:5ch;border-bottom:3px solid var(--amber);color:var(--amber);padding-inline:4px}
+/* results */
+.result{text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:34px 20px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.result .score{font-family:var(--display);font-size:64px;font-weight:800;color:var(--amber);line-height:1}
+.result .best{font-family:var(--mono);font-size:13px;color:var(--teal)}
+.result .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.btn{border-radius:999px;padding:11px 20px;font-weight:700;border:1.5px solid var(--line);background:var(--panel-2)}
+.btn.go{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
+.missed{text-align:left;width:100%;max-width:560px;margin-top:10px}
+.missed h4{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.missed li{font-size:14.5px;margin-bottom:6px;color:var(--ink)}
+.missed li span{color:var(--teal)}
+footer{margin-top:40px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <a class="home" href="/student/exam-prep/motor-control-exam-prep" style="color:var(--amber);border:1px solid var(--line);margin-bottom:14px">← Study page</a>
+    <div class="eyebrow">Neurorehabilitation · Motor control &amp; learning</div>
+    <div class="brand"><h1>Synapse <span>Arcade</span></h1></div>
+    <svg class="trace" viewBox="0 0 800 56" preserveAspectRatio="none" aria-hidden="true">
+      <path class="base" d="M0 40 H800"/>
+      <path d="M0 40 H300 L318 40 L330 6 L344 50 L356 44 L380 40 H520 L532 40 L540 22 L550 44 L560 40 H800"/>
+    </svg>
+    <p class="sub">Five quick games on motor control, motor learning and neuroplasticity. Every round draws different questions, and your best scores stay in this browser.</p>
+  </header>
+  <main id="app"></main>
+  <footer>Card text is paraphrased from the sources cited on the study page, where the full references are listed. A few scenario examples in Sort It and Lightning Round illustrate the definitions.</footer>
+</div>
+
+<script>
+(function(){
+/* ================= DATA ================= */
+var MATCH={
+ "Theorists":[
+  ["Sherrington","Reflexes chained together form complex behavior"],
+  ["Bernstein","Coordination = mastering redundant degrees of freedom"],
+  ["Gibson","Perception guides action; affordances"],
+  ["Edelman","Neural Darwinism (neuronal group selection)"],
+  ["Schmidt","Generalized motor program; recall & recognition schemas"],
+  ["Adams","Memory trace + perceptual trace (closed loop)"],
+  ["Newell","Learner searches for the optimal perceptual-motor solution"],
+  ["Wulf & Lewthwaite","OPTIMAL: autonomy, expectancies, external focus"],
+  ["Gentile","2 stages: get in the ballpark, then refine & adapt"],
+  ["Fitts & Posner","Cognitive → associative → autonomous"],
+  ["Brunnstrom","Used reflexes & synergies to develop movement in stages"],
+  ["Bobath","Normalize tone; only normal movement, no compensations"],
+  ["Gesell & McGraw","Neuromaturation: CNS is the primary agent of change"],
+  ["Jackson","Top-down: higher centers control lower centers"],
+  ["Hebb","Cells that fire together wire together"]
+ ],
+ "Studies":[
+  ["Maguire 2000","Taxi drivers have larger hippocampi"],
+  ["Allred 2005","Training the less-affected limb → more disuse of affected limb"],
+  ["Page 2007","Mental + physical practice beat physical + relaxation post-stroke"],
+  ["Murase 2004","Interhemispheric inhibition impedes recovery"],
+  ["Feeney & Baron 1986","Diaschisis: transient loss in intact tissue"],
+  ["Kleber 2010","Opera singers: more S1/M1, basal ganglia & cerebellar activation"],
+  ["Shea & Morgan 1979","Blocked helps performance; random helps learning"],
+  ["Yogev 2005","Dual-task walking in Parkinson's disease"],
+  ["Karnath 2000/2003","Pusher syndrome: posterolateral thalamus"],
+  ["von Hofsten & Lindhagen 1979","18-wk infants reach only for catchable objects"],
+  ["Molinari 1997","Cerebellar lesions impair procedural learning"],
+  ["Gilbert & Thach 1977","Climbing fibers carry the error signal to Purkinje cells"],
+  ["Wulf 1998","External focus beats internal focus"],
+  ["Wolf 2006 (EXCITE)","CIMT 3–9 months after stroke"],
+  ["Levin & Piscitelli 2022","Direct vs indirect motor control theories"],
+  ["Aydin 2007","Mathematicians: more parietal gray matter"],
+  ["Bermudez 2008","Musicians: more motor, auditory & visual-spatial gray matter"],
+  ["Kleim & Jones 2008","10 principles of experience-dependent plasticity"],
+  ["Cramer 2008","Repair-related changes post-stroke: 'the stage is set'"],
+  ["Catalano & Kleiner 1984","Variable-speed practice cut errors at a new speed"],
+  ["Biernaskie 2004","Rehab at 5 days post-infarct beat 30 days"],
+  ["Tillerson 2001","Forced use in PD models helped most when started immediately"],
+  ["Iwatsuki, Navalta & Wulf","Choosing photos made runners more efficient (lower VO₂ & HR)"]
+ ],
+ "Terms":[
+  ["Hick's law","RT rises with # of stimulus-response alternatives"],
+  ["Fitts' law","Speed-accuracy tradeoff: MT = a + b·log₂(2A/W)"],
+  ["Power law of practice","Rapid early gains that slow with skill"],
+  ["Affordance","Reciprocal fit between person & environment for a task"],
+  ["Attractor state","Preferred, stable pattern of movement (deep well)"],
+  ["Control parameter","Variable (e.g., speed) that drives a change in pattern"],
+  ["CPG","Brainstem/spinal circuit producing rhythmic stepping, chewing, breathing"],
+  ["Motor equivalence","Same task performed with any effector (handwriting)"],
+  ["Diaschisis","Temporary depressed function in intact tissue"],
+  ["Performance bandwidth","Feedback only when error exceeds a set range"],
+  ["Contextual interference","Interference in practice order benefits learning"],
+  ["Self-efficacy","Belief you can perform the actions that lead to outcomes"],
+  ["Body schema","Internal model of the body, updated during movement"],
+  ["Figure-ground","Can't distinguish foreground from background"],
+  ["Coping model","Imperfect-skill demonstrator, e.g. an older sibling"],
+  ["Sustained attention","Consistent response during repetitive activity (vigilance)"],
+  ["Alternating attention","Shifting focus between tasks with different demands"],
+  ["Long-term depression","Connection weakens when post fires before pre"],
+  ["Distributed practice","Rest equal to or greater than trial time"],
+  ["Denervation supersensitivity","Post-synaptic cell becomes hypersensitive"],
+  ["Angiogenesis","New capillaries in the motor cortex (endurance training)"],
+  ["Selective pruning","Removal of redundant or less-used connections"],
+  ["Neural migration","Neurons move from their birth site to their final location"],
+  ["Salience matters","Kleim & Jones principle #7"]
+ ]
+};
+
+var SORT={
+ "TOA level":{b:["Impairment","Strategy","Function","Participation"],items:[
+  ["Manual muscle test",0],["PROM measurement",0],["FACES pain rating scale",0],["Botox to reduce tone",0],["Theraband strengthening",0],["Sensory re-education",0],
+  ["Observing how the action is accomplished",1],["Inaccurate foot placement on stairs",1],["Manual guidance",1],["Mental rehearsal",1],["Reaching for objects of different sizes",1],["Impaired anticipatory control",1],
+  ["Berg Balance Scale",2],["Jebsen-Taylor test",2],["Motor Activity Log",2],["Constraint-induced movement therapy",2],["Learned disuse",2],["Walking a straight path, then over obstacles",2],
+  ["Quality of Life questionnaire",3],["Community-based program",3],["Small in-clinic group activities",3],["Unable to take part in desired events",3]
+ ]},
+ "Explicit vs implicit":{b:["Explicit","Implicit"],items:[
+  ["Conscious recall of facts",0],["Held in working memory",0],["Evaluation, comparison, inference",0],["Relies on cognitive processes",0],["Use signs, lists & reminders",0],["Chunking information",0],["Direct attention to key movement markers",0],
+  ["Habituation",1],["Operant conditioning",1],["Classical conditioning",1],["Procedural learning",1],["Hard to express verbally",1],["Accumulates slowly with repetition",1],["Accept error as part of learning",1],["Focus on the goal before movement quality",1]
+ ]},
+ "KP vs KR":{b:["KP (performance)","KR (results)"],items:[
+  ["“I felt my knee buckle when I moved onto the step”",0],["“Your arm didn't go back far enough to throw it far”",0],["Info on movement features that led to the outcome",0],["Best for tasks with complex movement",0],["“Your trunk pitched forward as you stood up”",0],["“Your elbow flared out during the press”",0],
+  ["“My throw went right, so I missed the target”",1],["“Look how much your thumb moved to secure the cup” (labeled KR in the source)",1],["Terminal feedback about the outcome",1],["Best when the learner can't tell the outcome",1],["“You hit 8 of 10 targets”",1],["“You walked 3 s faster”",1]
+ ]},
+ "Habituation vs sensitization":{b:["Habituation","Sensitization"],items:[
+  ["Short-term: decreased EPSP",0],["Long-term: fewer connections",0],["Less dizziness after repeated vestibular exercises",0],["Decreased response to tickle",0],["Suppression of response",0],
+  ["K⁺ channel modulation & more intracellular Ca²⁺",1],["Prolonged action potential",1],["Greater neurotransmitter release",1],["Long-term: more connections",1],["Lowered threshold for a painful stimulus",1],["Strengthened response to noxious stimuli",1]
+ ]},
+ "Open vs closed":{b:["Open task","Closed task"],items:[
+  ["Timing constraints present",0],["Must predict the speed of moving objects",0],["Catching a ball tossed at varying speeds",0],["Gait training in a busy hallway",0],["Stepping onto a moving walkway",0],["Returning a table tennis serve",0],
+  ["Stable environment",1],["No prediction required",1],["Sit-to-stand in a quiet room",1],["Reaching for a cup on a still table",1],["Climbing an empty staircase",1],["Buttoning a shirt while seated",1]
+ ]},
+ "Skill vs strength vs endurance":{b:["Skill training","Strength training","Endurance training"],items:[
+  ["Synaptogenesis in the motor cortex",0],["Reorganization of motor cortex representations",0],["Myelinization & synaptic potentiation",0],["Changes the motor map",0],
+  ["Alters spinal motoneuron excitability",1],["Synaptogenesis within the spinal cord",1],["No motor map change; spinal-level adaptation",1],
+  ["Angiogenesis in the motor cortex",2],["No change in motor map or synapse #",2],["HIIT increases BDNF",2],["Primes LTP-like plasticity (HIIT)",2],["Cardiopulmonary training",2]
+ ]},
+ "Discrete vs continuous":{b:["Discrete","Continuous"],items:[
+  ["Kicking a ball",0],["Sit-to-stand",0],["Lying down",0],["Recognizable beginning and end",0],
+  ["Walking",1],["Running",1],["End point decided by the performer",1]
+ ]},
+ "Attention type":{b:["Sustained","Selective","Alternating","Divided"],items:[
+  ["Vigilance during continuous, repetitive activity",0],["Random Letter Test",0],
+  ["Stroop test",1],["Freedom from distractibility (textbook)",1],
+  ["Trail-Making A & B",2],["Shifting focus between tasks with different demands",2],
+  ["Responding to multiple tasks at once",3],["Walking while counting backward by 7s",3]
+ ]},
+ "Recovery vs compensation":{b:["Direct recovery","Compensation"],items:[
+  ["Function restored to tissue shut down by edema",0],["Temporary impairment to neural tissue",0],["Recovery of the subsystem",0],["Task performed the same way as before injury",0],["Uses the original neural processes",0],
+  ["Residual neural tissue takes over function",1],["Uses a different subsystem",1],["Modified use of a subsystem",1],["Task performed in a different manner",1],["Behavioral substitution",1]
+ ]}
+};
+
+var TF=[
+ ["Blocked practice is better for performance; random practice is better for learning.",1,""],
+ ["Concurrent feedback most commonly enhances learning.",0,"The negative effect is more common: acquisition improves but learning doesn't."],
+ ["Personal performance accomplishments are the most powerful source of self-efficacy.",1,""],
+ ["Relative timing is a parameter of the GMP.",0,"Relative timing is an invariant. Overall duration is a parameter."],
+ ["Early learners benefit more from qualitative feedback.",1,""],
+ ["Long-term habituation increases the number of synaptic connections.",0,"Habituation decreases connections. Sensitization increases them."],
+ ["Diaschisis is a temporary loss of function in intact neural tissue.",1,""],
+ ["The striatum of the basal ganglia is critical for procedural learning.",1,""],
+ ["Adams' closed-loop theory explains fast movements well.",0,"It can't explain fast movements or movements without feedback."],
+ ["An internal focus of attention is superior for motor learning.",0,"External focus is superior (Wulf 1998)."],
+ ["Hick's law: reaction time rises with more stimulus-response alternatives.",1,""],
+ ["Response programming time increases with more moving parts.",1,""],
+ ["In the Systems 3-stage model, novices exploit external forces.",0,"Experts exploit forces. Novices freeze DOF with co-contraction."],
+ ["Interhemispheric inhibition of the stroke M1 by the non-stroke M1 impedes recovery.",1,""],
+ ["Taxi drivers have larger hippocampi.",1,""],
+ ["Manual guidance should be kept in place as long as possible.",0,"Remove it as quickly as possible, or it becomes a regulatory feature."],
+ ["Massed practice has more practice time than rest time.",1,""],
+ ["Social comparison-oriented learners increase effort after failure.",0,"They withdraw effort. Self-referenced learners persist."],
+ ["The recognition schema sets the response in motion.",0,"The recall schema does. The recognition schema evaluates it."],
+ ["Working memory storage lasts about 1–60 seconds.",1,""],
+ ["Climbing fibers carry the error signal to Purkinje cells.",1,""],
+ ["Ecological theory is criticized for lacking specificity about problems like tone.",1,""],
+ ["Reflex theory easily explains novel movements.",0,"It can't. A violinist can play the cello."],
+ ["Assistive devices reduce degrees of freedom (Systems theory).",1,""],
+ ["Pusher syndrome involves damage to the posterolateral thalamus.",1,""],
+ ["In the Stroop effect, response selection is delayed by response competition.",1,""],
+ ["The cocktail party effect is an example of divided attention on two voices equally.",0,"You choose to attend to one auditory stimulus and ignore the other."],
+ ["Retention and transfer are the best indicators of learning.",1,""],
+ ["Explicit cues can make implicit motor-sequence learning harder after a basal ganglia stroke.",1,""],
+ ["Variable practice in schema theory showed a clear advantage in adults.",0,"The advantage held in children; adult results were the same."],
+ ["Peripheral lesions let adjacent cortical areas take over (face for hand).",1,""],
+ ["Early training of the less-affected limb improved recovery in Allred 2005.",0,"It led to little improvement and more disuse of the affected limb."],
+ ["Mental practice activates the supplementary motor cortex.",1,""],
+ ["Coping models are always worse than expert models.",0,"Beginners who watch beginners can outperform the model they observed."],
+ ["Neuronal group selection says active, self-generated movement is essential.",1,""],
+ ["Dynamic action theory relies on a central command center.",0,"It's based on self-organization with no command center."],
+ ["Intermittent feedback at less than 100% frequency is best for learning.",1,""],
+ ["Descriptive cues are better for beginners than prescriptive cues.",0,"Prescriptive cues (offering the fix) are better for beginners."],
+ ["Rewarded behaviors tend to be repeated in operant conditioning.",1,""],
+ ["Opera singers show more cerebellar activation than vocal students.",1,""],
+ ["Strength training changes the motor map.",0,"It alters spinal motoneuron excitability. Skill training reorganizes the motor cortex map."],
+ ["Endurance training induces angiogenesis but doesn't change synapse number.",1,""],
+ ["The early phase of LTP involves new synapse formation.",0,"The early phase is functional (transmitter release, slow reuptake). New synapses form in the later phase."],
+ ["Denervation supersensitivity is a post-synaptic change.",1,""],
+ ["Kleim & Jones list 'Salience matters' as a principle.",1,""],
+ ["When areas not designed for a function take over after M1 damage, recovery is optimal.",0,"Optimal recovery isn't seen. The best recovery comes when areas of similar function take over."],
+ ["Somatosensory cortex damage erases motor skills already learned.",0,"It doesn't disrupt learned skills, but it limits new learning."],
+ ["GABA is downregulated early after stroke.",1,""],
+ ["Inhibiting the contralesional hemisphere is a one-size-fits-all treatment.",0,"It's NOT a one-size-fits-all concept."],
+ ["Adams' closed loop theory includes recall and recognition schemas.",0,"Those are Schmidt's. Adams has a memory trace and a perceptual trace."],
+ ["A long-practiced preferred pattern sits in a deep attractor well, so it's hard to change.",1,""],
+ ["Neuronal Darwinism places the most emphasis on brain development.",1,""],
+ ["Unmasking means firming silent synapses.",1,""],
+ ["Collateral sprouting means axons sprout on their own after injury.",0,"That's regeneration (injured axons sprout). In collateral sprouting, intact neighboring axons sprout onto sites left by injured axons."],
+ ["Letting a patient choose an item is an example of enhanced expectancies.",0,"Choice is autonomy. Telling them people their age do well is an enhanced expectancy."],
+ ["Ecological plasticity is the positive effect of environmental stimulation on brain reorganization.",1,""],
+ ["Walking is a continuous task: the performer decides the end point.",1,""],
+ ["Sit-to-stand is a continuous task.",0,"It's discrete: it has a recognizable beginning and end."],
+ ["Sustained attention is also called vigilance.",1,""],
+ ["The Stroop test is used to test alternating attention.",0,"Stroop tests selective attention; Trail-Making A & B tests alternating."],
+ ["Variable practice improves transfer to novel versions of a task.",1,""],
+ ["Distributed practice has more practice time than rest.",0,"That's massed. Distributed means rest is equal to or greater than trial time."],
+ ["The early phase of LTP requires new protein synthesis.",0,"The early phase (1–3 h) doesn't; the late phase (≥24 h) does."],
+ ["Rehab started 5 days after infarct beat the same rehab started at 30 days (Biernaskie 2004).",1,""],
+ ["In the Wulf running study, choosing photos lowered runners' oxygen consumption.",1,""],
+ ["In the Wulf running study, the choice group reported lower RPE.",0,"RPE didn't differ between groups; it changed only with time."],
+ ["Only task-relevant choices improve motor performance.",0,"Even irrelevant choices help, like picking photos or a golf ball color."],
+ ["In the running study, the choice group had significantly lower RER.",0,"RER was lower but not significant. VO₂ and HR were significantly lower."],
+ ["Cortisol downregulates dopamine, and autonomy helps protect against this.",1,""],
+ ["The yoked control group saw the same photos, in the same order, as a choice-group partner.",1,""],
+ ["The autonomy running study's results generalize well to clinical populations.",0,"External validity is limited to college-age runners."]
+];
+
+var SEQ=[
+ ["Information processing",["Stimulus identification","Response selection","Response programming"]],
+ ["Neural growth",["Neural proliferation","Neural migration","Synaptogenesis","Selective pruning","Myelination"]],
+ ["Fitts & Posner stages",["Cognitive","Associative","Autonomous"]],
+ ["Systems 3-stage model",["Novice: freeze DOF","Advanced: release DOF","Expert: exploit forces"]],
+ ["Perception → cognition → action",["Sensing","Perceiving","Interpreting","Conceptualization","Strategy / plan","Activation","Execution"]],
+ ["Task-based intervention",["Determine goal & define task","Determine level of skill learning","Choose method of intervention"]],
+ ["Structuring feedback around a task",["Demonstration / mental practice","Concurrent feedback","Terminal feedback (KR/KP)"]],
+ ["Gentile's stages",["Understand the goal & get in the ballpark","Refine, adapt & perform consistently"]],
+ ["Neural modifiability",["Change in synaptic efficacy","Persisting changes","Change in synaptic connections"]],
+ ["LTP phases",["Response to first stimulus","Early phase (1–3 h)","Later phase (~24 h)"]],
+ ["Kleim & Jones principles 1–5",["Use it or lose it","Use it & improve it","Specificity","Repetition","Intensity matters"]],
+ ["Kleim & Jones principles 6–10",["Time matters","Salience matters","Age matters","Transference","Interference"]],
+ ["LTP, start to finish",["Weak stimulus: small EPSP","Simultaneous pre & post firing","Early phase: more transmitter release, slow reuptake","Later phase: new synapses & release sites","Same stimulus: large EPSP"]],
+ ["Wulf autonomy running study",["Day 1: VO₂max treadmill test","One week later: warm-up walk & run","20-min run at 65% VO₂max while viewing choice or yoked photos"]],
+ ["OPTIMAL reward pathway",["Choice (autonomy)","Dopamine release","Goal-action coupling","Neurophysiological efficiency"]]
+];
+
+var BL=[
+ ["Habituation, short-term: ___ EPSP","decreased"],
+ ["Sensitization, long-term: ___ # of connections","increased"],
+ ["Associative learning: the learner ___ the relationship","predicts"],
+ ["Control of ___ movement: mossy fibers to Purkinje cells","ongoing"],
+ ["Cerebellar lesions: ___ learning","impaired"],
+ ["___ (transient): temporary loss of function in intact tissue","Diaschisis"],
+ ["Cytotoxic edema: build-up of ___ fluid","intracellular"],
+ ["Intercellular plasticity: neural ___ (axons sprout)","regeneration"],
+ ["Denervation ___ is a post-synaptic, hypersensitive change","supersensitivity"],
+ ["Unmasking of ___ synapses","silent"],
+ ["Increased gray matter in the parietal cortex of ___","mathematicians"],
+ ["Increased gray matter in motor, auditory & visual-spatial areas in ___","musicians"],
+ ["Tx for interhemispheric inhibition: ___ of the contralesional hemisphere","inhibition"],
+ ["Kleim & Jones #1: use it or ___ it","lose"],
+ ["Kleim & Jones #7: ___ matters","salience"],
+ ["Endurance training induces ___ in the motor cortex","angiogenesis"],
+ ["HIIT increases ___ and primes LTP-like plasticity","BDNF"],
+ ["LTP requires ___ firing of pre & post synaptic cells","simultaneous"],
+ ["Collateral ___ goes to injured axons in the same system","sprouting"],
+ ["Stem cells in ___: transplant into the putamen","Parkinson's"],
+ ["Compensation: residual neural tissue ___ function","takes over"],
+ ["Hippocampi are larger in ___","taxi drivers"],
+ ["Peripheral lesions: adjacent areas take over, i.e., ___ for hand","face"],
+ ["Interhemispheric inhibition of the ipsilesional M1 by the ___ M1","contralesional"],
+ ["Blocked practice is better for ___","performance"],
+ ["Massed practice: greater ___ than rest time","practice"],
+ ["The striatum of the ___ is critical for procedural learning","basal ganglia"],
+ ["Personal performance ___ are the strongest source of self-efficacy","accomplishments"],
+ ["Remove manual guidance as ___ as possible","quickly"],
+ ["Working memory storage: 1 to ___ seconds","60"],
+ ["Hick's law: RT rises with the number of stimulus-___ alternatives","response"],
+ ["Early learners benefit from ___ feedback to get in the ballpark","qualitative"],
+ ["Novices ___ degrees of freedom through co-contraction","freeze"],
+ ["Short-term plasticity: pre & post synapses talk ___","more"],
+ ["Later phase of LTP lasts about ___ hours","24"],
+ ["In the GMP, relative timing is an ___ feature","invariant"],
+ ["Recall schema sets the response in motion; ___ schema evaluates it","recognition"],
+ ["OPTIMAL: autonomy, enhanced expectancies & an ___ focus","external"],
+ ["Wulf 1998: ___ focus is superior for learning","external"],
+ ["Pusher syndrome: damage to the posterolateral ___","thalamus"],
+ ["Sustained attention is also called ___","vigilance"],
+ ["A ___ task has a recognizable beginning and end","discrete"],
+ ["Trail-Making A & B tests ___ attention","alternating"],
+ ["The late phase of LTP requires protein ___","synthesis"],
+ ["Wulf running study: the control group was ___ to a choice participant","yoked"],
+ ["The submax run was at the speed linked with ___% VO₂max","65"],
+ ["___ downregulates dopamine","Cortisol"]
+];
+var BL_POOL=BL.map(function(x){return x[1]});
+
+/* ================= HELPERS ================= */
+var app=document.getElementById('app'), timers=[];
+function clearTimers(){timers.forEach(function(t){clearTimeout(t);clearInterval(t)});timers=[]}
+function later(fn,ms){var t=setTimeout(fn,ms);timers.push(t);return t}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function h(html){app.innerHTML=html;window.scrollTo(0,0)}
+var BEST={};try{BEST=JSON.parse(localStorage.getItem('limbic-motor-arcade-best')||'{}')||{}}catch(e){BEST={}}
+function saveBest(k,v){var isNew=!(k in BEST)||v>BEST[k];if(isNew){BEST[k]=v;try{localStorage.setItem('limbic-motor-arcade-best',JSON.stringify(BEST))}catch(e){}}return isNew}
+function bar(title,hud){return '<div class="bar"><button class="back" id="back" type="button">← Arcade</button><h2>'+title+'</h2><div class="hud">'+hud+'</div></div>'}
+function wireBack(){var b=document.getElementById('back');if(b)b.onclick=hub}
+function results(key,title,score,max,unit,missed,again){
+  try{if(missed&&missed.length){var AK="limbic-motor-sg"+'-amiss-v1',A=JSON.parse(localStorage.getItem(AK)||'{}')||{};missed.forEach(function(x){var k=String(x[0])+' → '+String(x[1]);var e=A[k]||{n:0};e.n++;e.last=Date.now();e.g=title;A[k]=e});localStorage.setItem(AK,JSON.stringify(A))}localStorage.setItem("limbic-motor-sg"+'-sync-ts',String(Date.now()))}catch(e){}
+  clearTimers();
+  var isNew=saveBest(key,score);
+  var m='';
+  if(missed&&missed.length){m='<div class="missed"><h4>Review these</h4><ul>'+missed.map(function(x){return '<li>'+esc(x[0])+' → <span>'+esc(x[1])+'</span></li>'}).join('')+'</ul></div>'}
+  h(bar(title,'')+'<div class="result"><div class="eyebrow">Round complete</div><div class="score">'+score+(max?'<span style="font-size:28px;color:var(--muted)"> / '+max+'</span>':'')+'</div><div>'+unit+'</div><div class="best">'+(isNew?'New best!':'Best: '+BEST[key])+'</div>'+m+'<div class="row"><button class="btn go" id="again" type="button">Play again</button><button class="btn" id="home" type="button">Back to arcade</button></div></div>');
+  wireBack();document.getElementById('again').onclick=again;document.getElementById('home').onclick=hub;
+  document.getElementById('again').focus();
+}
+
+/* ================= HUB ================= */
+var GAMES=[
+ {id:'match',k:'Connect',t:'Who Said It?',d:'Link theorists, studies and terms to what they’re known for. Tap a left card, then its match.',fn:function(){match()}},
+ {id:'sort',k:'Classify',t:'Sort It',d:'Tap the right bucket: TOA level, explicit vs implicit, KP vs KR, open vs closed and more.',fn:function(){sortGame()}},
+ {id:'tf',k:'60 seconds',t:'Lightning Round',d:'True or false, as many as you can before the timer runs out. Streaks count.',fn:function(){lightning()}},
+ {id:'order',k:'Sequence',t:'Order Up',d:'Put stages in order: information processing, neural growth, Fitts & Posner and more.',fn:function(){order()}},
+ {id:'blank',k:'Fill in',t:'Fill the Blank',d:'Fill-in-the-blank lines on neuroplasticity and other key concepts.',fn:function(){blanks()},wide:true}
+];
+function bestFor(id){var keys=Object.keys(BEST).filter(function(k){return k.indexOf(id)===0});if(!keys.length)return 'Not played yet';var v=Math.max.apply(null,keys.map(function(k){return BEST[k]}));return 'Best: '+v}
+function hub(){
+  clearTimers();
+  var html='<div class="grid">'+GAMES.map(function(g){return '<button class="tile'+(g.wide?' wide':'')+'" type="button" data-g="'+g.id+'"><span class="k">'+g.k+'</span><h3>'+g.t+'</h3><p>'+g.d+'</p><span class="best">'+bestFor(g.id)+'</span></button>'}).join('')+'</div>';
+  app.innerHTML=html;
+  [].forEach.call(app.querySelectorAll('.tile'),function(b){b.onclick=function(){GAMES.filter(function(g){return g.id===b.getAttribute('data-g')})[0].fn()}});
+}
+
+/* ================= MATCH ================= */
+var matchDeck='Theorists';
+function match(){
+  clearTimers();
+  var pairs=shuffle(MATCH[matchDeck]).slice(0,6).map(function(p,i){return {id:i,t:p[0],c:p[1]}});
+  var left=shuffle(pairs),right=shuffle(pairs),sel=null,done=0,miss=0,missed=[];
+  var chips=Object.keys(MATCH).map(function(k){return '<button class="chip'+(k===matchDeck?' on':'')+'" type="button" data-d="'+k+'">'+k+'</button>'}).join('');
+  h(bar('Who Said It?','<span class="pill">Pairs <b id="m-d">0</b>/6</span><span class="pill">Misses <b id="m-m">0</b></span>')+
+    '<p class="howto">Tap a card on the left, then the description it matches.</p><div class="chips">'+chips+'</div>'+
+    '<div class="cols"><div class="col">'+left.map(function(p){return '<button class="card term" type="button" data-id="'+p.id+'">'+esc(p.t)+'</button>'}).join('')+'</div>'+
+    '<div class="col">'+right.map(function(p){return '<button class="card" type="button" data-id="'+p.id+'">'+esc(p.c)+'</button>'}).join('')+'</div></div>');
+  wireBack();
+  [].forEach.call(app.querySelectorAll('.chip'),function(c){c.onclick=function(){matchDeck=c.getAttribute('data-d');match()}});
+  var terms=app.querySelectorAll('.col:first-child .card'),clues=app.querySelectorAll('.col:last-child .card');
+  [].forEach.call(terms,function(b){b.onclick=function(){if(b.classList.contains('done'))return;[].forEach.call(terms,function(x){x.classList.remove('sel')});b.classList.add('sel');sel=b}});
+  [].forEach.call(clues,function(b){b.onclick=function(){
+    if(!sel||b.classList.contains('done'))return;
+    if(sel.getAttribute('data-id')===b.getAttribute('data-id')){
+      sel.classList.remove('sel');sel.classList.add('done');b.classList.add('done');sel.disabled=true;b.disabled=true;sel=null;done++;
+      document.getElementById('m-d').textContent=done;
+      if(done===6){var score=Math.max(0,60-miss*5);later(function(){results('match-'+matchDeck,'Who Said It?',score,60,'points · '+miss+' miss'+(miss===1?'':'es')+' ('+matchDeck+')',missed,match)},500)}
+    }else{
+      miss++;document.getElementById('m-m').textContent=miss;
+      var p=pairs[+sel.getAttribute('data-id')];if(!missed.some(function(x){return x[0]===p.t}))missed.push([p.t,p.c]);
+      b.classList.add('bad');var s=sel;s.classList.add('bad');later(function(){b.classList.remove('bad');s.classList.remove('bad')},350);
+    }
+  }});
+}
+
+/* ================= SORT ================= */
+var sortSet='TOA level';
+function sortGame(){
+  clearTimers();
+  var set=SORT[sortSet],items=shuffle(set.items).slice(0,10),i=0,score=0,missed=[],locked=false;
+  var chips=Object.keys(SORT).map(function(k){return '<button class="chip'+(k===sortSet?' on':'')+'" type="button" data-s="'+k+'">'+k+'</button>'}).join('');
+  h(bar('Sort It','<span class="pill">Card <b id="s-i">1</b>/'+items.length+'</span><span class="pill">Score <b id="s-s">0</b></span>')+
+    '<div class="chips">'+chips+'</div><div class="stage"><span class="lab">'+esc(sortSet)+'</span><div class="big" id="s-item"></div></div>'+
+    '<div class="buckets '+(set.b.length===4?'b4':set.b.length===3?'b3':'b2')+'">'+set.b.map(function(b,j){return '<button class="bucket" type="button" data-j="'+j+'">'+esc(b)+'</button>'}).join('')+'</div><div class="feedback" id="s-fb"></div>');
+  wireBack();
+  [].forEach.call(app.querySelectorAll('.chip'),function(c){c.onclick=function(){sortSet=c.getAttribute('data-s');sortGame()}});
+  var bs=app.querySelectorAll('.bucket');
+  function show(){document.getElementById('s-item').textContent=items[i][0];document.getElementById('s-i').textContent=i+1;document.getElementById('s-fb').innerHTML='';[].forEach.call(bs,function(b){b.classList.remove('right','wrong')});locked=false}
+  [].forEach.call(bs,function(b){b.onclick=function(){
+    if(locked)return;locked=true;
+    var j=+b.getAttribute('data-j'),ans=items[i][1],fb=document.getElementById('s-fb');
+    bs[ans].classList.add('right');
+    if(j===ans){score++;fb.innerHTML='<span class="ok">Correct.</span>'}else{b.classList.add('wrong');missed.push([items[i][0],set.b[ans]]);fb.innerHTML='<span class="no">It’s '+esc(set.b[ans])+'.</span>'}
+    document.getElementById('s-s').textContent=score;
+    later(function(){i++;if(i>=items.length)results('sort-'+sortSet,'Sort It',score,items.length,'correct ('+sortSet+')',missed,sortGame);else show()},j===ans?650:1500);
+  }});
+  show();
+}
+
+/* ================= LIGHTNING ================= */
+function lightning(){
+  clearTimers();
+  var deck=shuffle(TF),i=0,score=0,streak=0,bestStreak=0,left=60,missed=[],locked=false;
+  h(bar('Lightning Round','<span class="pill">Time <b id="l-t">60</b>s</span><span class="pill">Score <b id="l-s">0</b></span><span class="pill">Streak <b id="l-k">0</b></span>')+
+    '<div class="timer"><i id="l-bar"></i></div><div class="stage"><span class="lab">True or false?</span><div class="big" id="l-q"></div></div>'+
+    '<div class="tf"><button class="t" type="button" id="l-true">True</button><button class="f" type="button" id="l-false">False</button></div><div class="feedback" id="l-fb">Keys: T or F</div>');
+  wireBack();
+  function show(){if(i>=deck.length){deck=deck.concat(shuffle(TF))}document.getElementById('l-q').textContent=deck[i][0];if(i>0)document.getElementById('l-fb').innerHTML='';locked=false}
+  function answer(v){
+    if(locked||left<=0)return;locked=true;
+    var q=deck[i],ok=(v===q[1]),fb=document.getElementById('l-fb');
+    if(ok){score++;streak++;bestStreak=Math.max(bestStreak,streak);fb.innerHTML='<span class="ok">Correct'+(streak>=3?' · '+streak+' in a row':'')+'</span>'}
+    else{streak=0;missed.push([q[0],(q[1]?'True':'False')+(q[2]?'. '+q[2]:'')]);fb.innerHTML='<span class="no">'+(q[1]?'True.':'False.')+'</span> '+esc(q[2]||'')}
+    document.getElementById('l-s').textContent=score;document.getElementById('l-k').textContent=streak;
+    later(function(){i++;show()},ok?250:1200);
+  }
+  document.getElementById('l-true').onclick=function(){answer(1)};
+  document.getElementById('l-false').onclick=function(){answer(0)};
+  var key=function(e){if(!document.getElementById('l-true')){document.removeEventListener('keydown',key);return}if(e.key==='t'||e.key==='T')answer(1);if(e.key==='f'||e.key==='F')answer(0)};
+  document.addEventListener('keydown',key);
+  var iv=setInterval(function(){left--;var t=document.getElementById('l-t');if(!t){clearInterval(iv);return}t.textContent=left;document.getElementById('l-bar').style.width=(left/60*100)+'%';if(left<=0){clearInterval(iv);document.removeEventListener('keydown',key);results('tf','Lightning Round',score,0,'correct in 60 s · best streak '+bestStreak,missed.slice(-8),lightning)}},1000);
+  timers.push(iv);
+  show();
+}
+
+/* ================= ORDER ================= */
+function order(){
+  clearTimers();
+  var rounds=shuffle(SEQ).slice(0,5),r=0,total=0,missed=[];
+  function round(){
+    var name=rounds[r][0],steps=rounds[r][1],next=0,miss=0,pool=shuffle(steps);
+    if(pool.join()===steps.join()&&steps.length>1)pool=pool.slice(1).concat(pool[0]);
+    h(bar('Order Up','<span class="pill">Round <b>'+(r+1)+'</b>/5</span><span class="pill">Score <b>'+total+'</b></span>')+
+      '<div class="stage" style="min-height:0;padding:18px"><span class="lab">Put in order</span><div class="big">'+esc(name)+'</div></div>'+
+      '<div class="slots">'+steps.map(function(_,k){return '<div class="slot" data-k="'+k+'"><span class="n">'+(k+1)+'</span><span></span></div>'}).join('')+'</div>'+
+      '<div class="pool">'+pool.map(function(s){return '<button class="seqchip" type="button">'+esc(s)+'</button>'}).join('')+'</div><div class="feedback" id="o-fb">Tap the first step.</div>');
+    wireBack();
+    var slots=app.querySelectorAll('.slot');
+    [].forEach.call(app.querySelectorAll('.seqchip'),function(b){b.onclick=function(){
+      if(b.textContent===steps[next]){
+        slots[next].classList.add('filled');slots[next].lastChild.textContent=steps[next];b.remove();next++;
+        document.getElementById('o-fb').textContent=next<steps.length?'Next step…':'';
+        if(next===steps.length){var pts=Math.max(0,10-miss*2);total+=pts;if(miss)missed.push([name,steps.join(' → ')]);
+          document.getElementById('o-fb').innerHTML='<span class="ok">+'+pts+' points</span>';
+          later(function(){r++;if(r>=rounds.length)results('order','Order Up',total,50,'points across 5 sequences',missed,order);else round()},900)}
+      }else{miss++;b.classList.add('bad');later(function(){b.classList.remove('bad')},350);document.getElementById('o-fb').innerHTML='<span class="no">Not that one yet.</span>'}
+    }});
+  }
+  round();
+}
+
+/* ================= BLANKS ================= */
+function blanks(){
+  clearTimers();
+  var qs=shuffle(BL).slice(0,10),i=0,score=0,missed=[],locked=false;
+  function show(){
+    var q=qs[i],opts=shuffle([q[1]].concat(shuffle(BL_POOL.filter(function(w){return w!==q[1]})).slice(0,3)));
+    h(bar('Fill the Blank','<span class="pill">Line <b>'+(i+1)+'</b>/10</span><span class="pill">Score <b>'+score+'</b></span>')+
+      '<div class="stage"><span class="lab">Fill the blank</span><div class="blank-line" id="b-line">'+esc(q[0]).replace('___','<span class="gap" id="b-gap">?</span>')+'</div></div>'+
+      '<div class="buckets b2">'+opts.map(function(o){return '<button class="bucket" type="button">'+esc(o)+'</button>'}).join('')+'</div><div class="feedback" id="b-fb"></div>');
+    wireBack();locked=false;
+    var bs=app.querySelectorAll('.bucket');
+    [].forEach.call(bs,function(b){b.onclick=function(){
+      if(locked)return;locked=true;var ok=b.textContent===q[1];
+      [].forEach.call(bs,function(x){if(x.textContent===q[1])x.classList.add('right')});
+      document.getElementById('b-gap').textContent=q[1];
+      if(ok){score++;document.getElementById('b-fb').innerHTML='<span class="ok">Correct.</span>'}
+      else{b.classList.add('wrong');missed.push([q[0].replace('___','…'),q[1]]);document.getElementById('b-fb').innerHTML='<span class="no">Answer: '+esc(q[1])+'</span>'}
+      later(function(){i++;if(i>=qs.length)results('blank','Fill the Blank',score,10,'lines correct',missed,blanks);else show()},ok?700:1500);
+    }});
+  }
+  show();
+}
+
+hub();
+})();
+</script>

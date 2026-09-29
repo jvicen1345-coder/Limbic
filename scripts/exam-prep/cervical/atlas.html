@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html,body{margin:0}[hidden]{display:none!important}img{max-width:100%}a.home{font-family:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;font-size:13px;text-decoration:none;border-radius:999px;padding:6px 14px;display:inline-block}
+.chip.quizchip{margin-left:auto;border-style:dashed}
+.chip.quizchip[aria-pressed="true"]{border-style:solid}
+body.lblquiz .svgbox svg text{filter:blur(4.5px);cursor:pointer}
+body.lblquiz .svgbox svg text.rv{filter:none}
+body.lblquiz figcaption{filter:blur(5px);cursor:pointer;user-select:none}
+body.lblquiz figcaption.rv{filter:none}
+.quiz-note{font-size:13.5px;color:var(--ink-2);padding:8px 0 0}
+.quiz-note[hidden]{display:none}
+.revall{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:999px;margin-left:auto;background:var(--surface);border:1px solid var(--line);color:var(--ink-2);cursor:pointer}
+body:not(.lblquiz) .revall{display:none}
+
+body.drill figure.fig.dr-off{display:none}
+body.drill .week-h{display:none}
+body.drill section.wk.dr-empty{display:none}
+.drill-bar{position:sticky;top:58px;z-index:4;display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--surface);border:1px solid var(--accent);border-radius:10px;padding:10px 12px;margin:10px 0}
+.drill-bar[hidden]{display:none}
+.drill-bar .dr-pos{font-family:var(--mono);font-size:12.5px;color:var(--accent);font-weight:600}
+.drill-bar .dr-h{font-size:13.5px;color:var(--ink-2);flex:1 1 220px}
+.drill-bar button{font-size:13.5px;padding:7px 12px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.drill-bar .dr-yes{border-color:var(--ok);color:var(--ok)}
+.drill-bar .dr-no{border-color:var(--bad);color:var(--bad)}
+</style>
+<title>Cervical Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f3f5f9; --surface:#ffffff; --surface-2:#e9edf5; --ink:#18203a; --ink-2:#4d5670; --line:#d3d9e6; --line-strong:#8f9ab3;
+  --accent:#2d48b0; --accent-soft:#e2e7f8; --pos:#16806a; --pos-soft:#dcf1ea; --neg:#b3322a; --neg-soft:#f9e1de; --warm:#b86a12; --warm-soft:#fbead3;
+  --display:"Literata",Georgia,serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131b; --surface:#181c28; --surface-2:#222839; --ink:#e7eaf3; --ink-2:#a4acc2; --line:#2f3649; --line-strong:#6a7591;
+    --accent:#8fa3f2; --accent-soft:#232c4f; --pos:#5fd0b2; --pos-soft:#15352e; --neg:#f08a80; --neg-soft:#3d1c1a; --warm:#f0b465; --warm-soft:#3a2a14;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131b; --surface:#181c28; --surface-2:#222839; --ink:#e7eaf3; --ink-2:#a4acc2; --line:#2f3649; --line-strong:#6a7591;
+  --accent:#8fa3f2; --accent-soft:#232c4f; --pos:#5fd0b2; --pos-soft:#15352e; --neg:#f08a80; --neg-soft:#3d1c1a; --warm:#f0b465; --warm-soft:#3a2a14;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 60px}
+.wrap{max-width:1180px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:650;margin:0;text-wrap:balance;line-height:1.2}
+header{padding-block:34px 18px;border-bottom:2px solid var(--ink);display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+header h1{font-size:clamp(30px,5vw,46px);margin-top:6px}
+header p{color:var(--ink-2);max-width:60ch;margin:8px 0 0}
+.back{font-family:var(--mono);font-size:13px;color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:var(--surface);white-space:nowrap}
+.back:hover{border-color:var(--accent)}
+.filters{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;flex-wrap:wrap;padding-block:12px;border-bottom:1px solid var(--line);align-items:center}
+.chip{font-family:var(--body);font-size:13.5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.count{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.week-h{margin-top:34px;display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.week-h .wk{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.week-h h2{font-size:22px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+figure.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px}
+.fig-h{display:flex;gap:10px;align-items:baseline}
+.fig-h .n{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:24px}
+.fig-h h3{font-size:17px}
+.svgbox{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.svgbox svg{display:block;width:100%;height:auto;min-width:460px;color:var(--ink)}
+figcaption{font-size:14px;color:var(--ink-2);line-height:1.5}
+figcaption .src{font-family:var(--mono);font-size:11px;background:var(--surface-2);color:var(--ink-2);border-radius:4px;padding:1px 6px;white-space:nowrap}
+figcaption .ill{font-family:var(--mono);font-size:11px;border:1px dashed var(--line-strong);border-radius:4px;padding:0 5px;white-space:normal;overflow-wrap:anywhere}
+/* svg vocabulary */
+svg text{font-family:var(--body);font-size:13px;fill:currentColor}
+svg .ts{font-size:11.5px;fill:var(--ink-2)}
+svg .tb{font-weight:600}
+svg .th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;fill:var(--ink-2)}
+svg .tacc{fill:var(--accent)} svg .tpos{fill:var(--pos)} svg .tneg{fill:var(--neg)} svg .twarm{fill:var(--warm)}
+svg .bx{fill:var(--surface);stroke:var(--line-strong);stroke-width:1.2}
+svg .bx.acc{fill:var(--accent-soft);stroke:var(--accent)}
+svg .bx.pos{fill:var(--pos-soft);stroke:var(--pos)}
+svg .bx.neg{fill:var(--neg-soft);stroke:var(--neg)}
+svg .bx.warm{fill:var(--warm-soft);stroke:var(--warm)}
+svg .bx.mut{fill:var(--surface-2);stroke:var(--line)}
+svg .ln{stroke:currentColor;stroke-width:1.5;fill:none}
+svg .ln.acc{stroke:var(--accent)} svg .ln.pos{stroke:var(--pos)} svg .ln.neg{stroke:var(--neg)} svg .ln.warm{stroke:var(--warm)}
+svg .ln.dash{stroke-dasharray:5 4} svg .ln.faint{stroke:var(--line-strong)} svg .ln.thick{stroke-width:3}
+svg .ax{stroke:var(--line-strong);stroke-width:1.2;fill:none}
+svg .grid-l{stroke:var(--line);stroke-width:1}
+svg .f-acc{fill:var(--accent)} svg .f-pos{fill:var(--pos)} svg .f-neg{fill:var(--neg)} svg .f-warm{fill:var(--warm)} svg .f-ink{fill:currentColor} svg .f-mut{fill:var(--line-strong)} svg .f-surf{fill:var(--surface)}
+svg .f-accs{fill:var(--accent-soft)} svg .f-poss{fill:var(--pos-soft)} svg .f-negs{fill:var(--neg-soft)} svg .f-warms{fill:var(--warm-soft)} svg .f-s2{fill:var(--surface-2)}
+svg .venn{fill:var(--accent);fill-opacity:.1;stroke:var(--accent);stroke-width:1.4}
+footer{margin-top:40px;border-top:1px solid var(--line);padding-top:14px;font-size:13px;color:var(--ink-2)}
+</style>
+
+<div class="wrap">
+<header>
+  <div>
+    <div class="eyebrow">Orthopaedic physical therapy · Cervical spine</div>
+    <h1>Cervical Atlas</h1>
+    <p>Original diagrams of cervical mechanics, decision rules and techniques. Each caption states the one idea the picture shows and names its source.</p>
+  </div>
+  <a class="back" href="index.html">← Study page</a>
+</header>
+<div class="filters" id="filters" role="group" aria-label="Filter by topic"></div>
+<main id="atlas"></main>
+<footer>All diagrams are original schematics, not reproductions of published figures. Captions give short author-year citations; full references are listed on the study page. Figures marked <span class="ill" style="font-family:var(--mono);font-size:11px">shape only</span> or with a note show relationships, not measured data.</footer>
+</div>
+
+<script>
+(function(){
+var ID=0;
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function S(w,h,label,body){
+  var mk=function(n,cls){return '<marker id="'+n+ID+'" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" class="'+cls+'"/></marker>'};
+  return '<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(label)+'"><defs>'+mk('a','f-ink')+mk('b','f-acc')+mk('c','f-neg')+mk('d','f-pos')+mk('e','f-warm')+mk('g','f-mut')+'</defs>'+body+'</svg>';
+}
+function mkr(k){k=k||'';return k.indexOf('acc')>=0?'b':k.indexOf('neg')>=0?'c':k.indexOf('pos')>=0?'d':k.indexOf('warm')>=0?'e':k.indexOf('faint')>=0?'g':'a'}
+function T(x,y,s,k,anchor){return '<text x="'+x+'" y="'+y+'" class="'+(k||'')+'" text-anchor="'+(anchor||'middle')+'">'+esc(s)+'</text>'}
+function TL(x,y,lines,k,anchor,lh){lh=lh||15;return lines.map(function(l,i){return T(x,y+i*lh,l,k,anchor)}).join('')}
+function B(x,y,w,h,lines,k,tk){
+  lines=[].concat(lines);var n=lines.length,lh=15,cy=y+h/2-(n-1)*lh/2+4.5;
+  return '<rect class="bx '+(k||'')+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6"/>'+lines.map(function(l,i){
+    var cls=(tk||'')+(i===0?' tb':' ts');if(n===1)cls=(tk||'')+' tb';return T(x+w/2,cy+i*lh,l,cls)}).join('');
+}
+function A(x1,y1,x2,y2,k,lab,lx,ly,lk,anchor){
+  var s='<line class="ln '+(k||'')+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" marker-end="url(#'+mkr(k)+ID+')"/>';
+  if(lab)s+=T(lx!=null?lx:(x1+x2)/2,ly!=null?ly:(y1+y2)/2-6,lab,lk||'ts',anchor);
+  return s;
+}
+function P(d,k,arrow){return '<path class="ln '+(k||'')+'" d="'+d+'"'+(arrow?' marker-end="url(#'+mkr(k)+ID+')"':'')+'/>'}
+function L(x1,y1,x2,y2,k){return '<line class="ln '+(k||'')+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"/>'}
+function C(x,y,r,k){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" class="'+(k||'')+'"/>'}
+function R(x,y,w,h,k,rx){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(rx==null?4:rx)+'" class="'+(k||'')+'"/>'}
+function axes(x0,y0,w,h,xl,yl){return '<path class="ax" d="M'+x0+' '+(y0-h)+'V'+y0+'H'+(x0+w)+'"/>'+(xl?T(x0+w/2,y0+20,xl,'ts'):'')+(yl?'<text class="ts" text-anchor="middle" transform="translate('+(x0-14)+' '+(y0-h/2)+') rotate(-90)">'+esc(yl)+'</text>':'')}
+function person(x,y,k){return C(x,y,9,'bx '+(k||''))+L(x,y+9,x,y+42,k)+L(x,y+20,x-14,y+32,k)+L(x,y+20,x+14,y+30,k)+L(x,y+42,x-10,y+64,k)+L(x,y+42,x+10,y+64,k)}
+function neuron(x,y,k){return C(x,y,13,'bx '+(k||''))}
+
+var F=[];
+function fig(w,title,cap,src,draw,note){F.push({w:w,t:title,c:cap,src:src,draw:draw,note:note})}
+/* ================= TOPIC 1 ================= */
+/* wrapping box helpers */
+function wrapT(t,m){if(!t)return [];var w=String(t).split(' '),l=[''];w.forEach(function(x){var c=l[l.length-1];if(c&&(c+' '+x).length>m)l.push(x);else l[l.length-1]=(c?c+' ':'')+x});return l}
+function BX(x,y,w,h,title,sub,k,tk){var tl=wrapT(title,Math.floor((w-12)/8.2)),sl=[];[].concat(sub||[]).forEach(function(q){sl=sl.concat(wrapT(q,Math.floor((w-10)/6.3)))});var n=tl.length+sl.length,lh=14,cy=y+h/2-(n-1)*lh/2+4.5,o='<rect class="bx '+(k||'')+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6"/>';tl.forEach(function(l,i){o+=T(x+w/2,cy+i*lh,l,(tk||'')+' tb')});sl.forEach(function(l,i){o+=T(x+w/2,cy+(tl.length+i)*lh,l,'ts')});return o}
+function BS(x,y,w,h,text,k){var sl=wrapT(text,Math.floor((w-10)/6.3)),lh=14,cy=y+h/2-(sl.length-1)*lh/2+4.5,o='<rect class="bx '+(k||'')+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6"/>';sl.forEach(function(l,i){o+=T(x+w/2,cy+i*lh,l,'ts')});return o}
+fig('1','Who does what: cervical regions','The upper cervical spine specializes: C0–1 nods and C1–2 turns. The typical segments, C2–7, do everything and supply 75% of sagittal-plane motion.','Neumann 2002',function(){
+  var b='';
+  b+=B(40,20,140,44,['C0–C1','atypical'],'mut')+B(40,76,140,44,['C1–C2','atypical'],'acc','tacc')+B(40,132,140,90,['C2–C7','typical'],'pos','tpos');
+  b+=A(185,42,250,42,'faint')+A(185,98,250,98,'acc')+A(185,177,250,177,'pos');
+  b+=TL(260,36,['Forward/backward bending,','some side flexion'],'ts','start');
+  b+=T(260,94,'Rotation = primary motion','tacc tb','start')+T(260,110,'55% of cervical rotation (35–40°)','ts','start');
+  b+=TL(260,164,['Flexion/extension, side bending, rotation','Separated by disc + neural arch','75% of sagittal-plane motion'],'ts','start');
+  return S(560,235,'Three stacked regions with their motion roles',b);
+});
+fig('1','Opening vs closing at C2–7','On flexion, the superior facet glides up and forward on the one below (opening/upglide). On extension it glides down and back (closing/downglide).','Neumann 2002',function(){
+  function pan(ox,lab,up,k){var s=T(ox+120,20,lab,'th');
+    s+=P('M'+(ox+30)+' 170 L'+(ox+210)+' 110','ln thick faint')+T(ox+60,195,'inferior facet (below)','ts','start');
+    var cx=up?ox+150:ox+100,cy=up?120:142;
+    s+='<rect x="'+(cx-40)+'" y="'+(cy-40)+'" width="80" height="26" rx="4" class="bx '+k+'" transform="rotate(-18 '+cx+' '+(cy-27)+')"/>';
+    s+=T(cx,cy-60,'superior facet','ts');
+    s+=up?A(ox+110,150,ox+175,120,'pos thick'):A(ox+160,112,ox+95,142,'neg thick');
+    s+=T(ox+120,220,up?'superior + anterior = UPGLIDE':'inferior + posterior = DOWNGLIDE',up?'tpos tb':'tneg tb');return s}
+  return S(560,235,'Two panels: facet gliding up for flexion and down for extension',pan(0,'FLEXION · OPENING',true,'pos')+pan(290,'EXTENSION · CLOSING',false,'neg'));
+});
+fig('1','Right rotation from above','Rotation and side bending close the facet on the side you turn toward and open the one on the other side, at every level from C2 to C7.','Neumann 2002',function(){
+  var b=T(280,20,'TOP VIEW · PATIENT TURNS RIGHT','th');
+  b+=C(280,120,42,'bx mut')+T(280,124,'body','ts');
+  b+=R(160,150,70,34,'bx pos',8)+T(195,171,'L facet','tpos tb');
+  b+=R(330,150,70,34,'bx neg',8)+T(365,171,'R facet','tneg tb');
+  b+=P('M250 60 A80 80 0 0 1 330 70','ln acc thick',true)+T(345,56,'right rotation','tacc','start');
+  b+=T(195,205,'contralateral: OPENS','tpos tb')+T(195,221,'upglide','ts');
+  b+=T(365,205,'ipsilateral: CLOSES','tneg tb')+T(365,221,'downglide','ts');
+  return S(560,235,'Top view of a vertebra with the left facet opening and right facet closing',b);
+});
+fig('1','Segmental ROM by region (Neumann 2002)','Midpoints of Neumann’s ranges. C0–1 is mostly flexion/extension, C1–2 is mostly rotation (Neumann: no side flexion; other descriptions allow small amounts), and C2–7 carries most flexion/extension.','Neumann 2002',function(){
+  var d=[['C0–1',[5,10,0,5]],['C1–2',[5,10,37.5,0]],['C2–7',[37.5,57.5,32.5,32.5]]],col=['acc','pos','warm','neg'],lab=['Flex','Ext','Rot','SF'];
+  var b=axes(60,200,470,170,'','degrees');
+  [0,20,40,60].forEach(function(v){var y=200-v*2.6;b+=L(60,y,530,y,'faint dash')+T(52,y+4,String(v),'ts','end')});
+  d.forEach(function(g,i){var x0=85+i*150;g[1].forEach(function(v,j){var x=x0+j*28,h=v*2.6;b+=R(x,200-h,22,h,'f-'+col[j],2)+T(x+11,196-h,String(v),'ts')});b+=T(x0+50,220,g[0],'tb')});
+  lab.forEach(function(l,j){b+=R(330+j*52,14,10,10,'f-'+col[j],2)+T(343+j*52,23,l,'ts','start')});
+  return S(560,235,'Grouped bars of flexion, extension, rotation and side flexion per region',b);
+},'Midpoints of ranges.');
+fig('1','Two sets of "normal" cervical ROM','Expected AROM on observation and goniometric norms disagree, most for extension and rotation. State which reference you use.','Norkin & White 2016; goniometry/MMT reference table',function(){
+  var m=[['Flexion',47.5,45],['Extension',65,45],['Side bend',47.5,45],['Rotation',80,60]];
+  var b=axes(110,205,420,175,'','');
+  [0,20,40,60,80].forEach(function(v){var x=110+v*5;b+=L(x,30,x,205,'faint dash')+T(x,220,v+'°','ts')});
+  m.forEach(function(r,i){var y=40+i*42;b+=T(100,y+17,r[0],'tb','end')+R(110,y,r[1]*5,14,'f-acc',2)+R(110,y+17,r[2]*5,14,'f-warm',2)+T(114+r[1]*5,y+11,r[0]==='Flexion'||r[0]==='Side bend'?'45–50':r[0]==='Extension'?'50–80':'≈80','ts','start')+T(114+r[2]*5,y+28,r[0]==='Rotation'?'0–60':'0–45','ts','start')});
+  b+=R(360,6,10,10,'f-acc',2)+T(374,15,'Expected AROM','ts','start')+R(460,6,10,10,'f-warm',2)+T(474,15,'Goniometric','ts','start');
+  return S(560,232,'Paired bars comparing expected AROM with goniometric norms',b);
+},'Expected AROM bars drawn at range midpoints.');
+fig('1','Where the goniometer goes','Flexion/extension pivot at the ear, lateral flexion at C7, rotation at the top of the head. The moving arm follows the nares, the occipital protuberance or the nose tip.','Goniometry/MMT reference table',function(){
+  var rows=[['Flexion / extension','External auditory meatus','Base of the nares','Perpendicular or parallel to the ground'],['Lateral flexion','SP of C7','Occipital protuberance','SPs of the T/S, perpendicular to the ground'],['Rotation','Center of the cranial aspect of the head','Tip of the nose','Parallel to a line between the acromions']];
+  var b=T(70,22,'MOTION','th')+T(203,22,'FULCRUM','th')+T(338,22,'MOVING ARM','th')+T(478,22,'STATIONARY ARM','th');
+  rows.forEach(function(r,i){var y=32+i*64;b+=BX(10,y,120,54,r[0],'','acc','tacc')+BS(138,y,130,54,r[1],'')+BX(276,y,124,54,r[2],'','pos','tpos')+BS(408,y,142,54,r[3],'mut')});
+  return S(560,228,'Table of fulcrum, moving arm and stationary arm for each cervical motion',b);
+});
+fig('2','Screening map: five conditions, five tools','Each serious condition has its own screening tool. Grieve’s three questions sit on top as the fast screen for every cervical patient.','Stiell 2001; Russek 2023; Rushton 2023; Cook 2010',function(){
+  var b=BX(150,8,260,46,'Grieve’s 3 questions','dizziness · RA on steroids · leg neuro','warm','twarm');
+  var c=[['Fracture','Canadian C-Spine Rule'],['Instability','Sharp-Purser, Alar test'],['Vascular','5 D’s + 3 N’s, refer'],['Malignancy','Risk factors, men > 50'],['Myelopathy','5-item cluster']];
+  c.forEach(function(x,i){var X=8+i*110;b+=A(280,54,X+50,88,'faint')+BX(X,90,102,40,x[0],'','neg','tneg')+BS(X,138,102,58,x[1],'')});
+  return S(560,205,'Five red-flag conditions with the tool for each',b);
+});
+fig('2','Canadian C-Spine Rule','Three gates in order. Any high-risk factor sends the patient to x-ray. No low-risk factor also means x-ray. If they can actively rotate 45° both ways, no x-ray.','Stiell 2001',function(){
+  var b=BX(10,10,250,62,'1. Any high-risk factor?','age ≥ 65 · dangerous mechanism · paresthesias in extremities','neg','tneg');
+  b+=BX(10,100,250,62,'2. Any low-risk factor?','simple rear-end MVC · sitting in ED · ambulatory · delayed onset · no midline tenderness','warm','twarm');
+  b+=BX(10,190,250,44,'3. Rotate 45° left and right?','','acc','tacc');
+  b+=BX(410,60,140,50,'RADIOGRAPHY','','neg','tneg')+BX(410,188,140,46,'No radiography','','pos','tpos');
+  b+=A(135,72,135,98,'','no',148,90,'ts','start')+A(135,162,135,188,'','yes',148,180,'ts','start');
+  b+=A(260,40,408,76,'neg','yes',330,48,'tneg')+A(260,130,408,92,'neg','none',330,104,'tneg')+A(260,205,408,104,'neg','unable',330,150,'tneg')+A(260,220,408,212,'pos','able',330,228,'tpos');
+  return S(560,245,'Flowchart of three decision gates leading to radiography or not',b);
+});
+fig('2','Canadian C-Spine: dangerous mechanisms vs exclusions','Dangerous mechanisms make x-ray mandatory. Exclusions mean the rule can’t be used at all.','Stiell 2001',function(){
+  var L1=['Fall ≥ 3 ft / 5 stairs','Axial load (diving)','MVC > 100 km/h, rollover, ejection','Motorized recreational vehicle','Bicycle struck / collision'];
+  var L2=['Non-trauma','GCS < 15','Unstable vital signs','Age < 16','Acute paralysis','Known vertebral disease','Previous C-spine surgery','Pregnant'];
+  var b=T(140,18,'DANGEROUS MECHANISM → X-RAY','th tneg')+T(420,18,'RULE NOT APPLICABLE','th');
+  L1.forEach(function(t,i){b+=BS(10,28+i*40,260,32,t,'neg')});
+  L2.forEach(function(t,i){b+=BS(290+(i%2)*132,28+Math.floor(i/2)*50,126,42,t,'mut')});
+  return S(560,232,'Two lists: dangerous mechanisms and exclusions',b);
+});
+fig('2','Sharp-Purser: the logic','Fix C2 and push the forehead back so C1 translates back. A positive test is symptoms easing, excess displacement, or myelopathic symptoms in flexion.','PhysioU (Wong)',function(){
+  var s=['Seated, neck semi-flexed; note resting symptoms','Index finger + thumb fix the C2 spinous process','Palm applies posterior force through the forehead','C1 translates back on C2'],b='';
+  s.forEach(function(t,i){var x=6+i*138;b+=BS(x,24,126,70,t,i===2?'acc':'');if(i<3)b+=A(x+126,59,x+138,59,'')});
+  b+=T(280,118,'POSITIVE if any:','th tneg');
+  b+=BS(12,128,172,46,'myelopathic symptoms in forward flexion','neg')+BS(194,128,172,46,'symptoms DECREASE with the A→P movement','neg')+BS(376,128,172,46,'excess displacement during A→P','neg');
+  b+=T(280,200,'highly specific · +LR 17.25 · refer for radiograph + stabilization','tb');
+  return S(560,212,'Steps of the Sharp-Purser test and its three positive findings',b);
+});
+fig('2','How a vertebral artery dissection causes stroke','The trauma mechanism runs from one combined movement to a stroke in five steps.','Rushton 2023',function(){
+  var s=['Rotation + side flexion + extension','Intima of the vertebral artery tears','Blood pools in the arterial wall','Clots form','Clot dislodges → stroke'],b='';
+  s.forEach(function(t,i){var x=6+i*111;b+=BS(x,70,100,70,t,i===4?'neg':'warm');if(i<4)b+=A(x+100,105,x+111,105,'')});
+  b+=T(280,40,'VERTEBRAL ARTERY DISSECTION (TRAUMA)','th tneg')+T(280,180,'vs cervical arterial disease: CV risk factors (↑ lipids, HTN, smoking)','ts');
+  return S(560,200,'Five-step chain from neck motion to stroke',b);
+});
+fig('2','Vascular concern: what to do next','Screen with the 5 D’s and 3 N’s. If you’re worried, defer manual therapy, then refer by urgency.','Rushton 2023',function(){
+  var b=BX(130,6,300,48,'Neck pain + facial/peri-orbital pain','with vascular risk factors or recent trauma','warm','twarm');
+  b+=A(280,54,280,74,'')+BX(110,76,340,36,'Screen: 5 D’s + 3 N’s · measure BP','','');
+  b+=A(280,112,280,132,'')+BX(170,134,220,34,'DEFER manual therapy','','neg','tneg');
+  b+=A(230,168,140,190,'neg')+A(330,168,420,190,'warm');
+  b+=BX(10,192,260,48,'Acute → emergency department','thunderclap (≤ 60 s) · new neuro signs','neg','tneg')+BX(290,192,260,48,'Subacute → physician','no VBI positional testing','warm','twarm');
+  return S(560,248,'Decision flow for suspected vascular pathology',b);
+});
+fig('2','Most frequent signs of dissection (Thomas 2015)','Vertebrobasilar dissection leads with unsteadiness. Internal carotid dissection leads with ptosis.','Thomas 2015',function(){
+  var v=[['Unsteadiness/ataxia',67],['Dysphagia/dysarthria/aphasia',44],['LE weakness',41],['UE weakness',33],['Nausea/vomiting',26]];
+  var c=[['Ptosis',70],['UE weakness',65],['Facial palsy',60],['LE weakness',50],['Dysphagia/dysarthria/aphasia',45]];
+  function pan(ox,lab,d,k){var s=T(ox+130,18,lab,'th');d.forEach(function(r,i){var y=32+i*36;s+=T(ox,y+10,r[0],'ts','start')+R(ox,y+14,r[1]*2.2,12,'f-'+k,2)+T(ox+r[1]*2.2+6,y+24,(r[0]==='Ptosis'?'60–80':r[1])+'%','ts','start')});return s}
+  return S(560,215,'Two bar lists of sign frequency for VBA and ICA dissection',pan(10,'VBA DISSECTION',v,'acc')+pan(290,'ICA DISSECTION',c,'neg'));
+},'Ptosis bar drawn at the midpoint of 60–80%.');
+fig('2','Myelopathy cluster','Count the positives. Three or more of five pushes the probability to 94%, so refer immediately for advanced imaging.','Cook 2010',function(){
+  var s=['Gait deviation','+ Hoffman’s','+ Inverted supinator','+ Babinski','Age > 45'],b='';
+  s.forEach(function(t,i){b+=BX(6+i*110,16,102,50,t,'',i<3?'acc':'mut',i<3?'tacc':'')});
+  b+=T(280,88,'≥ 3 of 5 positive','tb');
+  b+=A(280,94,280,116,'acc')+BX(150,118,260,40,'+LR 30.9 → post-test 94%','','acc','tacc');
+  b+=A(280,158,280,180,'neg')+BX(130,182,300,38,'Immediate referral: advanced imaging','','neg','tneg');
+  return S(560,228,'Five findings, three highlighted, leading to referral',b);
+});
+fig('3','Four CPG neck pain categories','Each category has a hallmark. Real patients often overlap, and a movement diagnosis can sit on top of any of them.','Blanpied 2017',function(){
+  var q=[['Mobility deficits','limited motion reproduces symptoms','acc'],['Headache','cervicogenic: unilateral, ↓ AROM','warm'],['Radiating pain','distal UE / Cloward; C5–6','neg'],['Movement coordination','whiplash, concussive signs, weak DNF','pos']],b='';
+  q.forEach(function(x,i){var X=20+(i%2)*270,Y=16+Math.floor(i/2)*100;b+=BX(X,Y,250,84,x[0],x[1],x[2],'t'+x[2])});
+  return S(560,210,'Two-by-two grid of the four neck pain categories',b);
+});
+fig('3','Three headaches, three manual therapy responses','Response to upper cervical manual therapy: migraine variable, tension-type limited, cervicogenic often good.','Robertson 2026',function(){
+  var h=[['Migraine','POUND · unilateral','variable',55,'warm'],['Tension-type','bilateral · pressing','limited',25,'neg'],['Cervicogenic','unilateral · ↓ AROM','often good',90,'pos']],b=T(350,20,'UPPER CERVICAL MANUAL THERAPY RESPONSE','th');
+  h.forEach(function(x,i){var y=36+i*60;b+=B(10,y,160,46,[x[0],x[1]],x[4],'t'+x[4])+R(200,y+14,300,18,'f-s2',4)+R(200,y+14,x[3]*3,18,'f-'+x[4],4)+T(206+x[3]*3,y+28,x[2],'tb','start')});
+  return S(560,220,'Bars comparing manual therapy response across headache types',b);
+},'Bar length is qualitative.');
+fig('3','Radiculopathy: closing vs opening the foramen','Extension with ipsilateral side bending and rotation worsens symptoms, and early treatment maximizes the foramen (opening). The narrowing mechanism shown is an illustrative inference.','Blanpied 2017; Robertson 2026',function(){
+  function pan(ox,lab,open,k){var s=T(ox+125,20,lab,'th');
+    s+=R(ox+40,40,170,40,'bx mut',6)+R(ox+40,(open?150:130),170,40,'bx mut',6)+T(ox+125,64,'vertebra','ts')+T(ox+125,(open?174:154),'vertebra','ts');
+    s+=C(ox+125,open?115:105,open?16:9,'bx '+k)+T(ox+180,open?120:108,'root','ts','start');
+    s+=T(ox+125,214,open?'traction · avoid ext/ipsi SB-rot':'ext + ipsilateral SB + rotation',k==='pos'?'tpos tb':'tneg tb');return s}
+  return S(560,228,'Narrowed foramen compressing root vs opened foramen',pan(0,'SYMPTOMS ↑',false,'neg')+pan(290,'CHEMICAL PHASE GOAL',true,'pos'));
+});
+fig('3','Radiculopathy treatment timeline','Protect the inflamed root first. Load, mobilize and glide the nerve later.','Robertson 2026',function(){
+  var b=L(20,110,540,110,'faint');
+  b+=BX(20,50,200,110,'CHEMICAL',['first 4–6 weeks','traction; open the foramen','avoid ext + ipsilateral SB/rot','no aggressive ULTT or glides'],'neg','tneg');
+  b+=BX(340,50,200,110,'MECHANICAL',['beyond 12 weeks','graded mobs → ext/ipsi rotation','strengthen levator + UT','neural sliders/gliders'],'pos','tpos');
+  b+=A(222,110,338,110,'faint','transition',280,100,'ts');
+  b+=T(20,182,'0','ts','start')+T(220,182,'6 wk','ts')+T(340,182,'12 wk','ts');
+  return S(560,195,'Timeline from chemical to mechanical phase',b);
+});
+fig('3','Whiplash prognosis (Ritchie 2015)','NDI sorts patients first. Low NDI plus young age predicts full recovery. High NDI plus older age plus high hyperarousal predicts ongoing disability.','Ritchie 2015',function(){
+  var b=BX(240,6,80,28,'NDI','','acc','tacc');
+  b+=BX(40,56,90,28,'≤ 32%','','pos','tpos')+BX(235,56,90,28,'33–39%','','mut')+BX(430,56,90,28,'≥ 40%','','neg','tneg');
+  b+=A(280,34,85,54,'faint')+A(280,34,280,54,'faint')+A(280,34,475,54,'faint');
+  b+=BX(40,104,90,28,'≤ 35 y','','pos','tpos')+A(85,84,85,102,'')+BX(430,104,90,28,'≥ 35 y','','neg','tneg')+A(475,84,475,102,'');
+  b+=BX(20,152,130,40,'Predicted full recovery','','pos','tpos')+A(85,132,85,150,'pos');
+  b+=BX(385,150,170,42,'PDS hyperarousal','≥ 6 on the subscale','neg','tneg')+A(475,132,475,150,'');
+  b+=BX(385,210,170,44,'Ongoing disability','moderate/severe','neg','tneg')+A(475,192,475,208,'neg');
+  b+=BX(190,210,180,44,'Neither prediction','','mut');
+  b+=A(280,84,280,208,'faint');
+  return S(560,262,'Decision tree using NDI, age and hyperarousal',b);
+},'Other branches (older with low NDI, younger with high NDI, or hyperarousal under 6) lead to neither prediction.');
+fig('3','CPG recommendations by phase (all grade B)','Mobility deficits move from ROM plus thoracic manipulation, to endurance, to multimodal care. Headache moves from active mobility, to manual therapy, to manual therapy plus exercise.','Blanpied 2017',function(){
+  var r=[['Mobility deficits',['Thoracic manip + neck ROM + scapulothoracic/UE exercise','Neck and shoulder girdle endurance exercise','Thoracic + cervical manip/mob, mixed exercise, dry needling/laser/traction']],['Headache',['Supervised instruction in active mobility exercise','Cervical manipulation and mobilization','Manip/mob + neck and shoulder stretching, strengthening, endurance']]];
+  var b=T(213,18,'ACUTE','th')+T(353,18,'SUBACUTE','th')+T(490,18,'CHRONIC','th');
+  r.forEach(function(x,i){var y=28+i*104;b+=BX(6,y,130,94,x[0],'',i?'warm':'acc',i?'twarm':'tacc');x[1].forEach(function(t,j){b+=BS(146+j*138,y,132,94,t,'')})});
+  return S(560,232,'Grid of CPG recommendations by category and phase',b);
+});
+fig('4','The four cervical MSI syndromes','Two families: extension (forward head, ↑ lordosis) and flexion (flat thoracic, ↓ lordosis). Each has a rotation variant where turning isn’t clean.','Sahrmann 2011',function(){
+  var b=T(195,18,'EXTENSION FAMILY','th')+T(430,18,'FLEXION FAMILY','th')+T(40,80,'sagittal','ts')+T(40,180,'+ rotation','ts');
+  b+=BX(80,30,230,90,'Extension',['excess translation vs sagittal rotation','pain with extension / forward head'],'warm','twarm');
+  b+=BX(80,130,230,90,'Extension-rotation',['MOST COMMON · unilateral pain','compensatory extension/SB'],'neg','tneg');
+  b+=BX(320,30,230,90,'Flexion',['excess lower-cervical flexion','pain sitting / reading'],'acc','tacc');
+  b+=BX(320,130,230,90,'Flexion-rotation',['rotation with concurrent flexion','lacks thoracic flexion'],'pos','tpos');
+  return S(560,228,'Two-by-two grid of the four movement syndromes',b);
+});
+fig('4','Why the levator feels "tight"','A depressed scapula pulls on the levator, producing sustained loading at C1–C4. The muscle works isometrically while lengthened, which loads and shears the upper neck.','Sahrmann 2011',function(){
+  var b='';
+  for(var i=0;i<7;i++){b+=R(120,24+i*24,40,18,'bx '+(i<4?'warm':'mut'),4)+T(110,37+i*24,'C'+(i+1),'ts','end')}
+  b+=P('M300 150 L380 150 L360 220 L310 220 Z','ln')+T(340,196,'scapula','ts');
+  b+=P('M160 60 Q240 70 305 152','ln warm thick')+T(245,62,'levator scapulae','twarm tb');
+  b+=A(340,222,340,250,'neg thick')+T(350,250,'suitcase pulls down','tneg','start');
+  b+=T(420,80,'overloaded while','tb','start')+T(420,96,'LENGTHENED,','tb','start')+T(420,112,'not short','ts','start');
+  b+=A(175,90,210,100,'neg')+T(215,120,'shear C1–C4','tneg','start');
+  return S(560,262,'Spine column, scapula and levator line with downward pull',b);
+});
+fig('4','Forward head: poorly distributed flexion','In forward head posture, the lower cervical spine over-flexes and the upper cervical spine under-flexes. Treatment corrects segmental flexion.','Sahrmann 2011',function(){
+  var ups=[3,3,4],lows=[14,16,18],b=T(280,18,'SHARE OF FLEXION BY LEVEL (SCHEMATIC)','th'),y=40;
+  ['C1–2','C2–3','C3–4','C4–5','C5–6','C6–7'].forEach(function(l,i){var v=i<3?ups[i]:lows[i-3],k=i<3?'acc':'neg';b+=T(90,y+i*28+12,l,'ts','end')+R(100,y+i*28,v*18,18,'f-'+k,3)});
+  b+=T(200,66,'upper cervical: insufficient flexion','tacc tb','start')+T(440,150,'lower cervical:','tneg tb','start')+T(440,166,'excessive','tneg tb','start');
+  return S(560,215,'Bars showing small upper and large lower cervical flexion',b);
+},'Shape only.');
+fig('4','Syndrome intervention verbs','Each syndrome’s treatment boils down to three verbs.','Sahrmann 2011',function(){
+  var r=[['Extension',['Restore neutral alignment','Strengthen long extensors + intrinsic flexors','Reduce levator/SCM dominance'],'warm'],['Extension-rotation',['Train rotation on a vertical axis','Support the arms','Strengthen intrinsic rotators + DNF'],'neg'],['Flexion',['Strengthen long spine extensors','Normalize flexion (slump)','Correct thoracic alignment'],'acc'],['Flexion-rotation',['Correct thoracic/scapular alignment','Restore thoracic flexion','Move the C-spine on axis'],'pos']],b='';
+  r.forEach(function(x,i){var y=8+i*56;b+=BX(4,y,144,48,x[0],'',x[2],'t'+x[2]);x[1].forEach(function(t,j){b+=BS(154+j*134,y,128,48,t,'')})});
+  return S(560,236,'Four rows of three intervention steps',b);
+});
+fig('4','Worked case: from findings to treatment','Her scapulae sat low and anteriorly tilted, so her neck carried her arms. Unloading was both the test and the treatment.','Case example',function(){
+  var b=BX(6,14,180,196,'Findings',['long neck · kyphosis','pain studying, wearing bun','low, anteriorly tilted scapulae','R UE elevation → L rotation','DNF can’t hold > 10 s'],'warm','twarm');
+  b+=A(188,112,212,112,'')+BX(214,77,132,70,'Dx','extension-rotation','neg','tneg')+A(348,112,372,112,'');
+  b+=BX(374,14,180,196,'Treatment',['armrests · arms propped up','hair down','AAROM, lower cervical','slant board · phone position','self-mob, shoulders unloaded'],'pos','tpos');
+  return S(560,220,'Three-box flow from findings to diagnosis to treatment',b);
+});
+fig('5','Suboccipital palpation routes','Anchor on the C2 spinous process and the C1 transverse process. Each suboccipital runs between two of the four landmarks.','PhysioU (Wong)',function(){
+  var p={occ:[280,40],mast:[470,60],c1:[440,130],c2:[280,190]};
+  var b=P('M120 40 H440','ln faint')+T(120,32,'occiput','ts','start');
+  b+=C(p.mast[0],p.mast[1],8,'bx mut')+T(p.mast[0]+14,p.mast[1]+4,'mastoid','ts','start');
+  b+=C(p.c1[0],p.c1[1],9,'bx acc')+T(p.c1[0]+14,p.c1[1]+4,'C1 TP','tacc tb','start');
+  b+=C(p.c2[0],p.c2[1],9,'bx acc')+T(p.c2[0],p.c2[1]+26,'C2 SP','tacc tb');
+  b+=P('M280 190 L440 130','ln neg thick')+T(372,178,'OC inferior','tneg tb');
+  b+=P('M440 130 L470 60','ln warm thick')+T(462,108,'OC superior','twarm tb','start');
+  b+=P('M280 190 L330 44','ln pos thick')+T(318,120,'RCP major','tpos tb','start');
+  b+=P('M280 190 L292 44','ln acc thick')+T(282,100,'RCP minor','tacc tb','end');
+  return S(560,225,'Four landmarks joined by four suboccipital lines, right side',b);
+});
+fig('5','PAIVM vs upglide/downglide testing','Central and unilateral PAs tell you where it hurts and whether it’s stiff. Upglide and downglide testing tells you which direction is stuck.','PhysioU (Wong)',function(){
+  var b=B(20,30,240,120,['PAIVM (central / unilateral PA)','✓ source of pain','✓ hypo vs hypermobile','✗ direction of limitation'],'acc','tacc');
+  b+=A(262,90,298,90,'','then',280,80,'ts');
+  b+=B(300,30,240,120,['Upglide / downglide','✓ opening vs closing','✓ which side','→ treat that glide'],'pos','tpos');
+  b+=T(280,185,'Hypo above & below the hinge, hyper AT the hinge','tb');
+  return S(560,200,'Two-box sequence from PAIVM to directional testing',b);
+});
+fig('5','Reading AROM for glide restrictions','A facet that can’t open blocks rotation away from it and pushes the neck into extension. A facet that can’t close blocks rotation toward it and pushes the neck into flexion.','PhysioU (Wong)',function(){
+  var b=T(140,18,'RIGHT UPGLIDE RESTRICTED','th tpos')+T(420,18,'RIGHT DOWNGLIDE RESTRICTED','th tneg');
+  b+=B(20,30,240,170,['Opening restriction','↓ LEFT (contralateral) rotation','↓ left side flexion','deviates into EXTENSION','usually C2–4 (above hinge)','pain end-range left rotation'],'pos','tpos');
+  b+=B(300,30,240,170,['Closing restriction','↓ RIGHT (ipsilateral) rotation','↓ right side flexion','deviates into FLEXION','usually C6–7','pain end-range right rotation'],'neg','tneg');
+  return S(560,210,'Side-by-side signs for right upglide vs right downglide restriction',b);
+});
+fig('5','The hinge point','Expect stiffness above and below the hinge, and hypermobility at it, especially in extension. The hinge level varies, and C5 here is only an example.','PhysioU (Wong)',function(){
+  var lv=['C2','C3','C4','C5','C6','C7'],st=['hypo · upglide','hypo · upglide','hypo · upglide','HINGE · hyper','hypo · downglide','hypo · downglide'],kk=['pos','pos','pos','warm','neg','neg'],b='';
+  lv.forEach(function(l,i){var y=16+i*34;b+=R(200,y,60,26,'bx '+kk[i],5)+T(230,y+17,l,'tb')+T(280,y+17,st[i],'t'+kk[i],'start')});
+  b+=P('M160 30 Q120 115 160 200','ln faint')+T(110,120,'lordosis','ts','end');
+  return S(560,225,'Column of segments with upglide restrictions above, hinge, downglide restrictions below',b);
+});
+fig('5','Choosing the unilateral PA grade','Grade by the pain-resistance relationship. The more irritable the joint, the lower the grade.','PhysioU (Wong)',function(){
+  var b=axes(60,190,440,160,'depth into range →','');
+  b+=L(60,190,500,190,'faint');
+  b+=L(170,40,170,190,'neg dash')+T(170,34,'pain','tneg tb');b+=L(330,40,330,190,'acc dash')+T(330,34,'R1','tacc tb');
+  b+=R(62,120,106,50,'bx neg',6)+T(115,140,'pain BEFORE','tneg tb')+T(115,156,'resistance → I–II','ts');
+  b+=R(300,80,190,50,'bx pos',6)+T(395,100,'pain WITH resistance','tpos tb')+T(395,116,'or resistance dominant → III–IV','ts');
+  b+=T(440,210,'↑ irritability = ↓ grade','ts');
+  return S(560,222,'Timeline of pain onset relative to resistance with grade choice',b);
+});
+fig('5','Where the force goes','Upglide pushes the cranial pillar 45° toward the opposite eye. Downglide locks in and presses 45° toward the opposite elbow or shoulder.','PhysioU (Wong)',function(){
+  var b=T(140,18,'UPGLIDE (supine, top view)','th tpos')+T(420,18,'DOWNGLIDE (head off table)','th tneg');
+  b+=C(140,100,50,'bx mut')+C(118,86,5,'f-ink')+C(162,86,5,'f-ink')+T(196,140,'face up','ts','start');
+  b+=C(100,170,7,'bx pos')+A(100,170,158,92,'pos thick')+T(20,200,'R pillar → toward L eye (45°)','tpos','start');
+  b+=C(400,90,40,'bx mut')+T(400,94,'head','ts');
+  b+=C(380,150,7,'bx neg')+A(380,150,450,200,'neg thick')+T(458,196,'→ opposite','tneg','start')+T(458,210,'elbow/shoulder','tneg','start');
+  b+=T(400,232,'no stabilization · crisp capsular end feel','ts');
+  return S(560,242,'Schematic force directions for upglide and downglide',b);
+},'Schematic directions only.');
+fig('5','SNAG, step by step','Hold the glide the whole way out and back. It must be pain free.','PhysioU (Wong)',function(){
+  var s=['Thumbs on the painful segment','Upglide toward the eye','Patient rotates to the opposite side','Hold the glide back to neutral','Release and repeat (6–10)'],b='';
+  s.forEach(function(t,i){var x=6+i*111;b+=BS(x,50,100,70,t,i===1?'pos':'');if(i<4)b+=A(x+100,85,x+111,85,'')});
+  b+=T(280,28,'1–2 sets × 6–10 · pain free · then active ROM = "save button"','tb');
+  return S(560,135,'Five-step SNAG sequence',b);
+});
+fig('5','Deep neck extensor test: faulty vs corrected','The faulty lift leads with a chin poke and creases the upper neck. The correction fixes the eyes on a spot and lifts through the upper back.','PhysioU (Wong); Jull 2019',function(){
+  function q(ox,good){var s='';s+=P('M'+(ox+40)+' 150 L'+(ox+170)+' 130','ln thick')+L(ox+50,150,ox+50,200,'')+L(ox+160,132,ox+160,200,'');
+    if(good){s+=P('M'+(ox+170)+' 130 L'+(ox+205)+' 128','ln thick pos')+C(ox+220,132,14,'bx pos')+A(ox+215,150,ox+215,190,'faint dash')+T(ox+215,205,'eyes on spot','ts')}
+    else{s+=P('M'+(ox+170)+' 130 L'+(ox+195)+' 112','ln thick neg')+C(ox+208,100,14,'bx neg')+A(ox+214,104,ox+250,88,'neg')+T(ox+188,108,'crease','tneg tb','end')}
+    s+=T(ox+130,30,good?'CORRECTED':'FAULTY',good?'th tpos':'th tneg')+T(ox+130,50,good?'lift through upper back (CT junction cue)':'initiates with craniocervical extension','ts');return s}
+  return S(560,220,'Two quadruped stick figures, chin poke vs neutral head lift',q(0,false)+q(280,true));
+});
+
+
+
+/* ================= RENDER ================= */
+var WK=[['all','All'],['1','Topic 1 · Arthrokinematics & ROM'],['2','Topic 2 · Screening'],['3','Topic 3 · Neck pain classification'],['4','Topic 4 · MSI syndromes'],['5','Topic 5 · Mobility exam & treatment']];
+var atlas=document.getElementById('atlas'),html='',n=0;
+WK.slice(1).forEach(function(w){
+  var list=F.filter(function(f){return f.w===w[0]});
+  html+='<section class="wk" data-w="'+w[0]+'"><div class="week-h"><span class="wk">'+list.length+' figures</span><h2>'+w[1]+'</h2></div><div class="grid">';
+  list.forEach(function(f){n++;ID=n;
+    var note=f.note&&f.note.indexOf('Wait')!==0?' <span class="ill">'+esc(f.note)+'</span>':'';
+    html+='<figure class="fig" id="fig'+n+'"><div class="fig-h"><span class="n">'+(n<10?'0':'')+n+'</span><h3>'+esc(f.t)+'</h3></div><div class="svgbox">'+f.draw()+'</div><figcaption>'+esc(f.c)+' <span class="src">'+esc(f.src)+'</span>'+note+'</figcaption></figure>';
+  });
+  html+='</div></section>';
+});
+atlas.innerHTML=html;
+var fl=document.getElementById('filters'),cur='all';
+fl.innerHTML=WK.map(function(w){return '<button type="button" class="chip" data-w="'+w[0]+'" aria-pressed="'+(w[0]==='all')+'">'+(w[0]==='all'?'All':'Topic '+w[0])+'</button>'}).join('')+'<span class="count" id="cnt"></span>';
+function apply(){[].forEach.call(document.querySelectorAll('section.wk'),function(s){s.hidden=!(cur==='all'||s.getAttribute('data-w')===cur)});
+  [].forEach.call(fl.querySelectorAll('.chip'),function(c){c.setAttribute('aria-pressed',String(c.getAttribute('data-w')===cur))});
+  document.getElementById('cnt').textContent=(cur==='all'?n:F.filter(function(f){return f.w===cur}).length)+' figures'}
+[].forEach.call(fl.querySelectorAll('.chip'),function(c){c.onclick=function(){cur=c.getAttribute('data-w');apply();window.scrollTo({top:0})}});
+apply();
+})();
+</script>
+<script>
+(function(){
+  var fl=document.getElementById('filters');if(!fl)return;
+  var b=document.createElement('button');b.type='button';b.className='chip quizchip';b.setAttribute('aria-pressed','false');b.textContent='Label quiz';
+  fl.appendChild(b);
+  var note=document.createElement('p');note.className='quiz-note';note.hidden=true;note.textContent='Labels and captions are blurred. Name each one, then tap it to check. Reveal all shows a whole figure.';fl.insertAdjacentElement('afterend',note);
+  [].forEach.call(document.querySelectorAll('figure.fig'),function(f){var h=f.querySelector('.fig-h');if(!h)return;var r=document.createElement('button');r.type='button';r.className='revall';r.textContent='Reveal all';h.appendChild(r);
+    r.onclick=function(){var on=!f.classList.contains('allrv');f.classList.toggle('allrv',on);[].forEach.call(f.querySelectorAll('svg text,figcaption'),function(t){t.classList.toggle('rv',on)});r.textContent=on?'Hide again':'Reveal all'}});
+  b.onclick=function(){var on=!document.body.classList.contains('lblquiz');document.body.classList.toggle('lblquiz',on);b.setAttribute('aria-pressed',String(on));note.hidden=!on;
+    [].forEach.call(document.querySelectorAll('.rv'),function(t){t.classList.remove('rv')});[].forEach.call(document.querySelectorAll('figure.allrv'),function(f){f.classList.remove('allrv');var r=f.querySelector('.revall');if(r)r.textContent='Reveal all'})};
+  document.addEventListener('click',function(e){if(!document.body.classList.contains('lblquiz'))return;var t=e.target.closest('svg text, figcaption');if(t){var tt=t.tagName.toLowerCase()==='tspan'?t.closest('text'):t;(tt||t).classList.toggle('rv')}});
+})();
+</script>
+<script>
+(function(){
+  var PFX="limbic-cervical-sg",fl=document.getElementById('filters');if(!fl)return;
+  var b=document.createElement('button');b.type='button';b.className='chip quizchip';b.setAttribute('aria-pressed','false');b.textContent='Diagram drill';b.style.marginLeft='6px';
+  fl.appendChild(b);
+  var bar=document.createElement('div');bar.className='drill-bar';bar.hidden=true;bar.setAttribute('role','region');bar.setAttribute('aria-label','Diagram drill');
+  bar.innerHTML='<span class="dr-pos"></span><span class="dr-h">Name every blurred label, tap each to check, then grade yourself.</span><button type="button" class="dr-yes">Knew it</button><button type="button" class="dr-no">Missed some</button><button type="button" class="dr-stop">Stop</button>';
+  var qn=document.querySelector('.quiz-note');(qn||fl).insertAdjacentElement('afterend',bar);
+  var order=[],k=0,known=0,ownLbl=false;
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+  function show(){
+    var cur=order[k];[].forEach.call(document.querySelectorAll('figure.fig'),function(f){f.classList.toggle('dr-off',f!==cur)});
+    [].forEach.call(document.querySelectorAll('section.wk'),function(s){s.classList.toggle('dr-empty',!s.contains(cur))});
+    [].forEach.call(cur.querySelectorAll('.rv'),function(t){t.classList.remove('rv')});cur.classList.remove('allrv');var r=cur.querySelector('.revall');if(r)r.textContent='Reveal all';
+    bar.querySelector('.dr-pos').textContent='Figure '+(k+1)+' of '+order.length;window.scrollTo({top:0});
+  }
+  function start(){
+    order=shuffle([].slice.call(document.querySelectorAll('section.wk:not([hidden]) figure.fig')));if(!order.length)return;
+    k=0;known=0;document.body.classList.add('drill');
+    if(!document.body.classList.contains('lblquiz')){var q=fl.querySelector('.quizchip:not([data-drill])');if(q&&q!==b){q.click();ownLbl=true}}
+    b.setAttribute('aria-pressed','true');bar.hidden=false;bar.querySelector('.dr-h').textContent='Name every blurred label, tap each to check, then grade yourself.';
+    [].forEach.call(bar.querySelectorAll('.dr-yes,.dr-no'),function(x){x.hidden=false});show();
+  }
+  function stop(){
+    document.body.classList.remove('drill');[].forEach.call(document.querySelectorAll('.dr-off,.dr-empty'),function(x){x.classList.remove('dr-off','dr-empty')});
+    if(ownLbl&&document.body.classList.contains('lblquiz')){var q=fl.querySelector('.quizchip:not([data-drill])');if(q&&q!==b)q.click()}ownLbl=false;
+    b.setAttribute('aria-pressed','false');bar.hidden=true;
+  }
+  function grade(ok){
+    var cur=order[k];if(!cur)return;
+    if(ok)known++;else{try{var AK=PFX+'-amiss-v1',A=JSON.parse(localStorage.getItem(AK)||'{}')||{},t='Diagram: '+(cur.querySelector('h3')||{}).textContent,e=A[t]||{n:0};e.n++;e.last=Date.now();e.g='Diagram drill';A[t]=e;localStorage.setItem(AK,JSON.stringify(A));localStorage.setItem(PFX+'-sync-ts',String(Date.now()))}catch(x){}}
+    k++;
+    if(k>=order.length){bar.querySelector('.dr-pos').textContent='Done';bar.querySelector('.dr-h').textContent='You knew '+known+' of '+order.length+' figures. Missed ones are listed under Weak spots on the study page.';[].forEach.call(bar.querySelectorAll('.dr-yes,.dr-no'),function(x){x.hidden=true});return}
+    show();
+  }
+  b.setAttribute('data-drill','1');
+  b.onclick=function(){if(document.body.classList.contains('drill'))stop();else start()};
+  bar.querySelector('.dr-yes').onclick=function(){grade(true)};
+  bar.querySelector('.dr-no').onclick=function(){grade(false)};
+  bar.querySelector('.dr-stop').onclick=stop;
+})();
+</script>

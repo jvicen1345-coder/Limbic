@@ -40,6 +40,24 @@ export const EXAM_PREP_GUIDES: ExamPrepGuide[] = [
     questions: 127,
     playbook: "neuro-examination",
   },
+  {
+    slug: "cervical-exam-prep",
+    name: "Cervical Spine",
+    description:
+      "Arthrokinematics, screening for serious pathology, neck pain classification, movement system impairment syndromes, and mobility examination and treatment. Key points with spaced review, practice quiz, flashcards, cases, practical skill check-offs, a timed mock quiz, five study games and a diagram atlas.",
+    topics: 5,
+    keyPoints: 43,
+    questions: 142,
+  },
+  {
+    slug: "motor-control-exam-prep",
+    name: "Motor Control & Motor Learning",
+    description:
+      "Motor control theories, information processing, skill acquisition and feedback, motor learning theories, and neuroplasticity, with the evidence behind each. Key points with spaced review, practice quiz, flashcards, cases, a timed mock quiz, five study games and a diagram atlas.",
+    topics: 5,
+    keyPoints: 43,
+    questions: 116,
+  },
 ];
 
 /** The companion pages each guide ships with, beside the main document. */
