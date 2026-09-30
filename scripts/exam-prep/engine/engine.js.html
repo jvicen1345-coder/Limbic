@@ -483,6 +483,9 @@
     return out;
   }
   function goWeek(id){if(!WEEKS.some(function(w){return w.id===id}))id='all';weakOnly=false;var we=document.getElementById('st-weak');if(we)we.checked=false;setWeek(id);var el=document.querySelector('#key .week[data-week="'+id+'"]')||document.getElementById('study-ctl');el.scrollIntoView({behavior:'smooth'})}
+  /* Deep links: #kp-<tag> opens that key point's topic and scrolls to it. */
+  function goHash(){var m=/^#kp-([\w-]+)$/.exec(location.hash),el=m&&document.getElementById('kp-'+m[1]);if(el)goKp(el)}
+  window.addEventListener('hashchange',goHash);setTimeout(goHash,0);
   function goKp(k){var w=k.closest('.week');weakOnly=false;var we=document.getElementById('st-weak');if(we)we.checked=false;setWeek(w?w.getAttribute('data-week'):'all');k.classList.add('flash');k.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(function(){k.classList.remove('flash')},2600)}
   function renderWeak(){
     var box=document.getElementById('weak-list');if(!box)return;
