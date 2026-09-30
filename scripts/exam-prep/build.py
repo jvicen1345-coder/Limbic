@@ -60,10 +60,10 @@ if not PERSONAL:
 # ---------- body ----------
 def kp_html(k):
     tag, q, gist, watch, a = k
-    return ('<div class="kp"><input type="checkbox" aria-label="Reviewed"><div>\n'
+    return ('<div class="kp" id="kp-%s"><input type="checkbox" aria-label="Reviewed"><div>\n'
             '<div class="q"><span class="tag">%s</span>%s</div>\n'
             '<details class="bd"><summary>Break it down</summary><div class="bd-body"><p><span class="bd-l">The gist</span>%s</p><p><span class="bd-l bd-w">Watch for</span>%s</p></div></details>\n'
-            '<div class="a">%s</div></div></div>\n') % (tag, q, gist, watch, a.strip())
+            '<div class="a">%s</div></div></div>\n') % (tag, tag, q, gist, watch, a.strip())
 
 weeks = ''
 for t in T:
