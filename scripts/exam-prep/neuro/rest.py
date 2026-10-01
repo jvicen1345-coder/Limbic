@@ -320,6 +320,9 @@ Q = [
  (8,"Box and Block Test: a block tossed over without the fingertips crossing the partition is:",["Counted","Not counted","Counted as two","Counted only on the dominant side"],1,"Fingertips must cross; bounced blocks that did cross still count; two carried together count as one."),
  (9,"Which goal is written correctly as a patient-centered functional goal?",["Pt will decrease spasticity in L elbow flexors in 4 weeks","Pt will be able to walk better","Mr. R will walk 150 ft on tile with a quad cane and stand-by assist for balance within 3 weeks","Pt will increase L hip flexion strength to 4/5"],2,"It names who, an observable activity, conditions, how well and by when. Goals target function, never an impairment like spasticity on its own."),
  (9,"In the five-part goal format, \"with contact guard at the trunk and one verbal cue for hand placement\" is the:",["Who","What","Conditions","How well"],3,"How well = the help or accuracy needed, described concretely."),
+ (6,"UE D2 flexion includes:",["Shoulder flexion, adduction, IR","Shoulder flexion, abduction, ER with wrist extension","Shoulder extension, abduction, IR","Shoulder flexion, adduction, ER with wrist flexion"],1,"D2 flexion: scapular posterior elevation; shoulder flexion, abduction, ER; supination; radial deviation and wrist extension; fingers extend."),
+ (6,"Which LE pattern pairs hip flexion with internal rotation?",["D1 flexion","D1 extension","D2 flexion","D2 extension"],2,"LE D2 flexion: hip flexion, abduction, IR; DF with eversion. D1 flexion pairs flexion with adduction and ER."),
+ (6,"UE D1 extension ends with the hand:",["Closed, near the opposite face","Open, down and out at the same-side hip","Open, up and out overhead","Closed, at the opposite hip"],1,"D1 extension: shoulder extension, abduction, IR; pronation; wrist extension with ulnar deviation; fingers open."),
 ]
 
 F = [
@@ -408,6 +411,9 @@ F = [
  (7,"Floor transfer down / up","Down: edge of mat → half-kneel → kneel, hands to floor (quadruped) → side sit. Up: quadruped → hands on chair → tall kneel → half-kneel → sit."),
  (9,"Functional goal: 5 parts","Who · does what (observable activity) · under what conditions · how well (specific help or accuracy) · by when. Never target an impairment such as spasticity."),
  (9,"SMART","Specific · Measurable · Achievable · Realistic/Relevant · Timed; set with the patient."),
+ (6,"UE D1 flex / D1 ext","Flex: scap elev+protract · sh flex, add, ER · supination · wrist flex + RD · fingers flex. Ext: scap depress+retract · sh ext, abd, IR · pronation · wrist ext + UD · fingers extend."),
+ (6,"UE D2 flex / D2 ext","Flex: scap elev+retract · sh flex, abd, ER · supination · wrist ext + RD · fingers extend. Ext: scap depress+protract · sh ext, add, IR · pronation · wrist flex + UD · fingers flex."),
+ (6,"LE D1 / D2","D1 flex: hip flex, add, ER · DF + inversion. D1 ext: hip ext, abd, IR · PF + eversion. D2 flex: hip flex, abd, IR · DF + eversion. D2 ext: hip ext, add, ER · PF + inversion."),
 ]
 
 # Short answer: (topic, question, answer_html, keyterms, need)

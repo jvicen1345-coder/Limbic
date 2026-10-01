@@ -621,6 +621,29 @@ topic('6', 'Ther ex & PNF', 'Topic 6 · Therapeutic exercise, aerobic training &
 <tr><td class="name">Combination of isotonics</td><td>Concentric, isometric and eccentric of the same agonists without relaxation</td><td>Controlled mobility, coordination, ↑ AROM, ↑ strength, functional eccentric control</td><td>"Push/pull, hold, let me move you slowly"</td></tr>
 <tr><td class="name">Replication</td><td>Start at the end position, resist and hold, move back passively, return; increase distance</td><td>Teach the final position; motor learning of a task</td><td>"Hold", "relax", "move to starting position"</td></tr>
 </tbody></table></div><p>{{u_ther}}</p>'''),
+('6G', 'PNF diagonals: D1 and D2 flexion and extension, UE and LE',
+ 'Each limb has two diagonals (D1, D2), each with a flexion and an extension end. Every pattern combines flexion or extension, abduction or adduction, and rotation, and the distal joints follow the proximal ones.',
+ 'UE: <b>flexion patterns always go with ER and supination</b>, extension with IR and pronation. D1 flexion crosses midline (adduction, hand closes); D2 flexion goes up and out (abduction, hand opens). LE: D1 flexion = up and across with ER; <b>D2 flexion = up and out with IR</b>.',
+ '''<div class="tbl-wrap"><table class="rt"><colgroup><col style="width:17%"><col style="width:17%"><col style="width:26%"><col style="width:40%"></colgroup>
+<thead><tr><th>UE pattern</th><th>Scapula</th><th>Shoulder</th><th>Forearm · wrist · fingers (thumb)</th></tr></thead><tbody>
+<tr><td class="name">D1 flexion</td><td>Elevation, protraction (anterior elevation)</td><td>Flexion, adduction, ER</td><td>Supination · radial deviation + flexion · finger flexion, adduction (thumb adduction)</td></tr>
+<tr><td class="name">D1 extension</td><td>Depression, retraction (posterior depression)</td><td>Extension, abduction, IR</td><td>Pronation · ulnar deviation + extension · finger extension, abduction (thumb abduction)</td></tr>
+<tr><td class="name">D2 flexion</td><td>Elevation, retraction (posterior elevation)</td><td>Flexion, abduction, ER</td><td>Supination · radial deviation + extension · finger extension, abduction (thumb extension)</td></tr>
+<tr><td class="name">D2 extension</td><td>Depression, protraction (anterior depression)</td><td>Extension, adduction, IR</td><td>Pronation · ulnar deviation + flexion · finger flexion, adduction (thumb opposition)</td></tr>
+</tbody></table></div>
+<div class="tbl-wrap"><table class="rt"><colgroup><col style="width:17%"><col style="width:23%"><col style="width:27%"><col style="width:33%"></colgroup>
+<thead><tr><th>LE pattern</th><th>Pelvis</th><th>Hip</th><th>Ankle · toes</th></tr></thead><tbody>
+<tr><td class="name">D1 flexion</td><td>Anterior elevation</td><td>Flexion, adduction, ER</td><td>DF + inversion · toe extension</td></tr>
+<tr><td class="name">D1 extension</td><td>Posterior depression</td><td>Extension, abduction, IR</td><td>PF + eversion · toe flexion</td></tr>
+<tr><td class="name">D2 flexion</td><td>Posterior elevation</td><td>Flexion, abduction, IR</td><td>DF + eversion · toe extension</td></tr>
+<tr><td class="name">D2 extension</td><td>Anterior depression</td><td>Extension, adduction, ER</td><td>PF + inversion · toe flexion</td></tr>
+</tbody></table></div>
+<ul>
+<li>The elbow (UE) and knee (LE) can stay straight, flex or extend in any pattern. Each extension pattern is the exact reverse of its flexion pattern along the same diagonal. {{beckers21}}</li>
+<li><b>Cues:</b> UE D1 flexion "squeeze, turn and pull up and across" (eyes and head follow the hand when used for rolling); UE D1 extension "open, turn and push down and away"; LE D1 flexion "toes up, heel up and across". {{u_roll}} UE D2 flexion "open, turn and lift up and out"; UE D2 extension "squeeze, turn and pull down and across"; LE D2 flexion "toes up, foot out, lift up and out". {{beckers21}}</li>
+<li><b>Memory aids:</b> D2 flexion = drawing a sword from the opposite hip; D2 extension = putting it back. D1 flexion = bringing the hand to the opposite side of the face. <span class="mine">inference</span></li>
+<li><b>Uses in this guide:</b> resisted UE D1 flexion and LE D1 flexion to facilitate rolling; chop and lift (combined bilateral UE patterns) for rolling and supine to sit; any PNF technique (rhythmic initiation, combination of isotonics, etc.) can be applied within a diagonal. {{u_roll,u_sts,u_ther}}</li>
+</ul>'''),
 ])
 
 # ---------------- TOPIC 7 ----------------
