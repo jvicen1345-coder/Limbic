@@ -876,4 +876,16 @@ topic('9', 'Documentation', 'Topic 9 · Documentation: daily SOAP note &amp; the
 <li><b>Cranial nerves:</b> "Cranial nerves II–IX, XI, XII intact"; acuity "L 20/30; R 20/30 with corrective lenses"; "+R head impulse test". {{u_cn}}</li>
 <li><b>Coordination:</b> "+ rebound phenomenon"; coordination graded 1–5. {{u_exam,lanzino12}}</li>
 </ul>'''),
+('9F', 'Writing patient-centered functional goals',
+ 'A goal names a meaningful activity the patient can\'t do now but wants to, written so anyone can observe and measure it: who, does what, under what conditions, how well, by when.',
+ 'Goals are about <b>function</b>, never about an impairment for its own sake: never "decrease spasticity". Write what the patient will <b>do</b>, not what they will "be able to" do.',
+ '''<ul>
+<li><b>Functional goal:</b> an individually meaningful activity the person can\'t perform because of their condition but wants to accomplish through PT; observable, repeatable, with a definite beginning and end; self-care, work or leisure. {{rand00}}</li>
+<li><b>Five parts:</b> (1) <b>Who</b>: the patient; (2) <b>What</b>: the observable activity (the third word of the goal names it; avoid "will be able to"); (3) <b>Conditions</b>: environment, device, surface, setup or precautions specific to this patient; (4) <b>How well</b>: describe the help or accuracy concretely (where you assist, how often you cue, how many successful trials), not just "min A"; (5) <b>By when</b>: a target date from healing, evidence, experience and the patient\'s progress. {{rand00}}</li>
+<li><b>SMART check:</b> Specific, Measurable, Achievable, Realistic/Relevant, Timed. Set goals <b>with</b> the patient. {{bovend09}}</li>
+<li><b>Where they come from:</b> the patient\'s own goals (PSFS, goal-setting questions) for realistic, patient-centered goals {{u_subj}}; SDOH and environment shape prognosis and goals {{u_subj}}; acute care plans list short- and long-term goals {{u_acute}}; with hypertonia, goals stay functional and never target spasticity itself {{u_ue2}}.</li>
+<li><b>Making "how well" measurable:</b> tie it to a test with a known meaningful change (e.g., a PSFS gain of at least the MCID: 1.58 after stroke, 2.5 in MS) or to time, distance, repetitions, assist level and cue frequency. <span class="mine">inference</span> {{evensen23,manago23}}</li>
+<li><b>Short- vs long-term:</b> the long-term goal is the function you expect at discharge; short-term goals are the steps toward it, often the same task with more help, an easier condition or a lower standard. <span class="mine">inference</span></li>
+<li><span class="mine">example</span> Strong: "Mr. R will transfer from bed to wheelchair toward his L (more involved) side by stand pivot, with contact guard at the trunk and one verbal cue for hand placement, in 4 of 5 trials within 3 weeks." Weak: "Pt will decrease tone in L elbow flexors" (impairment, not function) or "Pt will be able to walk better" (not observable or measurable).</li>
+</ul>'''),
 ])
