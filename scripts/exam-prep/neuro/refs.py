@@ -76,5 +76,6 @@ R = {
  "notes": "Vicencio J. Neurologic physical therapy study notes: examination, functional training and documentation. Author's synthesis; 2026.",
  "rand00": "Randall KE, McEwen IR. Writing patient-centered functional goals. <i>Phys Ther</i>. 2000;80(12):1197-1203. doi:10.1093/ptj/80.12.1197",
  "bovend09": "Bovend'Eerdt TJH, Botell RE, Wade DT. Writing SMART rehabilitation goals and achieving goal attainment scaling: a practical guide. <i>Clin Rehabil</i>. 2009;23(4):352-361. doi:10.1177/0269215508101741",
+ "beckers21": "Beckers D, Buck M. <i>PNF in Practice: An Illustrated Guide</i>. 5th ed. Springer; 2021. doi:10.1007/978-3-662-61818-9",
  "u_egress": "University Hospitals of Derby and Burton NHS Foundation Trust. Can my patient mobilise safely? Use the Egress Test [poster]. Undated."
 }

@@ -601,5 +601,14 @@
   "changes": "None",
   "evidence": "Crossref DOI record",
   "refnote": ""
+ },
+ "beckers21": {
+  "status": "verified",
+  "ama": "Beckers D, Buck M. <i>PNF in Practice: An Illustrated Guide</i>. 5th ed. Springer; 2021. doi:10.1007/978-3-662-61818-9",
+  "doi": "10.1007/978-3-662-61818-9",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Springer book DOI page",
+  "refnote": ""
  }
 }

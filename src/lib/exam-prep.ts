@@ -36,8 +36,8 @@ export const EXAM_PREP_GUIDES: ExamPrepGuide[] = [
     description:
       "Clinical reasoning, the subjective exam, movement analysis, cognition and cranial nerves, tone and motor control, speech and swallowing, therapeutic exercise and PNF, bed mobility and transfers, the hemiplegic upper extremity, and documentation. Key points with spaced review, practice quiz, flashcards, cases, a timed mock quiz, five study games and a diagram atlas.",
     topics: 9,
-    keyPoints: 79,
-    questions: 141,
+    keyPoints: 80,
+    questions: 144,
     playbook: "neuro-examination",
   },
   {
