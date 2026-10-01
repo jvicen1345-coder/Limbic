@@ -306,6 +306,18 @@ Q = [
  (9,"In acute care, the most important reason to ask about home setup is:",["Billing","Discharge planning","Pain","Medication reconciliation"],1,"Home setup matters for discharge planning in acute care."),
  (9,"The first EGRESS step is:",["Stand and march","Move to the edge of the surface","Step forward and back","Walk"],1,"Edge → seated march → stand and march → step forward/back."),
  (9,"Rehab potential in an acute care assessment is rated:",["1–10","Good, fair or poor","MMT grades","Independent/dependent"],1,"Good, fair or poor."),
+ (1,"In the common hypothesis (Ho) process, what comes right after the initial observation?",["Task/movement analysis","A first hypothesis, then the subjective exam","Testing potential impairments","Outcome measures"],1,"Initial observation → Ho → subjective exam → Ho → task/movement analysis → Ho of potential impairments → test them."),
+ (2,"On the PSFS, how is the total score calculated?",["Sum of all activity scores","Sum of activity scores ÷ number of activities","Lowest activity score","Highest activity score"],1,"Each activity is rated 0 (unable) to 10 (pre-injury level); the total is the mean."),
+ (2,"In the movement analysis glossary, which two constructs fall under postural control?",["Alignment and symmetry","Verticality and stability","Smoothness and timing","Speed and amplitude"],1,"Postural control = verticality and stability; coordination = smoothness, sequencing, timing, accuracy."),
+ (3,"Weber test: sound lateralizes to the right ear. This is consistent with:",["Right sensorineural loss","Right conductive loss or left sensorineural loss","Normal hearing","Left conductive loss"],1,"A positive Weber lateralizes toward an ipsilateral conductive loss or away from a sensorineural loss."),
+ (5,"Where are executive function processes performed?",["Occipital lobe","Frontal lobe","Cerebellum","Brainstem"],1,"Executive function is a frontal lobe process."),
+ (5,"In the memory model, information that is never attended to is lost from:",["Long-term memory","Short-term memory","Sensory memory","Working memory only"],2,"Unattended → lost from sensory memory; unrehearsed → lost from STM; some LTM fades over time."),
+ (5,"Which aphasia types come from lesions in the border zone (watershed) around the central speech areas?",["Broca's, Wernicke's, conduction","Transcortical motor, transcortical sensory, anomic","Global only","Conduction and global"],1,"Central: Broca's, Wernicke's, conduction, global. Border zone: transcortical motor, transcortical sensory, anomic."),
+ (5,"Which word-retrieval stage is the motor plan for the word's sounds?",["Semantic concept","Lemma","Phonological word","Articulatory score"],2,"Concept → lemma → phonological code → phonological word (motor plan) → articulatory score (spoken)."),
+ (7,"On the PASS, a score of 2 on an item means:",["Cannot perform","Performs with much help","Performs with little help","Performs without help"],2,"0 cannot, 1 much help, 2 little help, 3 without help."),
+ (7,"In Janssen's determinants of sit to stand, a rigid AFO is a:",["Chair-related factor","Person-related factor","Strategy-related factor","Not a determinant"],2,"A fixed joint, light conditions, attention and training are strategy (task) factors."),
+ (7,"Getting up from the floor using a chair, which comes right after quadruped near the chair?",["Tall kneel","Hands on the chair seat","Half-kneel","Push up to sit"],1,"Quadruped → hands on the seat → tall kneel → half-kneel → push up → sit."),
+ (8,"Box and Block Test: a block tossed over without the fingertips crossing the partition is:",["Counted","Not counted","Counted as two","Counted only on the dominant side"],1,"Fingertips must cross; bounced blocks that did cross still count; two carried together count as one."),
 ]
 
 F = [
@@ -386,6 +398,12 @@ F = [
  (9,"O-section essentials","Task, MC, VC, direction of force, reps, assist, setup, equipment, outcome; quantify cues."),
  (9,"A-section language","Increase safety, reduce fall risk, reduce caregiver burden; not a summary of O."),
  (9,"EGRESS steps","Edge of surface → seated march → stand and march → step forward and back."),
+ (1,"Ho process order","Initial observation → Ho → subjective exam → Ho → task/movement analysis → Ho of potential impairments → test them."),
+ (2,"SDOH 5 domains","Economic stability · education · health care · neighborhood/built environment · social and community context."),
+ (5,"EF wheel (5)","Planning and organizing · flexible thinking · problem solving · inhibition and self-regulation · insight and awareness."),
+ (5,"Aphasia: central vs border zone","Central: Broca's, Wernicke's, conduction, global. Border zone: TC motor, TC sensory, anomic."),
+ (5,"Word retrieval (5 stages)","Semantic concept → lemma → phonological code → phonological word (motor plan) → articulatory score."),
+ (7,"Floor transfer down / up","Down: edge of mat → half-kneel → kneel, hands to floor (quadruped) → side sit. Up: quadruped → hands on chair → tall kneel → half-kneel → sit."),
 ]
 
 # Short answer: (topic, question, answer_html, keyterms, need)
