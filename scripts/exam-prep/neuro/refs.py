@@ -74,5 +74,7 @@ R = {
  "francisco23": "Francisco GE, Engineer ND, Dawson J, et al. Vagus nerve stimulation paired with upper-limb rehabilitation after stroke: 2- and 3-year follow-up from the pilot study. <i>Arch Phys Med Rehabil</i>. 2023;104(8):1180-1187. doi:10.1016/j.apmr.2023.02.012",
  "schwabish26": "Schwabish L. Cognition is like a multistory building. <i>Eat, Speak, Think</i> [blog]. January 2026. Accessed September 28, 2026. https://eatspeakthink.com",
  "notes": "Vicencio J. Neurologic physical therapy study notes: examination, functional training and documentation. Author's synthesis; 2026.",
+ "rand00": "Randall KE, McEwen IR. Writing patient-centered functional goals. <i>Phys Ther</i>. 2000;80(12):1197-1203. doi:10.1093/ptj/80.12.1197",
+ "bovend09": "Bovend'Eerdt TJH, Botell RE, Wade DT. Writing SMART rehabilitation goals and achieving goal attainment scaling: a practical guide. <i>Clin Rehabil</i>. 2009;23(4):352-361. doi:10.1177/0269215508101741",
  "u_egress": "University Hospitals of Derby and Burton NHS Foundation Trust. Can my patient mobilise safely? Use the Egress Test [poster]. Undated."
 }

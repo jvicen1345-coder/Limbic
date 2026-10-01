@@ -583,5 +583,23 @@
   "changes": "None.",
   "evidence": "SAGE PDF at doi 10.1177/154596839901300103: Gelber DA, Jozefczyk PB; Neurorehabil Neural Repair 1999;13:5-14 (issue 1 encoded in DOI).",
   "refnote": ""
+ },
+ "rand00": {
+  "status": "verified",
+  "ama": "Randall KE, McEwen IR. Writing patient-centered functional goals. <i>Phys Ther</i>. 2000;80(12):1197-1203. doi:10.1093/ptj/80.12.1197",
+  "doi": "10.1093/ptj/80.12.1197",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record",
+  "refnote": ""
+ },
+ "bovend09": {
+  "status": "verified",
+  "ama": "Bovend'Eerdt TJH, Botell RE, Wade DT. Writing SMART rehabilitation goals and achieving goal attainment scaling: a practical guide. <i>Clin Rehabil</i>. 2009;23(4):352-361. doi:10.1177/0269215508101741",
+  "doi": "10.1177/0269215508101741",
+  "pmid": "",
+  "changes": "None",
+  "evidence": "Crossref DOI record",
+  "refnote": ""
  }
 }

@@ -318,6 +318,8 @@ Q = [
  (7,"In Janssen's determinants of sit to stand, a rigid AFO is a:",["Chair-related factor","Person-related factor","Strategy-related factor","Not a determinant"],2,"A fixed joint, light conditions, attention and training are strategy (task) factors."),
  (7,"Getting up from the floor using a chair, which comes right after quadruped near the chair?",["Tall kneel","Hands on the chair seat","Half-kneel","Push up to sit"],1,"Quadruped → hands on the seat → tall kneel → half-kneel → push up → sit."),
  (8,"Box and Block Test: a block tossed over without the fingertips crossing the partition is:",["Counted","Not counted","Counted as two","Counted only on the dominant side"],1,"Fingertips must cross; bounced blocks that did cross still count; two carried together count as one."),
+ (9,"Which goal is written correctly as a patient-centered functional goal?",["Pt will decrease spasticity in L elbow flexors in 4 weeks","Pt will be able to walk better","Mr. R will walk 150 ft on tile with a quad cane and stand-by assist for balance within 3 weeks","Pt will increase L hip flexion strength to 4/5"],2,"It names who, an observable activity, conditions, how well and by when. Goals target function, never an impairment like spasticity on its own."),
+ (9,"In the five-part goal format, \"with contact guard at the trunk and one verbal cue for hand placement\" is the:",["Who","What","Conditions","How well"],3,"How well = the help or accuracy needed, described concretely."),
 ]
 
 F = [
@@ -404,6 +406,8 @@ F = [
  (5,"Aphasia: central vs border zone","Central: Broca's, Wernicke's, conduction, global. Border zone: TC motor, TC sensory, anomic."),
  (5,"Word retrieval (5 stages)","Semantic concept → lemma → phonological code → phonological word (motor plan) → articulatory score."),
  (7,"Floor transfer down / up","Down: edge of mat → half-kneel → kneel, hands to floor (quadruped) → side sit. Up: quadruped → hands on chair → tall kneel → half-kneel → sit."),
+ (9,"Functional goal: 5 parts","Who · does what (observable activity) · under what conditions · how well (specific help or accuracy) · by when. Never target an impairment such as spasticity."),
+ (9,"SMART","Specific · Measurable · Achievable · Realistic/Relevant · Timed; set with the patient."),
 ]
 
 # Short answer: (topic, question, answer_html, keyterms, need)
