@@ -414,7 +414,7 @@ export default async function StudentAtriumPage() {
         )}
       </div>
 
-      <AtriumWeekSchedule days={scheduleDays} weekLabel={weekLabel} />
+      <AtriumWeekSchedule days={scheduleDays} />
 
       {phase.type === "clinical" && phase.trimester && (
         <div className="atrium-rotation-banner">

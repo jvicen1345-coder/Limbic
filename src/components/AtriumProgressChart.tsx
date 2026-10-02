@@ -74,14 +74,14 @@ export function AtriumProgressChart({
           </svg>
           <div className="atrium-progress-ring-center">
             <div className="atrium-progress-ring-number">{daysCompletedThisWeek}</div>
-              <div className="atrium-progress-ring-label">of 7 days</div>
+            <div className="atrium-progress-ring-label">of 7 days</div>
           </div>
         </div>
 
         <div className="atrium-progress-details">
           <div className="atrium-progress-streak">
             <ZapIcon size={14} />
-            {currentStreak > 0 ? `${currentStreak} day${currentStreak === 1 ? "" : "s"} streak` : "No streak yet"}
+            {currentStreak > 0 ? `${currentStreak} day${currentStreak === 1 ? "" : "s"} streak` : "Start your streak today"}
           </div>
 
           {!hasAnyData && (

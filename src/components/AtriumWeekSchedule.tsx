@@ -49,14 +49,13 @@ export interface WeekScheduleDay {
  *  time or location column — see lib/calendar-data.ts buildCalendarEvents, which strips
  *  time before it ever reaches /calendar's own views either), so those cells show just the
  *  title, same as before. */
-export function AtriumWeekSchedule({ days, weekLabel }: { days: WeekScheduleDay[]; weekLabel: string }) {
+export function AtriumWeekSchedule({ days }: { days: WeekScheduleDay[] }) {
   const isEmpty = days.every((d) => d.events.length === 0);
 
   return (
     <div className="atrium-friends-strip atrium-week-schedule">
       <div className="atrium-week-schedule-header">
         <span className="atrium-friends-label">Class Schedule</span>
-        <span className="atrium-week-schedule-range">{weekLabel}</span>
         <Link href="/student/assignments" className="atrium-week-schedule-manage">
           Manage
         </Link>
