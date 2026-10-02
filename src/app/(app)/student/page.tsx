@@ -409,7 +409,7 @@ export default async function StudentAtriumPage() {
           </p>
         ) : (
           <p className="atrium-countdown-prompt">
-            Add your NPTE date to unlock your countdown <Link href="/profile/credentials#professional-dates">→ Profile Settings</Link>
+            Add your NPTE date to unlock your countdown &rArr; <Link href="/profile/credentials#professional-dates"> Profile Settings</Link>
           </p>
         )}
       </div>
@@ -456,7 +456,6 @@ export default async function StudentAtriumPage() {
             currentStreak={user.boardsStreakDays}
             domains={domainAccuracy}
           />
-          <p className="atrium-motivation-line">Your daily sharpening is waiting — 5 minutes keeps your streak alive.</p>
         </div>
 
         <AtriumThisWeekCard
