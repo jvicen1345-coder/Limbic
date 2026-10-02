@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { freshEmail, signUpAndEnterApp } from "./helpers";
+import { freshEmail, missingUserError, signUpAndEnterApp, withDb } from "./helpers";
 import { OUTCOME_MEASURES, measureSummary } from "../src/lib/outcome-measures";
 
 /**
@@ -23,31 +23,6 @@ import { OUTCOME_MEASURES, measureSummary } from "../src/lib/outcome-measures";
  * its inserts started failing SQLITE_BUSY through their own retry budget while these tests
  * passed. Nothing here needs a second account, so it does not open one.
  */
-
-/** One write over a second connection, with the same SQLITE_BUSY retry and the same
- *  close-in-finally as copyright-moderation.spec.ts — see the long note there on why an
- *  unclosed libSQL client surfaces as an unrelated flake in auth.spec.ts. */
-async function withDb<T>(fn: (db: Awaited<ReturnType<typeof openDb>>) => Promise<T>): Promise<T> {
-  let lastError: unknown;
-  for (let attempt = 0; ; attempt++) {
-    const db = await openDb();
-    try {
-      await db.execute("PRAGMA busy_timeout = 10000");
-      return await fn(db);
-    } catch (error) {
-      lastError = error;
-      if (attempt >= 4) throw lastError;
-      await new Promise((r) => setTimeout(r, 250 * 2 ** attempt));
-    } finally {
-      db.close();
-    }
-  }
-}
-
-async function openDb() {
-  const { createClient } = await import("@libsql/client");
-  return createClient({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
-}
 
 /** The numbers are the case the feature exists for: a result that clears statistical
  *  significance and fails to clear the MCID. If the deterministic layer ever stops saying
@@ -94,7 +69,7 @@ function appraisalInput(title: string) {
 async function insertAppraisals(email: string, titles: { published: string; draft: string }) {
   return withDb(async (db) => {
     const user = await db.execute({ sql: "SELECT id FROM User WHERE email = ?", args: [email] });
-    if (user.rows.length !== 1) throw new Error("sign-up row not visible on this connection yet");
+    if (user.rows.length !== 1) throw missingUserError(email, "sign-up row not visible on this connection yet");
     const authorId = String(user.rows[0].id);
     const now = Date.now();
     const stamp = `${now}-${Math.random().toString(36).slice(2, 8)}`;

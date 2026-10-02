@@ -58,6 +58,11 @@ next-env.d.ts
 /prisma/dev.db-journal
 /prisma/dev.db-wal
 /prisma/dev.db-shm
+# Optional scratch database for `PLAYWRIGHT_DATABASE_URL=file:./e2e.db`.
+/e2e.db
+/e2e.db-journal
+/e2e.db-wal
+/e2e.db-shm
 
 # python bytecode from the guide build scripts under docs/
 __pycache__/
