@@ -292,8 +292,7 @@ html[data-theme="dark"] .app-root--atrium {
   padding: 18px;
 }
 .atrium-week-header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
-.atrium-week-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 14px; }
-.atrium-week-range { font-size: 12px; color: var(--color-neutral-700); }
+.atrium-week-range { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 14px; }
 
 .atrium-week-empty-prompt {
   border: 1px solid color-mix(in srgb, var(--color-warn) 45%, transparent);
@@ -385,10 +384,10 @@ html[data-theme="dark"] .app-root--atrium {
   margin-top: 20px;
 }
 .atrium-zone-streak { grid-area: streak; min-width: 0; }
-.atrium-zone-roundup { grid-area: roundup; }
+.atrium-zone-roundup { grid-area: roundup; min-height: 430px; }
 .atrium-zone-cards { grid-area: cards; }
 
-@media (max-width: 799px) {
+@media (max-width: 1030px) {
   .atrium-v2-grid {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
@@ -396,15 +395,6 @@ html[data-theme="dark"] .app-root--atrium {
       "roundup"
       "cards";
   }
-}
-
-/* Single-line motivational nudge under the streak card — replaces the old bordered
-   3-line greeting card with plain muted text, no card/background of its own. */
-.atrium-motivation-line {
-  margin: 14px 2px 0;
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--color-neutral-700);
 }
 
 /* Resource grid — supporting-tool cards below the streak/roundup row. Grid area/spacing
@@ -474,9 +464,10 @@ html[data-theme="dark"] .app-root--atrium {
    .progress-bar-fill classes the NPTE Breakdown tab's system-weight bars already use. */
 .atrium-progress-card {
   display: flex;
+  min-height: 430px;
   flex-direction: column;
+  gap: 15px;
   padding: 22px 24px;
-  margin-bottom: 20px;
   border-radius: calc(var(--radius-lg) * 1.15);
   background: var(--atrium-surface);
   border: 1px solid var(--atrium-border);
@@ -485,7 +476,7 @@ html[data-theme="dark"] .app-root--atrium {
    layout before the Daily Clinical Sharpening CTA below folded into this same card (see
    AtriumProgressChart.tsx's own doc comment); split out so the CTA can sit as a second row
    underneath instead of squeezing into the same flex row as a third item. */
-.atrium-progress-top { display: flex; align-items: center; gap: 24px; }
+.atrium-progress-top { display: flex; flex: 1; align-items: center; gap: 24px; }
 .atrium-progress-ring-wrap { position: relative; flex-shrink: 0; width: 100px; height: 100px; }
 .atrium-progress-ring-center {
   position: absolute;
@@ -532,6 +523,7 @@ html[data-theme="dark"] .app-root--atrium {
 .atrium-progress-domain-arrow { flex-shrink: 0; color: var(--color-neutral-500); }
 .atrium-progress-cta {
   display: flex;
+  flex: 1;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -782,8 +774,7 @@ html[data-theme="dark"] .app-root--atrium {
    card language as the Your People strip just above it — only the header/grid layout below
    is specific to this component. */
 .atrium-week-schedule-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
-.atrium-week-schedule-header .atrium-friends-label { margin-bottom: 0; }
-.atrium-week-schedule-range { font-size: 12px; color: var(--color-neutral-700); flex: 1; }
+.atrium-week-schedule-header .atrium-friends-label { margin-bottom: 0; flex: 1; }
 .atrium-week-schedule-manage { font-size: 12.5px; font-weight: 600; color: var(--atrium-tint); text-decoration: none; }
 .atrium-week-schedule-manage:hover { text-decoration: underline; }
 .atrium-week-schedule-empty-all { font-size: 13px; color: var(--color-neutral-700); line-height: 1.5; margin: 0; }

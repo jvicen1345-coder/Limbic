@@ -88,10 +88,9 @@ export function AtriumThisWeekCard({
   const visibleRecommendations = showAllRecs ? recommendations : recommendations.slice(0, 3);
 
   return (
-    <aside className="atrium-week-panel atrium-zone-roundup">
+    <aside className="atrium-week-panel atrium-zone-roundup" aria-label="This Week">
       <div className="atrium-week-header">
         <span className="atrium-week-header-group">
-          <span className="atrium-week-title">This Week</span>
           <span className="atrium-week-range">{weekLabel}</span>
         </span>
         {canvasUrl ? (

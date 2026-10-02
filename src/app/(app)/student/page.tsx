@@ -409,12 +409,12 @@ export default async function StudentAtriumPage() {
           </p>
         ) : (
           <p className="atrium-countdown-prompt">
-            Add your NPTE date to unlock your countdown <Link href="/profile/credentials#professional-dates">→ Profile Settings</Link>
+            Add your NPTE date to unlock your countdown &rArr; <Link href="/profile/credentials#professional-dates">Profile Settings</Link>
           </p>
         )}
       </div>
 
-      <AtriumWeekSchedule days={scheduleDays} weekLabel={weekLabel} />
+      <AtriumWeekSchedule days={scheduleDays} />
 
       {phase.type === "clinical" && phase.trimester && (
         <div className="atrium-rotation-banner">
@@ -456,7 +456,6 @@ export default async function StudentAtriumPage() {
             currentStreak={user.boardsStreakDays}
             domains={domainAccuracy}
           />
-          <p className="atrium-motivation-line">Your daily sharpening is waiting — 5 minutes keeps your streak alive.</p>
         </div>
 
         <AtriumThisWeekCard

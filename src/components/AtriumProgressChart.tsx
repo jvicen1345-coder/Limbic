@@ -74,23 +74,19 @@ export function AtriumProgressChart({
           </svg>
           <div className="atrium-progress-ring-center">
             <div className="atrium-progress-ring-number">{daysCompletedThisWeek}</div>
-            {daysCompletedThisWeek > 0 ? (
-              <div className="atrium-progress-ring-label">of 7 days</div>
-            ) : (
-              <div className="atrium-progress-ring-label atrium-progress-ring-label--empty">Start your streak today</div>
-            )}
+            <div className="atrium-progress-ring-label">of 7 days</div>
           </div>
         </div>
 
         <div className="atrium-progress-details">
           <div className="atrium-progress-streak">
             <ZapIcon size={14} />
-            {currentStreak > 0 ? `${currentStreak} day${currentStreak === 1 ? "" : "s"} streak` : "No streak yet"}
+            {currentStreak > 0 ? `${currentStreak} day${currentStreak === 1 ? "" : "s"} streak` : "Start your streak today"}
           </div>
 
           {!hasAnyData && (
             <p className="atrium-dashboard-empty" style={{ margin: 0 }}>
-              Your readiness builds one day at a time. Tap a domain below to start practicing it.
+              Tap or click a domain below to start practicing.
             </p>
           )}
           <div className="atrium-progress-domains">
