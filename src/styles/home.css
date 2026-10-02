@@ -235,29 +235,31 @@
 
 /* Calendar widget (see components/LimbicCalendarWidget.tsx) sits beside the Limbic Agent
    card (see components/LimbicAgentCard.tsx), relocated from the aside — this row replaces
-   what used to be the agent card's own standalone block. Calendar keeps a fixed 340px (its
-   7-column day grid has no width of its own, so left flexible it would stretch to fill
-   whatever the agent card doesn't take). The agent is capped at the same 340px — a 50%
-   cap left a dead gutter beside a compact calendar once the row was wide, and did not
-   stop the card collapsing when the row was narrow. Side-by-side only when the slot is
-   at least 340 + 20px gap + 340. Below that (sidebar + aside leave main-col ~212px at an
-   800px window and ~436px at 1024px) both go full width of the column — that mid-width
-   stack stays full-bleed of the column (#542). The 799px rule still stacks to match
-   .home-row in screens.css, including a wide phone where the slot itself could fit two
-   cards, but the calendar wrap stays at 340px there (#531) so square day cells keep the
-   desktop widget's density instead of growing with the column. The agent card still
-   spans the phone column. */
+   what used to be the agent card's own standalone block. Calendar keeps a fixed 340px
+   (#531): the month grid is repeat(7, 1fr) with square day cells, so a wider calendar
+   grows taller in proportion and, because the agent card stretches to match, pushes the
+   feed down. The agent wrap is the fluid half (flex: 1, no max-width) and takes every
+   pixel the calendar doesn't, so the row fills the main column out to the existing
+   1400px page cap instead of stopping at 700px. Side-by-side only when the slot is at
+   least 700px (the 699px container query). Below that (sidebar + aside leave main-col
+   ~212px at an 800px window and ~436px at 1024px) both go full width of the column —
+   that mid-width stack stays full-bleed of the column (#542). The 799px rule still
+   stacks to match .home-row in screens.css, including a wide phone where the slot itself
+   could fit two cards, but the calendar wrap stays at 340px there (#531) so square day
+   cells keep the desktop widget's density instead of growing with the column. The agent
+   card still spans the phone column. With the calendar hidden, the agent wrap is the
+   only child and fills the row on its own. */
 .home-calendar-agent-slot {
   container-type: inline-size;
   container-name: home-cal-agent;
   margin-bottom: 20px;
 }
-/* Side by side, the two cards are a matched pair: same 340px width, stretched to the
-   taller one's height, with each card's footer (calendar link / Ask button) pinned to
-   the bottom via margin-top: auto in the components. */
+/* Side by side, the calendar stays 340px and the agent card takes the rest. Both
+   stretch to the taller one's height, with each card's footer (calendar link / Ask
+   button) pinned to the bottom via margin-top: auto. */
 .home-calendar-agent-row { display: flex; align-items: stretch; gap: 20px; }
 .home-calendar-top-wrap { flex: 0 1 340px; max-width: 340px; min-width: 0; }
-.home-agent-card-wrap { flex: 0 1 340px; max-width: 340px; min-width: 0; }
+.home-agent-card-wrap { flex: 1; min-width: 0; }
 .home-calendar-top-wrap > .card,
 .home-agent-card-wrap > .card { height: 100%; }
 @container home-cal-agent (max-width: 699px) {
@@ -284,6 +286,59 @@
     max-width: 340px;
   }
 }
+
+/* Agent card body (components/LimbicAgentCard.tsx). .card-body is flex:1 globally, which
+   stretched both the week intro and the empty line to share the height the calendar
+   forces on this card, so "No articles read in the past 7 days." floated between two
+   voids. Those lines stay in their own section; the slack stays between that section
+   and the pinned Ask footer. Topic rows span the fluid card rather than the old 340px
+   measure. */
+.home-agent-card-wrap .card-body { flex: 0 1 auto; }
+.home-agent-week {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.home-agent-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.home-agent-week-empty {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  opacity: 0.7;
+}
+.home-agent-gaps {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  width: 100%;
+}
+.home-agent-gaps-label {
+  font-size: var(--fs-10);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+}
+.home-agent-topic {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 0;
+  text-decoration: none;
+  color: inherit;
+  font-size: 13px;
+}
+.home-agent-topic-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.35;
+}
+.home-agent-topic-meta { color: var(--color-neutral-700); }
+.home-agent-topic-chevron { color: var(--color-accent-700); flex-shrink: 0; }
+.home-agent-footer { margin-top: auto; padding-top: 4px; }
 
 /* Moved from agent.css — threads teaser card — Home and Search */
 /* — Feed-card Threads teaser (see components/ArticleCard.tsx) — a direct, always-visible
