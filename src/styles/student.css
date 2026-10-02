@@ -292,7 +292,8 @@ html[data-theme="dark"] .app-root--atrium {
   padding: 18px;
 }
 .atrium-week-header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
-.atrium-week-range { font-size: 12px; font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 14px;}
+.atrium-week-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 14px; }
+.atrium-week-range { font-size: 12px; color: var(--color-neutral-700); }
 
 .atrium-week-empty-prompt {
   border: 1px solid color-mix(in srgb, var(--color-warn) 45%, transparent);
@@ -395,6 +396,10 @@ html[data-theme="dark"] .app-root--atrium {
       "roundup"
       "cards";
   }
+  /* Stacked, the 430px floor only adds empty space under short content. This rule
+     beats .atrium-zone-roundup above; the progress card's own floor is cleared in the
+     media query next to that rule, which comes later in the file. */
+  .atrium-zone-roundup { min-height: unset; }
 }
 
 /* Resource grid — supporting-tool cards below the streak/roundup row. Grid area/spacing
@@ -466,11 +471,16 @@ html[data-theme="dark"] .app-root--atrium {
   display: flex;
   min-height: 430px;
   flex-direction: column;
-  gap: 15;
+  gap: 15px;
   padding: 22px 24px;
   border-radius: calc(var(--radius-lg) * 1.15);
   background: var(--atrium-surface);
   border: 1px solid var(--atrium-border);
+}
+@media (max-width: 1030px) {
+  /* Same floor as .atrium-zone-roundup, cleared once the grid stacks (see .atrium-v2-grid).
+     Has to follow the min-height above — an earlier media query loses to this rule. */
+  .atrium-progress-card { min-height: unset; }
 }
 /* The ring + per-domain breakdown row — was the entirety of .atrium-progress-card's own
    layout before the Daily Clinical Sharpening CTA below folded into this same card (see
@@ -774,7 +784,7 @@ html[data-theme="dark"] .app-root--atrium {
    card language as the Your People strip just above it — only the header/grid layout below
    is specific to this component. */
 .atrium-week-schedule-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
-.atrium-week-schedule-header .atrium-friends-label { margin-bottom: 0; flex: 1;}
+.atrium-week-schedule-header .atrium-friends-label { margin-bottom: 0; }
 .atrium-week-schedule-range { font-size: 12px; color: var(--color-neutral-700); flex: 1; }
 .atrium-week-schedule-manage { font-size: 12.5px; font-weight: 600; color: var(--atrium-tint); text-decoration: none; }
 .atrium-week-schedule-manage:hover { text-decoration: underline; }

@@ -298,7 +298,7 @@
   overscroll-behavior-x: contain;
   padding-bottom: 4px;
   scrollbar-width: thin;
-  scrollbar-color: var(--color-accent-600) transparent
+  scrollbar-color: var(--color-accent-600) transparent;
 }
 
 @media (max-width: 640px) {

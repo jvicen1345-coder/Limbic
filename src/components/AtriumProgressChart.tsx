@@ -86,7 +86,7 @@ export function AtriumProgressChart({
 
           {!hasAnyData && (
             <p className="atrium-dashboard-empty" style={{ margin: 0 }}>
-              Click a domain below to start practicing.
+              Tap or click a domain below to start practicing.
             </p>
           )}
           <div className="atrium-progress-domains">

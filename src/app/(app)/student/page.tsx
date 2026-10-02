@@ -409,7 +409,7 @@ export default async function StudentAtriumPage() {
           </p>
         ) : (
           <p className="atrium-countdown-prompt">
-            Add your NPTE date to unlock your countdown &rArr; <Link href="/profile/credentials#professional-dates"> Profile Settings</Link>
+            Add your NPTE date to unlock your countdown &rArr; <Link href="/profile/credentials#professional-dates">Profile Settings</Link>
           </p>
         )}
       </div>
