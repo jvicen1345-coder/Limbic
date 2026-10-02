@@ -139,6 +139,37 @@ export async function setUserColumn(email: string, column: string, value: string
   }
 }
 
+/** One ReadArticle old enough to fall outside the agent's 7-day window. The article id is
+ *  not in the feed, so recent topics stay empty ("No articles read in the past 7 days.")
+ *  while neglected topics still fall back to the canonical specialties. */
+export async function insertStaleRead(email: string) {
+  const stamp = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const id = `stale-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const { createClient } = await import("@libsql/client");
+  let lastError: unknown;
+
+  for (let attempt = 0; ; attempt++) {
+    const db = createClient({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
+    try {
+      await db.execute("PRAGMA busy_timeout = 10000");
+      const result = await db.execute({
+        sql: `INSERT INTO ReadArticle (id, userId, articleId, scrollProgress, createdAt, updatedAt)
+              SELECT ?, id, 'stale-gap-probe', 0, ?, ? FROM User WHERE email = ?`,
+        args: [id, stamp, stamp, email],
+      });
+      if (result.rowsAffected === 1) return;
+      lastError = new Error(`no User row for ${email} (INSERT affected ${result.rowsAffected} rows)`);
+    } catch (error) {
+      if (!String(error).includes("SQLITE_BUSY")) throw error;
+      lastError = error;
+    } finally {
+      db.close();
+    }
+    if (attempt >= 4) throw lastError;
+    await new Promise((resolve) => setTimeout(resolve, 250 * 2 ** attempt));
+  }
+}
+
 /** Puts an account on the paid LimbicStudent tier — what Limbic Boards and the playbooks are
  *  gated on (studentTier in lib/session.ts). */
 export async function grantLimbicStudent(email: string) {

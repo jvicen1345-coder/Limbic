@@ -38,63 +38,48 @@ export function LimbicAgentCard({ insights, isPro }: { insights: LimbicAgentInsi
         <p className="card-body">Start reading to unlock your personalized insights.</p>
       ) : (
         <>
-          <p className="card-body" style={{ marginBottom: 2 }}>
-            Based on your reading history this week:
-          </p>
-          {insights.recentTopics.length > 0 ? (
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {insights.recentTopics.map((t) => (
-                <span key={t} className="tag tag-accent-2">
-                  {t}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p className="card-body" style={{ fontSize: 12.5, opacity: 0.7 }}>
-              No articles read in the past 7 days.
+          <div className="home-agent-week">
+            <p className="card-body" style={{ marginBottom: 2 }}>
+              Based on your reading history this week:
             </p>
-          )}
+            {insights.recentTopics.length > 0 ? (
+              <div className="home-agent-tags">
+                {insights.recentTopics.map((t) => (
+                  <span key={t} className="tag tag-accent-2">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="home-agent-week-empty">No articles read in the past 7 days.</p>
+            )}
+          </div>
 
           {insights.neglectedTopics.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 6 }}>
-              <div
-                style={{ fontSize: "var(--fs-10)", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-accent-700)" }}
-              >
-                Topics you haven&rsquo;t touched
-              </div>
+            <div className="home-agent-gaps">
+              <div className="home-agent-gaps-label">Topics you haven&rsquo;t touched</div>
               {insights.neglectedTopics.map((n) =>
                 n.recommendedArticle ? (
-                  <Link
-                    key={n.topic}
-                    href={`/home?topic=${slugifyTopic(n.topic)}`}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 8,
-                      textDecoration: "none",
-                      color: "inherit",
-                      fontSize: 13,
-                      padding: "4px 0",
-                    }}
-                  >
-                    <span>
+                  <Link key={n.topic} href={`/home?topic=${slugifyTopic(n.topic)}`} className="home-agent-topic">
+                    <span className="home-agent-topic-label">
                       <strong>{n.topic}</strong>
-                      <span style={{ color: "var(--color-neutral-700)" }}>, {gapTrailer(n.gapDays)}</span>
+                      <span className="home-agent-topic-meta">, {gapTrailer(n.gapDays)}</span>
                     </span>
-                    <ChevronRightIcon size={14} style={{ color: "var(--color-accent-700)", flexShrink: 0 }} />
+                    <ChevronRightIcon size={14} className="home-agent-topic-chevron" />
                   </Link>
                 ) : (
-                  <div key={n.topic} style={{ fontSize: 13, padding: "4px 0" }}>
-                    <strong>{n.topic}</strong>
-                    <span style={{ color: "var(--color-neutral-700)" }}>, {gapTrailer(n.gapDays)}</span>
+                  <div key={n.topic} className="home-agent-topic">
+                    <span className="home-agent-topic-label">
+                      <strong>{n.topic}</strong>
+                      <span className="home-agent-topic-meta">, {gapTrailer(n.gapDays)}</span>
+                    </span>
                   </div>
                 )
               )}
             </div>
           )}
 
-          <div style={{ marginTop: "auto", paddingTop: 4 }}>
+          <div className="home-agent-footer">
             <Link href={isPro ? "/agent" : "/pro"} className="btn btn-primary" style={{ fontSize: 12.5 }}>
               Ask Limbic Agent
               <ChevronRightIcon size={14} />

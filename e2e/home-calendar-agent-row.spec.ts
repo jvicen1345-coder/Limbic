@@ -1,9 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
-import { freshEmail, setUserColumn, signUpAndEnterApp } from "./helpers";
+import { freshEmail, insertStaleRead, setUserColumn, signUpAndEnterApp } from "./helpers";
 
-/** Layout contract for the home calendar + agent row (#533 / #542 / #531).
- *  Side-by-side only when the slot can hold 340 + 20 + 340. Narrower main columns
- *  (the sidebar+aside band from ~800–1200) stack both full width. ≤799 stays stacked
+/** Layout contract for the home calendar + agent row (#533 / #542 / #531 / #569).
+ *  Side-by-side only when the slot is at least 700px. The calendar wrap stays 340px;
+ *  the agent card takes the rest of the main column. Narrower main columns (the
+ *  sidebar+aside band from ~800–1200) stack both full width. ≤799 stays stacked
  *  even when the column itself is wide enough for two cards, and the calendar wrap
  *  stays at the 340px widget density so the month grid is not full-bleed tall. */
 
@@ -84,11 +85,21 @@ function expectNarrowCompactCalendar(boxes: RowBoxes) {
 
 function expectSideBySide(boxes: RowBoxes) {
   expect(Math.abs(boxes.cal.top - boxes.agent.top)).toBeLessThan(8);
+  expect(Math.abs(boxes.cal.bottom - boxes.agent.bottom)).toBeLessThan(2);
   expect(boxes.agent.left).toBeGreaterThanOrEqual(boxes.cal.right - 2);
+  const gap = boxes.agent.left - boxes.cal.right;
+  expect(gap).toBeGreaterThan(12);
+  expect(gap).toBeLessThan(28);
   expect(boxes.cal.width).toBeGreaterThan(330);
   expect(boxes.cal.width).toBeLessThan(350);
-  expect(boxes.agent.width).toBeGreaterThan(270);
-  expect(boxes.agent.width).toBeLessThan(350);
+  const expectedAgent = boxes.rowWidth - boxes.cal.width - gap;
+  expect(Math.abs(boxes.agent.width - expectedAgent)).toBeLessThan(3);
+  const mainWidth = boxes.main.right - boxes.main.left;
+  expect(Math.abs(boxes.rowWidth - mainWidth)).toBeLessThan(3);
+  expect(Math.abs(boxes.agent.right - boxes.main.right)).toBeLessThan(3);
+  expect(Math.abs(boxes.dayCell.width - boxes.dayCell.height)).toBeLessThan(2);
+  expect(boxes.dayCell.width).toBeGreaterThan(30);
+  expect(boxes.dayCell.width).toBeLessThan(52);
 }
 
 function monthLabel(offset: number) {
@@ -104,6 +115,9 @@ test("calendar and agent stay readable from phone through mid-width desktop", as
   await signUpAndEnterApp(page, email);
   await expect(page.locator(".home-calendar-agent-row")).toBeVisible();
   await expect(page.locator(".home-calendar-top-wrap")).toBeVisible();
+  const skipTourEarly = page.getByRole("button", { name: "Skip tour" });
+  if (await skipTourEarly.isVisible()) await skipTourEarly.click();
+  await expect(page.locator(".tour-tooltip")).toHaveCount(0);
 
   for (const width of [390, 780]) {
     await page.setViewportSize({ width, height: 900 });
@@ -113,7 +127,7 @@ test("calendar and agent stay readable from phone through mid-width desktop", as
     expectNarrowCompactCalendar(boxes!);
   }
 
-  for (const width of [800, 1024, 1200]) {
+  for (const width of [800, 1000, 1024, 1200]) {
     await page.setViewportSize({ width, height: 900 });
     const boxes = await measureRow(page);
     expect(boxes, `row missing at ${width}px`).not.toBeNull();
@@ -121,12 +135,20 @@ test("calendar and agent stay readable from phone through mid-width desktop", as
     expectStackedFullWidth(boxes!);
   }
 
-  await page.setViewportSize({ width: 1440, height: 900 });
-  const wide = await measureRow(page);
-  expect(wide).not.toBeNull();
-  expect(wide!.rowWidth).toBeGreaterThanOrEqual(PAIR_MIN);
-  expectInsideMain(wide!);
-  expectSideBySide(wide!);
+  const sideBySide: RowBoxes[] = [];
+  for (const width of [1400, 1440, 1680]) {
+    await page.setViewportSize({ width, height: 900 });
+    const wide = await measureRow(page);
+    expect(wide, `row missing at ${width}px`).not.toBeNull();
+    expect(wide!.rowWidth).toBeGreaterThanOrEqual(PAIR_MIN);
+    expectInsideMain(wide!);
+    expectSideBySide(wide!);
+    sideBySide.push(wide!);
+  }
+  const [at1400, , at1680] = sideBySide;
+  expect(Math.abs(at1400.cal.width - at1680.cal.width)).toBeLessThan(2);
+  expect(Math.abs(at1400.dayCell.width - at1680.dayCell.width)).toBeLessThan(2);
+  expect(at1680.agent.width).toBeGreaterThan(at1400.agent.width + 40);
 
   await page.setViewportSize({ width: 390, height: 900 });
   const skipTour = page.getByRole("button", { name: "Skip tour" });
@@ -153,4 +175,72 @@ test("calendar and agent stay readable from phone through mid-width desktop", as
   await day.evaluate((el) => el.scrollIntoView({ block: "center", inline: "nearest" }));
   await day.click();
   await expect(cal.getByText("CEU Deadline", { exact: true })).toBeVisible();
+
+  await insertStaleRead(email);
+  await page.setViewportSize({ width: 1680, height: 900 });
+  await page.goto("/home");
+  await expect(page.getByText("No articles read in the past 7 days.")).toBeVisible();
+  const emptyState = await page.evaluate(() => {
+    const empty = document.querySelector(".home-agent-week-empty");
+    const week = document.querySelector(".home-agent-week");
+    const intro = week?.querySelector(".card-body");
+    const gaps = document.querySelector(".home-agent-gaps");
+    const topic = document.querySelector(".home-agent-topic");
+    const card = document.querySelector(".home-agent-card-wrap .card");
+    const ask = card?.querySelector("a.btn");
+    if (!empty || !intro || !gaps || !topic || !card || !ask) return null;
+    const box = (el: Element) => el.getBoundingClientRect();
+    const emptyBox = box(empty);
+    const introBox = box(intro);
+    const gapsBox = box(gaps);
+    const topicBox = box(topic);
+    const cardBox = box(card);
+    const askBox = box(ask);
+    return {
+      introHeight: introBox.height,
+      emptyHeight: emptyBox.height,
+      gapAbove: emptyBox.top - introBox.bottom,
+      gapBelow: gapsBox.top - emptyBox.bottom,
+      topicWidth: topicBox.width,
+      cardWidth: cardBox.width,
+      askFromCardBottom: cardBox.bottom - askBox.bottom,
+    };
+  });
+  expect(emptyState).not.toBeNull();
+  expect(emptyState!.introHeight).toBeLessThan(48);
+  expect(emptyState!.emptyHeight).toBeLessThan(40);
+  expect(emptyState!.gapAbove).toBeGreaterThanOrEqual(0);
+  expect(emptyState!.gapAbove).toBeLessThan(20);
+  expect(emptyState!.gapBelow).toBeGreaterThanOrEqual(0);
+  expect(emptyState!.gapBelow).toBeLessThan(36);
+  expect(emptyState!.topicWidth).toBeGreaterThan(emptyState!.cardWidth - 48);
+  expect(emptyState!.topicWidth).toBeGreaterThan(400);
+  expect(emptyState!.askFromCardBottom).toBeGreaterThan(8);
+  expect(emptyState!.askFromCardBottom).toBeLessThan(28);
+
+  await setUserColumn(email, "hiddenHomeWidgets", JSON.stringify(["calendar"]));
+  await page.goto("/home");
+  await expect(page.locator(".home-calendar-top-wrap")).toHaveCount(0);
+  const alone = await page.evaluate(() => {
+    const row = document.querySelector(".home-calendar-agent-row");
+    const agent = document.querySelector(".home-agent-card-wrap");
+    const main = document.querySelector(".home-main-col");
+    if (!row || !agent || !main) return null;
+    const box = (el: Element) => el.getBoundingClientRect();
+    return { row: box(row).width, agent: box(agent).width, main: box(main).width };
+  });
+  expect(alone).not.toBeNull();
+  expect(Math.abs(alone!.agent - alone!.row)).toBeLessThan(2);
+  expect(Math.abs(alone!.row - alone!.main)).toBeLessThan(2);
+
+  await page.setViewportSize({ width: 390, height: 900 });
+  const phoneAlone = await page.evaluate(() => {
+    const row = document.querySelector(".home-calendar-agent-row");
+    const agent = document.querySelector(".home-agent-card-wrap");
+    if (!row || !agent) return null;
+    const box = (el: Element) => el.getBoundingClientRect();
+    return { row: box(row).width, agent: box(agent).width };
+  });
+  expect(phoneAlone).not.toBeNull();
+  expect(Math.abs(phoneAlone!.agent - phoneAlone!.row)).toBeLessThan(2);
 });
