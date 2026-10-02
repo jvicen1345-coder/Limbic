@@ -115,6 +115,9 @@ test("calendar and agent stay readable from phone through mid-width desktop", as
   await signUpAndEnterApp(page, email);
   await expect(page.locator(".home-calendar-agent-row")).toBeVisible();
   await expect(page.locator(".home-calendar-top-wrap")).toBeVisible();
+  const skipTourEarly = page.getByRole("button", { name: "Skip tour" });
+  if (await skipTourEarly.isVisible()) await skipTourEarly.click();
+  await expect(page.locator(".tour-tooltip")).toHaveCount(0);
 
   for (const width of [390, 780]) {
     await page.setViewportSize({ width, height: 900 });
