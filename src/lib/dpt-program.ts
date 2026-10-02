@@ -304,7 +304,7 @@ export function getProgramPhaseLabel(phase: ProgramPhase, calendarType?: string 
   // calendar type, not its actual term/rotation dates, so the label stops at the term count.
   if (calendarType && !phase.trimester) {
     const word = CALENDAR_LABEL_WORD[calendarType] ?? calendarType;
-    return `Year ${phase.year} — ${word} ${phase.trimesterNumber}`;
+    return `Year ${phase.year} • ${word} ${phase.trimesterNumber}`;
   }
 
   if (phase.type === "clinical" && phase.trimester) {
@@ -314,7 +314,7 @@ export function getProgramPhaseLabel(phase: ProgramPhase, calendarType?: string 
   if (phase.type === "didactic" && phase.trimester) {
     const yearLabel = `Year ${phase.year}`;
     const nextClinical = phase.nextPhase?.type === "clinical"
-      ? ` — Rotation ${phase.nextPhase.clinicalNumber} in ${phase.daysUntilNextPhase} days`
+      ? `  •  Rotation ${phase.nextPhase.clinicalNumber} in ${phase.daysUntilNextPhase} days`
       : "";
     return `${yearLabel} — ${phase.trimester.name}${nextClinical}`;
   }

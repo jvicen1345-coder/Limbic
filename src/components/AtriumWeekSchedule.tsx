@@ -64,7 +64,7 @@ export function AtriumWeekSchedule({ days }: { days: WeekScheduleDay[] }) {
       {isEmpty ? (
         <p className="atrium-week-schedule-empty-all">
           Upload a syllabus in <Link href="/student/assignments">Assignments</Link> and Limbic AI
-          will pull out your class times, or add a one-off class in <Link href="/calendar">Calendar</Link> (type: Class).
+          will pull out your class times, or add a one-off class in <Link href="/calendar">Calendar</Link>
         </p>
       ) : (
         <div className="atrium-week-schedule-grid">
