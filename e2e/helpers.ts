@@ -21,6 +21,92 @@ export function freshEmail(label: string) {
 
 export const PASSWORD = "TestPass123!";
 
+/** Accounts this suite creates. Cleanup deletes these and nothing else. */
+const PLAYWRIGHT_EMAIL_LIKE = "pw-%@example.com";
+
+/** The SQLite file this process writes to. `playwright.config.ts` loads `.env` and applies
+ *  `PLAYWRIGHT_DATABASE_URL` before the web server starts, so this is the same URL the app
+ *  is using. The `file:./dev.db` fallback is only for a helper imported outside that config. */
+export function testDatabaseUrl() {
+  return process.env.DATABASE_URL ?? "file:./dev.db";
+}
+
+/** The failure that used to read as a sign-up race. The URL is the part that distinguishes
+ *  "the row is not committed yet" from "this connection is a different database than the
+ *  server that just created the account". */
+export function missingUserError(email: string, detail = "UPDATE affected 0 rows") {
+  return new Error(
+    `no User row for ${email} (${detail}) on database ${testDatabaseUrl()}. The dev server and this helper are not looking at the same database.`,
+  );
+}
+
+async function openTestDb() {
+  const { createClient } = await import("@libsql/client");
+  return createClient({ url: testDatabaseUrl() });
+}
+
+/** One transaction-sized use of a second connection against the shared SQLite file.
+ *
+ *  Retries any error, not only SQLITE_BUSY. Callers throw when the sign-up row is not
+ *  visible yet, and that has to be retried the same way a lock is — see `missingUserError`.
+ *  The connection is closed in `finally` on every attempt. An unclosed libSQL client holds
+ *  a write connection for the rest of the run; with `busy_timeout` the sign-in writes in
+ *  auth.spec.ts then queue behind it long enough to blow a 15s expect, which looks like
+ *  an unrelated auth flake. */
+export async function withDb<T>(fn: (db: Awaited<ReturnType<typeof openTestDb>>) => Promise<T>): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; ; attempt++) {
+    const db = await openTestDb();
+    try {
+      await db.execute("PRAGMA busy_timeout = 10000");
+      return await fn(db);
+    } catch (error) {
+      lastError = error;
+      if (attempt >= 4) throw lastError;
+      await new Promise((resolve) => setTimeout(resolve, 250 * 2 ** attempt));
+    } finally {
+      db.close();
+    }
+  }
+}
+
+/** Deletes accounts this suite created, plus the throttle rows keyed by the same emails
+ *  (those are not foreign keys, so they would otherwise survive the user delete).
+ *
+ *  Called at the start and the end of a run. Syllabus, StudyCard, and Assignment reference
+ *  User without ON DELETE CASCADE, so they are removed first; everything else cascades
+ *  once foreign keys are on. */
+export async function deletePlaywrightUsers() {
+  await withDb(async (db) => {
+    const testUsers = { sql: "SELECT id FROM User WHERE email LIKE ?", args: [PLAYWRIGHT_EMAIL_LIKE] };
+    await db.execute("PRAGMA foreign_keys = ON");
+    await db.execute({
+      sql: `DELETE FROM StudyCard WHERE userId IN (${testUsers.sql})`,
+      args: testUsers.args,
+    });
+    await db.execute({
+      sql: `DELETE FROM Assignment WHERE userId IN (${testUsers.sql})`,
+      args: testUsers.args,
+    });
+    await db.execute({
+      sql: `DELETE FROM Syllabus WHERE userId IN (${testUsers.sql})`,
+      args: testUsers.args,
+    });
+    await db.execute({
+      sql: "DELETE FROM SignInThrottle WHERE email LIKE ?",
+      args: [PLAYWRIGHT_EMAIL_LIKE],
+    });
+    await db.execute({
+      sql: "DELETE FROM PasswordResetThrottle WHERE email LIKE ?",
+      args: [PLAYWRIGHT_EMAIL_LIKE],
+    });
+    await db.execute({
+      sql: "DELETE FROM User WHERE email LIKE ?",
+      args: [PLAYWRIGHT_EMAIL_LIKE],
+    });
+  });
+}
+
 /** Creates the account and stops there, on whatever the first onboarding gate currently is.
  *  Callers that only need the account to exist (the sign-in and rate-limit tests) use this
  *  directly and never enter the app. */
@@ -114,11 +200,10 @@ export async function signUpAndEnterApp(page: Page, email: string) {
  */
 export async function setUserColumn(email: string, column: string, value: string | number | null) {
   if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(column)) throw new Error(`unsafe column name: ${column}`);
-  const { createClient } = await import("@libsql/client");
   let lastError: unknown;
 
   for (let attempt = 0; ; attempt++) {
-    const db = createClient({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
+    const db = await openTestDb();
     try {
       await db.execute("PRAGMA busy_timeout = 10000");
       const result = await db.execute({ sql: `UPDATE User SET ${column} = ? WHERE email = ?`, args: [value, email] });
@@ -126,8 +211,9 @@ export async function setUserColumn(email: string, column: string, value: string
       // Zero rows means the sign-up's row isn't visible on this connection yet, so it's
       // retryable like SQLITE_BUSY rather than fatal. Letting it through silently would
       // surface much later as a confusing locked page instead of the one under test, which
-      // is why it's checked at all.
-      lastError = new Error(`no User row for ${email} (UPDATE affected 0 rows)`);
+      // is why it's checked at all. The database URL is in the message so a config
+      // mismatch is not mistaken for that race.
+      lastError = missingUserError(email);
     } catch (error) {
       if (!String(error).includes("SQLITE_BUSY")) throw error;
       lastError = error;
@@ -145,11 +231,10 @@ export async function setUserColumn(email: string, column: string, value: string
 export async function insertStaleRead(email: string) {
   const stamp = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   const id = `stale-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  const { createClient } = await import("@libsql/client");
   let lastError: unknown;
 
   for (let attempt = 0; ; attempt++) {
-    const db = createClient({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
+    const db = await openTestDb();
     try {
       await db.execute("PRAGMA busy_timeout = 10000");
       const result = await db.execute({
@@ -158,7 +243,7 @@ export async function insertStaleRead(email: string) {
         args: [id, stamp, stamp, email],
       });
       if (result.rowsAffected === 1) return;
-      lastError = new Error(`no User row for ${email} (INSERT affected ${result.rowsAffected} rows)`);
+      lastError = missingUserError(email, `INSERT affected ${result.rowsAffected} rows`);
     } catch (error) {
       if (!String(error).includes("SQLITE_BUSY")) throw error;
       lastError = error;

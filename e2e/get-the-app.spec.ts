@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { freshEmail, setUserColumn, signUpAndEnterApp } from "./helpers";
+import { freshEmail, missingUserError, setUserColumn, signUpAndEnterApp, testDatabaseUrl, withDb } from "./helpers";
 
 /**
  * Profile's Get the App card (#494): the dismiss switch was already built
@@ -59,29 +59,20 @@ function mockMatchMediaStandalone() {
 }
 
 async function readGetTheAppDismissed(email: string): Promise<number> {
-  const { createClient } = await import("@libsql/client");
-  let lastError: unknown;
-  for (let attempt = 0; ; attempt++) {
-    const db = createClient({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
-    try {
-      await db.execute("PRAGMA busy_timeout = 10000");
-      const result = await db.execute({
-        sql: "SELECT getTheAppDismissed FROM User WHERE email = ?",
-        args: [email],
-      });
-      const value = result.rows[0]?.getTheAppDismissed;
-      if (value === 1 || value === 0) return Number(value);
-      if (typeof value === "bigint") return Number(value);
-      lastError = new Error(`no getTheAppDismissed for ${email} (got ${String(value)})`);
-    } catch (error) {
-      if (!String(error).includes("SQLITE_BUSY")) throw error;
-      lastError = error;
-    } finally {
-      db.close();
+  return withDb(async (db) => {
+    const result = await db.execute({
+      sql: "SELECT getTheAppDismissed FROM User WHERE email = ?",
+      args: [email],
+    });
+    const value = result.rows[0]?.getTheAppDismissed;
+    if (value === 1 || value === 0 || typeof value === "bigint") return Number(value);
+    if (result.rows.length !== 1) {
+      throw missingUserError(email, `no getTheAppDismissed (got ${String(value)})`);
     }
-    if (attempt >= 4) throw lastError;
-    await new Promise((resolve) => setTimeout(resolve, 250 * 2 ** attempt));
-  }
+    throw new Error(
+      `no getTheAppDismissed for ${email} (got ${String(value)}) on database ${testDatabaseUrl()}`,
+    );
+  });
 }
 
 test.describe("Get the App dismiss", () => {

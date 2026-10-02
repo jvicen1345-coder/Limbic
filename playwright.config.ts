@@ -1,4 +1,39 @@
+import { spawnSync } from "node:child_process";
+import { loadEnvFile } from "node:process";
 import { defineConfig, devices } from "@playwright/test";
+
+/**
+ * The Next server loads `.env` on its own. This process does not, unless we do it here.
+ * Without that, helpers fall back to `file:./dev.db` while the server uses whatever
+ * `.env` says, and every direct write then reports "no User row" as if sign-up had lost
+ * a race. `loadEnvFile` does not override variables already in the environment, matching
+ * Next, so an explicit shell `DATABASE_URL` still wins on both sides.
+ *
+ * `PLAYWRIGHT_DATABASE_URL` is an optional scratch file (for example `file:./e2e.db`).
+ * When it is set, it replaces `DATABASE_URL` for this process and the server it starts,
+ * and migrations are applied before that server boots. CI does not set it.
+ */
+try {
+  loadEnvFile();
+} catch (error) {
+  const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
+  if (code !== "ENOENT") throw error;
+}
+
+if (process.env.PLAYWRIGHT_DATABASE_URL) {
+  process.env.DATABASE_URL = process.env.PLAYWRIGHT_DATABASE_URL;
+  if (process.env.DATABASE_URL.startsWith("file:")) {
+    const migrated = spawnSync(process.execPath, ["scripts/apply-migrations.mjs"], {
+      stdio: "inherit",
+      env: process.env,
+    });
+    if (migrated.status !== 0) {
+      throw new Error(`Failed to migrate PLAYWRIGHT_DATABASE_URL (${process.env.DATABASE_URL}).`);
+    }
+  }
+}
+
+if (!process.env.DATABASE_URL) process.env.DATABASE_URL = "file:./dev.db";
 
 /** Allow a parallel agent to keep :3000. Unset in CI so the suite still uses the usual port. */
 const e2ePort = process.env.PLAYWRIGHT_PORT ?? "3000";
@@ -88,8 +123,10 @@ export default defineConfig({
       : `npm run dev -- --port ${e2ePort}`,
     url: e2eOrigin,
     // Never reuse in CI: a stale server from an earlier step would silently serve different
-    // code than the one this config just built.
-    reuseExistingServer: !process.env.CI,
+    // code than the one this config just built. Also skip reuse when a scratch database is
+    // requested — the server already on :3000 was started against the developer's own
+    // DATABASE_URL, and helpers would then write to a different file.
+    reuseExistingServer: !process.env.CI && !process.env.PLAYWRIGHT_DATABASE_URL,
     // The CI budget has to cover a full production build, not just a server boot.
     timeout: process.env.CI ? 300_000 : 60_000,
   },

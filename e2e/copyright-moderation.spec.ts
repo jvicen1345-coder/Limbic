@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { freshEmail, signUp, PASSWORD } from "./helpers";
+import { freshEmail, missingUserError, signUp, PASSWORD, withDb } from "./helpers";
 
 /**
  * The two enforcement mechanisms the DMCA policy at /dmca depends on, tested against the
@@ -17,39 +17,6 @@ import { freshEmail, signUp, PASSWORD } from "./helpers";
  * sets it.
  */
 
-/** One UPDATE/INSERT over a second connection, with the same SQLITE_BUSY retry as
- *  grantLicense in movement-lab.spec.ts — the dev server holds the same file while serving
- *  the sign-up that just ran.
- *
- *  The connection is closed in a `finally`, which matters more here than it looks. Under
- *  playwright.config.ts's fullyParallel these tests run alongside auth.spec.ts, whose
- *  rate-limit test needs six sequential sign-in POSTs to each write to SignInThrottle. An
- *  unclosed libSQL client keeps a write connection open against the same SQLite file for
- *  the rest of the run, and with `PRAGMA busy_timeout = 10000` those sign-in writes then
- *  queue behind it long enough to blow that test's 15s expect timeout — which is exactly
- *  what happened, and looked for all the world like an unrelated flake in auth.spec.ts. */
-async function withDb<T>(fn: (db: Awaited<ReturnType<typeof openDb>>) => Promise<T>): Promise<T> {
-  let lastError: unknown;
-  for (let attempt = 0; ; attempt++) {
-    const db = await openDb();
-    try {
-      await db.execute("PRAGMA busy_timeout = 10000");
-      return await fn(db);
-    } catch (error) {
-      lastError = error;
-      if (attempt >= 4) throw lastError;
-      await new Promise((r) => setTimeout(r, 250 * 2 ** attempt));
-    } finally {
-      db.close();
-    }
-  }
-}
-
-async function openDb() {
-  const { createClient } = await import("@libsql/client");
-  return createClient({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
-}
-
 test.describe("copyright moderation", () => {
   test("a suspended account is refused at sign-in and cannot hold a session", async ({ page }) => {
     const email = freshEmail("suspended");
@@ -63,7 +30,7 @@ test.describe("copyright moderation", () => {
         sql: "UPDATE User SET suspendedAt = ?, suspendedReason = ? WHERE email = ?",
         args: [Date.now(), "Repeat infringer (e2e)", email],
       });
-      if (result.rowsAffected !== 1) throw new Error("sign-up row not visible on this connection yet");
+      if (result.rowsAffected !== 1) throw missingUserError(email, "sign-up row not visible on this connection yet");
     });
 
     // The existing session dies on the next request — getCurrentUser() returns null for a
@@ -92,7 +59,7 @@ test.describe("copyright moderation", () => {
         sql: "UPDATE User SET suspendedAt = ? WHERE email = ?",
         args: [Date.now(), email],
       });
-      if (result.rowsAffected !== 1) throw new Error("sign-up row not visible on this connection yet");
+      if (result.rowsAffected !== 1) throw missingUserError(email, "sign-up row not visible on this connection yet");
     });
     await page.goto("/home");
     await expect(page).toHaveURL(/\/sign-in/);

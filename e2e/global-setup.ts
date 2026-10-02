@@ -1,4 +1,5 @@
-import type { FullConfig } from "@playwright/test";
+import { chromium, type FullConfig } from "@playwright/test";
+import { deletePlaywrightUsers, testDatabaseUrl } from "./helpers";
 
 /**
  * Warms the routes the first-run flow walks, once, before any test runs.
@@ -56,10 +57,61 @@ async function enableWal(databaseUrl: string) {
   }
 }
 
+/** Test accounts must never land in Turso. CI and local runs both use a file: URL;
+ *  a remote URL is a configuration mistake, and one thrown here is easier to read than
+ *  dozens of "no User row" failures after the server has already written to production. */
+function assertLocalDatabase(databaseUrl: string) {
+  if (databaseUrl.startsWith("file:")) return;
+  throw new Error(
+    `Playwright refused to start against ${databaseUrl}. The suite writes test accounts and only runs against a local file: SQLite database, never Turso. Set DATABASE_URL or PLAYWRIGHT_DATABASE_URL to a file: URL.`,
+  );
+}
+
+/** Compiles signInAction and signUpAction before any test's 15s expect.
+ *
+ *  global setup already fetches /sign-in, which compiles the page. The server actions
+ *  those forms post to are a separate compile on `next dev`, and the first failed
+ *  sign-in in auth.spec.ts was losing that race. Paying for it here, once, leaves the
+ *  assertion's own timeout for the assertion. */
+async function warmAuthActions(baseURL: string) {
+  const browser = await chromium.launch(
+    process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE
+      ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE }
+      : {},
+  );
+  try {
+    const page = await browser.newPage({ baseURL });
+    page.setDefaultTimeout(60_000);
+    page.setDefaultNavigationTimeout(60_000);
+    const email = "pw-warm-auth@example.com";
+
+    await page.goto("/sign-in");
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password").fill("wrong-password");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.getByText("Incorrect email or password.").waitFor();
+
+    await page.goto("/sign-in");
+    await page.getByText("New here? Create an account").click();
+    await page.getByLabel("Email").fill(email);
+    const passwords = page.locator('input[type="password"]');
+    await passwords.nth(0).fill("TestPass123!");
+    await passwords.nth(1).fill("DifferentPass123!");
+    await page.getByRole("checkbox").check();
+    await page.getByRole("button", { name: "Create account" }).click();
+    await page.getByText("Those passwords don't match.").waitFor();
+  } finally {
+    await browser.close();
+  }
+}
+
 export default async function globalSetup(config: FullConfig) {
   const baseURL = config.projects[0]?.use?.baseURL ?? "http://localhost:3000";
+  const databaseUrl = testDatabaseUrl();
+  assertLocalDatabase(databaseUrl);
 
-  await enableWal(process.env.DATABASE_URL ?? "file:./dev.db");
+  await enableWal(databaseUrl);
+  await deletePlaywrightUsers();
 
   // Every route the specs navigate to (`grep -o 'page.goto("[^"]*"' e2e/*.ts`), plus the two
   // the first-run flow redirects through. Being signed out does not matter: a gated route
@@ -85,4 +137,10 @@ export default async function globalSetup(config: FullConfig) {
   } finally {
     clearTimeout(deadline);
   }
+
+  await warmAuthActions(String(baseURL));
+
+  return async () => {
+    await deletePlaywrightUsers();
+  };
 }

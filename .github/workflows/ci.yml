@@ -42,7 +42,7 @@ jobs:
   e2e:
     name: End-to-end (Playwright)
     runs-on: ubuntu-latest
-    # Blocking, and now actually reliable: 22 tests, green three runs running. It used not
+    # Blocking, and now actually reliable: 133 tests. It used not
     # to be — four of the ten main runs before this change were not green, on tests
     # unrelated to whatever was being merged, because the suite ran against `next dev` and
     # was really measuring route-compile contention between parallel workers. The config

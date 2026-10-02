@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { freshEmail, signUpAndEnterApp } from "./helpers";
+import { freshEmail, missingUserError, signUpAndEnterApp, withDb } from "./helpers";
 import { CONTINUE_READING_FINISHED_THRESHOLD, SHORT_ARTICLE_DWELL_MS } from "@/lib/reading-progress";
 
 const NECK = {
@@ -15,34 +15,10 @@ const HIP = {
   title: "Hip Pain and Mobility Deficits, Hip Osteoarthritis: Revision 2025",
 };
 
-/** Same SQLITE_BUSY retry + close-in-finally as appraisals.spec.ts — a second connection
- *  against the shared local SQLite file while the server is writing. */
-async function withDb<T>(fn: (db: Awaited<ReturnType<typeof openDb>>) => Promise<T>): Promise<T> {
-  let lastError: unknown;
-  for (let attempt = 0; ; attempt++) {
-    const db = await openDb();
-    try {
-      await db.execute("PRAGMA busy_timeout = 10000");
-      return await fn(db);
-    } catch (error) {
-      lastError = error;
-      if (attempt >= 4) throw lastError;
-      await new Promise((r) => setTimeout(r, 250 * 2 ** attempt));
-    } finally {
-      db.close();
-    }
-  }
-}
-
-async function openDb() {
-  const { createClient } = await import("@libsql/client");
-  return createClient({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
-}
-
 async function userIdFor(email: string): Promise<string> {
   return withDb(async (db) => {
     const user = await db.execute({ sql: "SELECT id FROM User WHERE email = ?", args: [email] });
-    if (user.rows.length !== 1) throw new Error(`no User row for ${email}`);
+    if (user.rows.length !== 1) throw missingUserError(email, "sign-up row not visible on this connection yet");
     return String(user.rows[0].id);
   });
 }

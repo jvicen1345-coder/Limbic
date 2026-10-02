@@ -60,10 +60,14 @@ npm test             # Playwright e2e in e2e/
 Unit tests use Node's built-in runner (not Vitest). They currently cover CSS payload and
 route-sheet reachability guards plus a few library helpers.
 
-`npm test` is Playwright against a real app and the local SQLite `dev.db` — there is no
-mocked backend. Locally it starts `next dev` if nothing is already on `:3000`, or reuses
-that server. Copy [`.env.example`](.env.example) to `.env` and apply migrations first
-(see [Getting started](#getting-started)). The first time you run e2e locally:
+`npm test` is Playwright against a real app and the local SQLite database — there is no
+mocked backend. The test process loads `.env` the same way Next does, so helpers write to
+the same `DATABASE_URL` as the server. Set `PLAYWRIGHT_DATABASE_URL` (for example
+`file:./e2e.db`) to use a scratch file instead; Playwright migrates it and deletes
+`pw-*@example.com` accounts at the start and end of the run. Locally it starts `next dev`
+if nothing is already on `:3000`, or reuses that server. Copy [`.env.example`](.env.example)
+to `.env` and apply migrations first (see [Getting started](#getting-started)). The first
+time you run e2e locally:
 
 ```bash
 npx playwright install chromium
