@@ -27,6 +27,19 @@ const APPEND_WHEN_WITHIN = 2;
 // slide in either direction never has to wait for a fresh iframe/player to spin up.
 const MOUNT_WINDOW = 2;
 
+// `slots` only grows and never reorders, so observing from a saved index picks up just the
+// slides this observer has not been given yet. Returns the slide count, which is the next
+// start index. A brand-new observer (including the one React Strict Mode creates after
+// tearing the first one down) must start at 0 — the count lives in a ref, and refs survive
+// that cycle, so leaving it at the old length would watch nothing.
+function observeSlidesFrom(container: HTMLElement, observer: IntersectionObserver, fromIndex: number): number {
+  const slides = container.querySelectorAll("[data-slot-id]");
+  for (let i = fromIndex; i < slides.length; i++) {
+    observer.observe(slides[i]);
+  }
+  return slides.length;
+}
+
 interface ClipSlot {
   clip: Clip;
   /** Unique per physical slide (clip id + lap number) — the clip can repeat across laps,
@@ -74,15 +87,20 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
   });
 
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const observedCountRef = useRef(0);
 
-  // Creates the IntersectionObserver exactly once for the page's lifetime, not once per lap
-  // appended. Recreating it on every `slots` change (the previous approach) re-observed
-  // every slide from scratch each time — IntersectionObserver fires an immediate callback
-  // for any element that already satisfies the threshold the moment observe() is called on
-  // it, so the still-active slide re-fired on every single recreation. Wasteful at best;
-  // avoiding it also rules out any risk of the still-active slide's repeated re-fire
-  // nudging the append check (below) into triggering more laps than the reader actually
-  // scrolled to.
+  // One observer for the feed, not one per appended lap. Recreating it on every `slots`
+  // change (the previous approach) re-observed every slide from scratch each time —
+  // IntersectionObserver fires an immediate callback for any element that already satisfies
+  // the threshold the moment observe() is called on it, so the still-active slide re-fired
+  // on every single recreation. Wasteful at best; avoiding it also rules out any risk of
+  // the still-active slide's repeated re-fire nudging the append check (below) into
+  // triggering more laps than the reader actually scrolled to.
+  //
+  // Dev still recreates it once: React Strict Mode runs setup, cleanup, then setup again,
+  // and refs survive that cycle. The replacement observer has no targets, so this effect
+  // (the one that owns the observer) re-observes every current slide from index 0.
+  // Appending a lap does not recreate the observer.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -107,6 +125,7 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
       { root: container, threshold: [0.6] }
     );
     observerRef.current = observer;
+    observedCountRef.current = observeSlidesFrom(container, observer, 0);
 
     return () => {
       observer.disconnect();
@@ -115,19 +134,13 @@ export function ClipsFeed({ clips, savedClipIds }: { clips: Clip[]; savedClipIds
   }, []);
 
   // Observes only newly-appended slides as new laps arrive, instead of re-observing
-  // everything (which is what caused the cascade described above) — `slots` only ever
-  // grows and never reorders, so a simple "how many have been observed so far" count is
-  // enough to find just the delta each time.
-  const observedCountRef = useRef(0);
+  // everything (which is what caused the cascade described above). The count is reset
+  // only when the observer above is replaced; here it stays put so a lap watches the delta.
   useEffect(() => {
     const container = containerRef.current;
     const observer = observerRef.current;
     if (!container || !observer) return;
-    const slides = container.querySelectorAll("[data-slot-id]");
-    for (let i = observedCountRef.current; i < slides.length; i++) {
-      observer.observe(slides[i]);
-    }
-    observedCountRef.current = slides.length;
+    observedCountRef.current = observeSlidesFrom(container, observer, observedCountRef.current);
   }, [slots]);
 
   // Marks the active clip "seen" (fire-and-forget) so the ordering on the next visit puts
