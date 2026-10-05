@@ -24,3 +24,18 @@ export function findClue(puzzle: CrosswordPuzzle, direction: Direction, row: num
     ) ?? null
   );
 }
+
+export type ClueState = "empty" | "correct" | "wrong";
+
+/** "empty" until every square of the clue has a letter, then "correct" or "wrong" against
+ *  the solution grid. Drives the clue list: only a correct entry gets struck through. */
+export function clueState(
+  clue: CrosswordClue,
+  direction: Direction,
+  cells: string[][],
+  solution: CrosswordPuzzle["grid"],
+): ClueState {
+  const squares = cellsForClue(clue, direction);
+  if (squares.some(([r, c]) => cells[r][c] === "")) return "empty";
+  return squares.every(([r, c]) => cells[r][c].toUpperCase() === solution[r][c]) ? "correct" : "wrong";
+}

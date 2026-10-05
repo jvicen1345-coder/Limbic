@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import type { CrosswordClue, CrosswordPuzzle } from "@/lib/crossword-puzzles";
-import { SIZE, emptyCells, cellsForClue, findClue, type Direction } from "./helpers";
+import { SIZE, emptyCells, cellsForClue, clueState, findClue, type Direction } from "./helpers";
 import { recordCrosswordCompletionAction } from "@/app/actions/daily-completion";
 import { formatElapsed } from "@/lib/meta";
 import { nowMs } from "@/lib/clock";
@@ -107,17 +107,10 @@ export function CrosswordGame({
     [isBlack]
   );
 
-  /** Whether every square of a clue has *a* letter in it — deliberately not whether those
-   *  letters are right. Comparing a clue to puzzle.grid while the puzzle is still in
-   *  progress is a correctness oracle: any guess can be confirmed without finishing the
-   *  grid, and a single unknown square can be pinned down by cycling letters until the
-   *  clue flips. "Filled" keeps the progress signal (what's left to do) and withholds the
-   *  answer key. The only correctness check is the whole-grid one once every square has a
-   *  letter. The strike in .crossword-clue-item-filled is that same fill signal, scoped to
-   *  .crossword-clue-text so the number stays readable — it does not mean the entry matches. */
-  const isClueFilled = useCallback(
-    (clue: CrosswordClue, dir: Direction) => cellsForClue(clue, dir).every(([r, c]) => cells[r][c] !== ""),
-    [cells]
+  /** Per-clue right/wrong once every square of the clue has a letter — see clueState. */
+  const clueStatus = useCallback(
+    (clue: CrosswordClue, dir: Direction) => clueState(clue, dir, cells, puzzle.grid),
+    [cells, puzzle]
   );
 
   const persist = useCallback(
@@ -325,12 +318,12 @@ export function CrosswordGame({
   const shareText = `Limbic Mini Crossword, ${shareDateLabel}\nCompleted in ${formatElapsed(elapsedSeconds ?? 0)}\nlimbic.center/crossword`;
 
   const renderClue = (clue: CrosswordClue, dir: Direction) => {
-    const filled = isClueFilled(clue, dir);
+    const state = clueStatus(clue, dir);
     const active = activeClue?.number === clue.number && direction === dir;
     return (
       <div
         key={`${dir}-${clue.number}`}
-        className={`crossword-clue-item${active ? " crossword-clue-item-active" : ""}${filled ? " crossword-clue-item-filled" : ""}`}
+        className={`crossword-clue-item${active ? " crossword-clue-item-active" : ""}${state !== "empty" ? ` crossword-clue-item-${state}` : ""}`}
         onClick={() => {
           inputRef.current?.focus();
           setTouched(true);
@@ -340,7 +333,12 @@ export function CrosswordGame({
       >
         <span className="crossword-clue-num">{clue.number}</span>
         <span className="crossword-clue-text">{clue.clue}</span>
-        {filled ? <span className="crossword-sr-only">, filled</span> : null}
+        {state === "correct" ? (
+          <span className="crossword-clue-mark crossword-clue-mark-correct" aria-hidden="true">✓</span>
+        ) : state === "wrong" ? (
+          <span className="crossword-clue-mark crossword-clue-mark-wrong" aria-hidden="true">✗</span>
+        ) : null}
+        {state !== "empty" ? <span className="crossword-sr-only">, {state}</span> : null}
       </div>
     );
   };
