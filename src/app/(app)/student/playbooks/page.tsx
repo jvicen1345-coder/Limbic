@@ -7,6 +7,7 @@ import { isSiteAdmin } from "@/lib/admin";
 import { ChevronRightIcon, LockIcon } from "@/components/icons";
 import { StudentGate } from "@/components/student/StudentGate";
 import { ChooseFreePlaybookButton } from "@/components/playbook/ChooseFreePlaybookButton";
+import { PlaybookSearch } from "@/components/playbook/PlaybookSearch";
 
 export const metadata: Metadata = {
   title: "Playbooks",
@@ -55,6 +56,13 @@ export default async function PlaybooksHubPage() {
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "8px 0 0" }}>
         Studying for an exam or practical? <Link href="/student/exam-prep">See Exam Prep →</Link>
       </p>
+
+      {/* Search across every served guide at once. Each playbook has its own in-page filter,
+          but that one searches a single document and only its tables, numcells, references,
+          drill cases and callouts — not its prose or statnotes. This finds the section; the
+          in-page filter narrows it once you are there. Entitlement is enforced inside the
+          action, not by rendering this on a gated page. */}
+      <PlaybookSearch />
 
       {!paid && !admin && (
         <p className="playbook-hub-tier-note">
