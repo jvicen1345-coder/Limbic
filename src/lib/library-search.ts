@@ -1,8 +1,8 @@
 /**
  * Lexical ranking for cross-playbook search — the passages come from
- * lib/playbook-passages.ts, the filesystem read and cache from lib/playbook-index.ts, and
+ * lib/library-passages.ts, the filesystem read and cache from lib/library-index.ts, and
  * the query-expansion layer that feeds extra terms in here from
- * lib/playbook-query-expansion.ts.
+ * lib/library-query-expansion.ts.
  *
  * This is BM25, not embeddings, and that is a decision about this corpus rather than a
  * shortcut. The library is dense with exact tokens a reader types verbatim: 155 distinct
@@ -22,7 +22,7 @@
  * lib/classify.ts. Nothing here touches the filesystem, the database or the session.
  */
 
-import type { PlaybookPassage, PassageKind } from "@/lib/playbook-passages";
+import type { LibraryPassage, PassageKind } from "@/lib/library-passages";
 
 /** Words that carry no retrieval signal in a corpus that is entirely clinical examination
  *  text. Kept deliberately short: this list exists so a question-shaped query ("how do I
@@ -53,6 +53,12 @@ const KIND_WEIGHT: Record<PassageKind, number> = {
   heading: 1.6,
   number: 1.25,
   statnote: 1.15,
+  // A key point is what an Exam Prep guide is for — the prompt and its answer together, the
+  // thing a student is actually revising. It sits just above a playbook's table row for the
+  // same reason a numcell does: it is an answer rather than a mention. It is also much longer
+  // than a row, but BM25's length normalization already discounts that, so the weight does
+  // not need to.
+  keypoint: 1.2,
   callout: 1.05,
   row: 1,
   prose: 1,
@@ -101,8 +107,8 @@ export function weightTerms(own: string[], expanded: string[]): WeightedTerm[] {
   return terms;
 }
 
-export interface PlaybookIndex {
-  passages: PlaybookPassage[];
+export interface LibraryIndex {
+  passages: LibraryPassage[];
   /** Tokens per passage, parallel to `passages`. */
   tokens: string[][];
   /** Lowercased passage text, parallel to `passages`, for the phrase check. */
@@ -113,7 +119,7 @@ export interface PlaybookIndex {
 }
 
 export interface RankedPassage {
-  passage: PlaybookPassage;
+  passage: LibraryPassage;
   score: number;
   /** Fraction of the reader's own terms (weight 1) this passage contains, 0..1. The caller
    *  uses the best coverage across all results to decide whether expansion is needed: a
@@ -164,7 +170,7 @@ export function queryTerms(query: string): string[] {
   return [...seen];
 }
 
-export function buildIndex(passages: PlaybookPassage[]): PlaybookIndex {
+export function buildIndex(passages: LibraryPassage[]): LibraryIndex {
   const tokens: string[][] = [];
   const lowered: string[] = [];
   const df = new Map<string, number>();
@@ -243,7 +249,7 @@ export function guideAffinity(
  * phrase the reader never wrote.
  */
 export function rank(
-  index: PlaybookIndex,
+  index: LibraryIndex,
   terms: WeightedTerm[],
   phrase: string,
   { limit = 40, perSection = 2, slugWeights }: RankOptions = {}

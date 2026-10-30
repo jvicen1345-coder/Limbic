@@ -14,7 +14,7 @@ import { z } from "zod";
  * fixes it, where no amount of re-weighting could.
  *
  * It expands rather than rewrites. The returned terms are added to the reader's own, weighted
- * below them (see EXPANSION_WEIGHT in lib/playbook-search.ts), because the queries this
+ * below them (see EXPANSION_WEIGHT in lib/library-search.ts), because the queries this
  * corpus answers best are exact ones — a test name, a decimal value, an abbreviation — and a
  * layer that replaced the query would break those to fix the paraphrases. It also only runs
  * when lexical search could not cover the query as typed, so an exact query never pays the
@@ -64,7 +64,7 @@ const SYSTEM =
  * Asks for the document's words for this query. Returns `[]` on any failure, and on any
  * response that parsed but carried nothing usable.
  */
-export async function expandPlaybookQuery(query: string): Promise<string[]> {
+export async function expandLibraryQuery(query: string): Promise<string[]> {
   const trimmed = query.trim();
   if (!trimmed) return [];
 

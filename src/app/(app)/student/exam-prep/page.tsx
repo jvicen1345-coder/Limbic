@@ -40,6 +40,11 @@ export default async function ExamPrepHubPage() {
     <div className="screen-pad atrium-page" style={{ maxWidth: 960 }}>
       <h1 style={{ fontSize: 26, margin: "0 0 6px" }}>Exam Prep</h1>
       <p style={{ fontSize: 14, color: "var(--color-neutral-700)", maxWidth: 640, lineHeight: 1.5, margin: 0 }}>{SUBTITLE}</p>
+      {/* These guides and the playbooks are searched together — a reader after one fact has
+          no reason to know which of the two hubs holds it. */}
+      <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "8px 0 0" }}>
+        Looking for something specific? <Link href="/student/search">Search playbooks &amp; study guides →</Link>
+      </p>
 
       {!paid && !admin && (
         <p className="playbook-hub-tier-note">

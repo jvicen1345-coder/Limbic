@@ -13,11 +13,12 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/student/guides/shoulder-examination": ["content/playbooks/*.html"],
     "/student/guides/[guide]": ["content/playbooks/*.html"],
-    // The hub's cross-playbook search reads the same files to build its index (see
-    // lib/playbook-index.ts). A Server Action is served by the route that invokes it, so the
-    // files have to be traced onto the hub page too — without this, search works locally and
-    // finds nothing in production.
-    "/student/playbooks": ["content/playbooks/*.html"],
+    // Library search reads both content directories to build its index (see
+    // lib/library-index.ts). A Server Action is served by the route that invokes it, so every
+    // route rendering the search box needs the files traced onto it — without this, search
+    // works locally and finds nothing in production.
+    "/student/search": ["content/playbooks/*.html", "content/exam-prep/*.html"],
+    "/student/playbooks": ["content/playbooks/*.html", "content/exam-prep/*.html"],
     "/student/exam-prep/[guide]": ["content/exam-prep/*.html"],
     "/student/exam-prep/[guide]/[part]": ["content/exam-prep/*.html"],
   },

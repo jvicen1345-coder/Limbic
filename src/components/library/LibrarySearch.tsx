@@ -1,17 +1,22 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { searchPlaybooksAction, type PlaybookSearchResponse } from "@/app/actions/playbook-search";
+import { searchLibraryAction, type LibrarySearchResponse } from "@/app/actions/library-search";
+import { POOL_LABEL } from "@/lib/library-sources";
 import { SearchIcon, LockIcon } from "@/components/icons";
 
 /**
- * Search across every served playbook at once, from the hub (see
- * app/(app)/student/playbooks/page.tsx).
+ * Search across every served playbook and Exam Prep study guide at once.
  *
- * Each playbook already ships its own in-page "Filter" box, which searches that one document
- * and only the table rows, numcells, references, drill cases and callouts in it. This searches
- * all seven, and the prose and statnotes the filter cannot see. The two are complementary:
- * this one finds the section, the filter narrows it once you are inside.
+ * Rendered as the whole of app/(app)/student/search, and inline on the Playbooks hub. Both
+ * surfaces say what is being searched — the point is that a reader never has to guess whether
+ * a result came from a playbook or a study guide, or whether the thing they did not find was
+ * even looked at. Every result carries its pool, and the scope line states the counts.
+ *
+ * Each playbook also ships its own in-page "Filter" box, which searches that one document and
+ * only the table rows, numcells, references, drill cases and callouts in it. This searches all
+ * ten documents, and the prose, statnotes and key points that filter cannot see. The two are
+ * complementary: this one finds the section, the filter narrows it once you are inside.
  *
  * Two tiers of searching, which the box makes visible rather than guessing between. Typing
  * ranks lexically on every keystroke — instant, and the right answer for the exact tokens
@@ -39,12 +44,30 @@ const KIND_LABEL: Record<string, string> = {
   row: "Table",
   number: "Number",
   reference: "Reference",
-  case: "Drill case",
+  case: "Breakdown",
+  keypoint: "Key point",
 };
 
-export function PlaybookSearch() {
+export interface LibrarySearchProps {
+  /** Counts for the scope line, resolved on the server so the surface can state what it
+   *  searches before anyone types. Falls back to whatever a response reports. */
+  scope?: { playbooks: number; studyGuides: number };
+  /** The page uses a larger field and autofocuses; the hub's inline box does neither. */
+  variant?: "page" | "inline";
+}
+
+function scopeLine(scope: { playbooks: number; studyGuides: number }): string {
+  const parts: string[] = [];
+  if (scope.playbooks > 0) parts.push(`${scope.playbooks} playbook${scope.playbooks === 1 ? "" : "s"}`);
+  if (scope.studyGuides > 0) {
+    parts.push(`${scope.studyGuides} study guide${scope.studyGuides === 1 ? "" : "s"}`);
+  }
+  return parts.join(" · ");
+}
+
+export function LibrarySearch({ scope, variant = "inline" }: LibrarySearchProps = {}) {
   const [query, setQuery] = useState("");
-  const [result, setResult] = useState<PlaybookSearchResponse | null>(null);
+  const [result, setResult] = useState<LibrarySearchResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [expanding, setExpanding] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -64,7 +87,7 @@ export function PlaybookSearch() {
     const handle = window.setTimeout(() => {
       setBusy(true);
       setFailed(false);
-      searchPlaybooksAction(trimmed).then(
+      searchLibraryAction(trimmed).then(
         (next) => {
           if (ticket !== latest.current) return;
           setResult(next);
@@ -86,7 +109,7 @@ export function PlaybookSearch() {
     if (trimmed.length < 2 || expanding) return;
     const ticket = ++latest.current;
     setExpanding(true);
-    searchPlaybooksAction(trimmed, { expand: true }).then(
+    searchLibraryAction(trimmed, { expand: true }).then(
       (next) => {
         if (ticket !== latest.current) return;
         setResult(next);
@@ -108,77 +131,89 @@ export function PlaybookSearch() {
   // previous query's hits.
   const current = result && result.query === trimmed ? result : null;
   const hits = current?.hits ?? [];
+  // Prefer the server-rendered scope so the line is right before anyone types; fall back to
+  // whatever the last response reported.
+  const shownScope = scope ?? current?.scope;
 
   return (
-    <div className="pbsearch">
+    <div className={`libsearch${variant === "page" ? " libsearch--page" : ""}`}>
       <form
-        className="pbsearch-bar"
+        className="libsearch-bar"
         role="search"
         onSubmit={(event) => {
           event.preventDefault();
           runExpanded();
         }}
       >
-        <SearchIcon size={15} className="pbsearch-icon" />
+        <SearchIcon size={variant === "page" ? 17 : 15} className="libsearch-icon" />
         <input
           type="search"
-          className="pbsearch-input"
+          className="libsearch-input"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search every playbook — a test, a number, or what you'd say to a patient"
-          aria-label="Search every playbook"
+          placeholder="A test, a number, or what you'd say to a patient"
+          aria-label="Search playbooks and study guides"
           aria-controls={listId}
           autoComplete="off"
           spellCheck={false}
         />
-        {(busy || expanding) && <span className="pbsearch-spinner" aria-hidden="true" />}
+        {(busy || expanding) && <span className="libsearch-spinner" aria-hidden="true" />}
       </form>
 
+      {/* Said before anything is typed, and kept visible while results are on screen: a
+          reader should never have to infer what was searched from what came back. */}
+      {shownScope && (shownScope.playbooks > 0 || shownScope.studyGuides > 0) && (
+        <p className="libsearch-scope">Searching {scopeLine(shownScope)}</p>
+      )}
+
       {show && (
-        <div className="pbsearch-results" id={listId} role="region" aria-live="polite">
-          {failed && <p className="pbsearch-note">Search is unavailable right now. Try again in a moment.</p>}
+        <div className="libsearch-results" id={listId} role="region" aria-live="polite">
+          {failed && <p className="libsearch-note">Search is unavailable right now. Try again in a moment.</p>}
 
           {!failed && current?.gated && (
-            <p className="pbsearch-note">Searching the playbooks needs a Limbic Student sign-in.</p>
+            <p className="libsearch-note">Searching playbooks and study guides needs a Limbic Student sign-in.</p>
           )}
 
           {!failed && current && !current.gated && (
             <>
               {current.expandedWith.length > 0 && (
-                <p className="pbsearch-note">
+                <p className="libsearch-note">
                   Also searched for {current.expandedWith.join(", ")}.
                 </p>
               )}
 
               {hits.length === 0 && !expanding && (
-                <p className="pbsearch-note">
-                  Nothing in the playbooks matches that.
-                  {current.canExpand && " Press Enter to also search the terms these guides use for it."}
+                <p className="libsearch-note">
+                  Nothing in the playbooks or study guides matches that.
+                  {current.canExpand && " Press Enter to also search the terms these documents use for it."}
                 </p>
               )}
 
               {hits.length > 0 && current.canExpand && (
-                <p className="pbsearch-note">
+                <p className="libsearch-note">
                   No passage uses all of those words. Press Enter to also search the terms these
-                  guides use for it.
+                  documents use for it.
                 </p>
               )}
 
-              <ul className="pbsearch-list">
+              <ul className="libsearch-list">
                 {hits.map((hit, position) => (
-                  <li className="pbsearch-hit" key={`${hit.href}-${position}`}>
-                    <a className="pbsearch-hit-link" href={hit.href}>
-                      <span className="pbsearch-hit-where">
-                        <span className="pbsearch-hit-guide">{hit.guideName}</span>
-                        {hit.heading && <span className="pbsearch-hit-section">{hit.heading}</span>}
-                        <span className="pbsearch-hit-kind">{KIND_LABEL[hit.kind] ?? hit.kind}</span>
+                  <li className="libsearch-hit" key={`${hit.href}-${position}`}>
+                    <a className="libsearch-hit-link" href={hit.href}>
+                      <span className="libsearch-hit-where">
+                        <span className={`libsearch-pool libsearch-pool--${hit.pool}`}>
+                          {POOL_LABEL[hit.pool]}
+                        </span>
+                        <span className="libsearch-hit-guide">{hit.guideName}</span>
+                        {hit.heading && <span className="libsearch-hit-section">{hit.heading}</span>}
+                        <span className="libsearch-hit-kind">{KIND_LABEL[hit.kind] ?? hit.kind}</span>
                       </span>
                       {/* Segments are rendered as elements rather than set as markup — these
-                          are a playbook's own words, and they are never trusted as HTML. */}
-                      <span className="pbsearch-hit-text">
+                          are a document's own words, and they are never trusted as HTML. */}
+                      <span className="libsearch-hit-text">
                         {hit.segments.map((segment, at) =>
                           segment.hit ? (
-                            <mark className="pbsearch-mark" key={at}>
+                            <mark className="libsearch-mark" key={at}>
                               {segment.text}
                             </mark>
                           ) : (
@@ -192,10 +227,12 @@ export function PlaybookSearch() {
               </ul>
 
               {current.locked.length > 0 && (
-                <p className="pbsearch-locked">
+                <p className="libsearch-locked">
                   <LockIcon size={12} />
-                  {current.locked.map((entry) => `${entry.name} (${entry.matches})`).join(", ")} also
-                  match — part of the Limbic Student plan.
+                  {current.locked
+                    .map((entry) => `${entry.name} (${entry.matches})`)
+                    .join(", ")}{" "}
+                  also match — part of the Limbic Student plan.
                 </p>
               )}
             </>

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import type { PlaybookPassage } from "@/lib/playbook-passages";
+import type { LibraryPassage } from "@/lib/library-passages";
 import {
   EXPANSION_WEIGHT,
   bestCoverage,
@@ -12,7 +12,7 @@ import {
   splitByEntitlement,
   tokenize,
   weightTerms,
-} from "@/lib/playbook-search";
+} from "@/lib/library-search";
 
 /**
  * Ranking and entitlement for cross-playbook search.
@@ -21,10 +21,10 @@ import {
  * outranks a topical mention, an expansion term cannot outvote a typed one, a locked guide
  * contributes no text — and a rule stated against three passages is readable, where the same
  * rule stated against 1,955 is a guess about why a number came out the way it did. The real
- * corpus is exercised in playbook-passages.test.ts.
+ * corpus is exercised in library-passages.test.ts.
  */
 
-function passage(over: Partial<PlaybookPassage> & { text: string }): PlaybookPassage {
+function passage(over: Partial<LibraryPassage> & { text: string }): LibraryPassage {
   return {
     slug: "knee-examination",
     sectionId: "special",

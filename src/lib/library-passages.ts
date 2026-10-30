@@ -1,21 +1,31 @@
 /**
- * Turns a served playbook (content/playbooks/<slug>.html) into the passages that
- * cross-playbook search ranks — see lib/playbook-search.ts for the ranking and
- * lib/playbook-index.ts for the filesystem read this pairs with.
+ * Turns a served document — a playbook from content/playbooks, or an Exam Prep study guide
+ * from content/exam-prep — into the passages library search ranks. See lib/library-search.ts
+ * for the ranking, lib/library-sources.ts for which documents are indexed, and
+ * lib/library-index.ts for the filesystem read this pairs with.
  *
- * Why this exists at all: each playbook already ships an in-page "Filter" box, but it
- * indexes five kinds of unit (table rows, numcells, reference entries, drill cases and
- * callouts) and nothing else, so prose paragraphs — 194 of the 219 in the library, every
- * `p.statnote` among them — cannot be matched by it, and it only ever searches the one
- * document it lives in. This module is the cross-playbook index that fixes both.
+ * Why this exists at all: each playbook already ships an in-page "Filter" box, but it indexes
+ * five kinds of unit (table rows, numcells, reference entries, drill cases and callouts) and
+ * nothing else, so prose paragraphs — every `p.statnote` among them — cannot be matched by
+ * it, and it only ever searches the one document it lives in. The study guides have no
+ * cross-document search either. This module is the index that covers both.
  *
- * It parses rather than pattern-matches. The guide route deliberately treats these files as
+ * **The two families do not share markup.** A playbook keeps its answers in tables, numcells
+ * and drill cases; an Exam Prep guide keeps them in `div.kp` key-point blocks, each holding a
+ * prompt, an answer and a `details.bd` breakdown, and has no numcells at all. Forcing one
+ * selector list over both does not fail loudly — it fails by returning plausible rubbish.
+ * Running the playbook selectors over a study guide yields *more* passages, not fewer (256
+ * against 212 for the cervical guide), because each key point disintegrates into its
+ * constituent paragraphs: the reader gets half an answer per result and the card that holds
+ * the prompt, answer and breakdown together never appears. So the unit selectors are a
+ * per-family profile and the machinery around them is shared.
+ *
+ * It parses rather than pattern-matches. The guide routes deliberately treat these files as
  * opaque bytes ("the bytes are the deliverable" — see lib/guides.ts), and this module does
- * not change that: it never rewrites a playbook, it only reads one. But it does couple to
- * the authored markup, which is the real cost of having search at all. Rename a class in a
- * playbook and the matching passages leave the index silently. playbook-passages.test.ts
- * asserts a floor per guide and per kind so that failure lands in CI instead of in a
- * student's results.
+ * not change that: it never rewrites a document, it only reads one. But it does couple to the
+ * authored markup, which is the real cost of having search at all. Rename a class and the
+ * matching passages leave the index silently. library-passages.test.ts asserts a floor per
+ * document and per kind so that failure lands in CI instead of in a student's results.
  *
  * Deliberately free of `server-only` and of any filesystem access: it takes HTML as a
  * string so node:test can exercise it directly, the same convention lib/classify.ts and
@@ -26,7 +36,10 @@ import { parse, type HTMLElement } from "node-html-parser";
 
 /** What kind of thing a passage is. Ranking leans on this — a query that reads like a
  *  statistic should prefer the cell that holds one, and a heading match says the whole
- *  section is about the query rather than mentioning it once. */
+ *  section is about the query rather than mentioning it once.
+ *
+ *  `keypoint` is the Exam Prep families' equivalent of a playbook's `row`: the unit a student
+ *  is actually revising from, prompt and answer together. */
 export type PassageKind =
   | "heading"
   | "prose"
@@ -35,9 +48,68 @@ export type PassageKind =
   | "row"
   | "number"
   | "reference"
-  | "case";
+  | "case"
+  | "keypoint";
 
-export interface PlaybookPassage {
+/**
+ * Which selectors find the answers in one family of document.
+ *
+ * `units` runs in order, and a unit claims its subtree: anything matched later that sits
+ * inside an already-claimed element is skipped, so a breakdown nested in a key point does not
+ * become a second result for the same answer. That ordering is the only reason this reads as
+ * a list rather than a tangle of exclusions, so keep the containing units first.
+ */
+export interface ExtractionProfile {
+  /** Selector and the kind it produces, outermost-first. */
+  units: Array<{ selector: string; kind: PassageKind }>;
+  /** Table rows are handled separately from `units` because a row's cells are joined rather
+   *  than read as one run of text. Empty to skip tables entirely. */
+  rowSelector?: string;
+  /** Section ids whose headings are not topics — a bibliography's heading is a paper title,
+   *  and under the heading boost it outranks the passage that answers the query. */
+  skipHeadingSections?: string[];
+}
+
+/**
+ * The served playbooks (content/playbooks). The first five units are what the in-page Filter
+ * box already indexes; `p.statnote` and the prose fallback are what it cannot reach.
+ */
+export const PLAYBOOK_PROFILE: ExtractionProfile = {
+  rowSelector: "section table tbody tr",
+  units: [
+    { selector: "#drill details", kind: "case" },
+    { selector: ".callout", kind: "callout" },
+    { selector: ".numcell", kind: "number" },
+    { selector: "#refs li", kind: "reference" },
+    { selector: "p.statnote", kind: "statnote" },
+  ],
+  skipHeadingSections: ["refs"],
+};
+
+/**
+ * The Exam Prep study guides (content/exam-prep).
+ *
+ * `div.kp` comes first and deliberately swallows its children: each key point holds a prompt
+ * (`div.q`), an answer (`div.a`) and a `details.bd` breakdown, and a student searching for
+ * any of those wants the whole card, not three rows pointing at the same place. The bare
+ * `details` entry below it then picks up the practical skill check-offs in `#skills`, which
+ * are not inside a key point.
+ *
+ * These documents carry no `.numcell` and no `p.statnote`; listing selectors that match
+ * nothing would only invite someone to assume they do.
+ */
+export const EXAM_PREP_PROFILE: ExtractionProfile = {
+  rowSelector: "section table tbody tr",
+  units: [
+    { selector: "div.kp", kind: "keypoint" },
+    { selector: "details", kind: "case" },
+    { selector: ".callout", kind: "callout" },
+    { selector: "#refs li", kind: "reference" },
+  ],
+  skipHeadingSections: ["refs"],
+};
+
+export interface LibraryPassage {
   /** Which guide this came from — also the entitlement unit, since access is per slug. */
   slug: string;
   /** The enclosing `<section>`'s id, which is what a result deep-links to. Empty when a
@@ -49,7 +121,7 @@ export interface PlaybookPassage {
   kind: PassageKind;
   /** Readable text, whitespace-collapsed but otherwise as authored — this is both what gets
    *  tokenized and what the snippet is cut from, so it keeps its original punctuation and
-   *  casing. Normalization happens at tokenize time in lib/playbook-search.ts. */
+   *  casing. Normalization happens at tokenize time in lib/library-search.ts. */
   text: string;
 }
 
@@ -132,14 +204,18 @@ function locate(el: HTMLElement, headings: Map<HTMLElement, { id: string; headin
 }
 
 /**
- * Extracts every searchable passage from one playbook document.
+ * Extracts every searchable passage from one served document.
  *
- * The unit types are the five the in-page filter already indexes, plus the three it does
- * not: prose paragraphs, statnotes, and the headings themselves. A paragraph that sits
- * inside one of the other units is not emitted twice — the containing unit already carries
- * its text, and two hits on the same sentence would push a second real answer off the page.
+ * Beyond the profile's own units, every document contributes its prose paragraphs and its
+ * headings. A paragraph inside a unit is not emitted twice — the containing unit already
+ * carries its text, and two hits on one sentence would push a second real answer off the
+ * page.
  */
-export function extractPassages(slug: string, html: string): PlaybookPassage[] {
+export function extractPassages(
+  slug: string,
+  html: string,
+  profile: ExtractionProfile = PLAYBOOK_PROFILE
+): LibraryPassage[] {
   const root = parse(html);
 
   for (const selector of CONTROL_SELECTORS) {
@@ -156,7 +232,7 @@ export function extractPassages(slug: string, html: string): PlaybookPassage[] {
     });
   }
 
-  const passages: PlaybookPassage[] = [];
+  const passages: LibraryPassage[] = [];
   const claimed = new Set<HTMLElement>();
 
   const push = (el: HTMLElement, kind: PassageKind, text: string) => {
@@ -167,46 +243,32 @@ export function extractPassages(slug: string, html: string): PlaybookPassage[] {
     claimed.add(el);
   };
 
-  // --- the units the in-page filter already knows about ---
-
   // A table row is one finding, which is the unit a student is usually after. `.group` rows
   // are full-width subheadings rather than data, so they carry no answer of their own.
-  for (const row of root.querySelectorAll("section table tbody tr")) {
-    if (hasClass(row, "group")) continue;
-    const cells = row.querySelectorAll("th, td").map((cell) => textOf(cell)).filter(Boolean);
-    if (cells.length === 0) continue;
-    push(row, "row", cells.join(" · "));
+  if (profile.rowSelector) {
+    for (const row of root.querySelectorAll(profile.rowSelector)) {
+      if (hasClass(row, "group")) continue;
+      const cells = row.querySelectorAll("th, td").map((cell) => textOf(cell)).filter(Boolean);
+      if (cells.length === 0) continue;
+      push(row, "row", cells.join(" · "));
+    }
   }
 
-  for (const cell of root.querySelectorAll(".numcell")) push(cell, "number", textOf(cell));
-  for (const entry of root.querySelectorAll("#refs li")) push(entry, "reference", textOf(entry));
-  for (const drill of root.querySelectorAll("#drill details")) push(drill, "case", textOf(drill));
-  for (const callout of root.querySelectorAll(".callout")) push(callout, "callout", textOf(callout));
+  // The profile's units, outermost first. A unit inside an already-claimed one is skipped:
+  // the Exam Prep guides nest a `details.bd` breakdown inside every `div.kp`, and indexing
+  // both would spend two result rows on one key point.
+  for (const { selector, kind } of profile.units) {
+    for (const el of root.querySelectorAll(selector)) {
+      if (claimed.has(el) || hasAncestor(el, (ancestor) => claimed.has(ancestor))) continue;
+      push(el, kind, textOf(el));
+    }
+  }
 
-  // --- the units it does not ---
-
-  // `p.statnote` is a bare paragraph, not a `.callout` div, which is the whole reason all 13
-  // of them in the library are invisible to the in-page filter. They are also some of the
-  // densest writing in these documents, so they are indexed as their own kind rather than as
-  // ordinary prose.
-  for (const note of root.querySelectorAll("p.statnote")) push(note, "statnote", textOf(note));
-
+  // Prose last among the text units, and only where no unit already carries it — the
+  // paragraphs inside a callout, a drill case or a key point are that unit's text.
   for (const paragraph of root.querySelectorAll("section p")) {
     if (claimed.has(paragraph)) continue;
-    // Skip a paragraph whose text another unit already carries. Without this, the prose
-    // inside a callout or a drill case is indexed twice and one answer occupies two result
-    // rows.
-    const nested = hasAncestor(
-      paragraph,
-      (el) =>
-        tag(el) === "table" ||
-        tag(el) === "details" ||
-        hasClass(el, "numcell") ||
-        hasClass(el, "callout") ||
-        el.getAttribute("id") === "refs" ||
-        el.getAttribute("id") === "drill"
-    );
-    if (nested) continue;
+    if (hasAncestor(paragraph, (el) => claimed.has(el) || tag(el) === "table")) continue;
     push(paragraph, "prose", textOf(paragraph));
   }
 
@@ -219,8 +281,9 @@ export function extractPassages(slug: string, html: string): PlaybookPassage[] {
   // of the list itself, so under the heading boost a query like "mobilization" surfaced
   // "Effects of mobilization and manipulation" — a bibliography entry — above the passage
   // that answers it. A citation is reachable as a `reference` passage either way.
+  const skipHeadings = new Set(profile.skipHeadingSections ?? []);
   for (const heading of root.querySelectorAll("section h2, section h3")) {
-    if (locate(heading, sections).id === "refs") continue;
+    if (skipHeadings.has(locate(heading, sections).id)) continue;
     push(heading, "heading", textOf(heading));
   }
 

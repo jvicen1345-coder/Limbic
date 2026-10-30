@@ -7,7 +7,8 @@ import { isSiteAdmin } from "@/lib/admin";
 import { ChevronRightIcon, LockIcon } from "@/components/icons";
 import { StudentGate } from "@/components/student/StudentGate";
 import { ChooseFreePlaybookButton } from "@/components/playbook/ChooseFreePlaybookButton";
-import { PlaybookSearch } from "@/components/playbook/PlaybookSearch";
+import { LibrarySearch } from "@/components/library/LibrarySearch";
+import { libraryScope } from "@/lib/library-sources";
 
 export const metadata: Metadata = {
   title: "Playbooks",
@@ -44,6 +45,7 @@ export default async function PlaybooksHubPage() {
   // site admin — the route agrees (see lib/guides.ts canReadGuide), so this is a way in
   // rather than a link to a 404.
   const admin = await isSiteAdmin();
+  const scope = libraryScope({ admin });
   const paid = user.studentTier === "limbicStudent";
   const freeSlug = user.freePlaybookSlug;
 
@@ -55,14 +57,15 @@ export default async function PlaybooksHubPage() {
           study-mode companion. Point across so a reader who came to study finds them. */}
       <p style={{ fontSize: 13, color: "var(--color-neutral-700)", margin: "8px 0 0" }}>
         Studying for an exam or practical? <Link href="/student/exam-prep">See Exam Prep →</Link>
+        {" · "}
+        <Link href="/student/search">Search both →</Link>
       </p>
 
-      {/* Search across every served guide at once. Each playbook has its own in-page filter,
-          but that one searches a single document and only its tables, numcells, references,
-          drill cases and callouts — not its prose or statnotes. This finds the section; the
-          in-page filter narrows it once you are there. Entitlement is enforced inside the
-          action, not by rendering this on a gated page. */}
-      <PlaybookSearch />
+      {/* Searches both libraries, not just this hub's — a reader looking for a fact has no
+          reason to know whether a playbook or a study guide holds it. The box states its own
+          scope, and /student/search is the same search with room to read the results.
+          Entitlement is enforced inside the action, not by rendering this on a gated page. */}
+      <LibrarySearch scope={scope} />
 
       {!paid && !admin && (
         <p className="playbook-hub-tier-note">

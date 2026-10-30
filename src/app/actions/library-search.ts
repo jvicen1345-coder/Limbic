@@ -1,10 +1,9 @@
 "use server";
 
-import { GUIDES, guideHref, guideIsReadable } from "@/lib/guides";
 import { isSiteAdmin } from "@/lib/admin";
 import { getCurrentUser, hasStudentAccess, hasPlaybookAccess } from "@/lib/session";
-import { playbookIndex } from "@/lib/playbook-index";
-import { expandPlaybookQuery } from "@/lib/playbook-query-expansion";
+import { libraryIndex } from "@/lib/library-index";
+import { expandLibraryQuery } from "@/lib/library-query-expansion";
 import {
   bestCoverage,
   guideAffinity,
@@ -14,11 +13,12 @@ import {
   splitByEntitlement,
   weightTerms,
   type SnippetSegment,
-} from "@/lib/playbook-search";
-import type { PassageKind } from "@/lib/playbook-passages";
+} from "@/lib/library-search";
+import type { PassageKind } from "@/lib/library-passages";
+import { librarySources, type LibraryPool } from "@/lib/library-sources";
 
 /**
- * Cross-playbook search: one query, every served playbook, ranked.
+ * Library search: one query, every served playbook and Exam Prep study guide, ranked.
  *
  * A Server Action rather than a route handler because that is how search already works here
  * (see actions/ai-search.ts behind components/SearchScreen.tsx) and because AGENTS.md asks
@@ -36,7 +36,7 @@ const MAX_HITS = 24;
 
 /** How many passages to rank before entitlement is applied.
  *
- *  Has to be well above MAX_HITS. A reader on the free tier holds one guide of seven, so the
+ *  Has to be well above MAX_HITS. A reader on the free tier holds one document of ten, so the
  *  best two dozen passages in the library can easily be entirely locked — ranking only
  *  MAX_HITS and then filtering would hand them an empty page while their own guide held the
  *  answer further down. Ranking wide and truncating after the filter also makes the locked
@@ -46,9 +46,12 @@ const CANDIDATES = 300;
 /** Length of the snippet window, in characters. Two lines at the result width. */
 const SNIPPET_CHARS = 220;
 
-export interface PlaybookSearchHit {
+export interface LibrarySearchHit {
   slug: string;
   guideName: string;
+  /** Which pool it came from, so a result says whether it is a playbook or a study guide
+   *  rather than leaving the reader to recognise the name. */
+  pool: LibraryPool;
   /** Deep link to the section the passage sits in. */
   href: string;
   /** The section's heading, for naming the result. */
@@ -59,11 +62,14 @@ export interface PlaybookSearchHit {
   segments: SnippetSegment[];
 }
 
-export interface PlaybookSearchResponse {
+export interface LibrarySearchResponse {
   query: string;
-  hits: PlaybookSearchHit[];
-  /** Guides that matched but this reader has not unlocked — a name and a count, never text. */
-  locked: { name: string; matches: number }[];
+  hits: LibrarySearchHit[];
+  /** Documents that matched but this reader has not unlocked — a name and a count, never
+   *  text. */
+  locked: { name: string; pool: LibraryPool; matches: number }[];
+  /** What was searched, so the surface can state its scope rather than implying it. */
+  scope: { playbooks: number; studyGuides: number };
   /** Terms the expansion layer added, so the UI can say what else it looked for. Empty when
    *  the query was answered as typed, which is the common case. */
   expandedWith: string[];
@@ -75,8 +81,16 @@ export interface PlaybookSearchResponse {
   gated: boolean;
 }
 
-function empty(query: string, gated = false): PlaybookSearchResponse {
-  return { query, hits: [], locked: [], expandedWith: [], canExpand: false, gated };
+function empty(query: string, gated = false): LibrarySearchResponse {
+  return {
+    query,
+    hits: [],
+    locked: [],
+    scope: { playbooks: 0, studyGuides: 0 },
+    expandedWith: [],
+    canExpand: false,
+    gated,
+  };
 }
 
 /**
@@ -89,10 +103,10 @@ function empty(query: string, gated = false): PlaybookSearchResponse {
  * ask for work the reader could ask for anyway, so it carries no authority: everything that
  * withholds content is below, keyed on the session.
  */
-export async function searchPlaybooksAction(
+export async function searchLibraryAction(
   rawQuery: string,
   { expand = false }: { expand?: boolean } = {}
-): Promise<PlaybookSearchResponse> {
+): Promise<LibrarySearchResponse> {
   const query = rawQuery.trim().slice(0, 200);
   if (query.length < 2) return empty(query);
 
@@ -102,14 +116,16 @@ export async function searchPlaybooksAction(
 
   const admin = await isSiteAdmin();
 
-  // An unpublished guide is excluded for an ordinary reader exactly as the route excludes it,
-  // so search cannot be the thing that reveals one. No guide carries the flag today; this
-  // keeps search honest when the next one is being written.
-  const searchable = GUIDES.filter((guide) => guideIsReadable(guide, admin));
-  const names = new Map(searchable.map((guide) => [guide.slug, guide.name]));
-  const hrefs = new Map(searchable.map((guide) => [guide.slug, guideHref(guide)]));
+  // Both pools, with an unpublished playbook excluded for an ordinary reader exactly as its
+  // route excludes it — search must not become the surface that reveals one.
+  const searchable = librarySources({ admin });
+  const bySlug = new Map(searchable.map((source) => [source.slug, source]));
+  const scope = {
+    playbooks: searchable.filter((source) => source.pool === "playbook").length,
+    studyGuides: searchable.filter((source) => source.pool === "study-guide").length,
+  };
 
-  const index = await playbookIndex();
+  const index = await libraryIndex({ admin });
   const own = queryTerms(query);
   if (own.length === 0) return empty(query);
 
@@ -124,7 +140,7 @@ export async function searchPlaybooksAction(
   let expandedWith: string[] = [];
   const thin = bestCoverage(lexical) < 1;
   if (expand && thin) {
-    const expanded = await expandPlaybookQuery(query);
+    const expanded = await expandLibraryQuery(query);
     if (expanded.length > 0) {
       const terms = weightTerms(own, expanded);
       const widened = rank(index, terms, query, { limit: CANDIDATES, slugWeights: affinity });
@@ -150,15 +166,24 @@ export async function searchPlaybooksAction(
 
   return {
     query,
-    hits: visible.slice(0, MAX_HITS).map((hit) => ({
-      slug: hit.passage.slug,
-      guideName: names.get(hit.passage.slug) ?? hit.passage.slug,
-      href: `${hrefs.get(hit.passage.slug) ?? ""}${hit.passage.sectionId ? `#${hit.passage.sectionId}` : ""}`,
-      heading: hit.passage.heading,
-      kind: hit.passage.kind,
-      segments: snippet(hit.passage.text, highlight, SNIPPET_CHARS),
+    hits: visible.slice(0, MAX_HITS).map((hit) => {
+      const source = bySlug.get(hit.passage.slug);
+      return {
+        slug: hit.passage.slug,
+        guideName: source?.name ?? hit.passage.slug,
+        pool: source?.pool ?? "playbook",
+        href: `${source?.href ?? ""}${hit.passage.sectionId ? `#${hit.passage.sectionId}` : ""}`,
+        heading: hit.passage.heading,
+        kind: hit.passage.kind,
+        segments: snippet(hit.passage.text, highlight, SNIPPET_CHARS),
+      };
+    }),
+    locked: locked.map((entry) => ({
+      name: bySlug.get(entry.slug)?.name ?? entry.slug,
+      pool: bySlug.get(entry.slug)?.pool ?? "playbook",
+      matches: entry.matches,
     })),
-    locked: locked.map((entry) => ({ name: names.get(entry.slug) ?? entry.slug, matches: entry.matches })),
+    scope,
     expandedWith,
     canExpand: thin && expandedWith.length === 0,
     gated: false,
