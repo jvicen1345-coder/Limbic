@@ -997,3 +997,157 @@ button.playbook-maskwrap:focus-visible {
   text-decoration: none;
 }
 .playbook-hub-locked:hover { color: var(--color-accent-700); border-color: var(--color-accent); text-decoration: none; }
+
+/* ---------- cross-playbook search (components/playbook/LibrarySearch.tsx) ----------
+   The hub's search box and its results. Lives here rather than on the root import because
+   nothing outside the playbooks routes renders it. Each served playbook also carries its own
+   in-page filter, which is styled inside that document's own <style> block and shares
+   nothing with this. */
+.libsearch { margin-top: 18px; }
+
+.libsearch-bar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--atrium-border);
+  background: var(--atrium-surface);
+}
+.libsearch-bar:focus-within { border-color: var(--color-accent); }
+.libsearch-icon { color: var(--color-neutral-700); flex: 0 0 auto; }
+
+.libsearch-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 11px 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-text);
+}
+.libsearch-input:focus { outline: none; }
+/* The native clear affordance sits on a transparent field and renders as a dark smudge in
+   dark mode, so the field keeps its own styling and drops the decoration. */
+.libsearch-input::-webkit-search-decoration,
+.libsearch-input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+
+.libsearch-spinner {
+  flex: 0 0 auto;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid var(--color-neutral-200);
+  border-top-color: var(--color-accent);
+  animation: libsearch-spin 0.7s linear infinite;
+}
+@keyframes libsearch-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .libsearch-spinner { animation-duration: 2.4s; }
+}
+
+.libsearch-results { margin-top: 10px; }
+
+.libsearch-note {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+}
+
+.libsearch-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+
+.libsearch-hit { margin: 0; }
+.libsearch-hit-link {
+  display: block;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  text-decoration: none;
+  color: inherit;
+}
+.libsearch-hit-link:hover { border-color: var(--color-accent); }
+
+.libsearch-hit-where {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin-bottom: 4px;
+}
+.libsearch-hit-guide { font-weight: 600; font-size: 12.5px; color: var(--color-accent-700); }
+/* The section name is the anchor the link lands on, so it reads as the destination rather
+   than as a second title. */
+.libsearch-hit-section { font-size: 12.5px; color: var(--color-text); }
+.libsearch-hit-kind {
+  font-size: var(--fs-10-5);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-neutral-700);
+}
+
+.libsearch-hit-text {
+  display: block;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+}
+.libsearch-mark {
+  background: var(--pb-accent-soft, color-mix(in srgb, var(--color-accent) 18%, var(--color-surface)));
+  color: var(--color-text);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.libsearch-locked {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+}
+
+@media (max-width: 560px) {
+  .libsearch-input { font-size: 15px; }
+  .libsearch-hit-kind { display: none; }
+}
+
+/* The search page (app/(app)/student/search) gives the field more presence than the inline
+   copy on the hub, and more room to the results beneath it. */
+.libsearch--page { margin-top: 20px; }
+.libsearch--page .libsearch-input { padding: 14px 0; font-size: 15px; }
+.libsearch--page .libsearch-results { margin-top: 14px; }
+
+/* Stated before anything is typed: what this search covers. */
+.libsearch-scope {
+  margin: 7px 0 0;
+  font-size: var(--fs-11-5);
+  letter-spacing: 0.01em;
+  color: var(--color-neutral-700);
+}
+
+/* Which library a result came from. A playbook and a study guide are different kinds of
+   document, and the badge saves the reader recognising which is which by name. */
+.libsearch-pool {
+  flex: 0 0 auto;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: var(--fs-9-5);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--color-divider);
+  color: var(--color-neutral-700);
+}
+.libsearch-pool--playbook {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+  color: var(--color-accent-700);
+}
+.libsearch-pool--study-guide {
+  border-color: color-mix(in srgb, var(--color-accent-2) 45%, transparent);
+  color: var(--color-accent-2);
+}
