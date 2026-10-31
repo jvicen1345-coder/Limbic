@@ -209,6 +209,11 @@ export function NavContent({ profileName, specialtyLabel, practiceState, school,
             {isStudent && (
               <NavLink href="/student/playbooks" icon={<BandageIcon />} label="Playbooks" bold={false} onNavigate={onNavigate} />
             )}
+            {/* Same .edu gate as the page (hasStudentAccess): free once isStudent is true,
+                so no lock badge. ZapIcon matches News — this list is that same feed. */}
+            {isStudent && (
+              <NavLink href="/student/roundup" icon={<ZapIcon />} label="Weekly Roundup" bold={false} onNavigate={onNavigate} />
+            )}
             <NavLink href="/student/resources" icon={<ListIcon />} label="NPTE Resources" bold={false} onNavigate={onNavigate} />
           </>
         )}
