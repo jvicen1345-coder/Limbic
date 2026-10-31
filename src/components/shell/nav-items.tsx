@@ -56,12 +56,16 @@ export function NavLink({
   bold = true,
   onNavigate,
   dataTour,
+  activePrefixes,
 }: {
   href: string;
   icon: React.ReactNode;
   label: string;
   /** A number renders as a count badge (hidden at 0); a string renders as-is (e.g. "Pro"). */
   badge?: number | string;
+  /** Highlight this row on any of these section prefixes, including nested routes.
+   *  `/saved` lights on `/saved/clips`. Takes the place of `exact` when set. */
+  activePrefixes?: string[];
   /** Marks this item as a target for the guided tour (see components/LimbicTour.tsx),
    *  which finds it via document.querySelector(`[data-tour="${dataTour}"]`). Only the
    *  handful of items the tour actually references pass this. */
@@ -84,7 +88,11 @@ export function NavLink({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
-  const active = exact ? pathname === href : pathname.startsWith(href);
+  const active = activePrefixes
+    ? activePrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
+    : exact
+      ? pathname === href
+      : pathname === href || pathname.startsWith(href);
   const showBadge = typeof badge === "string" ? badge.length > 0 : badge != null && badge > 0;
   return (
     <Link href={href} style={sidebarNavStyle(active, bold)} onClick={onNavigate} data-active={active} data-tour={dataTour}>
@@ -127,6 +135,7 @@ export function NavToggle({
   expanded,
   onClick,
   dataTour,
+  active = false,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -134,14 +143,20 @@ export function NavToggle({
   onClick: () => void;
   /** Marks this item as a target for the guided tour — see NavLink's own dataTour above. */
   dataTour?: string;
+  /** True while the current route belongs to this group, including its sub-pages. */
+  active?: boolean;
 }) {
   return (
     <button
       type="button"
-      style={{ ...sidebarNavStyle(false, true), background: "color-mix(in srgb, var(--color-text) 6%, transparent)" }}
+      style={{
+        ...sidebarNavStyle(active, true),
+        background: active ? "var(--color-accent-100)" : "color-mix(in srgb, var(--color-text) 6%, transparent)",
+      }}
       aria-expanded={expanded}
       onClick={onClick}
       data-tour={dataTour}
+      data-active={active}
     >
       {icon}
       {label}

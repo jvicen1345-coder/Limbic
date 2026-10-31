@@ -303,3 +303,19 @@
 .boards-tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
 .boards-tabs::-webkit-scrollbar { display: none; }
 .boards-tab { flex: 1 0 auto; }
+
+/* Section tab rails (Learn, Clinical, Library's saved/news/connexion, Community's
+   wellness) sit above the page's own .screen-pad. Match that pad's measure so the
+   tabs line up with the title under them. Clinical passes section-subtabs-wide
+   because the dashboard and HEP builder lift the 900px cap. */
+.section-subtabs {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 44px 0;
+  box-sizing: border-box;
+}
+.section-subtabs-wide { max-width: none; }
+@media (max-width: 799px) {
+  .section-subtabs { padding: 12px 18px 0; }
+}

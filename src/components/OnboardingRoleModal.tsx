@@ -86,7 +86,7 @@ export function OnboardingRoleModal() {
       <div className="card elev-lg onboarding-role-card">
         <h1 style={{ fontSize: 22, margin: "0 0 4px" }}>How are you using Limbic?</h1>
         <p className="card-body" style={{ marginTop: 2 }}>
-          This just orders your sidebar to match — every section stays available either way,
+          This personalizes a few surfaces for how you use Limbic. Every section stays available,
           and you can change this anytime from Profile.
         </p>
 

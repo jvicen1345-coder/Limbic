@@ -18,8 +18,6 @@ import { CalendarWeekView } from "./CalendarWeekView";
 import { CalendarListView } from "./CalendarListView";
 import { CalendarDetailPanel } from "./CalendarDetailPanel";
 import { AddEventModal } from "./AddEventModal";
-import { SubTabs } from "@/components/SubTabs";
-import { PROFILE_TABS } from "@/lib/section-nav";
 
 function startOfWeek(date: Date): Date {
   const d = new Date(date);
@@ -74,7 +72,6 @@ export function CalendarPageClient({ events }: { events: CalendarEvent[] }) {
 
   return (
     <div className="screen-pad">
-      <SubTabs tabs={PROFILE_TABS} />
       <div className="cal-page-header">
         <div className="cal-page-title-row">
           <h1 className="cal-page-title">Limbic Calendar</h1>

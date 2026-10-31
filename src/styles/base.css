@@ -457,6 +457,14 @@ details[open] > .pro-accordion-summary .pro-accordion-chevron { transform: rotat
   margin-bottom: -1px;
 }
 .sub-tab.active { color: var(--color-accent-700); border-bottom-color: var(--color-accent); }
+.sub-tab-lock {
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  vertical-align: 1px;
+  white-space: nowrap;
+}
 
 .sliding-tabs {
   position: relative;

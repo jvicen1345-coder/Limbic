@@ -1,9 +1,19 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { signUpAndEnterApp } from "./helpers";
 
+async function dismissWelcomeTour(page: Page) {
+  const skip = page.getByRole("button", { name: "Skip tour" });
+  try {
+    await skip.waitFor({ state: "visible", timeout: 8_000 });
+    await skip.click();
+  } catch {
+    // The tour only auto-starts for an account that has not finished it.
+  }
+}
+
 /**
- * Weekly Roundup already rendered at /student/roundup; these tests cover the new way in.
- * A .edu address is what hasStudentAccess (and therefore the sidebar link) keys off.
+ * Weekly Roundup renders at /student/roundup. It is a Learn tab, not its own sidebar row.
+ * A .edu address is what hasStudentAccess (and therefore the tab) keys off.
  */
 
 function studentEmail(label: string) {
@@ -11,40 +21,46 @@ function studentEmail(label: string) {
 }
 
 test.describe("Weekly Roundup nav", () => {
-  test("the desktop sidebar link opens the roundup and highlights it", async ({ page }) => {
+  test("Learn stays highlighted and the roundup tab opens the page", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await signUpAndEnterApp(page, studentEmail("desk"));
+    await dismissWelcomeTour(page);
 
     const sidebar = page.locator(".app-sidebar");
-    await sidebar.getByRole("button", { name: "Limbic Student" }).click();
-    await sidebar.getByRole("link", { name: "Weekly Roundup" }).click();
+    await sidebar.getByRole("link", { name: "Learn", exact: true }).click();
+    await expect(page).toHaveURL(/\/student$/);
+
+    const tabs = page.locator(".sub-tabs");
+    await tabs.getByRole("link", { name: "Weekly Roundup" }).click();
 
     await expect(page).toHaveURL(/\/student\/roundup$/);
     await expect(page.getByRole("heading", { name: "Weekly Roundup" })).toBeVisible();
-    // Exact match: /student (Atrium) must stay inactive on the nested roundup route.
-    await expect(sidebar.getByRole("link", { name: "Weekly Roundup" })).toHaveAttribute("data-active", "true");
-    await expect(sidebar.getByRole("link", { name: "Atrium", exact: true })).toHaveAttribute("data-active", "false");
+    await expect(sidebar.getByRole("link", { name: "Learn", exact: true })).toHaveAttribute("data-active", "true");
+    await expect(tabs.getByRole("link", { name: "Weekly Roundup" })).toHaveClass(/active/);
+    await expect(tabs.getByRole("link", { name: "Atrium", exact: true })).not.toHaveClass(/active/);
   });
 
-  test("the mobile drawer link opens the roundup", async ({ page }) => {
+  test("the mobile drawer Learn link leads to the roundup tab", async ({ page }) => {
     // Sign up at the default desktop width. completeFirstRun waits on a single visible
     // navigation, and a phone width shows the bottom nav while the sidebar is still in
     // the DOM.
     await signUpAndEnterApp(page, studentEmail("mobile"));
+    await dismissWelcomeTour(page);
     await page.setViewportSize({ width: 390, height: 844 });
 
     await page.getByRole("button", { name: "Open menu" }).click();
     const drawer = page.locator(".app-mobile-drawer");
-    await drawer.getByRole("button", { name: "Limbic Student" }).click();
-    await drawer.getByRole("link", { name: "Weekly Roundup" }).click();
+    await drawer.getByRole("link", { name: "Learn", exact: true }).click();
+    await expect(drawer).toBeHidden();
 
+    await page.locator(".sub-tabs").getByRole("link", { name: "Weekly Roundup" }).click();
     await expect(page).toHaveURL(/\/student\/roundup$/);
     await expect(page.getByRole("heading", { name: "Weekly Roundup" })).toBeVisible();
-    await expect(drawer).toBeHidden();
 
     await page.getByRole("button", { name: "Open menu" }).click();
     const reopened = page.locator(".app-mobile-drawer");
-    await expect(reopened.getByRole("link", { name: "Weekly Roundup" })).toHaveAttribute("data-active", "true");
-    await expect(reopened.getByRole("link", { name: "Atrium", exact: true })).toHaveAttribute("data-active", "false");
+    await expect(reopened.getByRole("link", { name: "Learn", exact: true })).toHaveAttribute("data-active", "true");
+    await expect(page.locator(".sub-tabs").getByRole("link", { name: "Weekly Roundup" })).toHaveClass(/active/);
+    await expect(page.locator(".sub-tabs").getByRole("link", { name: "Atrium", exact: true })).not.toHaveClass(/active/);
   });
 });

@@ -128,6 +128,10 @@ export default async function globalSetup(config: FullConfig) {
     "/hep",
     "/movement-lab",
     "/pro/exercises",
+    "/student",
+    "/student/roundup",
+    "/saved/clips",
+    "/wellness/metrics",
   ];
 
   const controller = new AbortController();

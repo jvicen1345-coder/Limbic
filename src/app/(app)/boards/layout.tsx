@@ -2,7 +2,13 @@ import type { ReactNode } from "react";
 import "@/styles/boards.css";
 import "@/styles/games.css";
 import "@/styles/streaks.css";
+import { LearnSectionTabs } from "@/components/shell/SectionTabs";
 
 export default function Layout({ children }: { children: ReactNode }) {
-  return children;
+  return (
+    <>
+      <LearnSectionTabs />
+      {children}
+    </>
+  );
 }

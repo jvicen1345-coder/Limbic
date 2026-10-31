@@ -60,7 +60,7 @@ test.describe("navigation badges", () => {
     releaseBadges();
     await navigation;
     await expect(page.getByText("7 saved")).toBeAttached();
-    await page.getByRole("button", { name: "Articles" }).click();
+    await page.getByRole("button", { name: "Library", exact: true }).click();
     await expect(page.getByRole("link", { name: /News 4/ })).toBeVisible();
 
     // Failed badge chrome is equally non-blocking and must not manufacture zero values.
@@ -72,7 +72,7 @@ test.describe("navigation badges", () => {
     await expect(page.getByRole("navigation").first()).toBeVisible();
     await expect(page.getByRole("heading", { name: "Mini Crossword" })).toBeVisible();
     await expect(page.getByText(/\d+ saved/)).toHaveCount(0);
-    await page.getByRole("button", { name: "Articles" }).click();
+    await page.getByRole("button", { name: "Library", exact: true }).click();
     await expect(page.getByRole("link", { name: "News", exact: true })).toBeVisible();
   });
 });

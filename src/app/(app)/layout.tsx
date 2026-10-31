@@ -3,11 +3,10 @@ import "@/styles/tour.css";
 import "@/styles/screens.css";
 import "@/styles/programs.css";
 import { redirect } from "next/navigation";
-import { getCurrentUser, hasStudentAccess, hasLicenseAccess, adminAreasForUser, isAdminEmail } from "@/lib/session";
+import { getCurrentUser, hasStudentAccess, adminAreasForUser, isAdminEmail } from "@/lib/session";
 import { nexusVisibleTo } from "@/lib/nexus-visibility";
 import { SPECIALTY_META } from "@/lib/meta";
 import { AppShell } from "@/components/AppShell";
-import { zoneTwoOrder } from "@/lib/user-role";
 import { TimeZoneSync } from "@/components/TimeZoneSync";
 import { TourHost } from "@/components/TourHost";
 import { getTimeZone } from "@/lib/user-time-zone";
@@ -34,8 +33,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // because child pages key calendar-day data from the same server value.
   const timeZone = await getTimeZone(user);
 
-  const hasLicense = hasLicenseAccess(user);
-  // All three are derivable from the already-loaded user. Calling the lib/admin.ts wrappers
+  // Admin areas and the Nexus flag are derivable from the already-loaded user. Calling the lib/admin.ts wrappers
   // here would read the session again (request-cached now, but still unnecessary work on the
   // hot path).
   //
@@ -57,14 +55,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       specialtyLabel={SPECIALTY_META[user.specialty as keyof typeof SPECIALTY_META]}
       practiceState={user.practiceState}
       school={user.school}
-      hasLicense={hasLicense}
       isPro={user.isPro}
       isStudent={hasStudentAccess(user)}
       isVerifiedStudent={user.studentTier === "limbicStudent"}
       showNexus={showNexus}
       adminAreas={adminAreas}
       isOwnerAdmin={isOwnerAdmin}
-      zoneTwoOrder={zoneTwoOrder(user.userRole)}
     >
       <TimeZoneSync serverTimeZone={timeZone} />
       {/* Mounted for the whole app rather than by Home, which is why tour.css stays on

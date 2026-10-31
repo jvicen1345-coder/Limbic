@@ -184,6 +184,11 @@ export function LimbicTour({
   // body (see react-hooks/set-state-in-effect).
   useEffect(() => {
     if (step.route && pathname !== step.route) return;
+    // The Atlas anchor lives inside the Library group, which is collapsed on Home.
+    // NavContent opens that group when it hears this, before the wait below gives up.
+    if (step.target !== "center") {
+      window.dispatchEvent(new CustomEvent("limbic:tour-target", { detail: step.target }));
+    }
 
     let frame = 0;
     let cancelled = false;

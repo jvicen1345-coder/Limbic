@@ -5,8 +5,6 @@ import { decorateArticle } from "@/lib/feed";
 import { NewsRow } from "@/components/RowCards";
 import { Pagination } from "@/components/Pagination";
 import { parsePageParam, paginate } from "@/lib/pagination";
-import { NEWS_TABS } from "@/lib/section-nav";
-import { SubTabs } from "@/components/SubTabs";
 
 export default async function NewsPage({
   searchParams,
@@ -35,7 +33,6 @@ export default async function NewsPage({
         </a>{" "}
         and other outlets, each story links back to its original source below.
       </p>
-      <SubTabs tabs={NEWS_TABS} />
       {aptaArticles.length > 0 ? (
         <>
           <div style={{ display: "flex", flexDirection: "column" }}>

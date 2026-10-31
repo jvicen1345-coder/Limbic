@@ -5,8 +5,6 @@ import { decorateArticle } from "@/lib/feed";
 import { NewsRow } from "@/components/RowCards";
 import { Pagination } from "@/components/Pagination";
 import { parsePageParam, paginate } from "@/lib/pagination";
-import { NEWS_TABS } from "@/lib/section-nav";
-import { SubTabs } from "@/components/SubTabs";
 import type { ArticleType } from "@/lib/types";
 
 // Same "not research, not a CE/community event, not an APTA-specific story" slice this
@@ -44,7 +42,6 @@ export default async function GeneralNewsPage({
         Clinical guidelines, industry & policy coverage, and new equipment, everything
         outside of APTA&rsquo;s own newsroom.
       </p>
-      <SubTabs tabs={NEWS_TABS} />
       {generalArticles.length > 0 ? (
         <>
           <div style={{ display: "flex", flexDirection: "column" }}>

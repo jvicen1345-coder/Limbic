@@ -10,8 +10,6 @@ export const metadata: Metadata = {
   title: "Overview",
 };
 import { CrownIcon } from "@/components/icons";
-import { PRO_TABS } from "@/lib/section-nav";
-import { SubTabs } from "@/components/SubTabs";
 import { AutoRenewalTerms } from "@/components/AutoRenewalTerms";
 
 /** The six tools that still require a LimbicPRO subscription — everything else in the old
@@ -99,7 +97,6 @@ export default async function ProOverviewPage() {
         Free clinical reference for every PT. LimbicPRO adds the tools that save you time, track your patients, and
         support your clinical decisions.
       </p>
-      <SubTabs tabs={PRO_TABS} />
 
       <div className="card elev-sm" style={{ margin: "16px 0" }}>
         <div className="card-kicker">Already included free for all clinicians</div>

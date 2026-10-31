@@ -7,8 +7,8 @@ import { USER_ROLES, type UserRole } from "@/lib/user-role";
 
 /** Profile's Role section — the same three cards the onboarding gate uses (see
  *  components/OnboardingRoleModal.tsx), just editable in place instead of blocking
- *  anything. Changing this only reorders the sidebar's Zone 2 sections (see
- *  lib/user-role.ts zoneTwoOrder, components/AppShell.tsx) — nothing is ever hidden. */
+ *  anything. Changing this personalizes surfaces such as the wellness hub's card order
+ *  (see lib/user-role.ts wellnessCardOrder). Every sidebar section stays available. */
 export function UserRoleSection({ role }: { role: UserRole | null }) {
   const [editing, setEditing] = useState(false);
   const [selected, setSelected] = useState<UserRole | null>(role);

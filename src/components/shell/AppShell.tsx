@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import type { ZoneTwoKey } from "@/lib/user-role";
 import {
   LogoIcon,
   HomeIcon,
@@ -46,7 +45,6 @@ export interface AppShellProps {
   specialtyLabel: string;
   practiceState: string;
   school: string | null;
-  hasLicense: boolean;
   isPro: boolean;
   isStudent: boolean;
   isVerifiedStudent: boolean;
@@ -57,9 +55,6 @@ export interface AppShellProps {
    *  open, and whether it is an allowlist owner (the one Admin screen with no area). */
   adminAreas: AdminArea[];
   isOwnerAdmin: boolean;
-  /** See lib/user-role.ts zoneTwoOrder() — computed in app/(app)/layout.tsx off the
-   *  account's userRole. */
-  zoneTwoOrder: ZoneTwoKey[];
   children: React.ReactNode;
 }
 
@@ -68,14 +63,12 @@ export function AppShell({
   specialtyLabel,
   practiceState,
   school,
-  hasLicense,
   isPro,
   isStudent,
   isVerifiedStudent,
   showNexus,
   adminAreas,
   isOwnerAdmin,
-  zoneTwoOrder,
   children,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -86,8 +79,6 @@ export function AppShell({
     specialtyLabel,
     practiceState,
     school,
-    hasLicense,
-    isPro,
     isStudent,
     isVerifiedStudent,
     showNexus,
@@ -95,7 +86,6 @@ export function AppShell({
     isOwnerAdmin,
     aptaCount: navigationBadges?.aptaCount,
     nexusRequestCount: navigationBadges?.nexusRequestCount,
-    zoneTwoOrder,
     clinicMembership: navigationBadges?.clinicMembership ?? null,
   };
   // Extends the Atrium's warm palette out to the surrounding chrome (sidebar/topbar/
@@ -185,13 +175,11 @@ export function AppShell({
         {children}
       </main>
 
-      {/* Search/Home/Profile are the only entries every account gets — Atrium and Dashboard
-          are conditional on the same isStudent/isPro flags the sidebar already gates its own
-          "/student" and "/pro/dashboard" links on (see NavContent above), so the bar only
-          grows for an account that actually has that destination; bottomNavStyle's flex: 1
-          on every item re-spaces the row automatically at 3, 4, or 5 entries. Order is
-          Search, Atrium, Home, Dashboard, Profile — Home sits in the middle of the full
-          5-entry bar. */}
+      {/* Search/Home/Profile are the entries every account gets. Atrium and Dashboard
+          stay conditional on isStudent/isPro, so the bar only grows for an account that
+          actually has that destination; bottomNavStyle's flex: 1 on every item re-spaces
+          the row automatically at 3, 4, or 5 entries. Order is Search, Atrium, Home,
+          Dashboard, Profile — Home sits in the middle of the full 5-entry bar. */}
       <nav className="app-bottomnav">
         <BottomNavLink href="/search" icon={<SearchIcon size={20} />} label="Search" />
         {isStudent && <BottomNavLink href="/student" icon={<GraduationCapIcon size={20} />} label="Atrium" />}

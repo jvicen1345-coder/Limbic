@@ -80,7 +80,7 @@ const WELCOME_TOUR: Tour = {
       id: "sidebar",
       title: "Your Navigation",
       description:
-        "Everything on Limbic lives here. The sidebar reorders based on your role — student, clinician, or general user.",
+        "Everything on Limbic lives in six sections: Home, Search, Learn, Clinical, Library, and Community.",
       target: '[data-tour="sidebar"]',
       position: "right",
     },
@@ -257,7 +257,7 @@ const STUDENT_TOUR: Tour = {
       id: "sidebar",
       title: "The rest of the section",
       description:
-        "Boards, Clinical Reference, the Study Guide and the examination Playbooks all live under Limbic Student in the sidebar. Boards is open to licensed clinicians too, not only students.",
+        "Boards, the Study Guide, the examination Playbooks, and the Weekly Roundup are the tabs across the top of Learn. Boards is open to licensed clinicians too. Clinical Reference sits with the clinical tools.",
       target: '[data-tour="limbic-student"]',
       position: "right",
       route: "/student",
@@ -383,7 +383,7 @@ const CONNEXION_TOUR: Tour = {
       id: "done",
       title: "That's the Connexion Method",
       description:
-        "The Overview is the page to come back to. Delia Vicencio's own page in the sidebar covers who developed the method and their background.",
+        "The Overview is the page to come back to. The About Delia tab covers who developed the method and their background.",
       target: "center",
       position: "bottom",
       route: "/connexion",
